@@ -136,6 +136,12 @@ $(INCLUDES)	: $(HEADERS)
 		  mkdir -p $(BUILD_DIR)/include
 		  $(CP) $(HEADERS) $(BUILD_DIR)/include
 		  echo '#include "config.h"' >$(BUILD_DIR)/include/ghcconfig.h
+		  # Ultra-evil...
+		  ( echo '#undef PACKAGE_NAME'      ; \
+		    echo '#undef PACKAGE_TARNAME'   ; \
+		    echo '#undef PACKAGE_VERSION'   ; \
+		    echo '#undef PACKAGE_STRING'    ; \
+		    echo '#undef PACKAGE_BUGREPORT' ) >>$(BUILD_DIR)/include/ghcconfig.h
 
 ################################################################
 # Library modules that use the Foreign Function Interface
