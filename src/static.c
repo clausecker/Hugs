@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.122 $
- * $Date: 2002/11/04 02:25:12 $
+ * $Revision: 1.123 $
+ * $Date: 2002/11/04 16:10:39 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1049,8 +1049,6 @@ Name n; {
 	 */
      && name(n).mod != name(clash).mod ) {
       name(clash).clashes = cons(n,name(clash).clashes);
-    } else {
-      name(n).mod = source;
     }
 }
 
@@ -1063,8 +1061,6 @@ Tycon tc; {
       /* See importName() comment. */
      && tycon(tc).mod != tycon(clash).mod ) {
       tycon(clash).clashes = cons(tc,tycon(clash).clashes);
-    } else {
-      tycon(tc).mod = source;
     }
     if ( nonNull(cc = findClass(tycon(tc).text)) ) {
       cclass(cc).clashes = cons(tc,cclass(cc).clashes);
@@ -1082,8 +1078,6 @@ Class c; {
 	   on both the class values here..*/
         cclass(c).clashes = cons(clash,cclass(c).clashes);
         cclass(clash).clashes = cons(c,cclass(clash).clashes);
-    } else {
-        cclass(c).mod = source;
     }
     if (nonNull(findTycon(cclass(c).text))) {
         cclass(clash).clashes = cons(c,cclass(clash).clashes);
@@ -1177,11 +1171,11 @@ Cell e; {
 	         ents = module(m).exports;
 	     }
 	     for(;nonNull(ents);ents=tl(ents)) {
-	       Cell qid;
-	       Text txtNm;
-	       Name nm;
-	       Tycon tc;
-	       Class cc;
+	       Cell  qid;
+	       Text  txtNm;
+	       Name  nm1, nm2;
+	       Tycon tc1, tc2;
+	       Class cc1, cc2;
 	       
 	       /* Build the (alias) qualified entity and
 		  test whether it's in scope - ugly. */
@@ -1209,18 +1203,23 @@ Cell e; {
 		       internal("checkExportModule");
 		   }
 	       }
-	       /* Check that the entity E is available 
-		* as E (from module M) and A.E
+	       /* Decide whether an entity E is to be exported;
+	        * it needs to satisfy the following conditions:
+		*
+		*  - it needs to be visible in unqualified form 
+		*  - it is also available as A.E (where A is the
+		*    alias used in the module re-exportation.)
+		*  - the two names refer to the same (declared) name.
 		*/
-	       if ( ( (nm = findName(txtNm))  && 
-		      name(nm).mod == m      &&
-		      !isNull(findQualName(qid)))  ||
-		    ( (tc = findTycon(txtNm)) &&
-		      tycon(tc).mod == m     &&
-		      !isNull(findQualTycon(qid))) ||
-		    ( (cc = findClass(txtNm)) && 
-		      cclass(cc).mod == m    && 
-		      !isNull(findQualClass(qid))) ) {
+	       if ( ( (nm1 = findName(txtNm))             && 
+		      !isNull((nm2 = findQualName(qid)))  &&
+		      name(nm1).mod == name(nm2).mod)         ||
+		    ( (tc1 = findTycon(txtNm))            &&
+		      !isNull((tc2 = findQualTycon(qid))) &&
+		      tycon(tc1).mod == tycon(tc2).mod)       ||
+		    ( (cc1 = findClass(txtNm))            && 
+		      !isNull((cc2 = findQualClass(qid))) &&
+		      cclass(cc1).mod == cclass(cc2).mod)      ) {
 		   exports=cons(hd(ents),exports);
 	       }
 	     }
