@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.79 $
- * $Date: 2002/05/15 18:11:22 $
+ * $Revision: 1.80 $
+ * $Date: 2002/05/15 22:24:20 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -101,8 +101,8 @@ static Void   local setLastEdit       Args((String,Int));
 static Void   local failed            Args((Void));
 static String local strCopy           Args((String));
 static Void   local browseit	      Args((Module,String,Bool));
-static Void   local browse	          Args((Void));
-static Void   local shutdown          Args((Void));
+static Void   local browse	      Args((Void));
+static Void   local shutdownHugs      Args((Void));
 
 static Bool   printMostGeneralType = TRUE;
 
@@ -244,7 +244,7 @@ char *argv[]; {
     SaveGUIOptions();
 #endif
     everybody(EXIT);
-    shutdown();
+    shutdownHugs();
 #if HUGS_FOR_WINDOWS
     return 0; /* return to Winmain */
 #endif
@@ -394,7 +394,7 @@ String argv[]; {
 /* --------------------------------------------------------------------------
  * Shutdown interpreter.
  * ------------------------------------------------------------------------*/
-static Void shutdown() {
+static Void shutdownHugs() {
   int i;
   /* Let go of dynamic storage */  
   if (hugsPath)  free(hugsPath);
