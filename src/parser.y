@@ -11,11 +11,13 @@
  * included in the distribution.
  *
  * $RCSfile: parser.y,v $
- * $Revision: 1.10 $
- * $Date: 2000/08/11 22:34:34 $
+ * $Revision: 1.11 $
+ * $Date: 2000/12/13 09:36:05 $
  * ------------------------------------------------------------------------*/
 
 %{
+extern String scriptFile;
+					  
 #ifndef lint
 #define lint
 #endif
@@ -98,6 +100,7 @@ static Void   local noIP	 Args((String));
 %token '['        ';'        ']'        '`'	   '.'
 %token TMODULE    IMPORT     HIDING     QUALIFIED  ASMOD
 %token NEEDPRIMS
+%token FOREIGN    EXPORT     DYNAMIC    CCALL      STDKALL    UNSAFE   LABEL
 
 %%
 /*- Top level script/module structure -------------------------------------*/
@@ -136,8 +139,7 @@ startMain : /* empty */			{startModule(conMain);
 modname	  : CONID			{startModule($1); $$ = gc1(NIL);}
 	  ;
 modid	  : CONID			{$$ = $1;}
-	  | STRINGLIT			{ extern String scriptFile;
-					  String modName = findPathname(scriptFile,textToStr(textOf($1)));
+	  | STRINGLIT			{ String modName = findPathname(scriptFile,textToStr(textOf($1)));
 					  if (modName) { /* fillin pathname if known */
 					      $$ = mkStr(findText(modName));
 					  } else {
@@ -367,6 +369,44 @@ prims	  : prims ',' prim		{$$ = gc3(cons($3,$1));}
 prim	  : var STRINGLIT		{$$ = gc2(pair($1,$2));}
 	  | var				{$$ = $1;}
 	  ;
+
+/*- Foreign Function Interface --------------------------------------------*/
+
+topDecl   : FOREIGN IMPORT callconv DYNAMIC unsafe_flag var COCO topType 
+               {foreignImport($1,$3,pair(NIL,NIL),$6,$8); sp-=8;}
+          | FOREIGN IMPORT callconv ext_loc ext_name unsafe_flag var COCO topType 
+               {foreignImport($1,$3,pair($4,$5),$7,$9); sp-=9;}
+          | FOREIGN IMPORT callconv ext_name unsafe_flag var COCO topType 
+               {foreignImport($1,$3,pair(NIL,$4),$6,$8); sp-=8;}
+          | FOREIGN IMPORT callconv unsafe_flag var COCO topType 
+               {foreignImport($1,$3,pair(NIL,$5),$5,$7); sp-=7;}
+          ;
+topDecl   : FOREIGN EXPORT callconv ext_name var COCO topType 
+               {foreignExport($1,$3,$4,$5,$7); sp-=7;}
+          | FOREIGN EXPORT callconv var COCO topType 
+               {foreignExport($1,$3,$4,$4,$6); sp-=6;}
+          | FOREIGN EXPORT callconv DYNAMIC var COCO topType 
+               {foreignExport($1,$3,NIL,$5,$7); sp-=7;}
+          ;
+topDecl   : FOREIGN LABEL ext_loc ext_name var COCO topType 
+               {foreignLabel($1,pair($3,$4),$5,$7); sp-=7;}
+          | FOREIGN LABEL ext_name var COCO topType 
+               {foreignLabel($1,pair(NIL,$3),$4,$6); sp-=6;}
+          | FOREIGN LABEL var COCO topType 
+               {foreignLabel($1,pair(NIL,$3),$3,$5); sp-=5;}
+	  ;
+
+callconv  : CCALL                {$$ = gc1(mkVar(textCcall));}
+          | STDKALL              {$$ = gc1(mkVar(textStdcall));}
+          | /* empty */          {$$ = gc0(NIL);}
+          ;
+ext_loc   : STRINGLIT            {$$ = $1;}
+          ;
+ext_name  : STRINGLIT            {$$ = $1;}
+          ;
+unsafe_flag: /* empty */         {$$ = gc0(NIL);}
+          | UNSAFE               {$$ = gc1(NIL); /* ignored */ }
+          ;
 
 /*- Class declarations: ---------------------------------------------------*/
 

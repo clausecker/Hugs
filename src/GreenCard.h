@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: GreenCard.h,v $
- * $Revision: 1.3 $
- * $Date: 1999/09/13 21:37:30 $
+ * $Revision: 1.4 $
+ * $Date: 2000/12/13 09:36:05 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -100,10 +100,17 @@ typedef struct {
   /* garbage collect */
   void		 (*garbageCollect) Args(());
 
-} HugsAPI2;
+  /* API3 additions follow */
+  HugsStablePtr  (*lookupName)     Args((char*, char*));
+  void           (*ap)             Args((int));
+  void           (*getUnit)        Args(());
+  void*          (*mkThunk)        Args((void*, HugsStablePtr));
+  void           (*freeThunk)      Args((void*));
+  int     	 (*getBool)        Args(());
+  void      	 (*putBool)        Args((int));
+} HugsAPI3;
 
-HugsAPI2 *hugs; /* pointer to virtual function table */
-
+static HugsAPI3 *hugs = 0; /* pointer to virtual function table */
 
 /* Copied verbatim from prelude.h */
 

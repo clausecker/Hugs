@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: input.c,v $
- * $Revision: 1.15 $
- * $Date: 2000/11/22 18:15:27 $
+ * $Revision: 1.16 $
+ * $Date: 2000/12/13 09:36:05 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -42,6 +42,9 @@ List selDefns	     = NIL;             /* list of selector lists          */
 List genDefns	     = NIL;             /* list of generated names	   */
 List primDefns       = NIL;             /* primitive definitions           */
 List unqualImports   = NIL;             /* unqualified import list         */
+List foreignImports  = NIL;             /* foreign import declarations     */
+List foreignExports  = NIL;             /* foreign export declarations     */
+List foreignLabels   = NIL;             /* foreign label  declarations     */
 List defaultDefns    = NIL;             /* default definitions (if any)    */
 Int  defaultLine     = 0;               /* line in which default defs occur*/
 List evalDefaults    = NIL;             /* defaults for evaluator          */
@@ -124,6 +127,10 @@ static Text textModule,  textImport;
 static Text textHiding,  textQualified, textAsMod;
 static Text textWildcard;
 static Text textNeedPrims;
+static Text textForeign, textExport,   textDynamic,textUnsafe, textLabel;
+
+Text   textCcall;                       /* ccall                           */
+Text   textStdcall;                     /* stdcall                         */
 
 Text   textNum;                         /* Num                             */
 Text   textPrelude;                     /* Prelude                         */
@@ -1530,6 +1537,13 @@ static Int local yylex() {             /* Read next input token ...        */
 	if (it==textHiding)            return HIDING;
 	if (it==textQualified)         return QUALIFIED;
 	if (it==textNeedPrims)         return NEEDPRIMS;
+        if (it==textForeign)           return FOREIGN;
+        if (it==textExport)            return EXPORT;
+        if (it==textDynamic)           return DYNAMIC;
+        if (it==textCcall)             return CCALL;
+        if (it==textStdcall)           return STDKALL;
+        if (it==textUnsafe)            return UNSAFE;
+        if (it==textLabel)             return LABEL;
 	if (it==textAsMod)             return ASMOD;
 	if (it==textWildcard)	       return '_';
 #if !HASKELL_98_ONLY
@@ -1732,6 +1746,13 @@ Int what; {
 		       textHiding     = findText("hiding");
 		       textQualified  = findText("qualified");
 		       textNeedPrims  = findText("needPrims_hugs");
+		       textForeign    = findText("foreign");
+                       textExport     = findText("export");
+                       textDynamic    = findText("dynamic");
+                       textCcall      = findText("ccall");
+                       textStdcall    = findText("stdcall");
+                       textUnsafe     = findText("unsafe");
+                       textLabel      = findText("label");
 		       textAsMod      = findText("as");
 		       textWildcard   = findText("_");
 		       textAll	      = findText("forall");
@@ -1758,6 +1779,9 @@ Int what; {
 		       genDefns	    = NIL;
 		       primDefns    = NIL;
 		       unqualImports= NIL;
+                       foreignImports= NIL;
+                       foreignExports= NIL;
+                       foreignLabels = NIL;
 		       defaultDefns = NIL;
 		       defaultLine  = 0;
 		       inputExpr    = NIL;
@@ -1778,6 +1802,9 @@ Int what; {
 		       mark(genDefns);
 		       mark(primDefns);
 		       mark(unqualImports);
+                       mark(foreignImports);
+                       mark(foreignExports);
+                       mark(foreignLabels);
 		       mark(defaultDefns);
 		       mark(evalDefaults);
 		       mark(inputExpr);

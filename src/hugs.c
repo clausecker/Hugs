@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.25 $
- * $Date: 2000/12/13 09:01:54 $
+ * $Revision: 1.26 $
+ * $Date: 2000/12/13 09:36:05 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -278,7 +278,7 @@ String argv[]; {
 struct options {                        /* command line option toggles     */
     char   c;                           /* table defined in main app.      */
 #if !HASKELL_98_ONLY
-    int    h98;
+    int    h98;                         /* set in Haskell'98 mode?         */
 #endif
     String description;
     Bool   *flag;
@@ -725,6 +725,11 @@ struct options toggle[] = {             /* List of command line toggles    */
              1,
 #endif
              "Print no. cells recovered after gc",    &gcMessages},
+    {'G', 
+#if !HASKELL_98_ONLY
+             0, 
+#endif
+             "Generate FFI code for foreign import",  &generate_ffi},
     {'l',
 #if !HASKELL_98_ONLY
              1, 

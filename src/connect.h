@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: connect.h,v $
- * $Revision: 1.13 $
- * $Date: 2000/12/13 09:01:54 $
+ * $Revision: 1.14 $
+ * $Date: 2000/12/13 09:36:05 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -305,6 +305,13 @@ extern  Cell   h98Context	Args((Bool,List));
 extern  Void   h98CheckCtxt	Args((Int,String,Bool,List,Inst));
 extern  Void   h98CheckType	Args((Int,String,Cell,Type));
 extern  Void   h98DoesntSupport	Args((Int,String));
+
+extern  Void   foreignImport    Args((Cell,Cell,Pair,Cell,Type));
+extern  Void   foreignExport    Args((Cell,Cell,Cell,Cell,Type));
+extern  Void   foreignLabel     Args((Cell,Pair,Cell,Type));
+extern  List   foreignImports;           /* foreign import declarations     */
+extern  List   foreignExports;           /* foreign export declarations     */
+extern  List   foreignLabels;            /* foreign label  declarations     */
 
 extern  Void   ffi              Args((Int));
 extern  Void   foreignHeader    Args((Void));
