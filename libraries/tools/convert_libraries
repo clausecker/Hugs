@@ -129,12 +129,21 @@ copy_examples() {
 
 # Convert hierarchical modules
 
-HUGSDIR="$target"
-ffihugs=src/ffihugs
-runhugs=src/runhugs
+top_dir="`pwd`"
+case "$target" in
+/*)	HUGSDIR="$target" ;;
+*)	HUGSDIR="$top_dir/$target" ;;
+esac
+ffihugs=$top_dir/src/ffihugs
+runhugs=$top_dir/src/runhugs
 export HUGSDIR ffihugs runhugs
 
+HUGSFLAGS=
+export HUGSFLAGS
+
 HugsPackage=libraries/tools/hugs-package
+
+HugsSetup="$runhugs -98 $top_dir/libraries/tools/HugsSetup.hs"
 
 # Distinguish two classes of package:
 # core_packages - released with Hugs and not independently updated
@@ -142,8 +151,8 @@ HugsPackage=libraries/tools/hugs-package
 # extra_packages - packaged with Hugs, but may also be independently updated
 #	(each of these goes in a separate hierarchy under {Hugs}/packages)
 
-core_packages='base Cabal haskell98 haskell-src network QuickCheck'
-extra_packages='fgl HaXml mtl parsec HUnit'
+core_packages='base mtl Cabal haskell98 haskell-src network'
+extra_packages='QuickCheck fgl HaXml parsec HUnit'
 
 #
 # ToDo: fix -- cygwin supports 'unix' only when no -mno-cygwin is given to gcc
@@ -154,13 +163,7 @@ CYGWIN*|MINGW32*)
 *)	core_packages="$core_packages unix" ;;
 esac
 
-# check whether these packages were enabled in configure
-for package in X11 HGL OpenGL GLUT OpenAL
-do
-	if grep 'BUILD_PACKAGE[ 	]*=[ 	]*yes' $src/$package/config.mk >/dev/null
-	then	extra_packages="$extra_packages $package"
-	fi
-done
+extra_packages="$extra_packages X11 HGL OpenGL GLUT OpenAL"
 
 for package in $core_packages
 do
@@ -174,19 +177,20 @@ HUGSFLAGS='' $ffihugs Hugs.Storable $HUGSDIR/libraries/Hugs/Storable_aux.c
 
 for package in $extra_packages
 do
-	mkdir -p $HUGSDIR/packages/$package
-	if [ -d $src/$package/src ]; then
-		package_src=$src/$package/src
+	cd $src/$package
+	if $HugsSetup configure --hugs --builddir="$HUGSDIR/packages/$package" --with-compiler="$ffihugs"; then
+		$HugsSetup build
+		copy_examples . $HUGSDIR/packages/$package/examples
+		for name in LICEN[CS]E* COPYING* COPYRIGHT* copyright; do
+			if test -f $name; then
+				cp $name $HUGSDIR/packages/$package
+			fi
+		done
 	else
-		package_src=$src/$package
+		echo $?
+		echo "Skipping $package package"
 	fi
-	sh $HugsPackage $package_src $HUGSDIR/packages/$package
-	copy_examples $src/$package $HUGSDIR/packages/$package/examples
-	for name in $src/$package/LICEN[CS]E* $src/$package/COPYING* $src/$package/COPYRIGHT* $src/$package/copyright; do
-		if test -f $name; then
-			cp $name $HUGSDIR/packages/$package
-		fi
-	done
+	cd "$top_dir"
 done
 
 # Compatibility with lib/exts:
