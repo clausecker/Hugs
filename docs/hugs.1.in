@@ -6,7 +6,7 @@
 .ds HS @HUGSSUFFIXES@
 .ds VI vi
 .SH NAME
-hugs \- Hugs 98, functional programming system
+hugs, runhugs, ffihugs \- Hugs 98, functional programming system
 .SH SYNOPSIS
 .B hugs
 [
@@ -15,6 +15,15 @@ hugs \- Hugs 98, functional programming system
 [
 .I modules
 ]
+.br
+.B #!\*(BN/runhugs
+.br
+.B ffihugs
+.B +G
+[
+.BI +L arg
+] ...
+.I module
 .SH DESCRIPTION
 Hugs is an interpreter for Haskell, a standard non-strict functional
 programming language.  Hugs implements almost all of the
@@ -32,10 +41,10 @@ Each Haskell module is stored in a separate file.
 When loading a module \fIname\fP, \fIHugs\fP looks in each of the directories
 on its search path (see \fB\-P\fP under \fBOPTIONS\fP)
 for the files \fIname\fP, \fIname\fP\fB.hs\fP and \fIname\fP\fB.lhs\fP.
-(The recognized suffixes may be changed using the \fB-S\fP option,
+(The recognized suffixes may be changed using the \fB\-S\fP option,
 described under \fBOPTIONS\fP.)
 Files ending in "\fB.lhs\fP" are treated as literate scripts.
-.PP
+.SH COMMANDS
 Once the interpreter has been loaded, the following commands are available:
 .TP 18
 \fB:load\fP [\fImodules\fP]
@@ -46,7 +55,7 @@ and load the specified modules.
 read additional modules.
 .TP
 .B :reload
-repeat last load command.
+repeat last \fBload\fP command.
 .TP
 \fB:project\fP \fIfile\fP
 load the modules listed in \fIfile\fP,
@@ -131,6 +140,9 @@ Print number of reductions/cells after each evaluation (default: off)
 .B +t
 Print type after each evaluation (default: off)
 .TP
+.B +T
+Apply the Haskell defaulting rules before printing types (default: off)
+.TP
 .B +f
 Terminate evaluation on first error (default: on)
 .TP
@@ -159,7 +171,7 @@ Always show which files loaded (default: on)
 Show kind errors in full (default: off)
 .TP
 .B +u
-Use "show" to display results (default: on)
+Use "\FBshow\fP" to display results (default: on)
 .TP
 .B +i
 Chase imports while loading files (default: on)
@@ -167,8 +179,8 @@ Chase imports while loading files (default: on)
 .B +o
 Allow overlapping instances (a Hugs extension; default: off)
 .TP
-.B +m
-Use multi instance resolution (a Hugs extension; default: off)
+.B +O
+Allow unsafe overlapping instances (a Hugs extension; default: off)
 .LP
 Other options (in which \fB\-\fP could be replaced by \fB+\fP,
 the choice making no difference) are:
@@ -212,14 +224,49 @@ Set preprocessor filter for source files to \fIcmd\fP (unset by default).
 Instead of reading a source file directly,
 \fIHugs\fP will read the standard output of
 \fIcmd\fP run with the source file name as argument.
+.SH "OTHER INVOCATIONS"
+The
+.B runhugs
+command is an interpreter for an executable Hugs script,
+which must be a literate script (ending in \fB.lhs\fP)
+containing a Haskell \fBMain\fP module.
+For example, the executable file \fBhello.lhs\fP might contain the lines
+.nf
+.RS
+\fB#!\*(BN/runhugs
+> module Main where
+> main = putStr "Hello, World\\n"\fP
+.RE
+.fi
+.PP
+The
+.B ffihugs
+command generates and compiles glue code for a module that uses the
+foreign function interface.
+Additional arguments for the C compiler may be supplied with 
+.B +L
+options.
+Suppose you have some C functions in \fBtest.c\fP and some ffi declarations
+for those functions in \fBTest.hs\fP and the code in \fBtest.c\fP needs to be
+compiled with \fB\-lm\fP.
+Then you would compile the module with the command
+.RS
+\fBffihugs +G +L"test.c" +L"\-lm" Test.hs\fP
+.RE
+which generates an object file \fBTest.so\fP.
+Then when \fBhugs\fP loads \fBTest.hs\fP, it will also load \fBTest.so\fP.
 .SH ENVIRONMENT
 .TP
 .B HUGSFLAGS
 Additional options for \fIhugs\fP,
 processed before any given on the command line.
 .TP
+.B HUGSDIR
+The Hugs library directory (default:
+.BR \*(LB ).
+.TP
 .B EDITOR
-The default editor, if \fB-E\fP is not given.
+The default editor, if \fB\-E\fP is not given.
 .TP
 .B SHELL
 Used to specify shell that is invoked by the \fB:!\fP command.
@@ -231,7 +278,7 @@ executable binary.
 .I \*(LB
 directory containing support files.
 .TP
-.I \*(LB/Prelude.hs
+.I \*(LB/lib/Prelude.hs
 standard prelude, loaded when \fIhugs\fP starts.
 .SH "WEB REFERENCES"
 .TP
