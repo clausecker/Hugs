@@ -3,7 +3,7 @@ CONTEXT_DIFF='diff -C2'
 export CONTEXT_DIFF
 DEV_NULL=/dev/null 
 export DEV_NULL
-HUGSFLAGS='-P../lib;../lib/hugs;../lib/exts'
+HUGSFLAGS='-P../lib:../lib/hugs:../lib/exts'
 export HUGSFLAGS
 HUGS=../src/hugs
 
