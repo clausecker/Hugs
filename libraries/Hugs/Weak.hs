@@ -2,10 +2,6 @@
 --
 -- Notes (please refer to the draft specification for background):
 --
---  - mkWeakPair is listed in the signature specification, but its
---    semantics are not described, and hence we have not provided
---    an implementation here.
---
 --  - Programmers using weak pointers should call runFinalizer at
 --    regular intervals to ensure that finalizers are scheduled for
 --    execution.  This implementation provides functions runFinalizer,
@@ -16,8 +12,7 @@
 -- Tested with Hugs 98.
 
 module Hugs.Weak(Weak,
-	    mkWeak, mkWeakPtr, mkWeakPair,
-            deRefWeak, finalize, addFinalizer, replaceFinalizer,
+	    mkWeak, deRefWeak, finalize, replaceFinalizer,
 	    runFinalizer, finalizerWaiting, runAllFinalizers ) where
 
 data Weak a
@@ -30,16 +25,6 @@ primitive weakPtrEq :: Weak a -> Weak a -> Bool
 
 instance Eq (Weak a) where
   (==) = weakPtrEq
-
-mkWeakPtr           :: k -> Maybe (IO ()) -> IO (Weak k)
-mkWeakPtr v f        = mkWeak v v f
-
-mkWeakPair          :: k -> v -> Maybe (IO ()) -> IO (Weak (k,v))
-mkWeakPair k v f     = mkWeak k (k,v) f
-
-addFinalizer	    :: k -> IO () -> IO ()
-addFinalizer v f     = do mkWeakPtr v (Just f)
-			  return ()
 
 primitive runFinalizer     :: IO ()
 primitive finalizerWaiting :: IO Bool
