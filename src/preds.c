@@ -7,8 +7,8 @@
  * in the distribution for details.
  *
  * $RCSfile: preds.c,v $
- * $Revision: 1.3 $
- * $Date: 1999/08/05 16:59:34 $
+ * $Revision: 1.4 $
+ * $Date: 1999/08/16 15:25:20 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -316,11 +316,6 @@ Int  d; {
 	Cell ev  = scFind(thd3(pi1),fst3(pi1),intOf(snd3(pi1)),pi,o,d);
 	if (nonNull(ev))
 	    return ev;
-	if (nonNull(ev) && showInstRes) {
-	    for (i = 0; i < d; i++)
-	      fputc(' ', stdout);
-	    fprintf(stdout, "scFound.\n");
-	}
     }
     return NIL;
 }
@@ -462,7 +457,7 @@ Int  d; {
 	pi_ = copyPred(pi, o);
 	for (i = 0; i < d; i++)
 	  fputc(' ', stdout);
-	fputs("inEntail: ", stdout);
+	fputs("inEntails: ", stdout);
 	printPred(stdout, pi_);
 	fputc('\n', stdout);
     }

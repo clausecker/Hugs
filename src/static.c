@@ -7,8 +7,8 @@
  * in the distribution for details.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.4 $
- * $Date: 1999/08/05 16:59:35 $
+ * $Revision: 1.5 $
+ * $Date: 1999/08/16 15:25:20 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -2710,7 +2710,7 @@ Inst in; {
 		}
 	    }
 #if MULTI_INST
-	    if (multiInstRes) {
+	    if (multiInstRes && nonNull(inst(in).specifics)) {
 		break;
 	    } else {
 #endif

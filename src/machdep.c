@@ -11,8 +11,8 @@
  * in the distribution for details.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.2 $
- * $Date: 1999/07/28 18:48:15 $
+ * $Revision: 1.3 $
+ * $Date: 1999/08/16 15:25:20 $
  * ------------------------------------------------------------------------*/
 
 #ifdef HAVE_SIGNAL_H
@@ -1354,11 +1354,17 @@ String symbol; {
 #else /* eg FreeBSD doesn't have RTLD_LAZY */
     void *instance = dlopen(dll,1);
 #endif
+    void *sym;
+
     if (NULL == instance) {
 	ERRMSG(0) "Error %s while importing DLL \"%s\"", dlerror(), dll
 	EEND;
     }
-    return dlsym(instance,symbol);
+    if (sym = dlsym(instance,symbol))
+        return sym;
+
+    ERRMSG(0) "Error loading sym: %s\n", dlerror()
+    EEND;
 }
 
 #elif HAVE_DL_H /* eg HPUX */
