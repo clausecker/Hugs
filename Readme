@@ -4,11 +4,11 @@ __   __ __  __  ____   ___      _________________________________________
 ||___|| ||__|| ||__||  __||     Copyright (c) 1994-1999
 ||---||         ___||           World Wide Web: http://haskell.org/hugs
 ||   ||                         Report bugs to: hugs-bugs@haskell.org
-||   || Version: November 1999  _________________________________________
+||   || Version: February 2000  _________________________________________
 
 ------------------------------------------------------------------------------
 
-   We are pleased to announce a new release of Hugs, a Haskell
+   We are pleased to announce a new  release of Hugs98, a  Haskell
    interpreter and programming environment for developing cool
    Haskell programs.  Sources and binaries are freely available
    by anonymous FTP and on the World-Wide Web.
@@ -19,25 +19,17 @@ __   __ __  __  ____   ___      _________________________________________
    in the most recent version of the Haskell Library Report and with
    extension libraries that are compatible with GHC 3.0 and later.
 
-   Additional features of the system include:
-
-   o "Import chasing": a single module may be loaded, and Hugs will
-     chase down all imports as long as module names are the same as
-     file names and the files are found in the current path.
-
-   o A simple GUI for Windows to facilitate program development.
-
-   o Library extensions to support concepts such as concurrency,
-     mutable variables and arrays, monadic parsing, tracing (for
-     debugging), graphics, and lazy state threads.
-
-   o A Win32 library for complete access to windows, graphics, and
-     other important OS functionalities and a graphics library for
-     easy access to Win32 graphics.
-
-   o A "foreign interface" mechanism to facilitate interoperability
-     with C.
-
+   This is purely a bug-fix release of Hugs98 Nov99. 
+   It fixes the following problems:
+     - If you defined an instance which inherited a method via a
+       superclass, hugs would go into an infinite loop.  Fortunately,
+       most people weren't doing this (except Chris Okasaki...).
+     - There were a couple of holes in the implementation of implicit
+       parameters (`with' wasn't always being scoped properly,
+       sometimes capturing implicit parameters outside of its scope).
+     - Functional dependencies weren't being properly propogated in
+       some cases with derived instances (`instance P ... => Q ...').
+ 
    Hugs is best used as a Haskell program development system: it boasts
    extremely fast compilation, supports incremental compilation, and
    has the convenience of an interactive interpreter (within which one
