@@ -7,7 +7,7 @@
 <!ENTITY options        SYSTEM "options.sgml">
 <!ENTITY using-hugs     SYSTEM "using_hugs.sgml">
 ]>
-  
+
 <book id="users-guide">
 <bookInfo>
 <title>The Hugs 98 User's Guide</title>

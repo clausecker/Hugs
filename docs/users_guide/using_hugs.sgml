@@ -257,6 +257,7 @@ except that an extra directory is searched first when
 <listitem>
 <para>
 the importing module was loaded by specifying a filename in that directory, or
+</para>
 </listitem>
 
 <listitem>
@@ -281,7 +282,7 @@ These may be resolved to filenames
 and (assuming that is found), <literal>/path/to/my/project/D.hs</literal>.
 However imports from modules found on the search path do not use the extra
 directory.
-
+</para>
 </listitem>
 </varlistentry>
 

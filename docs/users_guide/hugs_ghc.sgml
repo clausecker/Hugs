@@ -38,12 +38,12 @@ and this extension provides the necessary syntactic support.
 
 <para>
 Here is a simple (yet contrived) example:
-<programlisting>
+<programlisting><![CDATA[
   import Control.Monad.Fix
 
   justOnes = mdo xs <- Just (1:xs)
                  return xs
-</programlisting>
+]]></programlisting>
 As you can guess <literal>justOnes</literal> will evaluate to
 <literal>Just [1,1,1,...</literal>
 </para>
@@ -116,9 +116,9 @@ family.
 A parallel list comprehension has multiple independent branches of qualifier
 lists, each separated by a <quote><literal>|</literal></quote> symbol.
 For example, the following zips together two lists:
-<programlisting>
+<programlisting><![CDATA[
    [ (x, y) | x <- xs | y <- ys ]
-</programlisting>
+]]></programlisting>
 The behavior of parallel list comprehensions follows that
 of <literal>zip</literal>, in that
 the resulting list will have the same length as the shortest branch.
@@ -128,19 +128,19 @@ the resulting list will have the same length as the shortest branch.
 We can define parallel list comprehensions by translation to regular
 comprehensions.
 Given a parallel comprehension of the form:
-<programlisting>
+<programlisting><![CDATA[
    [ e | p1 <- e11, p2 <- e12, ...
        | q1 <- e21, q2 <- e22, ...
        ...
    ]
-</programlisting>
+]]></programlisting>
 This will be translated to:
-<programlisting>
+<programlisting><![CDATA[
    [ e | ((p1,p2), (q1,q2), ...) <- zipN [(p1,p2) | p1 <- e11, p2 <- e12, ...]
                                          [(q1,q2) | q1 <- e21, q2 <- e22, ...]
                                          ...
    ]
-</programlisting>
+]]></programlisting>
 where <quote><replaceable>zipN</replaceable></quote>
 is the appropriate zip for the given number of branches.
 </para>
@@ -471,7 +471,7 @@ with any polymorphic arguments when it is used in an expression.
 <para>
 The record update syntax cannot be used with records containing
 polymorphic components.
-<para>
+</para>
 
 </sect2>
 
@@ -731,10 +731,10 @@ An implicit parameter is <emphasis>bound</emphasis> using the standard
 <literal>let</literal> or <literal>where</literal> binding forms.
 For example, we define the <literal>min</literal> function by binding
 <literal>cmp</literal>:
-<programlisting>
+<programlisting><![CDATA[
   min :: [a] -> a
   min  = let ?cmp = (<=) in least
-</programlisting>
+]]></programlisting>
 </para>
 
 <para>

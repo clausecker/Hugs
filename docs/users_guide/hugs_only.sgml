@@ -229,6 +229,7 @@ Its only role is to provide the necessary primitive definitions, namely:
   primitive bkpt    :: String -> a -> a
   primitive setBkpt :: String -> Bool -> IO ()
 </programlisting>
+</para>
 
 <sect3>
 <title>Breakpoints</title>
@@ -333,7 +334,7 @@ Here is a very simple program using the three combinators.
 </programlisting>
 The following sample session shows how the <command>p</command> and
 <command>c</command> commands can be used.
-<screen>
+<screen><![CDATA[
   Main> prog 4
   Break @ fib> p
 
@@ -380,7 +381,7 @@ The following sample session shows how the <command>p</command> and
     }
 
   10 observations recorded
-</screen>
+]]></screen>
 </para>
 
 </sect3>
@@ -405,7 +406,7 @@ Consider now more significant differences.
 
 <para>
 HugsHood (and Hood) reports lists using the cons operator.
-<screen>
+<screen><![CDATA[
   Observe> observe "list" [1..3]
   [1,2,3]
 
@@ -413,10 +414,10 @@ HugsHood (and Hood) reports lists using the cons operator.
 
   list
     (1 : 2 : 3 : [])
-</screen>
+]]></screen>
 This is too verbose for lists of characters, so HugsHood reports
 strings in the usual format:
-<screen>
+<screen><![CDATA[
   Observe> observe "string" ['a'..'d']
   "abcd"
 
@@ -424,10 +425,10 @@ strings in the usual format:
 
   string
     "abcd"
-</screen>
+]]></screen>
 If only the initial part of the string is evaluated,
 a trailing <quote><literal>...</literal></quote> is reported.
-<screen>
+<screen><![CDATA[
   Observe> take 2  $ observe "string" ['a'..'d']
   "ab"
 
@@ -435,7 +436,7 @@ a trailing <quote><literal>...</literal></quote> is reported.
 
   string
     "ab..."
-</screen>
+]]></screen>
 This is clearly ambiguous, because evaluating the expression
 <screen>
   observe "string" "ab..."
@@ -450,13 +451,13 @@ should be easy to resolve.
 <title>Unevaluated expressions</title>
 
 <para>
-The <quote><literal>_</literal</quote> symbol is used to indicate
+The <quote><literal>_</literal></quote> symbol is used to indicate
 an unevaluated expression.
 In Hood all unevaluated expressions will be displayed using
-<quote><literal>_</literal</quote>.
-In HugsHood, <quote><literal>_</literal</quote> denotes an unevaluated
+<quote><literal>_</literal></quote>.
+In HugsHood, <quote><literal>_</literal></quote> denotes an unevaluated
 expression, but not all unevaluated expressions are denoted
-by <quote><literal>_</literal</quote>.
+by <quote><literal>_</literal></quote>.
 </para>
 
 <para>
@@ -477,7 +478,7 @@ Hood) does not actually record evaluation steps. It merely maintains an
 internal pointer to that part of the heap representing the tagged
 expression. If the expression in not in weak head normal form, then it
 obviously has not been evaluated and so it is reported as just
-<quote><literal>_</literal</quote>;
+<quote><literal>_</literal></quote>;
 otherwise it displayed.  Integer constants like <literal>1</literal> and
 <literal>2</literal> are not in WHNF,
 as they must be coerced to the correct type when evaluated.
@@ -562,7 +563,7 @@ while the second reports the arguments for just the initial application
 
 <para>
 The root optimisation can be disabled using the
-<link linkend=option-root-optimisation><option>-R</option></link> option.
+<link linkend="option-root-optimisation"><option>-R</option></link> option.
 This can be done from the command line or by using
 <command>:s</command> <option>-R</option> at the Hugs prompt.
 If you want to compile the prelude definitions without the root optimisation

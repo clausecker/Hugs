@@ -6,7 +6,7 @@ In <option>+98</option> mode, Hugs supports
 <ulink url="http://www.haskell.org/definition/">Haskell 98</ulink>
 and some standardized extensions
 (described by addenda to the Haskell 98 report).
-<para>
+</para>
 
 <sect1 id="bugs-haskell98">
 <title>Haskell 98 non-compliance</title>
@@ -91,7 +91,7 @@ Consider the following declarations:
 <programlisting>
   f  :: Eq a => a -> Bool
   f x = x==x || g True || g 'a'
-  g y = y<=y || f True || f 'b'
+  g y = y==y || f True || f 'b'
 </programlisting>
 In Haskell 98, the bindings of <literal>f</literal> and <literal>g</literal>
 are interdependent, and thus constitute a single binding group.
@@ -126,6 +126,7 @@ to impose further constraints on <replaceable>a</replaceable>, as in
     op :: Num a => a -> a -> a
 </programlisting>
 </para></listitem>
+</varlistentry>
 
 <varlistentry>
 <term>Different implementation of the monomorphism restriction for top-level bindings</term>
@@ -245,6 +246,7 @@ This means that Hugs incorrectly rejects the following:
 <listitem><para>
 The type <literal>Char</literal> is limited to the ISO8859-1 subset of Unicode.
 </para></listitem>
+</varlistentry>
 
 <varlistentry>
 <term>Rational literals lose precision</term>

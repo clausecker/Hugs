@@ -103,6 +103,8 @@ Set constraint cutoff limit in the type checker to
 <replaceable>num</replaceable> (default: 40).
 See <xref linkend="flexible-instances">.
 </para>
+</listitem>
+</varlistentry>
 
 <varlistentry id="option-overlapping">
 <term><option>+o</option></term>
@@ -160,6 +162,7 @@ while those ending in <quote><literal>.lhs</literal></quote>
 are always treated as literate scripts.
 This option determines whether other files are literate scripts or not.
 (See <xref linkend="runhugs"> for an example.)
+</para>
 </listitem>
 </varlistentry>
 
@@ -395,6 +398,7 @@ gnuclient (for use with (X)Emacs)
 </listitem>
 </itemizedlist>
 
+</para>
 </listitem>
 </varlistentry>
 
@@ -415,6 +419,8 @@ Set prompt string to <replaceable>str</replaceable>
 Any <literal>%s</literal> in <replaceable>str</replaceable>
 will be replaced by the current module name.
 </para>
+</listitem>
+</varlistentry>
 
 <varlistentry id="option-repeat-string">
 <term><option>-r</option><replaceable>str</replaceable></term>
@@ -423,6 +429,8 @@ will be replaced by the current module name.
 Set the string denoting the last expression to <replaceable>str</replaceable>
 (default: <quote><literal>$$</literal></quote>).
 </para>
+</listitem>
+</varlistentry>
 
 <varlistentry id="option-full-kind-errors">
 <term><option>+k</option></term>
@@ -625,7 +633,7 @@ and then its result is printed with <literal>Prelude.print</literal>:
 </screen>
 i.e., evaluating an IO action <replaceable>m</replaceable>
 with <option>+I</option> in effect is equivalent to evaluating
-<quote><literal>do { x <- m ; print x }</literal></quote>
+<quote><literal>do { x &lt;- m ; print x }</literal></quote>
 with <option>-I</option>.
 </para>
 </listitem>
@@ -661,6 +669,8 @@ size for the current execution of Hugs.
 On Win32, however, all options are saved to the registry,
 so it will take effect the next time Hugs is run.
 </para>
+</listitem>
+</varlistentry>
 
 <varlistentry id="option-print-reductions">
 <term><option>+s</option></term>
@@ -753,6 +763,7 @@ Enable root optimisation (default: on).
 This usually gives a small gain in speed, but you might want to turn it off
 if you're using the observation-based debugger
 (see <xref linkend="observe-and-root-optimisation">).
+</para>
 </listitem>
 </varlistentry>
 
@@ -919,6 +930,7 @@ Hugs will load <literal>Test.so</literal>.)
   hugs Test.hs
 </programlisting>
 and then use the imported or exported functions.
+</para>
 
 </sect1>
 
