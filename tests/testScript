@@ -201,6 +201,10 @@ test_static() {
   perl runstdtest $HUGS $STDOPTS "-Ostatic/mod161.hs" "-o1static/mod161.output" "-istatic/mod161.input"
   perl runstdtest $HUGS $STDOPTS "-Ostatic/mod162.hs" "-o1static/Loaded.output"
   perl runstdtest $HUGS $STDOPTS "-Ostatic/mod163.hs" "-o1static/Loaded.output"
+   # testing lazy name conflicting reporting for data constructors.
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod164.hs" "-o1static/mod164.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod165.hs" "-o1static/mod165.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod166.hs" "-o1static/Loaded.output"
 
   # Check opaque import/export of tycons
   perl runstdtest $HUGS $STDOPTS "-Ostatic/T2.hs"  "-o1static/T2.output"
