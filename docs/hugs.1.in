@@ -1,8 +1,9 @@
 .\" @configure_input@
-.TH HUGS 1 "October 2000" "" ""
+.TH HUGS 1 "January 2001" "" ""
 .ds LB @HUGSDIR@
 .ds BN @BINDIR@
 .ds HP @HUGSPATH@
+.ds HS @HUGSSUFFIXES@
 .ds VI vi
 .SH NAME
 hugs \- Hugs 98, functional programming system
@@ -31,6 +32,8 @@ Each Haskell module is stored in a separate file.
 When loading a module \fIname\fP, \fIHugs\fP looks in each of the directories
 on its search path (see \fB\-P\fP under \fBOPTIONS\fP)
 for the files \fIname\fP, \fIname\fP\fB.hs\fP and \fIname\fP\fB.lhs\fP.
+(The recognized suffixes may be changed using the \fB-S\fP option,
+described under \fBOPTIONS\fP.)
 Files ending in "\fB.lhs\fP" are treated as literate scripts.
 .PP
 Once the interpreter has been loaded, the following commands are available:
@@ -189,6 +192,11 @@ the Hugs library directory, namely \fB\*(LB\fP.
 The default value is
 .IP
 \fB\*(HP\fP
+.TP
+.BI \-S str
+Set the colon-separated list of source file suffixes to \fIstr\fP
+(default: \fB\*(HS\fP).
+A null entry in this list will be replaced by the previous suffix list.
 .TP
 .BI \-E str
 Use editor setting given by \fIstr\fP (unset by default).

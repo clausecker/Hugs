@@ -11,8 +11,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.66 $
- * $Date: 2002/09/09 14:47:02 $
+ * $Revision: 1.67 $
+ * $Date: 2002/09/13 15:08:07 $
  * ------------------------------------------------------------------------*/
 #include <math.h>
 
@@ -247,6 +247,7 @@ Bool   isReg; {
 
 #if HSCRIPT
 static String local hscriptDir    Args((Void));
+static void   local hscriptSuffixes Args((Void));
 #endif
 static String local RealPath      Args((String));
 #if 0
@@ -386,6 +387,12 @@ static String local hscriptDir() {  /* Directory containing hscript.dll	   */
     }
     return dir;
 }
+
+static void hscriptSuffixes() {
+    String ss = hugsSuffixes;
+    hugsSuffixes = substPath(":.hsx:.hash",hugsSuffixes);
+    free(ss);
+}
 #endif
 
 static String local RealPath(s)         /* Find absolute pathname of file  */
@@ -456,11 +463,6 @@ String s; {                     /* a pathname in some appropriate manner.  */
 #endif /* ! PATH_CANONICALIZATION */
 }
 
-#if HSCRIPT
-static String endings[] = { ".hs", ".lhs", ".hsx", ".hash", 0 };
-#else
-static String endings[] = { ".hs", ".lhs", 0 };
-#endif
 static char   searchBuf[FILENAME_MAX+1];
 static Int    searchPos;
 
@@ -483,14 +485,21 @@ String s; {
 
 static Bool local tryEndings(s) /* Try each of the listed endings          */
 String s; {
-    Int i;
+    Int save;
+    String sp;
 
     searchStr(s);
-    for (i=0; endings[i]; ++i) {
-	Int save = searchPos;
-	searchStr(endings[i]);
+    save = searchPos;
+    sp = hugsSuffixes;
+    while (*sp) {
+	for ( ; *sp && ! isPATHSEP(sp); sp++)
+	    if (searchPos<FILENAME_MAX)
+		searchBuf[searchPos++] = *sp;
+	searchBuf[searchPos] = '\0';
 	if (readable(searchBuf,TRUE))
 	    return TRUE;
+	if (*sp)
+	    sp++;
 	searchReset(save);
     }
     return FALSE;
@@ -689,7 +698,7 @@ String nm; {
       where 
         dirs          = addAlong ("" : hugspath)
         files         = [mod2dir nm, nm]
-        exts          = [".hs",".lhs"]
+        exts          = hugsSuffixes		-- default: [".hs",".lhs"]
 	
          -- you can optionally turn on/off the feature of adding the
          -- 'along' directory (i.e., the directory of the importing module,

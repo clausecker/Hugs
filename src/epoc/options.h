@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: options.h,v $
- * $Revision: 1.4 $
- * $Date: 2002/04/11 23:20:23 $
+ * $Revision: 1.5 $
+ * $Date: 2002/09/13 15:08:08 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -34,6 +34,13 @@
  * string of the form -P"...".  
  */
 #define HUGSPATH "{Hugs}\\lib;{Hugs}\\lib\\hugs;{Hugs}\\lib\\exts"
+
+/* The list of suffixes used by Haskell source files, separated either
+ * by colons (Unix) or semicolons (Macintosh, Windows, DOS).
+ *
+ * This value can be overridden using the -S flag.
+ */
+#define HUGSSUFFIXES ".hs;.lhs"
 
 /* The directory name which is substituted for the string "{Hugs}"
  * in a path variable.  This normally points to where the Hugs libraries

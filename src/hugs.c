@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.91 $
- * $Date: 2002/09/09 15:16:54 $
+ * $Revision: 1.92 $
+ * $Date: 2002/09/13 15:08:07 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -188,6 +188,7 @@ static Int    hpSize     = DEFAULTHEAP; /* Desired heap size               */
 String hugsEdit		 = 0;		/* String for editor command       */
 String hugsPath		 = 0;		/* String for file search path     */
 String projectPath	 = 0;		/* String for project search path  */
+String hugsSuffixes	 = 0;		/* Source filename suffixes        */
 Bool   preludeLoaded	 = FALSE;
 
 #if REDIRECT_OUTPUT
@@ -373,6 +374,10 @@ String argv[]; {
     hugsEdit      = strCopy(fromEnv("EDITOR",NULL));
 #endif
     hugsPath      = strCopy(HUGSPATH);
+    hugsSuffixes  = strCopy(HUGSSUFFIXES);
+#if HSCRIPT
+    hscriptSuffixes();
+#endif
     readOptions("-p\"%s> \" -r$$",FALSE);
 #if USE_REGISTRY
     projectPath   = readRegChildStrings(HKEY_LOCAL_MACHINE,ProjectRoot,
@@ -577,6 +582,7 @@ static Void local optionInfo() {        /* Print information about command */
     Printf(fmts,"pstr","Set prompt string to str");
     Printf(fmts,"rstr","Set repeat last expression string to str");
     Printf(fmts,"Pstr","Set search path for modules to str");
+    Printf(fmts,"Sstr","Set list of source file suffixes to str");
     Printf(fmts,"Estr","Use editor setting given by str");
     Printf(fmts,"cnum","Set constraint cutoff limit");
 #if SUPPORT_PREPROCESSOR
@@ -604,6 +610,8 @@ static Void local optionInfo() {        /* Print information about command */
     if (projectPath!=NULL) {
 	Printf("\nProject Path    : %s",projectPath);
     }
+    Printf("\nSource suffixes : -S");
+    printString(hugsSuffixes);
     Printf("\nEditor setting  : -E");
     printString(hugsEdit);
 #if SUPPORT_PREPROCESSOR
@@ -706,6 +714,7 @@ static String local optionsToStr() {          /* convert options to string */
     PUTStr('p',prompt);
     PUTStr('r',repeatStr);
     PUTStr('P',hugsPath);
+    PUTStr('S',hugsSuffixes);
     PUTStr('E',hugsEdit);
     PUTInt('c',cutoff);  PUTC(' ');
 #if SUPPORT_PREPROCESSOR
@@ -804,6 +813,19 @@ String s; {                             /* return FALSE if none found.     */
 			   } else {
 			     if (hugsPath) free(hugsPath);
 			     hugsPath = p;
+			   }
+			   return TRUE;
+		       }
+
+	    case 'S' : {
+			   String saveSuffixes = hugsSuffixes;
+			   hugsSuffixes = substPath(s+1,hugsSuffixes);
+			   if (!findMPathname(NULL,STD_PRELUDE,hugsPath)) {
+			       Printf("ERROR: unable to locate Prelude with new suffix list: \"%s\" - ignoring it.\n", hugsSuffixes);
+			       free(hugsSuffixes);
+			       hugsSuffixes = saveSuffixes;
+			   } else {
+			       free(saveSuffixes);
 			   }
 			   return TRUE;
 		       }
@@ -1119,7 +1141,7 @@ struct options toggle[] = {             /* List of command line toggles    */
           "Debug: show generated G code",          &debugCode},
 #endif
 #if DEBUG_SHOWSC
-    {'S',
+    {'C',
 #if !HASKELL_98_ONLY
           1,
 #endif
