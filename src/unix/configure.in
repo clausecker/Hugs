@@ -587,15 +587,16 @@ dnl Generate output files
 dnl
 dnl--------------------------------------------------------------------
 
-AC_OUTPUT(../Makefile ../../docs/Makefile ../../docs/hugs.1)
-
+TESTSCRIPT=""
 if test -f ../../tests/testScript.in ; then
- AC_OUTPUT(../../tests/testScript)
+ TESTSCRIPT=../../tests/testScript
 fi
+
+AC_OUTPUT(../Makefile ../../docs/Makefile ../../docs/hugs.1 $TESTSCRIPT)
 
 echo ''
 echo '************************************************'
-echo '*** NOW DO: cd .. followed by make default [install]'
+echo '*** NOW DO: cd .. ; make ; make install'
 echo '************************************************'
 exit 0
 
