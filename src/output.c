@@ -8,8 +8,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: output.c,v $
- * $Revision: 1.34 $
- * $Date: 2003/12/02 12:15:53 $
+ * $Revision: 1.35 $
+ * $Date: 2003/12/04 13:48:29 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -773,7 +773,7 @@ Text t; {
 	    putStr("\\&");
 
 	lastWasEsc   = (*ch=='\\');
-	lastWasSO    = (*s==SO);
+	lastWasSO    = (sc==SO);
 	for (; *ch; c = *ch++)
 	    putChr(*ch);
 	lastWasDigit = (isascii(c) && isdigit(c));
