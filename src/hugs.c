@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.38 $
- * $Date: 2001/06/22 18:35:44 $
+ * $Revision: 1.39 $
+ * $Date: 2001/06/22 18:51:34 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -209,7 +209,7 @@ char *argv[]; {
     svColor = SetForeColor(BLUE);    Printf("||   ||                    ");
     SetForeColor(svColor);           Printf("     Report bugs to: hugs-bugs@haskell.org\n");
     svColor = SetForeColor(RED);     Printf("||   || ");
-    SetForeColor(svColor);           Printf("Version: %s",HUGS_VERSION);
+    SetForeColor(svColor);           Printf("Version: %-14s",HUGS_VERSION);
     svColor = SetForeColor(BLUE);    Printf(" _______________________________________________\n\n");
     SetForeColor(svColor);
     }
