@@ -99,7 +99,6 @@ rpm-dirs:
 	-mkdir ${RPMTMP}
 	-mkdir ${RPMTMP}/BUILD
 	-mkdir ${RPMTMP}/RPMS
-	-mkdir ${RPMTMP}/RPMS/i386
 	-mkdir ${RPMTMP}/SOURCES
 	-mkdir ${RPMTMP}/SPECS
 	-mkdir ${RPMTMP}/SRPMS
@@ -107,7 +106,7 @@ rpm-dirs:
 rpm: tar rpm-dirs
 	cp ${PACKAGE}.tar.gz ${RPMTMP}/SOURCES
 	${RPMBUILD} ${RPMDEFS} -ba ${SPECFILE}
-	mv ${RPMTMP}/RPMS/i386/${PACKAGE}-${RELEASE}.i386.rpm .
+	mv ${RPMTMP}/RPMS/i?86/${PACKAGE}-${RELEASE}.i?86.rpm .
 	mv ${RPMTMP}/SRPMS/${PACKAGE}-${RELEASE}.src.rpm .
 
 rc-rpm:
