@@ -25,16 +25,18 @@ import qualified Distribution.InstalledPackageInfo as Inst
 import Distribution.ParseUtils
 import Distribution.Package
 import Distribution.PackageDescription
-import Distribution.PreProcess
+import Distribution.PreProcess	(PreProcessor)
 import Distribution.PreProcess.Unlit
 import Distribution.Setup
+import Distribution.Simple.Configure
+import Distribution.Simple.LocalBuildInfo
 import Distribution.Simple.Utils
 import Distribution.Version
 
-import Control.Monad	(liftM, foldM, filterM, when)
+import Control.Monad	(foldM, filterM, when)
 import Data.Char	(isAlpha, isAlphaNum)
-import Data.List	(isPrefixOf, isSuffixOf, sort, intersperse)
-import Data.Maybe	(isNothing, fromMaybe, mapMaybe)
+import Data.List	(isSuffixOf, sort, intersperse)
+import Data.Maybe	(isNothing, mapMaybe)
 import System.Cmd	(rawSystem)
 import System.Console.GetOpt
 import System.Directory
@@ -65,23 +67,29 @@ main
 	 (action, args) <- parseGlobalArgs args
 	 case action of
 	    ConfigCmd flags -> do
-		(flags, optFns, args) <-
+		(flags@(_, _, _, mb_prefix), optFns, args) <-
 			parseConfigureArgs flags args [buildDirOpt]
-		localbuildinfo <- configure pkg_descr flags args
-		writePersistBuildConfig (foldr id localbuildinfo optFns)
-		when (not (buildPackage (buildParams localbuildinfo)))
+		let prefix_opt pref opts = ("--prefix=" ++ pref) : opts
+		whenM (doesFileExist "configure") $
+			rawSystem "./configure"
+				(maybe id prefix_opt mb_prefix args)
+		pkg_descr <- getBuildParams currentDir pkg_descr
+		when (not (buildPackage pkg_descr))
 			exitFailure
+		localbuildinfo <- configure pkg_descr flags
+		writePersistBuildConfig (foldr id localbuildinfo optFns)
 
 	    BuildCmd -> do
 		(_, args) <- parseBuildArgs args []
 		no_extra_flags args
+		pkg_descr <- getBuildParams currentDir pkg_descr
 		localbuildinfo <- getPersistBuildConfig
-		let buildPref = buildDir localbuildinfo
-		build buildPref pkg_descr localbuildinfo
+		build pkg_descr localbuildinfo
 
 	    CleanCmd -> do
 		(_, args) <- parseCleanArgs args []
 		no_extra_flags args
+		pkg_descr <- getBuildParams currentDir pkg_descr
 		localbuildinfo <- getPersistBuildConfig
 		let buildPref = buildDir localbuildinfo
 		try $ removeFileRecursive buildPref
@@ -91,33 +99,36 @@ main
 	    CopyCmd mprefix -> do
 	        (mprefix, _, args) <- parseCopyArgs mprefix args []
 		no_extra_flags args
+		pkg_descr <- getBuildParams currentDir pkg_descr
 		localbuildinfo <- getPersistBuildConfig
-		let buildPref = buildDir localbuildinfo
-		install buildPref pkg_descr localbuildinfo mprefix False
+		install pkg_descr localbuildinfo mprefix False
 
 	    InstallCmd mprefix uInst -> do
 		((mprefix,uInst), _, args) <- parseInstallArgs (mprefix,uInst) args []
 		no_extra_flags args
+		pkg_descr <- getBuildParams currentDir pkg_descr
 		localbuildinfo <- getPersistBuildConfig
-		let buildPref = buildDir localbuildinfo
-		install buildPref pkg_descr localbuildinfo mprefix uInst
+		install pkg_descr localbuildinfo mprefix uInst
 		when (isNothing mprefix && hasLibs pkg_descr)
 			 (register pkg_descr localbuildinfo uInst)
 
 	    SDistCmd -> do
 		(_, args) <- parseSDistArgs args []
 		no_extra_flags args
+		pkg_descr <- getBuildParams currentDir pkg_descr
 		sdist srcPref distPref pkg_descr
 
 	    RegisterCmd uInst -> do
 		(uInst, _, args) <- parseRegisterArgs uInst args []
 		no_extra_flags args
+		pkg_descr <- getBuildParams currentDir pkg_descr
 		localbuildinfo <- getPersistBuildConfig
 		when (hasLibs pkg_descr) (register pkg_descr localbuildinfo uInst)
 
 	    UnregisterCmd -> do
 		(_, args) <- parseUnregisterArgs args []
 		no_extra_flags args
+		pkg_descr <- getBuildParams currentDir pkg_descr
 		localbuildinfo <- getPersistBuildConfig
 		unregister pkg_descr localbuildinfo
 
@@ -129,54 +140,33 @@ no_extra_flags extra_flags  =
 buildDirOpt :: OptDescr (LocalBuildInfo -> LocalBuildInfo)
 buildDirOpt = Option "b" ["builddir"] (ReqArg setBuildDir "DIR")
 		"directory to receive the built package [dist/build]"
+  where setBuildDir dir lbi = lbi { buildDir = dir }
 
 -- actions for Hugs
 
-configure :: PackageDescription -> ConfigFlags -> [String] -> IO LocalBuildInfo
-configure pkg (mb_hc_flavor, mb_hc_path, mb_hc_pkg, mb_prefix) args = do
-	whenM (doesFileExist "configure") $
-		rawSystem "./configure" (maybe id prefix_opt mb_prefix args)
-	params <- getBuildParams currentDir
-	compPath <- maybe findFFIHugs return mb_hc_path
-	let comp = Compiler {
-			compilerFlavor = fromMaybe Hugs mb_hc_flavor,
-			compilerVersion = Version [] [],
-			compilerPath = compPath,
-			compilerPkgTool = ""
-		}
-	return $ LocalBuildInfo {
-			prefix = instPrefix,
-			compiler = comp,
-			packageDeps = [],
-			executableDeps = [],
-			buildDir = "dist" `joinFileName` "build",
-			buildParams = params
-		}
-  where prefix_opt pref opts = ("--prefix=" ++ pref) : opts
-	instPrefix = fromMaybe "/usr/local" mb_prefix
-	findFFIHugs = do
-		mb_path <- findExecutable "ffihugs"
-		maybe (die "Cannot find ffihugs") return mb_path
-
-build :: FilePath -> PackageDescription -> LocalBuildInfo -> IO ()
-build buildPref pkg lbi = when (buildPackage params) $
+build :: PackageDescription -> LocalBuildInfo -> IO ()
+build pkg lbi = when (buildPackage pkg) $
 	withLib pkg $ \ libInfo -> do
-	-- Pass 1: preprocess files
-	let srcDir = hsSourceDir libInfo
-	files <- prepPackage libInfo params srcDir buildPref
-	-- Pass 2: compile foreign stubs
-	ffiFiles <- filterM testFFIModule files
-	mapM_ (compileFFI libInfo lbi srcDir) ffiFiles
-  where params = buildParams lbi
+	-- Pass 1: preprocess (except cpp) files in source directory
+	preprocessPackage pkg
+	-- Pass 2: copy or cpp files from source directory to build directory
+	files <- listSourceFiles libInfo
+	copyPackage pkg buildPref files
+	-- Pass 3: compile foreign stubs in build directory
+	let destFiles = [buildPref `joinFileName` f | f <- files]
+	ffiFiles <- filterM testFFIModule destFiles
+	mapM_ (compileFFI pkg lbi) ffiFiles
+  where buildPref = buildDir lbi
 
-install :: FilePath -> PackageDescription -> LocalBuildInfo ->
+install :: PackageDescription -> LocalBuildInfo ->
 	Maybe FilePath -> Bool -> IO ()
-install buildPref pkg lbi mprefix uInst =
-	when (buildPackage (buildParams lbi)) $
+install pkg lbi mprefix uInst =
+	when (buildPackage pkg) $
 	withLib pkg $ \ libInfo -> do
 	pkgDir <- hugsPackageDir pkg lbi uInst
 	maybeRemoveFileRecursive pkgDir
 	moveSources buildPref pkgDir (biModules libInfo) installSuffixes
+  where buildPref = buildDir lbi
 
 sdist :: FilePath -> FilePath -> PackageDescription -> IO ()
 sdist srcPref distPref pkg_descr =
@@ -202,84 +192,29 @@ hugsPackageDir pkg lbi uInst = do
 maybeRemoveFileRecursive dir =
 	whenM (doesDirectoryExist dir) $ removeFileRecursive dir
 
--- Local build information
-
-data LocalBuildInfo = LocalBuildInfo {
-		-- fields of Distribution.Simple.LocalBuildInfo
-		prefix		:: FilePath,
-		compiler	:: Compiler,
-		packageDeps	:: [PackageIdentifier],
-		executableDeps	:: [(String,[PackageIdentifier])],
-		-- extra fields for Hugs
-		buildDir	:: FilePath,
-		buildParams	:: BuildParameters
-	}
-	deriving (Show, Read)
-
-setBuildDir :: String -> LocalBuildInfo -> LocalBuildInfo
-setBuildDir dir lbi = lbi { buildDir = dir }
-
--- Possibly system-dependent build parameters
-
-data BuildParameters = BuildParameters {
-		buildPackage	:: Bool,
-		ccOptions	:: [String],
-		ldOptions	:: [String],
-		frameworks	:: [String]
-	}
-	deriving (Show, Read)
-
-setBuildPackage :: Bool -> BuildParameters -> BuildParameters
-setBuildPackage build params = params { buildPackage = build }
-
-setCcOptions :: [String] -> BuildParameters -> BuildParameters
-setCcOptions opts params = params { ccOptions = opts }
-
-setLdOptions :: [String] -> BuildParameters -> BuildParameters
-setLdOptions opts params = params { ldOptions = opts }
-
-setFrameworks :: [String] -> BuildParameters -> BuildParameters
-setFrameworks fws params = params { frameworks = fws }
-
-emptyBuildParameters :: BuildParameters
-emptyBuildParameters = BuildParameters {
-		buildPackage = True,
-		ccOptions = [],
-		ldOptions = [],
-		frameworks = []
-	}
-
 -- Reading local build information from Setup.buildinfo (if present)
 
 buildInfoFile :: FilePath
 buildInfoFile = "Setup.buildinfo"
 
-getBuildParams :: FilePath -> IO BuildParameters
-getBuildParams srcDir = do
+getBuildParams :: FilePath -> PackageDescription -> IO PackageDescription
+getBuildParams srcDir pkg_descr = do
 	exists <- doesFileExist fpath
 	if exists then do
 		inp <- readFile fpath
-		case parseBuildParameters inp of
+		case parseBuildParameters pkg_descr inp of
 		    Left err -> die (fpath ++ ": " ++ showError err)
-		    Right params -> return params
+		    Right pkg_descr' -> return pkg_descr'
 	    else
-		return emptyBuildParameters
+		return pkg_descr
   where
 	fpath = srcDir `joinFileName` buildInfoFile
 
-parseBuildParameters :: String -> Either PError BuildParameters
-parseBuildParameters inp = do
+parseBuildParameters :: PackageDescription -> String ->
+	Either PError PackageDescription
+parseBuildParameters pkg_descr inp = do
 	fieldLines <- singleStanza (stripComments inp)
-	foldM (parseBasicStanza fields) emptyBuildParameters fieldLines
-  where fields = [
-		plainField "build-package" buildPackage setBuildPackage,
-		wordsField "cc-options" ccOptions setCcOptions,
-		wordsField "ld-options" ldOptions setLdOptions,
-		wordsField "frameworks" frameworks setFrameworks
-	   ]
-	plainField name = simpleField name (text . show) parseReadS
-	wordsField name = simpleField name (fsep . map text)
-				(liftM words (munch (const True)))
+	foldM (parseBasicStanza basicStanzaFields) pkg_descr fieldLines
 
 -- stolen from Distribution.InstalledPackageInfo
 parseBasicStanza ((StanzaField name _ _ set):fields) pkg (lineNo, f, val)
@@ -287,63 +222,35 @@ parseBasicStanza ((StanzaField name _ _ set):fields) pkg (lineNo, f, val)
   | otherwise = parseBasicStanza fields pkg (lineNo, f, val)
 parseBasicStanza [] pkg (lineNo, f, val) = return pkg
 
--- Persistence of local build information
-
-localBuildInfoFile :: FilePath
-localBuildInfoFile = "setup-config"
-
-writePersistBuildConfig :: LocalBuildInfo -> IO ()
-writePersistBuildConfig lbi = writeFile localBuildInfoFile (shows lbi "\n")
-
-getPersistBuildConfig :: IO LocalBuildInfo
-getPersistBuildConfig = do
-	inp <- readFile localBuildInfoFile
-	readIO inp
-
 -- Building a package for Hugs
 
--- Pass 1: preprocess files
+-- Pass 1: apply preprocessors (except cpp) in-place
 
--- Preprocess a package, returning names of output files.
-prepPackage :: BuildInfo -> BuildParameters ->
-		FilePath -> FilePath -> IO [FilePath]
-prepPackage libInfo buildParams srcDir destDir =
-	mapM preprocess (biModules libInfo)
-  where preprocess mod = prepModule handlers useCpp cpp
-				(stem srcDir mod) (stem destDir mod)
-	handlers = ppHandlers incls
-	useCpp = CPP `elem` extensions libInfo
-	cpp = ppCpp incls
-	incls = ccOptions buildParams
-	stem dir mod = dir `joinFileName` dotToSep mod
+-- Preprocess a package.
+preprocessPackage :: PackageDescription -> IO ()
+preprocessPackage pkg_descr =
+	withLib pkg_descr $ \ libInfo -> do
+	let srcDir = hsSourceDir libInfo
+	let srcStem mod = srcDir `joinFileName` dotToSep mod
+	sequence_ [preprocessModule handlers (srcStem mod) |
+			mod <- biModules libInfo]
+  where handlers = ppHandlers incls
+	incls = ccOptions pkg_descr
 
--- Preprocess a file, returning name of output file.
-prepModule :: [PPHandler] -> Bool -> PreProcessor ->
-		FilePath -> FilePath -> IO FilePath
-prepModule handlers cppAll cpp srcStem destStem = do
-	createIfNotExists True (dirname destStem)
-	chooseHandler handlers
+-- Preprocess a file.
+preprocessModule :: [PPHandler] -> FilePath -> IO ()
+preprocessModule handlers fileStem = chooseHandler handlers
   where
-	dirname f = fst (splitFileName f)
-	chooseHandler [] = die (srcStem ++ ".*: not found")
+	chooseHandler [] = die (fileStem ++ ".*: not found")
 	chooseHandler ((suffix, maybe_pp):handlers) = do
+		let srcFile = fileStem ++ suffix
 		exists <- doesFileExist srcFile
-		if exists then do
-			opts <- getOptions srcFile
-			let useCpp = cppAll || "-cpp" `elem` opts
-			case maybe_pp of
-			    Nothing -> do
-				let destFile = destStem ++ suffix
-				(if useCpp then cpp else ppIdentity)
-					srcFile destFile
-				return destFile
+		if exists then case maybe_pp of
+			    Nothing -> return ()
 			    Just pp -> do
-				let destFile = destStem ++ ".hs"
-				(if useCpp then (pp >-> cpp) else pp)
-					srcFile destFile
-				return destFile
+				pp srcFile (fileStem ++ ".hs")
+				return ()
 		    else chooseHandler handlers
-	  where srcFile = srcStem ++ suffix
 
 -- Preprocessors
 
@@ -358,51 +265,81 @@ ppHandlers incls = [
 	(".ly",  Just (ppHappy)),
 	(".y",   Just (ppHappy))]
 
-ppCpp :: [String] -> PreProcessor
-ppCpp flags inFile outFile =
-	rawSystemPath "cpp"
-		(["-traditional", "-P", defHugs] ++ flags ++ [inFile, outFile])
-
-ppIdentity, ppHappy :: PreProcessor
-ppIdentity inFile outFile = copyFile inFile outFile >> return ExitSuccess
+ppHappy :: PreProcessor
 ppHappy = standardPP "happy" []
 
 standardPP :: String -> [String] -> PreProcessor
 standardPP eName args inFile outFile
     = rawSystemPath eName (args ++ ["-o" ++ outFile, inFile])
 
-(>->) :: PreProcessor -> PreProcessor -> PreProcessor
-(p1 >-> p2) inFile outFile = withTempFileDef $ \ tmpFile ->
-	p1 inFile tmpFile .&&. p2 tmpFile outFile
+-- List of Haskell source files relative to source directory.
+listSourceFiles :: BuildInfo -> IO [FilePath]
+listSourceFiles libInfo = mapM sourceFile (biModules libInfo)
+  where sourceFile mod = do
+		let stem = dotToSep mod
+		let hsFile = stem ++ ".hs"
+		let lhsFile = stem ++ ".lhs"
+		hsExists <- doesFileExist (srcDir `joinFileName` hsFile)
+		lhsExists <- doesFileExist (srcDir `joinFileName` lhsFile)
+		if hsExists then return hsFile
+		    else if lhsExists then return lhsFile
+		    else die ((srcDir `joinFileName` stem) ++
+				".{hs,lhs}: not found")
+	srcDir = hsSourceDir libInfo
 
-(.&&.) :: IO ExitCode -> IO ExitCode -> IO ExitCode
-c1 .&&. c2 = do
-	status <- c1
-	case status of
-	    ExitSuccess -> c2
-	    _ -> return status
+-- Pass 2: copy or cpp files to build directory
 
--- Pass 2: compile FFI modules
+-- Copy or cpp a package from the source directory to the build directory.
+copyPackage :: PackageDescription -> FilePath -> [FilePath] -> IO ()
+copyPackage pkg_descr destDir files =
+	withLib pkg_descr $ \ libInfo -> do
+	let useCpp = CPP `elem` extensions libInfo
+	let srcDir = hsSourceDir libInfo
+	let copy_or_cpp f = copyModule useCpp cpp
+				(srcDir `joinFileName` f)
+				(destDir `joinFileName` f)
+	sequence_ [copy_or_cpp f | f <- files]
+  where	cpp = ppCpp (ccOptions pkg_descr)
 
-compileFFI :: BuildInfo -> LocalBuildInfo ->
-	FilePath -> FilePath -> IO ExitCode
-compileFFI libInfo lbi srcDir file = do
+ppCpp :: [String] -> PreProcessor
+ppCpp flags inFile outFile =
+	rawSystemPath "cpp"
+		(["-traditional", "-P", defHugs] ++ flags ++ [inFile, outFile])
+
+-- Copy or cpp a file from the source directory to the build directory.
+copyModule :: Bool -> PreProcessor -> FilePath -> FilePath -> IO ()
+copyModule cppAll cpp srcFile destFile = do
+	createIfNotExists True (dirname destFile)
+	opts <- getOptions srcFile
+	if cppAll || "-cpp" `elem` opts then do
+		cpp srcFile destFile
+		return ()
+	    else
+		copyFile srcFile destFile
+  where dirname f = fst (splitFileName f)
+
+-- Pass 3: compile FFI modules in build directory
+
+compileFFI :: PackageDescription -> LocalBuildInfo -> FilePath -> IO ()
+compileFFI pkg_descr lbi file = do
+	withLib pkg_descr $ \ libInfo -> do
 	options <- getOptions file
+	let srcDir = hsSourceDir libInfo
+	let pkg_incs = ["\"" ++ inc ++ "\"" | inc <- includes libInfo]
 	let incs = uniq (sort (includeOpts options ++ pkg_incs))
 	let pathFlag = "-P" ++ buildDir lbi ++ [searchPathSeparator]
 	let hugsArgs = "-98" : pathFlag : map ("-i" ++) incs
 	cfiles <- getCFiles file
 	let cArgs =
-		ccOptions params ++
+		ccOptions pkg_descr ++
 		map (joinFileName srcDir) cfiles ++
 		["-L" ++ dir | dir <- extraLibDirs libInfo] ++
-		ldOptions params ++
+		ldOptions pkg_descr ++
 		["-l" ++ lib | lib <- extraLibs libInfo] ++
-		concat [["-framework", f] | f <- frameworks params]
+		concat [["-framework", f] | f <- frameworks pkg_descr]
 	rawSystem ffihugs (hugsArgs ++ file : cArgs)
-  where	pkg_incs = ["\"" ++ inc ++ "\"" | inc <- includes libInfo]
-	params = buildParams lbi
-	ffihugs = compilerPath (compiler lbi)
+	return ()
+  where	ffihugs = compilerPath (compiler lbi)
 
 includeOpts :: [String] -> [String]
 includeOpts [] = []
