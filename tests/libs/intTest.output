@@ -595,9 +595,9 @@ negate 2 = -2
 negate 3 = -3
 #
 testReal
-toRational -3 = -3 % 1
-toRational -2 = -2 % 1
-toRational -1 = -1 % 1
+toRational -3 = (-3) % 1
+toRational -2 = (-2) % 1
+toRational -1 = (-1) % 1
 toRational 0 = 0 % 1
 toRational 1 = 1 % 1
 toRational 2 = 2 % 1
@@ -1856,9 +1856,9 @@ negate 2 = -2
 negate 3 = -3
 #
 testReal
-toRational -3 = -3 % 1
-toRational -2 = -2 % 1
-toRational -1 = -1 % 1
+toRational -3 = (-3) % 1
+toRational -2 = (-2) % 1
+toRational -1 = (-1) % 1
 toRational 0 = 0 % 1
 toRational 1 = 1 % 1
 toRational 2 = 2 % 1
@@ -3117,9 +3117,9 @@ negate 2 = -2
 negate 3 = -3
 #
 testReal
-toRational -3 = -3 % 1
-toRational -2 = -2 % 1
-toRational -1 = -1 % 1
+toRational -3 = (-3) % 1
+toRational -2 = (-2) % 1
+toRational -1 = (-1) % 1
 toRational 0 = 0 % 1
 toRational 1 = 1 % 1
 toRational 2 = 2 % 1
