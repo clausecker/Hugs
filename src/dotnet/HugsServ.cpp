@@ -5,6 +5,7 @@
 extern "C" {
 #include "prelude.h"
 #include "storage.h"
+#include "machdep.h"
 #include "connect.h"
 };
 #include "prim.h"
