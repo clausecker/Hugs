@@ -17,13 +17,13 @@ RPMDEFS = --define "_topdir ${RPMTMP}" \
 	  --define "release ${RELEASE}" \
 
 VERSION_SUBSTS = \
-    -e "s/define MAJOR_RELEASE.*/define MAJOR_RELEASE 0/" \
+    -e "s/define MAJOR_RELEASE.*/define MAJOR_RELEASE ${MAJOR_RELEASE}/" \
     -e "s/VERSION_STRING MONTH_YEAR/VERSION_STRING \"${MONTH_YEAR}\"/" \
     -e "s/VERSION_STRING YYYYMMDD/VERSION_STRING \"${YEAR_MONTH_DAY}\"/"
 
 RC_STRING = RC1
 RC_VERSION_SUBSTS = \
-    -e "s/define MAJOR_RELEASE.*/define MAJOR_RELEASE 1/" \
+    -e "s/define MAJOR_RELEASE.*/define MAJOR_RELEASE ${MAJOR_RELEASE}/" \
     -e "s/VERSION_STRING MONTH_YEAR/VERSION_STRING \"${MON_YEAR} ${RC_STRING}\"/"
 
 # unless you've just unpacked, `make clean' first
