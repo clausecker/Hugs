@@ -270,9 +270,9 @@ An entry of the form
 <quote><replaceable>directory</replaceable><literal>/*</literal></quote>
 means all the immediate subdirectories of <replaceable>directory</replaceable>.
 (See <xref linkend="packages"/> for a way of using this.)
-The default value is
+On Unix, the default value is
 <screen>
-.:{Hugs}/libraries:{Hugs}/packages/*:{Hugs}/oldlib
+.:{Home}/lib/hugs/packages/*:/usr/local/lib/hugs/packages/*:{Hugs}/libraries:{Hugs}/packages/*:{Hugs}/oldlib
 </screen>
 </para>
 <para>
@@ -1157,6 +1157,10 @@ Hugs search path (see <xref linkend="option-search-path"/>) includes
 <quote><literal><replaceable>prefix</replaceable>/lib/hugs/packages/*</literal></quote>
 (with a literal <quote><literal>*</literal></quote>).
 </para>
+
+<para>
+You can remove the package by simply deleting this directory.
+</para>
 </listitem>
 
 <varlistentry>
@@ -1183,6 +1187,36 @@ will be runnable if your program search path includes the directory
 </varlistentry>
 
 </variablelist>
+
+<para>
+The default setting of the module search path
+(see <xref linkend="option-search-path"/>) supports the following uses:
+</para>
+
+<itemizedlist>
+
+<listitem><para>
+To prepare to install a package privately, invoke the Cabal setup script with
+<screen>
+setup configure --prefix=$HOME
+</screen>
+</para></listitem>
+
+<listitem><para>
+To prepare to install a package for use by all users of the local host,
+invoke the Cabal setup script without a <literal>--prefix</literal> option.
+The package will then be installed under
+<filename>/usr/local/lib/hugs/packages</filename>
+(assuming you have the necessary permissions).
+</para></listitem>
+
+<listitem><para>
+Those preparing binary packages will use <literal>--prefix=/usr</literal>
+or similar, with a corresponding <literal>--copy-prefix</literal>
+option to <quote><literal>setup copy</literal></quote>.
+</para></listitem>
+
+</itemizedlist>
 
 <note>
 <para>

@@ -787,7 +787,7 @@ elif test "x$host" = "xdos"; then
     MkInstall="src/MkNull.in"
 else
     hugsdir_deflt='${libdir}/hugs'
-    HUGSPATH=".:{Hugs}/libraries:{Hugs}/packages/*:{Hugs}/oldlib"
+    HUGSPATH=".:{Home}/lib/hugs/packages/*:/usr/local/lib/hugs/packages/*:{Hugs}/libraries:{Hugs}/packages/*:{Hugs}/oldlib"
     HUGSSUFFIXES=".hs:.lhs"
     MkInstall="src/MkInstal.in"
 fi
