@@ -29,7 +29,7 @@ TAG=HEAD
 HSLIBSTAG=HEAD
 LIBRARIESTAG=HEAD
 
-HSLIBSDIRS = concurrent data hssource lang net text util
+HSLIBSDIRS = concurrent data hssource lang net text util posix
 LIBRARIESDIRS = base haskell98 haskell-src network parsec QuickCheck unix \
 	GLUT OpenGL
 
