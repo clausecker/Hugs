@@ -73,14 +73,6 @@ AC_CHECK_HEADERS(windows.h winsock.h)
 AC_HEADER_TIME
 AC_CHECK_HEADERS(time.h sys/time.h sys/timeb.h sys/times.h)
 
-AC_PATH_XTRA
-if test "$no_x" = yes; then
-  LibsWithX11=NO
-else
-  LibsWithX11=YES
-fi
-AC_SUBST([LibsWithX11])
-
 dnl ** check for POSIX regex
 HavePosixRegex=NO
 AC_CHECK_HEADERS([regex.h], [AC_CHECK_FUNCS(regcomp, [HavePosixRegex=YES])])
