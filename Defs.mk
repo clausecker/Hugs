@@ -29,7 +29,7 @@ TAG=HEAD
 HSLIBSTAG=HEAD
 LIBRARIESTAG=HEAD
 
-HSLIBSDIRS = concurrent data lang text util
-LIBRARIESDIRS = base haskell98 haskell-src network
+HSLIBSDIRS = concurrent data hssource lang net text util
+LIBRARIESDIRS = base haskell98 haskell-src network unix
 
 CVSROOT = ${shell cat CVS/Root}
