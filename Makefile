@@ -44,12 +44,14 @@ ${PACKAGE}.tar.gz:
 	-mkdir -p ${TARTMP}
 	cd ${TARTMP}; cvs -d ${CVSROOT} export -r${TAG} hugs98
 	cd ${TARTMP}; cvs -d ${CVSROOT} export -r${HSLIBSTAG} fptools/hslibs
+	cd ${TARTMP}; cvs -d ${CVSROOT} export -r${HSLIBSTAG} fptools/libraries
 	# using `make parser.c' would be best, but by default yacc
 	# will be used, and yacc is, for some reason, incompatible
 	cp ${TARTMP}/hugs98/src/version.h /tmp/mktar
 	cd ${TARTMP}/hugs98/src; sed -e "s/MONTH_YEAR/${MONTH_YEAR}/" -e "s/YYYYMMDD/${YEAR_MONTH_DAY}/" < ${TARTMP}/version.h > ${TARTMP}/hugs98/src/version.h
 	cd ${TARTMP}/hugs98/src; bison -y parser.y; mv y.tab.c parser.c
 	cd ${TARTMP}/hugs98/src/unix; ./convert_hslibs ${TARTMP}/fptools
+	cd ${TARTMP}/hugs98/src/unix; ./convert_libraries ${TARTMP}/fptools
 	# Siggy deren't like these in distros
 	cd ${TARTMP}/hugs98; rm -rf tests
 	cd ${TARTMP}/hugs98/src/unix; autoconf; autoheader
