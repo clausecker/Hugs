@@ -9,15 +9,15 @@
  * which is included in the distribution.
  *
  * $RCSfile: options.h,v $
- * $Revision: 1.14 $
- * $Date: 2004/02/16 11:45:18 $
+ * $Revision: 1.15 $
+ * $Date: 2004/10/16 10:56:13 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
  * Hugs paths and directories
  * ------------------------------------------------------------------------*/
 
-/* Define this as the default setting of HUGSPATH.                        
+/* Define this as the default setting of HUGSPATH.
  * Value may contain string "{Hugs}" (for which we will substitute the
  * value of HUGSDIR) and should be either colon-separated (Unix)
  * or semicolon-separated (Macintosh, Windows, DOS).  Escape
@@ -26,8 +26,8 @@
  *
  * This value can be overridden from the command line by setting the
  * HUGSFLAGS environment variable or by storing an appropriate value
- * for HUGSFLAGS in the registry (Win32 only).  In all cases, use a 
- * string of the form -P"...".  
+ * for HUGSFLAGS in the registry (Win32 only).  In all cases, use a
+ * string of the form -P"...".
  */
 #define HUGSPATH ".;{Hugs}\\libraries;{Hugs}\\packages\\*;{Hugs}\\oldlib;{Hugs}\\win32"
 
@@ -40,16 +40,16 @@
 
 /* The directory name which is substituted for the string "{Hugs}"
  * in a path variable.  This normally points to where the Hugs libraries
- * are installed - ie so that the file HUGSDIR/lib/Prelude.hs exists    
- * Typical values are:                                  
- *    "/usr/local/lib/hugs"                             
- *    "/usr/homes/JFHaskell/hugs"                       
- *    ".."      
+ * are installed - ie so that the file HUGSDIR/lib/Prelude.hs exists
+ * Typical values are:
+ *    "/usr/local/lib/hugs"
+ *    "/usr/homes/JFHaskell/hugs"
+ *    ".."
  *
  * This value is ignored on Windows and Macintosh versions since
  * it is assumed that the binary is installed in HUGSDIR.
  *
- * This value cannot be overridden from the command line or by using 
+ * This value cannot be overridden from the command line or by using
  * environment variables.  This isn't quite as limiting as you'd think
  * since you can always choose _not_ to use the {Hugs} variable - however,
  * it's obviously _nicer_ to have it set correctly.
@@ -79,7 +79,7 @@
  */
 #define SEARCH_DIR 0   /* Not ready yet! */
 
-/* Define if a command line editor is available and should be used. 
+/* Define if a command line editor is available and should be used.
  * There are two choices of command line editor that can be used with Hugs:
  * GNU readline and editline (from comp.sources.misc, vol 31, issue 71)
  */
@@ -100,7 +100,7 @@
  */
 #define SMALL_HUGS   0
 #define REGULAR_HUGS 0
-#define LARGE_HUGS   1
+#define LARGE_HUGS 1
 
 /* --------------------------------------------------------------------------
  * Fancy features
@@ -116,14 +116,14 @@
 #define PROFILING 0
 
 /* Define if you want to run Haskell code through a preprocessor
- * 
- * Note that there's the import chasing mechanism will not spot any 
+ *
+ * Note that there's the import chasing mechanism will not spot any
  * #includes so you must :load (not :reload) if you change any
  * (non-Haskell) configurations files.
  */
 #define USE_PREPROCESSOR 0
 
-/* Define if you want to time every evaluation. 
+/* Define if you want to time every evaluation.
  *
  * Timing is included in the Hugs distribution for the purpose of benchmarking
  * the Hugs interpreter, comparing its performance across a variety of
@@ -163,7 +163,7 @@
 /* Define if you want to use a low-level printer from within a debugger    */
 #define DEBUG_PRINTER 0
 
-/* Define if you want to perform runtime tag-checks as an internal 
+/* Define if you want to perform runtime tag-checks as an internal
  * consistency check.  This makes Hugs run very slowly - but is very
  * effective at detecting and locating subtle bugs.
  */
@@ -176,7 +176,7 @@
  * be used by most people..
  * ------------------------------------------------------------------------*/
 
-/* Define if you want to use the primitives which let you examine Hugs 
+/* Define if you want to use the primitives which let you examine Hugs
  * internals.
  */
 #define INTERNAL_PRIMS 0

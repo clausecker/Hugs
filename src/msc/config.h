@@ -52,7 +52,7 @@
 #define X_DISPLAY_MISSING 1
 
 /* The following symbols are defined in options.h:
- * 
+ *
  *   BYTECODE_PRIMS
  *   CHECK_TAGS
  *   DEBUG_CODE
@@ -162,7 +162,7 @@
  * That is, if the following code compiles ok:
  *
  * #include <setjmp.h>
- * 
+ *
  * int test1() {
  *     jmp_buf jb[1];
  *     jmp_buf *jbp = jb;
@@ -561,7 +561,7 @@
 
 /* Define if struct msghdr contains msg_accrights field */
 /* #undef HAVE_STRUCT_MSGHDR_MSG_ACCRIGHTS */
- 
+
 /* Define if struct msghdr contains msg_control field */
 /* #undef HAVE_STRUCT_MSGHDR_MSG_CONTROL */
 

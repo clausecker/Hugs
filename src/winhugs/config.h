@@ -52,7 +52,7 @@
 #define X_DISPLAY_MISSING 1
 
 /* The following symbols are defined in options.h:
- * 
+ *
  *   BYTECODE_PRIMS
  *   CHECK_TAGS
  *   DEBUG_CODE
@@ -162,14 +162,14 @@
  * That is, if the following code compiles ok:
  *
  * #include <setjmp.h>
- * 
+ *
  * int test1() {
  *     jmp_buf jb[1];
  *     jmp_buf *jbp = jb;
  *     return (setjmp(jb[0]) == 0);
  * }
  */
-#define JMPBUF_ARRAY   1
+#define JMPBUF_ARRAY 1
 
 /* Define if your C compiler inserts underscores before symbol names */
 /* #undef LEADING_UNDERSCORE */
@@ -182,7 +182,7 @@
 /* Define if time.h or sys/time.h define the altzone variable.  */
 /* #undef HAVE_DECL_ALTZONE */
 
-/* Define if we want to use Apple's OpenGL for the Quartz Display System on Mac OS X (instead of X11) */   
+/* Define if we want to use Apple's OpenGL for the Quartz Display System on Mac OS X (instead of X11) */
 /* #undef USE_QUARTZ_OPENGL */
 
 /* Define if time.h or sys/time.h define the timezone variable.  */
@@ -561,7 +561,7 @@
 
 /* Define if struct msghdr contains msg_accrights field */
 /* #undef HAVE_STRUCT_MSGHDR_MSG_ACCRIGHTS */
- 
+
 /* Define if struct msghdr contains msg_control field */
 /* #undef HAVE_STRUCT_MSGHDR_MSG_CONTROL */
 

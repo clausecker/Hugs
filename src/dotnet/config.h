@@ -49,7 +49,7 @@
 /* #undef TM_IN_SYS_TIME */
 
 /* The following symbols are defined in options.h:
- * 
+ *
  *   BYTECODE_PRIMS
  *   CHECK_TAGS
  *   DEBUG_CODE
@@ -160,14 +160,14 @@
  * That is, if the following code compiles ok:
  *
  * #include <setjmp.h>
- * 
+ *
  * int test1() {
  *     jmp_buf jb[1];
  *     jmp_buf *jbp = jb;
  *     return (setjmp(jb[0]) == 0);
  * }
  */
-#define JMPBUF_ARRAY   1
+#define JMPBUF_ARRAY 1
 
 /* Define if your C compiler inserts underscores before symbol names */
 /* #undef LEADING_UNDERSCORE */
