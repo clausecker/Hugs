@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: builtin.c,v $
- * $Revision: 1.3 $
- * $Date: 1999/09/13 11:00:59 $
+ * $Revision: 1.4 $
+ * $Date: 1999/09/15 08:47:17 $
  * ------------------------------------------------------------------------*/
 
 /* We include math.h before prelude.h because SunOS 4's cpp incorrectly
@@ -150,6 +150,16 @@ Name nameIntToFloat;
     IntArg(y,1);                                   \
     r = e;                                         \
     PtrResult(r);                                  \
+}
+
+/* e is an expression with free variables x */
+#define Ptr2Int(nm,e)                              \
+  primFun(nm) {                                    \
+    Pointer x;				   	   \
+    Int r;					   \
+    PtrArg(x,1);                                   \
+    r = e;                                         \
+    IntResult(r);                                  \
 }
 
 /* e is a constant expression                     */
@@ -569,6 +579,7 @@ PROTO_PRIM(primFloatEncode);
 
 PROTO_PRIM(primNullAddr);
 PROTO_PRIM(primPlusAddr);
+PROTO_PRIM(primAddrToInt);
 PROTO_PRIM(primEqAddr);
 
 PROTO_PRIM(primEqInt);
@@ -738,6 +749,7 @@ static struct primitive builtinPrimTable[] = {
   {"primRationalToDouble", 1, primRationalToFloat},
 
   {"nullAddr",          0, primNullAddr},
+  {"addrToInt",         1, primAddrToInt},
   {"plusAddr",          2, primPlusAddr},
   {"primEqAddr",        2, primEqAddr},
 
@@ -1304,6 +1316,7 @@ primFun(primFloatEncode) {             /* Float encode primitive           */
 CAFPtr(primNullAddr,0)                 /* Null pointer                     */
 PtrInt2Ptr(primPlusAddr,(char*)x+y)    /* Pointer arithmetic               */
 PtrPtr2Bool(primEqAddr,x==y)           /* Addr equality primitive          */
+Ptr2Int(primAddrToInt,((Int)x))        /* geting the pointer               */
 
 /* --------------------------------------------------------------------------
  * Comparison primitives:
