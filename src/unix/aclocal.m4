@@ -249,48 +249,44 @@ if test "$fptools_cv_have_timezone" = yes; then
 fi
 ])
 
-dnl ** figure out the alignment restriction of a type
-dnl    (required SIZEOF test but AC_CHECK_SIZEOF doesn't call PROVIDE
-dnl     so we can't call REQUIRE)
 
-dnl FPTOOLS_CHECK_ALIGNMENT(TYPE)
-AC_DEFUN(FPTOOLS_CHECK_ALIGNMENT,
-[changequote(<<, >>)dnl
-dnl The name to #define.
-define(<<AC_TYPE_NAME>>, translit(alignment_$1, [a-z *], [A-Z_P]))dnl
-dnl The cache variable name.
-define(<<AC_CV_NAME>>, translit(ac_cv_alignment_$1, [ *], [_p]))dnl
-dnl The name of the corresponding size.
-define(<<AC_CV_SIZEOF_NAME>>, translit(ac_cv_sizeof_$1, [ *], [_p]))dnl
-changequote([, ])dnl
-AC_MSG_CHECKING(alignment of $1)
-AC_CACHE_VAL(AC_CV_NAME,
-[AC_TRY_RUN([
-#include <stdio.h>
-#if HAVE_STDDEF_H
-#include <stddef.h>
-#endif
-#ifndef offsetof
-#define offsetof(ty,field) ((size_t)((char *)&((ty *)0)->field - (char *)(ty *)0))
-#endif
-int
-main()
-{
-  FILE *f=fopen("conftestval", "w");
-  if (!f) exit(1);
-  fprintf(f, "%d", offsetof(struct { char c; $1 ty;},ty));
-  exit(0);
-}],
-AC_CV_NAME=`cat conftestval`,
-AC_CV_NAME=$AC_CV_SIZEOF_NAME,
-AC_CV_NAME=$AC_CV_SIZEOF_NAME)])
-AC_MSG_RESULT($AC_CV_NAME)
-AC_DEFINE_UNQUOTED(AC_TYPE_NAME, $AC_CV_NAME)
-AC_PROVIDE($AC_TYPE_NAME)
-undefine([AC_TYPE_NAME])dnl
-undefine([AC_CV_NAME])dnl
-undefine([AC_CV_SIZEOF_NAME])dnl
-])
+# FP_COMPUTE_INT(EXPRESSION, VARIABLE, INCLUDES, IF-FAILS)
+# ---------------------------------------------------------
+# Assign VARIABLE the value of the compile-time EXPRESSION using INCLUDES for
+# compilation. Execute IF-FAILS when unable to determine the value. Works for
+# cross-compilation, too.
+#
+# Implementation note: We are lazy and use an internal autoconf macro, but it
+# is supported in autoconf versions 2.50 up to the actual 2.57, so there is
+# little risk.
+AC_DEFUN([FP_COMPUTE_INT],
+[_AC_COMPUTE_INT([$1], [$2], [$3], [$4])[]dnl
+])# FP_COMPUTE_INT
+
+
+# FP_CHECK_ALIGNMENT(TYPE, [IGNORED], [INCLUDES = DEFAULT-INCLUDES])
+# ------------------------------------------------------------------
+# A variation of AC_CHECK_SIZEOF for computing the alignment restrictions of a
+# given type. Defines ALIGNMENT_TYPE.
+AC_DEFUN([FP_CHECK_ALIGNMENT],
+[AS_LITERAL_IF([$1], [],
+               [AC_FATAL([$0: requires literal arguments])])[]dnl
+AC_CHECK_TYPE([$1], [], [], [$3])[]dnl
+m4_pushdef([fp_Cache], [AS_TR_SH([fp_cv_alignment_$1])])[]dnl
+AC_CACHE_CHECK([alignment of $1], [fp_Cache],
+[if test "$AS_TR_SH([ac_cv_type_$1])" = yes; then
+  FP_COMPUTE_INT([(long) (&((struct { char c; $1 ty; } *)0)->ty)],
+                 [fp_Cache],
+                 [AC_INCLUDES_DEFAULT([$3])],
+                 [AC_MSG_ERROR([cannot compute alignment ($1)
+See `config.log' for more details.], [77])])
+else
+  fp_Cache=0
+fi])[]dnl
+AC_DEFINE_UNQUOTED(AS_TR_CPP(alignment_$1), $fp_Cache, [The alignment of a `$1'.])[]dnl
+m4_popdef([fp_Cache])[]dnl
+])# FP_CHECK_ALIGNMENT
+
 
 dnl ** Map an arithmetic C type to a Haskell type.
 dnl    Based on autconf's AC_CHECK_SIZEOF.
@@ -377,7 +373,7 @@ main() {
 }],AC_CV_NAME=`cat conftestval`,
 ifelse([$2], , [AC_CV_NAME=NotReallyAType; AC_CV_NAME_supported=no], AC_CV_NAME=$2),
 ifelse([$3], , [AC_CV_NAME=NotReallyATypeCross; AC_CV_NAME_supported=no], AC_CV_NAME=$3))]) dnl
-if test "$AC_CV_NAME_supported" == yes; then
+if test "$AC_CV_NAME_supported" = yes; then
   AC_MSG_RESULT($AC_CV_NAME)
   AC_DEFINE_UNQUOTED(AC_TYPE_NAME, $AC_CV_NAME, [Define to Haskell type for $1])
 else
@@ -414,45 +410,42 @@ AC_DEFINE(HAVE_LONG_LONG)
 fi
 ])
 
-dnl ** Obtain the value of a C constant.
-dnl    The value will be `(-1)' if the constant is undefined.
-dnl
-dnl    This is set up so that the argument can be a shell variable.
-dnl
-AC_DEFUN(FPTOOLS_CHECK_CCONST,
-[
-eval "def_name=CONST_$1"
-eval "cv_name=ac_cv_cconst_$1"
-AC_MSG_CHECKING(value of $1)
-AC_CACHE_VAL($cv_name,
-[AC_TRY_RUN([#include <stdio.h>
-#include <errno.h>
-#include <fcntl.h>
-main()
-{
-  FILE *f=fopen("conftestval", "w");
-  if (!f) exit(1);
-  fprintf(f, "%d\n", $1);
-  exit(0);
-}], 
-eval "$cv_name=`cat conftestval`",
-eval "$cv_name=-1",
-eval "$cv_name=-1")])dnl
-eval "fptools_check_cconst_result=`echo '$'{$cv_name}`"
-AC_MSG_RESULT($fptools_check_cconst_result)
-AC_DEFINE_UNQUOTED($def_name, $fptools_check_cconst_result)
-unset fptools_check_cconst_result
-])
 
-dnl ** Invoke AC_CHECK_CCONST on each argument (which have to separate with 
-dnl    spaces)
-dnl
-AC_DEFUN(FPTOOLS_CHECK_CCONSTS,
-[for ac_const_name in $1
+# FP_CHECK_CONST(EXPRESSION, [INCLUDES = DEFAULT-INCLUDES], [VALUE-IF-FAIL = -1])
+# ---------------------------------------------------------------------------------
+# Defines CONST_EXPRESSION to the value of the compile-time EXPRESSION, using
+# INCLUDES. If the value cannot be determined, use VALUE-IF-FAIL.
+AC_DEFUN([FP_CHECK_CONST],
+[AS_VAR_PUSHDEF([fp_Cache], [fp_cv_const_$1])[]dnl
+AC_CACHE_CHECK([value of $1], fp_Cache,
+[FP_COMPUTE_INT([$1], fp_check_const_result, [AC_INCLUDES_DEFAULT([$2])],
+                [fp_check_const_result=m4_default([$3], ['-1'])])
+AS_VAR_SET(fp_Cache, [$fp_check_const_result])])[]dnl
+AC_DEFINE_UNQUOTED(AS_TR_CPP([CONST_$1]), AS_VAR_GET(fp_Cache), [The value of $1.])[]dnl
+AS_VAR_POPDEF([fp_Cache])[]dnl
+])# FP_CHECK_CONST
+
+
+# FP_CHECK_CONSTS_TEMPLATE(EXPRESSION...)
+# ----------------------------------
+# autoheader helper for FP_CHECK_CONSTS
+m4_define([FP_CHECK_CONSTS_TEMPLATE],
+[AC_FOREACH([fp_Const], [$1],
+  [AH_TEMPLATE(AS_TR_CPP(CONST_[]fp_Const),
+               [The value of ]fp_Const[.])])[]dnl
+])# FP_CHECK_CONSTS_TEMPLATE
+
+
+# FP_CHECK_CONSTS(EXPRESSION..., [INCLUDES = DEFAULT-INCLUDES], [VALUE-IF-FAIL = -1])
+# -------------------------------------------------------------------------------------
+# List version of FP_CHECK_CONST
+AC_DEFUN(FP_CHECK_CONSTS,
+[FP_CHECK_CONSTS_TEMPLATE([$1])dnl
+for fp_const_name in $1
 do
-FPTOOLS_CHECK_CCONST($ac_const_name)dnl
+FP_CHECK_CONST([$fp_const_name], [$2], [$3])
 done
-])
+])# FP_CHECK_CONSTS
 
 
 dnl ** Try building and loading a dynamically loadable library using
