@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: input.c,v $
- * $Revision: 1.84 $
- * $Date: 2004/02/04 11:21:43 $
+ * $Revision: 1.85 $
+ * $Date: 2004/03/29 11:43:45 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1167,7 +1167,7 @@ Char quote; {                          /* protect quote character          */
     static char buffer[12];	       					   
 
     assert(c >= 0);
-    if (isLatin1(c) && isIn(c,PRINT)) {/* normal printable character       */
+    if (isascii(c) && isIn(c,PRINT)) { /* normal printable character       */
 	if (c==quote || c=='\\') {     /* look for quote of approp. kind   */
 	    buffer[0] = '\\';           
 	    buffer[1] = (char)c;
