@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: builtin.c,v $
- * $Revision: 1.41 $
- * $Date: 2003/01/23 10:37:36 $
+ * $Revision: 1.42 $
+ * $Date: 2003/01/23 16:50:21 $
  * ------------------------------------------------------------------------*/
 
 /* We include math.h before prelude.h because SunOS 4's cpp incorrectly
@@ -1269,7 +1269,7 @@ primFun(primShiftInt) {
 CAFWord(primMaxWord,MAXHUGSWORD)       /* maximum integer CAF              */
 WordWord2Word(primPlusWord,x+y)        /* Word addition primitive          */
 WordWord2Word(primMinusWord,x-y)       /* Word subtraction primitive       */
-Word2Word(primNegateWord,-x)           /* Word negation (modulo MAXWORD)   */
+Word2Word(primNegateWord,-(Int)x)      /* Word negation (modulo MAXWORD)   */
 WordWord2Word(primMulWord,x*y)         /* Word multiplication primitive    */
 Word2Bool(primEvenWord,!(x&1))         /* Word even predicate              */
 WordWord2WordPre(primQuotWord,x/y,y!=0)/* Word division primitive          */
@@ -1309,7 +1309,8 @@ primFun(primShiftWord) {
 	/* << isn't defined for y larger than word size */
 	WordResult(y >= sizeof(x) * 8  ? 0 : x << y);
     } else {
-	WordResult(y <= sizeof(x) * -8 ? 0 : x >> (-y));
+        y = -y;
+	WordResult(y >= sizeof(x) * 8 ? 0 : x >> y);
     }
 }
 
