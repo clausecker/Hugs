@@ -12,8 +12,8 @@
  * included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.34 $
- * $Date: 2001/12/14 06:47:30 $
+ * $Revision: 1.35 $
+ * $Date: 2001/12/14 18:00:49 $
  * ------------------------------------------------------------------------*/
 
 #ifdef HAVE_SIGNAL_H
@@ -1387,14 +1387,14 @@ Bool   sepConsole; {
 
   /* currently ignore the 'sepConsole' and 'sync' flags */
 # if HAVE_MACSYSTEM
-    return macsystem(s);
+    return macsystem(cmd);
 # else
 #  if HAVE_BIN_SH
-    if (s[0]=='\0') {
-	s = fromEnv("SHELL","/bin/sh");
+    if (cmd[0]=='\0') {
+	cmd = fromEnv("SHELL","/bin/sh");
     }
 # endif
-    return system(s);
+    return system(cmd);
 # endif
 #else
   STARTUPINFO si;
