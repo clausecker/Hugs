@@ -9,8 +9,8 @@
  * included in the distribution.
  *
  * $RCSfile: output.c,v $
- * $Revision: 1.21 $
- * $Date: 2001/08/07 23:29:59 $
+ * $Revision: 1.22 $
+ * $Date: 2001/08/11 03:53:37 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -66,6 +66,8 @@ static Void local putKinds	 Args((Kinds));
 #if OBSERVATIONS
 static Bool local printObsList   Args((Cell,Int,Bool));
 static Void local printArg       Args((FILE *,Cell));
+static Bool local isStrConst	 Args((Cell));
+static Bool local putStrConst	 Args((Cell));
 static Bool local isCharCell	 Args((Cell));
 static Bool local getCellChar    Args((Cell));
 #endif
@@ -552,6 +554,8 @@ Cell e; {
 	unlexOp(t);
 	putChr(')');
     }
+    else if (args==2 && isStrConst(e))
+        putStrConst(e);
     else if (args==2)                  /* infix expr of the form e1 + e2   */
 	putInfix(d,t,sy,arg(maySkipDict(fun(e))),arg(e));
     else {                             /* o/w (e1 + e2) e3 ... en   (n>=3) */
@@ -562,6 +566,29 @@ Cell e; {
 }
 
 #if OBSERVATIONS
+
+static Bool local putStrConst(e)
+Cell e; {
+    putChr('"'); 
+    while (isAp(e) && isAp(fun(e)) && fun(fun(e))==nameCons) {
+        putStr(unlexChar(getCellChar(arg(fun(e))),'"'));
+        e = arg(e);
+    }
+    if (e!=nameNil)
+        internal("putStrConst");
+    putChr('"');
+}
+
+static Bool local isStrConst(e)
+Cell e; {
+    while (isAp(e) && isAp(fun(e)) && fun(fun(e))==nameCons) {
+        if (!isCharCell(arg(fun(e))))
+            return FALSE;
+        e = arg(e);
+    }
+    return e==nameNil;
+}
+
 static Bool local isCharCell(e)
 Cell e; {
     while(1)
@@ -584,7 +611,7 @@ Cell e; {
 	    			  break;
 	    case OBSERVE	: e = markedExpr(e);
 	    			  break;
-	    default		: ERRMSG(0) "error in getCellChar" EEND;
+	    default		: internal("error in getCellChar");
 	}
 }
 #endif
@@ -610,34 +637,13 @@ Syntax sy;                              /* with name t, syntax s           */
 Cell   e, f; {                          /* Left and right operands         */
     Syntax a = assocOf(sy);
     Int    p = precOf(sy);
-
-#if OBSERVATIONS
-    Bool charString = strcmp(textToStr(t),":")==0 && isCharCell(e);
-    if (charString){
-        /* special processing for character lists 			   */
-        if (!inString) { putChr('"'); 
-	                 inString=1;
-		       }
-	putStr(unlexChar(getCellChar(e),'"'));
-    }
-    else {
-#endif
-        OPEN(d>p);
-        put((a==LEFT_ASS ? p : 1+p), e);
-        putChr(' ');
-        unlexOp(t);
-        putChr(' ');
-#if OBSERVATIONS
-    }
-#endif
+    OPEN(d>p);
+    put((a==LEFT_ASS ? p : 1+p), e);
+    putChr(' ');
+    unlexOp(t);
+    putChr(' ');
     put((a==RIGHT_ASS ? p : 1+p), f);
-#if OBSERVATIONS
-    if (inString) { putChr('"'); 
-                    inString=0;
-		  }
-    if (!charString)
-#endif
-        CLOSE(d>p);
+    CLOSE(d>p);
 }
 
 static Void local putSimpleAp(e,n)      /* print application e0 e1 ... en  */
