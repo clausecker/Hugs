@@ -311,6 +311,7 @@ then	extra_libraries=`$get_pkg_field extra_libraries $conf | sed 's/HS[^ ]*_cbit
 	extra_ld_opts=`$get_pkg_field extra_ld_opts $conf`
 	extra_cc_opts=`$get_pkg_field extra_cc_opts $conf`
 	c_includes=`$get_pkg_field c_includes $conf`
+	extra_frameworks=`$get_pkg_field extra_frameworks $conf`
 fi
 
 while read modname
@@ -355,6 +356,9 @@ do
 				fi ;;
 			*)	cmd="$cmd +L-l$lib" ;;
 			esac
+ 		done
+		for framework in $extra_frameworks
+		do	cmd="$cmd +L-framework +L$framework"
 		done
 		cmd="$cmd `echo $modname | tr / .`"
 
