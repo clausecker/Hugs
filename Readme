@@ -17,9 +17,9 @@ __   __ __  __  ____   ___      _________________________________________
    - Much improved FFI support (contributed by Alastair Reid), bringing
      Hugs really very close to the Haskell FFI specification.
    - Adoption of a significant subset of GHC's hierarchical libraries
-     (hard work contributed by Ross Paterson.)
+     (contributed by Ross Paterson).
    - An (allegedly) complete implementation of the Haskell98 module
-     system.
+     system (Sigbjorn Finne).
    - Numerous bug fixes since the previous major release in Dec 2001.
 
    The home page for Hugs is at http://haskell.org/hugs.
