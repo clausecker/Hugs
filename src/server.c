@@ -11,8 +11,8 @@
  * included in the distribution.
  *
  * $RCSfile: server.c,v $
- * $Revision: 1.9 $
- * $Date: 2002/02/24 12:11:34 $
+ * $Revision: 1.10 $
+ * $Date: 2002/02/26 05:34:49 $
  * ------------------------------------------------------------------------*/
 
 #define NO_MAIN
@@ -570,7 +570,7 @@ static void evalError(Cell e)
   setError(message);
 }
 
-static BOOL tryEval(Cell c)
+static Bool tryEval(Cell c)
 {
     Cell temp = evalWithNoError(c);
     if (nonNull(temp))
@@ -582,9 +582,9 @@ static BOOL tryEval(Cell c)
 }
 
 
-static BOOL safeEval(Cell c)
+static Bool safeEval(Cell c)
 {
-        BOOL ok;
+        Bool ok;
         startEval();
         ok = tryEval(c);
         normalTerminal();
@@ -627,7 +627,7 @@ static String EvalString()      /* Evaluate a cell (:: String)      */
     BEGIN_PROTECT
 	Int      len = 0;
 	String   s;
-	BOOL     ok;
+	Bool     ok;
 	StackPtr oldsp = sp;
 
 	startEval();
@@ -683,7 +683,7 @@ static Int DoIO()        /* Evaluate a cell (:: IO ()) return exit status */
 {
     BEGIN_PROTECT
 	Int exitCode = 0;
-        BOOL ok;
+        Bool ok;
 	StackPtr oldsp = sp;
 	startEval();
 #ifndef NO_DYNAMIC_TYPES
@@ -719,7 +719,7 @@ static Int DoIO_Int(int* phval)
 {
     BEGIN_PROTECT
         Int exitCode = 0;
-        BOOL ok = TRUE;
+        Bool ok = TRUE;
         StackPtr oldsp = sp;
         startEval();
 #ifndef NO_DYNAMIC_TYPES
@@ -730,7 +730,7 @@ static Int DoIO_Int(int* phval)
         if (!ok)
         {
             sp = oldsp-1;   
-            exitCode = E_UNEXPECTED;
+            exitCode = 1;
         } else if (whnfHead == nameLeft) { 
             safeEval(pop());
             exitCode = whnfInt;
@@ -760,7 +760,7 @@ static Int DoIO_Addr(void** phval)
 {
     BEGIN_PROTECT
         Int exitCode = 0;
-        BOOL ok;
+        Bool ok;
         StackPtr oldsp = sp;
         startEval();
 #ifndef NO_DYNAMIC_TYPES
@@ -771,7 +771,7 @@ static Int DoIO_Addr(void** phval)
         if (!ok)
         {
             sp = oldsp-1;   
-            exitCode = E_UNEXPECTED;
+            exitCode = 1;
 	} else if (whnfHead == nameLeft) { 
             safeEval(pop());
             exitCode = whnfInt;
