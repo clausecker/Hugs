@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: storage.c,v $
- * $Revision: 1.7 $
- * $Date: 2000/05/26 17:38:52 $
+ * $Revision: 1.8 $
+ * $Date: 2000/08/11 15:03:13 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1968,7 +1968,7 @@ Int  depth; {
 	  case NAME :
 	      Printf("name(%d)", c-NAMEMIN);
 	      if (NAMEMIN <= c && c < nameHw)
-		  Printf("=\"%s\"", textToStr(name(c).text));
+		  Printf("=\"%s\"", textToStr(c));
 	      break;
 	  case TYCON :
 	      Printf("tycon(%d)", c-TYCMIN);
