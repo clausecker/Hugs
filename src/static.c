@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.170 $
- * $Date: 2004/11/09 00:27:22 $
+ * $Revision: 1.171 $
+ * $Date: 2004/11/18 10:25:07 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -2508,7 +2508,7 @@ Inst in; {
     tvts = oclose(fds,tvts);
     tvts = odiff(tvps,tvts);
     if (!isNull(tvts)) {
-	ERRMSG(line) "Undefined type variable \"%s\"",
+	ERRMSG(line) "Ambiguous type variable \"%s\"",
 	  textToStr(textOf(nth(offsetOf(hd(tvts)),tyvars)))
 	EEND;
     }
