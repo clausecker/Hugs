@@ -1,10 +1,10 @@
 ------------------------------------------------------------------------------
 __   __ __  __  ____   ___      _________________________________________
 ||   || ||  || ||  || ||__      Hugs 98: Based on the Haskell 98 standard
-||___|| ||__|| ||__||  __||     Copyright (c) 1994-2002
+||___|| ||__|| ||__||  __||     Copyright (c) 1994-2003
 ||---||         ___||           World Wide Web: http://haskell.org/hugs
 ||   ||                         Report bugs to: hugs-bugs@haskell.org
-||   || Version: Nov 2002       _________________________________________
+||   || Version: Aug 2003       _________________________________________
 
 ------------------------------------------------------------------------------
 
@@ -14,13 +14,12 @@ __   __ __  __  ____   ___      _________________________________________
 
    Feature highlights of this new release are:
    
-   - Much improved FFI support (contributed by Alastair Reid), bringing
-     Hugs really very close to the Haskell FFI specification.
-   - Adoption of a significant subset of GHC's hierarchical libraries
-     (contributed by Ross Paterson).
-   - An (allegedly) complete implementation of the Haskell98 module
-     system (Sigbjorn Finne).
-   - Numerous bug fixes since the previous major release in Dec 2001.
+   - More of the hierarchical libraries, including imprecise exceptions
+     and unboxed arrays, giving greater compatibility with GHC.
+   - The Double type is now double-precision on most architectures.
+   - The -N, -i, -f and -X options are gone, as is the :project command.
+   - Integrated .NET support (on Windows).
+   - Numerous bug fixes since the previous major release in Nov 2002.
 
    The home page for Hugs is at http://haskell.org/hugs.
 
@@ -33,6 +32,6 @@ __   __ __  __  ____   ___      _________________________________________
 ------------------------------------------------------------------------------
  The Hugs 98 system is Copyright (c) Mark P Jones, Alastair Reid, the
  Yale Haskell Group, and the OGI School of Science & Engineering at OHSU,
- 1994-2002, All rights reserved.  It is distributed as free software under
+ 1994-2003, All rights reserved.  It is distributed as free software under
  the license in the file "License", which is included in the distribution.
 ------------------------------------------------------------------------------
