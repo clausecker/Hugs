@@ -48,7 +48,7 @@ BUILD_DIR	= ../hugsdir
 LIBRARIES	= $(BUILD_DIR)/libraries/Prelude.hs
 
 # a file created by make include
-INCLUDE		= $(BUILD_DIR)/include/HsFFI.h
+INCLUDES	= $(BUILD_DIR)/include/HsFFI.h
 
 @SET_INSTALLDIRS@
 
@@ -113,14 +113,14 @@ CONVERTERS	= unix/convert_libraries unix/hugs-package
 
 libraries	:: $(LIBRARIES) @FFI_LIBRARIES@
 
-$(LIBRARIES)	: runhugs@EXE@ ffihugs@EXE@ ../libraries/Hugs/*.* $(CONVERTERS) $(TOOLS) $(INCLUDE)
+$(LIBRARIES)	: runhugs@EXE@ ffihugs@EXE@ ../libraries/Hugs/*.* $(CONVERTERS) $(TOOLS) $(INCLUDES)
 		  mkdir -p $(BUILD_DIR)/tools
 		  $(CP) $(TOOLS) $(BUILD_DIR)/tools
 		  mkdir -p $(BUILD_DIR)/libraries/Hugs
 		  $(CP) ../libraries/Hugs/*.* $(BUILD_DIR)/libraries/Hugs
 		  cd unix; ./convert_libraries $(FPTOOLS) ../../hugsdir
 
-$(INCLUDE)	: $(HEADERS)
+$(INCLUDES)	: $(HEADERS)
 		  mkdir -p $(BUILD_DIR)/include
 		  $(CP) $(HEADERS) $(BUILD_DIR)/include
 
@@ -137,7 +137,7 @@ BUILD_FFI = env HUGSDIR='$(BUILD_DIR)' HUGSFLAGS='' ./ffihugs +G
 # The script unix/BuildFFI is created by unix/convert_libraries,
 # and runs ffihugs on library modules that need it.
 
-$(FFI_LIBRARIES) : $(LIBRARIES) ffihugs$(EXE) $(INCLUDE)
+$(FFI_LIBRARIES) : $(LIBRARIES) ffihugs$(EXE) $(INCLUDES)
 		  $(BUILD_FFI) +L'$(BUILD_DIR)/libraries/Hugs/Storable_aux.c' Hugs.Storable
 		  env HUGSDIR='$(BUILD_DIR)' HUGSFLAGS='' unix/BuildFFI
 
