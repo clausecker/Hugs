@@ -2,121 +2,168 @@ module Dotnet.System.Uri where
 
 import Dotnet
 import qualified Dotnet.System.MarshalByRefObject
-import Dotnet.System.UriHostNameType
-import Dotnet.System.Array
-import Dotnet.System.String
-import Dotnet.System.UriPartial
-import Dotnet.System.Int32
+import qualified Dotnet.System.Object
+import qualified Dotnet.System.UriHostNameType
+import qualified Dotnet.System.Array
+import qualified Dotnet.System.UriPartial
 
 data Uri_ a
 type Uri a = Dotnet.System.MarshalByRefObject.MarshalByRefObject (Uri_ a)
 
 foreign import dotnet
-  "method Dotnet.System.Uri.get_AbsolutePath"
+  "method System.Uri.GetHashCode"
+  getHashCode :: Uri obj -> IO (Int)
+
+foreign import dotnet
+  "method System.Uri.Equals"
+  equals :: Dotnet.System.Object.Object a0 -> Uri obj -> IO (Bool)
+
+foreign import dotnet
+  "method System.Uri.ToString"
+  toString :: Uri obj -> IO (String)
+
+foreign import dotnet
+  "method System.Uri.get_AbsolutePath"
   get_AbsolutePath :: Uri obj -> IO (String)
 
 foreign import dotnet
-  "method Dotnet.System.Uri.get_AbsoluteUri"
+  "method System.Uri.get_AbsoluteUri"
   get_AbsoluteUri :: Uri obj -> IO (String)
 
 foreign import dotnet
-  "method Dotnet.System.Uri.get_Authority"
+  "method System.Uri.get_Authority"
   get_Authority :: Uri obj -> IO (String)
 
 foreign import dotnet
-  "method Dotnet.System.Uri.get_Fragment"
+  "method System.Uri.get_Fragment"
   get_Fragment :: Uri obj -> IO (String)
 
 foreign import dotnet
-  "method Dotnet.System.Uri.get_Host"
+  "method System.Uri.get_Host"
   get_Host :: Uri obj -> IO (String)
 
 foreign import dotnet
-  "method Dotnet.System.Uri.get_HostNameType"
+  "method System.Uri.get_HostNameType"
   get_HostNameType :: Uri obj -> IO (Dotnet.System.UriHostNameType.UriHostNameType a0)
 
 foreign import dotnet
-  "method Dotnet.System.Uri.get_IsDefaultPort"
+  "method System.Uri.get_IsDefaultPort"
   get_IsDefaultPort :: Uri obj -> IO (Bool)
 
 foreign import dotnet
-  "method Dotnet.System.Uri.get_IsFile"
+  "method System.Uri.get_IsFile"
   get_IsFile :: Uri obj -> IO (Bool)
 
 foreign import dotnet
-  "method Dotnet.System.Uri.get_IsLoopback"
+  "method System.Uri.get_IsLoopback"
   get_IsLoopback :: Uri obj -> IO (Bool)
 
 foreign import dotnet
-  "method Dotnet.System.Uri.get_IsUnc"
+  "method System.Uri.get_IsUnc"
   get_IsUnc :: Uri obj -> IO (Bool)
 
 foreign import dotnet
-  "method Dotnet.System.Uri.get_LocalPath"
+  "method System.Uri.get_LocalPath"
   get_LocalPath :: Uri obj -> IO (String)
 
 foreign import dotnet
-  "method Dotnet.System.Uri.get_PathAndQuery"
+  "method System.Uri.get_PathAndQuery"
   get_PathAndQuery :: Uri obj -> IO (String)
 
 foreign import dotnet
-  "method Dotnet.System.Uri.get_Port"
+  "method System.Uri.get_Port"
   get_Port :: Uri obj -> IO (Int)
 
 foreign import dotnet
-  "method Dotnet.System.Uri.get_Query"
+  "method System.Uri.get_Query"
   get_Query :: Uri obj -> IO (String)
 
 foreign import dotnet
-  "method Dotnet.System.Uri.get_Scheme"
+  "method System.Uri.get_Scheme"
   get_Scheme :: Uri obj -> IO (String)
 
 foreign import dotnet
-  "method Dotnet.System.Uri.get_Segments"
-  get_Segments :: Uri obj -> IO (Dotnet.System.Array.Array (Dotnet.System.String.StringTy a0))
+  "method System.Uri.get_Segments"
+  get_Segments :: Uri obj -> IO (Dotnet.System.Array.Array (String))
 
 foreign import dotnet
-  "method Dotnet.System.Uri.get_UserEscaped"
+  "method System.Uri.get_UserEscaped"
   get_UserEscaped :: Uri obj -> IO (Bool)
 
 foreign import dotnet
-  "method Dotnet.System.Uri.get_UserInfo"
+  "method System.Uri.get_UserInfo"
   get_UserInfo :: Uri obj -> IO (String)
 
 foreign import dotnet
-  "static method Dotnet.System.Uri.CheckHostName"
+  "static method System.Uri.CheckHostName"
   checkHostName :: String -> IO (Dotnet.System.UriHostNameType.UriHostNameType a1)
 
 foreign import dotnet
-  "static method Dotnet.System.Uri.CheckSchemeName"
+  "static method System.Uri.CheckSchemeName"
   checkSchemeName :: String -> IO (Bool)
 
 foreign import dotnet
-  "static method Dotnet.System.Uri.FromHex"
+  "static method System.Uri.FromHex"
   fromHex :: Char -> IO (Int)
 
 foreign import dotnet
-  "method Dotnet.System.Uri.GetLeftPart"
+  "method System.Uri.GetLeftPart"
   getLeftPart :: Dotnet.System.UriPartial.UriPartial a0 -> Uri obj -> IO (String)
 
 foreign import dotnet
-  "static method Dotnet.System.Uri.HexEscape"
+  "static method System.Uri.HexEscape"
   hexEscape :: Char -> IO (String)
 
 foreign import dotnet
-  "static method Dotnet.System.Uri.HexUnescape"
-  hexUnescape :: String -> Dotnet.System.Int32.Int32 a1 -> IO (Char)
+  "static method System.Uri.HexUnescape"
+  hexUnescape :: String -> Int -> IO (Char)
 
 foreign import dotnet
-  "static method Dotnet.System.Uri.IsHexDigit"
+  "static method System.Uri.IsHexDigit"
   isHexDigit :: Char -> IO (Bool)
 
 foreign import dotnet
-  "static method Dotnet.System.Uri.IsHexEncoding"
+  "static method System.Uri.IsHexEncoding"
   isHexEncoding :: String -> Int -> IO (Bool)
 
 foreign import dotnet
-  "method Dotnet.System.Uri.MakeRelative"
+  "method System.Uri.MakeRelative"
   makeRelative :: Dotnet.System.Uri.Uri a0 -> Uri obj -> IO (String)
+
+foreign import dotnet
+  "static field System.Uri.UriSchemeFile"
+  get_UriSchemeFile :: IO (String)
+
+foreign import dotnet
+  "static field System.Uri.UriSchemeFtp"
+  get_UriSchemeFtp :: IO (String)
+
+foreign import dotnet
+  "static field System.Uri.UriSchemeGopher"
+  get_UriSchemeGopher :: IO (String)
+
+foreign import dotnet
+  "static field System.Uri.UriSchemeHttp"
+  get_UriSchemeHttp :: IO (String)
+
+foreign import dotnet
+  "static field System.Uri.UriSchemeHttps"
+  get_UriSchemeHttps :: IO (String)
+
+foreign import dotnet
+  "static field System.Uri.UriSchemeMailto"
+  get_UriSchemeMailto :: IO (String)
+
+foreign import dotnet
+  "static field System.Uri.UriSchemeNews"
+  get_UriSchemeNews :: IO (String)
+
+foreign import dotnet
+  "static field System.Uri.UriSchemeNntp"
+  get_UriSchemeNntp :: IO (String)
+
+foreign import dotnet
+  "static field System.Uri.SchemeDelimiter"
+  get_SchemeDelimiter :: IO (String)
 
 

@@ -6,8 +6,7 @@ import Dotnet.System.Xml.XmlReader
 import Dotnet.System.Xml.XmlSpace
 import Dotnet.System.Xml.WriteState
 import qualified Dotnet.System.Array
-import Dotnet.System.Byte
-import qualified Dotnet.System.Char
+import qualified Data.Word
 
 data XmlWriter_ a
 type XmlWriter a = Dotnet.System.Object.Object (XmlWriter_ a)
@@ -58,11 +57,11 @@ foreign import dotnet
 
 foreign import dotnet
   "method Dotnet.System.Xml.XmlWriter.WriteBinHex"
-  writeBinHex :: Dotnet.System.Array.Array (Dotnet.System.Byte.Byte a0) -> Int -> Int -> XmlWriter obj -> IO (())
+  writeBinHex :: Dotnet.System.Array.Array Data.Word.Word8 -> Int -> Int -> XmlWriter obj -> IO (())
 
 foreign import dotnet
   "method Dotnet.System.Xml.XmlWriter.WriteBase64"
-  writeBase64 :: Dotnet.System.Array.Array (Dotnet.System.Byte.Byte a0) -> Int -> Int -> XmlWriter obj -> IO (())
+  writeBase64 :: Dotnet.System.Array.Array Data.Word.Word8 -> Int -> Int -> XmlWriter obj -> IO (())
 
 foreign import dotnet
   "method Dotnet.System.Xml.XmlWriter.WriteRaw"
@@ -70,11 +69,11 @@ foreign import dotnet
 
 foreign import dotnet
   "method Dotnet.System.Xml.XmlWriter.WriteRaw"
-  writeRaw_1 :: Dotnet.System.Array.Array (Dotnet.System.Char.Char a0) -> Int -> Int -> XmlWriter obj -> IO (())
+  writeRaw_1 :: Dotnet.System.Array.Array Char -> Int -> Int -> XmlWriter obj -> IO (())
 
 foreign import dotnet
   "method Dotnet.System.Xml.XmlWriter.WriteChars"
-  writeChars :: Dotnet.System.Array.Array (Dotnet.System.Char.Char a0) -> Int -> Int -> XmlWriter obj -> IO (())
+  writeChars :: Dotnet.System.Array.Array Char -> Int -> Int -> XmlWriter obj -> IO (())
 
 foreign import dotnet
   "method Dotnet.System.Xml.XmlWriter.WriteSurrogateCharEntity"
