@@ -10,8 +10,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: parser.y,v $
- * $Revision: 1.46 $
- * $Date: 2004/01/08 14:36:29 $
+ * $Revision: 1.47 $
+ * $Date: 2004/01/09 13:53:05 $
  * ------------------------------------------------------------------------*/
 
 %{
@@ -334,20 +334,16 @@ constr	  : '!' btype conop bbtype	{$$ = gc4(ap(ap($3,bang($2)),$4));}
 	  | bpolyType conop bbtype	{$$ = gc3(ap(ap($2,$1),$3));}
 	  | btype2			{$$ = $1;}
 	  | btype3			{$$ = $1;}
-	  | btype4			{$$ = $1;}
 	  | con '{' fieldspecs '}'	{$$ = gc4(ap(LABC,pair($1,rev($3))));}
 	  | con '{' '}'			{$$ = gc3(ap(LABC,pair($1,NIL)));}
 	  | error			{syntaxError("data type declaration");}
 	  ;
 btype3	  : btype2 '!' atype		{$$ = gc3(ap($1,bang($3)));}
-	  | btype3 '!' atype		{$$ = gc3(ap($1,bang($3)));}
+	  | btype2 bpolyType		{$$ = gc2(ap($1,$2));}
 	  | btype3 atype		{$$ = gc2(ap($1,$2));}
-	  ;
-btype4	  : btype2 bpolyType		{$$ = gc2(ap($1,$2));}
+	  | btype3 '!' atype		{$$ = gc3(ap($1,bang($3)));}
 	  | btype3 bpolyType		{$$ = gc2(ap($1,$2));}
-	  | btype4 bpolyType		{$$ = gc2(ap($1,$2));}
-	  | btype4 atype		{$$ = gc2(ap($1,$2));}
-	  | btype4 '!' atype		{$$ = gc3(ap($1,bang($3)));}
+	  | '(' CONOP ')'		{$$ = gc3($2);}
 	  ;
 bbtype	  : '!' btype			{$$ = gc2(bang($2));}
 	  | btype			{$$ = $1;}
