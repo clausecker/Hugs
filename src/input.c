@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: input.c,v $
- * $Revision: 1.30 $
- * $Date: 2001/12/06 00:50:13 $
+ * $Revision: 1.31 $
+ * $Date: 2001/12/06 22:05:57 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -71,6 +71,9 @@ static Bool local linecmp         Args((String,String));
 static Int  local nextLine        Args((Void));
 static Void local skip            Args((Void));
 static Void local thisLineIs      Args((Int));
+#if MULTI_LINEFEED
+static Void local mergeCRLF       Args((Void));
+#endif
 static Void local newlineSkip     Args((Void));
 static Void local closeAnyInput   Args((Void));
 
@@ -205,6 +208,7 @@ static  unsigned char   ctable[NUM_CHARS];
 #define IDAFTER         0x10
 #define SPACE           0x20
 #define PRINT           0x40
+#define NEWLINE         0x80
 
 static Void local initCharTab() {       /* Initialize char decode table    */
 #define setRange(x,f,t) {Int i=f;   while (i<=t) ctable[i++] |=x;}
@@ -242,6 +246,11 @@ static Void local initCharTab() {       /* Initialize char decode table    */
     setChars(PRINT,     "(),;[]_`{}");  /* Special characters		   */
     setChars(PRINT,     " '\"");        /* Space and quotes		   */
     setCopy (PRINT,     (DIGIT|SMALL|LARGE|SYMBOL));
+    
+    setChar (NEWLINE,   '\n');
+#if MULTI_LINEFEED
+    setChar (NEWLINE,   '\r');
+#endif
 
     charTabBuilt = TRUE;
 #undef setRange
@@ -558,7 +567,7 @@ static Int local nextLine()
     
 static Void local skip() {              /* move forward one char in input  */
     if (c0!=EOF) {                      /* stream, updating c0, c1, ...    */
-	if (c0=='\n' || c0=='\r') {     /* Adjusting cursor coords as nec. */
+	if (isIn(c0,NEWLINE)) {         /* Adjusting cursor coords as nec. */
 	    row++;
 	    column=1;
 	    if (reading==SCRIPTFILE)
@@ -632,10 +641,28 @@ Int kind; {                            /* & check for literate script errs */
     }
 }
 
+#if MULTI_LINEFEED
+static Void mergeCRLF()
+{
+# if __MWERKS__ && macintosh
+    if (c0=='\n' && c1=='\r') {
+#else
+    if (c0=='\r' && c1=='\n') {
+#endif
+        c0 = ' ';
+        //printf("CRLF at %d\n", row);
+        skip();
+    }
+}
+#endif
+
 static Void local newlineSkip() {      /* skip `\n' (supports lit scripts) */
     /* assert(c0=='\n'); */
     if (reading==SCRIPTFILE && thisLiterate) {
 	do {
+#if MULTI_LINEFEED
+            mergeCRLF();
+#endif
 	    skip();
 	    if (inCodeBlock) {         /* pass chars on definition lines   */
 		thisLineIs(CODELINE);  /* to lexer (w/o leading DEFNCHAR)  */
@@ -648,16 +675,16 @@ static Void local newlineSkip() {      /* skip `\n' (supports lit scripts) */
 		litLines++;
 		return;
 	    }
-	    while (c0 != '\n' && c0 != '\r' && isIn(c0,SPACE)) /* maybe line is blank?   */
+	    while (!isIn(c0,NEWLINE) && isIn(c0,SPACE)) /* maybe line is blank?   */
 		skip();
-	    if (c0=='\n' || c0=='\r' || c0==EOF)
+	    if (isIn(c0,NEWLINE) || c0==EOF)
 		thisLineIs(BLANKLINE);
 	    else {
 		thisLineIs(TEXTLINE);  /* otherwise it must be a comment   */
-		while (c0!='\n' && c0!='\r' && c0!=EOF)
+		while (!isIn(c0,NEWLINE) && c0!=EOF)
 		    skip();
-	    }                          /* by now, c0=='\n' or c0==EOF      */
-	} while (c0!=EOF);             /* if new line, start again         */
+	    }                          /* by now, isIn(c0,NEWLINE) or c0==EOF */
+	} while (c0!=EOF);             /* if new line, start again            */
 
 	if (litLines==0 && literateErrors) {
 	    ERRMSG(row) "Empty script - perhaps you forgot the `%c's?",
@@ -666,6 +693,9 @@ static Void local newlineSkip() {      /* skip `\n' (supports lit scripts) */
 	}
 	return;
     }
+#if MULTI_LINEFEED
+    mergeCRLF();
+#endif
     skip();
 }
 
@@ -863,7 +893,7 @@ static Cell local readChar() {         /* read character constant          */
     Cell charRead;
 
     skip(/* '\'' */);
-    if (c0=='\'' || c0=='\n' || c0=='\r' || c0==EOF) {
+    if (c0=='\'' || isIn(c0,NEWLINE) || c0==EOF) {
 	ERRMSG(row) "Illegal character constant"
 	EEND;
     }
@@ -884,7 +914,7 @@ static Cell local readString() {       /* read string literal              */
 
     startToken();
     skip(/* '\"' */);
-    while (c0!='\"' && c0!='\n' && c0!='\r' && c0!=EOF) {
+    while (c0!='\"' && !isIn(c0,NEWLINE) && c0!=EOF) {
 	c = readAChar(TRUE);
 	if (nonNull(c))
 	    saveStrChr(charOf(c));
@@ -1068,7 +1098,7 @@ Bool isStrLit; {
 
 static Void local skipGap() {          /* skip over gap in string literal  */
     do                                 /* (simplified in Haskell 1.1)      */
-	if (c0=='\n' || c0=='\r')
+	if (isIn(c0,NEWLINE))
 	    newlineSkip();
 	else
 	    skip();
@@ -1227,7 +1257,7 @@ Char   sys; {                          /* character for shell escape       */
     while (c0==' ' || c0 =='\t')      					   
 	skip();			      					   
 									   
-    if (c0=='\n' || c0=='\r')          /* look for blank command lines     */
+    if (isIn(c0,NEWLINE))              /* look for blank command lines     */
 	return NOCMD;		      					   
     if (c0==EOF)                       /* look for end of input stream     */
 	return QUIT;		      					   
@@ -1270,7 +1300,7 @@ String readFilename() {                /* Read filename from input (if any)*/
 	while (c0==' ' || c0=='\t')
 	    skip();
 
-    if (c0=='\n' || c0=='\r' || c0==EOF)  /* return null string at end of line*/
+    if (isIn(c0,NEWLINE) || c0==EOF)  /* return null string at end of line*/
 	return 0;
 
     startToken();
@@ -1303,7 +1333,7 @@ String readLine() {                    /* Read command line from input     */
 	skip();
 
     startToken();
-    while (c0!='\n' && c0!='\r' && c0!=EOF) {
+    while (!isIn(c0,NEWLINE) && c0!=EOF) {
 	saveTokenChar(c0);
 	skip();
     }
@@ -1357,7 +1387,7 @@ static Void local skipWhitespace() {   /* Skip over whitespace/comments    */
     for (;;)                           /* Strictly speaking, this code is  */
 	if (c0==EOF)                   /* a little more liberal than the   */
 	    return;                    /* report allows ...                */
-	else if (c0=='\n' || c0=='\r')	       					   
+	else if (isIn(c0,NEWLINE))	       					   
 	    newlineSkip();	       					   
 	else if (isIn(c0,SPACE))       					   
 	    skip();		       					   
@@ -1377,7 +1407,7 @@ static Void local skipWhitespace() {   /* Skip over whitespace/comments    */
 		    skip();
 		    nesting--;
 		}
-		else if (c0=='\n' || c0=='\r')
+		else if (isIn(c0,NEWLINE))
 		    newlineSkip();
 		else
 		    skip();
@@ -1389,8 +1419,8 @@ static Void local skipWhitespace() {   /* Skip over whitespace/comments    */
 	else if (c0=='-' && c1=='-') {  /* One line comment                */
 	    do
 		skip();
-	    while (c0!='\n' && c0!='\r' && c0!=EOF);
-	    if (c0=='\n' || c0=='\r')
+	    while (!isIn(c0,NEWLINE) && c0!=EOF);
+	    if (isIn(c0,NEWLINE))
 		newlineSkip();
 	}
 	else

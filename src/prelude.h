@@ -9,8 +9,8 @@
  * included in the distribution.
  *
  * $RCSfile: prelude.h,v $
- * $Revision: 1.27 $
- * $Date: 2001/09/27 00:26:50 $
+ * $Revision: 1.28 $
+ * $Date: 2001/12/06 22:05:57 $
  * ------------------------------------------------------------------------*/
 
 #include "config.h"
@@ -148,6 +148,7 @@
 #define ADDR_OPS         1
 #define TIME_MODULE      1
 #define DIRECTORY_MODULE 1
+#define MULTI_LINEFEED   1 /* Platform-independent linefeed handling        */
 #define MULTI_INST       0
 
 #define SHORT_CIRCUIT_COERCIONS 1
