@@ -218,7 +218,7 @@ mkdir -p $compat
 # hslibs lang GlaExts.lhs		# deprecated
   hslibs lang IArray.hs			# -> Data.Array.IArray
 # hslibs lang IOExts.hs
-  stub IOExts		Hugs.IOExts Hugs.IORef Hugs.IOArray
+  stub IOExts		Hugs.IOExts Hugs.IORef Hugs.IOArray System.IO.Unsafe
   hslibs lang IORef.hs			# -> Data.IORef
 # hslibs lang LazyST.hs
   stub LazyST		Data.STRef Control.Monad.ST.Lazy Hugs.LazyST

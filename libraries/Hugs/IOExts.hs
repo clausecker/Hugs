@@ -7,7 +7,6 @@
 module Hugs.IOExts
 	( fixIO				-- :: (a -> IO a) -> IO a
 	, unsafePerformIO		-- :: IO a -> a
-	, unsafeInterleaveIO		-- :: IO a -> IO a
 
 	, performGC
 
@@ -40,9 +39,6 @@ primitive performGC "primGC" :: IO ()
 
 unsafePerformIO :: IO a -> a
 unsafePerformIO m = valueOf (basicIORun m)
-
-unsafeInterleaveIO :: IO a -> IO a
-unsafeInterleaveIO m = return (unsafePerformIO m)
 
 primitive unsafePtrEq    :: a -> a -> Bool
 primitive unsafePtrToInt :: a -> Int
