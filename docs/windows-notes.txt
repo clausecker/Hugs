@@ -1,0 +1,298 @@
+  ********************************************************************
+  ********************************************************************
+  NOTICE: This file was written for Hugs 1.4, and has not been updated
+  to reflect changes in Hugs 98.  Information provided here may not be
+  valid in this release of Hugs, and should be used for guidance only.
+  ********************************************************************
+  ********************************************************************
+
+Notes on Hugs 1.4 under Windows 95 / NT
+
+ *** Uninstalling Hugs ***
+
+If you install using InstallShield (used by the pre-compiled binary
+release) then Hugs will be found on the Add/Remove program menu on the
+control panel.  You should uninstall existing versions of Hugs before
+installing a new one.
+
+
+ *** Windows interfaces to Hugs ***
+
+There are two windows interfaces to Hugs: winhugs is an interface to
+the Hugs system which does not provide editing but does have a
+scrollable interaction window and some nice browsers.  This was
+developed using Windows 3.1 technology and doesn't always follow
+Windows programming conventions.  It also interferes with the Graphics
+package and you can't run Fran or other programs which use the Win32
+graphics modules.
+
+We are currently developing a more traditional windows interface to
+the Hugs compiler, hugsedit.  Look on haskell.org/hugs for the latest
+information on this.  Unlike winhugs, hugsEdit is a separate program
+which calls the console version of Hugs as a subprocess.  
+
+
+ *** The Console Window ***
+
+If you are using Hugs in a console window, it is easy to change the
+properties of the console window to make Hugs more useable.  On NT, you
+can either create a shortcut to Hugs which has an adaquate console
+window or you can fiddle with the default Console settings on the
+control panel.  If you use Windows 95, you're out of luck as far as I
+know.  If you use either WinHugs or HugsEdit or run Hugs from the
+shell, this doesn't matter.  Note that you can cut and paste into
+console windows using an untitled menu under the Hugs icon in the
+window. 
+
+ 
+*** The Win32 Graphics Library ***
+
+We have imported many Win32 functions into Hugs.  These can be
+accessed either through the Win32 module directly or through the
+Graphics module.  We hope to eventually port Graphics to other
+platforms while Win32 is very specific to the Windows API.
+You probably shouldn't use Win32 unless you have to since it may
+change in the future.  Note that Win32 has changed significantly since it's
+initial release.
+
+
+ *** The Registry ***
+
+The registry is a small database maintained by Windows 95 / NT that holds
+persistant information about the environment and applications.  You
+can view and / or edit the registry using the `regedit' program in
+Windows.  You can also place values in the registry by opening a
+`.reg' file.
+
+Hugs uses the registry in three ways:
+  a) At startup, initial options which define search path, heap size, 
+     and other preferences are read from the registry.  Using :set
+     changes these settings.  The runhugs program uses the same
+     options settings - changing the heap size in hugs will also
+     change heap used by runhugs (command line options used
+     by runhugs override the registry options).
+  b) The registry associates .hs files with an icon and sets up Hugs
+     to open a .hs or .lhs file when double-clicked.  The .hsx extension
+     is associated with runhugs.  (I've had problems with the Internet
+     Explorer 4.0 not noticing when file icons change.  The only way
+     around this that I know is to manually set the file icon for .hs
+     and .hsx to the icons in the hugs/icons directory).
+  c) The registry keeps track of where Hugs is installed.
+
+When Hugs is installed via installShield (the pre-packaged binary
+release) these registry keys are set up automatically.  If you compile
+Hugs from sources, you need to deal with the registry manually.
+
+
+Initialization
+ 
+When Hugs is initialized, it looks for initialization options first in
+
+HKEY_CURRENT_USER\SOFTWARE\Yale and Nottingham Haskell Developers\Hugs\???
+
+where ??? is the version of Hugs you are running.  If this doesn't
+exist, the next place Hugs looks is  
+
+HKEY_LOCAL_MACHINE\SOFTWARE\Yale and Nottingham Haskell Developers\Hugs\???
+
+If you have more than one version of Hugs on your machine they won't
+interfere with each other, although only one will be associated with
+.hs files when they are opened.  
+
+The :set command writes the current set of options into the registry.
+If you give Hugs a bad search path (using :set -P) you may have to go
+into the registry editor to fix (or remove) the saved search path.
+You can usually fix path problems by deleting the 
+HKEY_CURRENT_USER\SOFTWARE\Yale and Nottingham Haskell Developers\Hugs\???
+key entirely.  The :set command always writes to CURRENT_USER, not
+LOCAL_MACHINE.  
+
+
+Initial Options
+
+The InstallShield installation creates an initial option string by looking
+for persistant hugs options.  Any key found in
+
+HKEY_LOCAL_MACHINE\SOFTWARE\Yale and Nottingham Haskell Developers\Hugs\options
+
+will have it's value concatenated onto the initial option list.  When
+a package such as Fran is installed, it adds a key here so that
+future Hugs installations will retain the search path entries that
+Fran adds.  You can also keep your own permanent preferences: a key such as
+
+My Options = -h1M -. 
+
+will add these options to the initial Hugs options set during installation.  
+The names of the key are not important: only the key values are used.
+The installation of Hugs does not set any of these options - it only reads
+them and places them in the initial Hugs option string.
+
+The following .reg file can be used to set up your own Hugs options:
+
+---- Change <<dir>> to hugs install directory.  Double any \
+---- Change <<Version>> to Hugs installation version
+---- Cut here:  hugsopts.reg ----  
+
+REGEDIT4
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Yale and Nottingham Haskell Developers\Hugs]
+"HUGSVERSION"="<<Version>>"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Yale and Nottingham Haskell Developers\Hugs\<<Version>>]
+s"InstallDir"="<<dir>>"
+
+[HKEY_CLASSES_ROOT\.hs]
+@="haskellProg"
+"Content Type"="Haskell Program"
+
+[HKEY_CLASSES_ROOT\.hsx]
+@="haskellExProg"
+"Content Type"="Executable Haskell Program"
+
+[HKEY_CLASSES_ROOT\.lhs]
+@="haskellProg"
+"Content Type"="Haskell Program"
+
+[HKEY_CLASSES_ROOT\haskellExProg]
+@="Executable Haskell Program"
+"EditFlags"=hex:00,00,00,00
+
+[HKEY_CLASSES_ROOT\haskellExProg\DefaultIcon]
+@="<<dir>>\\icons\\hsxicon.ico;0"
+
+[HKEY_CLASSES_ROOT\haskellExProg\shell]
+@=""
+
+[HKEY_CLASSES_ROOT\haskellExProg\shell\open]
+
+[HKEY_CLASSES_ROOT\haskellExProg\shell\open\command]
+@="<<dir>>\\runhugs.exe \"%1\""
+
+[HKEY_CLASSES_ROOT\haskellProg]
+@="Haskell Program"
+"EditFlags"=hex:00,00,00,00
+
+[HKEY_CLASSES_ROOT\haskellProg\DefaultIcon]
+@="<<dir>>\\icons\\hsicon.ico;0"
+
+[HKEY_CLASSES_ROOT\haskellProg\shell]
+@=""
+
+[HKEY_CLASSES_ROOT\haskellProg\shell\open]
+
+[HKEY_CLASSES_ROOT\haskellProg\shell\open\command]
+@="<<dir>>\\hugs.exe \"%1\""
+
+---- Cut here:  End of hugsopts.reg ----  
+
+File associations
+
+To associate .hs and .lhs files with an icon and a program to open
+them, the following registry keys are used.
+
+These define a file type for .hs, .lhs, and .hsx files.  These assume that
+Hugs is installed in C:\hugs.
+
+[HKEY_CLASSES_ROOT\.hs]
+@="haskellProg"
+"Content Type"="Haskell Program"
+[HKEY_CLASSES_ROOT\.lhs]
+@="haskellProg"
+"Content Type"="Haskell Program"
+[HKEY_CLASSES_ROOT\.hsx]
+@="haskellExProg"
+"Content Type"="Executable Haskell Program"
+
+These define the icon and opener for a Haskell program:
+
+[HKEY_CLASSES_ROOT\haskellProg]
+@="Haskell Program"
+
+[HKEY_CLASSES_ROOT\haskellProg\DefaultIcon]
+@="C:\\Hugs\\icons\\hsicon.ico"
+[HKEY_CLASSES_ROOT\haskellProg\shell]
+[HKEY_CLASSES_ROOT\haskellProg\shell\open]
+[HKEY_CLASSES_ROOT\haskellProg\shell\open\command]
+@="C:\\Hugs\\hugs.exe \"%1\""
+
+[HKEY_CLASSES_ROOT\haskellExProg\DefaultIcon]
+@="C:\\Hugs\\icons\\hsicon.ico"
+[HKEY_CLASSES_ROOT\haskellExProg\shell]
+[HKEY_CLASSES_ROOT\haskellExProg\shell\open]
+[HKEY_CLASSES_ROOT\haskellExProg\shell\open\command]
+@="C:\\Hugs\\runhugs.exe \"%1\""
+
+Of course, the location of Hugs may vary.  See below for a .reg file
+to set up all of these registry keys.
+
+You may wish to use the Hugs icon but open with an different program,
+such as an editor.  Change 
+
+[HKEY_CLASSES_ROOT\haskellProg\shell\open\command]
+
+if you want to open Haskell in a different way.
+
+
+Hugs Directory
+
+The key
+HKEY_LOCAL_MACHINE\Software\Yale and Nottingham Haskell Developers\Hugs\HugsVersion
+contains the version of the most recent Hugs installation.  This is
+used to install other software packages into the Hugs area.
+
+
+ *** Installing Hugs without InstallShield ***
+
+The InstallShield program that installs Hugs doesn't do that much. 
+You can install all of the Hugs-related registry options with the following
+
+
+ *** Installing Hugs on a server ***
+
+Running Hugs off a server under NT is relatively easy.  The registry 
+entries set during server installation will probably not be available
+to clients of the server but the built-in defaults that come with Hugs
+should prove adaquate.  It is probably easier to recompile hugs with
+different defaults (heap size, search path) than it is to distribute the
+proper registry values to each client.  You can also simply supply a .reg
+file to the users to get the registry set up before running hugs.
+
+The main problem with the registry is that the file association for .hs
+files is in a part of the registry which is local to the client.  If you
+really want to start up hugs programs by double clicking them (as well
+as have the icons and such) you need to distribute the registry entries
+associated with the file association to all clients or make a .reg file
+available so that clients can quickly update machines without the proper
+registry entries.
+
+According to Microsoft, these registry problems will go away on NT 5.0.
+
+Here is a .reg file to set up the Hugs file associations:
+
+---- cut here ---   File: hugs.reg
+
+REGEDIT4
+
+[HKEY_CLASSES_ROOT\.hs]
+@="haskellProg"
+"Content Type"="Haskell Program"
+[HKEY_CLASSES_ROOT\.lhs]
+@="haskellProg"
+"Content Type"="Haskell Program"
+
+[HKEY_CLASSES_ROOT\haskellProg]
+@="Haskell Program"
+
+[HKEY_CLASSES_ROOT\haskellProg\DefaultIcon]
+@="C:\\Hugs\\icons\\hsicon.ico"
+[HKEY_CLASSES_ROOT\haskellProg\shell]
+[HKEY_CLASSES_ROOT\haskellProg\shell\open]
+[HKEY_CLASSES_ROOT\haskellProg\shell\open\command]
+@="C:\\Hugs\\hugs.exe \"%1\""
+
+--- cut here ---
+
+
+
+
+

@@ -1,0 +1,198 @@
+
+
+
+HUGS(1)                   User Commands                   HUGS(1)
+
+
+
+NNNNAAAAMMMMEEEE
+     hugs - Hugs 1.4, functional programming system
+
+SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+     hhhhuuuuggggssss [ _o_p_t_i_o_n_s ]
+
+DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+     Hugs is an interpreter for Haskell,  a  standard  non-strict
+     functional programming language.  Hugs implements almost all
+     of version 1.4 of  the  Haskell  standard,  except  for  the
+     module  system.  The name HHHHuuuuggggssss is a mnemonic for the HHHHaaaasssskkkkeeeellllllll
+     UUUUsssseeeerrrr''''ssss GGGGooooffffeeeerrrr SSSSyyyysssstttteeeemmmm.
+
+     The interpreter is started using the _h_u_g_s command.  Once the
+     interpreter  has  been loaded, typing ::::???? will print the fol-
+     lowing list of commands:
+
+
+          ::::llllooooaaaadddd <_f_i_l_e_n_a_m_e_s>   load scripts from specified files
+          ::::llllooooaaaadddd               clear all files except prelude
+          ::::aaaallllssssoooo <_f_i_l_e_n_a_m_e_s>   read additional script files
+          ::::rrrreeeellllooooaaaadddd             repeat last load command
+          ::::pppprrrroooojjjjeeeecccctttt <_f_i_l_e_n_a_m_e> use project file
+          ::::eeeeddddiiiitttt <_f_i_l_e_n_a_m_e>    edit file
+          ::::eeeeddddiiiitttt               edit last file
+          <_e_x_p_r>              evaluate expression
+          ::::ttttyyyyppppeeee <_e_x_p_r>        print type of expression
+          ::::????                  display this list of commands
+          ::::sssseeeetttt <_o_p_t_i_o_n_s>      set command line options
+          ::::sssseeeetttt                help on command line options
+          ::::nnnnaaaammmmeeeessss [_p_a_t]        list names currently in scope
+          ::::iiiinnnnffffoooo <_n_a_m_e_s>       describe named objects
+          ::::ffffiiiinnnndddd <_n_a_m_e>        edit file containing definition of name
+          ::::!!!!_c_o_m_m_a_n_d           shell escape
+          ::::ccccdddd _d_i_r             change directory
+          ::::ggggcccc                 force garbage collection
+          ::::qqqquuuuiiiitttt               exit Hugs interpreter
+
+     Any command may be abbreviated to ::::_c where _c  is  the  first
+     character  in  the full name.  On most systems, you can also
+     exit from Hugs by typing the end-of-file character (^D).
+
+     Note that the interrupt key (^C on  most  systems)  can   be
+     used   at  any time whilst using Hugs to abandon the process
+     of reading in a file  of function definitions or the evalua-
+     tion   of   an   expression.    When   the  interrupt key is
+     detected, Hugs prints the string "{Interrupted!}" and prints
+     the "? " prompt so that further commands can be entered.
+
+
+OOOOPPPPTTTTIIIIOOOONNNNSSSS
+     Help with command line options can  be  obtained  by  typing
+
+
+
+SunOS 5.5           Last change: August 1996                    1
+
+
+
+
+
+
+HUGS(1)                   User Commands                   HUGS(1)
+
+
+
+     ::::sssseeeetttt followed by the return key within the interpreter.
+
+     Many options are toggled with ++++ or ---- to turn them on or off,
+     respectively. The following options are available:
+
+
+          ssss      Print number of reductions/cells after eval
+          ffff      Terminate evaluation on first error
+          gggg      Print number of cells recovered after gc
+          llll      Literate scripts as default
+          eeee      Warn about errors in literate scripts
+          ....      Print dots to show progress
+          wwww      Always show which files loaded
+          kkkk      Show kind errors in full
+          uuuu      Use "show" to display results
+          iiii      Chase imports while loading files
+
+     Other options (which should also be preceded by ++++ or ----,  the
+     choice making no difference) are:
+
+
+          hhhh_n_u_m   Set heap size (cannot be changed within _H_u_g_s)
+          pppp_s_t_r   Set prompt string to _s_t_r
+          rrrr_s_t_r   Set repeat last expression string to _s_t_r
+          PPPP_s_t_r   Set search path for script files to _s_t_r
+          EEEE_s_t_r   Use editor setting given by _s_t_r
+
+     The default settings are:  ++++ffffeeeewwwwuuuuiiii ----ssssttttggggllll....kkkk ----hhhh111100000000KKKK ----pppp""""???? """" ----rrrr$$$$$$$$
+
+EEEENNNNVVVVIIIIRRRROOOONNNNMMMMEEEENNNNTTTT
+     The following environment variables may be set in the user's
+     ._l_o_g_i_n or ._p_r_o_f_i_l_e file:
+
+     HHHHUUUUGGGGSSSSPPPPAAAATTTTHHHH====_f_i_l_e   A colon-separated list of directories to  be
+                     searched  for  script  files,  including the
+                     standard prelude.  The standard  setting  is
+                     /_u_s_r/_l_o_c_a_l/_H_u_g_s/_l_i_b:/_u_s_r/_l_o_c_a_l/_H_u_g_s/_l_i_b_h_u_g_s.
+
+     HHHHUUUUGGGGSSSSEEEEDDDDIIIITTTT====_c_m_d    Set the editor command line to  be  used  by
+                     _h_u_g_s.  A common setting is "_v_i +%_d %_s".
+
+     EEEEDDDDIIIITTTTOOOORRRR====_e_d_i_t_o_r   Used in place of HHHHUUUUGGGGSSSSEEEEDDDDIIIITTTT if the  latter  is
+                     not set.
+
+     SSSSHHHHEEEELLLLLLLL====_c_m_d       Used to specify shell that is invoked by the
+                     ::::!!!! command.
+
+FFFFIIIILLLLEEEESSSS
+     /usr/local/Hugs/bin/hugs      executable binary
+     /usr/local/Hugs               support files
+     /usr/local/Hugs/Prelude.hs    standard _h_u_g_s prelude
+
+
+
+
+SunOS 5.5           Last change: August 1996                    2
+
+
+
+
+
+
+HUGS(1)                   User Commands                   HUGS(1)
+
+
+
+WWWWEEEEBBBB RRRREEEEFFFFEEEERRRREEEENNNNCCCCEEEESSSS
+     The Hugs home page at Nottingham:
+     _h_t_t_p://_w_w_w._c_s._n_o_t_t._a_c._u_k/_D_e_p_a_r_t_m_e_n_t/_S_t_a_f_f/_m_p_j/_h_u_g_s._h_t_m_l.
+
+     The Hugs home page at Yale:
+     _h_t_t_p://_h_a_s_k_e_l_l._c_s._y_a_l_e._e_d_u/_h_u_g_s/.
+
+     The Haskell report home page:
+     _h_t_t_p://_h_a_s_k_e_l_l._c_s._y_a_l_e._e_d_u/_h_a_s_k_e_l_l-_r_e_p_o_r_t/_h_a_s_k_e_l_l-
+     _r_e_p_o_r_t._h_t_m_l.
+
+SSSSEEEEEEEE AAAALLLLSSSSOOOO
+     Mark P. Jones. _H_u_g_s _1._3, _T_h_e _H_a_s_k_e_l_l  _U_s_e_r'_s  _G_o_f_e_r  _S_y_s_t_e_m:
+     _U_s_e_r _M_a_n_u_a_l, August 1996.
+
+     J. Peterson and K. Hammond (editors).  _R_e_p_o_r_t  _o_n  _t_h_e  _P_r_o_-
+     _g_r_a_m_m_i_n_g  _L_a_n_g_u_a_g_e  _H_a_s_k_e_l_l  _1._3,  _A _N_o_n-_s_t_r_i_c_t _P_u_r_e_l_y _F_u_n_c_-
+     _t_i_o_n_a_l _L_a_n_g_u_a_g_e.  Yale University,  Department  of  Computer
+     Science, Research Report YALEU/DCS/RR-1106, May 1996.
+
+     Paul Hudak & Joseph H.  Fasel.   A  gentle  introduction  to
+     Haskell.  _A_C_M _S_I_G_P_L_A_N _N_o_t_i_c_e_s, 27(5), May 1992.
+
+AAAAUUUUTTTTHHHHOOOORRRR
+     Hugs 1.4, Mark Jones, University of Nottingham, August 1996.
+     Manual page: Jonathan Bowen, modified by Gary  Leavens,  and
+     then (with apologies to the original authors) by Mark Jones.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+SunOS 5.5           Last change: August 1996                    3
+
+
+
