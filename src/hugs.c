@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.53 $
- * $Date: 2001/12/09 23:55:09 $
+ * $Revision: 1.54 $
+ * $Date: 2001/12/14 02:07:38 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1341,16 +1341,23 @@ static Void local find() {              /* edit file containing definition */
 }
 
 static Void local runEditor() {         /* run editor on script lastEdit   */
-    if (startEdit(lastLine,lastEdit))   /* at line lastLine                */
+    String fileToEdit;
+    
+    if (lastEdit == NULL) {
+      fileToEdit = fileOfModule(lastModule());
+    } else {
+      fileToEdit = lastEdit;
+    }
+    if (startEdit(lastLine,fileToEdit))   /* at line lastLine                */
 	readScripts(1);
 }
 
-static Void local setLastEdit(fname,line)/* keep name of last file to edit
-*/
+static Void local setLastEdit(fname,line)/* keep name of last file to edit */
 String fname;
 Int    line; {
-    if (lastEdit)
- free(lastEdit);
+    if (lastEdit) {
+      free(lastEdit);
+    }
     lastEdit = strCopy(fname);
     lastLine = line;
 #if HUGS_FOR_WINDOWS
