@@ -16,7 +16,7 @@ import Prelude
 import Ptr
 import Dynamic
 import Storable         ( Storable )
-import MarshalAlloc     ( malloc, mallocBytes, ptr_free )
+import MarshalAlloc     ( malloc, mallocBytes, finalizerFree )
 
 -- #include "Dynamic.h"
 -- INSTANCE_TYPEABLE1(ForeignPtr,foreignPtrTc,"ForeignPtr")
@@ -38,12 +38,12 @@ primitive touchForeignPtr :: ForeignPtr a -> IO ()
 mallocForeignPtr :: Storable a => IO (ForeignPtr a)
 mallocForeignPtr = do
   r <- malloc
-  newForeignPtr r ptr_free
+  newForeignPtr r finalizerFree
 
 mallocForeignPtrBytes :: Int -> IO (ForeignPtr a)
 mallocForeignPtrBytes n = do
   r <- mallocBytes n
-  newForeignPtr r ptr_free
+  newForeignPtr r finalizerFree
 
 withForeignPtr :: ForeignPtr a -> (Ptr a -> IO b) -> IO b
 withForeignPtr fo io
@@ -53,4 +53,3 @@ withForeignPtr fo io
 
 primitive foreignPtrToPtr :: ForeignPtr a -> Ptr a
 primitive castForeignPtr "primUnsafeCoerce" :: ForeignPtr a -> ForeignPtr b
-

@@ -6,7 +6,7 @@ module MarshalAlloc (
   realloc,      -- :: Storable b => Ptr a        -> IO (Ptr b)
   reallocBytes, -- ::		    Ptr a -> Int -> IO (Ptr a)
   free,         -- :: Ptr a -> IO ()
-  ptr_free      -- :: FunPtr (Ptr a -> IO ())
+  finalizerFree -- :: FunPtr (Ptr a -> IO ())
 ) where
 
 import Maybe
@@ -59,5 +59,5 @@ failWhenNULL name f = do
 foreign import ccall unsafe "stdlib.h malloc"  _malloc  ::          CSize -> IO (Ptr a)
 foreign import ccall unsafe "stdlib.h realloc" _realloc :: Ptr a -> CSize -> IO (Ptr b)
 foreign import ccall unsafe "stdlib.h free"    _free    :: Ptr a -> IO ()
-foreign import ccall unsafe "stdlib.h &free"   ptr_free :: FunPtr (Ptr a -> IO ())
+foreign import ccall unsafe "stdlib.h &free" finalizerFree :: FunPtr (Ptr a -> IO ())
 
