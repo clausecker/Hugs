@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.155 $
- * $Date: 2003/09/29 21:28:41 $
+ * $Revision: 1.156 $
+ * $Date: 2003/10/03 23:22:12 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -7281,7 +7281,6 @@ Type   t; {
 #if !HASKELL_98_ONLY
     if (haskell98) {
 #endif
-	Type ty = t;
 	if (isPolyType(t))
 	    t = monotypeOf(t);
 	if (isQualType(t)) {
