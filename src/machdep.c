@@ -12,8 +12,8 @@
  * included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.25 $
- * $Date: 2001/08/14 23:07:02 $
+ * $Revision: 1.26 $
+ * $Date: 2001/08/15 01:06:21 $
  * ------------------------------------------------------------------------*/
 
 #ifdef HAVE_SIGNAL_H
@@ -126,8 +126,7 @@ static Bool   local setValue       Args((HKEY, String, String, DWORD, LPBYTE, DW
 static String local readRegString  Args((HKEY, String, String, String));
 static Bool   local writeRegString Args((String,String));
 
-#if 0
-/* UNUSED, but let's keep them around */
+#if HUGS_FOR_WINDOWS
 static Int    local readRegInt     Args((String,Int));
 static Bool   local writeRegInt    Args((String,Int));
 #endif
@@ -1899,8 +1898,7 @@ String val; {
 		    REG_SZ, (LPBYTE)val, lstrlen(val)+1);
 }
 
-#if 0
-/* UNUSED, but let's keep them around. */
+#if HUGS_FOR_WINDOWS
 static Bool local writeRegInt(var,val)         /* write String to registry */
 String var;                        
 Int    val; {
