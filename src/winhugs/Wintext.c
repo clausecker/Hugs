@@ -487,18 +487,19 @@ static VOID TextOutput (HWND hWnd, HDC hDC, UINT Col, UINT Row, LPSTR Str, INT n
     SetBkColor(hDC, thePalette[(Attr>>4)&0x07]);
   }
 
-  /*
   TextOut(hDC,
 	  twi->CharWidth*(Col-FIRST_COL)+HINDENT,
 	  twi->CharHeight*(Row-FIRST_ROW)+VINDENT,
 	  (LPCSTR) Str, n);
-  */
+  /* Commented out; no use was made of the extra features
+     that ExtTextOut() offers, so revert back to the simpler API function.
   ExtTextOut(hDC,
 	  twi->CharWidth*(Col-FIRST_COL)+HINDENT,
 	  twi->CharHeight*(Row-FIRST_ROW)+VINDENT,
 	  0, NULL,
 	  (LPCSTR) Str, n,
 	  NULL);
+  */
 }
 
 /* Print a region in the selected color. A region is a set of lines, specified
@@ -907,11 +908,12 @@ static INT DoChar (HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
   #define MY_VK_Z     26
 
   switch(CharCode) {
-    case VK_TAB:      /* expand into spaces */
+    /*
+    case VK_TAB:      * expand into spaces *
                       for(i=0;i<TAB_SIZE;i++)
       			PostMessage(hWnd, WM_CHAR, VK_SPACE, lParam);
     		      return 0;
-
+*/
     case VK_INSERT:   if (twi->Control) {
                         PostMessage(hWnd, WM_COPY, 0, 0L);
 			return 0;
@@ -2170,8 +2172,10 @@ INT WinPutchar (HWND hWnd, CHAR c)
   }
   else if (c == '\t') {
      UINT i;
-     for (i=0; i<TAB_SIZE; i++)
+     for (i=0; i< TAB_SIZE - (NewPosX - 1) % TAB_SIZE; i++)
        WinPutchar(hWnd, ' ');
+       
+     return c;
   }
   else {
      /* Print the char */
