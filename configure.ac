@@ -1034,7 +1034,7 @@ fi
 
 AC_OUTPUT(src/Makefile src/platform.h \
 	docs/Makefile docs/users_guide/Makefile \
-	docs/hugs.1 $TESTSCRIPT src/unix/hugs-package)
+	docs/hugs.1 $TESTSCRIPT src/unix/config src/unix/hugs-package)
 
 echo ''
 echo '************************************************'

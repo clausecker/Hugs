@@ -37,6 +37,12 @@ fi
 target="$2"
 compat="$target/oldlib"
 
+# parameters set by configure
+case $0 in
+*/*)	. `dirname $0`/config ;;
+*)	. ./config ;;
+esac
+
 # Create a compatibility stub for a Hugs extension module
 
 stub() {
@@ -107,7 +113,7 @@ copy_examples() {
 	to_dir=$2
 	if [ -d $from_dir/examples ]
 	then	(cd $from_dir;
-		 find find examples -name CVS -prune -o \! -name .cvsignore \! -iname Makefile -type f -print) |
+		 $FIND examples -name CVS -prune -o \! -name .cvsignore \! -iname Makefile -type f -print) |
 			sed 's:^examples/::' |
 			while read name
 			do

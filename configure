@@ -34577,7 +34577,7 @@ if test -f tests/config.in ; then
  TESTSCRIPT=tests/config
 fi
 
-                                                                      ac_config_files="$ac_config_files src/Makefile src/platform.h docs/Makefile docs/users_guide/Makefile docs/hugs.1 $TESTSCRIPT src/unix/hugs-package"
+                                                                                ac_config_files="$ac_config_files src/Makefile src/platform.h docs/Makefile docs/users_guide/Makefile docs/hugs.1 $TESTSCRIPT src/unix/config src/unix/hugs-package"
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
 # tests run on this system so they can be shared between configure
@@ -35108,6 +35108,7 @@ do
   "docs/users_guide/Makefile" ) CONFIG_FILES="$CONFIG_FILES docs/users_guide/Makefile" ;;
   "docs/hugs.1" ) CONFIG_FILES="$CONFIG_FILES docs/hugs.1" ;;
   "$TESTSCRIPT" ) CONFIG_FILES="$CONFIG_FILES $TESTSCRIPT" ;;
+  "src/unix/config" ) CONFIG_FILES="$CONFIG_FILES src/unix/config" ;;
   "src/unix/hugs-package" ) CONFIG_FILES="$CONFIG_FILES src/unix/hugs-package" ;;
   "src/config.h" ) CONFIG_HEADERS="$CONFIG_HEADERS src/config.h" ;;
   "src/options.h" ) CONFIG_HEADERS="$CONFIG_HEADERS src/options.h" ;;
