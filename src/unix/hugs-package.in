@@ -337,7 +337,12 @@ do
 		done
 		for lib in $extra_libraries
 		do	case $platform in
-			Win32)	cmd="$cmd +L$lib.lib" ;;
+			Win32)	
+			        if test "x$cc" = xgcc; then
+			           cmd="$cmd +L-l$lib"
+				else
+				   cmd="$cmd +L$lib.lib"
+				fi ;;
 			*)	cmd="$cmd +L-l$lib" ;;
 			esac
 		done
