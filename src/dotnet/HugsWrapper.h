@@ -313,7 +313,9 @@ public:
        if (super != 0 && super->Length > 0) {
 	 System::Type* supTy = DynInvoke::InvokeBridge::GetType(super);
 	 typeBuilder = moduleBuilder->DefineType(theTypeName, TypeAttributes::Public, supTy);
+#if 0
 	 Console::WriteLine("Succeeded creating {0} type", supTy);
+#endif
        } else {
 	 typeBuilder = moduleBuilder->DefineType(theTypeName, TypeAttributes::Public);
        }
@@ -323,7 +325,9 @@ public:
        theTypeName = String::Format("{0}{1}",typeName, __box(uniq));
      }
    }
+#if 0
    Console::WriteLine("Succeeded creating {0} type", theTypeName);
+#endif
 
    ConstructorBuilder* constructorBuilder = 
      typeBuilder->DefineConstructor(MethodAttributes::Public,
@@ -434,8 +438,9 @@ public:
 
    System::Type* res = typeBuilder->CreateType();
    
+#if 0
    Console::WriteLine("Succeeded creating {0} type..", res);
-
+#endif
    // For debugging purposes, persist the generated assembly.
    // (this goes hand-in-hand with the dynamic, persistable module
    // we created above).
@@ -450,7 +455,9 @@ public:
    theTypeName = "DynDelegator";
    while (true) {
      try {
+#if 0
        Console::WriteLine("Attempting to create type {0}..",theTypeName);
+#endif
        typeBuilder = moduleBuilder->DefineType(theTypeName, TypeAttributes::Public);
        break;
      } catch (ArgumentException*) {
@@ -458,7 +465,9 @@ public:
        theTypeName = String::Format("DynDelegator{0}",__box(uniq));
      }
    }
+#if 0
    Console::WriteLine("Succeeded creating {0} type", theTypeName);
+#endif
    ConstructorBuilder* constructorBuilder = 
      typeBuilder->DefineConstructor(MethodAttributes::Public,
 				   CallingConventions::Standard,
