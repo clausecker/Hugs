@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.30 $
- * $Date: 2001/01/31 02:52:13 $
+ * $Revision: 1.31 $
+ * $Date: 2001/01/31 06:39:30 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -127,6 +127,7 @@ static Bool InAutoReloadFiles = FALSE;	/* TRUE =>loading files before eval*/
 #endif
 
 static String scriptName[NUM_SCRIPTS];  /* Script file names               */
+static String scriptReal[NUM_SCRIPTS];  /* Full path to canonical name     */
 static Time   lastChange[NUM_SCRIPTS];  /* Time of last change to script   */
 static Bool   postponed[NUM_SCRIPTS];   /* Indicates postponed load        */
 static Int    numScripts;               /* Number of scripts loaded        */
@@ -299,6 +300,7 @@ String argv[]; {
 	       hugsPath ? hugsPath : "");
 	fatal("Unable to load prelude");
     }
+    scriptReal[0] = strCopy(RealPath(scriptName[0]));
 
 #if !HASKELL_98_ONLY
     if (haskell98) {
@@ -950,7 +952,9 @@ Bool   sch; {                           /* TRUE => requires pathname search*/
 	EEND;
     }
     else
-	scriptName[namesUpto++] = strCopy(sch ? findPathname(NULL,s) : s);
+	scriptName[namesUpto] = strCopy(sch ? findPathname(NULL,s) : s);
+	scriptReal[namesUpto] = strCopy(RealPath(scriptName[namesUpto]));
+	namesUpto++;
 }
 
 static Bool local addScript(fname,len)  /* read single script file         */
@@ -986,12 +990,14 @@ List imps; {
 	String origName = scriptName[origPos];
 	for (; nonNull(imps); imps=tl(imps)) {
 	    String iname = findPathname(origName,textToStr(textOf(hd(imps))));
+	    String rname = RealPath(iname);
 	    Int    i     = 0;
 	    for (; i<namesUpto; i++)
-		if (pathCmp(scriptName[i],iname)==0)
+		if (filenamecmp(scriptReal[i],rname)==0)
 		    break;
 	    if (i>=origPos) {           /* Neither loaded or queued        */
 		String theName;
+		String theReal;
 		Time   theTime;
 		Bool   thePost;
 
@@ -1010,14 +1016,17 @@ List imps; {
 		 * that i ends up with other imports in front of orig. script
 		 */
 		theName = scriptName[i];
+		theReal = scriptReal[i];
 		thePost = postponed[i];
 		timeSet(theTime,lastChange[i]);
 		for (; i>numScripts; i--) {
 		    scriptName[i] = scriptName[i-1];
+		    scriptReal[i] = scriptReal[i-1];
 		    postponed[i]  = postponed[i-1];
 		    timeSet(lastChange[i],lastChange[i-1]);
 		}
 		scriptName[numScripts] = theName;
+		scriptReal[numScripts] = theReal;
 		postponed[numScripts]  = thePost;
 		timeSet(lastChange[numScripts],theTime);
 		origPos++;
