@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: bignums.c,v $
- * $Revision: 1.11 $
- * $Date: 2003/07/24 13:39:40 $
+ * $Revision: 1.12 $
+ * $Date: 2003/09/19 09:45:57 $
  * ------------------------------------------------------------------------*/
 
 /*#define DEBUG_BIGNUMS*/
@@ -34,7 +34,6 @@ PROTO_PRIM(primMinusInteger);
 PROTO_PRIM(primMulInteger);
 PROTO_PRIM(primQrmInteger);
 PROTO_PRIM(primNegInteger);
-PROTO_PRIM(primEvenInteger);
 PROTO_PRIM(primIntToInteger);
 PROTO_PRIM(primIntegerToInt);
 PROTO_PRIM(primWordToInteger);
@@ -50,7 +49,6 @@ static struct primitive bignumPrimTable[] = {
   {"primMulInteger",	2, primMulInteger},
   {"primQrmInteger",	2, primQrmInteger},
   {"primNegInteger",	1, primNegInteger},
-  {"primEvenInteger",	1, primEvenInteger},
   {"primIntToInteger",	1, primIntToInteger},
   {"primIntegerToInt",	1, primIntegerToInt},
   {"primWordToInteger",	1, primWordToInteger},
@@ -98,7 +96,6 @@ extern Bignum bigWord   Args((Unsigned));
  * Local function prototypes:
  * ------------------------------------------------------------------------*/
 
-static Bool   local bigEven   Args((Bignum));
 static Int    local digitsCmp Args((List,List));
 static Bignum local bigAdd    Args((Bignum,Bignum));
 static Bignum local bigSub    Args((Bignum,Bignum));
@@ -379,16 +376,6 @@ Bignum a; {
 	return ZERONUM;
     else
 	return pair(((fst(a)==POSNUM) ? NEGNUM : POSNUM), snd(a));
-}
-
-primFun(primEvenInteger) {		/* Test for Integer parity	   */
-    eval(primArg(1));
-    updateRoot(bigEven(whnfHead) ? nameTrue : nameFalse);
-}
-
-static Bool local bigEven(a)		/* test for even number		   */
-Bignum a; {				/* ASSUMES BIGBASE is EVEN!	   */
-    return a==ZERONUM || (digitOf(hd(snd(a))) % 2 == 0) ;
 }
 
 /*---------------------------------------------------------------------------

@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: builtin.c,v $
- * $Revision: 1.61 $
- * $Date: 2003/07/24 13:39:41 $
+ * $Revision: 1.62 $
+ * $Date: 2003/09/19 09:45:57 $
  * ------------------------------------------------------------------------*/
 
 /* We include math.h before prelude.h because SunOS 4's cpp incorrectly
@@ -183,7 +183,6 @@ PROTO_PRIM(primModInt);
 PROTO_PRIM(primRemInt);
 PROTO_PRIM(primQrmInt);
 PROTO_PRIM(primNegInt);
-PROTO_PRIM(primEvenInt);
 
 PROTO_PRIM(primAndInt);
 PROTO_PRIM(primOrInt);
@@ -215,7 +214,6 @@ PROTO_PRIM(primQuotWord);
 PROTO_PRIM(primModWord);
 PROTO_PRIM(primRemWord);
 PROTO_PRIM(primQrmWord);
-PROTO_PRIM(primEvenWord);
 
 PROTO_PRIM(primAndWord);
 PROTO_PRIM(primOrWord);
@@ -381,7 +379,6 @@ static struct primitive builtinPrimTable[] = {
   {"primModInt",        2, primModInt},
   {"primRemInt",        2, primRemInt},
   {"primNegInt",        1, primNegInt},
-  {"primEvenInt",       1, primEvenInt},
   {"primQrmInt",        2, primQrmInt},
 
   {"primAndInt",        2, primAndInt},
@@ -402,7 +399,6 @@ static struct primitive builtinPrimTable[] = {
   {"primQuotWord",      2, primQuotWord},
   {"primModWord",       2, primModWord},
   {"primRemWord",       2, primRemWord},
-  {"primEvenWord",      1, primEvenWord},
   {"primQrmWord",       2, primQrmWord},
 
   {"primAndWord",       2, primAndWord},
@@ -816,7 +812,6 @@ IntInt2Int(primPlusInt,x+y)            /* Integer addition primitive       */
 IntInt2Int(primMinusInt,x-y)           /* Integer subtraction primitive    */
 IntInt2Int(primMulInt,x*y)             /* Integer multiplication primitive */
 Int2Int(primNegInt,-x)                 /* Integer negation primitive       */
-Int2Bool(primEvenInt,!(x&1))           /* Integer even predicate           */
 IntInt2IntNonZero(primQuotInt,x/y)     /* Integer division primitive       */
 				       /* truncated towards zero           */
 IntInt2IntNonZero(primRemInt,x%y)      /* Integer remainder primitive      */
@@ -891,7 +886,6 @@ WordWord2Word(primPlusWord,x+y)        /* Word addition primitive          */
 WordWord2Word(primMinusWord,x-y)       /* Word subtraction primitive       */
 Word2Word(primNegateWord,-(Int)x)      /* Word negation (modulo MAXWORD)   */
 WordWord2Word(primMulWord,x*y)         /* Word multiplication primitive    */
-Word2Bool(primEvenWord,!(x&1))         /* Word even predicate              */
 WordWord2WordNonZero(primQuotWord,x/y) /* Word division primitive          */
 				       /* truncated towards zero           */
 WordWord2WordNonZero(primDivWord,x/y)  /* Word division primitive          */

@@ -416,7 +416,6 @@ primitive primDivWord,
 	  primRemWord,
 	  primModWord       :: Word32 -> Word32 -> Word32
 primitive primQrmWord       :: Word32 -> Word32 -> (Word32,Word32)
-primitive primEvenWord      :: Word32 -> Bool
 primitive primWordToInteger :: Word32 -> Integer
 primitive primAndWord       :: Word32 -> Word32 -> Word32
 primitive primOrWord        :: Word32 -> Word32 -> Word32
