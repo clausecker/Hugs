@@ -400,7 +400,7 @@ test_libs() {
   perl runstdtest $HUGS $STDOPTS Concurrent -s30 "-o1libs/Loaded.output"
   perl runstdtest $HUGS $STDOPTS Dynamic    -s21 "-o1libs/Loaded.output"
   perl runstdtest $HUGS $STDOPTS Exception  -s14 "-o1libs/Loaded.output"
-  perl runstdtest $HUGS $STDOPTS Foreign    -s15 "-o1libs/Loaded.output"
+  perl runstdtest $HUGS $STDOPTS Foreign    -s38 "-o1libs/Loaded.output"
   perl runstdtest $HUGS $STDOPTS GetOpt     -s16 "-o1libs/Loaded.output"
   perl runstdtest $HUGS $STDOPTS IOExts     -s20 "-o1libs/Loaded.output"
   perl runstdtest $HUGS $STDOPTS Int        -s15 "-o1libs/Loaded.output"
@@ -421,7 +421,7 @@ test_libs() {
   perl runstdtest $HUGS $STDOPTS -98 HugsLibs -s38 "-o1libs/HugsLibs.output"
 
   echo "-- !!! Performing static tests on the hslibs libraries"
-  perl runstdtest $HUGS $STDOPTS -98 ../lib/exts/*.hs ../lib/exts/*.lhs -s75 "-o1libs/Loaded.output"
+  perl runstdtest $HUGS $STDOPTS -98 -W ../lib/exts/*.hs ../lib/exts/*.lhs -s85 "-o1libs/Loaded.output"
 
 
   echo "-- !!! Performing dynamic tests on libraries"
