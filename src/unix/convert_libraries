@@ -208,7 +208,7 @@ mkdir -p $compat
 # hslibs lang ByteArray.lhs		# deprecated
 # hslibs lang CCall.lhs			# GHC-specific (and obsolete)
   hslibs lang CTypesISO.hs		# -> Foreign.C.TypesISO
-# hslibs lang DiffArray.hs		# -> Data.Array.Diff
+  hslibs lang DiffArray.hs		# -> Data.Array.Diff
 # hslibs lang DirectoryExts.hs
   hslibs lang Dynamic.hs		# -> Data.Dynamic
   hslibs lang Exception.hs		# -> Control.Exception
@@ -224,9 +224,9 @@ mkdir -p $compat
   stub LazyST		Data.STRef Control.Monad.ST.Lazy Hugs.LazyST
 # hslibs lang MArray.hs			# lots of GHC stuff (and obsolete)
 # hslibs lang MutableArray.lhs		# deprecated
-# hslibs lang NativeInfo.hs		# -> System.Info
+  hslibs lang NativeInfo.hs		# -> System.Info
   hslibs lang NumExts.lhs
-# hslibs lang PackedString.lhs		# GHC-specific
+  hslibs lang PackedString.lhs		# -> Data.PackedString
 # hslibs lang PrelByteArr.lhs		# GHC-specific
 # hslibs lang ST.hs			# GHC-specific
   stub ST		Data.STRef Data.Array.ST Control.Monad.ST Hugs.ST
