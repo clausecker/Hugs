@@ -16,7 +16,6 @@ import FiniteMap
 import Foreign
 import ForeignObj
 import ForeignPtr
-import HugsStorable
 import IOExts
 import IORef
 import Int
