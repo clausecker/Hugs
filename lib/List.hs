@@ -172,8 +172,11 @@ minimumBy min []	 = error "List.minimumBy: empty list"
 minimumBy min xs	 = foldl1 min xs
 
 genericLength           :: (Integral a) => [b] -> a
-genericLength []         = 0
-genericLength (x:xs)     = 1 + genericLength xs
+genericLength            = foldl' (\n _ -> n + 1) 0
+ where
+  foldl'           :: (a -> b -> a) -> a -> [b] -> a
+  foldl' f a []     = a
+  foldl' f a (x:xs) = (foldl' f $! f a x) xs
 
 genericTake             :: (Integral a) => a -> [b] -> [b]
 genericTake 0 _          = []
