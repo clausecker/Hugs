@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: ffi.c,v $
- * $Revision: 1.17 $
- * $Date: 2002/07/06 10:52:00 $
+ * $Revision: 1.18 $
+ * $Date: 2002/08/03 15:02:58 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -412,7 +412,13 @@ List resultTy; {
     }
     fprintf(out,"(");
     if (extraArg) {
+#ifdef __sparc__
+        /* On SPARC we need an additional dummy argument due to stack alignment
+           restrictions, see the comment in mkThunk in builtin.c. */
+        fprintf(out,"HugsStablePtr fun1, void* unusedArg");
+#else
         fprintf(out,"HugsStablePtr fun1");
+#endif
         if (nonNull(argTys)) {
             fprintf(out,", ");
         }
