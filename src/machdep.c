@@ -12,8 +12,8 @@
  * included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.13 $
- * $Date: 2001/02/14 12:15:05 $
+ * $Revision: 1.14 $
+ * $Date: 2001/03/19 20:36:31 $
  * ------------------------------------------------------------------------*/
 
 #ifdef HAVE_SIGNAL_H
@@ -1178,6 +1178,7 @@ static Bool local startEdit(line,nm)    /* Start editor on file name at    */
 Int    line;                            /* given line.  Both name and line */
 String nm; {                            /* or just line may be zero        */
     static char editorCmd[FILENAME_MAX+1];
+    Bool withinQuotes = FALSE;
 
 #if !(defined macintosh)
     if (hugsEdit && *hugsEdit) {        /* Check that editor configured    */
@@ -1193,24 +1194,24 @@ String nm; {                            /* or just line may be zero        */
 	String rd = NULL;               /* Set to nonnull to redo ...      */
 #if HUGS_FOR_WINDOWS || 1
 	/* In order to support long file names in windows, we use the '\"' */
-	/* character to delimit the path			           */	
+	/* character to delimit the path			           */
 	if (*he=='\"') {		/* if editor starts with '\"'      */
-	  *ec++ = *he++;		/* copy initial '\"'		   */	
+	  *ec++ = *he++;		/* copy initial '\"'		   */
 	  n--;		
 	  for (; n>0 && *he && *he!='\"' && *he!='%'; n--)
 	    *ec++ = *he++;              /* Copy editor name to buffer      */
 					/* assuming filename ends at '\"'  */
 	  *ec++ = *he++;		
-	  n--;				/* copy final '\"'		   */	
+	  n--;				/* copy final '\"'		   */
 	}
 	else
-	  /* we assume a short file name without spaces                    */	
+	  /* we assume a short file name without spaces                    */
 	  for (; n>0 && *he && *he!=' ' && *he!='%'; n--)
 	    *ec++ = *he++;              /* Copy editor name to buffer      */
 					/* assuming filename ends at space */
         if (line==0) line=1;		/* if line is 0 the following code */
         				/* does not take into account the  */
-        				/* editor configuration (it just   */					
+        				/* editor configuration (it just   */
         				/* copies the file name!)          */
 #else
 	for (; n>0 && *he && *he!=' ' && *he!='%'; n--)
@@ -1227,9 +1228,9 @@ String nm; {                            /* or just line may be zero        */
 		    }
 		    else if (*he=='s' && (size_t)n>(strlen(nm)+2)) {
 	                /* Protect the filename by putting quotes around it */
-		        *ec++='\"';
+		        if (!withinQuotes) *ec++='\"';
 			strcpy(ec,nm); ec += strlen(nm);
-		        *ec++='\"';
+		        if (!withinQuotes) *ec++='\"';
 			*ec='\0';
 			rd = NULL;
 			he++;
@@ -1244,6 +1245,8 @@ String nm; {                            /* or just line may be zero        */
 			ec++;
 		}   /* ignore % followed by anything other than d, s, or % */
 		else {                  /* Copy other characters across    */
+                    if (*he == '\"')
+                        withinQuotes = !withinQuotes;
 		    *ec++ = *he++;
 		    n--;
 		}
