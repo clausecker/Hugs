@@ -353,7 +353,8 @@ instance Bits Word64 where
     x .|. y       = liftBinary (.|.) x y
     x `xor` y     = liftBinary xor x y
     complement    = liftUnary complement
-    x `shift` i   = fromInteger (toInteger x `shift` i)
+    x `shift` i   = fromInteger ((toInteger x `shift` i) `mod`
+				 0x10000000000000000)
     x `rotate` i  | i<0  = (x `shift` i) .|. (x `shift` (i+bitSize x))
 		  | i==0 = x
 		  | i>0  = (x `shift` i) .|. (x `shift` (i-bitSize x))
