@@ -11,6 +11,8 @@ module Addr
 	-- instance Show Addr
 	, ptrToAddr        -- :: Ptr a -> Addr
 	, addrToPtr        -- :: Addr -> Ptr a
+	, funPtrToAddr     -- :: FunPtr a -> Addr
+	, addrToFunPtr     -- :: Addr -> FunPtr a
 	) where
 
 -- data Addr -- in Prelude
