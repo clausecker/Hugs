@@ -151,7 +151,7 @@ BUILD_FFI = env HUGSDIR='$(BUILD_DIR)' HUGSFLAGS='' ./ffihugs +G
 
 $(FFI_LIBRARIES) : $(LIBRARIES) ffihugs$(EXEEXT) $(INCLUDES)
 		  $(BUILD_FFI) +L'$(BUILD_DIR)/libraries/Hugs/Storable_aux.c' Hugs.Storable
-		  env HUGSDIR='$(BUILD_DIR)' HUGSFLAGS='' unix/BuildFFI
+		  cd ..; env HUGSDIR=hugsdir HUGSFLAGS='' src/unix/BuildFFI
 
 ################################################################
 # Clean, distclean, veryclean, TAGS
