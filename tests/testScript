@@ -2,7 +2,7 @@
 
 source config
 
-STDOPTS='+q +w -pHugs: -P../lib:../lib/hugs:../lib/exts'
+STDOPTS='+q +w -pHugs:'
 
 test_static() {
   echo "\
