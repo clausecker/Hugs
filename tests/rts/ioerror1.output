@@ -1,6 +1,5 @@
 Type :? for help
-Hugs:IO Error: user error
-Reason: foo
+Hugs:user error (foo)
 Hugs:True
 Hugs:Caught error
 
@@ -8,6 +7,5 @@ Hugs:Caught error
 Continuing
 
 Hugs:
-IO Error: user error
-Reason: foo
+user error (foo)
 Hugs:[Leaving Hugs]
