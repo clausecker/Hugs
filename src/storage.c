@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: storage.c,v $
- * $Revision: 1.53 $
- * $Date: 2002/10/03 16:34:20 $
+ * $Revision: 1.54 $
+ * $Date: 2002/10/10 14:48:00 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1516,6 +1516,17 @@ Void setCurrModule(m)              /* set lookup tables for current module */
 Module m; {
     Int i;
     if (m!=currentModule) {
+	/* The effective module import list of a module
+	   is held onto until we switch to another. Ideally,
+	   we'd keep around the effective import lists for
+	   a module all the time (so that if a user uses
+	   the :m command to evaluate/query in the context
+	   of a different module, all the imported entities
+	   are in scope.) However, the run-time cost of 
+	   keeping these large lists around is considerable,
+	   so we approximate.
+	*/
+	module(currentModule).modImports = NIL;
 	currentModule = m; /* This is the only assignment to currentModule */
 	for (i=0; i<TYCONHSZ; ++i)
 	    tyconHash[i] = NIL;
