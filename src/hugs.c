@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.40 $
- * $Date: 2001/06/22 23:00:36 $
+ * $Revision: 1.41 $
+ * $Date: 2001/07/11 20:03:42 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -73,6 +73,7 @@ static Void   local evaluator         Args((Void));
 static Void   local stopAnyPrinting   Args((Void));
 static Void   local showtype          Args((Void));
 static String local objToStr          Args((Module, Cell));
+static Void   local splitQualString   Args((String,String*,String*));
 static Void   local info              Args((Void));
 static Void   local printSyntax       Args((Name));
 static Void   local showInst          Args((Inst));
@@ -1694,18 +1695,76 @@ Cell   c; {
 #endif
 }
 
+static Void local splitQualString(nm, pMod, pName) /* Given a string containing a possibly
+                                                      qualified name, split it up into a
+						      module and a name portion.
+						   */
+String nm;
+String* pMod;
+String* pName; {
+  String dot;
+
+  /* Find the last occurrence of '.' */
+  dot = strrchr(nm, '.');
+  
+  if (!dot) {
+    *pMod = NULL;
+    *pName = nm;
+  } else {
+    unsigned int nmLen;
+    unsigned int modLen;
+    unsigned int dotLen;
+
+    nmLen  = strlen(nm);
+    dotLen = strlen(dot);
+    modLen = (unsigned int)(nmLen - dotLen);
+
+    *pMod  = (String) malloc(sizeof(Char) * (modLen + 1));
+    *pName = (String) malloc(sizeof(Char) * (dotLen + 1));
+
+    /* The module portion consists of everything upto the last dot. */
+    strncpy(*pMod, nm, modLen);
+    (*pMod)[modLen] = '\0';
+    
+    /* Copy everything after the last '.' to the name string */
+    strcpy(*pName, dot+1);
+  }
+
+}
+
 static Void local info() {              /* describe objects                */
     Int    count = 0;                   /* or give menu of commands        */
     String s;
+    Module evMod;
+    
+    evMod = findEvalModule();
 
-    setCurrModule(findEvalModule());
+    setCurrModule(evMod);
     startNewScript(0);                  /* for recovery of storage         */
     for (; (s=readFilename())!=0; count++) {
-	describe(findText(s));
+         String mod=NULL;
+	 String nm=NULL;
+	 
+	 /* In the event of a qualified name, decompose it. */
+	 splitQualString(s, &mod,&nm);
+	 
+	 if (mod != NULL) {
+	   Module homeMod = findModule(findText(mod));
+	   if (nonNull(homeMod)) {
+	     setCurrModule(homeMod);
+	     describe(findText(nm));
+	     
+	   } else {
+	     Printf("Unknown module `%s'\n",mod);
+	   }
+	 }
+	 if (!mod) { free(mod); mod = NULL; }
+	 if (!nm)  { free(nm);  nm  = NULL; }
     }
     if (count == 0) {
 	whatScripts();
     }
+    setCurrModule(evMod);
 }
 
 static Void local describe(t)           /* describe an object              */
