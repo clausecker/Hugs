@@ -3,11 +3,9 @@ CONTEXT_DIFF='@CONTEXT_DIFF@'
 export CONTEXT_DIFF
 DEV_NULL='@DEV_NULL@'
 export DEV_NULL
-HUGSFLAGS=-P../lib:../lib/hugs:../lib/exts
-export HUGSFLAGS
 HUGS=../src/hugs
 
-STDOPTS='+q +w -pHugs:'
+STDOPTS='+q +w -pHugs: -P../lib:../lib/hugs:../lib/exts'
 
 test_static() {
   echo "\
@@ -303,6 +301,19 @@ test_rts() {
 
 } # End of test_rts
 
+test_ffi() {
+
+  echo "\
+----------------------------------------------------------------
+-- Testing foreign function interface.
+----------------------------------------------------------------"
+
+  # Test static checking and code generation first.
+  perl runstdtest $HUGS $STDOPTS +G -s14 "-Offi/Types.hs" "-o1ffi/Loaded.output"
+  perl runstdtest $HUGS $STDOPTS +G -s14 "-Offi/Forms.hs" "-o1ffi/Loaded.output"
+
+} # End of test ffi
+
 test_libs() {
   echo "\
 ----------------------------------------------------------------
@@ -453,6 +464,7 @@ do
   static) test_static;;
   tcheck) test_tcheck;;
   rts)    test_rts;;
+  ffi)    test_ffi;;
   libs)   test_libs;;
   demos)  test_demos;;
   temp)   test_temp;;
