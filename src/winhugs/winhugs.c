@@ -454,7 +454,7 @@ static VOID local DoCommand(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 				break;
 
     /* Display help about Hugs */
-    case ID_HELPINDEX:		{ CHAR DocFullPath[_MAX_PATH];
+    case ID_HELPINDEX:		{ CHAR DocFullPath[2*_MAX_PATH];
 				  CHAR HelpFullPath[_MAX_PATH];
 
 				  GetFromRegistryDocPath(DocFullPath);
@@ -507,7 +507,7 @@ static INT local DoCreate(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
   INT		DialogFontSize;
   CHAR		DialogFontName[256];
 
-  GetFromRegistryDialogFont(DialogFontName, &DialogFontSize);
+  GetFromRegistryDialogFont(DialogFontName, 256, &DialogFontSize);
 
   hDialogFont = CreateFont(DialogFontSize*15/9,0,0,0,
 		       FW_NORMAL,
@@ -1013,7 +1013,7 @@ static BOOL local InitInstance(LPSTR lpCmdLine, INT nCmdShow)
   hAccelTable = LoadAccelerators(hThisInstance, (LPSTR) "HugsAccelerators");
 
   /* create text window */
-  GetFromRegistryFont(FontName, &FontSize, &FontWeight);
+  GetFromRegistryFont(FontName, 256, &FontSize, &FontWeight);
   GetFromRegistryScreenSize(&ScreenRows, &ScreenCols);
   hWndText = CreateTextWindow(hThisInstance,
 			      hWndMain,
@@ -1613,10 +1613,13 @@ static VOID local GetFromRegistryFileNamesMenu (FILENAMESMENU* fnm, LPSTR Sectio
 
     Buffer=readRegString(HKEY_CURRENT_USER,hugsRegRoot,Entry, "");
 	
-    if (Buffer[0])
-      AddFileToFileNamesMenu(fnm, Buffer);
-    else
-      break;
+    if ( Buffer[0] ) {
+	AddFileToFileNamesMenu(fnm, Buffer);
+	free(Buffer);
+    } else {
+	free(Buffer);
+	break;
+    }
   }
 }
 
@@ -1651,26 +1654,28 @@ static VOID local InitMenus(VOID) {
 
 static VOID local GetFromRegistryDocPath(CHAR *realPath)
 {
+  String   regPath = readRegString(HKEY_CURRENT_USER,hugsRegRoot,RKEY_DOCPATH, DEFAULT_DOC_DIR);
 
-  CHAR	       regPath[2*_MAX_PATH]; 
-
-  strcpy(regPath, readRegString(HKEY_CURRENT_USER,hugsRegRoot,RKEY_DOCPATH, DEFAULT_DOC_DIR));
-
-  /* Expand "{Hugs}" */
+  /* Expand "{Hugs}" -- cavalier handling of potential overflows. Fix. */
   StrReplace("{Hugs}", hugsdir(), regPath, realPath);
+  free(regPath);
 }
 
-static VOID local GetFromRegistryFont(CHAR *FontName, INT *FontSize, INT* FontWeight)
+static VOID local GetFromRegistryFont(CHAR *FontName, INT FontNameLen, INT *FontSize, INT* FontWeight)
 {
-  strcpy(FontName, readRegString(HKEY_CURRENT_USER,hugsRegRoot,RKEY_SCREENFONTNAME, DEFAULT_FONT));
-  *FontSize = readRegInt(RKEY_SCREENFONTSIZE, DEFAULT_FONT_SIZE);
-  *FontWeight = readRegInt(RKEY_SCREENFONTWEIGHT, DEFAULT_FONT_WEIGHT);
+    String  opt = readRegString(HKEY_CURRENT_USER,hugsRegRoot,RKEY_SCREENFONTNAME, DEFAULT_FONT);
+    strncpy(FontName, opt, FontNameLen);
+    free(opt);
+    *FontSize = readRegInt(RKEY_SCREENFONTSIZE, DEFAULT_FONT_SIZE);
+    *FontWeight = readRegInt(RKEY_SCREENFONTWEIGHT, DEFAULT_FONT_WEIGHT);
 }
 
-static VOID local GetFromRegistryDialogFont(CHAR *FontName, INT *FontSize)
+static VOID local GetFromRegistryDialogFont(CHAR *FontName, INT FontNameLen, INT *FontSize)
 {
-  strcpy(FontName, readRegString(HKEY_CURRENT_USER,hugsRegRoot,RKEY_DIALOGSFONTNAME, DEFAULT_DIALOGFONT));
-  *FontSize = readRegInt(RKEY_DIALOGSFONTSIZE, DEFAULT_DIALOGFONT_SIZE);
+    String opt = readRegString(HKEY_CURRENT_USER,hugsRegRoot,RKEY_DIALOGSFONTNAME, DEFAULT_DIALOGFONT);
+    strncpy(FontName, opt, FontNameLen);
+    *FontSize = readRegInt(RKEY_DIALOGSFONTSIZE, DEFAULT_DIALOGFONT_SIZE);
+    free(opt);
 }
 
 
@@ -1692,68 +1697,70 @@ static VOID local GetFromRegistryScreenPosition(INT *X, INT *Y)
 
 VOID ReadGUIOptions(VOID)
 {
-  /* Get last working dir and set it */
-  SetWorkingDir(readRegString(HKEY_CURRENT_USER,hugsRegRoot,RKEY_LASTPATH, ".\\"));
+    /* Get last working dir and set it */
+    String opt = readRegString(HKEY_CURRENT_USER,hugsRegRoot,RKEY_LASTPATH, ".\\");
+    SetWorkingDir(opt);
+    free(opt);
 
-  /* load menus */
-  GetFromRegistryFileNamesMenu(&FilesMenu, RKEY_FILESMENU);
-  GetFromRegistryFileNamesMenu(&EditMenu, RKEY_EDITSMENU);
+    /* load menus */
+    GetFromRegistryFileNamesMenu(&FilesMenu, RKEY_FILESMENU);
+    GetFromRegistryFileNamesMenu(&EditMenu, RKEY_EDITSMENU);
 }
 
 
 VOID SaveGUIOptions(VOID)
 {
-  writeRegString(RKEY_DOCPATH, readRegString(HKEY_CURRENT_USER,hugsRegRoot,RKEY_DOCPATH, DEFAULT_DOC_DIR));
+    String opt = readRegString(HKEY_CURRENT_USER,hugsRegRoot,RKEY_DOCPATH, DEFAULT_DOC_DIR);
+    writeRegString(RKEY_DOCPATH, opt);
+    free(opt);
 
-  writeRegString("Options", optionsToStr());
+    writeRegString("Options", optionsToStr());
 
-  /* calculate rows and columns */
-  if (!IsIconic(hWndMain) && !IsZoomed(hWndMain)) {
-    RECT	aRect;
-    TEXTMETRIC *tm = (TEXTMETRIC*) SendMessage (hWndText, WM_GETTEXTMETRIC, 0, 0L);
-   
-    GetClientRect(hWndText, &aRect);
+    /* calculate rows and columns */
+    if (!IsIconic(hWndMain) && !IsZoomed(hWndMain)) {
+	RECT	aRect;
+	TEXTMETRIC *tm = (TEXTMETRIC*) SendMessage (hWndText, WM_GETTEXTMETRIC, 0, 0L);
+	
+	GetClientRect(hWndText, &aRect);
 
-    ScreenRows = (INT) (aRect.bottom-aRect.top) / (tm->tmHeight+tm->tmExternalLeading);
-    ScreenCols = (INT) (aRect.right-aRect.left) / (tm->tmAveCharWidth);
-  }
+	ScreenRows = (INT) (aRect.bottom-aRect.top) / (tm->tmHeight+tm->tmExternalLeading);
+	ScreenCols = (INT) (aRect.right-aRect.left) / (tm->tmAveCharWidth);
+    }
+
+    writeRegInt(RKEY_SCREENROWS, ScreenRows);
+    writeRegInt(RKEY_SCREENCOLS, ScreenCols);
+    
+  
+    { LOGFONT *LogFontPtr;
+      HDC      hDC;
+      INT      FontSize;
+
+      LogFontPtr = (LOGFONT*) SendMessage (hWndText, WM_GETLOGFONT, 0, 0L);
+
+      hDC = GetDC(hWndText);
+      FontSize = -MulDiv(LogFontPtr->lfHeight, 72, GetDeviceCaps(hDC, LOGPIXELSY));
+      ReleaseDC(hWndText, hDC);
+
+      writeRegInt(RKEY_SCREENFONTSIZE, FontSize);
+      writeRegInt(RKEY_SCREENFONTWEIGHT, LogFontPtr->lfWeight);
+      writeRegString(RKEY_SCREENFONTNAME, LogFontPtr->lfFaceName);
+    }
+
+    {
+      INT 	DialogFontSize;
+      CHAR	DialogFontName[256];
+
+      GetFromRegistryDialogFont(DialogFontName, 256, &DialogFontSize);
+
+      writeRegInt(RKEY_DIALOGSFONTSIZE, DialogFontSize);
+      writeRegString(RKEY_DIALOGSFONTNAME, DialogFontName);
+
+    }
 
   
-  writeRegInt(RKEY_SCREENROWS, ScreenRows);
-
-  writeRegInt(RKEY_SCREENCOLS, ScreenCols);
-
-  
-  { LOGFONT *LogFontPtr;
-    HDC      hDC;
-    INT      FontSize;
-
-    LogFontPtr = (LOGFONT*) SendMessage (hWndText, WM_GETLOGFONT, 0, 0L);
-
-    hDC = GetDC(hWndText);
-    FontSize = -MulDiv(LogFontPtr->lfHeight, 72, GetDeviceCaps(hDC, LOGPIXELSY));
-    ReleaseDC(hWndText, hDC);
-
-    writeRegInt(RKEY_SCREENFONTSIZE, FontSize);
-    writeRegInt(RKEY_SCREENFONTWEIGHT, LogFontPtr->lfWeight);
-    writeRegString(RKEY_SCREENFONTNAME, LogFontPtr->lfFaceName);
-  }
-
-  {
-    INT 	DialogFontSize;
-    CHAR	DialogFontName[256];
-
-    GetFromRegistryDialogFont(DialogFontName, &DialogFontSize);
-
-    writeRegInt(RKEY_DIALOGSFONTSIZE, DialogFontSize);
-    writeRegString(RKEY_DIALOGSFONTNAME, DialogFontName);
-
-  }
-
-  
-  SaveToRegistryWinPos();
-  SaveToRegistryMenus();
-  SaveToRegistryWorkingDir();
+    SaveToRegistryWinPos();
+    SaveToRegistryMenus();
+    SaveToRegistryWorkingDir();
 }
 
 /* save current working dir */
