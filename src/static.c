@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.69 $
- * $Date: 2002/06/13 22:01:30 $
+ * $Revision: 1.70 $
+ * $Date: 2002/06/14 14:41:11 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -156,7 +156,6 @@ static Name   local addNewPrim		Args((Int,Text,String,Cell));
 
 static Void   local checkForeignImport  Args((Name));
 static Void   local checkForeignExport  Args((Name));
-static Void   local checkForeignLabel   Args((Name));
 
 static Cell   local tidyInfix		Args((Int,Cell));
 static Pair   local attachFixity	Args((Int,Cell));
@@ -4701,17 +4700,24 @@ Cell   t;{
  */
 Bool generate_ffi = FALSE;
 
-Void foreignImport(line,callconv,extName,intName,type) 
+/* Tricky naming detail:
+ * 
+ * When we generate C function names, we need to make sure they
+ * are unique within each module.  This is done using the foreignCount
+ * variable.
+ */
+
+Void foreignImport(line,callconv,safety,ext,intName,type) 
                                               /* Handle foreign imports    */
 Cell line;
 Cell callconv;
-Pair extName;
+Cell safety;
+Cell ext;
 Cell intName;
 Cell type; {
     Text t   = textOf(intName);
     Name n   = findName(t);
-    /* ToDo: this implementation ignores ext_loc (== fst(extName)) */
-    Cell ext = snd(extName);
+    Int sfty;
 
     if (isNull(n)) {
         n = newName(t,NIL);
@@ -4719,105 +4725,125 @@ Cell type; {
         ERRMSG(line) "Redeclaration of foreign \"%s\"", textToStr(t)
         EEND;
     }
+    if (textOf(callconv) != textCCall) {
+        ERRMSG(line) "Foreign import calling convention \"%s\" not supported", textToStr(textOf(callconv))
+        EEND;
+    }
+    if (isNull(safety) || textOf(safety) == textSafe) {
+        sfty = FFI_SAFE;
+    } else if (textOf(safety) == textUnsafe) {
+        sfty = FFI_UNSAFE;
+    } else if (textOf(safety) == textThreadsafe) {
+        sfty = FFI_THREADSAFE;
+    } else {
+        ERRMSG(line) "Foreign import safety level \"%s\" not supported", textToStr(textOf(safety))
+        EEND;
+    }
     name(n).line     = intOf(line);
-    name(n).extFun   = isNull(ext) ? inventText() : textOf(ext);
     name(n).type     = type;
-    name(n).callconv = textOf(callconv);
+    name(n).extFun   = textOf(ext);
+    name(n).safety   = sfty;
+    name(n).foreignId = foreignCount++;
     foreignImports   = cons(n,foreignImports);
 }
 
-Void foreignExport(l,callconv,ext,intName,type)
+Void foreignExport(l,v,callconv,ext,intName,type)
                                               /* Handle foreign exports    */
 Cell l;
+Cell v;
 Cell callconv;
-Cell ext;       /* NIL for dynamic export */
+Cell ext;
 Cell intName;
 Cell type; {
     /* 
-     * Dynamic export generates a function called 'intName'.
-     * Static export attaches to an existing name (which will already
-     * exist in the symbol table).
-     */
-    /* ToDo: I think that foreign export static implies a type signature
-     * (it certainly implies a type check) but we ignore it.
+     * Export attaches to an existing name in the symbol table.
+     * We generate a new name whose definition is 
+     *   newName :: type
+     *   newName = intName;
+     * and pass the whole thing through the typechecker.
+     *
+     * This lets us have multiple exports of each symbol and nicely
+     * deals with the fact that the exported signature might not match
+     * the signature of the definition and might even be overloaded.
+     *
+     * The only problem is that the text of the name has to be
+     * shared between the generated code and Hugs.  Since these
+     * are two separate invocations of Hugs, we cannot use an
+     * invented Text so we generate the text by adding a prefix
+     * to the start which cannot conflict with normal identifiers.
      */
     Int  line    = intOf(l);
-    Bool dynamic = isNull(ext);
-    if (dynamic) {
-        Text t = textOf(intName);
-        Name n = findName(t);
-        if (isNull(n)) {
-            n = newName(t,NIL);
-        } else if (name(n).defn!=PREDEFINED) {
-            ERRMSG(line) "Redeclaration of foreign \"%s\"", textToStr(t)
-            EEND;
-        }
-        name(n).line     = line;
-        name(n).callconv = textOf(callconv);
-        name(n).extFun   = inventText();
-        name(n).type     = type;
-        foreignExports   = cons(n,foreignExports);
-    } else {
-        /* For static export, we generate a new name whose definition
-         * is 
-         *   newName :: type
-         *   newName = intName;
-         * and pass the whole thing through the typechecker.
-         *
-         * This lets us have multiple exports of each symbol and nicely
-         * deals with the fact that the exported signature might not match
-         * the signature of the definition and might even be overloaded.
-         * The other nice thing is that it means that all foreign imports
-         * and foreign exports generate a name.
-         *
-         * The only problem is that the text of the name has to be
-         * shared between the generated code and Hugs.  Since these
-         * are two separate invocations of Hugs, we cannot use an
-         * invented Text so we generate the text by adding a prefix
-         * to the start which cannot conflict with normal identifiers.
-         */
-        Text t   = concatText("--FFI_",textToStr(textOf(intName)));
-        Name n   = newName(t,NIL);
-        name(n).line     = line;
-        name(n).callconv = textOf(callconv);
-        name(n).extFun   = textOf(ext);
-        name(n).type     = type;
-        name(n).defn     = intName;
-        foreignExports   = cons(n,foreignExports);
-    } 
-}
 
-Void foreignLabel(line,extName,intName,type)  /* Handle foreign labels     */
-Cell line;
-Pair extName;
-Cell intName;
-Cell type; {
-    Text t   = textOf(intName);
-    Name n   = findName(t);
-    /* ToDo: this implementation ignores ext_loc (== fst(extName)) */
-    Cell ext = snd(extName);
+    Text t   = concatText("--FFI_",textToStr(textOf(intName)));
+    Name n   = newName(t,NIL);
 
-    if (isNull(n)) {
-        n = newName(t,NIL);
-    } else if (name(n).defn!=PREDEFINED) {
-        ERRMSG(line) "Redeclaration of foreign \"%s\"", textToStr(t)
+    if (textOf(v) != textExport) {
+        ERRMSG(line) "Foreign declarations must be either import or export not \"%s\"", textToStr(textOf(v))
         EEND;
     }
-    name(n).line     = intOf(line);
-    name(n).extFun   = textOf(ext);
+    if (textOf(callconv) != textCCall) {
+        ERRMSG(line) "Foreign export calling convention \"%s\" not supported", textToStr(textOf(callconv))
+        EEND;
+    }
+
+    name(n).line     = intOf(l);
     name(n).type     = type;
-    foreignLabels    = cons(n,foreignLabels);
+    name(n).extFun   = textOf(ext);
+    name(n).defn     = intName;
+    name(n).foreignId = foreignCount++;
+    foreignExports   = cons(n,foreignExports);
+}
+
+static String skipSpaces Args((String));
+static String matchToken Args((String,String));
+
+static String skipSpaces(s)
+String s; {
+    while (isspace(*s)) {
+        ++s;
+    }
+    return s;
+}
+
+static String skipToSpace(s)
+String s; {
+    while (*s != '\0' && !isspace(*s)) {
+        ++s;
+    }
+    return s;
+}
+
+static String matchToken(t,s)
+String t;
+String s; {
+    while (*t != '\0' && *t == *s) {
+        ++t;
+        ++s;
+    }
+    if (*t == '\0') {
+        return s;
+    } else {
+        return 0;
+    }
+}
+
+static String matchFname(s)
+String s; {
+    String t = skipToSpace(s);
+    if (t-s >= 3 && t[-2] == '.' && t[-1] == 'h') {
+        return t;
+    } else {
+        return 0;
+    }
 }
 
 static Void local checkForeignImport(p)   /* Check foreign import          */
 Name p; {
     Int  line      = name(p).line;
-    Text ext       = name(p).extFun;
-    Bool dynamic   = inventedText(ext);
-    Type t;
+    String ext     = textToStr(name(p).extFun);
+    String e       = 0;
+    Type t         = NIL;
     List argTys    = NIL;
-    List resultTys = NIL;
-    Bool addState  = TRUE;
 
     emptySubstitution();
     name(p).type = checkSigType(name(p).line,
@@ -4829,6 +4855,9 @@ Name p; {
      */
 
     t = name(p).type;
+    if (isPolyType(t)) {
+        t = monotypeOf(t);
+    }
     while (getHead(t)==typeArrow && argCount==2) {
         Type ta = fullExpand(arg(fun(t)));
         Type tr = arg(t);
@@ -4836,59 +4865,173 @@ Name p; {
         t = tr;
     }
     argTys = rev(argTys);
+    /* argTys now holds the argument tys and t holds result type */
 
-    /* argTys now holds the argument tys.  If this is a dynamic call,
-       the first one had better be an Addr.
-    */
-    if (dynamic) {
-       if (isNull(argTys) || hd(argTys) != typeAddr) {
-          ERRMSG(line) "First argument in foreign import dynamic must be an Addr"
-          EEND;
-       }
-       argTys = tl(argTys);
-    }
-    if (getHead(t) == typeIO) {
-        resultTys = getArgs(t);
-        assert(length(resultTys) == 1);
-        resultTys = hd(resultTys);
-        addState = TRUE;
-    } else {
-        resultTys = t;
-        addState = FALSE;
-    }
-    resultTys = fullExpand(resultTys);
-    if (isTuple(getHead(resultTys))) {
-        resultTys = getArgs(resultTys);
-    } else if (getHead(resultTys) == typeUnit) {
-        resultTys = NIL;
-    } else {
-        resultTys = singleton(resultTys);
-    }
-    if (length(resultTys) > 1) {
-        ERRMSG(line) "Foreign import used with multiple return values"
-        EEND;
+    /* What kind of import is this? */
+    ext = skipSpaces(ext);
+    if (e = matchToken("dynamic",ext)) { /* dynamic import */
+        Type ta = NIL;
+        Bool isIO = FALSE;
+
+        e = skipSpaces(e);
+        if (*e != '\0') goto cantparse;
+
+        /* type must be of the form:
+         *
+         *    (FunPtr fty) -> fty
+         *
+         */
+
+        if (length(argTys) < 1) goto dynerr;
+        ta = hd(argTys);
+        argTys = tl(argTys);
+
+        if (getHead(ta) != typeFunPtr || argCount!=1) goto dynerr;
+        ta = hd(getArgs(ta));
+
+        /* ToDo: check that ta == argTys -> t and check it's a valid type */
+
+        if (getHead(t) == typeIO && argCount==1) {
+            isIO = TRUE;
+            t = hd(getArgs(t));
+        }
+
+        if (generate_ffi) {
+            name(p).arity = length(argTys) + (isIO ? 2 : 0);
+            name(p).extFun = inventText();
+            implementForeignImportDynamic(line,name(p).foreignId,name(p).extFun,argTys,isIO,t);
+        }
+
+    } else if (e = matchToken("wrapper",ext)) { /* thunk builder */  
+        Type ta = NIL;
+
+        e = skipSpaces(e);
+        if (*e != '\0') goto cantparse;
+
+        if (length(argTys) != 1) goto wraperr;
+        ta = hd(argTys);
+
+        if (getHead(t) != typeIO || argCount!=1) goto wraperr;
+        t = hd(getArgs(t));
+
+        if (getHead(t) != typeFunPtr) goto wraperr;
+        t = hd(getArgs(t));
+
+        /* ToDo: check that ta == t */
+
+        if (generate_ffi) {
+            name(p).arity = 3;
+            name(p).extFun = inventText();
+            implementForeignImportWrapper(line,name(p).foreignId,name(p).extFun,argTys,t);
+        }
+
+    } else { 
+        /* static function or address:
+         *
+         *  ['static'] [fname] [&] ['[' lib ']'] [cid]
+         *
+         */
+        Text fn   = 0;
+        Text libn = 0;
+        Text cid  = 0;
+        Bool isLabel = FALSE;
+
+        if (e = matchToken("static",ext)) {
+            ext = skipSpaces(e);
+        }
+        
+        if (e = matchFname(ext)) {
+            fn = subText(ext,e-ext);
+            ext = skipSpaces(e);
+        }
+
+        if (e = matchToken("&",ext)) {
+            isLabel = TRUE;
+            ext = skipSpaces(e);
+        }
+        
+        if (e = matchToken("[",ext)) {
+            e   = skipSpaces(e);
+            ext = skipToSpace(e);
+            if (ext == e) goto cantparse;
+            libn = subText(e,ext-e);
+            e = matchToken("]",ext);
+            if (e == 0) goto cantparse;
+            ext = skipSpaces(e);
+        }
+
+        if (*ext != '\0') {
+            e = skipToSpace(ext);
+            cid = subText(ext,e-ext);
+            ext = skipSpaces(e);
+        } else {
+            cid = name(p).text;
+        }
+
+        if (*ext != '\0') goto cantparse;
+
+        if (isLabel) {
+            if (!isNull(argTys)) goto labelerr;
+            if (!(  (getHead(t) == typePtr && argCount == 1)
+                 || (getHead(t) == typeFunPtr && argCount == 1))) {
+                goto labelerr;
+            }
+            if (generate_ffi) {
+                name(p).arity = 0;
+                implementForeignImportLabel(line,name(p).foreignId,fn,libn,cid,name(p).text,t);
+                name(p).extFun = cid;
+            }
+        } else {
+            Bool isIO = FALSE;
+
+            if (getHead(t) == typeIO && argCount==1) {
+                isIO = TRUE;
+                t = hd(getArgs(t));
+            }
+
+            if (generate_ffi) {
+                name(p).arity 
+                    = length(argTys) 
+                    + (isIO ? 2 : 0);
+                implementForeignImport(line,name(p).foreignId,fn,libn,cid,argTys,isIO,t);
+                name(p).extFun = cid;
+            }
+        }
     }
 
-    if (generate_ffi) {
-        name(p).arity 
-          = length(argTys) 
-          + (dynamic ? 1 : 0)
-          + (addState ? 2 : 0);
-        implementForeignImport(line,dynamic,ext,argTys,resultTys,addState);
-    } else {
+    if (!generate_ffi) {
         addPrim(line,p,textToStr(name(p).text),name(p).mod,name(p).type);
     }
+
+    return;
+
+  cantparse:
+     ERRMSG(line) "Can't parse external entity '" 
+     ETHEN ERRTEXT ext
+     ETHEN ERRTEXT "'\n"
+     EEND;
+  
+  dynerr:
+    ERRMSG(line) "foreign import dynamic must have type '(FunPtr ft) -> ft'"
+    EEND;
+  
+  wraperr:
+    ERRMSG(line) "foreign import wrapper must have type 'ft -> IO (FunPtr ft)'"
+    EEND;
+  
+  labelerr:
+    ERRMSG(line) "foreign import & must have type 'Ptr a' or 'FunPtr a'"
+    EEND;
 }
+
 
 static Void local checkForeignExport(p)       /* Check foreign export      */
 Name p; {
-    Int  line      = name(p).line;
-    Text ext       = name(p).extFun;
+    Int  line  = name(p).line;
+    Text ext   = name(p).extFun;
     Type t;
-    List argTys    = NIL;
-    List resultTys = NIL;
-    Bool addState  = TRUE;
-    Bool dynamic   = inventedText(ext);
+    List argTys = NIL;
+    Bool isIO   = FALSE;
 
     emptySubstitution();
     name(p).type = checkSigType(line,
@@ -4900,28 +5043,6 @@ Name p; {
      */
     t = name(p).type;
 
-    /* Foreign export dynamic must have type (foo -> bar) -> IO Addr */
-    if (dynamic) {
-        if (getHead(t)==typeArrow && argCount==2) {
-            Type tr = arg(t);
-            t = arg(fun(t));
-            if (getHead(tr) == typeIO) {
-                tr = getArgs(tr);
-                assert(length(tr) == 1);
-                tr = fullExpand(hd(tr));
-                if (tr != typeAddr) {
-                    ERRMSG(line) "Result of foreign export dynamic must be IO Addr"
-                    EEND;
-                }
-            } else {
-                ERRMSG(line) "Result of foreign export dynamic must be IO Addr"
-                EEND;
-            }
-        } else {
-            ERRMSG(line) "Result of foreign export dynamic must be IO Addr"
-            EEND;
-        }
-    }
     while (getHead(t)==typeArrow && argCount==2) {
         Type ta = fullExpand(arg(fun(t)));
         Type tr = arg(t);
@@ -4930,84 +5051,17 @@ Name p; {
     }
     argTys = rev(argTys);
 
-    if (getHead(t) == typeIO) {
-        resultTys = getArgs(t);
-        assert(length(resultTys) == 1);
-        resultTys = hd(resultTys);
-        addState = TRUE;
-    } else {
-        resultTys = t;
-        addState = FALSE;
+    if (getHead(t) == typeIO && argCount==1) {
+        t = hd(getArgs(t));
+        isIO = TRUE;
     }
-    resultTys = fullExpand(resultTys);
-    if (isTuple(getHead(resultTys))) {
-        resultTys = getArgs(resultTys);
-    } else if (getHead(resultTys) == typeUnit) {
-        resultTys = NIL;
-    } else {
-        resultTys = singleton(resultTys);
-    }
-    if (length(resultTys) > 1) {
-        ERRMSG(line) "Foreign export used with multiple return values"
-        EEND;
-    }
+    t = fullExpand(t);
 
-    if (!dynamic) {
-#if 0
-        /* The following doesn't work because the type written into the
-         * dummy binding has been through the typechecker once already
-         * so it has the wrong type.
-         * What's needed here is something like what we do for bindings
-         * in instance decls: insert enough dictionaries to make the export
-         * have the stated type (or report why this can't be done).
-         */
-        /* If it's not a dynamic, we have to generate a dummy definition to
-         * pass to the typechecker.  This is done here rather than in
-         * foreign export because valDefns gets set at the end of parsing
-         * which would overwrite the result of the following assignment.
-         */
-        Cell v   = mkVar(name(p).text);
-        Cell rhs = pair(mkInt(line),name(p).defn);
-        Cell alt = pair(NIL,rhs);
-        valDefns = cons(pair(v,pair(name(p).type,singleton(alt))),valDefns);
-#else
-        ERRMSG(line) "Foreign export static not implemented yet."
-        EEND;
-#endif
-    }
     if (generate_ffi) {
         name(p).arity 
           = length(argTys) 
-          + (dynamic ? 1 : 0)
-          + (addState ? 2 : 0);
-        implementForeignExport(line,dynamic,ext,argTys,resultTys,addState);
-    } else if (dynamic) {
-        addPrim(line,p,textToStr(name(p).text),name(p).mod,name(p).type);
-    }
-}
-
-static Void local checkForeignLabel(p)   /* Check foreign import          */
-Name p; {
-    Int  line      = name(p).line;
-    Type t;
-
-    emptySubstitution();
-    name(p).type = checkSigType(name(p).line,
-                                "foreign import declaration",
-                                p,
-                                name(p).type);
-    /* We don't expand synonyms here because we don't want the IO
-     * part to be expanded.
-     */
-    t = name(p).type;
-    if (t != typeAddr) {
-        ERRMSG(line) "Type of foreign label must be Addr"
-        EEND;
-    }
-
-    if (generate_ffi) {
-        name(p).arity = 0;
-        implementForeignLabel(line,name(p).extFun,name(p).text);
+          + (isIO ? 2 : 0);
+        implementForeignExport(line,name(p).foreignId,ext,argTys,isIO,t);
     } else {
         addPrim(line,p,textToStr(name(p).text),name(p).mod,name(p).type);
     }
@@ -7487,17 +7541,21 @@ Void checkDefns() {			/* Top level static analysis	   */
         if (generate_ffi) {
             foreignHeader();
         } else {
-            needPrims(3);
+            needPrims(4);
         }
         mapProc(checkForeignImport,foreignImports);
         mapProc(checkForeignExport,foreignExports);
-        mapProc(checkForeignLabel, foreignLabels);
         if (generate_ffi) {
-            foreignFooter(foreignImports, foreignExports, foreignLabels);
+            foreignFooter(foreignImports, foreignExports);
         }
+
+        /* We are now finished with foreign import declarations but
+         * foreign export declarations need to pass through the
+         * typechecker so that we can check that the exported type is
+         * an instance of the actual type and so that we can gnerate
+         * code which inserts any dictionaries we might need.
+         */
         foreignImports = NIL;
-        foreignExports = NIL;
-        foreignLabels = NIL;
     }
 
     /* Every top-level name has now been created - so we can build the     */

@@ -8,8 +8,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: prelude.h,v $
- * $Revision: 1.34 $
- * $Date: 2002/06/11 17:52:56 $
+ * $Revision: 1.35 $
+ * $Date: 2002/06/14 14:41:10 $
  * ------------------------------------------------------------------------*/
 
 #include "config.h"
@@ -111,6 +111,7 @@
  *                  evaluator). 
  *   WORD_OPS       to include operations on unsigned ints
  *   ADDR_OPS       to include operations on addresses
+ *   PROVIDE_INT64  to include 64 bit Ints
  *   SHORT_CIRCUIT_COERCIONS to try to apply these rewrites at runtime:
  *                    integerToInt (intToInteger x) -> x
  *                    rationalToFloat  (fromDouble {dict} x) -> doubleToFloat x
@@ -151,6 +152,7 @@
 #define REDIRECT_OUTPUT  (!HUGS_FOR_WINDOWS)
 #define WORD_OPS         1
 #define ADDR_OPS         1
+#define PROVIDE_INT64    1
 #define TIME_MODULE      1
 #define DIRECTORY_MODULE 1
 #define MULTI_LINEFEED   1 /* Platform-independent linefeed handling        */

@@ -11,8 +11,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.50 $
- * $Date: 2002/06/12 18:55:24 $
+ * $Revision: 1.51 $
+ * $Date: 2002/06/14 14:41:10 $
  * ------------------------------------------------------------------------*/
 #include <math.h>
 
@@ -1695,6 +1695,41 @@ String s; {
 #endif /* !HAVE_LIBM */
 
 /*---------------------------------------------------------------------------
+ * Int64-related operations:
+ *-------------------------------------------------------------------------*/
+
+#ifdef PROVIDE_INT64
+union fudgeI64Coerce {
+    HsInt64  ival;
+    struct {
+	Int valPart1,valPart2;
+    }      cval;
+};
+
+Int part1Int64(i)
+HsInt64 i; {
+    union fudgeI64Coerce fudge;
+    fudge.ival = i;
+    return fudge.cval.valPart1;
+}
+
+Int part2Int64(i)
+HsInt64 i; {
+    union fudgeI64Coerce fudge;
+    fudge.ival = i;
+    return fudge.cval.valPart2;
+}
+
+HsInt64 int64FromParts(c1,c2)
+Int c1, c2; {
+    union fudgeI64Coerce fudge;
+    fudge.cval.valPart1 = c1;
+    fudge.cval.valPart2 = c2;
+    return fudge.ival;
+}
+#endif /* PROVIDE_INT64 */
+
+/*---------------------------------------------------------------------------
  * Printf-related operations:
  *-------------------------------------------------------------------------*/
 
@@ -1965,6 +2000,16 @@ Int version; {
 		getDLLSymbol(mkDLLFilename(scriptFile),INIT_MODULE_FUN);
 	    if (initModule) {
 		(*initModule)(hugsAPI3()); 
+		return;
+	    }
+	    break;
+	}
+    case 4 : 
+	{ 
+	    InitModuleFun4 initModule = (InitModuleFun4) 
+		getDLLSymbol(mkDLLFilename(scriptFile),INIT_MODULE_FUN);
+	    if (initModule) {
+		(*initModule)(hugsAPI4()); 
 		return;
 	    }
 	    break;

@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: storage.c,v $
- * $Revision: 1.40 $
- * $Date: 2002/05/18 16:22:11 $
+ * $Revision: 1.41 $
+ * $Date: 2002/06/14 14:41:13 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -179,6 +179,17 @@ String s2; {
     return findText(s);
 }    
 #undef MAX_TEXTLEN
+
+Text subText(s,l)                /* extract a substring and make it a Text */
+String s;
+Int    l; {
+    Text t = 0;
+    Char c = s[l];    /* save character */
+    s[l] = '\0';
+    t = findText(s);
+    s[l] = c;         /* restore character */
+    return t;
+}
 
 static Int local hash(s)                /* Simple hash function on strings */
 String s; {
@@ -508,8 +519,9 @@ Cell parent; {
     name(nameHw).number       = EXECNAME;
     name(nameHw).defn         = NIL;
     name(nameHw).type         = NIL;
-    name(nameHw).callconv     = 0;
     name(nameHw).extFun       = 0;
+    name(nameHw).safety       = FFI_NOSAFETY;
+    name(nameHw).foreignId    = -1; 
     name(nameHw).primDef      = 0;
     name(nameHw).code         = 0;
     name(nameHw).mod          = currentModule;
@@ -2355,6 +2367,7 @@ register Cell c; {
  * robust and can be used on any data structure irrespective of
  * its type.
  */
+Void printList Args((List, Int));
 Void print Args((Cell, Int));
 Void print(c, depth)
 Cell c;
@@ -2512,7 +2525,6 @@ Int  depth; {
     FlushStdout();
 }
 
-Void printList Args((List, Int));
 Void printList(l, depth)
 List l;
 Int  depth; {

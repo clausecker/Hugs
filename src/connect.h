@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: connect.h,v $
- * $Revision: 1.35 $
- * $Date: 2002/05/18 16:22:11 $
+ * $Revision: 1.36 $
+ * $Date: 2002/06/14 14:41:10 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -105,6 +105,12 @@ extern Name   nameGetFilename, nameGetErrorString;
 extern Name   nameWriteErr;             /* primitives required for IOError */
 extern Name   nameEOFErr;
 #endif
+
+extern Text  textCCall;                 /* ffi tokens                      */
+extern Text  textSafe;
+extern Text  textUnsafe;
+extern Text  textThreadsafe;
+extern Text  textExport;
 
 extern Text  textPrelude;
 extern Text  textNum;			/* used to process default decls   */
@@ -327,19 +333,20 @@ extern  Void   h98CheckCtxt	Args((Int,String,Bool,List,Inst));
 extern  Void   h98CheckType	Args((Int,String,Cell,Type));
 extern  Void   h98DoesntSupport	Args((Int,String));
 
-extern  Void   foreignImport    Args((Cell,Cell,Pair,Cell,Type));
-extern  Void   foreignExport    Args((Cell,Cell,Cell,Cell,Type));
-extern  Void   foreignLabel     Args((Cell,Pair,Cell,Type));
+extern  Void   foreignImport    Args((Cell,Cell,Cell,Cell,Cell,Type));
+extern  Void   foreignExport    Args((Cell,Cell,Cell,Cell,Cell,Type));
+extern  Int    foreignCount;
 extern  List   foreignImports;           /* foreign import declarations     */
 extern  List   foreignExports;           /* foreign export declarations     */
-extern  List   foreignLabels;            /* foreign label  declarations     */
 
 extern  Void   ffi              Args((Int));
 extern  Void   foreignHeader    Args((Void));
-extern  Void   foreignFooter    Args((List,List,List));
-extern  Void   implementForeignImport Args((Int,Bool,Text,List,List,Bool));
-extern  Void   implementForeignExport Args((Int,Bool,Text,List,List,Bool));
-extern  Void   implementForeignLabel  Args((Int,Text,Text));
+extern  Void   foreignFooter    Args((List,List));
+extern  Void   implementForeignImport        Args((Int,Int,Text,Text,Text,List,Bool,Type));
+extern  Void   implementForeignImportDynamic Args((Int,Int,Text,List,Bool,Type));
+extern  Void   implementForeignImportWrapper Args((Int,Int,Text,List,Type));
+extern  Void   implementForeignImportLabel   Args((Int,Int,Text,Text,Text,Text,Type));
+extern  Void   implementForeignExport        Args((Int,Int,Text,List,Bool,Type));
 extern  Bool   generate_ffi;
 
 extern  Void   typeChecker      Args((Int));

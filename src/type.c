@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: type.c,v $
- * $Revision: 1.47 $
- * $Date: 2002/05/18 16:22:11 $
+ * $Revision: 1.48 $
+ * $Date: 2002/06/14 14:41:14 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -213,6 +213,7 @@ static Type   local generalize	      Args((List,Type));
 static Bool   local equalTypes        Args((Type,Type));
 
 static Void   local typeDefnGroup     Args((List));
+static Void   local typeForeignExport Args((Name));
 static Pair   local typeSel	      Args((Name));
 
 static Name   local linkName          Args((String));
@@ -2850,6 +2851,7 @@ Void typeCheckDefns() { 	       /* Type check top level bindings    */
 	typeDefnGroup(hd(gs));
 	soFar(i++);
     }
+    mapProc(typeForeignExport,foreignExports); /* ToDo: soFar magic */
     clearTypeIns();
     for (gs=classDefns; nonNull(gs); gs=tl(gs)) {
 	emptySubstitution();
@@ -2906,6 +2908,35 @@ List bs; {				/* (one top level scc)		   */
 	name(n).type = snd(a);
     }
     hd(varsBounds) = NIL;
+}
+
+static Void local typeForeignExport(n)	/* Typecheck a foreign export decl */
+Name n; {				
+    Int line = name(n).line;
+    // todo
+#if 0
+    // Old comment from checkForeignExport:
+
+    /* The following doesn't work because the type written into the
+     * dummy binding has been through the typechecker once already
+     * so it has the wrong type.
+     * What's needed here is something like what we do for bindings
+     * in instance decls: insert enough dictionaries to make the export
+     * have the stated type (or report why this can't be done).
+     */
+    /* We have to generate a dummy definition to
+     * pass to the typechecker.  This is done here rather than in
+     * foreign export because valDefns gets set at the end of parsing
+     * which would overwrite the result of the following assignment.
+     */
+    Cell v   = mkVar(name(p).text);
+    Cell rhs = pair(mkInt(line),name(p).defn);
+    Cell alt = pair(NIL,rhs);
+    valDefns = cons(pair(v,pair(name(p).type,singleton(alt))),valDefns);
+#else
+    ERRMSG(line) "Foreign export not implemented yet."
+    EEND;
+#endif
 }
 
 static Pair local typeSel(s)		/* Calculate a suitable type for a */

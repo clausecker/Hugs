@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: input.c,v $
- * $Revision: 1.42 $
- * $Date: 2002/05/14 16:06:26 $
+ * $Revision: 1.43 $
+ * $Date: 2002/06/14 14:41:10 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -38,6 +38,7 @@ List selDefns	     = NIL;             /* list of selector lists          */
 List genDefns	     = NIL;             /* list of generated names	   */
 List primDefns       = NIL;             /* primitive definitions           */
 List unqualImports   = NIL;             /* unqualified import list         */
+Int  foreignCount    = 0;               /* count of foreigns in this module*/
 List foreignImports  = NIL;             /* foreign import declarations     */
 List foreignExports  = NIL;             /* foreign export declarations     */
 List foreignLabels   = NIL;             /* foreign label  declarations     */
@@ -125,14 +126,15 @@ static Text textBang,    textDot,      textAll,	   textImplies;
 
 static Text textModule,  textImport;
 static Text textHiding,  textQualified, textAsMod;
-static Text textDynamic;
-static Text textUnsafe, textLabel;
 static Text textWildcard;
 static Text textNeedPrims;
-static Text textForeign, textExport;
+static Text textForeign;
 
-Text   textCcall;                       /* ccall                           */
-Text   textStdcall;                     /* stdcall                         */
+Text   textCCall;                       /* ccall                           */
+Text   textSafe;                        /* safe                            */
+Text   textUnsafe;                      /* unsafe                          */
+Text   textThreadsafe;                  /* threadsafe                      */
+Text   textExport;                      /* export                          */
 
 Text   textNum;                         /* Num                             */
 Text   textPrelude;                     /* Prelude                         */
@@ -148,12 +150,6 @@ static Cell varDot;			/* (.)				   */
 static Cell varHiding;                  /* hiding                          */
 static Cell varQualified;               /* qualified                       */
 static Cell varAsMod;                   /* as                              */
-static Cell varExport;                  /* export                          */
-static Cell varDynamic;                 /* dynamic                         */
-static Cell varCCall;                   /* ccall                           */
-static Cell varStdCall;                 /* stdcall                         */
-static Cell varUnsafe;                  /* unsafe                          */
-static Cell varLabel;                   /* label                           */
 
 static List imps;                       /* List of imports to be chased    */
 
@@ -1746,12 +1742,6 @@ loop:	    skip();                     /* Skip qualifying dot             */
 	if (it==textQualified)         return QUALIFIED;
 	if (it==textNeedPrims)         return NEEDPRIMS;
         if (it==textForeign)           return FOREIGN;
-        if (it==textExport)            return EXPORT;
-        if (it==textDynamic)           return DYNAMIC;
-        if (it==textCcall)             return CCALL;
-        if (it==textStdcall)           return STDKALL;
-        if (it==textUnsafe)            return UNSAFE;
-        if (it==textLabel)             return LABEL;
 	if (it==textAsMod)             return ASMOD;
 	if (it==textWildcard)	       return '_';
 #if !HASKELL_98_ONLY
@@ -1945,12 +1935,11 @@ Int what; {
 		       textQualified  = findText("qualified");
 		       textNeedPrims  = findText("needPrims_hugs");
 		       textForeign    = findText("foreign");
-                       textExport     = findText("export");
-                       textDynamic    = findText("dynamic");
-                       textCcall      = findText("ccall");
-                       textStdcall    = findText("stdcall");
-                       textUnsafe     = findText("unsafe");
-                       textLabel      = findText("label");
+		       textExport     = findText("export");
+		       textCCall      = findText("ccall");
+		       textSafe       = findText("safe");
+		       textUnsafe     = findText("unsafe");
+		       textThreadsafe = findText("threadsafe");
 		       textAsMod      = findText("as");
 		       textWildcard   = findText("_");
 		       textAll	      = findText("forall");
@@ -1961,12 +1950,6 @@ Int what; {
 		       varHiding      = mkVar(textHiding);
 		       varQualified   = mkVar(textQualified);
 		       varAsMod       = mkVar(textAsMod);
-		       varExport      = mkVar(textExport);
-		       varDynamic     = mkVar(textDynamic);
-		       varCCall       = mkVar(textCcall);
-		       varStdCall     = mkVar(textStdcall);
-		       varUnsafe      = mkVar(textUnsafe);
-		       varLabel       = mkVar(textLabel);
 		       conMain        = mkCon(findText("Main"));
 		       varMain        = mkVar(findText("main"));
 		       evalDefaults   = NIL;
@@ -1983,9 +1966,9 @@ Int what; {
 		       genDefns	    = NIL;
 		       primDefns    = NIL;
 		       unqualImports= NIL;
+                       foreignCount = 0;
                        foreignImports= NIL;
                        foreignExports= NIL;
-                       foreignLabels = NIL;
 		       defaultDefns = NIL;
 		       defaultLine  = 0;
 		       inputExpr    = NIL;
@@ -2008,7 +1991,6 @@ Int what; {
 		       mark(unqualImports);
                        mark(foreignImports);
                        mark(foreignExports);
-                       mark(foreignLabels);
 		       mark(defaultDefns);
 		       mark(evalDefaults);
 		       mark(inputExpr);
@@ -2019,12 +2001,6 @@ Int what; {
 		       mark(varHiding);
 		       mark(varQualified);
 		       mark(varAsMod);
-		       mark(varExport);
-		       mark(varDynamic);
-		       mark(varCCall);
-		       mark(varStdCall);
-		       mark(varUnsafe);
-		       mark(varLabel);
 		       mark(varMain);
 		       mark(conMain);
 		       mark(imps);

@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: builtin.c,v $
- * $Revision: 1.23 $
- * $Date: 2002/06/11 17:52:56 $
+ * $Revision: 1.24 $
+ * $Date: 2002/06/14 14:41:10 $
  * ------------------------------------------------------------------------*/
 
 /* We include math.h before prelude.h because SunOS 4's cpp incorrectly
@@ -1920,29 +1920,53 @@ primFun(primPtrToInt) {
  *
  * GreenCard generated code accesses Hugs data structures and functions 
  * (only) via these functions (which are stored in the virtual function
- * table hugsAPI2.
+ * table hugsAPI4).
  *-------------------------------------------------------------------------*/
 
 static void           getUnit        Args((void));
-static int            getInt         Args((void));
-static unsigned int   getWord        Args((void));
-static void*          getAddr        Args((void));
-static float          getFloat       Args((void));
-static double         getDouble      Args((void));
-static char           getChar        Args((void));
+static HsInt          getInt         Args((void));
+static HsWord         getWord        Args((void));
+static HsAddr         getAddr        Args((void));
+static Float          getFloat       Args((void));
+static HsDouble       getDouble      Args((void));
+static HsChar         getChar        Args((void));
 static HugsForeign    getForeign     Args((void));
+static HsBool         getBool        Args((void));
+static HsInt8         getInt8        Args((void));
+static HsInt16        getInt16       Args((void));
+static HsInt32        getInt32       Args((void));
+static HsInt64        getInt64       Args((void));
+static HsWord8        getWord8       Args((void));
+static HsWord16       getWord16      Args((void));
+static HsWord32       getWord32      Args((void));
+static HsWord64       getWord64      Args((void));
+static HsPtr          getPtr         Args((void));
+static HsFunPtr       getFunPtr      Args((void));
+static HsForeignPtr   getForeignPtr  Args((void));	      
 static HugsStablePtr  getStablePtr   Args((void));
-static int            getBool        Args((void));
-	      
-static void           putInt         Args((int));
-static void           putWord        Args((unsigned int));
-static void           putAddr        Args((void*));
-static void           putFloat       Args((double));
-static void           putDouble      Args((double));
-static void           putChar        Args((char));
+static HsStablePtr    getStablePtr4  Args((void));
+
+static void           putInt         Args((HsInt));
+static void           putWord        Args((HsWord));
+static void           putAddr        Args((HsAddr));
+static void           putFloat       Args((HsDouble));
+static void           putDouble      Args((HsDouble));
+static void           putChar        Args((HsChar));
 static void           putForeign     Args((HugsForeign, void (*)(void *)));
 static void           putStablePtr   Args((HugsStablePtr));
-static void           putBool        Args((int));
+static void           putStablePtr4  Args((HsStablePtr));
+static void           putBool        Args((HsBool));
+static void           putInt8        Args((HsInt8));
+static void           putInt16       Args((HsInt16));
+static void           putInt32       Args((HsInt32));
+static void           putInt64       Args((HsInt64));
+static void           putWord8       Args((HsWord8));
+static void           putWord16      Args((HsWord16));
+static void           putWord32      Args((HsWord32));
+static void           putWord64      Args((HsWord64));
+static void           putPtr         Args((HsPtr));
+static void           putFunPtr      Args((HsFunPtr));
+static void           putForeignPtr  Args((HsForeignPtr));
 	      
 static void           returnIO       Args((HugsStackPtr, int));
 static void           returnId       Args((HugsStackPtr, int));
@@ -1950,14 +1974,29 @@ static int            runIO          Args((int));
 static void           apMany         Args((int));
 
 static void           getUnit()      { eval(pop()); }
-static int            getInt()       { eval(pop()); checkInt();   return whnfInt; }
-static unsigned int   getWord()      { eval(pop()); checkWord();  return (unsigned int) whnfInt; }
-static void*          getAddr()      { eval(pop()); checkPtr();   return ptrOf(whnfHead); }
-static float          getFloat()     { eval(pop()); checkFloat(); return whnfFloat; }
-static double         getDouble()    { eval(pop()); checkFloat(); return (double) whnfFloat; }
-static char           getChar()      { eval(pop()); checkChar();  return charOf(whnfHead); }
+static HsInt          getInt()       { eval(pop()); checkInt();   return whnfInt; }
+static HsWord         getWord()      { eval(pop()); checkWord();  return (unsigned int) whnfInt; }
+static HsAddr         getAddr()      { eval(pop()); checkPtr();   return ptrOf(whnfHead); }
+static HsFloat        getFloat()     { eval(pop()); checkFloat(); return whnfFloat; }
+static HsDouble       getDouble()    { eval(pop()); checkFloat(); return (double) whnfFloat; }
+static HsChar         getChar()      { eval(pop()); checkChar();  return charOf(whnfHead); }
 static HugsForeign    getForeign()   { eval(pop()); return derefMP(whnfHead); }
-static int            getBool()      { eval(pop()); checkBool();  return (whnfHead == nameTrue); }
+static HsBool         getBool()      { eval(pop()); checkBool();  return (whnfHead == nameTrue); }
+static HsInt8         getInt8()      { eval(pop()); checkInt();   return whnfInt; } 
+static HsInt16        getInt16()     { eval(pop()); checkInt();   return whnfInt; }
+static HsInt32        getInt32()     { eval(pop()); checkInt();   return whnfInt; }
+static HsInt64        getInt64()     { eval(pop()); return int64FromParts(intOf(fst(snd(whnfHead))), intOf(snd(snd(whnfHead)))); }
+static HsWord8        getWord8()     { eval(pop()); checkWord();  return (unsigned int) whnfInt; } 
+static HsWord16       getWord16()    { eval(pop()); checkWord();  return (unsigned int) whnfInt; } 
+static HsWord32       getWord32()    { eval(pop()); checkWord();  return (unsigned int) whnfInt; } 
+static HsWord64       getWord64()    { eval(pop()); return int64FromParts(intOf(fst(snd(whnfHead))), intOf(snd(snd(whnfHead)))); }
+static HsPtr          getPtr()       { eval(pop()); checkPtr();   return ptrOf(whnfHead); }
+static HsFunPtr       getFunPtr()    { eval(pop()); checkPtr();   return ptrOf(whnfHead); }
+
+static HsForeignPtr   getForeignPtr() {
+    ERRMSG(0) "getForeignPtr: not implemented in Hugs"
+    EEND;
+}
 
 static HugsStablePtr  getStablePtr() { 
     Cell c = mkStablePtr(pop());
@@ -1987,23 +2026,61 @@ String n; {
     return c;
 }
 
-static void putInt(x)    int    x; { push(mkInt(x)); }
-static void putWord(x)   unsigned int x; { push(mkInt((int)x)); }
-static void putAddr(x)   void*  x; { push(mkPtr(x)); }
+static void putInt(x)         HsInt         x; { push(mkInt(x)); }
+static void putWord(x)        HsWord        x; { push(mkInt((int)x)); }
+static void putAddr(x)        HsAddr        x; { push(mkPtr(x)); }
 #if HAVE_PROTOTYPES
 /* Symantec C and Solaris acc object to old style function headings
  * for this one function.  We continue to prefer pre-ANSI headers
  * elsewhere - for portability reasons.
  */
-static void putChar(char x)        { push(mkChar(x)); }
+static void putChar(HsChar x)                  { push(mkChar(x)); }
 #else
-static void putChar(x)   char   x; { push(mkChar(x)); }
-#endif
-static void putFloat(x)  double x; { push(mkFloat(x)); }
-static void putDouble(x) double x; { push(mkFloat(x)); }
-static void putForeign(x,f) HugsForeign x; void (*f)(HugsForeign); { push(mkMallocPtr(x,f)); }
-static void putStablePtr(x) HugsStablePtr x; { push(derefStablePtr(x)); }
-static void putBool(x)   int    x; { push(x?nameTrue:nameFalse); }
+static void putChar(x)        HsChar        x; { push(mkChar(x)); }
+#endif                        
+static void putFloat(x)       HsDouble      x; { push(mkFloat(x)); }
+static void putDouble(x)      HsDouble      x; { push(mkFloat(x)); }
+static void putForeign(x,f)   HugsForeign   x; void (*f)(HugsForeign); { push(mkMallocPtr(x,f)); }
+static void putStablePtr(x)   HugsStablePtr x; { push(derefStablePtr(x)); }
+static void putBool(x)        HsBool        x; { push(x?nameTrue:nameFalse); }
+                                            
+static void putInt8(x)        HsInt8        x; { push(mkInt(x)); }
+static void putInt16(x)       HsInt16       x; { push(mkInt(x)); }
+static void putInt32(x)       HsInt32       x; { push(mkInt(x)); }
+static void putInt64(x)       HsInt64       x; { push(pair(I64CELL,pair(part1Int64(x),part2Int64(x)))); }
+static void putWord8(x)       HsWord8       x; { push(mkInt((int)x)); }
+static void putWord16(x)      HsWord16      x; { push(mkInt((int)x)); }
+static void putWord32(x)      HsWord32      x; { push(mkInt((int)x)); }
+static void putWord64(x)      HsWord64      x; { push(pair(I64CELL,pair(part1Int64(x),part2Int64(x)))); }
+static void putPtr(x)         HsPtr         x; { push(mkPtr(x)); }
+static void putFunPtr(x)      HsFunPtr      x; { push(mkPtr(x)); }
+
+static void putStablePtr4(x)
+HsStablePtr   x; {
+    if (x) putStablePtr((HugsStablePtr)x);
+}
+
+static HsStablePtr getStablePtr4() { 
+    HugsStablePtr x = getStablePtr();
+    return (HsStablePtr)x;
+}
+
+static Void freeStablePtr4(x)
+HsStablePtr x; {
+    if (x) freeStablePtr((HugsStablePtr)x);
+}
+
+static HsFloat        getFloat4      Args((void));
+static void           putFloat4      Args((HsFloat));
+
+static HsFloat        getFloat4()    { eval(pop()); checkFloat(); return whnfFloat; }
+static void putFloat4(x)       HsFloat       x; { push(mkFloat(x)); }
+
+static void putForeignPtr(x)  
+HsForeignPtr x; {
+    ERRMSG(0) "putForeignPtr: not implemented in Hugs"
+    EEND;
+}
 
 static void returnIO(root,n) /* return in IO monad */
 HugsStackPtr root;
@@ -2149,7 +2226,7 @@ struct thunk_data {
 
 struct thunk_data* foreignThunks = 0;
 
-static void* mkThunk(void* app, HugsStablePtr s) {
+static void* mkThunk(void (*app)(void), HugsStablePtr s) {
     struct thunk_data* thunk 
         = (struct thunk_data*)malloc(sizeof(struct thunk_data));
     char* pc;
@@ -2343,6 +2420,78 @@ HugsAPI3* hugsAPI3() { /* build virtual function table */
 	api.getBool       = getBool;
 	api.putBool       = putBool;
 
+    }
+    return &api;
+}
+
+HugsAPI4* hugsAPI4() { /* build virtual function table */
+    static HugsAPI4 api;
+    static Bool initialised = FALSE;
+    if (!initialised) {
+
+	api.getInt        = getInt;
+	api.getWord       = getWord;
+	api.getAddr       = getAddr;
+	api.getFloat      = getFloat4;
+	api.getDouble     = getDouble;
+	api.getChar       = getChar;
+	api.getForeign    = getForeign;
+	api.getStablePtr  = getStablePtr;
+	      
+	api.putInt        = putInt;
+	api.putWord       = putWord;
+	api.putAddr       = putAddr;
+	api.putFloat      = putFloat4;
+	api.putDouble     = putDouble;
+	api.putChar       = putChar;
+	api.putForeign    = putForeign;
+	api.putStablePtr  = putStablePtr;
+			  
+	api.returnIO      = returnIO;
+	api.returnId      = returnId;
+	api.runIO         = runIO;
+
+	api.freeStablePtr = freeStablePtr;
+
+	api.registerPrims = registerPrims;
+
+	api.garbageCollect= garbageCollect;
+
+        api.lookupName    = lookupName;
+        api.ap            = apMany;
+        api.getUnit       = getUnit;
+        api.mkThunk       = mkThunk;
+        api.freeThunk     = freeHaskellFunctionPtr;
+	api.getBool       = getBool;
+	api.putBool       = putBool;
+
+        api.getInt8       = getInt8;
+        api.getInt16      = getInt16;
+        api.getInt32      = getInt32;
+        api.getInt64      = getInt64;
+        api.getWord8      = getWord8;
+        api.getWord16     = getWord16;
+        api.getWord32     = getWord32;
+        api.getWord64     = getWord64;
+        api.getPtr        = getPtr;
+        api.getFunPtr     = getFunPtr;
+        api.getForeignPtr = getForeignPtr;
+
+        api.putInt8       = putInt8;
+        api.putInt16      = putInt16;
+        api.putInt32      = putInt32;
+        api.putInt64      = putInt64;
+        api.putWord8      = putWord8;
+        api.putWord16     = putWord16;
+        api.putWord32     = putWord32;
+        api.putWord64     = putWord64;
+        api.putPtr        = putPtr;
+        api.putFunPtr     = putFunPtr;
+        api.putForeignPtr = putForeignPtr;
+
+	api.getStablePtr4 = getStablePtr4;
+	api.putStablePtr4 = putStablePtr4;
+	api.freeStablePtr4= freeStablePtr4;
     }
     return &api;
 }

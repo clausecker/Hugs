@@ -18,8 +18,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: iomonad.c,v $
- * $Revision: 1.26 $
- * $Date: 2002/05/30 00:32:59 $
+ * $Revision: 1.27 $
+ * $Date: 2002/06/14 14:41:10 $
  * ------------------------------------------------------------------------*/
  
 Name nameIORun;			        /* run IO code                     */
@@ -1558,17 +1558,17 @@ primFun(primEqRef) {			/* Ref a -> Ref a -> Bool	   */
 #define SPArg(nm,offset)                          \
     eval(primArg(offset));                        \
     checkSP();                                    \
-    nm = whnfInt
+    nm = (HugsStablePtr)whnfInt
 
 /* nm should be a variable in which result is stored.
    If you use an expression, reevaluation might occur */
 #define SPResult(nm)                              \
-   updateRoot(mkInt(nm))
+   updateRoot(mkInt((Int)(nm)))
 
 
 primFun(primMakeSP) {			/* a -> IO (StablePtr a)	   */
-    Int sp = mkStablePtr(IOArg(1));
-    if (sp > 0) {
+    HugsStablePtr sp = mkStablePtr(IOArg(1));
+    if (sp != 0) {
 	IOReturn(mkInt(sp));
     } else {
         IOFail(mkIOError(nameIllegal,
@@ -1579,27 +1579,29 @@ primFun(primMakeSP) {			/* a -> IO (StablePtr a)	   */
 }
 
 primFun(primDerefSP) {			/* StablePtr a -> IO a   	   */
-    eval(IOArg(1));
-    IOReturn(derefStablePtr(whnfInt));
+    HugsStablePtr x;
+    SPArg(x,3);
+    
+    IOReturn(derefStablePtr(x));
 }
 
 primFun(primFreeSP) {			/* StablePtr a -> IO ()   	   */
-    Int x;
-    IntArg(x,1);
+    HugsStablePtr x;
+    SPArg(x,3);
     freeStablePtr(x);
     IOReturn(nameUnit);
 }
 
 primFun(primCastSPToP) {		/* StablePtr a -> Ptr ()   	   */
-    Int x;
-    IntArg(x,1);
+    HugsStablePtr x;
+    SPArg(x,1);
     PtrResult((Pointer)x);
 }
 
 primFun(primCastPToSP) {		/* Ptr () -> StablePtr a   	   */
     Pointer x;
     PtrArg(x,1);
-    SPResult((Int)x);
+    SPResult((HsStablePtr)x);
 }
 
 

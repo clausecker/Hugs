@@ -8,8 +8,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: storage.h,v $
- * $Revision: 1.36 $
- * $Date: 2002/05/18 16:22:11 $
+ * $Revision: 1.37 $
+ * $Date: 2002/06/14 14:41:14 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -67,6 +67,7 @@ extern  Bool	     inventedText	Args((Text));
 extern	String	     identToStr		Args((Cell));
 extern	Text	     fixLitText	 	Args((Text));
 extern	Text	     concatText		Args((String,String));
+extern  Text         subText            Args((String,Int));
 
 /* --------------------------------------------------------------------------
  * Specification of syntax (i.e. default written form of application)
@@ -90,6 +91,11 @@ extern	Text	     concatText		Args((String,String));
 #define mkSyntax(a,p)	((a)|((p)<<2))
 #define DEF_OPSYNTAX	mkSyntax(DEF_ASS,DEF_PREC)
 #define NO_SYNTAX	(-1)
+
+#define FFI_NOSAFETY   0
+#define FFI_SAFE       1
+#define FFI_UNSAFE     2
+#define FFI_THREADSAFE 3
 
 /* --------------------------------------------------------------------------
  * Primitive functions:
@@ -657,8 +663,9 @@ struct strName {
     Cell type;
     Cell defn;
     Addr code;
-    Text callconv;                      /* for foreign import/export       */
     Text extFun;                        /* for foreign import/export       */
+    Int  safety;                        /* for foreign import/export       */
+    Int  foreignId;                     /* per module identifier           */
     Prim primDef;
     Name nextNameHash;
 #if PROFILING
@@ -1047,24 +1054,16 @@ extern List liveWeakPtrs;
 #endif /* GC_WEAKPTRS */
 
 /* --------------------------------------------------------------------------
- * Stable pointers
- * ------------------------------------------------------------------------*/
-
-#if GC_STABLEPTRS
-extern  Int  mkStablePtr     Args((Cell));
-extern  Cell derefStablePtr  Args((Int));
-extern  Void freeStablePtr   Args((Int));
-#endif
-
-/* --------------------------------------------------------------------------
  * Plugins
  * ------------------------------------------------------------------------*/
 
 /* This is an exact copy of the declaration found in GreenCard.h */
 
-typedef int     HugsStackPtr;
-typedef int     HugsStablePtr;
-typedef Pointer HugsForeign;
+#include "HsFFI.h"
+
+extern Int              part1Int64      Args((HsInt64));
+extern Int              part2Int64      Args((HsInt64));
+extern HsInt64          int64FromParts  Args((Int,Int));
 
 typedef struct {
 
@@ -1106,7 +1105,7 @@ typedef struct {
   HugsStablePtr  (*lookupName)     Args((char*, char*));
   void           (*ap)             Args((int));
   void           (*getUnit)        Args(());
-  void*          (*mkThunk)        Args((void*, HugsStablePtr));
+  void*          (*mkThunk)        Args((void (*)(void), HugsStablePtr));
   void           (*freeThunk)      Args((void*));
   int     	 (*getBool)        Args(());
   void      	 (*putBool)        Args((int));
@@ -1206,6 +1205,16 @@ typedef struct {
 
 extern  HugsAPI1* hugsAPI1     Args((Void));
 typedef Void (*InitModuleFun1) Args((HugsAPI1*));
+
+/* --------------------------------------------------------------------------
+ * Stable pointers
+ * ------------------------------------------------------------------------*/
+
+#if GC_STABLEPTRS
+extern  Int         mkStablePtr    Args((Cell));
+extern  Cell        derefStablePtr Args((Int));
+extern  Void        freeStablePtr  Args((Int));
+#endif
 
 /* --------------------------------------------------------------------------
  * Misc:

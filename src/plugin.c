@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: plugin.c,v $
- * $Revision: 1.4 $
- * $Date: 2002/04/11 23:20:20 $
+ * $Revision: 1.5 $
+ * $Date: 2002/06/14 14:41:10 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -17,50 +17,30 @@
 #include "errors.h"
 
 /* This file is often compiled with a command-line argument such as
- *   '-DPLUGINS1={Xlib,1,&initXlib},'
+ *   '-DPLUGINS={Xlib,1,&initXlib},'
  * default to empty if not present.
  */
-#ifndef PLUGINS1
-# define PLUGINS1
-#endif
-/* If you're using GreenCard2, you need to set PLUGINS2 instead.. */
-#ifndef PLUGINS2
-# define PLUGINS2
+#ifndef PLUGINS
+# define PLUGINS
 #endif
 
-struct pluginInfo1 {
+struct pluginInfo {
     String         nm;            /* Name of plugin module                 */
-    InitModuleFun1 initModule;    /* Initialisation code for the plugin    */
+    InitModuleFun4 initModule;    /* Initialisation code for the plugin    */
 };
 
-static struct pluginInfo1 pluginList1[] = { /* hardwired list of all plugins */
+static struct pluginInfo pluginList[] = { /* hardwired list of all plugins */
   /* {"Test",  initTest},  */
   /* {"Xlib",  initXlib},  */
-  PLUGINS1
-  {0,0}
-};
-
-struct pluginInfo2 {
-    String         nm;            /* Name of plugin module                 */
-    InitModuleFun2 initModule;    /* Initialisation code for the plugin    */
-};
-
-static struct pluginInfo2 pluginList2[] = { /* hardwired list of all plugins */
-  /* {"Win32", initWin32}, */
-  PLUGINS2
+  PLUGINS
   {0,0}
 };
 
 Bool havePlugin(mod)                /* did we statically link this plugin? */
 String mod; {
     Int i;
-    for(i=0; pluginList1[i].nm; ++i) {
-	if (0 == strcmp(mod, pluginList1[i].nm)) {
-	    return TRUE;
-	}
-    }
-    for(i=0; pluginList2[i].nm; ++i) {
-	if (0 == strcmp(mod, pluginList2[i].nm)) {
+    for(i=0; pluginList[i].nm; ++i) {
+	if (0 == strcmp(mod, pluginList[i].nm)) {
 	    return TRUE;
 	}
     }
@@ -75,11 +55,8 @@ Void plugins(what)
 Int what; {
     Int i;
     switch (what) {
-	case INSTALL : for (i=0; pluginList1[i].initModule; i++) {
-			   (*pluginList1[i].initModule)(hugsAPI1());
-		       }
-		       for (i=0; pluginList2[i].initModule; i++) {
-			   (*pluginList2[i].initModule)(hugsAPI2());
+	case INSTALL : for (i=0; pluginList[i].initModule; i++) {
+			   (*pluginList[i].initModule)(hugsAPI4());
 		       }
 		       break;
     }
