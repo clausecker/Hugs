@@ -14,8 +14,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: iomonad.c,v $
- * $Revision: 1.70 $
- * $Date: 2004/01/14 14:19:10 $
+ * $Revision: 1.71 $
+ * $Date: 2004/02/03 16:11:16 $
  * ------------------------------------------------------------------------*/
  
 Name nameIORun;			        /* run IO code                     */
@@ -2013,9 +2013,7 @@ primFun(primIOEql) {		    /* :: Eval a => a -> a -> ST Mem Bool */
     if (whatIs(x) == whatIs(y)) {
 	switch (whatIs(x)) {
 	   case INTCELL   : IOBoolResult(intOf(x)==intOf(y));
-			    return;
 	   case CHARCELL  : IOBoolResult(charOf(x)==charOf(y));
-			    return;
 	   /* deliberate fall through to end */
 	}
     }
@@ -2029,9 +2027,7 @@ primFun(primIOHash) {                      /* :: Eval a => a -> ST Mem Int */
 
     switch(whatIs(x)) {
 	case INTCELL   : IOBoolResult(x); 
-			 return;
 	case CHARCELL  : IOBoolResult(mkInt(charOf(x)));
-			 return;
     }
     IOBoolResult(mkInt((Int)x));
 }
