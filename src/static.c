@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.154 $
- * $Date: 2003/09/19 10:04:39 $
+ * $Revision: 1.155 $
+ * $Date: 2003/09/29 21:28:41 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -7265,6 +7265,32 @@ Type   t; {
 		ETHEN
 		ERRTEXT  "\n*** Expression : " ETHEN ERREXPR(e);
 		ERRTEXT	 "\n*** Type       : " ETHEN ERRTYPE(ty);
+		ERRTEXT	 "\n"
+		EEND;
+	    }
+	}
+#if !HASKELL_98_ONLY
+    }
+#endif
+}
+
+Void h98CheckInferredType(line,e,t)	/* Check for Haskell 98 type	   */
+Int    line;
+Cell   e;
+Type   t; {
+#if !HASKELL_98_ONLY
+    if (haskell98) {
+#endif
+	Type ty = t;
+	if (isPolyType(t))
+	    t = monotypeOf(t);
+	if (isQualType(t)) {
+	    Cell pi = h98Context(TRUE,fst(snd(t)));
+	    if (nonNull(pi)) {
+		ERRMSG(line) "Cannot infer instance"
+		ETHEN
+		ERRTEXT	 "\n*** Instance   : " ETHEN ERRPRED(pi);
+		ERRTEXT  "\n*** Expression : " ETHEN ERREXPR(e);
 		ERRTEXT	 "\n"
 		EEND;
 	    }

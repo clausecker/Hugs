@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: type.c,v $
- * $Revision: 1.71 $
- * $Date: 2003/09/19 10:04:41 $
+ * $Revision: 1.72 $
+ * $Date: 2003/09/29 21:28:41 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -2142,7 +2142,7 @@ List bs; {
 	    map1Proc(qualifyBinding,preds,hd(imps));
 	}
 
-	h98CheckType(line,"inferred type",
+	h98CheckInferredType(line,
 			fst(hd(hd(defnBounds))),snd(hd(hd(defnBounds))));
 	hd(varsBounds) = revOnto(hd(defnBounds),hd(varsBounds));
     }
@@ -2211,7 +2211,7 @@ List bs; {
 
 	if (!sameSchemes(t,fst(snd(b))))
 	    tooGeneral(line,fst(b),fst(snd(b)),t);
-	h98CheckType(line,"inferred type",fst(b),t);
+	h98CheckInferredType(line,fst(b),t);
 
 	if (nonNull(preds))		/* Check context was strong enough */
 	    cantEstablish(line,extbind,fst(b),t,ps);
@@ -2831,7 +2831,7 @@ Bool useDefs; {				/* using defaults if reqd	   */
     ctxt      = copyPreds(preds);
     type      = generalize(ctxt,copyType(type,beta));
     inputExpr = qualifyExpr(0,preds,inputExpr);
-    h98CheckType(0,"inferred type",inputExpr,type);
+    h98CheckInferredType(0,inputExpr,type);
     typeChecker(RESET);
     emptySubstitution();
     return type;
