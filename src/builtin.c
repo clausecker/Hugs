@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: builtin.c,v $
- * $Revision: 1.8 $
- * $Date: 2001/01/02 18:21:40 $
+ * $Revision: 1.9 $
+ * $Date: 2001/01/16 18:48:40 $
  * ------------------------------------------------------------------------*/
 
 /* We include math.h before prelude.h because SunOS 4's cpp incorrectly
@@ -1527,18 +1527,10 @@ primFun(primBkpt) {			/* check if break enabled          */
 #error primitive "setBkpt" unavailable as LAZY_ST not enabled 
 #else
 primFun(primSetBkpt) {			
-    int i=0;
-    eval(pop());
-    while (whnfHead==nameCons) {
-	eval(top());
-	checkChar();
-	if (i<MAXTAGLENGTH) obsTag[i++]=charOf(whnfHead);
-	eval(pop());
-    }
-    obsTag[i]=0;
+    String s = evalName(IOArg(2));
     eval(IOArg(1));
     checkBool();
-    setBreakpt(obsTag, whnfHead == nameTrue);
+    setBreakpt(s, whnfHead == nameTrue);
     IOReturn(nameUnit);
 }
 #endif
