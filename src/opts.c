@@ -197,8 +197,6 @@ Bool state; {
     Printf("Warning: unknown toggle `%c'; ignoring.\n", c);
 }
 
-#if !defined(HUGS_SERVER)
-
 static Void local togglesIn(state)      /* Print current list of toggles in*/
 Bool state; {                           /* given state                     */
     Int count = 0;
@@ -218,7 +216,7 @@ Bool state; {                           /* given state                     */
 	Putchar(' ');
 }
 
-static Void local optionInfo(Void) {    /* Print information about command */
+Void optionInfo(Void) {                 /* Print information about command */
     static String fmts = "%-5s%s\n";    /* line settings                   */
     static String fmtc = "%-5c%s\n";
     Int    i;
@@ -286,10 +284,6 @@ static Void local optionInfo(Void) {    /* Print information about command */
 #endif
     Putchar('\n');
 }
-
-#endif /* !HUGS_SERVER */
-
-#if HUGS_FOR_WINDOWS || USE_REGISTRY || defined(HUGS_SERVER)
 
 #define PUTC(c)                         \
     if (charsLeft > 1) {                \
@@ -389,9 +383,6 @@ String optionsToStr() {          /* convert options to string */
 #undef PUTS
 #undef PUTInt
 #undef PUTStr
-
-#endif /* defined(HUGS_FOR_WINDOWS) || defined(HUGS_SERVER) */
-
 
 /* --------------------------------------------------------------------------
  * Reading and processing option strings:
