@@ -804,6 +804,7 @@ AC_SUBST([GLUT_LIBS])
 dnl External macros
 
 builtin([include],ac_macros/acx_pthread.m4)
+builtin([include],ac_macros/ice_prog_cpp_traditional.m4)
 
 
 # FP_CHECK_PROG(VARIABLE, PROG-TO-CHECK-FOR,

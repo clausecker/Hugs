@@ -309,7 +309,7 @@ ac_includes_default="\
 # include <unistd.h>
 #endif"
 
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS build build_cpu build_vendor build_os host host_cpu host_vendor host_os target target_cpu target_vendor target_os HostPlatform_CPP TargetPlatform_CPP BuildPlatform_CPP HostArch_CPP TargetArch_CPP BuildArch_CPP HostOS_CPP TargetOS_CPP BuildOS_CPP YACC CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT CPP EGREP PTHREAD_CC PTHREAD_LIBS PTHREAD_CFLAGS RM CP LD PERL SET_MAKE have_hp2ps DOCBOOK2HTML DOCBOOK2DVI DOCBOOK2PDF DOCBOOK2PS fp_prog_find FindCmd fp_prog_sort SortCmd DIFF CONTEXT_DIFF GL_CFLAGS GL_LIBS GLU_CFLAGS GLU_LIBS X_CFLAGS X_PRE_LIBS X_LIBS X_EXTRA_LIBS GLUT_CFLAGS GLUT_LIBS HavePosixRegex HAVE_STRUCT_MSGHDR_MSG_ACCRIGHTS HAVE_STRUCT_MSGHDR_MSG_CONTROL ALLOCA OPTFLAGS DEBUGFLAGS LDDEBUGFLAGS FFI_LIBRARIES HUGSPATH HUGSSUFFIXES hugsdir HUGSDIR BINDIR DLL DLL_ENDING DEV_NULL WOBJECTS RC_FILES STRIP LIBOBJS LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS build build_cpu build_vendor build_os host host_cpu host_vendor host_os target target_cpu target_vendor target_os HostPlatform_CPP TargetPlatform_CPP BuildPlatform_CPP HostArch_CPP TargetArch_CPP BuildArch_CPP HostOS_CPP TargetOS_CPP BuildOS_CPP YACC CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT CPP EGREP CPP_TRADITIONAL PTHREAD_CC PTHREAD_LIBS PTHREAD_CFLAGS RM CP LD PERL SET_MAKE have_hp2ps DOCBOOK2HTML DOCBOOK2DVI DOCBOOK2PDF DOCBOOK2PS fp_prog_find FindCmd fp_prog_sort SortCmd DIFF CONTEXT_DIFF GL_CFLAGS GL_LIBS GLU_CFLAGS GLU_LIBS X_CFLAGS X_PRE_LIBS X_LIBS X_EXTRA_LIBS GLUT_CFLAGS GLUT_LIBS HavePosixRegex HAVE_STRUCT_MSGHDR_MSG_ACCRIGHTS HAVE_STRUCT_MSGHDR_MSG_CONTROL ALLOCA OPTFLAGS DEBUGFLAGS LDDEBUGFLAGS FFI_LIBRARIES HUGSPATH HUGSSUFFIXES hugsdir HUGSDIR BINDIR DLL DLL_ENDING DEV_NULL WOBJECTS RC_FILES STRIP LIBOBJS LTLIBOBJS'
 ac_subst_files='MkInstall MkDepend'
 
 # Initialize some variables set by options.
@@ -1325,8 +1325,6 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 
 
-
-
 ac_aux_dir=
 for ac_dir in ac_aux $srcdir/ac_aux; do
   if test -f $ac_dir/install-sh; then
@@ -1354,6 +1352,8 @@ ac_configure="$SHELL $ac_aux_dir/configure" # This should be Cygnus configure.
 
 
                     ac_config_headers="$ac_config_headers src/config.h src/options.h"
+
+
 
 
 
@@ -2959,6 +2959,85 @@ echo "${ECHO_T}$ac_cv_prog_gcc_traditional" >&6
 fi
 
 
+
+echo "$as_me:$LINENO: checking for a traditional C preprocessor" >&5
+echo $ECHO_N "checking for a traditional C preprocessor... $ECHO_C" >&6
+if test "${ice_cv_traditional_cpp+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+
+cat > conftest.c << EOF
+#if 1
+f' x = x+1
+#endif
+EOF
+ice_cv_traditional_cpp=
+ice_save_cpp="$CPP"
+ice_save_cppflags="$CPPFLAGS"
+for ice_cpp in "$CPP" "$CC -E" "/lib/cpp"; do
+for ice_cppflags in '' ' -traditional-cpp' ' -traditional' ' -Xs'; do
+CPP="$ice_cpp"
+CPPFLAGS="$ice_cppflags"
+cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+
+#if 1
+f' x = x+1
+#endif
+
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if { (eval echo "$as_me:$LINENO: \"$ac_cpp conftest.$ac_ext\"") >&5
+  (eval $ac_cpp conftest.$ac_ext) 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } >/dev/null; then
+  if test -s conftest.err; then
+    ac_cpp_err=$ac_c_preproc_warn_flag
+    ac_cpp_err=$ac_cpp_err$ac_c_werror_flag
+  else
+    ac_cpp_err=
+  fi
+else
+  ac_cpp_err=yes
+fi
+if test -z "$ac_cpp_err"; then
+  ice_cv_traditional_cpp="${CPP}${CPPFLAGS}"
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+
+fi
+rm -f conftest.err conftest.$ac_ext
+if test "$ice_cv_traditional_cpp" != ""; then
+break 2
+fi
+done
+done
+CPP="$ice_save_cpp"
+CPPFLAGS="$ice_save_cppflags"
+
+fi
+echo "$as_me:$LINENO: result: $ice_cv_traditional_cpp" >&5
+echo "${ECHO_T}$ice_cv_traditional_cpp" >&6
+CPP_TRADITIONAL="$ice_cv_traditional_cpp"
+
+
+
 if test "$with_pthreads" = yes; then
 
 
@@ -3909,7 +3988,58 @@ else
   # Found a poor WinDoze version of "find", ignore it.
   { echo "$as_me:$LINENO: WARNING: $fp_prog_find looks like a non-*nix find, ignoring it" >&5
 echo "$as_me: WARNING: $fp_prog_find looks like a non-*nix find, ignoring it" >&2;}
-  FP_CHECK_PROG(FindCmd, find, , , $fp_prog_find)
+  # Extract the first word of "find", so it can be a program name with args.
+set dummy find; ac_word=$2
+echo "$as_me:$LINENO: checking for $ac_word" >&5
+echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6
+if test "${ac_cv_prog_FindCmd+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  if test -n "$FindCmd"; then
+  ac_cv_prog_FindCmd="$FindCmd" # Let the user override the test.
+else
+  ac_prog_rejected=no
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+  for ac_exec_ext in '' $ac_executable_extensions; do
+  if $as_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    if test "$as_dir/$ac_word$ac_exec_ext" = "$fp_prog_find"; then
+       ac_prog_rejected=yes
+       continue
+     fi
+    ac_cv_prog_FindCmd="$as_dir/$ac_word$ac_exec_ext"
+    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+done
+
+if test $ac_prog_rejected = yes; then
+  # We found a bogon in the path, so make sure we never use it.
+  set dummy $ac_cv_prog_FindCmd
+  shift
+  if test $# != 0; then
+    # We chose a different compiler from the bogus one.
+    # However, it has the same basename, so the bogon will be chosen
+    # first if we set FindCmd to just the basename; use the full file name.
+    shift
+    ac_cv_prog_FindCmd="$as_dir/$ac_word${1+' '}$@"
+  fi
+fi
+fi
+fi
+FindCmd=$ac_cv_prog_FindCmd
+if test -n "$FindCmd"; then
+  echo "$as_me:$LINENO: result: $FindCmd" >&5
+echo "${ECHO_T}$FindCmd" >&6
+else
+  echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6
+fi
+
 fi
 rm -f conftest.txt conftest.out
 
@@ -3961,7 +4091,58 @@ else
   # Found a poor WinDoze version of "sort", ignore it.
   { echo "$as_me:$LINENO: WARNING: $fp_prog_sort looks like a non-*nix sort, ignoring it" >&5
 echo "$as_me: WARNING: $fp_prog_sort looks like a non-*nix sort, ignoring it" >&2;}
-  FP_CHECK_PROG(SortCmd, sort, , , $fp_prog_sort)
+  # Extract the first word of "sort", so it can be a program name with args.
+set dummy sort; ac_word=$2
+echo "$as_me:$LINENO: checking for $ac_word" >&5
+echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6
+if test "${ac_cv_prog_SortCmd+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  if test -n "$SortCmd"; then
+  ac_cv_prog_SortCmd="$SortCmd" # Let the user override the test.
+else
+  ac_prog_rejected=no
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+  for ac_exec_ext in '' $ac_executable_extensions; do
+  if $as_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    if test "$as_dir/$ac_word$ac_exec_ext" = "$fp_prog_sort"; then
+       ac_prog_rejected=yes
+       continue
+     fi
+    ac_cv_prog_SortCmd="$as_dir/$ac_word$ac_exec_ext"
+    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+done
+
+if test $ac_prog_rejected = yes; then
+  # We found a bogon in the path, so make sure we never use it.
+  set dummy $ac_cv_prog_SortCmd
+  shift
+  if test $# != 0; then
+    # We chose a different compiler from the bogus one.
+    # However, it has the same basename, so the bogon will be chosen
+    # first if we set SortCmd to just the basename; use the full file name.
+    shift
+    ac_cv_prog_SortCmd="$as_dir/$ac_word${1+' '}$@"
+  fi
+fi
+fi
+fi
+SortCmd=$ac_cv_prog_SortCmd
+if test -n "$SortCmd"; then
+  echo "$as_me:$LINENO: result: $SortCmd" >&5
+echo "${ECHO_T}$SortCmd" >&6
+else
+  echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6
+fi
+
 fi
 rm -f conftest.txt conftest.out
 
@@ -35045,6 +35226,7 @@ s,@EXEEXT@,$EXEEXT,;t t
 s,@OBJEXT@,$OBJEXT,;t t
 s,@CPP@,$CPP,;t t
 s,@EGREP@,$EGREP,;t t
+s,@CPP_TRADITIONAL@,$CPP_TRADITIONAL,;t t
 s,@PTHREAD_CC@,$PTHREAD_CC,;t t
 s,@PTHREAD_LIBS@,$PTHREAD_LIBS,;t t
 s,@PTHREAD_CFLAGS@,$PTHREAD_CFLAGS,;t t
