@@ -718,7 +718,7 @@ test -n "$YACC" && break
 done
 test -n "$YACC" || YACC="yacc"
 
-if test "`basename ${YACC}`x" == "byaccx"; then
+if test "`basename ${YACC}`x" = "byaccx"; then
    echo "Found 'byacc', but the Hugs98 parser is incompatible with it."
    echo "You need to install 'bison' and re-run the configure script."
    exit 1;
@@ -9624,6 +9624,159 @@ fi
         
 
 
+echo $ac_n "checking if '"-r"' builds loadable libraries""... $ac_c" 1>&6
+echo "configure:9629: checking if '"-r"' builds loadable libraries" >&5
+if eval "test \"`echo '$''{'ac_cv_dll_flags'+set}'`\" = set"; then
+  echo $ac_n "(cached) $ac_c" 1>&6
+else
+  
+  cat > conftest_dl.c <<EOF
+int x = 0;    /* global */
+int y;        /* common */
+static int z; /* static */
+static int test2() { return (test() + x + y + z); }
+int test() { return test2(); }
+EOF
+
+  ac_mkdll='${CC-cc} "-r" conftest_dl.c -o conftest_dl.so 1>&5'
+
+  if { (eval echo configure:9644: \"$ac_mkdll\") 1>&5; (eval $ac_mkdll) 2>&5; } && test -s conftest_dl.so 
+  then 
+    cat > conftest.c << EOF
+#include "confdefs.h"
+#if HAVE_PROTOTYPES       /* To enable use of prototypes whenever possible */
+#define Args(x) x
+#else
+#define Args(x) ()
+#endif
+
+#define SYMBOL1 "test"
+#define SYMBOL2 "_test"
+
+#define CANTRUN  1
+#define CANTOPEN 2
+#define SYM1_OK  3
+#define SYM2_OK  4
+#define CANTFIND 5
+
+#if HAVE_DLFCN_H /* eg LINUX, SOLARIS, ULTRIX */
+
+#include <stdio.h>
+#include <dlfcn.h>
+
+main()
+{
+    void *instance;
+    void *sym;
+
+    instance = dlopen("./conftest_dl.so",1);
+    if (instance==0) exit(CANTOPEN);
+      
+    sym = dlsym(instance,SYMBOL1);
+    if (sym != 0) exit(SYM1_OK);
+
+    sym = dlsym(instance,SYMBOL2);
+    if (sym != 0) exit(SYM2_OK);
+
+    exit(CANTFIND);
+}
+
+#elif HAVE_DL_H /* eg HPUX */
+
+#include <dl.h>
+
+main()
+{
+    shl_t instance;
+    void* r;
+
+    instance = shl_load("./conftest_dl.so",BIND_IMMEDIATE,0L);
+    if (instance == 0) exit(CANTOPEN);
+    
+    if (0 == shl_findsym(&instance,SYMBOL1,TYPE_PROCEDURE,&r)) exit(SYM1_OK);
+
+    if (0 == shl_findsym(&instance,SYMBOL2,TYPE_PROCEDURE,&r)) exit(SYM2_OK);
+
+    exit(CANTFIND);
+}
+
+#elif HAVE_MACH_O_DYLD_H         /* MacOS X */
+
+#include <stdio.h>
+#include <mach-o/dyld.h>
+
+main()
+{
+    NSObjectFileImage ofile;
+    NSModule handle = NULL;
+    void* addr;
+    NSSymbol sym;
+
+    if (NSCreateObjectFileImageFromFile("./conftest_dl.so",&ofile) != NSObjectFileImageSuccess)
+        exit(CANTOPEN);
+
+    handle = NSLinkModule(ofile,"./conftest_dl.so",NSLINKMODULE_OPTION_PRIVATE);
+    if (handle == 0) exit(CANTOPEN);
+    
+    sym = NSLookupSymbolInModule(handle, SYMBOL1); 
+    if (sym != 0) exit(SYM1_OK);
+    
+    sym = NSLookupSymbolInModule(handle, SYMBOL1); 
+    if (sym != 0) exit(SYM2_OK);
+    
+    exit(CANTFIND);
+}
+
+#elif HAVE_WINDOWS_H
+
+#include <windows.h>
+
+main()
+{
+    HINSTANCE instance;
+    void* sym;
+
+    instance = LoadLibrary("conftest_dl.dll");
+    if (instance ==0) exit(CANTOPEN);
+
+    sym = (void*)GetProcAddress(instance,SYMBOL1);
+    if (sym != 0) exit(SYM1_OK);
+
+    sym = (void*)GetProcAddress(instance,SYMBOL2);
+    if (sym != 0) exit(SYM2_OK);
+
+    exit(CANTFIND);
+}
+
+#else
+
+main()
+{
+  exit(CANTRUN);
+}
+
+#endif
+EOF
+
+
+if { (eval echo configure:9763: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} 
+then 
+  ./conftest 2>/dev/null
+  if test $? = 3; then
+    ac_cv_dll_flags="-r"
+    ac_cv_leading_underscore=no
+  fi
+  if test $? = 4; then
+    ac_cv_dll_flags="-r"
+    ac_cv_leading_underscore=yes
+  fi
+
+fi fi 
+rm -fr conftest* a.out
+
+fi
+ echo "$ac_t""$ac_cv_dll_flags" 1>&6
+                 
 
 
 
