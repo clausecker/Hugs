@@ -9,8 +9,8 @@
  * included in the distribution.
  *
  * $RCSfile: printer.c,v $
- * $Revision: 1.4 $
- * $Date: 2001/01/02 18:21:41 $
+ * $Revision: 1.5 $
+ * $Date: 2001/04/02 04:05:13 $
  * ------------------------------------------------------------------------*/
 
 static Void   local printer		Args((Name,Int));
@@ -64,6 +64,7 @@ Int what; {
 PROTO_PRIM(primPrint);
 PROTO_PRIM(primBPrint);
 PROTO_PRIM(primNPrint);
+PROTO_PRIM(primShowException);
 PROTO_PRIM(primLPrint);
 PROTO_PRIM(primNLPrint);
 PROTO_PRIM(primSPrint);
@@ -72,6 +73,7 @@ PROTO_PRIM(primNSPrint);
 static struct primitive printerPrimTable[] = {
   {"print",		3, primPrint},
   {"nprint",		3, primNPrint},
+  {"primShowException", 1, primShowException},
   {"lprint",		2, primLPrint},
   {"nlprint",		2, primNLPrint},
   {"sprint",		2, primSPrint},
@@ -122,6 +124,18 @@ primFun(primNPrint) {			/* print term without evaluation   */
     out = NIL;
     printer(nameNPrint,d);
     updOutRoot(primArg(1));
+}
+
+primFun(primShowException) {		/* Print bad redexes               */
+    eval(primArg(1));                   /*     :: Cell -> [Char]           */
+#if CHECK_TAGS
+    if (!isPair(whnfHead) || fst(whnfHead != HUGSOBJECT)) 
+        internal("HugsObject expected");
+#endif
+    out = NIL;
+    out = printDBadRedex(snd(whnfHead),nameNil);
+    updapRoot(fst(out),snd(out));
+    out = NIL;
 }
 
 static Void local printer(pr,d)		/* Main part: primPrint/primNPrint */
@@ -289,12 +303,10 @@ Int  d; {				/* precedence level		   */
 			break;
 #endif
 
-#if INTERNAL_PRIMS
 	case HUGSOBJECT: 
 			outStr("{Cell ...}");
 			pr = nameNPrint;
 			break;
-#endif
 
 #if TREX
 	case RECORD   : outStr("{record}");

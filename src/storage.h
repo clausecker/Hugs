@@ -9,8 +9,8 @@
  * included in the distribution.
  *
  * $RCSfile: storage.h,v $
- * $Revision: 1.17 $
- * $Date: 2001/03/19 17:43:41 $
+ * $Revision: 1.18 $
+ * $Date: 2001/04/02 04:05:13 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -322,9 +322,7 @@ extern  Pointer         ptrOf           Args((Cell));
 
 #define ARRAY        55		  /* Array	snd :: (Bounds,[Values])   */
 #define MUTVAR	     56		  /* Mutvar	snd :: Cell		   */
-#if INTERNAL_PRIMS
 #define HUGSOBJECT   57		  /* HUGSOBJECT	snd :: Cell	           */
-#endif
 
 #if STABLE_NAMES
 #define STABLENAME   58		  /* Stable Nm  snd :: Cell		   */

@@ -12,8 +12,8 @@
  * included in the distribution.
  *
  * $RCSfile: interns.c,v $
- * $Revision: 1.4 $
- * $Date: 2001/01/02 18:21:40 $
+ * $Revision: 1.5 $
+ * $Date: 2001/04/02 04:05:13 $
  * ------------------------------------------------------------------------*/
  
 /* --------------------------------------------------------------------------
@@ -193,7 +193,7 @@ primFun(primCatchError2) {	       /* Error catching  primitive        */
     Bool fOE = failOnError;
     Cell err = NIL;
     failOnError = FALSE;
-    evalWithNoError(primArg(1)); 
+    err = evalWithNoError(primArg(1)); 
     if (isNull(err)) {
 	updapRoot(nameRight, primArg(1));
     } else {

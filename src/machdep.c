@@ -12,8 +12,8 @@
  * included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.14 $
- * $Date: 2001/03/19 20:36:31 $
+ * $Revision: 1.15 $
+ * $Date: 2001/04/02 04:05:13 $
  * ------------------------------------------------------------------------*/
 
 #ifdef HAVE_SIGNAL_H
@@ -982,10 +982,12 @@ Int ac, bc;
     return getchar();
   } else {
       ac = getc(stdin);
-/*    bc = ac;                       /* eat all subsequent chars until EOF or EOL
+#if 0
+      bc = ac;                       /* eat all subsequent chars until EOF or EOL */
       while ((bc != EOF) && (bc != '\n')) {
         bc = getc(stdin);
-      }*/
+      }
+#endif
       return ac;
   }
 }

@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: builtin.c,v $
- * $Revision: 1.10 $
- * $Date: 2001/01/31 02:52:13 $
+ * $Revision: 1.11 $
+ * $Date: 2001/04/02 04:05:13 $
  * ------------------------------------------------------------------------*/
 
 /* We include math.h before prelude.h because SunOS 4's cpp incorrectly
@@ -44,8 +44,9 @@ Name namePrint,   nameNPrint;           /* primitives for printing         */
 Name nameIStrict, nameISeq;             /* primitives for strictness       */
 #endif
 
-Name nameFst,     nameSnd;          /* 2-tuple selector functions      */
+Name nameFst,     nameSnd;              /* 2-tuple selector functions      */
 Name nameAnd,     nameOr;               /* built-in logical connectives    */
+Name namePrimThrow;                     /* throw primitive function        */
 Name nameError;                         /* error primitive function        */
 Name nameUndefined;                     /* generic undefined value         */
 Name nameComp;                          /* function composition            */
@@ -482,6 +483,8 @@ Name nameIntToFloat;
 PROTO_PRIM(primFatbar);
 PROTO_PRIM(primFail);
 PROTO_PRIM(primCatchError);
+PROTO_PRIM(primThrowException);
+PROTO_PRIM(primCatchException);
 PROTO_PRIM(primSel);
 PROTO_PRIM(primIf);
 PROTO_PRIM(primStrict);
@@ -623,6 +626,8 @@ static struct primitive builtinPrimTable[] = {
   {"fatbar",            2, primFatbar},
   {"fail",              0, primFail},
   {"catchError",        1, primCatchError},
+  {"primThrowException",1, primThrowException},
+  {"primCatchException",1, primCatchException},
   {"gcBhole",           0, primFail},
   {"error",             1, primFail},
   {"sel",               3, primSel},
@@ -882,7 +887,7 @@ primFun(primFail) {                     /* Failure primitive               */
     cantReduce();
 }
 
-primFun(primCatchError) {           /* Error catching  primitive       */
+primFun(primCatchError) {               /* Error catching  primitive       */
     Bool fOE = failOnError;
     Cell err = NIL;
     failOnError = FALSE;
@@ -891,6 +896,38 @@ primFun(primCatchError) {           /* Error catching  primitive       */
 	updapRoot(nameJust, primArg(1));
     } else {
 	updateRoot(nameNothing);
+    }
+    failOnError = fOE;
+}
+
+/* ToDo: this just won't work! */
+primFun(primThrowException) {           /* Failure primitive               */
+    evalFails(root+1);                  /*  :: E×ception -> a              */
+}
+
+/* Cells have to be boxed (using the HUGSOBJECT tag) so that we can        */
+/* evaluate a Cell expression such as "fst (cell1, cell2)" without         */
+/* evaluating the thunk inside the Cell.                                   */
+
+/* This function ought to be in the IO monad to preserve referential       */
+/* transparency but it has tricky interactions with the concurrency parts  */
+/* of the IO monad so we provide it in unsafe form here and make it safe   */
+/* in the Prelude.                                                         */
+
+primFun(primCatchException) {	       /* Error catching primitive         */
+    Bool fOE = failOnError;            /*  :: a -> Either Cell a           */
+    Cell err = NIL;
+    failOnError = FALSE;
+    err = evalWithNoError(primArg(1)); 
+    if (isNull(err)) {
+	updapRoot(nameRight, primArg(1));
+    } else {
+        if (isAp(err) && fun(err) == namePrimThrow) {
+            err = arg(err);
+        } else {
+            err = ap(HUGSOBJECT, err);
+        }
+	updapRoot(nameLeft, err);
     }
     failOnError = fOE;
 }
@@ -2141,7 +2178,7 @@ Int what; {
 		       pFun(nameEnFrTh,    "_FromThen","enFrTh");
 
 		       pFun(nameBlackHole, "_Gc Black Hole",    "gcBhole");
-		       pFun(nameInd,	   "_indirect","error");
+		       pFun(nameInd,	   "_indirect", "error");
 		       name(nameInd).number = DFUNNAME;
 #if    TREX
 		       pFun(nameRecExt,	   "_recExt",	"recExt");
@@ -2166,6 +2203,7 @@ Int what; {
 		       predef(nameOr,           "||");
 		       predef(nameId,           "id");
 		       predef(nameOtherwise,    "otherwise");
+		       predef(namePrimThrow,    "primThrowException");
 		       predef(nameError,        "error");
 		       predef(nameUndefined,    "undefined");
 		       predef(nameComp,         ".");
