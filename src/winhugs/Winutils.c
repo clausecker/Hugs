@@ -242,14 +242,18 @@ VOID DrawBitmap (HDC hDC, HBITMAP hBitmap, UINT left, UINT top)
 VOID CenterDialogInParent (HWND hDlg)
 {
    RECT rDlg, rMain;
+   int posX, posY;
 
    GetWindowRect(hDlg, &rDlg);
    GetWindowRect(GetParent(hDlg), &rMain);
+   
+   posX = rMain.left+((rMain.right-rMain.left-(rDlg.right - rDlg.left))/2);
+   posY = rMain.top+((rMain.bottom-rMain.top-(rDlg.bottom - rDlg.top))/2);
+   
+   if (posX < 0) posX = 0;
+   if (posY < 0) posY = 0;
 
-   SetWindowPos(hDlg, NULL,
-       rMain.left+((rMain.right-rMain.left-(rDlg.right - rDlg.left))/2),
-       rMain.top+((rMain.bottom-rMain.top-(rDlg.bottom - rDlg.top))/2),
-       0, 0, SWP_NOSIZE | SWP_NOACTIVATE);
+   SetWindowPos(hDlg, NULL, posX, posY, 0, 0, SWP_NOSIZE | SWP_NOACTIVATE);
 }
 
 
@@ -262,7 +266,7 @@ BOOL CALLBACK SetDialogFontProc(HWND hwndChild, LPARAM hFont)
 }
 
 
-/* Call this fucntion in WM_INITDIALOG to set a font for every control in the dialog */
+/* Call this function in WM_INITDIALOG to set a font for every control in the dialog */
 VOID SetDialogFont (HWND hDlg, HFONT hFont)
 {
                           
