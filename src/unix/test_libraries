@@ -74,7 +74,7 @@ test_module() {
 (
 	cd $srcdir
 	for package in $packages
-	do	find $package -type f \( -name \*.hs  -o -name \*.lhs -o -name \*.y -o -name \*.ly -o -name \*.hsc -o -name \*.gc \) -print |
+	do	find $package -follow -type f \( -name \*.hs  -o -name \*.lhs -o -name \*.y -o -name \*.ly -o -name \*.hsc -o -name \*.gc \) -print |
 			sed 's:^[^/]*/::
 				s/\..*//
 				s:/:.:g' |
