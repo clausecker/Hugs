@@ -41,9 +41,11 @@ module Hugs.LazyST
         , Ix
 	) where
 
-import Hugs.Array(Array,Ix(index),bounds,assocs)
+import Hugs.Array(Array,Ix(index),assocs)
+import Hugs.Array.Base(HasBounds(bounds),MArray(..))
 import Hugs.IOExts(unsafePerformIO)
 import Control.Monad   
+import Data.Dynamic
 
 -----------------------------------------------------------------------------
 
@@ -116,6 +118,9 @@ unsafeFreezeSTArray  = freezeSTArray  -- not as fast as GHC
 instance Eq (STArray s ix elt) where
   (==) = eqSTArray
 
+instance HasBounds (STArray s) where
+  bounds = boundsSTArray
+
 primitive primNewArr   "STNewArr"
           :: (a,a) -> Int -> b -> ST s (STArray s a b)
 primitive primReadArr  "STReadArr"
@@ -130,3 +135,16 @@ primitive eqSTArray    "STArrEq"
           :: STArray s a b -> STArray s a b -> Bool
 
 -----------------------------------------------------------------------------
+
+instance MArray (STArray s) e (ST s) where
+	newArray = newSTArray
+	readArray = readSTArray
+	writeArray = writeSTArray
+
+sTArrayTc :: TyCon
+sTArrayTc = mkTyCon "STArray"
+
+instance (Typeable a, Typeable b, Typeable c) => Typeable (STArray a b c) where
+  typeOf a = mkAppTy sTArrayTc [typeOf ((undefined :: STArray a b c -> a) a),
+				typeOf ((undefined :: STArray a b c -> b) a),
+				typeOf ((undefined :: STArray a b c -> c) a)]

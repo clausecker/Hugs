@@ -137,10 +137,10 @@ function stub {
   cvt base Data/Array.hs
 # cvt base Data/Array/Base.hs
 # cvt base Data/Array/Diff.hs
-# cvt base Data/Array/IArray.hs
-# cvt base Data/Array/IO.hs
-# cvt base Data/Array/MArray.hs
-# cvt base Data/Array/ST.hs
+  cvt base Data/Array/IArray.hs
+  cvt base Data/Array/IO.hs
+  cvt base Data/Array/MArray.hs
+  cvt base Data/Array/ST.hs
 # cvt base Data/Array/Storable.hs
 # cvt base Data/Array/Unboxed.hs
   cvt base Data/Bits.hs
@@ -150,7 +150,7 @@ function stub {
   cvt base Data/Dynamic.hs
   cvt base Data/Either.hs
   cvt base Data/FiniteMap.hs
-# cvt base Data/Generics.hs
+# cvt base Data/Generics.hs		# GHC-specific
   cvt base Data/IORef.hs
   cvt base Data/Int.hs
   cvt base Data/Ix.hs
@@ -260,7 +260,7 @@ mkdir -p $stubdir
 # stub CVar
   stub Chan		Control.Concurrent.Chan
   stub Channel		Control.Concurrent.Chan
-# stub ChannelVar
+# stub ChannelVar				# deprecated Hugs lib
   stub ConcBase		Hugs.ConcBase
 # stub Concurrent	Control.Concurrent
   stub Dynamic		Data.Dynamic
@@ -271,7 +271,7 @@ mkdir -p $stubdir
   stub GetOpt		System.Console.GetOpt
   stub Html		Text.Html
   stub HtmlBlockTable	Text.Html.BlockTable
-  stub IOExts		Hugs.IOExts Data.IORef
+  stub IOExts		Hugs.IOExts Hugs.IORef Hugs.IOArray
   stub IORef		Data.IORef
   stub Int		Hugs.Int
   stub LazyST		Hugs.LazyST
@@ -281,7 +281,7 @@ mkdir -p $stubdir
 # stub MarshalError	Foreign.Marshal.Error
 # stub MarshalUtils	Foreign.Marshal.Utils
 # stub Memo
-# stub Merge
+# stub Merge					# deprecated Hugs lib
   stub MonadCont	Control.Monad.Cont
   stub MonadEither	Control.Monad.Error
   stub MonadError	Control.Monad.Error
@@ -290,7 +290,7 @@ mkdir -p $stubdir
   stub MonadList	Control.Monad.List
   stub MonadRWS		Control.Monad.RWS
   stub MonadReader	Control.Monad.Reader
-# stub MonadRec		# new libs have Fix, but Rec is used by mdo
+# stub MonadRec			# new libs have Fix, but Rec is used by mdo
   stub MonadState	Control.Monad.State
   stub MonadTrans	Control.Monad.Trans
   stub MonadWriter	Control.Monad.Writer
@@ -312,7 +312,7 @@ mkdir -p $stubdir
   stub ShowFunctions	Text.Show.Functions
   stub Stable		Hugs.Stable
   stub StablePtr	Hugs.StablePtr
-# stub Storable
+# stub Storable		Foreign.Storable
   stub Weak		Hugs.Weak
   stub Word		Hugs.Word
 
