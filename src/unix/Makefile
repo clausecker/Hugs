@@ -5,7 +5,7 @@ OPTS =  --enable-ffi \
 GNULIBS = 
 
 config: configure
-	-rm config.cache
+	$(RM) -r config.cache autom4te.cache
 	LIBS=${GNULIBS} hugsdir=${ROOT} ./configure ${OPTS} --datadir=${ROOT}
 
 configure: configure.in
