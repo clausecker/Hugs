@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.70 $
- * $Date: 2002/03/06 01:56:39 $
+ * $Revision: 1.71 $
+ * $Date: 2002/03/06 15:32:07 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1047,7 +1047,6 @@ struct options toggle[] = {             /* List of command line toggles    */
              1,
 #endif
             "Print most general type",  &printMostGeneralType},
-#if IPARAM
     {0,   
 #if !HASKELL_98_ONLY
           0,
