@@ -46,10 +46,10 @@ esac
 # platform sensitive settings
 case $platform in
 Win32)	CALLCONV=stdcall
-	cpp_flags="$cpp_flags -DPLATFORM=Win32"  	# hack for HGL
+	cpp_flags="$cpp_flags -DPLATFORM=\"Win32\""  	# hack for HGL
 	tmpdir_root=`cygpath -w /tmp | sed -e 's%\\\\%/%g' `;;
 *)	CALLCONV=ccall
-	cpp_flags="$cpp_flags -DPLATFORM=X11"   	# hack for HGL
+	cpp_flags="$cpp_flags -DPLATFORM=\"X11\""   	# hack for HGL
 	tmpdir_root="/tmp" ;;
 esac
 
@@ -95,9 +95,13 @@ esac
 
 if test -f $source_dir/config.mk; then
 	GLU_CFLAGS="`sed -n 's/^GLU_CFLAGS=//p' $source_dir/config.mk`"
+	GLU_FRAMEWORKS="`sed -n 's/^GLU_FRAMEWORKS=//p' $source_dir/config.mk`"
 	GLU_LIBS="`sed -n 's/^GLU_LIBS=//p' $source_dir/config.mk`"
+	GLUT_EXTRA_LIBS="`sed -n 's/^GLUT_EXTRA_LIBS=//p' $source_dir/config.mk`"
 	GLUT_CFLAGS="`sed -n 's/^GLUT_CFLAGS=//p' $source_dir/config.mk`"
+	GLUT_FRAMEWORKS="`sed -n 's/^GLUT_FRAMEWORKS=//p' $source_dir/config.mk`"
 	GLUT_LIBS="`sed -n 's/^GLUT_LIBS=//p' $source_dir/config.mk`"
+	AL_FRAMEWORKS="`sed -n 's/^AL_FRAMEWORKS=//p' $source_dir/config.mk`"
 	AL_LIBS="`sed -n 's/^AL_LIBS=//p' $source_dir/config.mk`"
 fi
 
@@ -303,9 +307,9 @@ then	conf=$tmpdir/package.conf
 		-DLIBDIR= -DLIBRARY= \
 		-DX_CFLAGS="\"$X_CFLAGS\"" -DX_PRE_LIBS="\"$X_PRE_LIBS\"" \
 		-DX_LIBS="\"$X_LIBS\"" -DX_EXTRA_LIBS="\"$X_EXTRA_LIBS\"" \
-		-DGLU_CFLAGS=",\"$GLU_CFLAGS\"" -DGLU_LIBS=",\"$GLU_LIBS\"" \
-		-DGLUT_CFLAGS=",\"$GLUT_CFLAGS\"" -DGLUT_LIBS=",\"$GLUT_LIBS\"" \
-		-DAL_LIBS=",\"$AL_LIBS\"" \
+		-DGLU_CFLAGS=",\"$GLU_CFLAGS\"" -DGLU_FRAMEWORKS="\"$GLU_FRAMEWORKS\"" -DGLU_LIBS=",\"$GLU_LIBS\"" \
+		-DGLUT_EXTRA_LIBS="\"$GLUT_EXTRA_LIBS\"" -DGLUT_CFLAGS=",\"$GLUT_CFLAGS\"" -DGLUT_FRAMEWORKS="\"$GLUT_FRAMEWORKS\"" -DGLUT_LIBS=",\"$GLUT_LIBS\"" \
+		-DAL_FRAMEWORKS="\"$AL_FRAMEWORKS\"" -DAL_LIBS=",\"$AL_LIBS\"" \
 		>$conf
 else
 	conf=`echo $source_dir/*.conf`
