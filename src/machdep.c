@@ -11,8 +11,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.80 $
- * $Date: 2003/03/03 06:31:04 $
+ * $Revision: 1.81 $
+ * $Date: 2003/03/03 11:31:19 $
  * ------------------------------------------------------------------------*/
 #include <math.h>
 #include "prelude.h"
@@ -108,7 +108,6 @@ int time_release = 20000;
 int allow_break_count = 0;
 #endif
 
-extern String readRegString       Args((HKEY, String, String, String));
 /* --------------------------------------------------------------------------
  * Prototypes for registry reading
  * ------------------------------------------------------------------------*/
@@ -118,6 +117,8 @@ extern String readRegString       Args((HKEY, String, String, String));
 #if HSCRIPT
 #define HScriptRoot ("SOFTWARE\\Haskell\\HaskellScript\\")
 #endif
+
+extern String readRegString        Args((HKEY, String, String, String));
 
 static Bool   local createKey      Args((HKEY, String, PHKEY, REGSAM));
 static Bool   local queryValue     Args((HKEY, String, String, LPDWORD, LPBYTE, DWORD));
