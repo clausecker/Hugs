@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: storage.c,v $
- * $Revision: 1.46 $
- * $Date: 2002/07/06 10:52:00 $
+ * $Revision: 1.47 $
+ * $Date: 2002/07/09 17:46:33 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1711,6 +1711,7 @@ Script sno; {
 #endif
 	if (scripts[i-1].prims) {
 	  freePrimInfo(scripts[i-1].prims);
+	  scripts[i-1].prims = 0;
 	}
 	scripts[i-1].prims = scripts[i].prims;
 
@@ -1774,6 +1775,7 @@ Script sno; {                           /* to reading script sno           */
 	while (i < scriptHw) {
 	  if (scripts[i].prims) {
 	    freePrimInfo(scripts[i].prims);
+            scripts[i].prims = 0;
 	  }
 	  i++;
 	}
@@ -3393,6 +3395,7 @@ Int what; {
       while (i < scriptHw) {
 	if (scripts[i].prims) {
 	  freePrimInfo(scripts[i].prims);
+	  scripts[i].prims = 0;
 	}
 	i++;
       }
