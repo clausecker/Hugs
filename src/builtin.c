@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: builtin.c,v $
- * $Revision: 1.39 $
- * $Date: 2003/01/06 14:31:35 $
+ * $Revision: 1.40 $
+ * $Date: 2003/01/21 10:41:31 $
  * ------------------------------------------------------------------------*/
 
 /* We include math.h before prelude.h because SunOS 4's cpp incorrectly
@@ -1950,7 +1950,6 @@ static HsFunPtr       getFunPtr      Args((void));
 static HsForeignPtr   getForeignPtr  Args((void));	      
 static HugsStablePtr  getStablePtr   Args((void));
 static HsStablePtr    getStablePtr4  Args((void));
-static HugsStablePtr  makeStablePtr4 Args((void));
 static HsFloat        getFloat4      Args((void));
 static HsDouble       getDouble4     Args((void));
 
