@@ -4,7 +4,16 @@ body {
 	background: white
 }
 
-h1, h2, h3, h4, div.question { color: #000099 }
+div.navheader, div.navfooter {
+	padding-left: 3px;
+	padding-right: 3px;
+	background: #ddeeff
+}
+div.navheader td, div.navfooter td { font-size: 80% }
+
+h1, h2, h3, h4, div.question, div.navheader th, div.navfooter td {
+	color: #000099
+}
 h1, h2, h3, h4 { font-weight: bold }
 div.question { font-style: italic }
 
