@@ -11,8 +11,8 @@
  * included in the distribution.
  *
  * $RCSfile: parser.y,v $
- * $Revision: 1.9 $
- * $Date: 1999/11/16 22:59:55 $
+ * $Revision: 1.10 $
+ * $Date: 2000/08/11 22:34:34 $
  * ------------------------------------------------------------------------*/
 
 %{
@@ -848,13 +848,30 @@ dbind	  : IPVARID '=' exp		{$$ = gc3(pair($1,$3));}
 
 list	  : exp				{$$ = gc1(ap(FINLIST,cons($1,NIL)));}
 	  | exps2			{$$ = gc1(ap(FINLIST,rev($1)));}
-	  | exp '|' quals		{$$ = gc3(ap(COMP,pair($1,rev($3))));}
+	  | exp zipquals		{
+#if ZIP_COMP
+					 if (length($2)==1) {
+					     $$ = gc2(ap(COMP,pair($1,hd($2))));
+					 } else {
+					     if (haskell98)
+						 syntaxError("list comprehension");
+					     $$ = gc2(ap(ZCOMP,pair($1,rev($2))));
+					 }
+#else
+					 if (length($2)!=1) {
+					     syntaxError("list comprehension");
+					 }
+					 $$ = gc2(ap(COMP,pair($1,hd($2))));
+#endif
+					}
 	  | exp         UPTO exp	{$$ = gc3(ap(ap(nameFromTo,$1),$3));}
 	  | exp ',' exp UPTO		{$$ = gc4(ap(ap(nameFromThen,$1),$3));}
 	  | exp         UPTO		{$$ = gc2(ap(nameFrom,$1));}
 	  | exp ',' exp UPTO exp	{$$ = gc5(ap(ap(ap(nameFromThenTo,
 								$1),$3),$5));}
 	  ;
+zipquals  : zipquals '|' quals		{$$ = gc3(cons(rev($3),$1));}
+	  | '|' quals			{$$ = gc2(cons(rev($2),NIL));}
 quals	  : quals ',' qual		{$$ = gc3(cons($3,$1));}
 	  | qual			{$$ = gc1(cons($1,NIL));}
 	  ;

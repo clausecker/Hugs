@@ -9,8 +9,8 @@
  * included in the distribution.
  *
  * $RCSfile: prelude.h,v $
- * $Revision: 1.8 $
- * $Date: 2000/07/28 04:23:46 $
+ * $Revision: 1.9 $
+ * $Date: 2000/08/11 22:34:34 $
  * ------------------------------------------------------------------------*/
 
 #include "config.h"
@@ -112,6 +112,7 @@
 #if !HASKELL_98_ONLY
 #define TREX		1
 #define IPARAM		1
+#define ZIP_COMP	1
 #define HERE_DOC	1
 #define MULTI_INST	1
 #else

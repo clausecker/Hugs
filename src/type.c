@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: type.c,v $
- * $Revision: 1.20 $
- * $Date: 2000/06/30 17:01:01 $
+ * $Revision: 1.21 $
+ * $Date: 2000/08/11 22:34:35 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -135,6 +135,11 @@ static Int    local funcType          Args((Int));
 static Void   local typeCase          Args((Int,Int,Cell));
 static Void   local typeComp	      Args((Int,Type,Cell,List));
 static Cell   local typeMonadComp     Args((Int,Cell));
+#if ZIP_COMP
+static Cell   local typeZComp	      Args((Int,Type,Cell,List));
+static Void   local typeCompy	      Args((Int,Type,List));
+static Cell   local typeMonadZComp    Args((Int,Cell));
+#endif
 static Void   local typeDo	      Args((Int,Cell));
 static Void   local typeConFlds	      Args((Int,Cell));
 static Void   local typeUpdFlds	      Args((Int,Cell));
@@ -391,6 +396,11 @@ static List pendingBtyvs = NIL;
 static Void local enterPendingBtyvs() {
     enterBtyvs();
     pendingBtyvs = cons(NIL,pendingBtyvs);
+}
+
+static Void local leavePendingBtyvsQuietly() {
+    pendingBtyvs = tl(pendingBtyvs);
+    leaveBtyvs();
 }
 
 static Void local leavePendingBtyvs() {
@@ -759,6 +769,10 @@ Cell e; {
 			  break;
 
 	case COMP	: return typeMonadComp(l,e);
+
+#if ZIP_COMP
+	case ZCOMP	: return typeMonadZComp(l,e);
+#endif
 
 	case CASE	: {    Int beta = newTyvars(2);    /* discr result */
 			       check(l,fst(snd(e)),NIL,discr,aVar,beta);
@@ -1235,6 +1249,172 @@ List qs; {
     }
 }
 
+#if ZIP_COMP
+
+/* --------------------------------------------------------------------------
+ * Parallel comprehensions
+ *
+ * This is an extension to the standard list comprehension notation,
+ * allowing parallel lists of qualifiers that generate independently
+ * of each other.  Parallel qualifier lists are separated with additional
+ * `|' symbols:
+ *     [ e | p1 <- e11, p2 <- e12, ...
+ *         | q1 <- e21, q2 <- e22, ...
+ *         ... ]
+ *
+ * The meaning of a parallel comprehension can be defined in terms of zip
+ * and a regular comprehension:
+ *     [ e | ((p1,p2), (q1,q2)) <- zip [(p1,p2) | p1 <- e11, p2 <- e12]
+ *                                     [(q1,q2) | q1 <- e21, q2 <- e22]]
+ * The use of let-bindings in the qualifier lists complicates this slightly.
+ * Let-bound variables will scope over the rest of their qualifier list
+ * as well as `e', but not over any part of a parallel qualifier list.
+ * We can express this in the translation by including in the derived
+ * patterns all the let-bound variables:
+ *     [ e | p1 <- e11, let v1 = e12, p2 <- e13
+ *         | q1 <- e21, let v2 = e22, q2 <- e23]
+ *     =>
+ *     [ e | ((p1,v1,p2), (q1,v2,q2)) <-
+ *               zip [(p1,v1,p2) | p1 <- e11, let v1 = e12, p2 <- e13]
+ *                   [(q1,v2,q2) | q1 <- e21, let v2 = e22, q2 <- e23]]
+ * Where it is understood that the `v' patterns in the tuples are given
+ * rank-2 types, so we don't lose the polymorphism.  We also have to be
+ * careful to preserve any shadowing.
+ *
+ * ZZ We aren't dealing with WHEREs correctly...
+ * ZZ We aren't dealing with skolem vars correctly...
+ * ------------------------------------------------------------------------*/
+
+static List gatheredAss;
+static List gatheredTyvars;
+static List gatheredPTyvars;
+
+static List local getPats(bs)
+List bs; {
+    List ps = NIL;
+    for (; nonNull(bs); bs=tl(bs)) {
+	ps = cons(fst(hd(bs)), ps);
+    }
+    return ps;
+}
+
+static Text local zipName(n)
+Int n; {
+    static char zip[14];
+    if (n == 2)
+	strcpy(zip, "zip");
+    else
+	sprintf(zip, "zip%d", n);
+    return findText(zip);
+}
+
+static Cell local tupleUp(xs)
+List xs; {
+    Int n = length(xs);
+    if (n == 1)
+	return hd(xs);
+    else {
+	Cell x = mkTuple(n);
+	for (; nonNull(xs); xs=tl(xs))
+	    x = ap(x, hd(xs));
+	return x;
+    }
+}
+
+static Cell local typeZComp(l,m,e,qss)	/* type check comprehension	   */
+Int l;
+Type m;					/* monad (mkOffset(0))		   */
+Cell e;
+List qss; {
+    List pss = qss, ass;
+    List zpat, zexp;
+#if IPARAM
+    List svPreds;
+#endif
+    saveVarsAss();
+    gatheredAss = NIL;
+    gatheredTyvars = NIL;
+    gatheredPTyvars = NIL;
+    for (;nonNull(pss);pss=tl(pss)) {
+	gatheredAss = cons(NIL,gatheredAss);
+	typeCompy(l,m,hd(pss));
+    }
+    /* add gathered vars */
+    hd(varsBounds) = revOnto(concat(gatheredAss),hd(varsBounds));
+    enterPendingBtyvs();
+    hd(btyvars) = gatheredTyvars;
+    hd(pendingBtyvs) = gatheredPTyvars;
+    spTypeExpr(l,fst(e));
+    leavePendingBtyvs();
+    restoreVarsAss();
+
+    /* now, we construct a regular comprehension out of the parallel one */
+    zpat = mkTuple(length(qss));
+    zexp = mkVar(zipName(length(qss)));
+    for (pss = qss, ass = rev(gatheredAss);nonNull(pss);pss=tl(pss), ass=tl(ass)) {
+	List ps = tupleUp(getPats(hd(ass)));
+	zpat = ap(zpat, ps);
+	/* zexp = ap(zexp, ap(COMP,pair(ps, hd(pss)))); */
+	zexp = ap(zexp, ap(MONADCOMP,pair(nameListMonad,pair(ps, hd(pss)))));
+    }
+    return pair(fst(e),singleton(ap(FROMQUAL,pair(zpat,zexp))));
+}
+
+static Void local typeCompy(l,m,qs)	/* type check comprehension	   */
+Int  l;
+Type m;					/* monad (mkOffset(0))		   */
+List qs; {
+    static String boolQual = "boolean qualifier";
+    static String genQual  = "generator";
+#if IPARAM
+    List svPreds;
+#endif
+
+    STACK_CHECK
+    if (!isNull(qs)) {			/* no qualifiers left		   */
+	Cell q   = hd(qs);
+	List qs1 = tl(qs);
+	switch (whatIs(q)) {
+	    case BOOLQUAL : spCheck(l,snd(q),NIL,boolQual,typeBool,0);
+			    typeCompy(l,m,qs1);
+			    break;
+
+	    case QWHERE   : enterBindings();
+			    enterSkolVars();
+			    mapProc(typeBindings,snd(q));
+			    typeCompy(l,m,qs1);
+			    leaveBindings();
+			    leaveSkolVars(l,typeIs,typeOff,0);
+			    break;
+
+	    case FROMQUAL : {   Int beta = newTyvars(1);
+				saveVarsAss();
+				enterPendingBtyvs();
+				spCheck(l,snd(snd(q)),NIL,genQual,m,beta);
+				enterSkolVars();
+				fst(snd(q))
+				    = typeFreshPat(l,patBtyvs(fst(snd(q))));
+				shouldBe(l,fst(snd(q)),NIL,genQual,aVar,beta);
+				hd(gatheredAss) = revOnto(dupUpto(hd(varsBounds),saveAssump),hd(gatheredAss));
+				gatheredTyvars = dupOnto(hd(btyvars),gatheredTyvars);
+				gatheredPTyvars = dupOnto(hd(pendingBtyvs),gatheredPTyvars);
+				typeCompy(l,m,qs1);
+				restoreVarsAss();
+			        leavePendingBtyvsQuietly();
+				leaveSkolVars(l,typeIs,typeOff,0);
+			    }
+			    break;
+
+	    case DOQUAL   : spCheck(l,snd(q),NIL,genQual,m,newTyvars(1));
+			    typeCompy(l,m,qs1);
+			    break;
+
+	    default:	    internal("typeComp");
+	}
+    }
+}
+#endif
+
 static Cell local typeMonadComp(l,e)	/* type check monad comprehension  */
 Int  l;
 Cell e; {
@@ -1253,6 +1433,28 @@ Cell e; {
     inferType(mon,alpha);
     return ap(MONADCOMP,pair(m,snd(e)));
 }
+
+#if ZIP_COMP
+static Cell local typeMonadZComp(l,e)	/* type check monad comprehension  */
+Int  l;
+Cell e; {
+    Int  alpha	      = newTyvars(1);
+    Int  beta	      = newTyvars(1);
+    Cell mon	      = ap(mkInt(beta),aVar);
+    Cell m	      = assumeEvid(predMonad,beta);
+    Cell new;
+    tyvar(beta)->kind = starToStar;
+#if !MONAD_COMPS
+    bindTv(beta,typeList,0);
+    m = nameListMonad;
+#endif
+
+    new = typeZComp(l,mon,snd(e),snd(snd(e)));
+    bindTv(alpha,typeIs,typeOff);
+    inferType(mon,alpha);
+    return ap(MONADCOMP,pair(m,new));
+}
+#endif
 
 static Void local typeDo(l,e)		/* type check do-notation	   */
 Int  l;

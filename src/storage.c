@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: storage.c,v $
- * $Revision: 1.8 $
- * $Date: 2000/08/11 15:03:13 $
+ * $Revision: 1.9 $
+ * $Date: 2000/08/11 22:34:35 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1968,7 +1968,7 @@ Int  depth; {
 	  case NAME :
 	      Printf("name(%d)", c-NAMEMIN);
 	      if (NAMEMIN <= c && c < nameHw)
-		  Printf("=\"%s\"", textToStr(c));
+		  Printf("=\"%s\"", textToStr(name(c).text));
 	      break;
 	  case TYCON :
 	      Printf("tycon(%d)", c-TYCMIN);
@@ -2026,6 +2026,20 @@ Int  depth; {
 	      break;
 	  case ESIGN:
 	      Printf("ESign(");
+	      print(fst(snd(c)),depth-1);
+	      Putchar(',');
+	      print(snd(snd(c)),depth-1);
+	      Putchar(')');
+	      break;
+	  case COMP:
+	      Printf("COMP(");
+	      print(fst(snd(c)),depth-1);
+	      Putchar(',');
+	      print(snd(snd(c)),depth-1);
+	      Putchar(')');
+	      break;
+	  case FROMQUAL:
+	      Printf("FROMQUAL(");
 	      print(fst(snd(c)),depth-1);
 	      Putchar(',');
 	      print(snd(snd(c)),depth-1);
@@ -2251,6 +2265,15 @@ List xs; {
     return rev(ys);
 }
 
+List dupUpto(xs,c)                     /* Duplicate spine of list xs       */
+List xs;
+Cell c; {
+    List ys = NIL;
+    for (; nonNull(xs) && hd(xs) != c; xs=tl(xs))
+	ys = cons(hd(xs),ys);
+    return rev(ys);
+}
+
 List revOnto(xs,ys)                    /* Destructively reverse elements of*/
 List xs, ys; {                         /* list xs onto list ys...          */
     Cell zs;
@@ -2284,6 +2307,24 @@ List xs, ys; {
     return xs;
 }
 #endif
+
+List concat(xss)
+List xss; {
+    List xs = NIL;
+    for (; nonNull(xss); xss=tl(xss))
+	xs = dupOnto(hd(xss),xs);
+    return xs;
+}
+
+List intersect(xs,ys)
+List xs, ys; {
+    List zs = NIL;
+    for (;nonNull(xs);xs=tl(xs)) {
+	if (varIsMember(textOf(hd(xs)),ys))
+	    zs = cons(hd(xs),zs);
+    }
+    return zs;
+}
 
 Cell varIsMember(t,xs)                 /* Test if variable is a member of  */
 Text t;                                /* given list of variables          */

@@ -9,8 +9,8 @@
  * included in the distribution.
  *
  * $RCSfile: storage.h,v $
- * $Revision: 1.10 $
- * $Date: 1999/11/15 22:57:03 $
+ * $Revision: 1.11 $
+ * $Date: 2000/08/11 22:34:35 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -349,6 +349,10 @@ extern  Pointer         ptrOf           Args((Cell));
 #define INFIX	     90		  /* INFIX	snd :: (see tidyInfix)	   */
 #define ONLY	     91		  /* ONLY	snd :: Exp		   */
 #define NEG	     92		  /* NEG	snd :: Exp		   */
+
+#if ZIP_COMP
+#define ZCOMP        93 	  /* ZCOMP	snd :: (Exp,[[Qual]])	   */
+#endif
 
 #if SIZEOF_INTP != SIZEOF_INT
 #define PTRCELL      99           /* C Heap Pointer snd :: (Int,Int)       */
@@ -718,11 +722,14 @@ extern	Int	     length	  Args((List));
 extern	List	     appendOnto   Args((List,List));	/* destructive	   */
 extern	List	     dupOnto      Args((List,List));
 extern  List	     dupList	  Args((List));
+extern  List	     dupUpto	  Args((List,Cell));
 extern	List	     revOnto	  Args((List, List));	/* destructive	   */
 #define rev(xs)      revOnto((xs),NIL)			/* destructive	   */
 extern	Cell	     cellIsMember Args((Cell,List));
 extern  Cell         cellAssoc    Args((Cell,List));
 extern  Cell         cellRevAssoc Args((Cell,List));
+extern	List	     concat	  Args((List));
+extern	List	     intersect	  Args((List,List));
 extern	Cell	     varIsMember  Args((Text,List));
 extern	Name	     nameIsMember Args((Text,List));
 extern  Cell	     intIsMember  Args((Int,List));

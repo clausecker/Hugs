@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.21 $
- * $Date: 2000/06/02 16:17:22 $
+ * $Revision: 1.22 $
+ * $Date: 2000/08/11 22:34:34 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -200,6 +200,12 @@ static Cell   local depExpr		Args((Int,Cell));
 static Void   local depPair		Args((Int,Cell));
 static Void   local depTriple		Args((Int,Cell));
 static Void   local depComp		Args((Int,Cell,List));
+#if ZIP_COMP
+static Void   local depZComp		Args((Int,Cell,List));
+static Void   local depCompy		Args((Int,List));
+static List   local intersectBinds	Args((List bs1,List bs2));
+static List   local getBindVars		Args((List bs));
+#endif
 static Void   local depCaseAlt		Args((Int,Cell));
 static Cell   local depVar		Args((Int,Cell));
 static Cell   local depQVar		Args((Int,Cell));
@@ -4556,7 +4562,7 @@ Int  line;
 Cell p; {
     patVars    = NIL;
     p	       = checkPat(line,p);
-    hd(bounds) = revOnto(patVars,hd(bounds));
+    hd(bounds) = dupOnto(patVars,hd(bounds));
     return p;
 }
 
@@ -5544,6 +5550,11 @@ Cell e; {
 	case COMP	: depComp(line,snd(e),snd(snd(e)));
 			  break;
 
+#if ZIP_COMP
+	case ZCOMP	: depZComp(line,snd(e),snd(snd(e)));
+			  break;
+#endif
+
 	case ESIGN	: fst(snd(e)) = depExpr(line,fst(snd(e)));
 			  snd(snd(e)) = checkSigType(line,
 						     "expression",
@@ -5635,6 +5646,95 @@ List qs; {
 	}
     }
 }
+
+#if ZIP_COMP
+/* ZZ this will all fall over if there are nested zip comps */
+static List gatheredVars;
+static List gatheredBinds;
+static List gatheredTyvars;
+static Void local depZComp(l,e,qss)
+Int l;
+Cell e;
+List qss; {
+    withinScope(NIL);
+    gatheredVars = NIL;
+    gatheredBinds = NIL;
+    gatheredTyvars = NIL;
+    for (;nonNull(qss);qss=tl(qss)) {
+	depCompy(l,hd(qss));
+	/* reset for next list of qualifiers */
+	restoreBvars(NIL);
+    }
+
+    /* add gathered vars */
+    hd(bounds) = gatheredVars;
+    withinScope(gatheredBinds);
+    enterBtyvs();
+    hd(btyvars) = gatheredTyvars;
+    fst(e) = depExpr(l,fst(e));
+    leaveBtyvs();
+    /* don't want to re-remove the dependency tags */
+    bounds   = tl(bounds);
+    bindings = tl(bindings);
+    depends  = tl(depends);
+    leaveScope();
+}
+
+static Void local depCompy(l,qs)	/* find dependents of comprehension*/
+Int  l;
+List qs; {
+    if (isNull(qs)) {
+    } else {
+	Cell q   = hd(qs);
+	List qs1 = tl(qs);
+	switch (whatIs(q)) {
+	    case FROMQUAL : {   snd(snd(q)) = depExpr(l,snd(snd(q)));
+				enterBtyvs();
+				fst(snd(q)) = bindPat(l,fst(snd(q)));
+				if (nonNull(intersect(gatheredVars,patVars))) {
+				    ERRMSG(l) "repeated pattern variable(s) in parallel comprehension"
+				    EEND;
+				}
+				gatheredVars = revOnto(patVars,gatheredVars);
+				gatheredTyvars = dupOnto(hd(btyvars),gatheredTyvars);
+				depCompy(l,qs1);
+				fst(snd(q)) = applyBtyvs(fst(snd(q)));
+			    }
+			    break;
+
+	    case QWHERE   : snd(q)      = eqnsToBindings(snd(q),NIL,NIL,NIL);
+			    withinScope(snd(q));
+			    snd(q)      = dependencyAnal(snd(q));
+			    hd(depends) = snd(q);
+			    if (nonNull(intersectBinds(gatheredBinds,hd(bindings)))) {
+				ERRMSG(l) "repeated binding(s) in parallel comprehension"
+				EEND;
+			    }
+			    gatheredBinds = dupOnto(hd(bindings),gatheredBinds);
+			    depCompy(l,qs1);
+			    leaveScope();
+			    break;
+
+	    case DOQUAL	  : /* fall-thru */
+	    case BOOLQUAL : snd(q) = depExpr(l,snd(q));
+			    depCompy(l,qs1);
+			    break;
+	}
+    }
+}
+
+static List local intersectBinds(bs1,bs2)
+List bs1, bs2; {
+    return (intersect(getBindVars(bs1),getBindVars(bs2)));
+}
+static List local getBindVars(bs)
+List bs; {
+    List zs = NIL;
+    for (; nonNull(bs); bs=tl(bs))
+	dupOnto(fst(hd(bs)),zs);
+    return zs;
+}
+#endif
 
 static Void local depCaseAlt(line,a)	/* Find dependents of case altern. */
 Int  line;
