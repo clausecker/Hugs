@@ -187,18 +187,20 @@ BEGIN
                     BS_AUTOCHECKBOX | WS_TABSTOP,160,29,140,10
     CONTROL         "&o Allow overlapping instances",ID_OP+12,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,160,39,140,10
-    CONTROL         "&u Use ""show"" to display results",ID_OP+13,"Button",
+    CONTROL         "&O Allow unsafe overlapping instances",ID_OP+13,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,160,49,140,10
-    CONTROL         "&I Display results of IO programs",ID_OP+14,"Button",
+    CONTROL         "&u Use ""show"" to display results",ID_OP+14,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,160,59,140,10
-    CONTROL         "&i Chase imports while loading files",ID_OP+15,"Button",
+    CONTROL         "&I Display results of IO programs",ID_OP+15,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,160,69,140,10
-    CONTROL         "&A Auto load files",ID_OP+16,"Button",
+    CONTROL         "&i Chase imports while loading files",ID_OP+16,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,160,79,140,10
-    CONTROL         "&R Enable root optimisation",ID_OP+17,"Button",
+    CONTROL         "&A Auto load files",ID_OP+17,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,160,89,140,10
-    CONTROL         "&H Enable `here documents'",ID_OP+18,"Button",
+    CONTROL         "&R Enable root optimisation",ID_OP+18,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,160,99,140,10
+    CONTROL         "&H Enable `here documents'",ID_OP+19,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,160,109,140,10
     LTEXT           "Path:",-1,12,139,22,8
     EDITTEXT        ID_PATH,37,137,183,12,ES_AUTOHSCROLL
     LTEXT           "Preprocessor filter:",-1,12,153,62,8

@@ -41,41 +41,41 @@
  * Nonlocal functions prototypes
  * ------------------------------------------------------------------------*/
 
-INT APIENTRY 	WinMain			(HINSTANCE, HINSTANCE, LPSTR, INT);
+INT APIENTRY	WinMain 		(HINSTANCE, HINSTANCE, LPSTR, INT);
 
 
 /* --------------------------------------------------------------------------
  * CALLBACK functions prototypes:
  * ------------------------------------------------------------------------*/
 
-LRESULT CALLBACK 		AboutDlgProc		(HWND, UINT, WPARAM, LPARAM);
-LRESULT CALLBACK 		BrowseClassesDlgProc    (HWND, UINT, WPARAM, LPARAM);
-LRESULT CALLBACK 		BrowseTyconsDlgProc    	(HWND, UINT, WPARAM, LPARAM);
-LRESULT CALLBACK 		BrowseNamesDlgProc    	(HWND, UINT, WPARAM, LPARAM);
-LRESULT CALLBACK 		MainGUIWndProc 		(HWND, UINT, WPARAM, LPARAM);
-LRESULT CALLBACK 		OptionsDlgProc		(HWND, UINT, WPARAM, LPARAM);
-LRESULT CALLBACK		ClassesWndProc 		(HWND, UINT, WPARAM, LPARAM);
-LRESULT CALLBACK                ScriptManDlgProc        (HWND, UINT, WPARAM, LPARAM);
+LRESULT CALLBACK		AboutDlgProc		(HWND, UINT, WPARAM, LPARAM);
+LRESULT CALLBACK		BrowseClassesDlgProc	(HWND, UINT, WPARAM, LPARAM);
+LRESULT CALLBACK		BrowseTyconsDlgProc	(HWND, UINT, WPARAM, LPARAM);
+LRESULT CALLBACK		BrowseNamesDlgProc	(HWND, UINT, WPARAM, LPARAM);
+LRESULT CALLBACK		MainGUIWndProc		(HWND, UINT, WPARAM, LPARAM);
+LRESULT CALLBACK		OptionsDlgProc		(HWND, UINT, WPARAM, LPARAM);
+LRESULT CALLBACK		ClassesWndProc		(HWND, UINT, WPARAM, LPARAM);
+LRESULT CALLBACK		ScriptManDlgProc	(HWND, UINT, WPARAM, LPARAM);
 
 
 /* --------------------------------------------------------------------------
  * Default interpreter options
  * ------------------------------------------------------------------------*/
 #define DEFAULT_ROWS		25
-#define DEFAULT_COLS 		80
+#define DEFAULT_COLS		80
 #define DEFAULT_FONT		"Courier New"
 #define DEFAULT_FONT_SIZE	9
 #define DEFAULT_DIALOGFONT	"MS Sans Serif"
-#define DEFAULT_DIALOGFONT_SIZE	8
-#define DEFAULT_PROMPT    	"%s> "
-#define DEFAULT_REPEATSTR 	"$$"
+#define DEFAULT_DIALOGFONT_SIZE 8
+#define DEFAULT_PROMPT		"%s> "
+#define DEFAULT_REPEATSTR	"$$"
 #define DEFAULT_PREPROCESSOR	""
-#define DEFAULT_DOC_DIR		"{Hugs}\\docs"
-#define HASKELL_REPORT          "report\\index.html"
-#define HASKELL_LIBS            "library\\index.html"
-#define HASKELL_GENTLE          "tutorial\\index.html"
-#define HUGS_EXTS               "libs\\libs.html"
-#define HUGS_DOCS               "hugsman\\index.html"
+#define DEFAULT_DOC_DIR 	"{Hugs}\\docs"
+#define HASKELL_REPORT		"report\\index.html"
+#define HASKELL_LIBS		"library\\index.html"
+#define HASKELL_GENTLE		"tutorial\\index.html"
+#define HUGS_EXTS		"libs\\libs.html"
+#define HUGS_DOCS		"hugsman\\index.html"
 #define HASKELL_ORG		"http:\\\\haskell.org"
 
 
@@ -85,7 +85,7 @@ LRESULT CALLBACK                ScriptManDlgProc        (HWND, UINT, WPARAM, LPA
 
 #define DlgSendMessage(h,c,w,l)  SendMessage((h),(c),MAKEWPARAM(w,(HIWORD(l))),(LOWORD(l)))
 #define AbortInterpreter	 input(BREAK); WinPuts(hWndText, "\n")
-#define GotoInterpreter		 longjmp(catch_error, 1);
+#define GotoInterpreter 	 longjmp(catch_error, 1);
 
 /* --------------------------------------------------------------------------
  * Local Variables:
@@ -93,26 +93,26 @@ LRESULT CALLBACK                ScriptManDlgProc        (HWND, UINT, WPARAM, LPA
 #if DOS
 	String appName = "Hugs for Windows";	/* Text for application name		*/
 #else
-	String appName = "Hugs for Windows 32";	/* Text for application name		*/
+	String appName = "Hugs for Windows 32"; /* Text for application name		*/
 #endif
 
-	HANDLE  	hThisInstance;          /* Windows instance for the application */
-	HWND    	hWndMain    = NULL;	/* Main Window handle                   */
-	HWND		hWndText    = NULL;	/* Hugs Text Window handle              */
-	HWND		hWndClasses = NULL;	/* Classes Hierarchy Window handle      */
+	HANDLE		hThisInstance;		/* Windows instance for the application */
+	HWND		hWndMain    = NULL;	/* Main Window handle			*/
+	HWND		hWndText    = NULL;	/* Hugs Text Window handle		*/
+	HWND		hWndClasses = NULL;	/* Classes Hierarchy Window handle	*/
 
-static	HANDLE  	hAccelTable;		/* Accelerators table 		        */
-static 	HCURSOR 	GarbageCursor  = NULL;	/* GC mouse cursor                      */
-static	HCURSOR		SaveCursor     = NULL;  /* Used to save current cursor          */
-static 	INT 		FrameWinWidth  = 0,
-			FrameWinHeight = 0;	/* Size of Main Window                  */
-static  INT		FrameWinX, FrameWinY;   /* Pos of Main Window in Screen 	*/
+static	HANDLE		hAccelTable;		/* Accelerators table			*/
+static	HCURSOR 	GarbageCursor  = NULL;	/* GC mouse cursor			*/
+static	HCURSOR 	SaveCursor     = NULL;	/* Used to save current cursor		*/
+static	INT		FrameWinWidth  = 0,
+			FrameWinHeight = 0;	/* Size of Main Window			*/
+static	INT		FrameWinX, FrameWinY;	/* Pos of Main Window in Screen 	*/
 static	INT		ScreenRows     = 0,
-			ScreenCols     = 0;     /* Text Window size in chars            */
-static  WNDPROC		PrevWndProc;		/* Window Proc of Frame class   	*/
-static  CHAR		**hugs_argv;	        /* Command line args 			*/
-static  INT		hugs_argc;
-static  HFONT		hDialogFont = NULL;	/* Font to use in Dialogs		*/
+			ScreenCols     = 0;	/* Text Window size in chars		*/
+static	WNDPROC 	PrevWndProc;		/* Window Proc of Frame class		*/
+static	CHAR		**hugs_argv;		/* Command line args			*/
+static	INT		hugs_argc;
+static	HFONT		hDialogFont = NULL;	/* Font to use in Dialogs		*/
 
 #include "menusbm.c"
 
@@ -183,13 +183,13 @@ static VOID local DoCommand(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
   switch (LOWORD(wParam)) {
     /* Open text editor for new file */
-    case ID_NEW:  		AbortInterpreter;
+    case ID_NEW:		AbortInterpreter;
 				SetInterpreterCommand(":l\n:e\n");
 				GotoInterpreter;
 				break;
 				
     /* Load a sript file from disk */
-    case ID_OPEN: 		{ CHAR *ScriptName;
+    case ID_OPEN:		{ CHAR *ScriptName;
 				  CHAR Command[2048];
 
 				  if ((ScriptName = GetaFileName(GetFocus(), IDS_FILTERFILE)) != NULL) {
@@ -203,10 +203,10 @@ static VOID local DoCommand(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
     /* Enter Script Manager */
     case ID_SCRIPTMAN:		DoScriptMan(hWnd, msg, wParam, lParam);
-	    			break;
+				break;
 
     /* Load a sript file from disk (the name of the script is currently selected) */
-    case ID_OPENSELECTED: 	{ CHAR *ScriptName;
+    case ID_OPENSELECTED:	{ CHAR *ScriptName;
 				  CHAR Command[2048];
 
 				  ScriptName = GetSelectedText(hWndText);
@@ -218,7 +218,7 @@ static VOID local DoCommand(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 				break;
 
     /* Exit Hugs interpreter */
-    case ID_EXIT:    		AbortInterpreter;
+    case ID_EXIT:		AbortInterpreter;
 				SetInterpreterCommand(":q\n");
 				GotoInterpreter;
 				break;
@@ -245,37 +245,37 @@ static VOID local DoCommand(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 				break;
 
     /* Clipboard copy */
-    case ID_COPY:    		SendMessage(hWndText, WM_COPY, 0, 0L);
+    case ID_COPY:		SendMessage(hWndText, WM_COPY, 0, 0L);
 				break;
 
 
     /* Clipboard paste */
-    case ID_PASTE:   		SendMessage(hWndText, WM_PASTE, 0, 0L);
+    case ID_PASTE:		SendMessage(hWndText, WM_PASTE, 0, 0L);
 				break;
 
 
     /* Clipboard cut */
-    case ID_CUT:     		SendMessage(hWndText, WM_CUT, 0, 0L);
+    case ID_CUT:		SendMessage(hWndText, WM_CUT, 0, 0L);
 				break;
 
 
     /* Clipboard clear */
-    case ID_CLEAR:   		SendMessage(hWndText, WM_CLEAR, 0, 0L);
+    case ID_CLEAR:		SendMessage(hWndText, WM_CLEAR, 0, 0L);
 				break;
 
 
     /* Edit previous line */
-    case ID_GOPREVIOUS:         SendMessage(hWndText, WM_KEYDOWN, (WPARAM) VK_UP, 0x1000000L);
+    case ID_GOPREVIOUS: 	SendMessage(hWndText, WM_KEYDOWN, (WPARAM) VK_UP, 0x1000000L);
 				SendMessage(hWndText, WM_KEYUP,   (WPARAM) VK_UP, 0x1000000L);
 				break;
 
     /* Edit next line */
-    case ID_GONEXT:             SendMessage(hWndText, WM_KEYDOWN, (WPARAM) VK_DOWN, 0x1000000L);
+    case ID_GONEXT:		SendMessage(hWndText, WM_KEYDOWN, (WPARAM) VK_DOWN, 0x1000000L);
 				SendMessage(hWndText, WM_KEYUP,   (WPARAM) VK_DOWN, 0x1000000L);
 				break;
 
     /* Open text editor */
-    case ID_GOEDIT:  		AbortInterpreter;
+    case ID_GOEDIT:		AbortInterpreter;
 				SetInterpreterCommand(":e\n");
 				GotoInterpreter;
 				break;
@@ -309,11 +309,11 @@ static VOID local DoCommand(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 				  AbortInterpreter;
 				  SetInterpreterCommand(Command);
 				  GotoInterpreter;
-   				}
+				}
 				break;
 
     /* Find definition of selected text */
-    case ID_FIND: 		{ String SelectedText;
+    case ID_FIND:		{ String SelectedText;
 
 				  SelectedText = GetSelectedText(hWndText);
 				  AbortInterpreter;
@@ -323,7 +323,7 @@ static VOID local DoCommand(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 				break;
 
     /* Show type of selected text */
-    case ID_TYPE: 		{ String SelectedText;
+    case ID_TYPE:		{ String SelectedText;
 				  SelectedText = GetSelectedText(hWndText);
 				  AbortInterpreter;
 				  SetInterpreterCommand(":t %s\n",(LPSTR)SelectedText);
@@ -332,8 +332,8 @@ static VOID local DoCommand(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 				break;
 
     /* Show info on selected text */
-    case ID_INFO: 		{ String SelectedText;
-    				  SelectedText = GetSelectedText(hWndText);
+    case ID_INFO:		{ String SelectedText;
+				  SelectedText = GetSelectedText(hWndText);
 				  AbortInterpreter;
 				  SetInterpreterCommand(":i %s\n",(LPSTR)SelectedText);
 				  GotoInterpreter;
@@ -341,8 +341,8 @@ static VOID local DoCommand(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 				break;
 
     /* Eval selected text */
-    case ID_EVAL: 		{ String SelectedText;
-    				  SelectedText = GetSelectedText(hWndText);
+    case ID_EVAL:		{ String SelectedText;
+				  SelectedText = GetSelectedText(hWndText);
 				  AbortInterpreter;
 				  SetInterpreterCommand("%s\n",(LPSTR)SelectedText);
 				  GotoInterpreter;
@@ -350,68 +350,68 @@ static VOID local DoCommand(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 				break;
 
     /* Stop program execution */
-    case ID_STOP:   		MessageBeep(0xFFFFFFFF);
+    case ID_STOP:		MessageBeep(0xFFFFFFFF);
 				raise(SIGINT);
-    				break;
+				break;
 				
     /* Evaluate main expression */
-    case ID_RUN:  		AbortInterpreter;
+    case ID_RUN:		AbortInterpreter;
 				SetInterpreterCommand("main\n");
 				GotoInterpreter;
 				break;
 
     /* Set interpreter options using dialog box */
-    case ID_SETOPTIONS:         DoOptions (hWnd, msg, wParam, lParam);
+    case ID_SETOPTIONS: 	DoOptions (hWnd, msg, wParam, lParam);
 				break;
 
 
     /* Reload script files */
     case ID_COMPILE:
-    case ID_MAKE:    		AbortInterpreter;
+    case ID_MAKE:		AbortInterpreter;
 				SetInterpreterCommand(":r\n");
 				GotoInterpreter;
 				break;
 
     
     /* Clear all files loaded but Prelude */
-    case ID_CLEARALL:           AbortInterpreter;
+    case ID_CLEARALL:		AbortInterpreter;
 				SetInterpreterCommand(":l\n");
 				GotoInterpreter;
 				break;
 
     /* Show classes hierarchy */
-    case ID_BROWSEHIERARCHY:    DrawClassesHierarchy();
+    case ID_BROWSEHIERARCHY:	DrawClassesHierarchy();
 				break;
 
     /* Browse classes defined */
-    case ID_BROWSECLASSES:      DoBrowseClasses(hWnd, msg, wParam, lParam);
+    case ID_BROWSECLASSES:	DoBrowseClasses(hWnd, msg, wParam, lParam);
 				break;
 
     /* Browse names defined */
-    case ID_BROWSENAMES:        DoBrowseNames(hWnd, msg, wParam, lParam);
+    case ID_BROWSENAMES:	DoBrowseNames(hWnd, msg, wParam, lParam);
 				break;
 
     /* Browse type constructors defined */
-    case ID_BROWSETYCONS:       DoBrowseTycons(hWnd, msg, wParam, lParam);
+    case ID_BROWSETYCONS:	DoBrowseTycons(hWnd, msg, wParam, lParam);
 				break;
 
     
     /* Display help about using windows help */
-    case ID_HELPUSE: 		WinHelp(hWnd, "Winhelp.Hlp", HELP_CONTENTS, 0L);
+    case ID_HELPUSE:		WinHelp(hWnd, "Winhelp.Hlp", HELP_CONTENTS, 0L);
 				break;
 
     /* Display help about Hugs */
-    case ID_HELPINDEX: 		{ CHAR DocFullPath[_MAX_PATH];
-                                  CHAR HelpFullPath[_MAX_PATH];
+    case ID_HELPINDEX:		{ CHAR DocFullPath[_MAX_PATH];
+				  CHAR HelpFullPath[_MAX_PATH];
 
 				  GetFromRegistryDocPath(DocFullPath);
-			   	  wsprintf(HelpFullPath, "%s\\hugs.hlp", DocFullPath);
+				  wsprintf(HelpFullPath, "%s\\hugs.hlp", DocFullPath);
 				  WinHelp(hWnd, HelpFullPath, HELP_CONTENTS, 0L);
 				}
 				break;
 
     /* Display the Haskell report */
-    case ID_HELPREPORT:		OpenHtmlFromDocs(HASKELL_REPORT);
+    case ID_HELPREPORT: 	OpenHtmlFromDocs(HASKELL_REPORT);
 				break;
 
     /* Display the Haskell lib report */
@@ -419,7 +419,7 @@ static VOID local DoCommand(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 				break;
 
     /* Display the Gentle intro */
-    case ID_HELPGENTLE:		OpenHtmlFromDocs(HASKELL_GENTLE);
+    case ID_HELPGENTLE: 	OpenHtmlFromDocs(HASKELL_GENTLE);
 				break;
 
     /* Go to haskell home */
@@ -441,7 +441,7 @@ static VOID local DoCommand(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 				break;
 
     /* Show Hugs copyright */
-    case ID_ABOUT:   		DoAbout (hWnd, msg, wParam, lParam);
+    case ID_ABOUT:		DoAbout (hWnd, msg, wParam, lParam);
 				break;
   }
 }
@@ -554,7 +554,7 @@ static VOID local DoGetMinMaxInfo(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
 A very minor quibble though is that it wasn't possible to
 resize the main window (maybe that's really intentional..)
 In any case, I've changed the handler for WM_MINMAXINFO to
-let me  do this - code appended.
+let me	do this - code appended.
 
 --sigbjorn
 */
@@ -564,8 +564,8 @@ static VOID local DoGetMinMaxInfo(HWND hWnd, UINT msg, WPARAM wParam, LPARAM
 lParam)
 {
   MINMAXINFO FAR* lpmmi;
-  RECT   	  rWind;
-  RECT        	  rDeskTop;
+  RECT		  rWind;
+  RECT		  rDeskTop;
 
   GetWindowRect(GetDesktopWindow(), &rDeskTop);
   GetWindowRect(hWnd, &rWind);
@@ -594,7 +594,7 @@ static VOID local DoMove(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
     /* We must substract as it gets client position */
     FrameWinX = (INT) LOWORD(lParam) - GetSystemMetrics(SM_CXFRAME);
     FrameWinY = (INT) HIWORD(lParam) - GetSystemMetrics(SM_CYCAPTION)
- 				     - GetSystemMetrics(SM_CYFRAME)
+				     - GetSystemMetrics(SM_CYFRAME)
 				     - GetSystemMetrics(SM_CYMENU);
   }
 }
@@ -623,8 +623,8 @@ static VOID local DoInitMenu (HWND hWnd, UINT message, WPARAM wParam, LPARAM lPa
 {
   BOOL CanCopy, CanPaste, CanClear, CanCut;
 
-  CanCopy  = (BOOL) SendMessage (hWndText, WM_CANCOPY,  0, 0L);
-  CanCut   = (BOOL) SendMessage (hWndText, WM_CANCUT,   0, 0L);
+  CanCopy  = (BOOL) SendMessage (hWndText, WM_CANCOPY,	0, 0L);
+  CanCut   = (BOOL) SendMessage (hWndText, WM_CANCUT,	0, 0L);
   CanPaste = (BOOL) SendMessage (hWndText, WM_CANPASTE, 0, 0L);
   CanClear = (BOOL) SendMessage (hWndText, WM_CANCLEAR, 0, 0L);
 
@@ -639,12 +639,12 @@ static VOID local DoInitMenu (HWND hWnd, UINT message, WPARAM wParam, LPARAM lPa
   EnableMenuItem((HMENU)wParam, ID_OPENSELECTED,  (CanCopy  ? MF_ENABLED : MF_GRAYED)|MF_BYCOMMAND);
   EnableMenuItem((HMENU)wParam, ID_EDITSELECTED,  (CanCopy  ? MF_ENABLED : MF_GRAYED)|MF_BYCOMMAND);
 
-  EnableMenuItem((HMENU)wParam, ID_MAKE,  	(projectLoaded  ? MF_ENABLED : MF_GRAYED)|MF_BYCOMMAND);
+  EnableMenuItem((HMENU)wParam, ID_MAKE,	(projectLoaded	? MF_ENABLED : MF_GRAYED)|MF_BYCOMMAND);
 
-  EnableMenuItem((HMENU)wParam, ID_CLEARALL,  	(!projectLoaded && (namesUpto > 1)
+  EnableMenuItem((HMENU)wParam, ID_CLEARALL,	(!projectLoaded && (namesUpto > 1)
 								? MF_ENABLED : MF_GRAYED)|MF_BYCOMMAND);
 
-  EnableMenuItem((HMENU)wParam, ID_COMPILE,  	(!projectLoaded && (namesUpto > 1)
+  EnableMenuItem((HMENU)wParam, ID_COMPILE,	(!projectLoaded && (namesUpto > 1)
 								? MF_ENABLED : MF_GRAYED)|MF_BYCOMMAND);
 }
 
@@ -664,7 +664,7 @@ __declspec(dllexport) UINT FAR APIENTRY
 
       CenterDialogInParent(hWnd);
       SetDialogFont(hWnd, hDialogFont);
-                
+		
       return TRUE;
     }
 
@@ -676,19 +676,19 @@ __declspec(dllexport) UINT FAR APIENTRY
 /* Used to get a file name using a common dialog box. Returns a pointer to    */
 /* a static string where the file name is, or NULL if cancel button is pushed */
 /* Mask is the identificator of a string defined in Hugs.Rc where the type    */
-/* of files and their masks are                                               */
+/* of files and their masks are 					      */
 static CHAR* local GetaFileName(HWND hWnd, UINT Mask)
 {
   #define MAXEXTENSIONS 15
 
-  static CHAR           Extensions[MAXEXTENSIONS][_MAX_EXT+1];
-  static OPENFILENAME   ofn;
-  static CHAR           szFileName[_MAX_PATH];
-  CHAR                  szFile[_MAX_PATH], szFileTitle[_MAX_PATH];
-  UINT                  i, j, cbString, n;
-  CHAR                  chReplace;    /* Separator between different filters in szFilter */
-  CHAR                  szFilter[300];
-  char                  currentDir[_MAX_PATH];
+  static CHAR		Extensions[MAXEXTENSIONS][_MAX_EXT+1];
+  static OPENFILENAME	ofn;
+  static CHAR		szFileName[_MAX_PATH];
+  CHAR			szFile[_MAX_PATH], szFileTitle[_MAX_PATH];
+  UINT			i, j, cbString, n;
+  CHAR			chReplace;    /* Separator between different filters in szFilter */
+  CHAR			szFilter[300];
+  char			currentDir[_MAX_PATH];
 
   szFile[0] = '\0';
 
@@ -708,7 +708,7 @@ static CHAR* local GetaFileName(HWND hWnd, UINT Mask)
       i++;
       j=0;
       while ((szFilter[i] != ';')&&(szFilter[i] != chReplace)){
-        Extensions[n][j++] = szFilter[i++];
+	Extensions[n][j++] = szFilter[i++];
       }
       Extensions[n++][j] = (CHAR) 0;
     } while (szFilter[i] == ';');
@@ -755,15 +755,15 @@ static CHAR* local GetaFileName(HWND hWnd, UINT Mask)
 static Void local copyArgs(LPSTR lpszCmdLine) {
 
   INT	i, currentArg, beginOfArg;
-  CHAR  svChar;
+  CHAR	svChar;
 
-  /* First, get number of args                                       */
-  /* Rules:                                                          */
-  /* 1) arguments are separates by spaces                            */
+  /* First, get number of args					     */
+  /* Rules:							     */
+  /* 1) arguments are separates by spaces			     */
   /* 2) A single argument may contain spaces if surrounded by quotes */
-  /*                                                                 */
-  /* For example, a valid command line with two args is              */
-  /*  c:> winhugs -98 "c:\program files\test.hs"                     */
+  /*								     */
+  /* For example, a valid command line with two args is 	     */
+  /*  c:> winhugs -98 "c:\program files\test.hs"		     */
   
   hugs_argc = 0;
   for(i=0;lpszCmdLine[i];) {
@@ -772,14 +772,14 @@ static Void local copyArgs(LPSTR lpszCmdLine) {
       hugs_argc++;
       while (lpszCmdLine[i] && lpszCmdLine[i] != '"') i++;
       if (lpszCmdLine[i] != '"') {
-        MessageBox(GetFocus(), "Invalid command line", appName, MB_OK);
-        hugs_argc = 0;
+	MessageBox(GetFocus(), "Invalid command line", appName, MB_OK);
+	hugs_argc = 0;
       }
     }
     else if(lpszCmdLine[i]!=' ') {
       i++;    
       hugs_argc++;
-      while (lpszCmdLine[i] && lpszCmdLine[i] != ' ') i++;          
+      while (lpszCmdLine[i] && lpszCmdLine[i] != ' ') i++;	    
     }
     
     if(lpszCmdLine[i]) i++;
@@ -798,26 +798,26 @@ static Void local copyArgs(LPSTR lpszCmdLine) {
   /* First argument must be program name */
   hugs_argv[0] = strCopy("winhugs.exe");
 
-#define copyCurrentArg {                                              \
-          svChar = lpszCmdLine[i];                                    \
-          lpszCmdLine[i] = '\0';                                      \
-          hugs_argv[currentArg++] = strCopy(&lpszCmdLine[beginOfArg]);\
-          lpszCmdLine[i] = svChar;                                    \
-        }          
+#define copyCurrentArg {					      \
+	  svChar = lpszCmdLine[i];				      \
+	  lpszCmdLine[i] = '\0';				      \
+	  hugs_argv[currentArg++] = strCopy(&lpszCmdLine[beginOfArg]);\
+	  lpszCmdLine[i] = svChar;				      \
+	}	   
 
   if (hugs_argc > 1) {
     currentArg = 1;
     for(i=0;lpszCmdLine[i];) {
     
       if(lpszCmdLine[i]=='"')  { /* a "... " argument */
-        beginOfArg = ++i;        
-        while (lpszCmdLine[i] != '"') i++;
-        copyCurrentArg;
+	beginOfArg = ++i;	 
+	while (lpszCmdLine[i] != '"') i++;
+	copyCurrentArg;
       }
       else if(lpszCmdLine[i]!=' ') {
-        beginOfArg = i;
-        while (lpszCmdLine[i] && lpszCmdLine[i] != ' ') i++;          
-        copyCurrentArg;
+	beginOfArg = i;
+	while (lpszCmdLine[i] && lpszCmdLine[i] != ' ') i++;	      
+	copyCurrentArg;
       }
     
       if(lpszCmdLine[i]) i++;
@@ -890,8 +890,8 @@ static BOOL local InitApplication(VOID)
   /* register classes hierarchy window */
   wc.style		= CS_VREDRAW | CS_HREDRAW;
   wc.lpfnWndProc	= ClassesWndProc;
-  wc.cbClsExtra		= 0;
-  wc.cbWndExtra		= 0;
+  wc.cbClsExtra 	= 0;
+  wc.cbWndExtra 	= 0;
   wc.hInstance		= hThisInstance;
   wc.hIcon		= NULL;
   wc.hCursor		= NULL;
@@ -913,7 +913,7 @@ static BOOL local InitApplication(VOID)
 static BOOL local InitInstance(LPSTR lpCmdLine, INT nCmdShow)
 {
   RECT		rText, rTB, rSTLN;
-  HWND 		hWndTB, hWndSTLN;
+  HWND		hWndTB, hWndSTLN;
   INT		FontSize;
   CHAR		FontName[256];
 
@@ -932,25 +932,25 @@ static BOOL local InitInstance(LPSTR lpCmdLine, INT nCmdShow)
   /* Configure tools bar */
   hWndTB = FRAMEGetTB (hWndMain);
   GetClientRect(hWndTB, &rTB);
-  TBAppendButton(hWndTB, ID_OPEN,            "OPENFILEBUTTON",    ID_OPEN,      TRUE);
-  TBAppendButton(hWndTB, ID_SCRIPTMAN,       "SCRIPTMANBUTTON",	  ID_SCRIPTMAN, TRUE);
-  TBAppendButton(hWndTB, MF_SEPARATOR,       NULL,        	  0,		0);
-  TBAppendButton(hWndTB, ID_CUT,             "CUTBUTTON",         ID_CUT,       TRUE);
-  TBAppendButton(hWndTB, ID_COPY,            "COPYBUTTON",        ID_COPY,      TRUE);
-  TBAppendButton(hWndTB, ID_PASTE,           "PASTEBUTTON",       ID_PASTE,     TRUE);
-  TBAppendButton(hWndTB, ID_CLEAR,           "DELETEBUTTON",      ID_CLEAR,     TRUE);
-  TBAppendButton(hWndTB, ID_GOEDIT,          "EDITBUTTON",        ID_GOEDIT,    TRUE);
-  TBAppendButton(hWndTB, MF_SEPARATOR,       NULL,        	  0,		0);
-  TBAppendButton(hWndTB, ID_RUN,             "RUNBUTTON",         ID_RUN,       TRUE);
-  TBAppendButton(hWndTB, ID_STOP,            "STOPBUTTON",        ID_STOP,      TRUE);
-  TBAppendButton(hWndTB, ID_MAKE,            "MAKEBUTTON",        ID_MAKE,      TRUE);
-  TBAppendButton(hWndTB, ID_SETOPTIONS,      "OPTIONSBUTTON",     ID_SETOPTIONS,TRUE);
-  TBAppendButton(hWndTB, MF_SEPARATOR,       NULL,        	  0,		0);
+  TBAppendButton(hWndTB, ID_OPEN,	     "OPENFILEBUTTON",	  ID_OPEN,	TRUE);
+  TBAppendButton(hWndTB, ID_SCRIPTMAN,	     "SCRIPTMANBUTTON",   ID_SCRIPTMAN, TRUE);
+  TBAppendButton(hWndTB, MF_SEPARATOR,	     NULL,		  0,		0);
+  TBAppendButton(hWndTB, ID_CUT,	     "CUTBUTTON",	  ID_CUT,	TRUE);
+  TBAppendButton(hWndTB, ID_COPY,	     "COPYBUTTON",	  ID_COPY,	TRUE);
+  TBAppendButton(hWndTB, ID_PASTE,	     "PASTEBUTTON",	  ID_PASTE,	TRUE);
+  TBAppendButton(hWndTB, ID_CLEAR,	     "DELETEBUTTON",	  ID_CLEAR,	TRUE);
+  TBAppendButton(hWndTB, ID_GOEDIT,	     "EDITBUTTON",	  ID_GOEDIT,	TRUE);
+  TBAppendButton(hWndTB, MF_SEPARATOR,	     NULL,		  0,		0);
+  TBAppendButton(hWndTB, ID_RUN,	     "RUNBUTTON",	  ID_RUN,	TRUE);
+  TBAppendButton(hWndTB, ID_STOP,	     "STOPBUTTON",	  ID_STOP,	TRUE);
+  TBAppendButton(hWndTB, ID_MAKE,	     "MAKEBUTTON",	  ID_MAKE,	TRUE);
+  TBAppendButton(hWndTB, ID_SETOPTIONS,      "OPTIONSBUTTON",	  ID_SETOPTIONS,TRUE);
+  TBAppendButton(hWndTB, MF_SEPARATOR,	     NULL,		  0,		0);
   TBAppendButton(hWndTB, ID_BROWSEHIERARCHY, "HIERARCHYBUTTON",   ID_BROWSEHIERARCHY, TRUE);
-  TBAppendButton(hWndTB, MF_SEPARATOR,       NULL,        	  0,		0);
-  TBAppendButton(hWndTB, ID_HELPINDEX,       "HELPBUTTON",        ID_HELPINDEX, TRUE);
-  TBAppendButton(hWndTB, MF_SEPARATOR,       NULL,        	  0,		0);
-  TBAppendButton(hWndTB, ID_EXIT,            "EXITBUTTON",        ID_EXIT,      TRUE);
+  TBAppendButton(hWndTB, MF_SEPARATOR,	     NULL,		  0,		0);
+  TBAppendButton(hWndTB, ID_HELPINDEX,	     "HELPBUTTON",	  ID_HELPINDEX, TRUE);
+  TBAppendButton(hWndTB, MF_SEPARATOR,	     NULL,		  0,		0);
+  TBAppendButton(hWndTB, ID_EXIT,	     "EXITBUTTON",	  ID_EXIT,	TRUE);
 
   /* get status line */
   hWndSTLN = FRAMEGetSTLN(hWndMain);
@@ -1011,30 +1011,30 @@ LRESULT CALLBACK MainGUIWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPara
   /* Check rest of messages */
   switch (msg) {
 
-    case WM_CLOSE:      	DoClose(hWnd, msg, wParam, lParam);
-    				break;
+    case WM_CLOSE:		DoClose(hWnd, msg, wParam, lParam);
+				break;
 
     case WM_COMMAND:		DoCommand(hWnd, msg, wParam, lParam);
 				break;
 
-    case WM_CREATE:     	return ((LRESULT) DoCreate(hWnd, msg, wParam, lParam));
+    case WM_CREATE:		return ((LRESULT) DoCreate(hWnd, msg, wParam, lParam));
 
-    case WM_DESTROY:    	DoDestroy(hWnd, msg, wParam, lParam);
+    case WM_DESTROY:		DoDestroy(hWnd, msg, wParam, lParam);
 				break;
 
-    case WM_DROPFILES:  	DoDropFiles(hWnd, msg, wParam, lParam);
+    case WM_DROPFILES:		DoDropFiles(hWnd, msg, wParam, lParam);
 				break;
 
     case WM_GETMINMAXINFO:	DoGetMinMaxInfo(hWnd, msg, wParam, lParam);
 				break;
 
-    case WM_INITMENU:   	DoInitMenu(hWnd, msg, wParam, lParam);
+    case WM_INITMENU:		DoInitMenu(hWnd, msg, wParam, lParam);
 				break;
 
-    case WM_MOVE:   		DoMove(hWnd, msg, wParam, lParam);
+    case WM_MOVE:		DoMove(hWnd, msg, wParam, lParam);
 				break;
 
-    default:            	return CALLPARENTCLASS;
+    default:			return CALLPARENTCLASS;
 
   }
   return CALLPARENTCLASS;
@@ -1065,8 +1065,8 @@ LRESULT CALLBACK AboutDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 	ms.dwLength = sizeof(MEMORYSTATUS);
 	GlobalMemoryStatus (&ms);
 
-        wsprintf (Buffer, "Unkown");
-        SetDlgItemText(hDlg, ID_FREERESOURCES, (LPCSTR)Buffer);
+	wsprintf (Buffer, "Unkown");
+	SetDlgItemText(hDlg, ID_FREERESOURCES, (LPCSTR)Buffer);
 
 	wsprintf (Buffer, "%u KB",((UINT)ms.dwTotalPhys)/1024U);
 	SetDlgItemText(hDlg, ID_TOTALMEMORY, (LPCSTR)Buffer);
@@ -1076,7 +1076,7 @@ LRESULT CALLBACK AboutDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
     return TRUE;
 
     case WM_PAINT: {
-      HDC 	   hDC;
+      HDC	   hDC;
       PAINTSTRUCT  Ps;
 
       BeginPaint(hDlg, &Ps);
@@ -1106,7 +1106,7 @@ LRESULT CALLBACK AboutDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 LRESULT CALLBACK OptionsDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 {
   INT  i;
-  
+
   switch (msg) {
 
     case WM_INITDIALOG: {
@@ -1115,7 +1115,7 @@ LRESULT CALLBACK OptionsDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
       CenterDialogInParent(hDlg);
       SetDialogFont (hDlg, hDialogFont);
       SetDlgItemText(hDlg, ID_PROMPT,	    (LPCSTR) prompt);
-      SetDlgItemText(hDlg, ID_LASTEXPR,	    (LPCSTR) repeatStr);
+      SetDlgItemText(hDlg, ID_LASTEXPR,     (LPCSTR) repeatStr);
       SetDlgItemText(hDlg, ID_PATH,	    (LPCSTR) hugsPath);
       SetDlgItemText(hDlg, ID_EDITOR,	    (LPCSTR) hugsEdit);
 #if USE_PREPROCESSOR  && (defined(HAVE_POPEN) || defined(HAVE__POPEN))
@@ -1125,35 +1125,60 @@ LRESULT CALLBACK OptionsDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
       SetDlgItemText(hDlg, ID_CUTOFF,	    (LPCSTR) Buffer);
 
       sprintf(Buffer, "%d", heapSize);
-      SetDlgItemText(hDlg, ID_HEAPSIZE,	    (LPCSTR) Buffer);
+      SetDlgItemText(hDlg, ID_HEAPSIZE,     (LPCSTR) Buffer);
 
+      for(i=0; toggle[i].c; i++) {
+	  int j = 0;
+	  while (1) { /* look for DlgItem corresponding to flag */
+	    GetDlgItemText(hDlg, ID_OP+j, (LPSTR) Buffer, 1024);
+
+	    if (!(*Buffer))
+	      break;
+
+	    if (Buffer[1] == toggle[i].c) {
+	      if (!toggle[i].h98 && haskell98)
+		EnableWindow(GetDlgItem(hDlg, ID_OP+j), FALSE);
+	      else
+		CheckDlgButton(hDlg, ID_OP+j, *toggle[i].flag);
+	      break;
+	    }
+
+	    j++;
+	  }
+      }
+
+
+/*
       for(i=0; toggle[i].c; i++)
-        if (!toggle[i].h98 && haskell98)
-          EnableWindow(GetDlgItem(hDlg, ID_OP+i), FALSE);
-        else
+	if (!toggle[i].h98 && haskell98)
+	  EnableWindow(GetDlgItem(hDlg, ID_OP+i), FALSE);
+	else
 	  CheckDlgButton(hDlg, ID_OP+i, *toggle[i].flag);
+
+*/
+
       return TRUE;
     }
 
     case WM_PAINT: {
-          HDC 	        hDC;
-          PAINTSTRUCT   Ps;
-          HBITMAP      	hBitmap;
-          RECT         	aRect, DlgRect;
+	  HDC		hDC;
+	  PAINTSTRUCT	Ps;
+	  HBITMAP	hBitmap;
+	  RECT		aRect, DlgRect;
 
-          BeginPaint(hDlg, &Ps);
-          hDC = Ps.hdc;
+	  BeginPaint(hDlg, &Ps);
+	  hDC = Ps.hdc;
 
-          /* Paint classes Bitmap */
-          GetWindowRect(hDlg, &DlgRect);
-          GetWindowRect(GetDlgItem(hDlg, ID_PLACEBITMAP), &aRect);
+	  /* Paint classes Bitmap */
+	  GetWindowRect(hDlg, &DlgRect);
+	  GetWindowRect(GetDlgItem(hDlg, ID_PLACEBITMAP), &aRect);
 
-          hBitmap = LoadMappedBitmap(hThisInstance, "OPTIONSDLGBMP");
-          DrawBitmap(hDC, hBitmap,
-	  	     aRect.left-DlgRect.left-GetSystemMetrics(SM_CXDLGFRAME),
+	  hBitmap = LoadMappedBitmap(hThisInstance, "OPTIONSDLGBMP");
+	  DrawBitmap(hDC, hBitmap,
+		     aRect.left-DlgRect.left-GetSystemMetrics(SM_CXDLGFRAME),
 		     aRect.top-DlgRect.top-GetSystemMetrics(SM_CYDLGFRAME)-GetSystemMetrics(SM_CYCAPTION));
-          DeleteObject(hBitmap);
-          EndPaint(hDlg, &Ps);
+	  DeleteObject(hBitmap);
+	  EndPaint(hDlg, &Ps);
     }
     break;
 
@@ -1176,31 +1201,50 @@ LRESULT CALLBACK OptionsDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 	  repeatStr = strCopy(Buffer);
 
 	  GetDlgItemText(hDlg, ID_PATH, (LPSTR) Buffer, 1024);
-          if (hugsPath) free(hugsPath);
-          hugsPath = strCopy(Buffer);
+	  if (hugsPath) free(hugsPath);
+	  hugsPath = strCopy(Buffer);
 
 	  GetDlgItemText(hDlg, ID_EDITOR, (LPSTR) Buffer, 1024);
 	  if (hugsEdit) free(hugsEdit);
-          hugsEdit = strCopy(Buffer);
+	  hugsEdit = strCopy(Buffer);
 
 #if USE_PREPROCESSOR  && (defined(HAVE_POPEN) || defined(HAVE__POPEN))
 	  GetDlgItemText(hDlg, ID_PREPROCESSOR, (LPSTR) Buffer, 1024);
 	  if (preprocessor) free(preprocessor);
-          preprocessor = strCopy(Buffer);
+	  preprocessor = strCopy(Buffer);
 #endif
-          
+
 	  GetDlgItemText(hDlg, ID_CUTOFF, (LPSTR) Buffer, 1024);
 	  cutoff = argToInt(Buffer);
 
 	  GetDlgItemText(hDlg, ID_HEAPSIZE, (LPSTR) Buffer, 1024);
 	  setHeapSize(Buffer);
 
-	  for(i=0; toggle[i].c; i++)
-            if (toggle[i].h98 || !haskell98)
-	      *toggle[i].flag = (Bool) IsDlgButtonChecked(hDlg, ID_OP+i);
 
+      for(i=0; toggle[i].c; i++) {
+	  int j = 0;
+	  while (1) { /* look for DlgItem corresponding to flag */
+	    GetDlgItemText(hDlg, ID_OP+j, (LPSTR) Buffer, 1024);
+
+	    if (!(*Buffer))
+	      break;
+
+	    if ((Buffer[1] == toggle[i].c) && (toggle[i].h98 || !haskell98)) {
+	      *toggle[i].flag = (Bool) IsDlgButtonChecked(hDlg, ID_OP+j);
+	      break;
+	    }
+
+	    j++;
+	  }
+      }
+
+/*
+	  for(i=0; toggle[i].c; i++)
+	    if (toggle[i].h98 || !haskell98)
+	      *toggle[i].flag = (Bool) IsDlgButtonChecked(hDlg, ID_OP+i);
+*/
 	  writeRegString("Options", optionsToStr());
-	  
+
 	  EndDialog(hDlg, TRUE);
 	  return TRUE;
 	}
@@ -1237,161 +1281,161 @@ static Void local SmAddScr(HWND hDlg, CHAR *s) {
 
 
 LRESULT CALLBACK ScriptManDlgProc(HWND hDlg, UINT msg,
-                               WPARAM wParam, LPARAM lParam) {
+			       WPARAM wParam, LPARAM lParam) {
     switch (msg) {
-        case WM_INITDIALOG: {
-            Int i;
-            smLoaded = numScripts;
-            smUpto   = 0;
+	case WM_INITDIALOG: {
+	    Int i;
+	    smLoaded = numScripts;
+	    smUpto   = 0;
 
-            CenterDialogInParent(hDlg);
-            SetDialogFont (hDlg, hDialogFont);
+	    CenterDialogInParent(hDlg);
+	    SetDialogFont (hDlg, hDialogFont);
 
-            SendDlgItemMessage(hDlg, LB_SCRIPTS, LB_SETHORIZONTALEXTENT, (WPARAM)1000, 0L);
+	    SendDlgItemMessage(hDlg, LB_SCRIPTS, LB_SETHORIZONTALEXTENT, (WPARAM)1000, 0L);
 
-            SendDlgItemMessage(hDlg, LB_SCRIPTS, WM_SETREDRAW,FALSE,0L);
+	    SendDlgItemMessage(hDlg, LB_SCRIPTS, WM_SETREDRAW,FALSE,0L);
 
-            for (i=0; i<namesUpto; i++)
-                SmAddScr(hDlg,scriptReal[i]);
-            SmSelScr(hDlg,0);
-            SendDlgItemMessage(hDlg,LB_SCRIPTS,LB_SETCURSEL, 0, 0L);
-            SendDlgItemMessage(hDlg,LB_SCRIPTS,WM_SETREDRAW,TRUE,0L);
-            return TRUE;
-        }
-        case WM_PAINT: {
-              HDC               hDC;
-              PAINTSTRUCT   Ps;
-              HBITMAP           hBitmap;
-              RECT              aRect, DlgRect;
+	    for (i=0; i<namesUpto; i++)
+		SmAddScr(hDlg,scriptReal[i]);
+	    SmSelScr(hDlg,0);
+	    SendDlgItemMessage(hDlg,LB_SCRIPTS,LB_SETCURSEL, 0, 0L);
+	    SendDlgItemMessage(hDlg,LB_SCRIPTS,WM_SETREDRAW,TRUE,0L);
+	    return TRUE;
+	}
+	case WM_PAINT: {
+	      HDC		hDC;
+	      PAINTSTRUCT   Ps;
+	      HBITMAP		hBitmap;
+	      RECT		aRect, DlgRect;
 
-              BeginPaint(hDlg, &Ps);
-              hDC = Ps.hdc;
+	      BeginPaint(hDlg, &Ps);
+	      hDC = Ps.hdc;
 
-              /* Paint classes Bitmap */
-              GetWindowRect(hDlg, &DlgRect);
-              GetWindowRect(GetDlgItem(hDlg, ID_PLACEBITMAP), &aRect);
+	      /* Paint classes Bitmap */
+	      GetWindowRect(hDlg, &DlgRect);
+	      GetWindowRect(GetDlgItem(hDlg, ID_PLACEBITMAP), &aRect);
 
-              hBitmap = LoadMappedBitmap(hThisInstance, "SCRIPTMANDLGBMP");
-              DrawBitmap(hDC, hBitmap,
-                         aRect.left-DlgRect.left-GetSystemMetrics(SM_CXDLGFRAME),
-                         aRect.top-DlgRect.top-GetSystemMetrics(SM_CYDLGFRAME)-GetSystemMetrics(SM_CYCAPTION));
-              DeleteObject(hBitmap);
-              EndPaint(hDlg, &Ps);
-        }
-        break;
+	      hBitmap = LoadMappedBitmap(hThisInstance, "SCRIPTMANDLGBMP");
+	      DrawBitmap(hDC, hBitmap,
+			 aRect.left-DlgRect.left-GetSystemMetrics(SM_CXDLGFRAME),
+			 aRect.top-DlgRect.top-GetSystemMetrics(SM_CYDLGFRAME)-GetSystemMetrics(SM_CYCAPTION));
+	      DeleteObject(hBitmap);
+	      EndPaint(hDlg, &Ps);
+	}
+	break;
 
-        case WM_COMMAND:
-            switch (CMDitem(wParam,lParam)) {
-                case ID_ADDSCRIPT:
-                    if (smUpto>=NUM_SCRIPTS)
-                        MessageBox(hDlg,"Too many script files",
-                                   "Add script", MB_ICONEXCLAMATION|MB_OK);
-                    else {
-                        String s = GetaFileName(hDlg,IDS_FILTERFILE);
-                        if (s)
-                            SmAddScr(hDlg,s);
-                    }
-                    return TRUE;
+	case WM_COMMAND:
+	    switch (CMDitem(wParam,lParam)) {
+		case ID_ADDSCRIPT:
+		    if (smUpto>=NUM_SCRIPTS)
+			MessageBox(hDlg,"Too many script files",
+				   "Add script", MB_ICONEXCLAMATION|MB_OK);
+		    else {
+			String s = GetaFileName(hDlg,IDS_FILTERFILE);
+			if (s)
+			    SmAddScr(hDlg,s);
+		    }
+		    return TRUE;
 
-                case ID_DELSCRIPT:
-                    if (selScr < 0)
-                        MessageBox(hDlg,"No script file selected",
-                                   "Remove script", MB_ICONEXCLAMATION|MB_OK);
-                    else if (selScr == 0)
-                        MessageBox(hDlg,"Cannot remove prelude file",
-                                   "Remove script", MB_ICONEXCLAMATION|MB_OK);
-                    else {
-                        Int i;
-                        SendDlgItemMessage(hDlg, LB_SCRIPTS, LB_DELETESTRING,
-                                           selScr, 0L);
-                        if (selScr<smLoaded)
-                            smLoaded = selScr;
-                        if (smFile[selScr]) {
-                            free(smFile[selScr]);
-                            smFile[selScr] = 0;
-                        }
-                        for (i=selScr+1; i<smUpto; ++i)
-                            smFile[i-1] = smFile[i];
-                        smUpto--;
-                        SmSelScr(hDlg,-1);
-                    }
-                    return TRUE;
+		case ID_DELSCRIPT:
+		    if (selScr < 0)
+			MessageBox(hDlg,"No script file selected",
+				   "Remove script", MB_ICONEXCLAMATION|MB_OK);
+		    else if (selScr == 0)
+			MessageBox(hDlg,"Cannot remove prelude file",
+				   "Remove script", MB_ICONEXCLAMATION|MB_OK);
+		    else {
+			Int i;
+			SendDlgItemMessage(hDlg, LB_SCRIPTS, LB_DELETESTRING,
+					   selScr, 0L);
+			if (selScr<smLoaded)
+			    smLoaded = selScr;
+			if (smFile[selScr]) {
+			    free(smFile[selScr]);
+			    smFile[selScr] = 0;
+			}
+			for (i=selScr+1; i<smUpto; ++i)
+			    smFile[i-1] = smFile[i];
+			smUpto--;
+			SmSelScr(hDlg,-1);
+		    }
+		    return TRUE;
 
-                case ID_EDITSCRIPT:
-                    if (selScr >= 0)
-                        DlgSendMessage(hDlg, WM_COMMAND, LB_SCRIPTS, MAKELONG(0, LBN_DBLCLK));
-                    else
-                        MessageBox(hDlg,"No file selected","Edit",
-                                   MB_ICONEXCLAMATION|MB_OK);
-                    return TRUE;
+		case ID_EDITSCRIPT:
+		    if (selScr >= 0)
+			DlgSendMessage(hDlg, WM_COMMAND, LB_SCRIPTS, MAKELONG(0, LBN_DBLCLK));
+		    else
+			MessageBox(hDlg,"No file selected","Edit",
+				   MB_ICONEXCLAMATION|MB_OK);
+		    return TRUE;
 
-                case ID_CLEARSCRIPTS: {
-                    Int i;
-                    for (i=1; i<smUpto; ++i)
-                        if (smFile[i])
-                            free(smFile[i]);
-                    smUpto = smLoaded = 1;
-                    SendDlgItemMessage(hDlg,LB_SCRIPTS,LB_RESETCONTENT,0,0L);
-                    fprintf(stdstr,"%s\n",smFile[0]);
-                    SendDlgItemMessage(hDlg, LB_SCRIPTS, LB_ADDSTRING, 0,
-                                       (LONG) (LPSTR) stdstrbuff);
-                    SmSelScr(hDlg,-1);
-                    return TRUE;
-                }
+		case ID_CLEARSCRIPTS: {
+		    Int i;
+		    for (i=1; i<smUpto; ++i)
+			if (smFile[i])
+			    free(smFile[i]);
+		    smUpto = smLoaded = 1;
+		    SendDlgItemMessage(hDlg,LB_SCRIPTS,LB_RESETCONTENT,0,0L);
+		    fprintf(stdstr,"%s\n",smFile[0]);
+		    SendDlgItemMessage(hDlg, LB_SCRIPTS, LB_ADDSTRING, 0,
+				       (LONG) (LPSTR) stdstrbuff);
+		    SmSelScr(hDlg,-1);
+		    return TRUE;
+		}
 
-                case LB_SCRIPTS:
-                    switch (CMDdata(wParam,lParam)) {
-                        case LBN_SELCHANGE:
-                            SmSelScr(hDlg,(Int)SendDlgItemMessage(hDlg,
-                                                                  LB_SCRIPTS,
-                                                                  LB_GETCURSEL,
-                                                                  0, 0L));
-                            return TRUE;
+		case LB_SCRIPTS:
+		    switch (CMDdata(wParam,lParam)) {
+			case LBN_SELCHANGE:
+			    SmSelScr(hDlg,(Int)SendDlgItemMessage(hDlg,
+								  LB_SCRIPTS,
+								  LB_GETCURSEL,
+								  0, 0L));
+			    return TRUE;
 
-                        case LBN_DBLCLK: {
-                            char buffer[_MAX_PATH];
-                            SendDlgItemMessage(hDlg,
-                                               LB_SCRIPTS,
-                                               LB_GETTEXT,
-                                               selScr,
-                                               (LPARAM) (LPSTR) buffer);
-                            setLastEdit((String)buffer,0);
-                            runEditor();
-                            return TRUE;
-                        }
-                    }
-                    break;
+			case LBN_DBLCLK: {
+			    char buffer[_MAX_PATH];
+			    SendDlgItemMessage(hDlg,
+					       LB_SCRIPTS,
+					       LB_GETTEXT,
+					       selScr,
+					       (LPARAM) (LPSTR) buffer);
+			    setLastEdit((String)buffer,0);
+			    runEditor();
+			    return TRUE;
+			}
+		    }
+		    break;
 
-                case IDOK: {
-                    Int i;
-                    for (i=0; i<namesUpto; i++)
-                        if (scriptName[i]) {
-                            free(scriptName[i]);
-                            free(scriptReal[i]);
-                    }    
-                    for (i=0; i<smUpto; i++) {
-                        scriptName[i] = smFile[i];
-                        scriptReal[i] = strCopy(RealPath(scriptName[i]));
-                        smFile[i]     = 0;
-                    }
-                    namesUpto  = smUpto;
-                    numScripts = smLoaded;
-                    dropScriptsFrom(numScripts-1);
-                    PostMessage(hWndMain,WM_COMMAND,ID_COMPILE,0L);
-                    EndDialog(hDlg,TRUE);
-                    return TRUE;
-                }
+		case IDOK: {
+		    Int i;
+		    for (i=0; i<namesUpto; i++)
+			if (scriptName[i]) {
+			    free(scriptName[i]);
+			    free(scriptReal[i]);
+		    }	 
+		    for (i=0; i<smUpto; i++) {
+			scriptName[i] = smFile[i];
+			scriptReal[i] = strCopy(RealPath(scriptName[i]));
+			smFile[i]     = 0;
+		    }
+		    namesUpto  = smUpto;
+		    numScripts = smLoaded;
+		    dropScriptsFrom(numScripts-1);
+		    PostMessage(hWndMain,WM_COMMAND,ID_COMPILE,0L);
+		    EndDialog(hDlg,TRUE);
+		    return TRUE;
+		}
 
-                case IDCANCEL: {
-                    Int i;
-                    for (i=0; i<smUpto; i++)
-                        if (smFile[i])
-                            free(smFile[i]);
-                    EndDialog(hDlg, TRUE);
-                    return TRUE;
-                }
-            }
-            break;
+		case IDCANCEL: {
+		    Int i;
+		    for (i=0; i<smUpto; i++)
+			if (smFile[i])
+			    free(smFile[i]);
+		    EndDialog(hDlg, TRUE);
+		    return TRUE;
+		}
+	    }
+	    break;
     }
     return FALSE;
 }
@@ -1432,10 +1476,10 @@ static CHAR local *GetFileNameFromFileNamesMenu (FILENAMESMENU* fnm, UINT i)
 static VOID local AddFileToFileNamesMenu(FILENAMESMENU* fnm, LPSTR NewFileName)
 {
   HMENU 	hMainMenu, hFilesSubMenu;
-  CHAR 		shortFName[_MAX_PATH], MenuContents[_MAX_PATH];
-  UINT 		i, Up;
+  CHAR		shortFName[_MAX_PATH], MenuContents[_MAX_PATH];
+  UINT		i, Up;
 
-  hMainMenu     = GetMenu(hWndMain);
+  hMainMenu	= GetMenu(hWndMain);
   hFilesSubMenu = GetSubMenu(hMainMenu, SUBMENU(fnm->MenuId));
 
 
@@ -1480,8 +1524,8 @@ static VOID local AddFileToFileNamesMenu(FILENAMESMENU* fnm, LPSTR NewFileName)
 static VOID local SaveToRegistryFileNamesMenu (FILENAMESMENU* fnm, LPSTR Section)
 {
   HMENU hMainMenu, hFilesSubMenu;
-  CHAR  Buffer[_MAX_PATH], Entry[256];
-  UINT  i, Total;
+  CHAR	Buffer[_MAX_PATH], Entry[256];
+  UINT	i, Total;
 
   hMainMenu = GetMenu(hWndMain);
   hFilesSubMenu = GetSubMenu(hMainMenu, SUBMENU(fnm->MenuId));
@@ -1497,9 +1541,9 @@ static VOID local SaveToRegistryFileNamesMenu (FILENAMESMENU* fnm, LPSTR Section
 static VOID local GetFromRegistryFileNamesMenu (FILENAMESMENU* fnm, LPSTR Section)
 {
   HMENU hMainMenu, hFilesSubMenu;
-  CHAR  Entry[256];
+  CHAR	Entry[256];
   String Buffer;
-  UINT  i, Total;
+  UINT	i, Total;
 
   hMainMenu = GetMenu(hWndMain);
   hFilesSubMenu = GetSubMenu(hMainMenu, SUBMENU(fnm->MenuId));
@@ -1514,7 +1558,7 @@ static VOID local GetFromRegistryFileNamesMenu (FILENAMESMENU* fnm, LPSTR Sectio
     wsprintf(Entry, "%s File%d", Section, i);
 
     Buffer=readRegString(HKEY_CURRENT_USER,HugsRoot,Entry, "");
-        
+	
     if (Buffer[0])
       AddFileToFileNamesMenu(fnm, Buffer);
     else
@@ -1528,7 +1572,7 @@ FILENAMESMENU FilesMenu, EditMenu;
 
 static VOID local InitMenus(VOID) {
 
-  InitFileNamesMenu(ID_FILESMENU,   ID_EXIT,         &FilesMenu);
+  InitFileNamesMenu(ID_FILESMENU,   ID_EXIT,	     &FilesMenu);
   InitFileNamesMenu(ID_EDITMENU,    ID_EDITSELECTED, &EditMenu); 
 }
 
@@ -1537,12 +1581,12 @@ static VOID local InitMenus(VOID) {
  * ------------------------------------------------------------------------*/
 
 #define RKEY_DOCPATH		 "Doc Path"
-#define RKEY_SCREENROWS		 "Screen Rows"
-#define RKEY_SCREENCOLS		 "Screen Cols"
-#define RKEY_SCREENFONTNAME      "Screen Font Name"
-#define RKEY_SCREENFONTSIZE      "Screen Font Size"
-#define RKEY_DIALOGSFONTNAME     "Dialogs Font Name"
-#define RKEY_DIALOGSFONTSIZE     "Dialogs Font Size"
+#define RKEY_SCREENROWS 	 "Screen Rows"
+#define RKEY_SCREENCOLS 	 "Screen Cols"
+#define RKEY_SCREENFONTNAME	 "Screen Font Name"
+#define RKEY_SCREENFONTSIZE	 "Screen Font Size"
+#define RKEY_DIALOGSFONTNAME	 "Dialogs Font Name"
+#define RKEY_DIALOGSFONTSIZE	 "Dialogs Font Size"
 #define RKEY_LASTPATH		 "LastPath"
 #define RKEY_POSX		 "Screen PosX"
 #define RKEY_POSY		 "Screen PosY"
@@ -1553,7 +1597,7 @@ static VOID local InitMenus(VOID) {
 static VOID local GetFromRegistryDocPath(CHAR *realPath)
 {
 
-  CHAR         regPath[2*_MAX_PATH]; 
+  CHAR	       regPath[2*_MAX_PATH]; 
 
   strcpy(regPath, readRegString(HKEY_CURRENT_USER,HugsRoot,RKEY_DOCPATH, DEFAULT_DOC_DIR));
 
@@ -1609,7 +1653,7 @@ static VOID local SaveGUIOptions(VOID)
 
   /* calculate rows and columns */
   if (!IsIconic(hWndMain) && !IsZoomed(hWndMain)) {
-    RECT        aRect;
+    RECT	aRect;
     TEXTMETRIC *tm = (TEXTMETRIC*) SendMessage (hWndText, WM_GETTEXTMETRIC, 0, 0L);
    
     GetClientRect(hWndText, &aRect);
@@ -1639,7 +1683,7 @@ static VOID local SaveGUIOptions(VOID)
   }
 
   {
-    INT		DialogFontSize;
+    INT 	DialogFontSize;
     CHAR	DialogFontName[256];
 
     GetFromRegistryDialogFont(DialogFontName, &DialogFontSize);
@@ -1690,11 +1734,11 @@ static VOID local SaveToRegistryMenus()
 
 /* Passes a command to Hugs interpreter */
 static Void local SetInterpreterCommand(LPCSTR fmt, ...) {
-  va_list ap;                    /* pointer into argument list           */
+  va_list ap;			 /* pointer into argument list		 */
   static char msg[1024];
   String s;
 
-  va_start(ap, fmt);             /* make ap point to first arg after fmt */
+  va_start(ap, fmt);		 /* make ap point to first arg after fmt */
   vsprintf(msg, fmt, ap);
 
   for(s=msg; *s; ++s) {
@@ -1705,7 +1749,7 @@ static Void local SetInterpreterCommand(LPCSTR fmt, ...) {
     }
   }
 
-  va_end(ap);                    /* clean up                             */
+  va_end(ap);			 /* clean up				 */
 }
 
 
@@ -1719,11 +1763,11 @@ static VOID OpenHtml(LPSTR s)
 /* Open an html document. Search the document in docs dir */
 static VOID OpenHtmlFromDocs(LPSTR s) 
 {
-  CHAR DocsFullPath[_MAX_PATH];                                      
-  CHAR HtmlFullPath[_MAX_PATH];                                      
+  CHAR DocsFullPath[_MAX_PATH]; 				     
+  CHAR HtmlFullPath[_MAX_PATH]; 				     
 
-  GetFromRegistryDocPath(DocsFullPath);                              
-  wsprintf(HtmlFullPath, "%s\\%s", DocsFullPath,s);                  
+  GetFromRegistryDocPath(DocsFullPath); 			     
+  wsprintf(HtmlFullPath, "%s\\%s", DocsFullPath,s);		     
   OpenHtml(HtmlFullPath); 
 }		
 
@@ -1739,7 +1783,7 @@ static LPSTR local ExpandFileName(LPSTR what)
     LPSTR where, t, unlex;
 
     strcpy(Expanded,"\"");
-        
+	
     for(where = &Expanded[1],t=what; *t; ++t) {
       unlex = unlexChar(*t,'"');
       wsprintf(where, "%s", unlexChar(*t,'"'));
