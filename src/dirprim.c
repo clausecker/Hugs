@@ -441,6 +441,7 @@ primFun(primGetPermissions) { /* FilePath -> IO (Bool,Bool,Bool,Bool) */
 primFun(primSetPermissions) { /* FilePath -> Bool -> Bool -> Bool -> Bool -> IO () */
   int rc;
   String str;
+  struct stat st;
 
   Bool   r;
   Bool   w;
@@ -469,10 +470,13 @@ primFun(primSetPermissions) { /* FilePath -> Bool -> Bool -> Bool -> Bool -> IO 
 		     IOArg(5)));
   }
 
-  rc = chmod(str,
-	     SET_CHMOD_FLAG(r, READ_FLAG)  |
-	     SET_CHMOD_FLAG(w, WRITE_FLAG) |
-	     SET_CHMOD_FLAG(e||s, EXEC_FLAG));
+  rc = stat(str, &st);
+  if (rc == 0)
+    rc = chmod(str,
+	       (st.st_mode & ~(READ_FLAG|WRITE_FLAG|EXEC_FLAG)) |
+	       SET_CHMOD_FLAG(r, READ_FLAG)  |
+	       SET_CHMOD_FLAG(w, WRITE_FLAG) |
+	       SET_CHMOD_FLAG(e||s, EXEC_FLAG));
 	     
   if (rc != 0) {
     IOFail(mkIOError(NIL,
