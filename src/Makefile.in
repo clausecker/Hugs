@@ -113,7 +113,7 @@ CONVERTERS	= unix/convert_libraries unix/hugs-package
 
 libraries	:: $(LIBRARIES) @FFI_LIBRARIES@
 
-$(LIBRARIES)	: ../libraries/Hugs/*.* $(CONVERTERS) $(TOOLS) $(INCLUDE)
+$(LIBRARIES)	: runhugs@EXE@ ffihugs@EXE@ ../libraries/Hugs/*.* $(CONVERTERS) $(TOOLS) $(INCLUDE)
 		  mkdir -p $(BUILD_DIR)/tools
 		  $(CP) $(TOOLS) $(BUILD_DIR)/tools
 		  mkdir -p $(BUILD_DIR)/libraries/Hugs
@@ -255,10 +255,10 @@ depend: $(SOURCES)
 #
 ################################################################
 
-check		: libraries
+check		: hugs@EXE@ libraries
 		  cd ../tests; sh testScript
 
-LibStatus	: libraries
+LibStatus	: hugs@EXE@ libraries
 		  (cd unix; ./test_libraries $(FPTOOLS)) >$@
 
 @MkInstall@
