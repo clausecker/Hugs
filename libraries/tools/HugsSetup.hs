@@ -8,7 +8,6 @@ Prototype Cabal setup script for Hugs
 	* probably doesn't work on Windows, and assumes gcc
 
 Not yet implemented:
-	* executables
 	* installed package description stuff
 	* source distributions
 
@@ -19,43 +18,30 @@ Missing features compared with hugs-package:
 
 module Main where
 
-import Distribution.Compat.ReadP (munch)
-import Distribution.Extension	(Extension(..))
-import qualified Distribution.InstalledPackageInfo as Inst
-import Distribution.ParseUtils
 import Distribution.Package
 import Distribution.PackageDescription
+import Distribution.ParseUtils
 import Distribution.PreProcess
-import Distribution.PreProcess.Unlit
 import Distribution.Setup
 import Distribution.Simple.Build
 import Distribution.Simple.Configure
+import Distribution.Simple.Install
 import Distribution.Simple.LocalBuildInfo
 import Distribution.Simple.Utils
 import Distribution.Version
 
-import Control.Monad	(foldM, filterM, when)
-import Data.Char	(isAlpha, isAlphaNum)
-import Data.List	(isSuffixOf, sort, intersperse)
-import Data.Maybe	(isNothing, mapMaybe)
+import Control.Monad	(foldM, when)
+import Data.List	(intersperse)
 import System.Cmd	(rawSystem)
 import System.Console.GetOpt
 import System.Directory
-import System.Exit
 import System.Environment
+import System.Exit
 import System.FilePath
-import System.IO
-import Text.PrettyPrint.HughesPJ (fsep, text)
-
--- cpp defines
-defHugs :: String
-defHugs = "-D__HUGS__"
+import System.IO.Error
 
 defaultPackageDesc :: FilePath
 defaultPackageDesc = "Setup.description"
-
-installSuffixes :: [String]
-installSuffixes = ["hs", "lhs", drop 1 dllExtension]
 
 -- main skeleton, copied from Distribution.Simple with minor changes
 
@@ -104,14 +90,14 @@ main
 		no_extra_flags args
 		pkg_descr <- getBuildParams currentDir pkg_descr
 		localbuildinfo <- getPersistBuildConfig
-		install pkg_descr localbuildinfo False
+		install pkg_descr localbuildinfo mprefix
 
 	    InstallCmd uInst -> do
 		(uInst, _, args) <- parseInstallArgs uInst args []
 		no_extra_flags args
 		pkg_descr <- getBuildParams currentDir pkg_descr
 		localbuildinfo <- getPersistBuildConfig
-		install pkg_descr localbuildinfo uInst
+		install pkg_descr localbuildinfo Nothing
 		when (hasLibs pkg_descr)
 			 (register pkg_descr localbuildinfo uInst)
 
@@ -147,15 +133,6 @@ buildDirOpt = Option "b" ["builddir"] (ReqArg setBuildDir "DIR")
 
 -- actions for Hugs
 
-install :: PackageDescription -> LocalBuildInfo -> Bool -> IO ()
-install pkg lbi uInst =
-	when (buildPackage pkg) $
-	withLib pkg $ \ libInfo -> do
-	pkgDir <- hugsPackageDir pkg lbi uInst
-	maybeRemoveFileRecursive pkgDir
-	moveSources buildPref pkgDir (biModules libInfo) installSuffixes
-  where buildPref = buildDir lbi
-
 sdist :: FilePath -> FilePath -> PackageDescription -> IO ()
 sdist srcPref distPref pkg_descr =
 	return ()	-- TODO
@@ -166,15 +143,10 @@ register pkg lbi uInst =
 
 unregister :: PackageDescription -> LocalBuildInfo -> IO ()
 unregister pkg lbi = do
-	pkgDir <- hugsPackageDir pkg lbi False
-	maybeRemoveFileRecursive pkgDir
-
-hugsPackageDir :: PackageDescription -> LocalBuildInfo -> Bool -> IO FilePath
-hugsPackageDir pkg lbi uInst = do
-	dir <- if uInst then getHomeDirectory
-	    else return (prefix lbi `joinFileName` "lib")
-	return $ dir `joinFileName` "hugs" `joinFileName` "packages"
-		`joinFileName` pkgName (package pkg)
+	let hugsDir = prefix lbi `joinFileName` "lib" `joinFileName` "hugs"
+	let pkg_name = pkgName (package pkg)
+	maybeRemoveFileRecursive (hugsDir `joinFileName` "packages" `joinFileName` pkg_name)
+	maybeRemoveFileRecursive (hugsDir `joinFileName` "programs" `joinFileName` pkg_name)
 
 -- like removeFileRecursive, but don't complain if directory absent
 maybeRemoveFileRecursive dir =
@@ -201,7 +173,7 @@ getBuildParams srcDir pkg_descr = do
 parseBuildParameters :: PackageDescription -> String ->
 	Either PError PackageDescription
 parseBuildParameters pkg_descr inp = do
-	fieldLines <- singleStanza (stripComments False inp)
+	fieldLines <- singleStanza inp
 	foldM (parseBasicStanza basicStanzaFields) pkg_descr fieldLines
 
 -- stolen from Distribution.InstalledPackageInfo
