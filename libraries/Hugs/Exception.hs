@@ -18,8 +18,6 @@ module Hugs.Exception(
 
 	catchException,		-- :: IO a -> (Exception -> IO a) -> IO a
 
-	evaluate,		-- :: a -> IO a
-
 	-- Hugs-only stuff
 
 	HugsException,
@@ -68,13 +66,6 @@ throwIO (HugsException exn) = primThrowException exn
 catchException :: IO a -> (Exception -> IO a) -> IO a
 catchException m k = do
   (m `catchHugsException` (k . HugsException)) `Prelude.catch` (k . IOException)
-
-----------------------------------------------------------------
--- evaluate
-----------------------------------------------------------------
-
-evaluate :: a -> IO a
-evaluate a = a `seq` return a
 
 ----------------------------------------------------------------
 -- dummy implementations of block and unblock

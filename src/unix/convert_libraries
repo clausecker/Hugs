@@ -171,6 +171,9 @@ stub() {
 		done
 		echo '    ) where'
 		echo
+		if [ $stub_module = Exception ]		# gross kludge
+		then	echo "import Prelude hiding (catch)"
+		fi
 		for real
 		do	echo "import $real"
 		done
