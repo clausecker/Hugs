@@ -175,6 +175,29 @@ Then type inference on <literal>len2</literal> fails.
 <variablelist>
 
 <varlistentry>
+<term>Implicit module header</term>
+<listitem><para>
+In Haskell 98, if the module header is omitted, it defaults to
+<quote><literal>module Main(main) where</literal></quote>.
+In Hugs it defaults to <quote><literal>module Main where</literal></quote>,
+because many people test small modules without module headers.
+</para></listitem>
+</varlistentry>
+
+<varlistentry>
+<term>Implicit export list</term>
+<listitem><para>
+In Haskell 98, a missing export list means all names defined in the
+current module.
+In Hugs, it is treated as
+<quote><literal>(module <replaceable>M</replaceable>)</literal></quote>,
+where <replaceable>M</replaceable> is the current module.
+This is almost the same, differing only when an imported module is aliased as
+<replaceable>M</replaceable>.
+</para></listitem>
+</varlistentry>
+
+<varlistentry>
 <term>Type synonyms in export and import lists</term>
 <listitem><para>
 Hugs allows the <replaceable>T</replaceable><literal>(..)</literal>
