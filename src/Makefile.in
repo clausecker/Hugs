@@ -84,7 +84,7 @@ ffihugs@OBJ@	: runhugs.c
 # Libraries, converted from raw sources out of the fptools tree
 ################################################################
 
-libraries	: $(FPTOOLS)
+libraries	:
 		  cd unix; ./convert_hslibs $(FPTOOLS)
 		  cd unix; ./convert_libraries $(FPTOOLS)
 
