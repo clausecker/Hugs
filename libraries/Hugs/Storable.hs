@@ -2,25 +2,6 @@ module Hugs.Storable( module Hugs.Storable ) where
 
 import Hugs.Prelude
 
--- Will not be needed once we switch over to the hierarchial libraries
-foreign import ccall unsafe "Storable_aux.h" szInt       :: Int
-foreign import ccall unsafe "Storable_aux.h" szChar      :: Int
--- foreign import ccall unsafe "Storable_aux.h" szWideChar  :: Int
--- foreign import ccall unsafe "Storable_aux.h" szWord      :: Int
-foreign import ccall unsafe "Storable_aux.h" szPtr       :: Int
-foreign import ccall unsafe "Storable_aux.h" szFunPtr    :: Int
-foreign import ccall unsafe "Storable_aux.h" szFloat     :: Int
-foreign import ccall unsafe "Storable_aux.h" szDouble    :: Int
-foreign import ccall unsafe "Storable_aux.h" szStablePtr :: Int
-foreign import ccall unsafe "Storable_aux.h" szInt8      :: Int
-foreign import ccall unsafe "Storable_aux.h" szInt16     :: Int
-foreign import ccall unsafe "Storable_aux.h" szInt32     :: Int
-foreign import ccall unsafe "Storable_aux.h" szInt64     :: Int
-foreign import ccall unsafe "Storable_aux.h" szWord8     :: Int
-foreign import ccall unsafe "Storable_aux.h" szWord16    :: Int
-foreign import ccall unsafe "Storable_aux.h" szWord32    :: Int
-foreign import ccall unsafe "Storable_aux.h" szWord64    :: Int
-
 foreign import ccall unsafe "Storable_aux.h" readIntOffPtr       :: Ptr Int           -> Int -> IO Int
 foreign import ccall unsafe "Storable_aux.h" readCharOffPtr      :: Ptr Char          -> Int -> IO Char
 -- foreign import ccall unsafe "Storable_aux.h" readWideCharOffPtr  :: Ptr Char          -> Int -> IO Char
