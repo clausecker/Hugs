@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.66 $
- * $Date: 2002/04/20 15:23:35 $
+ * $Revision: 1.67 $
+ * $Date: 2002/05/09 16:28:12 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -624,19 +624,24 @@ List ls2; {
   Text t;
   List xs;
   List res = ls2;
-  Cell rs;
+  Cell cs;
 
   for (xs=ls1;nonNull(xs); xs=tl(xs)) {
     t = findImportText(hd(xs));
-    if ((rs = lookupImport(t,ls2)) != NIL) {
+    if ((cs = lookupImport(t,ls2)) != NIL) {
       /* found a match, now combine the two */
       if (isIdent(hd(xs)) || !isPair(hd(xs))) {
 	/* just a name doesn't add any more info than what's
 	   already in the list; continue. */
 	;
-      } else if (isPair(hd(xs))) {
-	/* join the constructors/members, no elimination of dups. */
-	snd(hd(rs)) = dupOnto(snd(hd(xs)), snd(hd(rs)));
+      } else if ( isPair(hd(xs)) ) {
+	  if ( !isPair(hd(cs)) ) {
+	      /* just adding more information */
+	      hd(cs) = hd(xs);
+	  } else {
+	      /* join the constructors/members, no elimination of dups. */
+	      snd(hd(cs)) = dupOnto(snd(hd(xs)), snd(hd(cs)));
+	  }
       } else {
 	internal("mergeImportLists2");
       }
