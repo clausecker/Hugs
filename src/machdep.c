@@ -11,8 +11,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.112 $
- * $Date: 2003/12/16 05:55:32 $
+ * $Revision: 1.113 $
+ * $Date: 2004/01/14 14:19:10 $
  * ------------------------------------------------------------------------*/
 #include "prelude.h"
 #include "storage.h"
@@ -1069,33 +1069,54 @@ Void gcCStack() {                       /* Garbage collect elements off    */
 
 #include <termios.h>
 typedef  struct termios  TermParams;
-#define  getTerminal(tp) tcgetattr(fileno(stdin), &tp)
-#define  setTerminal(tp) tcsetattr(fileno(stdin), TCSAFLUSH, &tp)
-#define  noEcho(tp)      tp.c_lflag    &= ~(ICANON | ECHO); \
-			 tp.c_cc[VMIN]  = 1;                \
+#define  getTerminal(fd,tp) tcgetattr(fd, &tp)
+#define  setTerminal(fd,tp) tcsetattr(fd, TCSAFLUSH, &tp)
+#define  getEcho(tp)     ((tp.c_lflag | ECHO) != 0)
+#define  noEcho(tp)      tp.c_lflag    &= ~ECHO;
+#define  doEcho(tp)      tp.c_lflag    |= ECHO;
+#define  getBuff(tp)     ((tp.c_lflag | ICANON) != 0)
+#define  noBuff(tp)      tp.c_lflag    &= ~ICANON; \
+			 tp.c_cc[VMIN]  = 1; \
 			 tp.c_cc[VTIME] = 0;
+#define  doBuff(tp)      tp.c_lflag    |= ICANON; \
+			 tp.c_cc[VEOF]  = '\04'; \
+			 tp.c_cc[VEOL]  = '\0';
 
 #elif HAVE_SGTTY_H
 
 #include <sgtty.h>
 typedef  struct sgttyb   TermParams;
-#define  getTerminal(tp) ioctl(fileno(stdin),TIOCGETP,&tp)
-#define  setTerminal(tp) ioctl(fileno(stdin),TIOCSETP,&tp)
+#define  getTerminal(fd,tp) ioctl(fd,TIOCGETP,&tp)
+#define  setTerminal(fd,tp) ioctl(fd,TIOCSETP,&tp)
+#define  getEcho(tp)     ((tp.sg_flags | ECHO) != 0)
+#define  noEcho(tp)      tp.sg_flags &= ~ECHO;
+#define  doEcho(tp)      tp.sg_flags |= ECHO;
 #if HPUX
-#define  noEcho(tp)      tp.sg_flags |= RAW; tp.sg_flags &= (~ECHO);
+#define  getBuff(tp)     ((tp.sg_flags | RAW) == 0)
+#define  noBuff(tp)      tp.sg_flags |= RAW;
+#define  doBuff(tp)      tp.sg_flags &= ~RAW;
 #else
-#define  noEcho(tp)      tp.sg_flags |= CBREAK; tp.sg_flags &= (~ECHO);
+#define  getBuff(tp)     ((tp.sg_flags | CBREAK) == 0)
+#define  noBuff(tp)      tp.sg_flags |= CBREAK;
+#define  doBuff(tp)      tp.sg_flags &= ~CBREAK;
 #endif
 
 #elif HAVE_TERMIO_H
 
 #include <termio.h>
 typedef  struct termio   TermParams;
-#define  getTerminal(tp) ioctl(fileno(stdin),TCGETA,&tp)
-#define  setTerminal(tp) ioctl(fileno(stdin),TCSETAF,&tp)
-#define  noEcho(tp)      tp.c_lflag    &= ~(ICANON | ECHO); \
-			 tp.c_cc[VMIN]  = 1;                \
+#define  getTerminal(fd,tp) ioctl(fd,TCGETA,&tp)
+#define  setTerminal(fd,tp) ioctl(fd,TCSETAF,&tp)
+#define  getEcho(tp)     ((tp.c_lflag | ECHO) != 0)
+#define  noEcho(tp)      tp.c_lflag    &= ~ECHO;
+#define  doEcho(tp)      tp.c_lflag    |= ECHO;
+#define  getBuff(tp)     ((tp.c_lflag | ICANON) != 0)
+#define  noBuff(tp)      tp.c_lflag    &= ~ICANON; \
+			 tp.c_cc[VMIN]  = 1; \
 			 tp.c_cc[VTIME] = 0;
+#define  doBuff(tp)      tp.c_lflag    |= ICANON; \
+			 tp.c_cc[VEOF]  = '\04'; \
+			 tp.c_cc[VEOL]  = '\0';
 
 #endif
 
@@ -1104,19 +1125,60 @@ static TermParams originalSettings;
 
 Void normalTerminal() {                 /* restore terminal initial state  */
     if (messedWithTerminal)
-	setTerminal(originalSettings);
+	setTerminal(fileno(stdin), originalSettings);
 }
 
-Void noechoTerminal() {                 /* set terminal into noecho mode   */
+/* We used to do evaluation with the terminal in raw and noecho mode,
+ * but now we just leave it alone, at least on Unix-like systems.
+ * When all platforms do this, this function can go away.
+ */
+Void noechoTerminal() {
+}
+
+Bool getEchoTerminal(Int fd) {
     TermParams settings;
 
-    if (!messedWithTerminal) {
-	getTerminal(originalSettings);
+    getTerminal(fd, settings);
+    return getEcho(settings);
+}
+
+Void setEchoTerminal(Int fd, Bool echo) {
+    TermParams settings;
+
+    if (fd==0 && !messedWithTerminal) {
+	getTerminal(0, originalSettings);
 	messedWithTerminal = TRUE;
     }
-    getTerminal(settings);
-    noEcho(settings);
-    setTerminal(settings);
+    getTerminal(fd, settings);
+    if (echo) {
+	doEcho(settings);
+    } else {
+	noEcho(settings);
+    }
+    setTerminal(fd, settings);
+}
+
+Bool getBuffTerminal(Int fd) {
+    TermParams settings;
+
+    getTerminal(fd, settings);
+    return getEcho(settings);
+}
+
+Void setBuffTerminal(Int fd, Bool buffered) {
+    TermParams settings;
+
+    if (fd==0 && !messedWithTerminal) {
+	getTerminal(0, originalSettings);
+	messedWithTerminal = TRUE;
+    }
+    getTerminal(fd, settings);
+    if (buffered) {
+	doBuff(settings);
+    } else {
+	noBuff(settings);
+    }
+    setTerminal(fd, settings);
 }
 
 Int getTerminalWidth() {                /* determine width of terminal     */
@@ -1139,7 +1201,6 @@ Int readTerminalChar() {                /* read character from terminal    */
 
 #elif __MWERKS__ && macintosh
 #include <limits.h>
-static Bool terminalEchoReqd = TRUE;
 
 Int getTerminalWidth() {
     /* Never insert extra '\n' in output, as the console softwraps. */
@@ -1147,28 +1208,27 @@ Int getTerminalWidth() {
 }
 
 Void normalTerminal() {
-    terminalEchoReqd = TRUE;
 }
 
 Void noechoTerminal() {
-    terminalEchoReqd = FALSE;
+}
+
+Bool getEchoTerminal(Int fd) {
+    return TRUE;
+}
+
+Void setEchoTerminal(Int fd, Bool echo) {
+}
+
+Bool getBuffTerminal(Int fd) {
+    return TRUE;
+}
+
+Void setBuffTerminal(Int fd, Bool buffered) {
 }
 
 Int readTerminalChar() {               /* read character from terminal    */
-Int ac, bc;
-
-  if (terminalEchoReqd) {
     return getchar();
-  } else {
-      ac = getc(stdin);
-#if 0
-      bc = ac;                       /* eat all subsequent chars until EOF or EOL */
-      while ((bc != EOF) && (bc != '\n')) {
-        bc = getc(stdin);
-      }
-#endif
-      return ac;
-  }
 }
 
 #else /* no terminal driver - eg DOS, RISCOS */
@@ -1191,6 +1251,20 @@ Void normalTerminal() {                 /* restore terminal initial state  */
 
 Void noechoTerminal() {                 /* turn terminal echo on/off       */
     terminalEchoReqd = FALSE;
+}
+
+Bool getEchoTerminal(Int fd) {
+    return fd!=0 || terminalEchoReqd;
+}
+
+Void setEchoTerminal(Int fd, Bool echo) {
+}
+
+Bool getBuffTerminal(Int fd) {
+    return fd!=0 || terminalEchoReqd;
+}
+
+Void setBuffTerminal(Int fd, Bool buffered) {
 }
 
 Int readTerminalChar() {                /* read character from terminal    */

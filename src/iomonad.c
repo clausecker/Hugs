@@ -14,8 +14,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: iomonad.c,v $
- * $Revision: 1.69 $
- * $Date: 2003/12/04 18:04:26 $
+ * $Revision: 1.70 $
+ * $Date: 2004/01/14 14:19:10 $
  * ------------------------------------------------------------------------*/
  
 Name nameIORun;			        /* run IO code                     */
@@ -92,7 +92,6 @@ PROTO_PRIM(primGetArgs);
 PROTO_PRIM(primSetProgName);
 PROTO_PRIM(primSetArgs);
 
-PROTO_PRIM(primGetCh);
 PROTO_PRIM(primGetChar);
 PROTO_PRIM(primPutChar);
 PROTO_PRIM(primPutStr);
@@ -141,6 +140,10 @@ PROTO_PRIM(primAppendFile);
 PROTO_PRIM(primReadBinaryFile);
 PROTO_PRIM(primWriteBinaryFile);
 PROTO_PRIM(primAppendBinaryFile);
+
+PROTO_PRIM(primHIsTerminalDevice);
+PROTO_PRIM(primHGetEcho);
+PROTO_PRIM(primHSetEcho);
 
 PROTO_PRIM(primIOEql);
 PROTO_PRIM(primIOHash);
@@ -226,7 +229,6 @@ static struct primitive iomonadPrimTable[] = {
   {"primSetProgName",   1+IOArity, primSetProgName},
   {"primSetArgs",       1+IOArity, primSetArgs},
 
-  {"getCh",		0+IOArity, primGetCh},
   {"getChar",		0+IOArity, primGetChar},
   {"putChar",		1+IOArity, primPutChar},
   {"putStr",		1+IOArity, primPutStr},
@@ -270,6 +272,9 @@ static struct primitive iomonadPrimTable[] = {
   {"readBinaryFile",	1+IOArity, primReadBinaryFile},
   {"writeBinaryFile",	2+IOArity, primWriteBinaryFile},
   {"appendBinaryFile",	2+IOArity, primAppendBinaryFile},
+  {"hIsTerminalDevice",	1+IOArity, primHIsTerminalDevice},
+  {"hGetEcho",		1+IOArity, primHGetEcho},
+  {"hSetEcho",		2+IOArity, primHSetEcho},
 #endif
 
 #if IO_REFS
@@ -728,19 +733,7 @@ primFun(primSetArgs) {                  /* primSetArgs :: [String] -> IO () */
  * Console IO
  * ------------------------------------------------------------------------*/
 
-primFun(primGetCh) {			/* Get character from stdin wo/echo*/
-    Int c = readTerminalChar();
-    if (c==EOF) {
-	IOFail(mkIOError(handles[HSTDIN].hcell,
-			 nameEOFErr,
-			 "IOExtensions.getCh",
-			 "end of file",
-			 NIL));
-    }
-    IOReturn(mkChar(c));
-}
-
-primFun(primGetChar) {			/* Get character from stdin w/ echo*/
+primFun(primGetChar) {			/* Get character from stdin        */
     Int c = readTerminalChar();
     if (c==EOF) {
 	IOFail(mkIOError(handles[HSTDIN].hcell,
@@ -749,7 +742,7 @@ primFun(primGetChar) {			/* Get character from stdin w/ echo*/
 			 "end of file",
 			 NIL));
     }
-#if !(__MWERKS__ && macintosh)	/* Metrowerks console has no NO_ECHO mode. */
+#if RAW_CONSOLE				/* Simulate echoing ourselves.     */
     FPutChar(c, stdout);
     fflush(stdout);
 #endif
@@ -1337,6 +1330,11 @@ primFun(primHSetBuffering) {	/* Change a Handle's buffering */
 		           "unable to change buffering",
 		           NIL));
 	}
+#if HAVE_ISATTY
+	if ((handles[h].hmode&(HWRITE|HAPPEND|HREADWRITE)) &&
+	    isatty(fileno(handles[h].hfp)))
+	    setBuffTerminal(fileno(handles[h].hfp), ty!=0);
+#endif
 	IOReturn(nameUnit);
     } else
         IOFail(mkIOError(NIL,
@@ -1356,8 +1354,11 @@ primFun(primHGetBuffering) {	/* Return buffering info of a handle. */
       /* figure out buffer mode and size. */
 #if HAVE_ISATTY
       if (isatty (fileno(handles[h].hfp)) ) {
-	/* TTY connected handles are linebuffered. */
-	handles[h].hbufMode = HANDLE_LINEBUFFERED;
+	/* TTY connected handles are normally linebuffered. */
+	handles[h].hbufMode =
+	    (handles[h].hmode&(HWRITE|HAPPEND|HREADWRITE))==0 ||
+		getBuffTerminal(fileno(handles[h].hfp)) ?
+	    	HANDLE_LINEBUFFERED : HANDLE_NOTBUFFERED;
 	handles[h].hbufSize = 0;
       } else {
 #endif
@@ -1608,6 +1609,63 @@ primFun(primHWaitForInput) { /* Check whether a character can be read
 		   "unsupported operation",
 		   NIL));
 #endif
+}
+
+primFun(primHIsTerminalDevice) { /* Does the handle refer to a terminal? */
+    Int h;
+    HandleArg(h, 1+IOArity);
+    if (handles[h].hmode==HCLOSED) {
+        IOFail(mkIOError(NIL,
+			 nameIllegal,
+		         "System.IO.hIsTerminalDevice",
+		         "invalid handle",
+			 NIL));
+    }
+#if HAVE_ISATTY
+    IOBoolResult(isatty(fileno(handles[h].hfp)));
+#else
+    IOBoolResult(h<=HSTDERR);
+#endif
+}
+
+primFun(primHGetEcho) {
+    Int h;
+    Int fd;
+    HandleArg(h, 1+IOArity);
+    if (handles[h].hmode==HCLOSED) {
+        IOFail(mkIOError(NIL,
+			 nameIllegal,
+		         "System.IO.hGetEcho",
+		         "invalid handle",
+			 NIL));
+    }
+    fd = fileno(handles[h].hfp);
+#if HAVE_ISATTY
+    IOBoolResult(isatty(fd) && getEchoTerminal(fd));
+#else
+    IOBoolResult(FALSE);
+#endif
+}
+
+primFun(primHSetEcho) {
+    Int h;
+    Bool echo;
+    Int fd;
+    HandleArg(h, 2+IOArity);
+    BoolArg(echo, 1+IOArity);
+    if (handles[h].hmode==HCLOSED) {
+        IOFail(mkIOError(NIL,
+			 nameIllegal,
+		         "System.IO.hSetEcho",
+		         "invalid handle",
+			 NIL));
+    }
+    fd = fileno(handles[h].hfp);
+#if HAVE_ISATTY
+    if (isatty(fd))
+	setEchoTerminal(fd, echo);
+#endif
+    IOReturn(nameUnit);
 }
 
 #endif /* IO_HANDLES */
