@@ -213,7 +213,7 @@ esac
 if test "x$CP" != "xcopy"; then
 # Only check for RM&CP if they haven't been overridden already (cf. --with-nmake)
 AC_PATH_PROG(RM,rm)
-RM='${RM} -f'
+RM="$RM -f"
 AC_PATH_PROG(CP,cp)
 fi
 
