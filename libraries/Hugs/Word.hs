@@ -13,8 +13,8 @@ module Hugs.Word
 import Hugs.Prelude ( Word, Word8, Word16, Word32, Word64 )
 import Data.Bits
 import Data.Int
-import Data.Ix ( Ix(..) )
-import Data.Ratio ( (%) )
+import Hugs.Prelude ( Ix(..) )
+import Hugs.Prelude ( (%) )
 import Hugs.Prelude ( readDec, showInt )
 import Hugs.Prelude ( Num(fromInt), Integral(toInt) )
 
