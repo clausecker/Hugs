@@ -26,6 +26,8 @@ AC_CACHE_CHECK([for a traditional C preprocessor],
 [
 cat > conftest.c << EOF
 #if 1
+{-# INLINE f'
+ #-}
 f' x = x+1
 #endif
 EOF
@@ -38,6 +40,8 @@ CPP="$ice_cpp"
 CPPFLAGS="$ice_cppflags"
 AC_PREPROC_IFELSE([AC_LANG_PROGRAM([[
 #if 1
+{-# INLINE f'
+ #-}
 f' x = x+1
 #endif
 ]])], [ice_cv_traditional_cpp="${CPP}${CPPFLAGS}"])
