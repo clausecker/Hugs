@@ -1,5 +1,5 @@
 {-
-Prototype Cabal setup script for Hugs
+Prototype Cabal setup script for Hugs (and other implementations)
 	* configure runs ./configure if present
 	* then reads build parameters from Setup.buildinfo, if present
 	* user packages go in $HOME/hugs/packages/<pkg>
@@ -13,17 +13,18 @@ Missing features compared with hugs-package:
 
 module Main where
 
-import Distribution.PackageDescription
-import Distribution.ParseUtils
-import Distribution.Simple
-import Distribution.Simple.Utils
+import Distribution.PackageDescription	(PackageDescription,
+					 emptyPackageDescription,
+					 basicStanzaFields)
+import Distribution.ParseUtils		(PError, StanzaField(..),
+					 showError, singleStanza)
+import Distribution.Simple		(UserHooks(..), emptyUserHooks,
+					 defaultMainWithHooks)
+import Distribution.Simple.Utils	(die)
 
 import Control.Monad	(foldM, when)
 import System.Cmd	(rawSystem)
-import System.Directory
-
-defaultPackageDesc :: FilePath
-defaultPackageDesc = "Setup.description"
+import System.Directory	(doesFileExist)
 
 -- Read local build information from Setup.buildinfo (if present)
 
@@ -43,7 +44,7 @@ hooks = emptyUserHooks {
 	preSDist = \ _ -> readHook,
 	preReg   = \ _ _ -> readHook,
 	preUnreg = \ _ -> readHook
-   }
+    }
   where simplePreConf args (_, _, _, mb_prefix) = do
 		configureExists <- doesFileExist "configure"
 		when configureExists $ do
@@ -55,15 +56,14 @@ hooks = emptyUserHooks {
 	prefix_opt pref opts = ("--prefix=" ++ pref) : opts
 
 	readHook = do
-		pkg_descr <- readPackageDescription defaultPackageDesc
 		exists <- doesFileExist buildInfoFile
 		if exists then do
 			inp <- readFile buildInfoFile
-			case parseBuildParameters pkg_descr inp of
+			case parseBuildParameters emptyPackageDescription inp of
 			    Left err -> die (buildInfoFile ++ ": " ++ showError err)
-			    Right pkg_descr' -> return (Just pkg_descr')
+			    Right pkg_descr -> return (Just pkg_descr)
 		    else
-			return (Just pkg_descr)
+			return Nothing
 
 parseBuildParameters :: PackageDescription -> String ->
 	Either PError PackageDescription
