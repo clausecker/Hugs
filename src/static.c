@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.95 $
- * $Date: 2002/09/13 04:23:18 $
+ * $Revision: 1.96 $
+ * $Date: 2002/09/13 05:07:15 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -459,11 +459,14 @@ Cell   entity; { /* Entry from import/hiding list */
     Cell subEntities = !isId ? snd(entity) : NIL;
     Text t           = isId ? textOf(entity) : textOf(fst(entity));
     List es          = module(exporter).exports;
-    /* If the imported thing is possibly a data con, we have to grovel
-       around inside each tycon looking for it.
-    */
-    Bool isDataCon   = 
-      subEntities == NIL && isCon(isId ? entity : fst(entity));
+
+    /* In H98, a data con may be named in a 'hiding' list, so we
+     * have to grovel around inside each tycon looking for it.
+     */
+    Bool lookForDataCon = 
+      isHidden &&
+      subEntities == NIL && 
+      isCon(isId ? entity : fst(entity));
     
     for(; nonNull(es); es=tl(es)) {
 	Cell e = hd(es); /* :: Entity | (Entity, NIL|DOTDOT|[Entity]) */
@@ -506,8 +509,9 @@ Cell   entity; { /* Entry from import/hiding list */
 		    } else {
 			imports = addEntity(f,NIL,imports);
 		    }
-		    break;
-		} else if (isDataCon && tycon(f).what != SYNONYM) {
+		    if (!lookForDataCon) break;
+		}
+		if (lookForDataCon && tycon(f).what != SYNONYM) {
 		    /* Want all dcons that are _exported_ by
 		       the importing module.
 		    */
@@ -525,7 +529,7 @@ Cell   entity; { /* Entry from import/hiding list */
 			}
 			dcons=tl(dcons);
 		    }
-		    if (impFound) break;
+		    if (!lookForDataCon) break;
 		}
 	    } else if (isClass(f)) {
 		if (cclass(f).text == t) {
@@ -552,7 +556,7 @@ Cell   entity; { /* Entry from import/hiding list */
 			    imports=dupOnto(xs,imports);
 			}
 		    }
-		    break;
+		    if (!lookForDataCon) break;
 		}
 	    } else {
 		internal("checkImportEntity2");
@@ -572,13 +576,13 @@ Cell   entity; { /* Entry from import/hiding list */
 		} else {
 		    imports = cons(e,imports);
 		}
-		break;
+		if (!lookForDataCon) break;
 	    }
 	} else if (isTycon(e)) {
 	    if (isId && tycon(e).text == t) {
 		impFound = TRUE;
 		imports = addEntity(e,NIL,imports);
-		break;
+		if (!lookForDataCon) break;
 	    }
 	} else {
 	    internal("checkImportEntity3");
