@@ -9,8 +9,8 @@
  * included in the distribution.
  *
  * $RCSfile: storage.h,v $
- * $Revision: 1.24 $
- * $Date: 2002/01/01 22:39:12 $
+ * $Revision: 1.25 $
+ * $Date: 2002/01/08 00:26:31 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -561,7 +561,8 @@ extern Void     setBreakCount   Args((String,Int));
  */
 struct Module {
     Text  text;
-    /* Lists of top level objects (local defns + imports)                  */
+    /* Lists of top level objects (local defns + imports)                       */
+    /* Invariant: a name/tycons only appears once (i.e., no dups) in this list. */
     List  tycons;
     List  names;
     List  classes;

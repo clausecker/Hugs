@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: storage.c,v $
- * $Revision: 1.25 $
- * $Date: 2002/01/01 22:39:11 $
+ * $Revision: 1.26 $
+ * $Date: 2002/01/08 00:26:32 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -514,7 +514,7 @@ Text t; {
     Name n = nameHash[nHash(t)];
 
     while (nonNull(n) && name(n).text!=t)
-	n = name(n).nextNameHash;
+      n = name(n).nextNameHash;
     return n;
 }
 
@@ -656,11 +656,9 @@ Type   ty; {
     name(n).line	         = l;
     name(n).defn	         = NIL;
     name(n).type	         = ty;
-
-
+    
 #if !IGNORE_MODULES
     name(n).mod = mod;
-    module(mod).names = cons(n,module(mod).names);
 #endif
 
     /*
@@ -731,7 +729,6 @@ Cell type; {
 
 #if !IGNORE_MODULES
     name(n).mod   = currentModule;
-    module(currentModule).names=cons(n,module(currentModule).names);
 #endif
 
     return n;
