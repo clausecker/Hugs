@@ -14,8 +14,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: iomonad.c,v $
- * $Revision: 1.80 $
- * $Date: 2004/09/30 16:49:05 $
+ * $Revision: 1.81 $
+ * $Date: 2004/09/30 17:05:10 $
  * ------------------------------------------------------------------------*/
  
 Name nameIORun;			        /* run IO code                     */
@@ -942,11 +942,11 @@ primFun(primHContents) {		/* hGetContents :: Handle -> IO Str*/
 		         NULL));
     }
 
-    handles[h].hmode = HSEMICLOSED; /* semi-close handle		   */
     if (handles[h].hmode&HREADWRITE && !handles[h].hHaveRead) {
 	fflush(handles[h].hfp);
 	handles[h].hHaveRead = TRUE;
     }
+    handles[h].hmode = HSEMICLOSED; /* semi-close handle		   */
     IOReturn(ap(nameHreader,IOArg(1)));
 }
 
