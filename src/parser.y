@@ -11,8 +11,8 @@
  * included in the distribution.
  *
  * $RCSfile: parser.y,v $
- * $Revision: 1.16 $
- * $Date: 2001/04/03 02:56:36 $
+ * $Revision: 1.17 $
+ * $Date: 2001/06/01 00:32:32 $
  * ------------------------------------------------------------------------*/
 
 %{
@@ -931,6 +931,7 @@ dbs0	  : /* empty */			{$$ = gc0(NIL);}
 dbs1	  : dbs0 dbind			{$$ = gc2(cons($2,$1));}
 	  ;
 dbind	  : IPVARID '=' exp		{$$ = gc3(pair($1,$3));}
+	  | IPVARID error		{syntaxError("with binding");}
 	  ;
 
 /*- List Expressions: -------------------------------------------------------*/
