@@ -200,7 +200,13 @@ Void loadPrelude() {  /* load in the Prelude module(s). */
     addScriptName(prelLocation, FALSE);
     
     /* add the H98 Prelude module to the stack */
-    addScriptName(findMPathname(STD_PRELUDE), FALSE);
+    if (!( prelLocation = findMPathname(STD_PRELUDE)) ) {
+	Printf("H98 Prelude not found on current path: \"%s\"\n",
+	       hugsPath ? hugsPath : "");
+	fatal("Unable to load H98 prelude");
+    }
+
+    addScriptName(prelLocation, FALSE);
 
     everybody(INSTALL);
 
