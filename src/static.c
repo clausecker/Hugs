@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.56 $
- * $Date: 2002/03/22 00:00:26 $
+ * $Revision: 1.57 $
+ * $Date: 2002/04/09 20:38:35 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -460,6 +460,9 @@ Cell   entity; { /* Entry from import/hiding list */
 				imports=cons(pair(f,xs),imports);
 				imports=dupOnto(xs,imports);
 			    }
+			    break;
+			case SYNONYM:
+			    imports=cons(f,imports);
 			    break;
 			default:;
 			  /* deliberate fall thru */
