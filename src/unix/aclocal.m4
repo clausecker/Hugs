@@ -207,65 +207,6 @@ AC_DEFINE(HAVE_LABELS_AS_VALUES)
 fi
 ])
 
-dnl ** check for leading underscores in symbol names
-dnl 
-dnl Test for determining whether symbol names have a leading
-dnl underscore.
-dnl 
-dnl We assume that they _haven't_ if anything goes wrong.
-dnl
-dnl Some nlist implementations seem to try to be compatible by ignoring
-dnl a leading underscore sometimes (eg. FreeBSD).  We therefore have
-dnl to work around this by checking for *no* leading underscore first.
-dnl Sigh.  --SDM
-dnl
-AC_DEFUN(FPTOOLS_UNDERSCORE,
-[AC_CHECK_LIB(elf, nlist, LIBS="-lelf $LIBS")dnl
-AC_CACHE_CHECK([leading underscore in symbol names], fptools_cv_lead_uscore,
-
-dnl
-dnl Hack!: nlist() under Digital UNIX insist on there being an _,
-dnl but symbol table listings shows none. What is going on here?!?
-dnl
-dnl Another hack: cygwin doesn't come with nlist.h , so we hardwire
-dnl the underscoredness of that "platform"
-changequote(<<, >>)dnl
-<<
-case $HostPlatform in
-alpha-dec-osf*) fptools_cv_lead_uscore='no';;
-*cygwin32) fptools_cv_lead_uscore='yes';;
-*mingw32) fptools_cv_lead_uscore='yes';;
-*) >>
-changequote([, ])dnl
-AC_TRY_RUN([#ifdef HAVE_NLIST_H
-#include <nlist.h>
-changequote(<<, >>)dnl
-<<
-struct nlist xYzzY1[] = {{"xYzzY1", 0},{0}};
-struct nlist xYzzY2[] = {{"_xYzzY2", 0},{0}};
-#endif
-
-main(argc, argv)
-int argc;
-char **argv;
-{
-#ifdef HAVE_NLIST_H
-    if(nlist(argv[0], xYzzY1) == 0 && xYzzY1[0].n_value != 0)
-        exit(1);
-    if(nlist(argv[0], xYzzY2) == 0 && xYzzY2[0].n_value != 0)
-        exit(0);>>
-changequote([, ])dnl
-#endif
-    exit(1);
-}], fptools_cv_lead_uscore=yes, fptools_cv_lead_uscore=no, fptools_cv_lead_uscore=NO)
-;;
-esac);
-LeadingUnderscore=`echo $fptools_cv_lead_uscore | sed 'y/yesno/YESNO/'`
-AC_SUBST(LeadingUnderscore)
-case $LeadingUnderscore in
-YES) AC_DEFINE(LEADING_UNDERSCORE);;
-esac
-])
 
 dnl *** Is altzone available? ***
 dnl 
@@ -502,3 +443,160 @@ done
 ])
 
 
+dnl ** Try building and loading a dynamically loadable library using
+dnl    the specified flags.
+dnl
+AC_DEFUN(HUGS_TRY_DYNLINK,
+dnl AC_BEFORE([$0], [AC_C_PROTOTYPES])
+AC_MSG_CHECKING(if '$1' builds loadable libraries)
+AC_CACHE_VAL(ac_cv_dll_flags,
+[
+  cat > conftest_dl.c <<EOF
+int test() { return 1; }
+EOF
+
+  ac_mkdll='${CC-cc} $1 conftest_dl.c -o conftest_dl.so 1>&AC_FD_CC'
+
+  if AC_TRY_EVAL(ac_mkdll) && test -s conftest_dl.so 
+  then dnl compiling and linking loadee succeeded
+
+    cat > conftest.c << EOF
+#include "confdefs.h"
+#if HAVE_PROTOTYPES       /* To enable use of prototypes whenever possible */
+#define Args(x) x
+#else
+#define Args(x) ()
+#endif
+
+#define SYMBOL1 "test"
+#define SYMBOL2 "_test"
+
+#define CANTRUN  1
+#define CANTOPEN 2
+#define SYM1_OK  3
+#define SYM2_OK  4
+#define CANTFIND 5
+
+#if HAVE_DLFCN_H /* eg LINUX, SOLARIS, ULTRIX */
+
+#include <stdio.h>
+#include <dlfcn.h>
+
+main()
+{
+    void *instance;
+    void *sym;
+
+    instance = dlopen("./conftest_dl.so",1);
+    if (instance==0) exit(CANTOPEN);
+      
+    sym = dlsym(instance,SYMBOL1);
+    if (sym != 0) exit(SYM1_OK);
+
+    sym = dlsym(instance,SYMBOL2);
+    if (sym != 0) exit(SYM2_OK);
+
+    exit(CANTFIND);
+}
+
+#elif HAVE_DL_H /* eg HPUX */
+
+#include <dl.h>
+
+main()
+{
+    shl_t instance;
+    void* r;
+
+    instance = shl_load("./conftest_dl.so",BIND_IMMEDIATE,0L);
+    if (instance == 0) exit(CANTOPEN);
+    
+    if (0 == shl_findsym(&instance,SYMBOL1,TYPE_PROCEDURE,&r)) exit(SYM1_OK);
+
+    if (0 == shl_findsym(&instance,SYMBOL2,TYPE_PROCEDURE,&r)) exit(SYM2_OK);
+
+    exit(CANTFIND);
+}
+
+#elif HAVE_MACH_O_DYLD_H         /* MacOS X */
+
+#include <stdio.h>
+#include <mach-o/dyld.h>
+
+main()
+{
+    NSObjectFileImage ofile;
+    NSModule handle = NULL;
+    void* addr;
+    NSSymbol sym;
+
+    if (NSCreateObjectFileImageFromFile("./conftest_dl.so",&ofile) != NSObjectFileImageSuccess)
+        exit(CANTOPEN);
+
+    handle = NSLinkModule(ofile,"./conftest_dl.so",NSLINKMODULE_OPTION_PRIVATE);
+    if (handle == 0) exit(CANTOPEN);
+    
+    sym = NSLookupSymbolInModule(handle, SYMBOL1); 
+    if (sym != 0) exit(SYM1_OK);
+    
+    sym = NSLookupSymbolInModule(handle, SYMBOL1); 
+    if (sym != 0) exit(SYM2_OK);
+    
+    exit(CANTFIND);
+}
+
+#elif HAVE_WINDOWS_H
+
+#include <windows.h>
+
+main()
+{
+    HINSTANCE instance;
+    void* sym;
+
+    instance = LoadLibrary("conftest_dl.dll");
+    if (instance ==0) exit(CANTOPEN);
+
+    sym = (void*)GetProcAddress(instance,SYMBOL1);
+    if (sym != 0) exit(SYM1_OK);
+
+    sym = (void*)GetProcAddress(instance,SYMBOL2);
+    if (sym != 0) exit(SYM2_OK);
+
+    exit(CANTFIND);
+}
+
+#else
+
+main()
+{
+  exit(CANTRUN);
+}
+
+#endif
+EOF
+
+
+if AC_TRY_EVAL(ac_link) && test -s conftest${ac_exeext} 
+then dnl compiling and linking loader succeeded
+
+  ./conftest 2>/dev/null
+  if test $? = 3; then
+    ac_cv_dll_flags=$1
+    ac_cv_leading_underscore=no
+  fi
+  if test $? = 4; then
+    ac_cv_dll_flags=$1
+    ac_cv_leading_underscore=yes
+  fi
+
+fi dnl compiling and linking loader succeeded
+fi dnl compiling and linking loadee succeeded
+
+rm -fr conftest* a.out
+]) dnl close AC_CACHE_VAL
+AC_MSG_RESULT($ac_cv_dll_flags)
+)
+
+
+dnl End of file

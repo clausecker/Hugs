@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: ffi.c,v $
- * $Revision: 1.15 $
- * $Date: 2002/06/24 17:00:56 $
+ * $Revision: 1.16 $
+ * $Date: 2002/07/01 00:44:48 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -110,34 +110,30 @@ String fn; {
     }
 
     /* The basic command */
-#ifdef _MSC_VER
-    insert("cl /LD \"-I");
+    insert(MKDLL_CMD);
+
+    /* the path to HsFFI.h */
+    insert(" \"-I");
     insert(hugsdir());
-    insert("/include\" \"");
+    insert("/include\"");
+
+    /* the file to compile */
+    insert(" \"");
     insert(mkFFIFilename(i));
-    insert("\" -o \"");
+    insert("\"");
+
+    /* the output file */
+    insert(" -o \"");
     insert(mkFFIFilename2(i));
-    insert("\" ");
-#else
-#if HAVE_MACH_O_DYLD_H         /* MacOS X */
-    insert("cc -bundle -I'");
-#else
-    insert("cc -shared -I'");
-#endif
-    insert(hugsdir());
-    insert("/include' '");
-    //    insert(notdir(mkFFIFilename(scriptFile)));
-    insert(mkFFIFilename(i));
-    insert("' -o '");
-    //    insert(notdir(mkFFIFilename2(scriptFile)));
-    insert(mkFFIFilename2(i));
-    insert("' ");
-#endif
+    insert("\"");
+
+    /* compiler and linker flags specified on Hugs command line */
     if (ffiFlags) {
+        insert(" ");
         insert(ffiFlags);
     }
 
-    // printf("Executing '%s'\n",buffer);
+    printf("Executing '%s'\n",buffer);
     if (system(buffer) != 0) {
         ERRMSG(0) "Error while running compilation command '%s'", buffer
         EEND;

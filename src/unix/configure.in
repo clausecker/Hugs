@@ -382,9 +382,6 @@ AC_DEFINE(VOID_INT_SIGNALS)
 fi
 
 
-dnl ** check for leading underscores in symbol names
-FPTOOLS_UNDERSCORE
-
 dnl--------------------------------------------------------------------
 dnl
 dnl Check Configuration options
@@ -551,37 +548,59 @@ fi
 
 dnl--------------------------------------------------------------------
 dnl
-dnl Figure out how to do dynamic linking
+dnl Figure out how to do dynamic linking.
+dnl
+dnl It is fairly easy to do the dynamic loading: that is fairly well 
+dnl documented and only depends on the target platform.
+dnl 
+dnl It is also fairly easy to decide whether or not to add a leading 
+dnl underscore to symbol names when doing symbol lookup.
+dnl
+dnl But it is bloody hard to figure out how to _build_ a file which can be
+dnl dynamically loaded because it varies with both the platform and the
+dnl choice of linker.  So we use a rather crude approach: we try every
+dnl set of linking commands that anyone suggests will work.
+dnl
+dnl At the time of writing, I have no idea which of these tests will work.
+dnl I don't want to add flags that are obviously silly but I want to
+dnl record what is worth trying.  So, for now, I'm going to leave all
+dnl the untested ones commented out.  As platforms are found which need
+dnl those flags, we'll uncomment each line (and maybe even record which
+dnl platforms those are).
 dnl
 dnl--------------------------------------------------------------------
 
+dnl Try the MS Visual C flags
+HUGS_TRY_DYNLINK("/LD")                
 
-dnl NOT used anymore - it's just too unreliable.
-dnl Moved the comments listing different options for each system
-dnl to ../../Install
-dnl
-dnl How do we build a dll or shareable object file?
-dnl
-dnl if test "$with_plugins" = yes; then
-dnl 
-dnl   AC_CACHE_CHECK(for dll/shared object file flags,ac_cv_DLL_FLAGS,
-dnl   [
-dnl 	  dnl Try the gcc flags
-dnl 	  AC_TRY_LINK_NOWARN("-shared -nostdlib",[],
-dnl 	    ac_cv_DLL_FLAGS="-shared -nostdlib",
-dnl 	  AC_TRY_LINK_NOWARN("-r",[],
-dnl 	    ac_cv_DLL_FLAGS="-r",
-dnl 	  AC_TRY_LINK_NOWARN("/LD",[],
-dnl 	    ac_cv_DLL_FLAGS="/LD",
-dnl 	    ac_cv_DLL_FLAGS="$DLL_FLAGS"
-dnl 	  )))
-dnl   ])
-dnl   DLL_FLAGS="$ac_cv_DLL_FLAGS";
-dnl 
-dnl fi
+dnl Try the gcc flags
+HUGS_TRY_DYNLINK("-shared")            
 
-AC_SUBST(PIC_FLAGS) 
-AC_SUBST(DLL_FLAGS) 
+dnl Try the MacOS X flags
+HUGS_TRY_DYNLINK("-bundle")        
+
+dnl Try the MacOS X flags
+HUGS_TRY_DYNLINK("-bundle -lc")        
+
+dnl Try the gcc flags
+dnl HUGS_TRY_DYNLINK("-shared -nostdlib")  
+
+dnl Some other gcc flags
+dnl HUGS_TRY_DYNLINK("-r")                 
+
+dnl Some other gcc flags
+dnl HUGS_TRY_DYNLINK("-rdynamic")          
+
+dnl Try the SunOS flags
+dnl HUGS_TRY_DYNLINK("-G")                 
+
+dnl Try the HPUX flags
+dnl HUGS_TRY_DYNLINK("-Aa +z")             
+
+AC_DEFINE_UNQUOTED(MKDLL_CMD, "${CC-cc} $ac_cv_dll_flags")
+if test "$ac_cv_leading_underscore" = "yes"; then
+AC_DEFINE(LEADING_UNDERSCORE)
+fi
 
 dnl--------------------------------------------------------------------
 dnl
@@ -648,7 +667,7 @@ prefix		= $prefix\\
 exec_prefix	= $exec_prefix\\
 bindir		= $bindir\\
 datadir		= $datadir\\
-mandir         = $mandir\\
+mandir          = $mandir\\
 hugsdir		= $hugsdir\\
 "
 fi
