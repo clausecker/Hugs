@@ -986,6 +986,11 @@
    compatibles only) */
 #undef HUGS_FOR_WINDOWS
 
+/* Specifier(s) for functions that should be inlined, but not generate an
+   external definition. This will be `inline' for C99 and `extern inline' for
+   gcc. */
+#undef INLINE_ONLY
+
 /* Define to 1 if you want to use the primitives which let you examine Hugs
    internals. */
 #undef INTERNAL_PRIMS
@@ -1146,3 +1151,9 @@
 
 /* Define to empty if `const' does not conform to ANSI C. */
 #undef const
+
+/* Define to `__inline__' or `__inline' if that's what the C compiler
+   calls it, or to nothing if 'inline' is not supported under any name.  */
+#ifndef __cplusplus
+#undef inline
+#endif

@@ -1002,3 +1002,8 @@
 
 /* The value of O_BINARY.  */
 #define CONST_O_BINARY 32768
+
+/* Specifier(s) for functions that should be inlined, but not generate an
+   external definition. This will be `inline' for C99 and `extern inline' for
+   gcc. */
+#define INLINE_ONLY extern __inline

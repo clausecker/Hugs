@@ -781,6 +781,47 @@ AC_SUBST([GLUT_CFLAGS])
 AC_SUBST([GLUT_LIBS])
 ])# FP_CHECK_GLUT
 
+dnl AC_C_INLINE_ONLY
+dnl
+dnl Define the preprocessor symbol INLINE_ONLY to the specifier(s) that
+dnl ensure that functions are inlines but not separately defined.
+dnl (This is `inline' for C99 and `inline extern' for gcc.)
+
+AC_DEFUN([AC_C_INLINE_ONLY],
+[AC_REQUIRE([AC_PROG_CC])
+ AC_REQUIRE([AC_C_INLINE])
+ AC_CACHE_CHECK([syntax for pure inlines], [ac_cv_c_inline_only],
+[
+  cat >conftest.h <<EOF
+INLINE int foo(int n) { return n+1; }
+EOF
+
+  cat >conftest_fn.c <<EOF
+#define INLINE
+#include "conftest.h"
+EOF
+
+  cat >conftest.c <<EOF
+#define INLINE INLINE_ONLY
+#include "conftest.h"
+int main() { return foo(2); }
+EOF
+
+  ac_cv_c_inline_only=''
+  for inline_only in $ac_cv_c_inline "extern $ac_cv_c_inline"; do
+    if $CC $CFLAGS -DINLINE_ONLY="$inline_only" conftest.c conftest_fn.c >&5 2>&5; then
+      ac_cv_c_inline_only="$inline_only"
+    fi
+  done
+])
+if test "$ac_cv_c_inline_only"; then
+  AC_DEFINE_UNQUOTED([INLINE_ONLY], $ac_cv_c_inline_only,
+    [Specifier(s) for functions that should be inlined,
+     but not generate an external definition.
+     This will be `inline' for C99 and `extern inline' for gcc.])
+fi
+])
+
 
 dnl External macros
 

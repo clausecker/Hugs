@@ -927,3 +927,7 @@
 /* The value of EXDEV.  */
 #define CCONST_EXDEV 18
 
+/* Specifier(s) for functions that should be inlined, but not generate an
+   external definition. This will be `inline' for C99 and `extern inline' for
+   gcc. */
+#define INLINE_ONLY extern __inline

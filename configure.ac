@@ -630,6 +630,8 @@ dnl--------------------------------------------------------------------
 
 
 AC_C_CONST               dnl can we use "const"?
+AC_C_INLINE              dnl can we use "inline"?
+AC_C_INLINE_ONLY         dnl should we use "inline" or "inline extern"?
 AC_C_PROTOTYPES          dnl can we use function prototypes?
 AC_C_JMPBUF_ARRAY        dnl can we take address of jmpbufs?
 AC_C_LABELS_AS_VALUES    dnl can we use gcc's "labels as values" feature?
