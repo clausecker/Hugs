@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.85 $
- * $Date: 2002/09/08 02:24:02 $
+ * $Revision: 1.86 $
+ * $Date: 2002/09/08 06:14:42 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -348,15 +348,15 @@ Cell nm; {
     if (!isCon(nm)) internal("startModule");
     if (isNull(m = findModule(t))) {
 	m = newModule(t);
-	if ( newPrelude && moduleUserPrelude == 0 && t == textUserPrelude ) {
+	if ( moduleUserPrelude == 0 && t == textUserPrelude ) {
 	  moduleUserPrelude = m;
 	}
     } else if (!isPreludeScript()) {
 	/* You're allowed to break the rules in the Prelude! */
 #if HSCRIPT
-	reloadModule = textToStr(textOf(nm));
+	reloadModule = textToStr(t);
 #endif
-	ERRMSG(0) "Module \"%s\" already loaded", textToStr(textOf(nm))
+	ERRMSG(0) "Module \"%s\" already loaded", textToStr(t)
 	EEND;
     }
     setCurrModule(m);
