@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.85 $
- * $Date: 2002/06/21 23:22:00 $
+ * $Revision: 1.86 $
+ * $Date: 2002/08/08 23:35:47 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -775,7 +775,7 @@ String s; {                             /* return FALSE if none found.     */
 		       return TRUE;
 #endif
 
-	    case 'L' : ffiSetFlags(s+1);
+	    case 'L' : ffiSetFlags(strCopy(s+1));
 		       return TRUE;
 
 	    case 'h' : setHeapSize(s+1);

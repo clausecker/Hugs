@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: runhugs.c,v $
- * $Revision: 1.11 $
- * $Date: 2002/05/15 18:11:23 $
+ * $Revision: 1.12 $
+ * $Date: 2002/08/08 23:35:47 $
  * ------------------------------------------------------------------------*/
 
 #include <stdio.h>
@@ -109,12 +109,16 @@ char* argv[]; {
     hugs->loadFile(argv[0]);
     check();
 
+#ifdef FFI_COMPILER
+    exitCode = 0;
+#else
     hugs->setHugsArgs(argc,argv);
-
+    
     hugs->pushHVal(hugs->compileExpr("Main","main >> return ()"));
     exitCode = hugs->doIO();
     check();
-    
+#endif
+
 #if defined(_MSC_VER) && !defined(_MANAGED)
     } __except ( ((GetExceptionCode() == EXCEPTION_STACK_OVERFLOW) ? EXCEPTION_EXECUTE_HANDLER : EXCEPTION_CONTINUE_SEARCH) ) {
       fatal("C stack overflow");

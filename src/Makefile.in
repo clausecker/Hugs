@@ -69,6 +69,13 @@ runhugs@OBJ@	: $(PRELUDE) hugs.c machdep.c timer.c runhugs.c
 runhugs@EXE@	: runhugs@OBJ@ $(SERVER_OBJECTS)
 		  $(CC) $(LDFLAGS) runhugs@OBJ@ $(SERVER_OBJECTS) $(LIBS) -o runhugs@EXE@
 
+ffihugs@OBJ@	: $(PRELUDE) hugs.c machdep.c timer.c runhugs.c
+ffihugs@EXE@	: ffihugs@OBJ@ $(SERVER_OBJECTS)
+		  $(CC) $(LDFLAGS) ffihugs@OBJ@ $(SERVER_OBJECTS) $(LIBS) -o ffihugs@EXE@
+
+ffihugs@OBJ@	: runhugs.c
+		  $(CC) -c $(CFLAGS) $(OPTFLAGS) -DFFI_COMPILER runhugs.c -o ffihugs@OBJ@
+
 ################################################################
 # Clean, distclean, veryclean, TAGS
 ################################################################
