@@ -6,6 +6,9 @@ NAME=$(shell egrep ^Name: hugs98.spec  | colrm 1 14)
 VERSION=$(shell egrep ^Version: hugs98.spec  | colrm 1 14)
 RELEASE=${NAME}-${VERSION}
 PATCHLEVEL=$(shell egrep ^Release: hugs98.spec  | colrm 1 14)
+
+# TAG=Dec2001
+# HSLIBSTAG=hugs-Dec2001
 TAG=HEAD
 HSLIBSTAG=HEAD
 
