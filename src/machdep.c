@@ -11,8 +11,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.90 $
- * $Date: 2003/07/03 14:08:17 $
+ * $Revision: 1.91 $
+ * $Date: 2003/07/04 11:59:52 $
  * ------------------------------------------------------------------------*/
 #include "prelude.h"
 #include "storage.h"
@@ -227,6 +227,10 @@ Bool   isReg; {
  * Search for script files on the HUGS path:
  * ------------------------------------------------------------------------*/
 
+#if __MWERKS__ && macintosh
+static String local currentDir	  Args((void));
+#endif
+
 #if HSCRIPT
 static String local hscriptDir    Args((Void));
 static void   local hscriptSuffixes Args((Void));
@@ -300,7 +304,7 @@ String s; {
 #endif
 
 
-String hugsdir() {                   /* directory containing lib/Prelude.hs */
+String hugsdir() {		/* directory containing libraries/Prelude.hs */
 #if HSCRIPT
     /* In HaskellScript (Win32 only), we lookup InstallDir in the registry. */
     static char dir[FILENAME_MAX+1] = "";
@@ -750,12 +754,14 @@ String name; {
 	    /* allow initial MPW-style "shell-variables" */
 	    if (*pathpt=='{') { /* of the form {varname} */
 		int i, len;
+		String value;
 
 		for (i = 0; shell_var[i].var_name!=NULL; i++) {
 		    len = strlen(shell_var[i].var_name);
 		    if (strncmp(pathpt+1,shell_var[i].var_name,len)==0
-			&& pathpt[len+1]=='}') {
-			searchStr((*shell_var[i].var_value)());
+			&& pathpt[len+1]=='}'
+			&& (value = (*shell_var[i].var_value)())!=NULL) {
+			searchStr(value);
 			pathpt += len+2;
 			break;
 		    }
@@ -1729,12 +1735,12 @@ void*  instance;
 String symbol; {
     void *sym;
 
-    if ((sym = dlsym(instance,symbol)) != 0) {
-        return sym;
+    if ((sym = dlsym(instance,symbol)) == 0) {
+	ERRMSG(0) "Error loading sym:\n%s\n", dlerror()
+	EEND;
     }
 
-    ERRMSG(0) "Error loading sym:\n%s\n", dlerror()
-    EEND;
+    return sym;
 }
 
 void freeDLL (dll) /* free up DLL */
