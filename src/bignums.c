@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: bignums.c,v $
- * $Revision: 1.14 $
- * $Date: 2003/11/01 17:02:44 $
+ * $Revision: 1.15 $
+ * $Date: 2004/10/29 12:43:09 $
  * ------------------------------------------------------------------------*/
 
 /*#define DEBUG_BIGNUMS*/
@@ -161,9 +161,16 @@ double a; {
 	    b = a;
 	    bn = pair(POSNUM,NIL);
 	}
-	for (b=floor(b), nx=bn; b>0; nx=tl(nx)) {
+	b = floor(b);
+	/* NB: in IEEE floating point, !(b>0) is not the same as b<=0 */
+	if (!(b>0))			/* happens on IEEE NaN */
+	    throwException(ap(nameArithException, nameOverflow));
+	for (nx=bn; b>0; nx=tl(nx)) {
 	    double n = fmod(b,(double)(BIGBASE));
-	    tl(nx)   = pair(mkDigit(((Int)(n))),NIL);
+	    Int d    = (Int)n;
+	    if (d<0)			/* happens on IEEE inf and -inf */
+		throwException(ap(nameArithException, nameOverflow));
+	    tl(nx)   = pair(mkDigit(d),NIL);
 	    b        = (b - n) / BIGBASE;
 	}
 	return bn;
