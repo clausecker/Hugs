@@ -2,7 +2,7 @@
 
 . ./config
 
-STDOPTS='+q +w -pHugs:'
+STDOPTS='+q -w -pHugs: -s10'
 
 test_static() {
   echo "\
@@ -16,154 +16,154 @@ test_static() {
 ----------------------------------------------------------------"
 
   # Test syntax/static checks on use of qualified names
-  perl runstdtest $HUGS $STDOPTS -s10 "-Ostatic/qual1.hs"  "-o1static/qual1.output"
-  perl runstdtest $HUGS $STDOPTS -s10 "-Ostatic/qual2.hs"  "-o1static/qual2.output"
-  perl runstdtest $HUGS $STDOPTS -s10 "-Ostatic/qual3.hs"  "-o1static/qual3.output"
-  perl runstdtest $HUGS $STDOPTS -s10 "-Ostatic/qual4.hs"  "-o1static/qual4.output"
-  perl runstdtest $HUGS $STDOPTS -s10 "-Ostatic/qual5.hs"  "-o1static/qual5.output"
-  perl runstdtest $HUGS $STDOPTS -s14 "-Ostatic/syntax.hs" "-o1static/syntax.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/qual1.hs"  "-o1static/qual1.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/qual2.hs"  "-o1static/qual2.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/qual3.hs"  "-o1static/qual3.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/qual4.hs"  "-o1static/qual4.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/qual5.hs"  "-o1static/qual5.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/syntax.hs" "-o1static/syntax.output"
 
   # ToDo: test for duplicate modules 
-  perl runstdtest $HUGS -O-i $STDOPTS -s10 "-Ostatic/mod1.hs"   "-o1static/mod1.output"
-  perl runstdtest $HUGS -O-i $STDOPTS -s10 "-Ostatic/mod2.hs"   "-o1static/mod2.output"
-  perl runstdtest $HUGS $STDOPTS -s10 "-Ostatic/mod3.hs"   "-o1static/mod3.output"
-  perl runstdtest $HUGS $STDOPTS -s10 "-Ostatic/mod4.hs"   "-o1static/mod4.output"
-  perl runstdtest $HUGS $STDOPTS -s14 "-Ostatic/mod5.hs"   "-o1static/mod5.output"
-  perl runstdtest $HUGS $STDOPTS -s14 "-Ostatic/mod6.hs"   "-o1static/mod6.output"
-  perl runstdtest $HUGS $STDOPTS -s10 "-Ostatic/mod7.hs"   "-o1static/mod7.output"
-  perl runstdtest $HUGS $STDOPTS -s10 "-Ostatic/mod8.hs"   "-o1static/mod8.output"
-  perl runstdtest $HUGS $STDOPTS -s10 "-Ostatic/mod9.hs"   "-o1static/mod9.output"
+  perl runstdtest $HUGS -O-i $STDOPTS "-Ostatic/mod1.hs"   "-o1static/mod1.output"
+  perl runstdtest $HUGS -O-i $STDOPTS "-Ostatic/mod2.hs"   "-o1static/mod2.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod3.hs"   "-o1static/mod3.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod4.hs"   "-o1static/mod4.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod5.hs"   "-o1static/mod5.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod6.hs"   "-o1static/mod6.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod7.hs"   "-o1static/mod7.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod8.hs"   "-o1static/mod8.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod9.hs"   "-o1static/mod9.output"
 
-  perl runstdtest $HUGS $STDOPTS -s10 "-Ostatic/mod10.hs"  "-o1static/mod10.output"
-  perl runstdtest $HUGS $STDOPTS -s15 "-Ostatic/mod11.hs"  "-o1static/mod11.output"
-  perl runstdtest $HUGS $STDOPTS -s15 "-Ostatic/mod12.hs"  "-o1static/mod12.output"
-  perl runstdtest $HUGS $STDOPTS -s14 "-Ostatic/mod13.hs"  "-o1static/mod13.output"
-  perl runstdtest $HUGS $STDOPTS -s14 "-Ostatic/mod14.hs"  "-o1static/mod14.output"
-  perl runstdtest $HUGS $STDOPTS -s15 "-Ostatic/mod15.hs"  "-o1static/mod15.output"
-  perl runstdtest $HUGS $STDOPTS -s15 "-Ostatic/mod16.hs"  "-o1static/mod16.output"
-  perl runstdtest $HUGS $STDOPTS -s10 "-Ostatic/mod17.hs"  "-o1static/mod17.output"
-  perl runstdtest $HUGS $STDOPTS -s10 "-Ostatic/mod18.hs"  "-o1static/mod18.output"
-  perl runstdtest $HUGS $STDOPTS -s10 "-Ostatic/mod19.hs"  "-o1static/mod19.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod10.hs"  "-o1static/mod10.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod11.hs"  "-o1static/mod11.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod12.hs"  "-o1static/mod12.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod13.hs"  "-o1static/mod13.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod14.hs"  "-o1static/mod14.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod15.hs"  "-o1static/mod15.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod16.hs"  "-o1static/mod16.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod17.hs"  "-o1static/mod17.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod18.hs"  "-o1static/mod18.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod19.hs"  "-o1static/mod19.output"
 
-  perl runstdtest $HUGS $STDOPTS -s10 "-Ostatic/mod20.hs"  "-o1static/mod20.output"
-  perl runstdtest $HUGS $STDOPTS -s10 "-Ostatic/mod21.hs"  "-o1static/mod21.output"
-  perl runstdtest $HUGS $STDOPTS -s10 "-Ostatic/mod22.hs"  "-o1static/mod22.output"
-  perl runstdtest $HUGS $STDOPTS -s10 "-Ostatic/mod23.hs"  "-o1static/mod23.output"
-  perl runstdtest $HUGS $STDOPTS -s10 "-Ostatic/mod24.hs"  "-o1static/mod24.output"
-  perl runstdtest $HUGS $STDOPTS -s10 "-Ostatic/mod25.hs"  "-o1static/mod25.output"
-  perl runstdtest $HUGS $STDOPTS -s10 "-Ostatic/mod26.hs"  "-o1static/mod26.output"
-  perl runstdtest $HUGS $STDOPTS -s10 "-Ostatic/mod27.hs"  "-o1static/mod27.output"
-  perl runstdtest $HUGS $STDOPTS -98 -s10 "-Ostatic/mod28.hs"  "-o1static/mod28.output"
-  perl runstdtest $HUGS $STDOPTS     -s10 "-Ostatic/mod29.hs"  "-o1static/mod29.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod20.hs"  "-o1static/mod20.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod21.hs"  "-o1static/mod21.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod22.hs"  "-o1static/mod22.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod23.hs"  "-o1static/mod23.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod24.hs"  "-o1static/mod24.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod25.hs"  "-o1static/mod25.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod26.hs"  "-o1static/mod26.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod27.hs"  "-o1static/mod27.output"
+  perl runstdtest $HUGS $STDOPTS -98 "-Ostatic/mod28.hs"  "-o1static/mod28.output"
+  perl runstdtest $HUGS $STDOPTS     "-Ostatic/mod29.hs"  "-o1static/mod29.output"
 
-  perl runstdtest $HUGS $STDOPTS -s15 "-Ostatic/mod30.hs"  "-o1static/mod30.output"
-  perl runstdtest $HUGS $STDOPTS -s15 "-Ostatic/mod31.hs"  "-o1static/mod31.output"
-  perl runstdtest $HUGS $STDOPTS -s15 "-Ostatic/mod32.hs"  "-o1static/mod32.output"
-  perl runstdtest $HUGS $STDOPTS -s15 "-Ostatic/mod33.hs"  "-o1static/mod33.output"
-  perl runstdtest $HUGS $STDOPTS -s15 "-Ostatic/mod34.hs"  "-o1static/mod34.output"
-  perl runstdtest $HUGS $STDOPTS -s15 "-Ostatic/mod35.hs"  "-o1static/mod35.output"
-  perl runstdtest $HUGS $STDOPTS -s10 "-Ostatic/mod36.hs"  "-o1static/mod36.output"
-  perl runstdtest $HUGS $STDOPTS -s15 "-Ostatic/mod37.hs"  "-o1static/mod37.output"
-  perl runstdtest $HUGS $STDOPTS -s10 "-Ostatic/mod38.hs"  "-o1static/mod38.output"
-  perl runstdtest $HUGS $STDOPTS -s14 "-Ostatic/mod39.hs"  "-o1static/mod39.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod30.hs"  "-o1static/mod30.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod31.hs"  "-o1static/mod31.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod32.hs"  "-o1static/mod32.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod33.hs"  "-o1static/mod33.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod34.hs"  "-o1static/mod34.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod35.hs"  "-o1static/mod35.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod36.hs"  "-o1static/mod36.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod37.hs"  "-o1static/mod37.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod38.hs"  "-o1static/mod38.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod39.hs"  "-o1static/mod39.output"
 
-  perl runstdtest $HUGS $STDOPTS -s10 "-Ostatic/mod40.hs"  "-o1static/mod40.output"
-  perl runstdtest $HUGS $STDOPTS -s10 "-Ostatic/mod41.hs"  "-o1static/mod41.output"
-  perl runstdtest $HUGS $STDOPTS -s10 "-Ostatic/mod42.hs"  "-o1static/mod42.output"
-  perl runstdtest $HUGS $STDOPTS -s10 "-Ostatic/mod43.hs"  "-o1static/mod43.output"
-  perl runstdtest $HUGS $STDOPTS -s10 "-Ostatic/mod44.hs"  "-o1static/mod44.output"
-  perl runstdtest $HUGS $STDOPTS -s10 "-Ostatic/mod45.hs"  "-o1static/mod45.output"
-  perl runstdtest $HUGS $STDOPTS -s10 "-Ostatic/mod46.hs"  "-o1static/mod46.output"
-  perl runstdtest $HUGS $STDOPTS -s10 "-Ostatic/mod47.hs"  "-o1static/mod47.output"
-  perl runstdtest $HUGS $STDOPTS -s10 "-Ostatic/mod48.hs"  "-o1static/mod48.output"
-  perl runstdtest $HUGS $STDOPTS -s10 "-Ostatic/mod49.hs"  "-o1static/mod49.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod40.hs"  "-o1static/mod40.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod41.hs"  "-o1static/mod41.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod42.hs"  "-o1static/mod42.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod43.hs"  "-o1static/mod43.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod44.hs"  "-o1static/mod44.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod45.hs"  "-o1static/mod45.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod46.hs"  "-o1static/mod46.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod47.hs"  "-o1static/mod47.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod48.hs"  "-o1static/mod48.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod49.hs"  "-o1static/mod49.output"
 
-  perl runstdtest $HUGS $STDOPTS -s10 "-Ostatic/mod50.hs"  "-o1static/mod50.output"
-  perl runstdtest $HUGS $STDOPTS -s10 "-Ostatic/mod51.hs"  "-o1static/mod51.output"
-  perl runstdtest $HUGS $STDOPTS -s10 "-Ostatic/mod52.hs"  "-o1static/mod52.output"
-  perl runstdtest $HUGS $STDOPTS -s10 "-Ostatic/mod53.hs"  "-o1static/mod53.output"
-  perl runstdtest $HUGS $STDOPTS -s10 "-Ostatic/mod54.hs"  "-o1static/mod54.output"
-  perl runstdtest $HUGS $STDOPTS -s10 "-Ostatic/mod55.hs"  "-o1static/mod55.output"
-  perl runstdtest $HUGS $STDOPTS -s10 "-Ostatic/mod56.hs"  "-o1static/mod56.output"
-  perl runstdtest $HUGS $STDOPTS -s10 "-Ostatic/mod57.hs"  "-o1static/mod57.output"
-  perl runstdtest $HUGS $STDOPTS -s10 "-Ostatic/mod58.hs"  "-o1static/mod58.output"
-  perl runstdtest $HUGS $STDOPTS -s10 "-Ostatic/mod59.hs"  "-o1static/mod59.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod50.hs"  "-o1static/mod50.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod51.hs"  "-o1static/mod51.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod52.hs"  "-o1static/mod52.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod53.hs"  "-o1static/mod53.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod54.hs"  "-o1static/mod54.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod55.hs"  "-o1static/mod55.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod56.hs"  "-o1static/mod56.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod57.hs"  "-o1static/mod57.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod58.hs"  "-o1static/mod58.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod59.hs"  "-o1static/mod59.output"
 
-  perl runstdtest $HUGS $STDOPTS -s10 "-Ostatic/mod60.hs"  "-o1static/mod60.output"
-  perl runstdtest $HUGS $STDOPTS -s10 "-Ostatic/mod61.hs"  "-o1static/mod61.output"
-  perl runstdtest $HUGS $STDOPTS -s10 "-Ostatic/mod62.hs"  "-o1static/mod62.output"
-  perl runstdtest $HUGS $STDOPTS -s10 "-Ostatic/mod63.hs"  "-o1static/mod63.output"
-  perl runstdtest $HUGS $STDOPTS -s10 "-Ostatic/mod64.hs"  "-o1static/mod64.output"
-  perl runstdtest $HUGS $STDOPTS -s10 "-Ostatic/mod65.hs"  "-o1static/mod65.output"
-  perl runstdtest $HUGS $STDOPTS -s10 "-Ostatic/mod66.hs"  "-o1static/mod66.output"
-  perl runstdtest $HUGS $STDOPTS -s10 "-Ostatic/mod67.hs"  "-o1static/mod67.output"
-  perl runstdtest $HUGS $STDOPTS -s10 "-Ostatic/mod68.hs"  "-o1static/mod68.output"
-  perl runstdtest $HUGS $STDOPTS -s10 "-Ostatic/mod69.hs"  "-o1static/mod69.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod60.hs"  "-o1static/mod60.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod61.hs"  "-o1static/mod61.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod62.hs"  "-o1static/mod62.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod63.hs"  "-o1static/mod63.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod64.hs"  "-o1static/mod64.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod65.hs"  "-o1static/mod65.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod66.hs"  "-o1static/mod66.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod67.hs"  "-o1static/mod67.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod68.hs"  "-o1static/mod68.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod69.hs"  "-o1static/mod69.output"
 
-  perl runstdtest $HUGS $STDOPTS -s10 "-Ostatic/mod70.hs"  "-o1static/mod70.output"
-  perl runstdtest $HUGS $STDOPTS -s10 "-Ostatic/mod71.hs"  "-o1static/mod71.output"
-  perl runstdtest $HUGS $STDOPTS -s10 "-Ostatic/mod72.hs"  "-o1static/mod72.output"
-  perl runstdtest $HUGS $STDOPTS -s10 "-Ostatic/mod73.hs"  "-o1static/mod73.output"
-  perl runstdtest $HUGS $STDOPTS -s10 "-Ostatic/mod74.hs"  "-o1static/mod74.output"
-  perl runstdtest $HUGS $STDOPTS -s15 "-Ostatic/mod75.hs"  "-o1static/mod75.output"
-  perl runstdtest $HUGS $STDOPTS -s10 "-Ostatic/mod76.hs"  "-o1static/mod76.output"
-  perl runstdtest $HUGS $STDOPTS -s10 "-Ostatic/mod77.hs"  "-o1static/mod77.output"
-  perl runstdtest $HUGS $STDOPTS -98 -s10 "-Ostatic/mod78.hs"  "-o1static/mod78.output"
-  perl runstdtest $HUGS $STDOPTS     -s10 "-Ostatic/mod79.hs"  "-o1static/mod79.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod70.hs"  "-o1static/mod70.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod71.hs"  "-o1static/mod71.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod72.hs"  "-o1static/mod72.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod73.hs"  "-o1static/mod73.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod74.hs"  "-o1static/mod74.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod75.hs"  "-o1static/mod75.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod76.hs"  "-o1static/mod76.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod77.hs"  "-o1static/mod77.output"
+  perl runstdtest $HUGS $STDOPTS -98 "-Ostatic/mod78.hs"  "-o1static/mod78.output"
+  perl runstdtest $HUGS $STDOPTS     "-Ostatic/mod79.hs"  "-o1static/mod79.output"
 
-  perl runstdtest $HUGS $STDOPTS -s10 "-Ostatic/mod80.hs"  "-o1static/mod80.output"
-  perl runstdtest $HUGS $STDOPTS -s10 "-Ostatic/mod81.hs"  "-o1static/mod81.output"
-  perl runstdtest $HUGS $STDOPTS -s14 "-Ostatic/mod82.hs"  "-o1static/mod82.output"
-  perl runstdtest $HUGS $STDOPTS -s14 "-Ostatic/mod83.hs"  "-o1static/mod83.output"
-  perl runstdtest $HUGS $STDOPTS -s15 "-Ostatic/mod84.hs"  "-o1static/mod84.output"
-  perl runstdtest $HUGS $STDOPTS -s15 "-Ostatic/mod85.hs"  "-o1static/mod85.output"
-  perl runstdtest $HUGS $STDOPTS -s15 "-Ostatic/mod86.hs"  "-o1static/mod86.output"
-  perl runstdtest $HUGS $STDOPTS -s10 "-Ostatic/mod87.hs"  "-o1static/mod87.output"
-  perl runstdtest $HUGS $STDOPTS -s10 "-Ostatic/mod88.hs"  "-o1static/mod88.output"
-  perl runstdtest $HUGS $STDOPTS -s10 "-Ostatic/mod89.hs"  "-o1static/mod89.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod80.hs"  "-o1static/mod80.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod81.hs"  "-o1static/mod81.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod82.hs"  "-o1static/mod82.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod83.hs"  "-o1static/mod83.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod84.hs"  "-o1static/mod84.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod85.hs"  "-o1static/mod85.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod86.hs"  "-o1static/mod86.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod87.hs"  "-o1static/mod87.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod88.hs"  "-o1static/mod88.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod89.hs"  "-o1static/mod89.output"
 
-  perl runstdtest $HUGS $STDOPTS -s10 "-Ostatic/mod90.hs"  "-o1static/mod90.output"
-  perl runstdtest $HUGS $STDOPTS -s10 "-Ostatic/mod91.hs"  "-o1static/mod91.output"
-  perl runstdtest $HUGS $STDOPTS -s14 "-Ostatic/mod92.hs"  "-o1static/mod92.output"
-  perl runstdtest $HUGS $STDOPTS -s14 "-Ostatic/mod93.hs"  "-o1static/mod93.output"
-  perl runstdtest $HUGS $STDOPTS -s15 "-Ostatic/mod94.hs"  "-o1static/mod94.output"
-  perl runstdtest $HUGS $STDOPTS -s15 "-Ostatic/mod95.hs"  "-o1static/mod95.output"
-  perl runstdtest $HUGS $STDOPTS -s15 "-Ostatic/mod96.hs"  "-o1static/mod96.output"
-  perl runstdtest $HUGS $STDOPTS -s10 "-Ostatic/mod97.hs"  "-o1static/mod97.output"
-  perl runstdtest $HUGS $STDOPTS -s10 "-Ostatic/mod98.hs"  "-o1static/mod98.output"
-  perl runstdtest $HUGS $STDOPTS -s15 "-Ostatic/mod99.hs"  "-o1static/mod99.output"
-  perl runstdtest $HUGS $STDOPTS -s15 "-Ostatic/mod100.hs"  "-o1static/mod100.output"
-  perl runstdtest $HUGS $STDOPTS -Pstatic: -s10 "-Ostatic/mod101.hs"  "-o1static/mod101.output"
-  perl runstdtest $HUGS $STDOPTS -Pstatic: -s10 "-Ostatic/mod102.hs"  "-o1static/mod102.output"
-  perl runstdtest $HUGS $STDOPTS -s13 "-Ostatic/mod103.hs"  "-o1static/mod103.output"
-  perl runstdtest $HUGS $STDOPTS -s15 "-Ostatic/mod104.hs"  "-o1static/mod104.output"
-  perl runstdtest $HUGS $STDOPTS -s17 "-Ostatic/mod105.hs"  "-o1static/mod105.output"
-  perl runstdtest $HUGS $STDOPTS -s17 "-Ostatic/mod106.hs"  "-o1static/mod106.output"
-  perl runstdtest $HUGS $STDOPTS -s15 "-Ostatic/mod107.hs"  "-o1static/mod107.output"
-  perl runstdtest $HUGS $STDOPTS -s15 "-Ostatic/mod108.hs"  "-o1static/mod108.output"
-  perl runstdtest $HUGS $STDOPTS -s15 "-Ostatic/mod109.hs"  "-o1static/mod109.output"
-  perl runstdtest $HUGS $STDOPTS -s10 "-Ostatic/mod110.hs"  "-o1static/mod110.output"
-  perl runstdtest $HUGS $STDOPTS -s14 "-Ostatic/mod111.hs"  "-o1static/Loaded.output"
-  perl runstdtest $HUGS $STDOPTS -s14 "-Ostatic/mod112.hs"  "-o1static/Loaded.output"
-  perl runstdtest $HUGS $STDOPTS -s15 "-Ostatic/mod113.hs"  "-o1static/Loaded.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod90.hs"  "-o1static/mod90.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod91.hs"  "-o1static/mod91.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod92.hs"  "-o1static/mod92.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod93.hs"  "-o1static/mod93.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod94.hs"  "-o1static/mod94.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod95.hs"  "-o1static/mod95.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod96.hs"  "-o1static/mod96.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod97.hs"  "-o1static/mod97.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod98.hs"  "-o1static/mod98.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod99.hs"  "-o1static/mod99.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod100.hs"  "-o1static/mod100.output"
+  perl runstdtest $HUGS $STDOPTS -Pstatic: "-Ostatic/mod101.hs"  "-o1static/mod101.output"
+  perl runstdtest $HUGS $STDOPTS -Pstatic: "-Ostatic/mod102.hs"  "-o1static/mod102.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod103.hs"  "-o1static/mod103.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod104.hs"  "-o1static/mod104.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod105.hs"  "-o1static/mod105.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod106.hs"  "-o1static/mod106.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod107.hs"  "-o1static/mod107.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod108.hs"  "-o1static/mod108.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod109.hs"  "-o1static/mod109.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod110.hs"  "-o1static/mod110.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod111.hs"  "-o1static/Loaded.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod112.hs"  "-o1static/Loaded.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod113.hs"  "-o1static/Loaded.output"
 
   # Check opaque import/export of tycons
-  perl runstdtest $HUGS $STDOPTS -s16 "-Ostatic/T2.hs"  "-o1static/T2.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/T2.hs"  "-o1static/T2.output"
   # Check transparent import of type synonyms
-  perl runstdtest $HUGS $STDOPTS -s15 "-Ostatic/T3.hs"  "-o1static/T3.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/T3.hs"  "-o1static/T3.output"
 
-  perl runstdtest $HUGS $STDOPTS -s10 "-Ostatic/export1.hs"  "-o1static/export1.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/export1.hs"  "-o1static/export1.output"
 
   # Check opaque import/export of member functions
-  perl runstdtest $HUGS $STDOPTS -Pstatic: -s15 "-Ostatic/T7.hs"  "-o1static/Loaded.output"
+  perl runstdtest $HUGS $STDOPTS -Pstatic: "-Ostatic/T7.hs"  "-o1static/Loaded.output"
   
   # Check handling of multi-platform newlines
-  perl runstdtest $HUGS $STDOPTS -s10 "-Ostatic/PlainLF.hs"   "-o1static/PlainLF.output"
-  perl runstdtest $HUGS $STDOPTS -s10 "-Ostatic/PlainCRLF.hs" "-o1static/PlainCRLF.output"
-  perl runstdtest $HUGS $STDOPTS -s10 "-Ostatic/PlainCR.hs"   "-o1static/PlainCR.output"
-  perl runstdtest $HUGS $STDOPTS -s10 "-Ostatic/LitLF.lhs"    "-o1static/LitLF.output"
-  perl runstdtest $HUGS $STDOPTS -s10 "-Ostatic/LitCRLF.lhs"  "-o1static/LitCRLF.output"
-  perl runstdtest $HUGS $STDOPTS -s10 "-Ostatic/LitCR.lhs"    "-o1static/LitCR.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/PlainLF.hs"   "-o1static/PlainLF.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/PlainCRLF.hs" "-o1static/PlainCRLF.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/PlainCR.hs"   "-o1static/PlainCR.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/LitLF.lhs"    "-o1static/LitLF.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/LitCRLF.lhs"  "-o1static/LitCRLF.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/LitCR.lhs"    "-o1static/LitCR.output"
 
 } # End of static tests
 
@@ -178,7 +178,7 @@ test_tcheck() {
 -- 
 -- It may also produce output that looks like this:
 -- 
---   ./hugs +q -pHugs:  tcheck/dicts.hs < tcheck/dicts.input
+--   ./hugs +q -w -PHugs:  tcheck/dicts.hs < tcheck/dicts.input
 --   expected stdout not matched by reality
 --   *** tcheck/dicts.output  Fri Jul 11 13:25:27 1997
 --   --- /tmp/runtest3584.3  Fri Jul 11 15:55:13 1997
@@ -198,15 +198,15 @@ test_tcheck() {
 -- You should report a problem if any other output is generated.
 ----------------------------------------------------------------"
 
-  perl runstdtest $HUGS $STDOPTS -s15 "-Otcheck/types.hs"  "-o1tcheck/types.output"
-  perl runstdtest $HUGS $STDOPTS -s15 "-Otcheck/dicts.hs"  "-itcheck/dicts.input" "-o1tcheck/dicts.output"
-  perl runstdtest $HUGS $STDOPTS -s10 "-Otcheck/ty1.hs"    "-o1tcheck/ty1.output"
-  perl runstdtest $HUGS $STDOPTS -s10 "-Otcheck/ty2.hs"    "-o1tcheck/ty2.output"
-#  perl runstdtest $HUGS $STDOPTS -s10 "-Otcheck/monad.hs"  "-o1tcheck/monad.output"
+  perl runstdtest $HUGS $STDOPTS "-Otcheck/types.hs"  "-o1tcheck/types.output"
+  perl runstdtest $HUGS $STDOPTS "-Otcheck/dicts.hs"  "-itcheck/dicts.input" "-o1tcheck/dicts.output"
+  perl runstdtest $HUGS $STDOPTS "-Otcheck/ty1.hs"    "-o1tcheck/ty1.output"
+  perl runstdtest $HUGS $STDOPTS "-Otcheck/ty2.hs"    "-o1tcheck/ty2.output"
+#  perl runstdtest $HUGS $STDOPTS "-Otcheck/monad.hs"  "-o1tcheck/monad.output"
   # Very tricky test - the input script uses /bin/cp to mimic the
   # effect of editing a file and reloading
-  perl runstdtest $HUGS $STDOPTS -w -s11 "-itcheck/DictHW.input" "-o1tcheck/DictHW.output"
-  perl runstdtest $HUGS $STDOPTS -w tcheck/TyErr.hs -s10 "-o1tcheck/TyErr.output"
+  perl runstdtest $HUGS $STDOPTS "-itcheck/DictHW.input" "-o1tcheck/DictHW.output"
+  perl runstdtest $HUGS $STDOPTS tcheck/TyErr.hs "-o1tcheck/TyErr.output"
 
 }
 
@@ -221,7 +221,7 @@ test_rts() {
 -- 
 -- It may also produce output that looks like this:
 -- 
---   ./hugs +q -pHugs:  ./???.hs < ./???.input
+--   ./hugs +q -w -PHugs:  ./???.hs < ./???.input
 --   expected stdout not matched by reality
 --   *** ./???.output  Fri Jul 11 13:25:27 1997
 --   --- /tmp/runtest3584.3  Fri Jul 11 15:55:13 1997
@@ -243,42 +243,42 @@ test_rts() {
 ----------------------------------------------------------------"
 
   # Test bignums early since printing depends on bignums
-  perl runstdtest $HUGS $STDOPTS -s15 "-Orts/bignums.hs" "-irts/bignums.input" "-o1rts/bignums.output"
+  perl runstdtest $HUGS $STDOPTS "-Orts/bignums.hs" "-irts/bignums.input" "-o1rts/bignums.output"
 
   # Using generic printer
-  perl runstdtest $HUGS $STDOPTS -u    -s15 "-Orts/print.hs"  "-irts/print.input" "-o1rts/print1.output"
-  perl runstdtest $HUGS $STDOPTS -u -f -s15 "-Orts/print.hs"  "-irts/print.input" "-o1rts/print2.output"
-# perl runstdtest $HUGS $STDOPTS -u -f -s15 "-Orts/catch.hs"  "-irts/catch.input" "-o1rts/catch.output"
-  perl runstdtest $HUGS $STDOPTS -u    -s15 "-Orts/enum.hs"   "-irts/enum.input"  "-o1rts/enum.output1"
-  perl runstdtest $HUGS $STDOPTS -u   -s15 "-Orts/infix.hs"   "-irts/infix.input"  "-o1rts/infix.output"
+  perl runstdtest $HUGS $STDOPTS -u    "-Orts/print.hs"  "-irts/print.input" "-o1rts/print1.output"
+  perl runstdtest $HUGS $STDOPTS -u -f "-Orts/print.hs"  "-irts/print.input" "-o1rts/print2.output"
+# perl runstdtest $HUGS $STDOPTS -u -f "-Orts/catch.hs"  "-irts/catch.input" "-o1rts/catch.output"
+  perl runstdtest $HUGS $STDOPTS -u    "-Orts/enum.hs"   "-irts/enum.input"  "-o1rts/enum.output1"
+  perl runstdtest $HUGS $STDOPTS -u   "-Orts/infix.hs"   "-irts/infix.input"  "-o1rts/infix.output"
 
   # Using derived show instance
-  #perl runstdtest $HUGS $STDOPTS +u -f -s15 "-Orts/catch2.hs" "-irts/catch.input" "-o1rts/catch2.output"
+  #perl runstdtest $HUGS $STDOPTS +u -f "-Orts/catch2.hs" "-irts/catch.input" "-o1rts/catch2.output"
 
   # Using derived instances
-  perl runstdtest $HUGS $STDOPTS +u    -s15 "-Orts/enum.hs"   "-irts/enum.input"  "-o1rts/enum.output2"
-  perl runstdtest $HUGS $STDOPTS +u    -s15 "-Orts/maxint.hs"   "-irts/maxint.input"  "-o1rts/maxint.output"
-  perl runstdtest $HUGS $STDOPTS -s15 "-Orts/ord.hs" "-irts/ord.input" "-o1rts/ord.output"
-  perl runstdtest $HUGS $STDOPTS -s17 "-Orts/read.hs" "-irts/read.input" "-o1rts/read.output"
-  perl runstdtest $HUGS $STDOPTS -s15 "-Orts/arith.hs" "-irts/arith.input" "-o1rts/arith.output"
+  perl runstdtest $HUGS $STDOPTS +u    "-Orts/enum.hs"   "-irts/enum.input"  "-o1rts/enum.output2"
+  perl runstdtest $HUGS $STDOPTS +u    "-Orts/maxint.hs"   "-irts/maxint.input"  "-o1rts/maxint.output"
+  perl runstdtest $HUGS $STDOPTS "-Orts/ord.hs" "-irts/ord.input" "-o1rts/ord.output"
+  perl runstdtest $HUGS $STDOPTS "-Orts/read.hs" "-irts/read.input" "-o1rts/read.output"
+  perl runstdtest $HUGS $STDOPTS "-Orts/arith.hs" "-irts/arith.input" "-o1rts/arith.output"
 
-  perl runstdtest $HUGS $STDOPTS -s15 "-Orts/testlist.hs"  "-irts/testlist.input" "-o1rts/testlist.output"
+  perl runstdtest $HUGS $STDOPTS "-Orts/testlist.hs"  "-irts/testlist.input" "-o1rts/testlist.output"
 
-  perl runstdtest $HUGS $STDOPTS -s19 "-Orts/arrayt.hs" "-irts/array1.input" "-o1rts/array1.output"
-  perl runstdtest $HUGS $STDOPTS -s19 "-Orts/array2.hs" "-irts/array2.input" "-o1rts/array2.output"
-  perl runstdtest $HUGS $STDOPTS -s19 "-Orts/arrayEx.hs" "-irts/arrayEx.input" "-o1rts/arrayEx.output"
+  perl runstdtest $HUGS $STDOPTS "-Orts/arrayt.hs" "-irts/array1.input" "-o1rts/array1.output"
+  perl runstdtest $HUGS $STDOPTS "-Orts/array2.hs" "-irts/array2.input" "-o1rts/array2.output"
+  perl runstdtest $HUGS $STDOPTS "-Orts/arrayEx.hs" "-irts/arrayEx.input" "-o1rts/arrayEx.output"
 
-  perl runstdtest $HUGS $STDOPTS -s15 "-Orts/primexc.hs" "-irts/primexc.input" "-o1rts/primexc.output"
+  perl runstdtest $HUGS $STDOPTS "-Orts/primexc.hs" "-irts/primexc.input" "-o1rts/primexc.output"
 
-  perl runstdtest $HUGS $STDOPTS -s22 "-Orts/refs.hs" "-irts/refs.input" "-o1rts/refs.output"
-  perl runstdtest $HUGS $STDOPTS -98 -s24 "-Orts/mutvars.hs" "-irts/mutvars.input" "-o1rts/mutvars.output"
-  perl runstdtest $HUGS $STDOPTS -s17 "-Orts/ioerror1.hs" "-irts/ioerror1.input" "-o1rts/ioerror1.output"
-  perl runstdtest $HUGS $STDOPTS -s15 "-Orts/ioerror2.hs" "-irts/ioerror2.input" "-o1rts/ioerror2.output"
+  perl runstdtest $HUGS $STDOPTS "-Orts/refs.hs" "-irts/refs.input" "-o1rts/refs.output"
+  perl runstdtest $HUGS $STDOPTS -98 "-Orts/mutvars.hs" "-irts/mutvars.input" "-o1rts/mutvars.output"
+  perl runstdtest $HUGS $STDOPTS "-Orts/ioerror1.hs" "-irts/ioerror1.input" "-o1rts/ioerror1.output"
+  perl runstdtest $HUGS $STDOPTS "-Orts/ioerror2.hs" "-irts/ioerror2.input" "-o1rts/ioerror2.output"
 
-  perl runstdtest $HUGS $STDOPTS -s23 "-Orts/mvar.hs" "-irts/mvar.input" "-o1rts/mvar.output"
+  perl runstdtest $HUGS $STDOPTS "-Orts/mvar.hs" "-irts/mvar.input" "-o1rts/mvar.output"
 
   # verifying correct dict generation.
-  perl runstdtest $HUGS +q -98 -pHugs: -s16 "-Orts/type01.hs"  "-o1rts/type01.output" "-irts/type01.input"
+  perl runstdtest $HUGS $STDOPTS -98 "-Orts/type01.hs"  "-o1rts/type01.output" "-irts/type01.input"
 
   # Old test code - it will probably get resurrected at some stage
   # 
@@ -290,7 +290,7 @@ test_rts() {
   #   perl runstdtests/iohandle.hs attempts to write it.
   # EOF
   # CHMOD 200 "./unreadable.tst"
-  #   perl runstdtest $HUGS +q -pHugs: "-O./iohandle.hs" "-i./iohandle.input" "-o1./iohandle.output"
+  #   perl runstdtest $HUGS $STDOPTS "-O./iohandle.hs" "-i./iohandle.input" "-o1./iohandle.output"
   # RM "./unreadable.tst"
 
   #   perl runstdtest $HUGS $STDOPTS          "-O./gc.hs" "-i./gc1.input" "-o1./gc1.output"
@@ -307,20 +307,20 @@ test_ffi() {
 ----------------------------------------------------------------"
 
   # Test static checking and code generation first.
-  perl runstdtest $HUGS $STDOPTS +G +L"types_aux.c" -s14 "-Offi/Types.hs" "-o1ffi/Loaded.output"
-  perl runstdtest $HUGS $STDOPTS +G +L"forms_aux.c" -s14 "-Offi/Forms.hs" "-o1ffi/Loaded.output"
+  perl runstdtest $HUGS $STDOPTS +G +L"types_aux.c" "-Offi/Types.hs" "-o1ffi/Loaded.output"
+  perl runstdtest $HUGS $STDOPTS +G +L"forms_aux.c" "-Offi/Forms.hs" "-o1ffi/Loaded.output"
 
   # This is a pair of tests: first build, then test runtime
-  perl runstdtest $HUGS $STDOPTS +G -s22 "-Offi/Sin.hs" "-o1ffi/Loaded.output"
-  perl runstdtest $HUGS $STDOPTS    -s24 "-Offi/Sin.hs" "-iffi/Sin.input" "-o1ffi/Sin.output"
+  perl runstdtest $HUGS $STDOPTS +G "-Offi/Sin.hs" "-o1ffi/Loaded.output"
+  perl runstdtest $HUGS $STDOPTS    "-Offi/Sin.hs" "-iffi/Sin.input" "-o1ffi/Sin.output"
 
   # This is a pair of tests: first build, then test runtime
-  perl runstdtest $HUGS $STDOPTS +G -s39 "-Offi/String.hs" "-o1ffi/Loaded.output"
-  perl runstdtest $HUGS $STDOPTS    -s40 "-Offi/String.hs" "-iffi/String.input" "-o1ffi/String.output"
+  perl runstdtest $HUGS $STDOPTS +G "-Offi/String.hs" "-o1ffi/Loaded.output"
+  perl runstdtest $HUGS $STDOPTS    "-Offi/String.hs" "-iffi/String.input" "-o1ffi/String.output"
 
   # This is a pair of tests: first build, then test runtime
-  perl runstdtest $HUGS $STDOPTS +G +L"FileIO_aux.c" -s40 "-Offi/FileIO.hs" "-o1ffi/Loaded.output"
-  perl runstdtest $HUGS $STDOPTS                     -s41 "-Offi/FileIO.hs" "-iffi/FileIO.input" "-o1ffi/FileIO.output"
+  perl runstdtest $HUGS $STDOPTS +G +L"FileIO_aux.c" "-Offi/FileIO.hs" "-o1ffi/Loaded.output"
+  perl runstdtest $HUGS $STDOPTS                     "-Offi/FileIO.hs" "-iffi/FileIO.input" "-o1ffi/FileIO.output"
 
 } # End of test ffi
 
@@ -352,7 +352,7 @@ test_libs() {
 -- 
 -- On Windows, it may also produce output that looks like this:
 -- 
---   ./hugs +q -pHugs:  ./system1.hs < ./system1.input
+--   ./hugs +q -w -PHugs:  ./system1.hs < ./system1.input
 --   expected stdout not matched by reality
 --   *** ./system1.output  Fri Jul 11 13:25:27 1997
 --   --- /tmp/runtest3584.3  Fri Jul 11 15:55:13 1997
@@ -375,68 +375,68 @@ test_libs() {
 ----------------------------------------------------------------"
 
   echo "-- !!! Performing static tests on standard libraries - please wait"
-  perl runstdtest $HUGS $STDOPTS Array   -s17 "-o1libs/Loaded.output"
-  perl runstdtest $HUGS $STDOPTS Char    -s14 "-o1libs/Loaded.output"
-  perl runstdtest $HUGS $STDOPTS Complex -s14 "-o1libs/Loaded.output"
-  perl runstdtest $HUGS $STDOPTS IO      -s15 "-o1libs/Loaded.output"
-  perl runstdtest $HUGS $STDOPTS Ix      -s14 "-o1libs/Loaded.output"
-  perl runstdtest $HUGS $STDOPTS List    -s15 "-o1libs/Loaded.output"
-  perl runstdtest $HUGS $STDOPTS Locale  -s14 "-o1libs/Loaded.output"
-  perl runstdtest $HUGS $STDOPTS Maybe   -s14 "-o1libs/Loaded.output"
-  perl runstdtest $HUGS $STDOPTS Monad   -s14 "-o1libs/Loaded.output"
-  perl runstdtest $HUGS $STDOPTS Numeric -s20 "-o1libs/Loaded.output"
+  perl runstdtest $HUGS $STDOPTS Array   "-o1libs/Loaded.output"
+  perl runstdtest $HUGS $STDOPTS Char    "-o1libs/Loaded.output"
+  perl runstdtest $HUGS $STDOPTS Complex "-o1libs/Loaded.output"
+  perl runstdtest $HUGS $STDOPTS IO      "-o1libs/Loaded.output"
+  perl runstdtest $HUGS $STDOPTS Ix      "-o1libs/Loaded.output"
+  perl runstdtest $HUGS $STDOPTS List    "-o1libs/Loaded.output"
+  perl runstdtest $HUGS $STDOPTS Locale  "-o1libs/Loaded.output"
+  perl runstdtest $HUGS $STDOPTS Maybe   "-o1libs/Loaded.output"
+  perl runstdtest $HUGS $STDOPTS Monad   "-o1libs/Loaded.output"
+  perl runstdtest $HUGS $STDOPTS Numeric "-o1libs/Loaded.output"
 # Did I miss Quote being added to the library report???
 # And how come it requires -98 if it's standard??
-  perl runstdtest $HUGS $STDOPTS -98 Quote -s16 "-o1libs/Loaded.output"
-  perl runstdtest $HUGS $STDOPTS Random    -s24 "-o1libs/Loaded.output"
-  perl runstdtest $HUGS $STDOPTS Ratio     -s14 "-o1libs/Loaded.output"
-  perl runstdtest $HUGS $STDOPTS System    -s14 "-o1libs/Loaded.output"
-  perl runstdtest $HUGS $STDOPTS Directory -s24 "-o1libs/Loaded.output"
-  perl runstdtest $HUGS $STDOPTS CPUTime   -s14 "-o1libs/Loaded.output"
-  perl runstdtest $HUGS $STDOPTS Locale    -s14 "-o1libs/Loaded.output"
+  perl runstdtest $HUGS $STDOPTS -98 Quote "-o1libs/Loaded.output"
+  perl runstdtest $HUGS $STDOPTS Random    "-o1libs/Loaded.output"
+  perl runstdtest $HUGS $STDOPTS Ratio     "-o1libs/Loaded.output"
+  perl runstdtest $HUGS $STDOPTS System    "-o1libs/Loaded.output"
+  perl runstdtest $HUGS $STDOPTS Directory "-o1libs/Loaded.output"
+  perl runstdtest $HUGS $STDOPTS CPUTime   "-o1libs/Loaded.output"
+  perl runstdtest $HUGS $STDOPTS Locale    "-o1libs/Loaded.output"
 
   echo "-- !!! Performing static tests on GHC-compatible libraries"
-  perl runstdtest $HUGS $STDOPTS Addr       -s14 "-o1libs/Loaded.output"
-  perl runstdtest $HUGS $STDOPTS Bits       -s14 "-o1libs/Loaded.output"
-  perl runstdtest $HUGS $STDOPTS Concurrent -s30 "-o1libs/Loaded.output"
-  perl runstdtest $HUGS $STDOPTS Dynamic    -s21 "-o1libs/Loaded.output"
-  perl runstdtest $HUGS $STDOPTS Exception  -s14 "-o1libs/Loaded.output"
-  perl runstdtest $HUGS $STDOPTS Foreign    -s38 "-o1libs/Loaded.output"
-  perl runstdtest $HUGS $STDOPTS GetOpt     -s16 "-o1libs/Loaded.output"
-  perl runstdtest $HUGS $STDOPTS IOExts     -s20 "-o1libs/Loaded.output"
-  perl runstdtest $HUGS $STDOPTS Int        -s15 "-o1libs/Loaded.output"
-  perl runstdtest $HUGS $STDOPTS -98 LazyST -s22 "-o1libs/Loaded.output"
-  perl runstdtest $HUGS $STDOPTS NumExts    -s15 "-o1libs/Loaded.output"
-  perl runstdtest $HUGS $STDOPTS Pretty     -s14 "-o1libs/Loaded.output"
-  perl runstdtest $HUGS $STDOPTS -98 ST     -s22 "-o1libs/Loaded.output"
-  perl runstdtest $HUGS $STDOPTS Stable     -s14 "-o1libs/Loaded.output"
-  perl runstdtest $HUGS $STDOPTS Weak       -s14 "-o1libs/Loaded.output"
-  perl runstdtest $HUGS $STDOPTS Word       -s23 "-o1libs/Loaded.output"
+  perl runstdtest $HUGS $STDOPTS Addr       "-o1libs/Loaded.output"
+  perl runstdtest $HUGS $STDOPTS Bits       "-o1libs/Loaded.output"
+  perl runstdtest $HUGS $STDOPTS Concurrent "-o1libs/Loaded.output"
+  perl runstdtest $HUGS $STDOPTS Dynamic    "-o1libs/Loaded.output"
+  perl runstdtest $HUGS $STDOPTS Exception  "-o1libs/Loaded.output"
+  perl runstdtest $HUGS $STDOPTS Foreign    "-o1libs/Loaded.output"
+  perl runstdtest $HUGS $STDOPTS GetOpt     "-o1libs/Loaded.output"
+  perl runstdtest $HUGS $STDOPTS IOExts     "-o1libs/Loaded.output"
+  perl runstdtest $HUGS $STDOPTS Int        "-o1libs/Loaded.output"
+  perl runstdtest $HUGS $STDOPTS -98 LazyST "-o1libs/Loaded.output"
+  perl runstdtest $HUGS $STDOPTS NumExts    "-o1libs/Loaded.output"
+  perl runstdtest $HUGS $STDOPTS Pretty     "-o1libs/Loaded.output"
+  perl runstdtest $HUGS $STDOPTS -98 ST     "-o1libs/Loaded.output"
+  perl runstdtest $HUGS $STDOPTS Stable     "-o1libs/Loaded.output"
+  perl runstdtest $HUGS $STDOPTS Weak       "-o1libs/Loaded.output"
+  perl runstdtest $HUGS $STDOPTS Word       "-o1libs/Loaded.output"
 
   echo "-- !!! Performing static tests on other extension libraries"
-  perl runstdtest $HUGS $STDOPTS -98 Memo   -s23 "-o1libs/Loaded.output"
-  perl runstdtest $HUGS $STDOPTS -98 MonadRec -s24 "-o1libs/Loaded.output"
-  perl runstdtest $HUGS $STDOPTS Observe    -s14 "-o1libs/Loaded.output"
+  perl runstdtest $HUGS $STDOPTS -98 Memo   "-o1libs/Loaded.output"
+  perl runstdtest $HUGS $STDOPTS -98 MonadRec "-o1libs/Loaded.output"
+  perl runstdtest $HUGS $STDOPTS Observe    "-o1libs/Loaded.output"
 
   echo "-- !!! Performing static tests on Hugs libraries"
-  perl runstdtest $HUGS $STDOPTS -98 HugsLibs -s38 "-o1libs/HugsLibs.output"
+  perl runstdtest $HUGS $STDOPTS -98 HugsLibs "-o1libs/HugsLibs.output"
 
   echo "-- !!! Performing static tests on the hslibs libraries"
-  perl runstdtest $HUGS $STDOPTS -98 -W ../lib/exts/*.hs ../lib/exts/*.lhs -s85 "-o1libs/Loaded.output"
+  perl runstdtest $HUGS $STDOPTS -98 -W ../lib/exts/*.hs ../lib/exts/*.lhs "-o1libs/Loaded.output"
 
 
   echo "-- !!! Performing dynamic tests on libraries"
   # Specific tests - checking that old bugs have been fixed 
-  perl runstdtest $HUGS $STDOPTS List    -s16 "-Olibs/list1.hs" "-ilibs/list1.input" "-o1libs/list1.output"
-  perl runstdtest $HUGS $STDOPTS System  -s15 "-Olibs/system1.hs" "-ilibs/system1.input" "-o1libs/system1.output"
-  perl runstdtest $HUGS $STDOPTS Complex -s14 "-ilibs/complex1.input" "-o1libs/complex1.output"
-  perl runstdtest $HUGS $STDOPTS Int     -s24 "-Olibs/intTest.hs" "-ilibs/intTest.input" "-o1libs/intTest.output"
-  perl runstdtest $HUGS $STDOPTS IO      -s26 "-Olibs/ioTest1.hs" "-ilibs/ioTest1.input" "-o1libs/ioTest1.output"
-  perl runstdtest $HUGS $STDOPTS Directory        -s26 "-Olibs/dirTest.hs" "-ilibs/dirTest.input" "-o1libs/dirTest.output"
-  perl runstdtest $HUGS $STDOPTS libs/FixIO.lhs   -s23 "-ilibs/FixIO.input" "-o1libs/FixIO.output"
-  perl runstdtest $HUGS $STDOPTS libs/testAddr.hs -s16 "-ilibs/Addr.input" "-o1libs/Addr.output"
-  perl runstdtest $HUGS $STDOPTS libs/prodcon.hs  -s32 "-ilibs/prodcon.input" "-o1libs/prodcon.output"
-  perl runstdtest $HUGS $STDOPTS libs/except1.hs  -s32 "-ilibs/except1.input" "-o1libs/except1.output"
+  perl runstdtest $HUGS $STDOPTS List    "-Olibs/list1.hs" "-ilibs/list1.input" "-o1libs/list1.output"
+  perl runstdtest $HUGS $STDOPTS System  "-Olibs/system1.hs" "-ilibs/system1.input" "-o1libs/system1.output"
+  perl runstdtest $HUGS $STDOPTS Complex "-ilibs/complex1.input" "-o1libs/complex1.output"
+  perl runstdtest $HUGS $STDOPTS Int     "-Olibs/intTest.hs" "-ilibs/intTest.input" "-o1libs/intTest.output"
+  perl runstdtest $HUGS $STDOPTS IO      "-Olibs/ioTest1.hs" "-ilibs/ioTest1.input" "-o1libs/ioTest1.output"
+  perl runstdtest $HUGS $STDOPTS Directory        "-Olibs/dirTest.hs" "-ilibs/dirTest.input" "-o1libs/dirTest.output"
+  perl runstdtest $HUGS $STDOPTS libs/FixIO.lhs   "-ilibs/FixIO.input" "-o1libs/FixIO.output"
+  perl runstdtest $HUGS $STDOPTS libs/testAddr.hs "-ilibs/Addr.input" "-o1libs/Addr.output"
+  perl runstdtest $HUGS $STDOPTS libs/prodcon.hs  "-ilibs/prodcon.input" "-o1libs/prodcon.output"
+  perl runstdtest $HUGS $STDOPTS libs/except1.hs  "-ilibs/except1.input" "-o1libs/except1.output"
 
 } # End of test_libs
 
@@ -454,8 +454,8 @@ test_demos() {
 ----------------------------------------------------------------"
 
   echo "-- !!! Performing static checks on demos"
-  perl runstdtest $HUGS $STDOPTS -w -98 ../demos/Demos -s10 "-o1demos/Loaded.output"
-  perl runstdtest $HUGS $STDOPTS -w ../demos/prolog/Main -s10 "-o1demos/Loaded.output"
+  perl runstdtest $HUGS $STDOPTS -98 ../demos/Demos "-o1demos/Loaded.output"
+  perl runstdtest $HUGS $STDOPTS ../demos/prolog/Main "-o1demos/Loaded.output"
 
 } # End of test demos
 
