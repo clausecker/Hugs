@@ -51,3 +51,8 @@ install_libraries :: libraries
 					$(INSTALL) -c $(BUILD_DIR)/$$file $(DESTDIR)$(hugsdir)/$$file ;;\
 				esac \
 			done
+		(cd $(BUILD_DIR); find packages -type f -print) | while read file;\
+			do	dir=`dirname $$file`;\
+				$(INSTALL) -d $(DESTDIR)$(hugsdir)/$$dir;\
+				$(INSTALL) -c $(BUILD_DIR)/$$file $(DESTDIR)$(hugsdir)/$$file;\
+			done
