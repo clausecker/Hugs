@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: type.c,v $
- * $Revision: 1.40 $
- * $Date: 2002/02/15 01:42:19 $
+ * $Revision: 1.41 $
+ * $Date: 2002/04/08 14:41:28 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -2355,24 +2355,13 @@ Inst in; {				/* member functions for instance in*/
     Int  beta    = newKindedVars(inst(in).kinds);
     List params  = makePredAss(inst(in).specifics,beta);
     Cell d       = inventDictVar();
-    /* original code - clearly wrong with respect to the supers
-    List evids   = cons(triple(inst(in).head,mkInt(beta),d),
-			appendOnto(dupList(params),supers));
-    */
-    /* my first fix - went too far in taking out self
+    /* A previous comment indicated that evids may be wrong
+       in some cases when you have overlapping instances.
+       (the fix was to add self to the list of evidence)
+       I can't reconstruct what I meant by that comment,
+       and adding self can cause definitions that are unintentionally
+       self-recursive. */
     List evids   = dupList(params);
-    */
-    /* correct way...? (adding back in self)
-     * yes, if we don't supply self here, it'll find itself thru
-     * instance entailment, which is silly, and further doesn't
-     * always work when you have overlapping instances.
-     * is this correct wrt overlapping instance?
-     * yes.  this can only arise in a generic instance, and
-     * because self is at the same type, then we've already chosen
-     * the correct (generic) instance (if there were a more specific
-     * instance, we wouldn't be here...)
-     */
-    List evids   = cons(triple(inst(in).head,mkInt(beta),d),dupList(params));
 
     List imps    = inst(in).implements;
     Cell l	 = mkInt(inst(in).line);
