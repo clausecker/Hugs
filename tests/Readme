@@ -135,24 +135,18 @@ To add a new test, you:
    There is a separate subdirectory for files associated with each
    category.
 
-4) Add the test command to testScript.in
+4) Add the test command to testScript
    and add your scripts to the appropriate subdirectory
    
    To keep the test commands short, the script defines 
 
      HUGS=../src/hugs
-     HUGSFLAGS=-P../lib:../lib/hugs:../lib/exts
+     STDOPTS='+q +w -pHugs: -P../lib:../lib/hugs:../lib/exts'
 
    So you write just:
 
-     perl runstdtest $HUGS +q -pHugs: -s17 \
+     perl runstdtest $HUGS $STDOPTS -s17 \
         "-Orts/arith.hs" "-irts/arith.input" "-o1rts/arith.output"
-
-5) Rerun hugs98/src/unix/configure to regenerate testScript from
-   testScript.in
-
-   But before you do that, make very, very sure that you've changed
-   testScript.in and not just testScript or you will lose your changes.
 
 
 Enjoy!

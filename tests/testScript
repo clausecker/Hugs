@@ -1,8 +1,9 @@
 #! /bin/sh
-CONTEXT_DIFF='@CONTEXT_DIFF@'
-export CONTEXT_DIFF
-DEV_NULL='@DEV_NULL@'
-export DEV_NULL
+
+source config
+
+# HUGSFLAGS=-P../lib:../lib/hugs:../lib/exts
+# export HUGSFLAGS
 HUGS=../src/hugs
 
 STDOPTS='+q +w -pHugs: -P../lib:../lib/hugs:../lib/exts'
