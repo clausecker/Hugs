@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: builtin.c,v $
- * $Revision: 1.47 $
- * $Date: 2003/02/10 14:52:00 $
+ * $Revision: 1.48 $
+ * $Date: 2003/02/14 06:12:17 $
  * ------------------------------------------------------------------------*/
 
 /* We include math.h before prelude.h because SunOS 4's cpp incorrectly
@@ -80,6 +80,10 @@
 
 #ifdef HAVE_DIRECT_H
 #include <direct.h>
+#endif
+
+#ifdef HAVE_FCNTL_H
+#include <fcntl.h>
 #endif
 
 #endif /* IO_MONAD */

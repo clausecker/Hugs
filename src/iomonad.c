@@ -14,8 +14,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: iomonad.c,v $
- * $Revision: 1.44 $
- * $Date: 2003/01/31 17:08:48 $
+ * $Revision: 1.45 $
+ * $Date: 2003/02/14 06:12:18 $
  * ------------------------------------------------------------------------*/
  
 Name nameIORun;			        /* run IO code                     */
@@ -32,6 +32,7 @@ static String local toIOErrorDescr Args((int,Bool));
 static Name   local toIOError      Args((int));
 static Cell   local mkIOError      Args((Cell,Name,String,String,Cell));
 static Cell   local openHandle     Args((StackPtr,Cell,Int,Bool,String));
+static Cell   local openFdHandle   Args((StackPtr,Int,Bool,Int,Bool,String));
 #endif
 
 #if IO_HANDLES
@@ -104,6 +105,7 @@ PROTO_PRIM(primOpenBinaryFile);
 PROTO_PRIM(primStdin);
 PROTO_PRIM(primStdout);
 PROTO_PRIM(primStderr);
+PROTO_PRIM(primOpenFd);
 PROTO_PRIM(primHIsEOF);
 PROTO_PRIM(primHugsHIsEOF);
 PROTO_PRIM(primHFlush);
@@ -202,6 +204,7 @@ static struct primitive iomonadPrimTable[] = {
   {"getContents",	0+IOArity, primContents},
   {"openFile",          2+IOArity, primOpenFile},
   {"openBinaryFile",    2+IOArity, primOpenBinaryFile},
+  {"openFd",            4+IOArity, primOpenFd},
   {"stdin",		0, primStdin},
   {"stdout",		0, primStdout},
   {"stderr",		0, primStderr},
@@ -405,6 +408,100 @@ String loc; {
 			       sCell)));
     }
 }
+
+
+static
+Cell local openFdHandle(root,fd,isSock,hmode,binary,loc) /* open handle to file desc fd in  */
+StackPtr root;
+Int    fd;
+Bool   isSock;
+Int    hmode; 
+Bool   binary;
+String loc; {
+    Int i;
+    Int tfd;
+
+    /* openFdHandle() returns a *pair*, just like openHandle(). */
+
+    for (i=0; i<(Int)MAX_HANDLES && nonNull(handles[i].hcell); ++i)
+	;                                       /* Search for unused handle*/
+    if (i>=(Int)MAX_HANDLES) {              /* If at first we don't    */
+	garbageCollect();                       /* succeed, garbage collect*/
+	for (i=0; i<(Int)MAX_HANDLES && nonNull(handles[i].hcell); ++i)
+	    ;                                   /* and try again ...       */
+    }
+    
+#if !WANT_FIXED_SIZE_TABLES
+    if (i >= (Int)MAX_HANDLES) {
+      unsigned long j;
+      growDynTable(dynTabHandles);
+      handles=(struct strHandle*)(dynTabHandles->data);
+      num_handles = dynTabHandles->maxIdx;
+      /* Nil out the new entries in the table */
+      for (j=dynTabHandles->idx; j < num_handles; j++) {
+	handles[j].hcell = NIL;
+      }
+    }
+#endif
+
+    if (i>=(Int)MAX_HANDLES) {                 /* ... before we give up   */
+      return(pair(NIL,
+		  mkIOError(NIL,
+			    nameIllegal,
+			    loc,
+			    "too many handles open",
+			    NIL)));
+    } else {                                   /* prepare to open file    */
+	String stmode;
+	if (binary) {
+	    stmode = (hmode&HAPPEND)    ? "ab+" :
+		     (hmode&HWRITE)     ? "wb+" :
+		     (hmode&HREADWRITE) ? "wb+" :
+		     (hmode&HREAD)      ? "rb" : (String)0;
+	} else {
+	    stmode = (hmode&HAPPEND)     ? "a+"  :
+		     (hmode&HWRITE)      ? "w+"  :
+		     (hmode&HREADWRITE)  ? "w+"  :
+		     (hmode&HREAD)       ? "r"  : (String)0;
+	}
+#ifdef _WIN32
+	if (isSock) {
+	  /* fd is a SOCKET, convert it to an FD.
+	   * Note: _open_osfhandle() will fail under
+	   * Win9x. ToDo: better on those plats.
+	   */
+	  tfd = _open_osfhandle(fd,
+				(hmode & HREAD      ? O_RDONLY : 0) |
+				(hmode & HWRITE     ? O_WRONLY : 0) |
+				(hmode & HREADWRITE ? O_RDWR : 0)   |
+				(hmode & HAPPEND    ? O_APPEND : 0) |
+				(binary ? O_BINARY : O_TEXT)
+				);
+	} else {
+	  tfd = fd;
+	}
+#else
+	tfd = fd;
+#endif
+
+	if (stmode && (handles[i].hfp=fdopen(tfd,stmode))) {
+	    handles[i].hmode = hmode;
+	    handles[i].hbufMode = HANDLE_NOTBUFFERED;
+	    handles[i].hbufSize = 0;
+	    if (hmode&HREADWRITE) {
+	      handles[i].hHaveRead = FALSE;
+	    }
+	    return (pair(nameNothing,handles[i].hcell = ap(HANDCELL,i)));
+	}
+	return (pair(NIL,
+		     mkIOError(NIL,
+			       toIOError(errno),
+			       loc,
+			       toIOErrorDescr(errno,TRUE),
+			       NIL)));
+    }
+}
+
 
 /* --------------------------------------------------------------------------
  * Building strings:
@@ -894,6 +991,46 @@ primFun(primStdout) {			/* Standard output handle	   */
 primFun(primStderr) {			/* Standard error handle	   */
     push(handles[HSTDERR].hcell);
 }
+
+primFun(primOpenFd) {			/* open handle to file descriptor. */
+  Int  m;                                /* :: Int{-Fd-} -> Bool -> IOMode -> Bool -> IO Handle */
+  Int  fd;
+  Bool binary;
+  Bool isSock;
+
+  IntArg(fd,4+IOArity);
+  BoolArg(isSock,3+IOArity);
+  BoolArg(binary,1+IOArity);
+
+  eval(IOArg(2));
+  if (isName(whnfHead) && isCfun(whnfHead)) {
+    switch (cfunOf(whnfHead)) {	/* we have to use numeric consts   */
+    case 1 : m = HREAD;		/* here to avoid the need to put   */
+      break;		/* IOMode in startup environment   */
+    case 2 : m = HWRITE;
+      break;
+    case 3 : m = HAPPEND;
+      break;
+    case 4 : m = HREADWRITE;
+      break;
+    }
+  }
+  
+  if (m!=HCLOSED) {			/* Only accept legal modes	   */
+      Cell hnd = openFdHandle(root,fd,isSock,m,binary,"openFd");
+      if (!isNull(fst(hnd))) {
+	  IOReturn(snd(hnd));
+      } else {
+	IOFail(snd(hnd));
+      }
+  }
+  IOFail(mkIOError(NIL,
+		   nameIllegal,
+		   "openFd",
+		   "unknown handle mode",
+		   NIL));
+}
+
 
 /* NOTE: this doesn't implement the Haskell 1.3 semantics */
 primFun(primHugsHIsEOF) {		/* Test for end of file on handle  */
