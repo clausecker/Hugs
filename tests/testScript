@@ -455,7 +455,6 @@ test_libs() {
   perl runstdtest $HUGS $STDOPTS IOExts     "-o1libs/Loaded.output"
   perl runstdtest $HUGS $STDOPTS Int        "-o1libs/Loaded.output"
   perl runstdtest $HUGS $STDOPTS -98 LazyST "-o1libs/Loaded.output"
-  perl runstdtest $HUGS $STDOPTS NumExts    "-o1libs/Loaded.output"
   perl runstdtest $HUGS $STDOPTS Pretty     "-o1libs/Loaded.output"
   perl runstdtest $HUGS $STDOPTS -98 ST     "-o1libs/Loaded.output"
   perl runstdtest $HUGS $STDOPTS Stable     "-o1libs/Loaded.output"
