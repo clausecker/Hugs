@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.81 $
- * $Date: 2002/05/16 14:26:27 $
+ * $Revision: 1.82 $
+ * $Date: 2002/05/18 10:14:56 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -48,18 +48,24 @@ static Bool   printMostGeneralType = FALSE;
  * Local function prototypes:
  * ------------------------------------------------------------------------*/
 
+#if !defined(HUGS_SERVER)
 static Void   local initialize        Args((Int,String []));
+#endif /* !HUGS_SERVER */
 static Void   local promptForInput    Args((String));
+#if !defined(HUGS_SERVER)
 static Void   local interpreter       Args((Int,String []));
 static Void   local menu              Args((Void));
 static Void   local guidance          Args((Void));
+
 static Void   local forHelp           Args((Void));
 static Void   local set               Args((Void));
 static Void   local changeDir         Args((Void));
 static Void   local load              Args((Void));
 static Void   local project           Args((Void));
+#endif /* !HUGS_SERVER */
 static Void   local readScripts       Args((Int));
 static Void   local whatScripts       Args((Void));
+#if !defined(HUGS_SERVER)
 static Void   local editor            Args((Void));
 static Void   local find              Args((Void));
 static Bool   local startEdit         Args((Int,String));
@@ -67,7 +73,9 @@ static Void   local runEditor         Args((Void));
 static Void   local setModule         Args((Void));
 static Module local findEvalModule    Args((Void));
 static Void   local evaluator         Args((Void));
+#endif /* !HUGS_SERVER */
 static Void   local stopAnyPrinting   Args((Void));
+#if !defined(HUGS_SERVER)
 static Void   local showtype          Args((Void));
 static String local objToStr          Args((Module, Cell));
 static Void   local splitQualString   Args((String,String*,String*));
@@ -76,13 +84,16 @@ static Void   local printSyntax       Args((Name));
 static Void   local showInst          Args((Inst));
 static Void   local describe          Args((Text));
 static Void   local listNames         Args((Void));
+#endif /* !HUGS_SERVER */
 #if HUGS_FOR_WINDOWS
 static Void   local autoReloadFiles   Args((Void));
 #endif
 
 static Void   local toggleSet         Args((Char,Bool));
+#if !defined(HUGS_SERVER)
 static Void   local togglesIn         Args((Bool));
 static Void   local optionInfo        Args((Void));
+#endif /* !HUGS_SERVER */
 #if HUGS_FOR_WINDOWS || USE_REGISTRY || defined(HUGS_SERVER)
 static String local optionsToStr      Args((Void));
 #endif
@@ -91,7 +102,9 @@ static Bool   local readOptions2      Args((String));
 static Bool   local processOption     Args((String));
 static Void   local setHeapSize       Args((String));
 static Int    local argToInt          Args((String));
+#if !defined(HUGS_SERVER)
 static Void   local expandPath        Args((String,String,unsigned int));
+#endif /* !HUGS_SERVER */
 
 static Void   local loadProject       Args((String));
 static Void   local clearProject      Args((Void));
@@ -102,8 +115,10 @@ static Void   local forgetAScript     Args((Script));
 static Void   local setLastEdit       Args((String,Int));
 static Void   local failed            Args((Void));
 static String local strCopy           Args((String));
+#if !defined(HUGS_SERVER)
 static Void   local browseit	      Args((Module,String,Bool));
 static Void   local browse	      Args((Void));
+#endif /* !HUGS_SERVER */
 static Void   local shutdownHugs      Args((Void));
 
 #if USE_PREFERENCES_FILE
@@ -151,7 +166,9 @@ static Int    namesUpto;                /* Number of script names set      */
 static Bool   needsImports;             /* set to TRUE if imports required */
        String scriptFile;               /* Name of current script (if any) */
 
+#if !defined(HUGS_SERVER)
 static Text   evalModule  = 0;          /* Name of module we eval exprs in */
+#endif /* !HUGS_SERVER */
 static String currProject = 0;          /* Name of current project file    */
 static Bool   projectLoaded = FALSE;    /* TRUE => project file loaded     */
 
@@ -176,6 +193,8 @@ Bool optImplicitImportRoot = TRUE;
    /* TRUE => directory of importing module added to search path
     *         while resolving imports from that module.
     */
+
+#if !defined(HUGS_SERVER)
 
 /* --------------------------------------------------------------------------
  * Printing the banner
@@ -219,9 +238,6 @@ static Void printBanner()
  * Hugs entry point:
  * ------------------------------------------------------------------------*/
 
-#ifndef HUGS_SERVER /* we omit main when building the "Hugs server" */
-
-
 Main main Args((Int, String []));       /* now every func has a prototype  */
 
 Main main(argc,argv)
@@ -250,8 +266,6 @@ char *argv[]; {
     exit(0);
     MainDone();
 }
-
-#endif /* HUGS_SERVER */
 
 /* --------------------------------------------------------------------------
  * Initialization, interpret command line args and read prelude:
@@ -389,6 +403,8 @@ String argv[]; {
     readScripts(0);
 }
 
+#endif /* !HUGS_SERVER */
+
 
 /* --------------------------------------------------------------------------
  * Shutdown interpreter.
@@ -474,6 +490,8 @@ Bool state; {
     Printf("Warning: unknown toggle `%c'; ignoring.\n", c);
 }
 
+#if !defined(HUGS_SERVER)
+
 static Void local togglesIn(state)      /* Print current list of toggles in*/
 Bool state; {                           /* given state                     */
     Int count = 0;
@@ -558,6 +576,8 @@ static Void local optionInfo() {        /* Print information about command */
 #endif
     Putchar('\n');
 }
+
+#endif /* !HUGS_SERVER */
 
 #if HUGS_FOR_WINDOWS || USE_REGISTRY || defined(HUGS_SERVER)
 
@@ -867,6 +887,8 @@ String s; {
     return n;
 }
 
+#if !defined(HUGS_SERVER)
+
 /* --------------------------------------------------------------------------
  * Print Menu of list of commands:
  * ------------------------------------------------------------------------*/
@@ -931,6 +953,8 @@ static Void local guidance() {
 static Void local forHelp() {
     Printf("Type :? for help\n");
 }
+
+#endif /* !HUGS_SERVER */
 
 /* --------------------------------------------------------------------------
  * Setting of command line options:
@@ -1091,6 +1115,8 @@ struct options toggle[] = {             /* List of command line toggles    */
           0}
 };
 
+#if !defined(HUGS_SERVER)
+
 static Void local set() {               /* change command line options from*/
     String s;                           /* Hugs command line               */
 
@@ -1163,6 +1189,8 @@ static Void local printDir() {         /* print directory                */
     printf("%s\n",getcwd(s,255));
 }
 #endif
+
+#endif /* !HUGS_SERVER */
 
 /* --------------------------------------------------------------------------
  * Loading project and script files:
@@ -1331,6 +1359,8 @@ Script scno; {
  * Commands for loading and removing script files:
  * ------------------------------------------------------------------------*/
 
+#if !defined(HUGS_SERVER)
+
 static Void local load() {           /* read filenames from command line   */
     String s;                        /* and add to list of scripts waiting */
 				     /* to be read                         */
@@ -1359,6 +1389,8 @@ static Void local project() {          /* read list of script names from   */
     loadProject(s);
     readScripts(1);
 }
+
+#endif /* !HUGS_SERVER */
 
 static Void local readScripts(n)        /* Reread current list of scripts, */
 Int n; {                                /* loading everything after and    */
@@ -1412,6 +1444,8 @@ static Void local whatScripts() {       /* list scripts in current session */
     }
 #endif
 }
+
+#if !defined(HUGS_SERVER)
 
 /* --------------------------------------------------------------------------
  * Access to external editor:
@@ -1473,6 +1507,8 @@ static Void local runEditor() {         /* run editor on script lastEdit   */
     }
 }
 
+#endif /* !HUGS_SERVER */
+
 static Void local setLastEdit(fname,line)/* keep name of last file to edit */
 String fname;
 Int    line; {
@@ -1488,9 +1524,12 @@ Int    line; {
 #endif
 }
 
+
 /* --------------------------------------------------------------------------
  * Read and evaluate an expression:
  * ------------------------------------------------------------------------*/
+
+#if !defined(HUGS_SERVER)
 
 static Void local setModule(){/*set module in which to evaluate expressions*/
     String s = readFilename();
@@ -1646,6 +1685,8 @@ static Void local evaluator() {        /* evaluate expr and print value    */
     stopAnyPrinting();
 }
 
+#endif /* !HUGS_SERVER */
+
 static Void local stopAnyPrinting() {  /* terminate printing of expression,*/
     if (printing) {                    /* after successful termination or  */
 	printing = FALSE;              /* runtime error (e.g. interrupt)   */
@@ -1685,6 +1726,8 @@ static Void local stopAnyPrinting() {  /* terminate printing of expression,*/
 /* --------------------------------------------------------------------------
  * Print type of input expression:
  * ------------------------------------------------------------------------*/
+
+#if !defined(HUGS_SERVER)
 
 static Void local showtype() {         /* print type of expression (if any)*/
     Cell type;
@@ -2166,6 +2209,8 @@ static Void local listNames() {         /* list names matching optional pat*/
     Printf("\n(%d names listed)\n", count);
 }
 
+#endif /* !HUGS_SERVER */
+
 /* --------------------------------------------------------------------------
  * print a prompt and read a line of input:
  * ------------------------------------------------------------------------*/
@@ -2281,6 +2326,8 @@ static Void local startEvaluatorThread(Void) {
  * ------------------------------------------------------------------------*/
 
 static jmp_buf catch_error;             /* jump buffer for error trapping  */
+
+#if !defined(HUGS_SERVER)
 
 static Void local interpreter(argc,argv)/* main interpreter loop           */
 Int    argc;
@@ -2405,6 +2452,8 @@ String argv[]; {
     }
     breakOn(FALSE);
 }
+
+#endif /* !HUGS_SERVER */
 
 /* --------------------------------------------------------------------------
  * Display progress towards goal:

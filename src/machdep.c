@@ -11,8 +11,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.46 $
- * $Date: 2002/05/17 14:19:56 $
+ * $Revision: 1.47 $
+ * $Date: 2002/05/18 10:14:56 $
  * ------------------------------------------------------------------------*/
 #include <math.h>
 
@@ -1323,6 +1323,8 @@ static Void local installHandlers() { /* Install handlers for all fatal    */
  * Shell escapes:
  * ------------------------------------------------------------------------*/
 
+#ifndef HUGS_SERVER /* omitted when building the "Hugs server" */
+
 static Bool local startEdit(line,nm)    /* Start editor on file name at    */
 Int    line;                            /* given line.  Both name and line */
 String nm; {                            /* or just line may be zero        */
@@ -1472,6 +1474,8 @@ String nm; {                            /* or just line may be zero        */
     free(editorCmd);
     return syncEdit;
 }
+
+#endif /* !HUGS_SERVER */
 
 Int
 shellEsc(cmd, sync, useShell)         /* run a shell command (or shell)  */
