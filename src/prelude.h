@@ -9,8 +9,8 @@
  * included in the distribution.
  *
  * $RCSfile: prelude.h,v $
- * $Revision: 1.30 $
- * $Date: 2002/01/21 04:24:29 $
+ * $Revision: 1.31 $
+ * $Date: 2002/02/24 04:21:44 $
  * ------------------------------------------------------------------------*/
 
 #include "config.h"
@@ -552,16 +552,17 @@ extern  int  kbhit	Args((void));
 #if HAVE_ALLOCA_H
 #include <alloca.h>
 #else
-#if HAVE__ALLOCA
-#ifndef __SYMBIAN32__
-#include <malloc.h>
-#endif
-#endif
-#if !HAVE_ALLOCA
-#ifndef alloca
-#define alloca _alloca
-#endif
-#endif
+# if HAVE__ALLOCA && !defined(__SYMBIAN32__)
+#  include <malloc.h>
+#  ifndef alloca
+#   define alloca _alloca
+#  endif
+# endif
+# if !HAVE_ALLOCA
+#  ifndef alloca
+#   define alloca _alloca
+#  endif
+# endif
 #endif
 
 
@@ -573,6 +574,27 @@ extern  int  kbhit	Args((void));
 #include <assert.h>
 #else
 #define assert(x) doNothing()
+#endif
+
+/*---------------------------------------------------------------------------
+ * Preprocessor support
+ *-------------------------------------------------------------------------*/
+
+/*
+ * Note: initially defined as
+ *   #define SUPPORT_PREPROCESSOR USE_PREPROCESSOR && (defined(HAVE_POPEN) || defined(HAVE__POPEN))
+ *
+ * which worked OK with GNU cpp, but MSVC didn't expand the 'defined' correctly.
+ *
+ */
+#if USE_PREPROCESSOR
+# if defined(HAVE_POPEN) || defined (HAVE__POPEN)
+# define SUPPORT_PREPROCESSOR 1
+# else
+# define SUPPORT_PREPROCESSOR 0
+# endif
+#else
+#define SUPPORT_PREPROCESSOR 0
 #endif
 
 /*---------------------------------------------------------------------------
