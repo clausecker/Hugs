@@ -19,8 +19,8 @@
  * included in the distribution.
  *
  * $RCSfile: iomonad.c,v $
- * $Revision: 1.16 $
- * $Date: 2001/12/06 17:20:26 $
+ * $Revision: 1.17 $
+ * $Date: 2001/12/11 00:54:51 $
  * ------------------------------------------------------------------------*/
  
 Name nameIORun;			        /* run IO code                     */
@@ -1246,6 +1246,10 @@ primFun(primHIsWritable) {		/* Test is handle writable         */
     IOBoolResult(handles[h].hmode&(HWRITE|HREADWRITE|HAPPEND));
 }
 
+#if defined(_WIN32) && !defined(S_ISREG)
+#define S_ISREG(x)  ((x) & _S_IFREG)
+#endif
+
 primFun(primHIsSeekable) {		/* Test if handle is writable   */
   Int h;
   Bool okHandle;
@@ -1261,8 +1265,13 @@ primFun(primHIsSeekable) {		/* Test if handle is writable   */
   if (okHandle && (fstat(fileno(handles[h].hfp), &sb) == 0)) {
     okHandle = S_ISREG(sb.st_mode);
   }
-#endif
   IOBoolResult(okHandle);
+#else
+  IOFail(mkIOError(nameIllegal,
+		   "IO.hIsSeekable",
+		   "unsupported operation",
+		   nameNothing));
+#endif
 }
 
 primFun(primHFileSize) {  /* If handle points to a regular file,
@@ -1282,11 +1291,16 @@ primFun(primHFileSize) {  /* If handle points to a regular file,
       S_ISREG(sb.st_mode)) {
     IOReturn(bigWord(sb.st_size));
   }
-#endif
   IOFail(mkIOError(nameIllegal,
 		   "IO.hFileSize",
 		   (okHandle ? "not a regular file" : "handle is (semi-)closed."),
 		   nameNothing));
+#else
+  IOFail(mkIOError(nameIllegal,
+		   "IO.hFileSize",
+		   "unsupported operation",
+		   nameNothing));
+#endif
 }
 
 primFun(primEqHandle) {			/* Test for handle equality        */
@@ -1434,7 +1448,7 @@ primFun(primHWaitForInput) { /* Check whether a character can be read
   }
 #else
   /* For now, punt on implementing async IO under Win32 */
-  /* For other platforms that don't support select90 on file
+  /* For other platforms that don't support select() on file
      file descs, please insert code that'll work. */
   IOFail(mkIOError(nameIllegal,
 		   "IO.hWaitForInput",
