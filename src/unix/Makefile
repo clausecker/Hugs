@@ -1,5 +1,6 @@
 ROOT := ${subst /src/unix,,${shell pwd}}
-OPTS =  --enable-ffi
+OPTS =  --enable-ffi \
+	--with-fptools=../../fptools
 #	--disable-large-banner
 GNULIBS = 
 
