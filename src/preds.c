@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: preds.c,v $
- * $Revision: 1.21 $
- * $Date: 2000/03/06 10:21:25 $
+ * $Revision: 1.22 $
+ * $Date: 2000/03/06 18:59:26 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -243,12 +243,7 @@ Int  d; {
     Class h  = getHead(pi);
     Cell ev = NIL;
 
-    /* the h==h1 test is just an optimization, and I'm not
-       sure it will work with IPs, so I'm being conservative
-       and commenting it out - JL */
-    /* We need h == h1, as it appears to be a precondition
-       for checking if the predicate are the same - AG */
-    if (h==h1 && samePred(pi1,o1,pi,o))
+    if (samePred(pi1,o1,pi,o))
 	return e;
 
     if (isClass(h1) && (!isClass(h) || cclass(h).level<cclass(h1).level)) {
