@@ -503,27 +503,4 @@ HBITMAP ResizeBitmap (HBITMAP SrcBitmap, UINT x, UINT y)
 }
 
 
-/* Replaces all occurrences of str "what" by "by" in "in" */
-VOID StrReplace(CHAR *what, CHAR *by, CHAR *in, CHAR *result)
-{
-
-  CHAR *ptrIn, *ptrResult;
-  UINT  byLength   = strlen(by);
-  UINT  whatLength = strlen(what);
-
-  for(ptrIn=in, ptrResult=result; *ptrIn;){
-    if(strncmp(ptrIn,what,whatLength)==0) {
-    strcpy(ptrResult, by);
-      ptrResult += byLength;
-      ptrIn     += whatLength;
-    }
-    else{
-      *ptrResult = *ptrIn;
-      ptrResult++; 
-      ptrIn++;
-    }
-  } 
-  *ptrResult = (CHAR)0;
-}
-
 #endif // HUGS_FOR_WINDOWS

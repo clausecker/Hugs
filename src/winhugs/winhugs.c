@@ -103,7 +103,7 @@ LRESULT CALLBACK		ScriptManDlgProc	(HWND, UINT, WPARAM, LPARAM);
 #define HUGS_EXTS		"libs\\libs.html"
 #define HUGS_DOCS		"hugsman\\index.html"
 #define HASKELL_ORG		"http:\\\\haskell.org"
-
+#define HUGS_HELP_FILE          "hugs.hlp"
 
 /* --------------------------------------------------------------------------
  * Local Macros:
@@ -440,12 +440,16 @@ static VOID local DoCommand(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 				break;
 
     /* Display help about Hugs */
-    case ID_HELPINDEX:		{ CHAR DocFullPath[2*_MAX_PATH];
-				  CHAR HelpFullPath[_MAX_PATH];
+    case ID_HELPINDEX:		{ char  DocFullPath[_MAX_PATH];
+                                  char *HelpFullPath = NULL;
 
-				  GetFromRegistryDocPath(DocFullPath);
-				  wsprintf(HelpFullPath, "%s\\hugs.hlp", DocFullPath);
-				  WinHelp(hWnd, HelpFullPath, HELP_CONTENTS, 0L);
+				  if ( GetFromRegistryDocPath(DocFullPath, _MAX_PATH) ) {
+				      HelpFullPath = alloca(strlen(DocFullPath) + strlen(HUGS_HELP_FILE) + 5);
+				      if (HelpFullPath) {
+					  wsprintf(HelpFullPath, "%s\\%s", DocFullPath, HUGS_HELP_FILE);
+					  WinHelp(hWnd, HelpFullPath, HELP_CONTENTS, 0L);
+				      }
+				  }
 				}
 				break;
 
@@ -1639,13 +1643,43 @@ static VOID local InitMenus(VOID) {
 #define RKEY_EDITSMENU		 "Edit Menu"
 
 
-static VOID local GetFromRegistryDocPath(CHAR *realPath)
+static int GetFromRegistryDocPath(char *realPath, int pathLen)
 {
-  String   regPath = readRegString(HKEY_CURRENT_USER,hugsRegRoot,RKEY_DOCPATH, DEFAULT_DOC_DIR);
+    String   hugsdir_ = hugsdir(); /* static, not freeable. */
+    String   regPath = readRegString(HKEY_CURRENT_USER,hugsRegRoot,RKEY_DOCPATH, DEFAULT_DOC_DIR);
+    INT      rlen,hlen;
+    INT      flen = sizeof("{Hugs}") - 1;
 
-  /* Expand "{Hugs}" -- cavalier handling of potential overflows. Fix. */
-  StrReplace("{Hugs}", hugsdir(), regPath, realPath);
-  free(regPath);
+    if (!regPath) {
+	goto NoResult;
+    }
+    /* Expand "{Hugs}" but only at the beginning of the string, avoiding
+     * buffer overflows in the process.
+     */
+    rlen = strlen(regPath);
+    hlen = strlen(hugsdir_);
+    
+    if ( (rlen > pathLen) ) {
+	/* {Hugs} or not, no way the result is going to fit. */
+	free(regPath);
+	goto NoResult;
+    }
+    if (strncmp ("{Hugs}", regPath, flen) == 0) {
+	if ( ((rlen + (hlen - flen)) > pathLen) ) {
+	    free(regPath);
+	    goto NoResult;
+	}
+	strcpy(realPath,hugsdir_);
+	strcat(realPath,regPath+flen);
+    } else {
+	strcpy(realPath,regPath);
+    }
+    free(regPath);
+    return 1;
+    
+NoResult:
+    *realPath = '\0';
+    return 0;
 }
 
 static VOID local GetFromRegistryFont(CHAR *FontName, INT FontNameLen, INT *FontSize, INT* FontWeight)
@@ -1914,27 +1948,30 @@ static Void local SetInterpreterCommand(LPCSTR fmt, ...) {
     }
   }
 
-  va_end(ap);			 /* clean up				 */
+  va_end(ap);	/* clean up */
 }
 
-
 /* Open an html document */
-static VOID OpenHtml(LPSTR s) 
+static VOID OpenHtml(LPSTR s)
 {
-  ShellExecute(hWndMain, NULL, s, NULL, NULL, SW_SHOWNORMAL); 
-}		
+  ShellExecute(hWndMain, NULL, s, NULL, NULL, SW_SHOWNORMAL);
+}
 
 
 /* Open an html document. Search the document in docs dir */
 static VOID OpenHtmlFromDocs(LPSTR s) 
 {
-  CHAR DocsFullPath[_MAX_PATH]; 				     
-  CHAR HtmlFullPath[_MAX_PATH]; 				     
+  CHAR DocsFullPath[_MAX_PATH];
+  char* HtmlFullPath = NULL;
 
-  GetFromRegistryDocPath(DocsFullPath); 			     
-  wsprintf(HtmlFullPath, "%s\\%s", DocsFullPath,s);		     
-  OpenHtml(HtmlFullPath); 
-}		
+  if ( GetFromRegistryDocPath(DocsFullPath, _MAX_PATH) ) {
+      HtmlFullPath = alloca(strlen(DocsFullPath) + strlen(s) + 5);
+      if (HtmlFullPath) {
+	  wsprintf(HtmlFullPath, "%s\\%s", DocsFullPath,s);
+	  OpenHtml(HtmlFullPath);
+      }
+  }
+}
 
 /* expands characters like \ to \\ in a file name */
 static LPSTR local ExpandFileName(LPSTR what)
