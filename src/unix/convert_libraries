@@ -318,6 +318,8 @@ nocvt base System/Time.hsc		Time.hs		# Hugs primitives
   cvt base Text/Show.hs
   cvt base Text/Show/Functions.hs
 
+  # Haskell 98 Library Report (minus Numeric, which is in base)
+
   cvt haskell98 Array.hs
   cvt haskell98 CPUTime.hs
   cvt haskell98 Char.hs
@@ -333,6 +335,24 @@ nocvt base System/Time.hsc		Time.hs		# Hugs primitives
   cvt haskell98 Ratio.hs
   cvt haskell98 System.hs
   cvt haskell98 Time.hs
+
+  # FFI Addendum
+
+  cvt haskell98 Bits.hs
+  cvt haskell98 CError.hs
+  cvt haskell98 CForeign.hs
+  cvt haskell98 CString.hs
+  cvt haskell98 CTypes.hs
+  cvt haskell98 ForeignPtr.hs
+  cvt haskell98 Int.hs
+  cvt haskell98 MarshalAlloc.hs
+  cvt haskell98 MarshalArray.hs
+  cvt haskell98 MarshalError.hs
+  cvt haskell98 MarshalUtils.hs
+  cvt haskell98 Ptr.hs
+  cvt haskell98 StablePtr.hs
+  cvt haskell98 Storable.hs
+  cvt haskell98 Word.hs
 
   cvt_happy haskell-src Language/Haskell/Parser.ly
   cvt haskell-src Language/Haskell/Lexer.hs
@@ -416,14 +436,8 @@ hugslibs Merge				# deprecated Hugs lib
 hugslibs Addr
 # hslibs lang ArrayBase.hs		# -> Data.Array.Base
   hslibs lang Arrow.hs
-  hslibs lang Bits.hs
 # hslibs lang ByteArray.lhs		# deprecated
 # hslibs lang CCall.lhs			# GHC-specific (and obsolete)
-  hslibs lang CError.hs
-  hslibs lang CForeign.hs
-# hslibs lang CString.hs		# deprecated
-  stub CString		Foreign.C.String	# rest is deprecated
-  hslibs lang CTypes.hs
   hslibs lang CTypesISO.hs
 # hslibs lang DiffArray.hs		# -> Data.Array.Diff
 # hslibs lang DirectoryExts.hs
@@ -431,41 +445,29 @@ hugslibs Addr
   hslibs lang Exception.hs
 # hslibs lang ForeignObj.lhs		# deprecated
 hugslibs ForeignObj			# uses Hugs primitives
-# hslibs lang ForeignPtr.hs
 # hslibs lang Generics.hs		# GHC-specific
 # hslibs lang GlaExts.lhs		# deprecated
   hslibs lang IArray.hs
 # hslibs lang IOExts.hs
   stub IOExts		Hugs.IOExts Hugs.IORef Hugs.IOArray
   hslibs lang IORef.hs
-# hslibs lang Int.hs			# lots of deprecated stuff
-  stub Int		Hugs.Int
 # hslibs lang LazyST.hs
   stub LazyST		Hugs.LazyST
 # hslibs lang MArray.hs			# lots of GHC stuff (and obsolete)
-  hslibs lang MarshalAlloc.hs
-  hslibs lang MarshalArray.hs
-  hslibs lang MarshalError.hs
-  hslibs lang MarshalUtils.hs
 # hslibs lang MutableArray.lhs		# deprecated
 # hslibs lang NativeInfo.hs		# -> System.Info
   hslibs lang NumExts.lhs
 # hslibs lang PackedString.lhs		# GHC-specific
 # hslibs lang PrelByteArr.lhs		# GHC-specific
-  hslibs lang Ptr.hs
 # hslibs lang ST.hs			# GHC-specific
   stub ST		Hugs.ST
   hslibs lang ShowFunctions.hs
   hslibs lang Stable.hs
   hslibs lang StableName.hs
-  hslibs lang StablePtr.hs
-  hslibs lang Storable.hs
 # hslibs lang StorableArray.hs		# -> Data.Array.Storable
 # hslibs lang SystemExts.lhs		# GHC-specific
 # hslibs lang TimeExts.lhs
   hslibs lang Weak.hs
-# hslibs lang Word.hs			# lots of deprecated stuff
-  stub Word		Hugs.Word
 
   hslibs lang/monads MonadCont.lhs
   hslibs lang/monads MonadEither.lhs
