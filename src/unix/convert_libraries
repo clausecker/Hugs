@@ -16,11 +16,17 @@
 #
 #   ./convert_libraries  <directory where libraries lives>
 
-cpp='gcc -P -E -traditional -xc -D__HUGS__ -D__HASKELL98__ -Dwith=with_a'
+cpp='gcc -P -E -traditional -xc -D__HUGS__ -D__HASKELL98__'
 
 hugs_src=../../lib
 dst=../../libraries
 compat=../../oldlib
+
+case $# in
+1)	;;
+*)	echo "usage: $0 <directory where libraries lives>"
+	exit 1 ;;
+esac
 
 src=$1/libraries
 if [ ! -d $src ]; then
@@ -34,43 +40,32 @@ if [ ! -d $hs_src ]; then
   exit 1
 fi
 
-# Create a hierarchical library module for use with Hugs
+# Convert a hierarchical library module for use with Hugs
 
 function cvt {
+	case $# in
+	2)	;;
+	*)	echo "usage: cvt package file" >&2
+		exit 1 ;;
+	esac
  
 	echo "Converting $1/$2"
 	dstdir=`dirname $dst/$2`
 	mkdir -p $dstdir
 
-	# Two forms, because we can't use all modules in the new libs yet.
-	case $# in
-	2)
-		# cvt package file
-		#	- converts a file from the new libraries
-		$cpp -I$src/$1/include $src/$1/$2 | cat -s >$dst/$2
-		;;
-	3)
-		# cvt package file hugslib
-		#	- uses the Hugs file as a stopgap replacement
-		#	  for the new module
-		new_stem=`echo $2 | sed 's/\..*//'`
-		new_module=`echo $2 | sed 's/\..*//' | tr / .`
-		old_extension=`echo $3 | sed 's/[^.]*//'`
-		old_module=`basename $3 $old_extension`
-		sed "s/module[ 	][ 	]*$old_module\\>/module $new_module/g
-			s/import IOExts/import Hugs.IOExts/
-			s/import Array/import Hugs.Array/
-			s/import Char/import Data.Char/
-			s/import Ratio/import Data.Ratio/
-			s/import Locale/import System.Locale/
-			s/import Time/import System.Time/
-			" $hugs_src/$3 >$dst/$new_stem$old_extension
-		;;
-	esac
+	$cpp -I$src/$1/include $src/$1/$2 | cat -s >$dst/$2
  
 }
 
+# For when we cannot use the new module yet: use a Hugs file as a
+# stopgap replacement.
+
 function cvt_happy {
+	case $# in
+	2)	;;
+	*)	echo "usage: cvt_happy package file" >&2
+		exit 1 ;;
+	esac
  
 	echo "Converting $1/$2"
 	mkdir -p `dirname $dst/$2`
@@ -92,9 +87,71 @@ function cvt_happy {
  
 }
 
+function nocvt {
+	case $# in
+	3)	;;
+	*)	echo "usage: nocvt package file hugslib" >&2
+		exit 1 ;;
+	esac
+
+	echo "Creating $1/$2 from $3"
+	dstdir=`dirname $dst/$2`
+	mkdir -p $dstdir
+
+	new_stem=`echo $2 | sed 's/\..*//'`
+	new_module=`echo $2 | sed 's/\..*//' | tr / .`
+	old_extension=`echo $3 | sed 's/[^.]*//'`
+	old_module=`basename $3 $old_extension`
+	sed "s/module[ 	][ 	]*$old_module\\>/module $new_module/g
+		s/import IOExts/import Hugs.IOExts/
+		s/import Array/import Hugs.Array/
+		s/import Char/import Data.Char/
+		s/import Ratio/import Data.Ratio/
+		s/import Locale/import System.Locale/
+		s/import Time/import System.Time/
+		s/import Ptr/import Foreign.Ptr/
+		s/import CTypes/import Foreign.C.Types/
+		s/import Marshal/import Foreign.Marshal./
+		s/import Exception/import Control.Exception/
+		" $hugs_src/$3 >$dst/$new_stem$old_extension
+}
+
+# Create a dummy hierarchical library module for use with Hugs
+# (to be fixed)
+
+function dummy {
+	case $# in
+	[01])	echo "usage: dummy package file [module ...]" >&2
+		exit 1 ;;
+	esac
+
+	echo "Creating a dummy for $1/$2"
+	target=$2
+	shift
+	shift
+	module=`echo $target | cut -d. -f1 | tr / .`
+	mkdir -p `dirname $dst/$target`
+	(
+		echo "module $module("
+		for real
+		do	echo "	module $real,"
+		done
+		echo '    ) where'
+		echo
+		for real
+		do	echo "import $real"
+		done
+	) >$dst/$target
+}
+
 # Create a compatability stub of a Hugs extension module
 
 function stub {
+	case $# in
+	0)	echo "usage: stub module [module ...]" >&2
+		exit 1 ;;
+	esac
+
 	stub=$1
 	shift
 	echo "Stub $stub -> $*"
@@ -114,6 +171,12 @@ function stub {
 # Copy the Hugs version to the compatibility lib
 
 function useold {
+	case $# in
+	1)	;;
+	*)	echo "usage: useold module" >&2
+		exit 1 ;;
+	esac
+
 	name="`ls ../../lib/exts/$1.*`"
 	echo "Copy `basename $name`"
 	cp $name $compat
@@ -122,6 +185,12 @@ function useold {
 # Convert the hslibs version to the compatibility lib
 
 function old_cvt {
+	case $# in
+	2)	;;
+	*)	echo "usage: old_cvt dir file" >&2
+		exit 1 ;;
+	esac
+
 	echo "Converting $2"
 	$cpp $hs_src/$1/$2 >$compat/$2
 }
@@ -137,7 +206,7 @@ function old_cvt {
   cvt base Control/Concurrent/QSem.hs
   cvt base Control/Concurrent/QSemN.hs
   cvt base Control/Concurrent/SampleVar.hs
-  cvt base Control/Exception.hs		exts/Exception.hs	# Hugs special
+nocvt base Control/Exception.hs		exts/Exception.hs	# Hugs special
   cvt base Control/Monad.hs
   cvt base Control/Monad/Cont.hs
   cvt base Control/Monad/Error.hs
@@ -162,7 +231,7 @@ function old_cvt {
   cvt base Data/Array/IO.hs
   cvt base Data/Array/MArray.hs
   cvt base Data/Array/ST.hs
-# cvt base Data/Array/Storable.hs
+# cvt base Data/Array/Storable.hs	# needs ForeignPtr
 # cvt base Data/Array/Unboxed.hs	# GHC-specific
   cvt base Data/Bits.hs
   cvt base Data/Bool.hs
@@ -191,26 +260,26 @@ function old_cvt {
   cvt base Debug/QuickCheck/Poly.hs
   cvt base Debug/QuickCheck/Utils.hs
   cvt base Debug/Trace.hs
-# cvt base Foreign.hs
+  cvt base Foreign.hs
 # cvt base Foreign/C.hs
 # cvt base Foreign/C/Error.hs
-# cvt base Foreign/C/String.hs
-# cvt base Foreign/C/Types.hs
-# cvt base Foreign/C/TypesISO.hs
-# cvt base Foreign/ForeignPtr.hs
-# cvt base Foreign/Marshal/Alloc.hs
-# cvt base Foreign/Marshal/Array.hs
-# cvt base Foreign/Marshal/Error.hs
-# cvt base Foreign/Marshal/Utils.hs
-  cvt base Foreign/Ptr.hs		exts/Ptr.hs	# not quite right
+nocvt base Foreign/C/String.hs		exts/CString.hs	# placeholder
+nocvt base Foreign/C/Types.hs		exts/CTypes.hs	# placeholder
+dummy base Foreign/C/TypesISO.hs	Foreign.C.Types	# kludge
+dummy base Foreign/ForeignPtr.hs
+  cvt base Foreign/Marshal/Alloc.hs
+  cvt base Foreign/Marshal/Array.hs
+  cvt base Foreign/Marshal/Error.hs
+  cvt base Foreign/Marshal/Utils.hs
+nocvt base Foreign/Ptr.hs		exts/Ptr.hs	# not quite right
   cvt base Foreign/StablePtr.hs
-# cvt base Foreign/Storable.hs
+nocvt base Foreign/Storable.hs		exts/Storable.hs # placeholder
   cvt base Numeric.hs
-  cvt base Prelude.hs			Prelude.hs	# Hugs special
-  cvt base System/CPUTime.hsc		CPUTime.hs	# Hugs primitives
+nocvt base Prelude.hs			Prelude.hs	# Hugs special
+nocvt base System/CPUTime.hsc		CPUTime.hs	# Hugs primitives
   cvt base System/Cmd.hs
   cvt base System/Console/GetOpt.hs
-  cvt base System/Directory.hs		Directory.hs	# Hugs primitives
+nocvt base System/Directory.hs		Directory.hs	# Hugs primitives
   cvt base System/Environment.hs
   cvt base System/Exit.hs
   cvt base System/IO.hs
@@ -222,7 +291,7 @@ function old_cvt {
   cvt base System/Mem/StableName.hs
   cvt base System/Mem/Weak.hs
   cvt base System/Random.hs
-  cvt base System/Time.hsc		Time.hs		# Hugs primitives
+nocvt base System/Time.hsc		Time.hs		# Hugs primitives
   cvt base Text/Html.hs
   cvt base Text/Html/BlockTable.hs
   cvt base Text/ParserCombinators/Parsec.hs
@@ -276,14 +345,14 @@ mkdir -p $compat
 
 useold Addr
   stub Bits		Data.Bits
-# stub CString		Foreign.C.String
-# stub CTypes		Foreign.C.Types
+  stub CString		Foreign.C.String
+  stub CTypes		Foreign.C.Types Foreign.C.TypesISO
 useold CVar
   stub Chan		Control.Concurrent.Chan
   stub Channel		Control.Concurrent.Chan
 useold ChannelVar				# deprecated Hugs lib
   stub ConcBase		Hugs.ConcBase
-# stub Concurrent	Control.Concurrent
+useold Concurrent	# Control.Concurrent
   stub Dynamic		Data.Dynamic
   stub Exception	Control.Exception
   stub FiniteMap	Data.FiniteMap
@@ -297,12 +366,12 @@ useold ForeignObj
   stub Int		Hugs.Int
   stub LazyST		Hugs.LazyST
   stub MVar		Control.Concurrent.MVar
-# stub MarshalAlloc	Foreign.Marshal.Alloc
-# stub MarshalArray	Foreign.Marshal.Array
-# stub MarshalError	Foreign.Marshal.Error
-# stub MarshalUtils	Foreign.Marshal.Utils
+  stub MarshalAlloc	Foreign.Marshal.Alloc
+  stub MarshalArray	Foreign.Marshal.Array
+  stub MarshalError	Foreign.Marshal.Error
+  stub MarshalUtils	Foreign.Marshal.Utils
 useold Memo
-# stub Merge					# deprecated Hugs lib
+useold Merge					# deprecated Hugs lib
   stub MonadCont	Control.Monad.Cont
   stub MonadEither	Control.Monad.Error
   stub MonadError	Control.Monad.Error
@@ -333,7 +402,7 @@ useold Observe
   stub ShowFunctions	Text.Show.Functions
   stub Stable		Hugs.Stable
   stub StablePtr	Hugs.StablePtr
-# stub Storable		Foreign.Storable
+  stub Storable		Foreign.Storable
   stub Weak		Hugs.Weak
   stub Word		Hugs.Word
 

@@ -73,3 +73,13 @@ install_ffi	:: install
 install_libraries ::
 		$(INSTALL_DATA) -LR ../libraries ../oldlib $(hugsdir)
 
+BUILD_FFI = ./hugs -P'{Hugs}/libraries' +q +G -w
+
+install_libraries_ffi :: install_libraries
+		$(INSTALL_DATA) ../lib/exts/Storable_aux.[ch] $(hugsdir)/libraries/Foreign
+		$(BUILD_FFI) Foreign.Storable +L"Storable_aux.c" < /dev/null
+		$(BUILD_FFI) Foreign.Marshal.Alloc < /dev/null
+		$(BUILD_FFI) Foreign.Marshal.Utils < /dev/null
+		$(RM) $(hugsdir)/libraries/Foreign/*.[ch]
+		$(RM) $(hugsdir)/libraries/Foreign/Marshal/*.[ch]
+

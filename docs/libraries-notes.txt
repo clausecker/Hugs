@@ -1,7 +1,6 @@
 Using Hugs with the new hierarchical libraries
 
-Most of the new libraries shipped with GHC 5.04 may also be used with
-Hugs.  The main exceptions are modules related to the FFI.
+Most of the new libraries shipped with GHC 5.04 may also be used with Hugs.
 
 Some assembly is required:
 (These instructions are for Unix, I imagine cygwin is similar)
@@ -16,26 +15,45 @@ o in src/unix, run
 	convert_libraries <directory where libraries lives>
 
   This will fill in libraries with converted modules, and also create
-  a directory oldlib full of stubs for compatability with the old Hugs
-  libraries, plus some old modules.
+  a directory oldlib for compatability with the old Hugs extension
+  libraries: mosty stubs, plus some old modules.
 
 o back in src, run
 
 	make install_libraries
 
+  or, if you'll be using the FFI,
+
+	make install_libraries_ffi
+
 o That's it.  Now you can run hugs with
  
-	hugs -P'{Hugs}/libraries:{Hugs}/oldlib'
+	hugs -P'{Hugs}/libraries:{Hugs}/oldlib:{Hugs}/lib/hugs'
  
   That should be fairly compatible both with GHC 5.04 and with the older
-  Hugs libraries.  If you only want compatability with GHC 5.04, you can
-  drop the second directory from the path.  Some modules also need -98
+  Hugs libraries.  If you only want compatability with GHC 5.04, you need
+  only the first directory in the path.  Some modules also need -98;
+  in that case you'll also need -W which disables the old syntax for
+  implicit parameters using "with" and "dlet" -- some modules use "with"
+  as an identifier.
 
+To run the test suite, in tests:
+
+	HUGSFLAGS='-W -P{Hugs}/libraries:{Hugs}/oldlib:{Hugs}/lib/hugs'
+	export HUGSFLAGS
+	sh testScript static tcheck rts ffi libs demos
 
 More details:
 
 o libraries/Hugs contains some Hugs-only modules (e.g. Hugs.IO), mostly
   modified versions of modules from lib.
+
+o everything else under libraries, and all of oldlib, are created by the
+  convert_libraries script (so don't edit them).
+
+o Some of the low-level modules under Foreign are minimal (sometimes
+  empty) placeholders.  (They are generated from originals in lib/exts:
+  CString, CTypes and Storable.)  Hopefully someone will fix this later.
 
 o to see what's handled and what's not, have a look at the conversion script
   src/unix/convert_libraries.  It's quite a kludge, but it mostly works,
