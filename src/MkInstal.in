@@ -44,14 +44,9 @@ install_demos	:: install_libhugs
 		$(INSTALL_DATA) ../demos/prolog/readme  $(hugsdir)/demos/prolog
 		$(INSTALL_DATA) ../demos/prolog/stdlib  $(hugsdir)/demos/prolog
 
-install_libexts	:: build_libexts
+install_libexts	:: 
 		$(INSTALL) -d $(hugsdir)/lib/exts
 		$(INSTALL_DATA) ../lib/exts/*.*     $(hugsdir)/lib/exts
-
-build_libexts	:: hugs$(EXE) install_include
-		./hugs +q -P../lib:../lib/exts Storable     +G +L"Storable_aux.c" < /dev/null
-		./hugs +q -P../lib:../lib/exts MarshalAlloc +G  < /dev/null
-		./hugs +q -P../lib:../lib/exts MarshalUtils +G  < /dev/null
 
 install_man	::
 		$(INSTALL) -d $(mandir)/man1
@@ -69,4 +64,9 @@ install_notes	::
 		$(INSTALL_DATA) ../Readme  $(hugsdir)
 		$(INSTALL_DATA) ../License $(hugsdir)
 		$(INSTALL_DATA) ../Credits $(hugsdir)
+
+install_ffi	:: install
+		./hugs +q -w Storable     +G +L"Storable_aux.c" < /dev/null
+		./hugs +q -w MarshalAlloc +G  < /dev/null
+		./hugs +q -w MarshalUtils +G  < /dev/null
 
