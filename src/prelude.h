@@ -8,8 +8,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: prelude.h,v $
- * $Revision: 1.50 $
- * $Date: 2003/08/27 19:59:54 $
+ * $Revision: 1.51 $
+ * $Date: 2003/09/19 10:04:38 $
  * ------------------------------------------------------------------------*/
 #ifndef __PRELUDE_H__
 #define __PRELUDE_H__
@@ -114,7 +114,6 @@
  *                  C objects when Haskell is done with them.
  *   GC_WEAKPTRS    to include support for weak pointers.
  *   STABLE_NAMES   stable names a la Simon PJ
- *   EVAL_INSTANCES to generate instances of the Eval class automatically.
  *   MONAD_COMPS    to allow monad comprehensions.
  *   REDIRECT_OUTPUT ability to redirect stdout/stderr to a buffer.
  *                  Only necessary for the Hugs server interface
@@ -159,7 +158,6 @@
 #define GC_MALLOCPTRS    1 /* May be required by external libraries        */
 #define GC_WEAKPTRS      1
 #define STABLE_NAMES     1
-#define EVAL_INSTANCES   0
 #define MONAD_COMPS	 0
 #define REDIRECT_OUTPUT  (!HUGS_FOR_WINDOWS)
 #define WORD_OPS         1

@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: connect.h,v $
- * $Revision: 1.74 $
- * $Date: 2003/03/23 01:42:24 $
+ * $Revision: 1.75 $
+ * $Date: 2003/09/19 10:04:38 $
  * ------------------------------------------------------------------------*/
 #ifndef __CONNECT_H__
 #define __CONNECT_H__
@@ -79,11 +79,6 @@ extern Name  nameListMonad;		/* builder function for List Monad */
 #if MUDO
 extern Class classMonadRec;		/* Recursive monads		   */
 extern Name  nameMFix;			/* for translating mdo-notation	   */
-#endif
-
-#if EVAL_INSTANCES
-extern Name  nameStrict,  nameSeq;	/* Members of class Eval	   */
-extern Name  nameIStrict, nameISeq;	/* ... and their implementations   */
 #endif
 
 extern Name  namePrint;			/* printing primitive		   */
@@ -210,9 +205,6 @@ extern Class classShow;
 extern Class classRead;
 extern Class classIx;
 extern Class classEnum;
-#if EVAL_INSTANCES
-extern Class classEval;
-#endif
 extern Class classBounded;
 
 extern Class classReal;			/* `numeric' classes		   */
@@ -305,9 +297,6 @@ extern  Void   classDefn	Args((Int,Cell,List,List));
 extern  Void   instDefn		Args((Int,Cell,Cell));
 extern  Void   addTupInst	Args((Class,Int));
 extern  Bool   hasIOResultType  Args((Type));
-#if EVAL_INSTANCES
-extern  Void   addEvalInst	Args((Int,Cell,Int,List));
-#endif
 #if TREX
 extern  Inst   addRecShowInst	Args((Class,Ext));
 extern  Inst   addRecEqInst	Args((Class,Ext));

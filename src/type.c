@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: type.c,v $
- * $Revision: 1.70 $
- * $Date: 2003/07/03 17:30:47 $
+ * $Revision: 1.71 $
+ * $Date: 2003/09/19 10:04:41 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -68,9 +68,6 @@ static Type typeOrdering;
 Class classEq,    classOrd;		/* `standard' classes		   */
 Class classIx,    classEnum;
 Class classShow,  classRead;
-#if EVAL_INSTANCES
-Class classEval;
-#endif
 Class classBounded;
 
 Class classReal,       classIntegral;	/* `numeric' classes		   */
@@ -105,10 +102,6 @@ Name nameGt;				/* for readsPrec		   */
 #if MUDO
 Class classMonadRec;			/* Recursive monads		   */
 Name nameMFix;
-#endif
-
-#if EVAL_INSTANCES
-Name nameStrict,  nameSeq;		/* Members of class Eval	   */
 #endif
 
 #if    IO_MONAD
@@ -3235,9 +3228,6 @@ Void linkPreludeTC() {			/* Hook to tycons and classes in   */
 	classEnum    = linkClass("Enum");
 	classShow    = linkClass("Show");
 	classRead    = linkClass("Read");
-#if EVAL_INSTANCES
-	classEval    = linkClass("Eval");
-#endif
 	classBounded = linkClass("Bounded");
 
 	classReal       = linkClass("Real");
@@ -3282,15 +3272,7 @@ Void linkPreludeTC() {			/* Hook to tycons and classes in   */
 	    = name(nameEnFrTh).type
 	    = mkPolyType(starToStar,fn(aVar,fn(aVar,listof)));
 
-#if EVAL_INSTANCES
-	addEvalInst(0,typeArrow,2,NIL);	/* Add Eval instances for builtins */
-	addEvalInst(0,typeList,1,NIL);
-	addEvalInst(0,typeUnit,0,NIL);
-#endif
 	for (i=2; i<=NUM_DTUPLES; i++) {/* Add derived instances of tuples */
-#if EVAL_INSTANCES
-	    addEvalInst(0,mkTuple(i),i,NIL);
-#endif
 	    addTupInst(classEq,i);
 	    addTupInst(classOrd,i);
 	    addTupInst(classShow,i);
@@ -3328,10 +3310,6 @@ Void linkPreludeCM() {			/* Hook to cfuns and mfuns in	   */
 	namePlus        = linkName("+");
 	nameMinBnd	= linkName("minBound");
 	nameMaxBnd	= linkName("maxBound");
-#if EVAL_INSTANCES
-	nameStrict	= linkName("strict");
-	nameSeq		= linkName("seq");
-#endif
 	nameReturn      = linkName("return");
 	nameBind        = linkName(">>=");
 	nameThen        = linkName(">>");

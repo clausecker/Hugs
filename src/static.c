@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.153 $
- * $Date: 2003/07/24 13:39:41 $
+ * $Revision: 1.154 $
+ * $Date: 2003/09/19 10:04:39 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -37,11 +37,6 @@ static List   local addSels		Args((Int,Name,List,List));
 static List   local selectCtxt		Args((List,List));
 static Void   local checkSynonyms	Args((List));
 static List   local visitSyn		Args((List,Tycon,List));
-#if EVAL_INSTANCES
-static Void   local deriveEval		Args((List));
-static List   local calcEvalContexts	Args((Tycon,List,List));
-static Void   local checkBanged		Args((Name,Kinds,List,Type));
-#endif
 static Type   local fullerExpand	Args((Type));
 static Type   local instantiateNewtype	Args((Name,Type));
 static Type   local instantiateSyn	Args((Type,Type));
@@ -874,155 +869,6 @@ List  syns; {
     tycon(t).defn = fullExpand(tycon(t).defn);
     return removeCell(t,syns);
 }
-
-#if EVAL_INSTANCES
-/* --------------------------------------------------------------------------
- * The following code is used in calculating contexts for the automatically
- * derived Eval instances for newtype and restricted type synonyms.  This is
- * ugly code, resulting from an ugly feature in the language, and I hope that
- * the feature, and hence the code, will be removed in the not too distant
- * future.
- * ------------------------------------------------------------------------*/
-
-static Void local deriveEval(tcs)	/* Derive instances of Eval	   */
-List tcs; {
-    List ts1 = tcs;
-    List ts  = NIL;
-    for (; nonNull(ts1); ts1=tl(ts1)) {	/* Build list of rsyns and newtypes*/
-	Tycon t = hd(ts1);		/* and derive instances for data   */
-	switch (whatIs(tycon(t).what)) {
-	    case DATATYPE    : addEvalInst(tycon(t).line,t,tycon(t).arity,NIL);
-			       break;
-	    case NEWTYPE     :
-	    case RESTRICTSYN : ts = cons(t,ts);
-			       break;
-	}
-    }
-    emptySubstitution();		/* then derive other instances	   */
-    while (nonNull(ts)) {
-	ts = calcEvalContexts(hd(ts),tl(ts),NIL);
-    }
-    emptySubstitution();
-
-    for (; nonNull(tcs); tcs=tl(tcs)) {	/* Check any banged components	   */
-	Tycon t = hd(tcs);
-	if (whatIs(tycon(t).what)==DATATYPE) {
-	    List cs = tycon(t).defn;
-	    for (; hasCfun(cs); cs=tl(cs)) {
-		Name c = hd(cs);
-		if (isPair(name(c).defn)) {
-		    Type  t    = name(c).type;
-		    List  scs  = fst(name(c).defn);
-		    Kinds ks   = NIL;
-		    List  ctxt = NIL;
-		    Int   n    = 1;
-		    if (isPolyType(t)) {
-			ks = polySigOf(t);
-			t  = monotypeOf(t);
-		    }
-		    if (isQualType(t)) {
-			ctxt = fst(snd(t));
-			t    = snd(snd(t));
-		    }
-		    for (; nonNull(scs); scs=tl(scs)) {
-			Int i = intOf(hd(scs));
-			for (; n<i; n++) {
-				t = arg(t);
-			}
-			checkBanged(c,ks,ctxt,arg(fun(t)));
-		    }
-		}
-	    }
-	}
-    }
-}
-
-static List local calcEvalContexts(tc,ts,ps)
-Tycon tc;				/* Worker code for deriveEval	   */
-List  ts;				/* ts = not visited, ps = visiting */
-List  ps; {
-    Cell ctxt = NIL;
-    Int  o    = newKindedVars(tycon(tc).kind);
-    Type t    = tycon(tc).defn;
-    Int  i;
-
-    if (whatIs(tycon(tc).what)==NEWTYPE) {
-	t = name(hd(t)).type;
-	if (isPolyType(t)) {
-	    t = monotypeOf(t);
-	}
-	if (isQualType(t)) {
-	    t = snd(snd(t));
-	}
-	if (whatIs(t)==EXIST) {		/* No instance if existentials used*/
-	    return ts;
-	}
-	if (whatIs(t)==RANK2) {		/* No instance if arg is poly/qual */
-	    return ts;
-	}
-	t = arg(fun(t));
-    }
-
-    clearMarks();			/* Make sure generics are marked   */
-    for (i=0; i<tycon(tc).arity; i++) {	/* in the correct order.	   */
-	copyTyvar(o+i);
-    }
-
-    for (;;) {
-	Type h = getDerefHead(t,o);
-	if (isSynonym(h) && argCount>=tycon(h).arity) {
-	    expandSyn(h,argCount,&t,&o);
-	} else if (isOffset(h)) {		/* Stop if var at head	   */
-	    ctxt = singleton(ap(classEval,copyType(t,o)));
-	    break;
-	} else if (isTuple(h)			/* Check for tuples ...	   */
-		   || h==tc			/* ... direct recursion	   */
-		   || cellIsMember(h,ps)	/* ... mutual recursion	   */
-		   || tycon(h).what==DATATYPE) {/* ... or datatype.	   */
-	    break;				/* => empty context	   */
-	} else {
-	    Cell pi = ap(classEval,t);
-	    Inst in;
-
-	    if (cellIsMember(h,ts)) {		/* Not yet visited?	   */
-		ts = calcEvalContexts(h,removeCell(h,ts),cons(h,ts));
-	    }
-
-	    if (nonNull(in=findInstFor(pi,o))) {/* Look for Eval instance  */
-		List qs = inst(in).specifics;
-		Int  o1 = typeOff;
-		if (isNull(qs))	{		/* No context there	   */
-		    break;			/* => empty context here   */
-		}
-		if (isNull(tl(qs)) && classEval==fun(hd(qs))) {
-		    t = arg(hd(qs));
-		    o = o1;
-		    continue;
-		}
-	    }
-	    return ts;				/* No instance, so give up */
-	}
-    }
-    addEvalInst(tycon(tc).line,tc,tycon(tc).arity,ctxt);
-    return ts;
-}
-
-static Void local checkBanged(c,ks,ps,ty)
-Name  c;				/* Check that banged component of c */
-Kinds ks;				/* with type ty is an instance of   */
-List  ps;				/* Eval under the predicates in ps. */
-Type  ty; {				/* (All types using ks)		    */
-    Cell pi = ap(classEval,ty);
-    if (isNull(provePred(ks,ps,pi))) {
-	ERRMSG(name(c).line) "Illegal datatype strictness annotation:" ETHEN
-	ERRTEXT "\n*** Constructor : "  ETHEN ERREXPR(c);
-	ERRTEXT "\n*** Context     : "  ETHEN ERRCONTEXT(ps);
-	ERRTEXT "\n*** Required    : "  ETHEN ERRPRED(pi);
-	ERRTEXT "\n"
-	EEND;
-    }
-}
-#endif
 
 /* --------------------------------------------------------------------------
  * Expanding out all type synonyms and newtypes in a type expression:
@@ -2696,13 +2542,6 @@ Inst in; {
         }
     }
 
-#if EVAL_INSTANCES
-    if (inst(in).c==classEval) {
-	ERRMSG(line) "Instances of class \"%s\" are generated automatically",
-		     textToStr(cclass(inst(in).c).text)
-	EEND;
-    }
-#endif
     kindInst(in,length(tyvars));
     insertInst(in);
 
@@ -2925,30 +2764,6 @@ Int   n; {
     cts = rev(cts);
     addDerInst(0,c,NIL,cts,mkTuple(n),n);
 }
-
-#if EVAL_INSTANCES
-Void addEvalInst(line,t,arity,ctxt)	/* Add dummy instance for Eval	   */
-Int  line;
-Cell t;
-Int  arity;
-List ctxt; {
-    Inst in   = newInst();
-    Cell head = t;
-    Int  i;
-    for (i=0; i<arity; i++) {
-	head = ap(head,mkOffset(i));
-    }
-    inst(in).line	  = line;
-    inst(in).c		  = classEval;
-    inst(in).head	  = ap(classEval,head);
-    inst(in).specifics    = ctxt;
-    inst(in).builder	  = newInstImp(in);
-    inst(in).numSpecifics = length(ctxt);
-    kindInst(in,arity);
-    cclass(classEval).instances
-	     = appendOnto(cclass(classEval).instances,singleton(in));
-}
-#endif
 
 #if TREX
 Inst addRecShowInst(c,e)		/* Generate instance for ShowRecRow*/
@@ -7235,9 +7050,6 @@ Void checkDefns() {			/* Top level static analysis	   */
     mapProc(allNoPrevDef,valDefns);	/* check against previous defns	   */
     mapProc(addDerivImp,derivedInsts);	/* Add impls for derived instances */
     deriveContexts(derivedInsts);	/* Calculate derived inst contexts */
-#if EVAL_INSTANCES
-    deriveEval(tyconDefns);		/* Derive instances of Eval	   */
-#endif
     instDefns  = appendOnto(instDefns,derivedInsts);
     checkDefaultDefns();		/* validate default definitions	   */
 

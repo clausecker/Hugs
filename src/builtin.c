@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: builtin.c,v $
- * $Revision: 1.62 $
- * $Date: 2003/09/19 09:45:57 $
+ * $Revision: 1.63 $
+ * $Date: 2003/09/19 10:04:37 $
  * ------------------------------------------------------------------------*/
 
 /* We include math.h before prelude.h because SunOS 4's cpp incorrectly
@@ -105,9 +105,6 @@ Name nameEnFrTo;
 Name nameBlackHole;                     /* for GC-detected black hole      */
 Name nameInd;				/* for dict indirection		   */
 Name namePrint,   nameNPrint;           /* primitives for printing         */
-#if EVAL_INSTANCES
-Name nameIStrict, nameISeq;             /* primitives for strictness       */
-#endif
 
 Name nameFst,     nameSnd;              /* 2-tuple selector functions      */
 Name nameAnd,     nameOr;               /* built-in logical connectives    */
@@ -2285,11 +2282,6 @@ Int what; {
 		       pFun(nameFail,      "_FAIL",    "fail");
 		       pFun(nameIf,        "_IF",      "if");
 		       pFun(nameSel,       "_SEL",     "sel");
-
-#if EVAL_INSTANCES
-		       pFun(nameIStrict,   "_strict",  "strict");
-		       pFun(nameISeq,      "_seq",     "seq");
-#endif
 
 		       pFun(nameConCmp,    "_concmp",  "conCmp");
 		       pFun(nameEnRange,   "_range",   "enRange");

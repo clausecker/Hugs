@@ -9,8 +9,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: compiler.c,v $
- * $Revision: 1.16 $
- * $Date: 2003/03/09 23:53:02 $
+ * $Revision: 1.17 $
+ * $Date: 2003/09/19 10:04:37 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -121,12 +121,6 @@ Cell e; {
 
 			  if (fst(e)==nameId || fst(e)==nameInd)
 			      return translate(snd(e));
-#if EVAL_INSTANCES
-			  if (fst(e)==nameStrict)
-			      return nameIStrict;
-			  if (fst(e)==nameSeq)
-			      return nameISeq;
-#endif
 			  if (isName(fst(e)) &&
 			      isMfun(fst(e)) &&
 			      mfunOf(fst(e))==0)

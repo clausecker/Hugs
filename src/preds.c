@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: preds.c,v $
- * $Revision: 1.33 $
- * $Date: 2003/07/24 13:39:41 $
+ * $Revision: 1.34 $
+ * $Date: 2003/09/19 10:04:38 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -1033,9 +1033,6 @@ Bool interactive; {			/* by default in the context of */
 		aNumClass = TRUE;
 	    else if (c!=classEq    && c!=classOrd  && c!=classShow &&
 		     c!=classRead  && c!=classIx   && c!=classEnum &&
-#if EVAL_INSTANCES
-		     c!=classEval  &&
-#endif
 		     c!=classBounded)
 		return FALSE;
 
