@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: storage.c,v $
- * $Revision: 1.49 $
- * $Date: 2002/09/08 02:24:03 $
+ * $Revision: 1.50 $
+ * $Date: 2002/09/08 14:06:55 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1721,7 +1721,7 @@ Script sno; {
 
 Void dropScriptsFrom(sno)               /* Restore storage to state prior  */
 Script sno; {                           /* to reading script sno           */
-    if (sno > 0 && sno < scriptHw) {    /* is there anything to restore?   */
+    if (sno >= 0 && sno < scriptHw) {   /* is there anything to restore?   */
 	int i;
 	textHw       = scripts[sno].textHw;
 	nextNewText  = scripts[sno].nextNewText;
