@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.126 $
- * $Date: 2002/11/08 16:23:58 $
+ * $Revision: 1.127 $
+ * $Date: 2002/11/18 06:27:23 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -44,7 +44,6 @@ static List   local addEntityPair       Args((Cell,List));
 static List   local mergeImportLists    Args((List,List));
 static List   local getIEOrphans        Args((List));
 static List   local fixupIEList         Args((List));
-static Bool   local isDCon              Args((Name));
 
 static Cell   local importEntity	Args((Module,Cell));
 static Void   local importName		Args((Module,Name));
@@ -426,21 +425,6 @@ Pair i; {
     fst(i)=m;
 }
 
-static Bool local
-isDCon(n)         /* TRUE if conid name refers to a dcon  */
-Name n; {
-    Tycon tc;
-    
-    /* It's a dcon when:
-     * - it's parent is a tycon
-     * - it itself isn't a type syn.
-     */
-    return (isTycon(name(n).parent) &&
-	    (!(tc = findTycon(name(n).text)) ||
-	     (tycon(tc).what != SYNONYM &&
-	      tycon(tc).what != RESTRICTSYN)));
-}
-
 static Name local lookupName(t,nms)    /* find text t in list of Names     */
 Text t;
 List nms; { /* :: [Name] */
@@ -526,7 +510,7 @@ List ieList; {
       if (isClass(name(e).parent)) {
 	/* a lone member */
 	orphans = cons(pair(name(e).parent, singleton(e)), orphans);
-      } else if (isDCon(e)) {
+      } else if (isCfun(e)) {
 	/* a lone data constructor (can only appear in a hiding list.) */
 	orphans = cons(pair(name(e).parent, singleton(e)), orphans);
       } else if (name(e).number == SELNAME) {
@@ -796,7 +780,7 @@ List is; {
   } else if (isName(e)) {
       if (isClass(name(e).parent)) {
         return addEntity(name(e).parent, singleton(e),is);
-      } else if (isTycon(name(e).parent) && !findTycon(name(e).text)) {
+      } else if (isTycon(name(e).parent) && isCfun(e)) {
         return addEntity(name(e).parent, singleton(e),is);
       } else if (name(e).number == SELNAME) {
         /* a field name */
@@ -1227,7 +1211,7 @@ Cell e; {
 	     for(xs=module(m).names; nonNull(xs); xs=tl(xs)) {
 	         if (name(hd(xs)).mod==m && 
 		     /* don't add dcons or class members */
-		     (!isTycon(name(hd(xs)).parent) &&
+		     (!isCfun(hd(xs)) &&
 		      !isClass(name(hd(xs)).parent))) {
 		     checkExportDistinct(exports,hd(xs));
 		     exports = cons(hd(xs),exports);
@@ -1346,7 +1330,14 @@ Cell e; {
 	Name export, nm;
 	Bool expFound = FALSE;
 
-	if (nonNull(export=findQualName(e))) {
+	if (isQCon(e) && nonNull(export=findQualTycon(e))) {
+	    expFound = TRUE;
+	    exports = checkExportTycon(exports,mt,NIL,export);
+	} else if (isQCon(e) && nonNull(export=findQualClass(e))) {
+	    /* opaque class export */
+	    expFound = TRUE;
+	    exports = checkExportClass(exports,mt,NIL,export);
+	} else if (nonNull(export=findQualName(e))) {
 	    /* Data constructors cannot appear in export lists,
 	     * so flag an error if they do.
 	     *
@@ -1356,7 +1347,10 @@ Cell e; {
 	     * the parent is the type on the RHS.)
 	     *
 	     */
-	    if (isTycon(name(export).parent) && !findTycon(name(export).text))  {
+	  if (  isCfun(export)    &&
+	       !isPreludeScript() && 
+	        currentModule != moduleUserPrelude) {
+	    /* Special case reqd for Prelude(s) to handle EmptyRow and (:) */
 		ERRMSG(0) "Illegal export of a lone data constructor \"%s\"",
 		          textToStr(name(export).text)
 	        EEND;
@@ -1364,15 +1358,6 @@ Cell e; {
 	    expFound = TRUE;
 	    checkExportDistinct(exports,export);
 	    exports=cons(export,exports);
-	} 
-	if (isQCon(e) && nonNull(export=findQualTycon(e))) {
-	    expFound = TRUE;
-	    exports = checkExportTycon(exports,mt,NIL,export);
-	} 
-	if (isQCon(e) && nonNull(export=findQualClass(e))) {
-	    /* opaque class export */
-	    expFound = TRUE;
-	    exports = checkExportClass(exports,mt,NIL,export);
 	}
 	if (!expFound) {
 	    ERRMSG(0) "Unknown entity \"%s\" exported from module \"%s\"",
