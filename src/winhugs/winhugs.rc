@@ -144,8 +144,10 @@ BEGIN
                     -1,130,52,242,10
     LTEXT           "Web: http://haskell.org/hugs",
                     -1,130,62,242,10
-    LTEXT           "Based on a Windows interface by José E. Gallardo, 2001",
-                    -1,130,80,250,8
+    LTEXT           "Please see the distribution for License and Credits info",
+                    -1,130,80,252,8
+//    LTEXT           "Based on a Windows interface by José E. Gallardo, 2001",
+//                    -1,130,80,250,8
     CONTROL         "",-1,"Static",SS_WHITEFRAME,9,98,324,1
     CONTROL         "",-1,"Static",SS_GRAYFRAME,9,97,324,1
     LTEXT           "xxxx KB",ID_TOTALMEMORY,288,115,39,8
