@@ -30,9 +30,9 @@ foreign import ccall puts :: Ptr CChar -> IO Int
 foreign import ccall "fcntl.h  open"  open'  :: Ptr CChar -> Int -> IO Int
 foreign import ccall "fcntl.h  open_for_read"  open2' :: Ptr CChar -> IO Int
 foreign import ccall "fcntl.h  creat" creat' :: Ptr CChar -> Int -> IO Int
-foreign import ccall "unistd.h"       close  :: Int -> IO Int
-foreign import ccall "unistd.h read"  read'  :: Int -> Ptr CChar -> Int -> IO Int
-foreign import ccall "unistd.h write" write' :: Int -> Ptr CChar -> Int -> IO Int
+foreign import ccall "FileIO_aux.h"       close  :: Int -> IO Int
+foreign import ccall "FileIO_aux.h read"  read'  :: Int -> Ptr CChar -> Int -> IO Int
+foreign import ccall "FileIO_aux.h write" write' :: Int -> Ptr CChar -> Int -> IO Int
 
 creat s m   = withCString s $ \s' -> unix "creat" $ creat' s' m
 open s m    = withCString s $ \s' -> unix "open"  $ open' s' m

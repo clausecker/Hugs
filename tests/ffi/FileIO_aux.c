@@ -1,8 +1,13 @@
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
+#include "FileIO_aux.h"
 
-int open_for_read(const char* pathname, int flags)
+int open_for_read(const char* pathname)
 {
-  return open(pathname,O_WRONLY | O_CREAT | O_TRUNC, S_IRWXU);
+  return open(pathname,O_WRONLY | O_CREAT | O_TRUNC, 
+#ifdef S_IRWXU
+	      S_IRWXU
+#else
+	      /* try doing it directly instead */
+	      S_IREAD | S_IWRITE | S_IEXEC
+#endif
+	     );
 }
