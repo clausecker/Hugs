@@ -8539,8 +8539,6 @@ fi
 if test "${with_fptools+set}" = set; then
   withval="$with_fptools"
   FPTOOLS="$withval"
-else
-  FPTOOLS=../../fptools
 fi
 
 # Check whether --enable-ffi or --disable-ffi was given.
@@ -8554,14 +8552,16 @@ fi
 
 
 
-if test -d "$FPTOOLS" &&
-   test -d "$FPTOOLS/hslibs" &&
-   test -d "$FPTOOLS/libraries"
-then echo "found directory $FPTOOLS"
-else
-    echo "The argument to --with-fptools must be a directory containing a copy of"
-    echo "hslibs and libraries from the Haskell CVS repository."
-    exit 1
+if test "x$FPTOOLS" != x ; then
+  if test -d "$FPTOOLS" &&
+     test -d "$FPTOOLS/hslibs" &&
+     test -d "$FPTOOLS/libraries"
+  then echo "found directory $FPTOOLS"
+  else
+       echo "The argument to --with-fptools must be a directory containing a copy of"
+       echo "hslibs and libraries from the Haskell CVS repository."
+       exit 1
+  fi
 fi
 
 
