@@ -82,7 +82,7 @@ runAndShowError :: IO a -> IO a
 runAndShowError m =
   m `catch` \err -> do 
       putChar '\n'
-      putStr (ioeGetErrorString err)
+      putStr (show err)
       return undefined
 
 -----------------------------------------------------------------------------
