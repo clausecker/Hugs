@@ -8,15 +8,6 @@ __   __ __  __  ____   ___     _________________________________________
 
 ------------------------------------------------------------------------------
 
-   ***************************************************************
-   This is a candidate (beta) release of Sep 1999 Hugs98.
-   It contains numerous bug fixes over the May 1999 release,
-   a new license, and an implementation of functional dependencies.
-
-   This candidate release is distributed in src format only.
-   Please send feedback about any problem to hugs-bugs@haskell.org
-   ***************************************************************
-
    We are pleased to announce a new release of Hugs, a Haskell
    interpreter and programming environment for developing cool
    Haskell programs.  Sources and binaries are freely available
