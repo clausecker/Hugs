@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: storage.c,v $
- * $Revision: 1.66 $
- * $Date: 2003/03/09 23:53:09 $
+ * $Revision: 1.67 $
+ * $Date: 2003/03/12 16:30:08 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -197,18 +197,8 @@ Int    l; {
      * result of textToStr so instead we make a copy, do the lookup and 
      * forget the copy.
      */
-    Text r;
-    char *t;
-    Int  i;
-    if ((t=(char *)malloc(l+1))==0) {
-        ERRMSG(0) "String storage space exhausted"
-	EEND;
-    }
-    for (i=0; i < l; ++i) {
-        t[i] = s[i];
-    }
-    t[i] = '\0';
-    r = findText(t);
+    String t = strnCopy(s, l);
+    Text r = findText(t);
     free(t);
     return r;
 }
