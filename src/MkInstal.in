@@ -18,7 +18,7 @@ install		:: install_demos		      # goodies
 install		:: install_man                        # manual page
 install		:: install_notes                      # Readme, etc
 
-install_bin	:: hugs$(EXE) runhugs$(EXE) ffihugs$(EXE)
+install_bin	:: hugs$(EXE) runhugs$(EXE) ffihugs$(EXE) libraries
 		$(INSTALL) -d $(DESTDIR)$(bindir)
 		$(INSTALL) -c hugs$(EXE) $(DESTDIR)$(bindir)
 		$(INSTALL) -c runhugs$(EXE) $(DESTDIR)$(bindir)
