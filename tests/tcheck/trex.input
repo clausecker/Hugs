@@ -1,0 +1,15 @@
+eg1
+eg2
+eg1 == eg2
+#a eg1
+#b eg1
+#c eg1
+(\(a=x, c=y, b=_) -> (y,x)) (a = True, b = "Hello", c = 12::Int)
+[ x | (a=[x], b=True) <- [(b=undefined, a=[]), (a=[2],b=True)]]
+[ x | (b=True, a=[x]) <- [(b=undefined, a=[]), (a=[2],b=True)]]
+:t eg1
+:t eg2
+t20
+t21
+t22
+t23

@@ -248,6 +248,7 @@ test_tcheck() {
   perl runstdtest $HUGS $STDOPTS "-itcheck/DictHW.input" "-o1tcheck/DictHW.output"
   perl runstdtest $HUGS $STDOPTS tcheck/TyErr.hs "-o1tcheck/TyErr.output"
   perl runstdtest $HUGS $STDOPTS "-Otcheck/recupd.hs" "-itcheck/recupd.input" "-o1tcheck/recupd.output"
+  perl runstdtest $HUGS $STDOPTS -98 "-Otcheck/trex.hs" "-itcheck/trex.input" "-o1tcheck/trex.output"
 
 }
 

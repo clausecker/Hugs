@@ -1075,7 +1075,7 @@ Cell e; {
 	  if (  isCfun(export)    &&
 	       !isPreludeScript() && 
 	        currentModule != moduleUserPrelude) {
-	    /* Special case reqd for Prelude(s) to handle EmptyRow and (:) */
+	    /* Special case reqd for Prelude(s) to handle (:) */
 		ERRMSG(0) "Illegal export of a lone data constructor \"%s\"",
 		          textToStr(name(export).text)
 	        EEND;

@@ -7,10 +7,10 @@
 -- Suitable for use with Hugs 98, if compiled with TREX support.
 -----------------------------------------------------------------------------
 
-module Hugs.Trex( Rec, EmptyRec, EmptyRow,
+module Hugs.Trex( Rec, emptyRec, EmptyRow,
 	ShowRecRow(..), EqRecRow(..), insertField ) where
 
-import Hugs.Prelude -- ( Rec, EmptyRec, EmptyRow )
+import Hugs.Prelude ( Rec, emptyRec, EmptyRow )
 
 -- Code for equalities:
 
@@ -31,7 +31,7 @@ instance ShowRecRow r => Show (Rec r) where
   showsPrec d = showFields . showRecRow
    where
     showFields   :: [(String, ShowS)] -> ShowS
-    showFields [] = showString "EmptyRec"
+    showFields [] = showString "emptyRec"
     showFields xs = showChar '(' . foldr1 comma (map fld xs) . showChar ')'
      where comma a b = a . showString ", " . b
            fld (s,v) = showString s . showChar '=' . v

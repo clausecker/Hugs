@@ -82,7 +82,7 @@ module Hugs.Prelude (
 --  Tuple types: (,), (,,), etc.
 --  Trivial type: ()
 --  Functions: (->)
-    Rec, EmptyRec, EmptyRow, -- non-standard, should only be exported if TREX
+    Rec, emptyRec, EmptyRow, -- non-standard, should only be exported if TREX
     Eq((==), (/=)),
     Ord(compare, (<), (<=), (>=), (>), max, min),
     Enum(succ, pred, toEnum, fromEnum, enumFrom, enumFromThen,
@@ -1960,5 +1960,9 @@ primPmNpk n x     = if n'<=x then Just (x-n') else Nothing
 
 primPmSub        :: Integral a => Int -> a -> a
 primPmSub n x     = x - fromInt n
+
+-- Trex
+emptyRec :: Rec EmptyRow
+emptyRec = EmptyRec
 
 -- End of Hugs standard prelude ----------------------------------------------
