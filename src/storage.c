@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: storage.c,v $
- * $Revision: 1.80 $
- * $Date: 2003/11/04 15:40:47 $
+ * $Revision: 1.81 $
+ * $Date: 2003/11/14 01:55:16 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -2760,6 +2760,37 @@ Int n; {
 	   ? INTZERO+n
 	   : pair(INTCELL,n);
 }
+
+#if UNICODE_CHARS
+
+/* --------------------------------------------------------------------------
+ * Unicode Characters: NUM_SHORT_CHARS is the number of one-cell characters.
+ * Like integers, the constructor, the selector, and the predicate
+ * are defined as external functions implemented in storage.c
+ * For characters with value less than NUM_SHORT_CHARS, one cell will be
+ * allocated. For greater character values, a pair of cells will be
+ * allocated. The pair of cells will have CHARCELL as fst, and
+ * the UNICODE value of the character as snd.
+ * ------------------------------------------------------------------------*/
+
+Bool isChar(c)               /* cell holds character value?      */
+Cell c; {
+    return isShortChar(c) || (isPair(c) && fst(c)==CHARCELL);
+}
+
+Char charOf(c)               /* find character value of cell?    */
+Cell c; {
+    return isPair(c) ? (Char)(snd(c)) : (Char)(c-CHARMIN);
+}
+
+Cell mkChar(c)              /* make cell representing character */
+Char c; {
+    return (0 <= c && c < NUM_SHORT_CHARS)
+	   ? CHARMIN+c
+	   : pair(CHARCELL,c);
+}
+
+#endif	/* UNICODE_CHARS */
 
 #if BIGNUMS
 Bool isBignum(c)                       /* cell holds bignum value?         */

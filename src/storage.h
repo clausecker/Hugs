@@ -8,8 +8,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: storage.h,v $
- * $Revision: 1.61 $
- * $Date: 2003/11/14 00:14:39 $
+ * $Revision: 1.62 $
+ * $Date: 2003/11/14 01:55:17 $
  * ------------------------------------------------------------------------*/
 #ifndef __STORAGE_H__
 #define __STORAGE_H__
@@ -290,6 +290,11 @@ extern	Cell	     whatIs    Args((Cell));
 #if DOTNET
 #define NPCELL       21		  /* .NET Ptr Cell:           snd :: Int   */
 #endif
+/* CHARCELL is the whatIs code for chars; if UNICODE_CHARS is set, it
+ * is also used for box cells representing character values greater than
+ * or equal to NUM_SMALL_CHARS, in the same way as INTCELL.
+ */
+#define CHARCELL     22		  /* Char literal:	      snd :: Char  */
 
 #define textOf(c)	((Text)(snd(c)))         /* c ::  (VAR|CON)(ID|OP) */
 #define qmodOf(c)       (textOf(fst(snd(c))))    /* c ::  QUALIDENT        */
@@ -502,7 +507,6 @@ extern void growDynTable       Args((DynTable*));
 #define TUPLE	     143	  /* whatIs code for tuple constructor	   */
 #define OFFSET	     144	  /* whatis code for offset		   */
 #define AP	     145	  /* whatIs code for application node	   */
-#define CHARCELL     146	  /* whatIs code for isChar		   */
 #if TREX
 #define EXT	     147	  /* whatIs code for isExt		   */
 #endif
@@ -548,7 +552,6 @@ extern void growDynTable       Args((DynTable*));
 #define TUPLE	     115	  /* whatIs code for tuple constructor	   */
 #define OFFSET	     116	  /* whatis code for offset		   */
 #define AP	     117	  /* whatIs code for application node	   */
-#define CHARCELL     118	  /* whatIs code for isChar		   */
 #if TREX
 #define EXT	     119	  /* whatIs code for isExt		   */
 #endif
@@ -920,6 +923,27 @@ extern Text   findModAlias   Args((Text));
  * ------------------------------------------------------------------------*/
 
 #define CHARMIN      (CLASSMIN+NUM_CLASSES)
+
+#if UNICODE_CHARS
+
+/* --------------------------------------------------------------------------
+ * Unicode Characters: NUM_SHORT_CHARS is the number of one-cell characters.
+ * Such cells are recognized by the new predicate isShortChar().
+ * Larger character values are stored as boxed values, in the same way
+ * as integers, with predicate, selector and constructor functions.
+ * ------------------------------------------------------------------------*/
+
+#define	NUM_SHORT_CHARS	1280	/* number of one-cell characters           */
+				/* (Latin, Greek and Cyrillic)             */
+
+#define isShortChar(c)   ((CHARMIN<=(c))&&(INTMIN>(c)))
+
+extern	Bool isChar    Args((Cell));
+extern	Int  charOf    Args((Cell));
+extern	Cell mkChar    Args((Int));
+
+#else	/* !UNICODE_CHARS */
+
 #define isChar(c)    (CHARMIN<=(c) && (c)<INTMIN)
 #if defined(_MANAGED) && defined(__cplusplus)
 #define charOf(c)    ((::Char)(c-CHARMIN))
@@ -928,11 +952,17 @@ extern Text   findModAlias   Args((Text));
 #endif
 #define mkChar(c)    ((Cell)(CHARMIN+(((unsigned)(c))%NUM_LAT1_CHARS)))
 
+#endif
+
 /* --------------------------------------------------------------------------
  * Small Integer values:
  * ------------------------------------------------------------------------*/
 
+#if !UNICODE_CHARS
 #define INTMIN	     (CHARMIN+NUM_LAT1_CHARS)
+#else
+#define INTMIN	     (CHARMIN+NUM_SHORT_CHARS)
+#endif	/* UNICODE_CHARS */
 
 #if FAST_WHATIS
 

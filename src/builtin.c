@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: builtin.c,v $
- * $Revision: 1.70 $
- * $Date: 2003/11/14 00:14:39 $
+ * $Revision: 1.71 $
+ * $Date: 2003/11/14 01:55:16 $
  * ------------------------------------------------------------------------*/
 
 /* We include math.h before prelude.h because SunOS 4's cpp incorrectly
@@ -331,6 +331,10 @@ PROTO_PRIM(primIsAlphaNum);
 PROTO_PRIM(primIsPrint);
 PROTO_PRIM(primToUpper);
 PROTO_PRIM(primToLower);
+#if UNICODE_CHARS
+PROTO_PRIM(primToTitle);
+PROTO_PRIM(primUniGenCat);
+#endif
 
 #if TREX
 PROTO_PRIM(primRecExt);
@@ -544,6 +548,10 @@ static struct primitive builtinPrimTable[] = {
   {"isPrint",		1, primIsPrint},
   {"toUpper",		1, primToUpper},
   {"toLower",		1, primToLower},
+#if UNICODE_CHARS
+  {"toTitle",		1, primToTitle},
+  {"primUniGenCat",	1, primUniGenCat},
+#endif
 
 #if TREX
   {"recExt",            3, primRecExt},
@@ -1453,6 +1461,11 @@ Char2Bool(primIsPrint,isPrint(x))
 
 Char2Char(primToLower,toLower(x))
 Char2Char(primToUpper,toUpper(x))
+
+#if UNICODE_CHARS
+Char2Char(primToTitle,toTitle(x))
+Char2Int(primUniGenCat,uni_gencat(x))
+#endif
 
 /* --------------------------------------------------------------------------
  * Extensible records: (Gaster and Jones, 1996)

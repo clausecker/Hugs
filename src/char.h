@@ -10,15 +10,18 @@
  * specified by the report.  Hugs should still accept older programs
  * because ASCII is just a subset of the Latin-1 character set.
  *
- * Notes: If you want to port Hugs to a machine that uses something
- * substantially different from the Latin-1 character set, then you will
- * need to insert additional code to map between character sets.
+ * Extended to Unicode by Dimitry Golubovsky <dimitry@golubovsky.org>.
  * ------------------------------------------------------------------------*/
 
 extern	Bool		charTabBuilt;
 extern  unsigned char   charTable[];
 
+#if UNICODE_CHARS
+extern const Char	max_uni_char;
+#define	MAXCHARVAL	max_uni_char
+#else
 #define	MAXCHARVAL	(NUM_LAT1_CHARS-1)
+#endif
 
 #define isIn(c,x)       (charTable[(unsigned char)(c)]&(x))
 #define isLatin1(c)     (0<=(c) && (c)<NUM_LAT1_CHARS)
@@ -39,13 +42,28 @@ extern  unsigned char   charTable[];
 #define	isAlphaNumLat1(c) (isIn((c),IDAFTER) && (c)!='_' && (c)!='\'')
 #define	isPrintLat1(c)	isIn((c),PRINT)
 
+#if UNICODE_CHARS
+
+extern	Bool	isLower		Args((Char));
+extern	Bool	isUpper		Args((Char));
+extern	Bool	isAlphaNum	Args((Char));
+extern	Bool	isPrint 	Args((Char));
+
+#else
+
 #define	isLower(c)	isLowerLat1(c)
 #define	isUpper(c)	isUpperLat1(c)
 #define	isAlphaNum(c)	isAlphaNumLat1(c)
 #define	isPrint(c)	isPrintLat1(c)
 
+#endif
+
 extern	Void	initCharTab	Args((void));
 extern	Char	toUpper		Args((Char));
 extern	Char	toLower		Args((Char));
+#if UNICODE_CHARS
+extern	Char	toTitle		Args((Char));
+extern	Int	uni_gencat	Args((Char));
+#endif
 
 #endif /* CHAR_H */

@@ -63,7 +63,7 @@ typedef void*          HsForeignPtr;
 typedef void*          HsStablePtr;  
                        
 #define HS_CHAR_MIN             0
-#define HS_CHAR_MAX             0xFF
+#define HS_CHAR_MAX             0x10FFFD
 #define HS_BOOL_FALSE           0
 #define HS_BOOL_TRUE            1
 #define HS_BOOL_MIN             HS_BOOL_FALSE
