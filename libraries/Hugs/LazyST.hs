@@ -41,7 +41,7 @@ module Hugs.LazyST
         , Ix
 	) where
 
-import Hugs.Array(Array,Ix(index),assocs)
+import Hugs.Array(Array,Ix(index,rangeSize),assocs)
 import Hugs.Array.Base(HasBounds(bounds),MArray(..))
 import Hugs.IOExts(unsafePerformIO)
 import Control.Monad   
