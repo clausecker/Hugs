@@ -74,8 +74,8 @@ hugs@EXE@	: $(IOBJECTS) @WOBJECTS@ @RC_FILES@
 
 version@OBJ@	: version.c $(SOURCES)
 		  @$(CC) \
-		      -DMONTH_YEAR='"'"`date +"%B %Y" 2> /dev/null`"'"' \
-		      -DYYYYMMDD='"'"`date +"%Y%m%d" 2> /dev/null`"'"' \
+		      -DMONTH_YEAR='"'"`date +'%B %Y' 2> /dev/null`"'"' \
+		      -DYYYYMMDD='"'"`date +'%Y%m%d' 2> /dev/null`"'"' \
 		      -c $(CFLAGS) $(OPTFLAGS) $<
 
 SERVER_OBJECTS	= server@OBJ@ $(OBJECTS) 
