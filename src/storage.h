@@ -8,8 +8,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: storage.h,v $
- * $Revision: 1.54 $
- * $Date: 2003/03/14 11:59:37 $
+ * $Revision: 1.55 $
+ * $Date: 2003/03/20 18:08:12 $
  * ------------------------------------------------------------------------*/
 #ifndef __STORAGE_H__
 #define __STORAGE_H__
@@ -148,11 +148,11 @@ extern  Text         subText            Args((String,Int));
  * Primitive functions:
  * ------------------------------------------------------------------------*/
 
-extern struct primitive {		/* table of primitives		   */
+struct primitive {		        /* entry in table of primitives	   */
     String ref;				/* primitive reference string	   */
     Int	   arity;			/* primitive function arity	   */
     Prim   imp;				/* primitive implementation	   */
-} primitives[];
+};
 
 /* Modules that define new primitive functions must register a control
  * function (defining INSTALL, RESET, etc code) and a (null-terminated)
