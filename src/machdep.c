@@ -11,8 +11,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.104 $
- * $Date: 2003/11/01 17:02:46 $
+ * $Revision: 1.105 $
+ * $Date: 2003/11/06 01:39:19 $
  * ------------------------------------------------------------------------*/
 #include "prelude.h"
 #include "storage.h"
@@ -267,6 +267,7 @@ static Bool   local find2	  Args((String));
 #if DOS_FILENAMES
 static Bool   local isPathSep     Args((String));
 #endif
+static Bool   local scanSubDirs   Args((String));
 
 #if __MWERKS__ && macintosh
 typedef char FileName[FILENAME_MAX + 1];
