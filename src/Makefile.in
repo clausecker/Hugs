@@ -106,9 +106,11 @@ ffihugs@OBJ@	: runhugs@OBJ@
 # Libraries, converted from raw sources out of the fptools tree
 ################################################################
 
+CONVERTERS	= unix/convert_libraries unix/convert_package
+
 libraries	:: $(LIBRARIES) @FFI_LIBRARIES@
 
-$(LIBRARIES)	: ../libraries/Hugs/*.* unix/convert_libraries
+$(LIBRARIES)	: ../libraries/Hugs/*.* $(CONVERTERS)
 		  mkdir -p $(BUILD_DIR)/libraries/Hugs
 		  $(CP) ../libraries/Hugs/*.* $(BUILD_DIR)/libraries/Hugs
 		  cd unix; ./convert_libraries $(FPTOOLS) ../../hugsdir
@@ -121,29 +123,18 @@ $(INCLUDE)	: $(HEADERS)
 # Library modules that use the Foreign Function Interface
 ################################################################
 
-FFI_LIBRARIES	= \
-		$(BUILD_DIR)/libraries/Hugs/Storable@DLL@ \
-		$(BUILD_DIR)/libraries/Foreign/C/Error@DLL@ \
-		$(BUILD_DIR)/libraries/Foreign/Marshal/Alloc@DLL@ \
-		$(BUILD_DIR)/libraries/Foreign/Marshal/Utils@DLL@ \
-		$(BUILD_DIR)/libraries/Text/Regex/Posix@DLL@ \
-		$(BUILD_DIR)/libraries/Network/BSD@DLL@ \
-		$(BUILD_DIR)/libraries/Network/Socket@DLL@
+FFI_LIBRARIES	= $(BUILD_DIR)/libraries/Hugs/Storable@DLL@
 
 ffi_libraries	: $(FFI_LIBRARIES)
 
 BUILD_FFI = env HUGSDIR='$(BUILD_DIR)' HUGSFLAGS='-W' ./ffihugs +G
 
-# If only we could put +L options in source files ...
+# The script unix/BuildFFI is created by unix/convert_libraries,
+# and runs ffihugs on library modules that need it.
 
 $(FFI_LIBRARIES) : $(LIBRARIES) ffihugs$(EXE) $(INCLUDE)
 		  $(BUILD_FFI) +L'$(BUILD_DIR)/libraries/Hugs/Storable_aux.c' Hugs.Storable
-		  $(BUILD_FFI) +L'$(BUILD_DIR)/libraries/Foreign/C/errno.c' Foreign.C.Error  
-		  $(BUILD_FFI) Foreign.Marshal.Alloc
-		  $(BUILD_FFI) Foreign.Marshal.Utils
-		  $(BUILD_FFI) Text.Regex.Posix
-		  $(BUILD_FFI) Network.BSD
-		  $(BUILD_FFI) +L'$(BUILD_DIR)/libraries/Network/HsNet.c' +L'$(BUILD_DIR)/libraries/Network/initWinSock.c' +L'$(BUILD_DIR)/libraries/Network/ancilData.c' Network.Socket
+		  env HUGSDIR='$(BUILD_DIR)' HUGSFLAGS='-W' unix/BuildFFI
 
 ################################################################
 # Clean, distclean, veryclean, TAGS

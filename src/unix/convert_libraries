@@ -107,21 +107,20 @@ hslibs() {
 
 # Convert hierarchical modules
 
-for package in base haskell98 haskell-src network
+HUGSDIR="$target"
+HUGSFLAGS='-W'
+export HUGSDIR HUGSFLAGS
+
+echo "#! /bin/sh
+
+cd `pwd`
+" >BuildFFI
+chmod 755 BuildFFI
+
+for package in base haskell98 haskell-src network unix
 do
 	./convert_package $1/libraries/$package $dst
 done
-
-  echo Copying FFI support files
-  cp ../config.h                        $dst/Foreign/C
-  cp $src/base/cbits/errno.c            $dst/Foreign/C
-  cp $src/base/include/*.h              $dst/Foreign/C
-  cp ../config.h                        $dst/Network
-  cp $src/network/include/HsNet.h       $dst/Network
-  cp $src/network/cbits/ancilData.c     $dst/Network
-  cp $src/network/cbits/initWinSock.c   $dst/Network
-  cp $src/network/cbits/winSockErr.c    $dst/Network
-  cp $src/network/cbits/HsNet.c         $dst/Network
 
 # Compatibility with lib/exts:
 
@@ -130,7 +129,6 @@ mkdir -p $compat
 # Hugs-only modules
 
   stub ConcBase		Hugs.ConcBase
-  stub HugsStorable	Hugs.Storable
   stub Memo		Hugs.Memo	# hslibs module is different
   stub Observe		Hugs.Observe	# hslibs module is different
 
@@ -239,7 +237,7 @@ mkdir -p $compat
   hslibs lang/monads MonadState.lhs	# -> Control.Monad.State
   hslibs lang/monads MonadTrans.lhs	# -> Control.Monad.Trans
   hslibs lang/monads MonadWriter.lhs	# -> Control.Monad.Writer
-  hslibs lang/monads Monoid.lhs		# -> Control.Monad.Monoid
+  hslibs lang/monads Monoid.lhs		# -> Data.Monoid
 
   hslibs net BSD.hs			# -> Network.BSD
   hslibs net CGI.lhs			# -> Network.CGI
