@@ -84,6 +84,12 @@ esac
 
 includes="-I$HUGSDIR/include -I$source_dir/include"
 
+# configure the library package first
+
+if test -x $source_dir/configure; then
+	(cd $source_dir; ./configure)
+fi
+
 # create all scratch files in $tmpdir
 
 tmpdir=$tmpdir_root/cvt.$$

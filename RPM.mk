@@ -66,7 +66,7 @@ ${PACKAGE}.tar.gz:
 	  cvs export -r ${TAG} hugs98; \
 	  cd hugs98; \
 	  cvs export -r ${HSLIBSTAG} `for lib in $(HSLIBSDIRS); do echo fptools/hslibs/$$lib; done`; \
-	  cvs export -r ${LIBRARIESTAG} fptools/config.sub fptools/config.guess fptools/install-sh `for lib in $(LIBRARIESDIRS) $(LIBRARIESFILES); do echo fptools/libraries/$$lib; done`
+	  cvs export -r ${LIBRARIESTAG} fptools/config.sub fptools/config.guess fptools/install-sh `for lib in $(LIBRARIESDIRS); do echo fptools/libraries/$$lib; done`
 # Unused, and the pathnames in there are too long for portable tar
 	cd ${TARTMP}/hugs98; rm -rf fptools/libraries/parsec/examples
 # preprocess these, so the package can be built without happy & ghc
@@ -88,8 +88,7 @@ ${PACKAGE}.tar.gz:
 	cd ${TARTMP}/hugs98/src; bison -y parser.y; mv y.tab.c parser.c
 # Siggy deren't like these in distros
 	cd ${TARTMP}/hugs98; rm -rf tests
-	cd ${TARTMP}/hugs98; autoreconf
-	echo timestamp for config.h.in >${TARTMP}/hugs98/src/stamp-h.in
+	cd ${TARTMP}/hugs98; make configure
 	mv ${TARTMP}/hugs98 ${TARTMP}/${PACKAGE}
 	cd ${TARTMP}; tar cf ${TMP}/${NAME}.tar ${PACKAGE}
 	gzip -9 ${TMP}/${NAME}.tar

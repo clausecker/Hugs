@@ -11,7 +11,7 @@ AC_CONFIG_SRCDIR([src/hugs.c])
 dnl We need 2.50 for AC_HELP_STRING.
 AC_PREREQ([2.50])
 
-AC_CONFIG_SUBDIRS([libraries fptools/libraries])
+AC_CONFIG_SUBDIRS([libraries])
 
 AC_CONFIG_HEADER(src/config.h src/options.h)
 AH_TOP([/* platform-specific defines */

@@ -18,7 +18,6 @@ LIBRARIESTAG = HEAD
 HSLIBSDIRS = concurrent data hssource lang net text util posix
 LIBRARIESDIRS = base haskell98 haskell-src mtl network parsec QuickCheck unix \
 	Cabal OpenGL GLUT OpenAL fgl X11 HGL HaXml HUnit Win32
-LIBRARIESFILES = aclocal.m4 configure.ac libraries-footer.txt
 
 # End of general settings (leave this line unchanged)
 
@@ -120,6 +119,8 @@ src/Makefile: configure src/config.h.in
 configure src/config.h.in: src/stamp-h.in
 src/stamp-h.in: configure.ac aclocal.m4 fptools
 	-autoreconf
+	for dir in fptools/libraries/*; do if test -f $$dir/configure.ac; \
+		then (cd $$dir; autoreconf); fi; done
 	echo timestamp for config.h.in >$@
 
 # fetching library sources
@@ -127,4 +128,4 @@ src/stamp-h.in: configure.ac aclocal.m4 fptools
 fptools:
 	-mkdir fptools
 	cvs -d `cat CVS/Root` get -r$(HSLIBSTAG) `for lib in $(HSLIBSDIRS); do echo fptools/hslibs/$$lib; done`
-	cvs -d `cat CVS/Root` get -r$(LIBRARIESTAG) fptools/config.sub fptools/config.guess fptools/install-sh `for lib in $(LIBRARIESDIRS) $(LIBRARIESFILES); do echo fptools/libraries/$$lib; done`
+	cvs -d `cat CVS/Root` get -r$(LIBRARIESTAG) fptools/config.sub fptools/config.guess fptools/install-sh `for lib in $(LIBRARIESDIRS); do echo fptools/libraries/$$lib; done`
