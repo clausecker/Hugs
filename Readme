@@ -23,7 +23,9 @@ __   __ __  __  ____   ___      _________________________________________
      have been added along with a complete implementation of Haskell98 IO.
 
    - Hugs is now delivered with most of the hslibs libraries installed
-     in the lib/exts/ directory.
+     in the lib/exts/ directory.  The added modules cover the Edison, 
+     Parsec, HaXml, QuickCheck, concurrent, monad, and html subdirectories 
+     of hslibs.
 
    - The :set option now refuses the user to set a module search path
      that doesn't contain the Prelude. This is to protect users from
