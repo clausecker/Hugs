@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: storage.c,v $
- * $Revision: 1.79 $
- * $Date: 2003/11/01 17:02:50 $
+ * $Revision: 1.80 $
+ * $Date: 2003/11/04 15:40:47 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -3290,8 +3290,14 @@ Int i; {
     mallocPtrs[n].refCount += i;
     if (mallocPtrs[n].refCount <= 0) {
 	Cell p;
-	for (p=mallocPtrs[n].finalizers; nonNull(p); p=tl(p))
-	    ((CFinalizer)ptrOf(hd(p)))(mallocPtrs[n].ptr);
+	for (p=mallocPtrs[n].finalizers; nonNull(p); p=tl(p)) {
+	    Cell fin = hd(p);
+	    if (isPtr(fin))
+		((CFinalizer)ptrOf(fin))(mallocPtrs[n].ptr);
+	    else
+		((CFinalizerEnv)ptrOf(fst(fin)))
+		    (ptrOf(snd(fin)), mallocPtrs[n].ptr);
+	}
 
 	mallocPtrs[n].ptr      = 0;
 	mallocPtrs[n].finalizers = NIL;

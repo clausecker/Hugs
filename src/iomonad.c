@@ -14,8 +14,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: iomonad.c,v $
- * $Revision: 1.63 $
- * $Date: 2003/11/01 17:02:45 $
+ * $Revision: 1.64 $
+ * $Date: 2003/11/04 15:40:47 $
  * ------------------------------------------------------------------------*/
  
 Name nameIORun;			        /* run IO code                     */
@@ -160,6 +160,7 @@ PROTO_PRIM(primCastPToSP);
 
 PROTO_PRIM(primNewFP);
 PROTO_PRIM(primAddFPF);
+PROTO_PRIM(primAddFPFEnv);
 PROTO_PRIM(primWriteFP);
 PROTO_PRIM(primEqFP);
 PROTO_PRIM(primTouchFP);
@@ -288,6 +289,7 @@ static struct primitive iomonadPrimTable[] = {
 
   {"newForeignPtr_",	1+IOArity, primNewFP},
   {"addForeignPtrFinalizer", 2+IOArity, primAddFPF},
+  {"addForeignPtrFinalizerEnv", 3+IOArity, primAddFPFEnv},
   {"touchForeignPtr",	1+IOArity, primTouchFP},
   {"unsafeForeignPtrToPtr", 1, primFPToP},
 
@@ -1683,6 +1685,18 @@ primFun(primAddFPF) { /* FunPtr (Ptr a -> IO ()) -> ForeignPtr a -> IO () */
     mp = mpOf(whnfHead);
     eval(IOArg(2));
     mallocPtrs[mp].finalizers = cons(whnfHead, mallocPtrs[mp].finalizers);
+    IOReturn(nameUnit);
+}
+
+primFun(primAddFPFEnv) {	 /* FunPtr (Ptr env -> Ptr a -> IO ()) ->  */
+    int mp;			 /*	Ptr Env -> ForeignPtr a -> IO ()   */
+    eval(IOArg(1));
+    mp = mpOf(whnfHead);
+    eval(IOArg(2));
+    push(whnfHead);
+    eval(IOArg(3));
+    mallocPtrs[mp].finalizers =
+	cons(pair(whnfHead, pop()), mallocPtrs[mp].finalizers);
     IOReturn(nameUnit);
 }
 

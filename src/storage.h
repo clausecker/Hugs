@@ -8,8 +8,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: storage.h,v $
- * $Revision: 1.59 $
- * $Date: 2003/10/14 13:56:25 $
+ * $Revision: 1.60 $
+ * $Date: 2003/11/04 15:40:48 $
  * ------------------------------------------------------------------------*/
 #ifndef __STORAGE_H__
 #define __STORAGE_H__
@@ -1177,9 +1177,11 @@ struct strMallocPtr {		/* Malloc Ptr description                  */
     Void *ptr;			/* Pointer into C world                    */
     Int  refCount;              /* Reference count                         */
     Cell finalizers;		/* List of finalizer functions             */
+    				/* or (finalizer, envptr) pairs		   */
 };
 
-typedef Void (*CFinalizer) Args((Pointer));
+typedef Void (*CFinalizer)       Args((Pointer));
+typedef Void (*CFinalizerEnv)    Args((Pointer, Pointer));
 
 extern struct strMallocPtr       mallocPtrs[];
 extern Cell   newMallocPtr       Args((Void *));
