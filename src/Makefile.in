@@ -259,7 +259,7 @@ check		: libraries
 		  cd ../tests; sh testScript
 
 LibStatus	: libraries
-		  unix/test_libraries $(FPTOOLS) >$@
+		  (cd unix; ./test_libraries $(FPTOOLS)) >$@
 
 @MkInstall@
 
