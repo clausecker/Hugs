@@ -307,8 +307,8 @@ test_ffi() {
 ----------------------------------------------------------------"
 
   # Test static checking and code generation first.
-  perl runstdtest $HUGS $STDOPTS +G +L"types_aux.c" "-Offi/Types.hs" "-o1ffi/Loaded.output"
-  perl runstdtest $HUGS $STDOPTS +G +L"forms_aux.c" "-Offi/Forms.hs" "-o1ffi/Loaded.output"
+  perl runstdtest $HUGS $STDOPTS +G +L"ffi/types_aux.c" "-Offi/Types.hs" "-o1ffi/Loaded.output"
+  perl runstdtest $HUGS $STDOPTS +G +L"ffi/forms_aux.c" "-Offi/Forms.hs" "-o1ffi/Loaded.output"
 
   # This is a pair of tests: first build, then test runtime
   perl runstdtest $HUGS $STDOPTS +G "-Offi/Sin.hs" "-o1ffi/Loaded.output"
@@ -319,7 +319,7 @@ test_ffi() {
   perl runstdtest $HUGS $STDOPTS    "-Offi/String.hs" "-iffi/String.input" "-o1ffi/String.output"
 
   # This is a pair of tests: first build, then test runtime
-  perl runstdtest $HUGS $STDOPTS +G +L"FileIO_aux.c" "-Offi/FileIO.hs" "-o1ffi/Loaded.output"
+  perl runstdtest $HUGS $STDOPTS +G +L"ffi/FileIO_aux.c" "-Offi/FileIO.hs" "-o1ffi/Loaded.output"
   perl runstdtest $HUGS $STDOPTS                     "-Offi/FileIO.hs" "-iffi/FileIO.input" "-o1ffi/FileIO.output"
 
   # This is a pair of tests: first build, then test runtime
