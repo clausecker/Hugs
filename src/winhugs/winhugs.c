@@ -35,31 +35,15 @@
 #include "opts.h"
 #include "evaluator.h"
 
-/* Hack and slash */
-struct options {                        /* command line option toggles     */
-    char   c;                           /* table defined in main app.      */
-#if !HASKELL_98_ONLY
-    int    h98;                         /* set in Haskell'98 mode?         */
-#endif
-    String description;
-    Bool   *flag;
-};
-
-extern struct options toggle[];
-
 #include "WinFrame.h"
 #include "WinToolB.h"
 #include "WinSTLN.h"
 #include "WinUtils.h"
 
-
 /* --------------------------------------------------------------------------
  * Local functions prototypes
  * ------------------------------------------------------------------------*/
-
-#ifndef __WINHUGS_H
 #include "WinHugs.h"
-#endif
 
 
 /* --------------------------------------------------------------------------
