@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.119 $
- * $Date: 2002/11/03 04:19:07 $
+ * $Revision: 1.120 $
+ * $Date: 2002/11/03 04:32:12 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1151,13 +1151,6 @@ Cell e; {
         List mods = findQualifiers(alias);
 	Module m;
 
-	/* If it's not an alias, try resolving it as a module name. */
-	if (isNull(mods)) {
-	    m = findModid(snd(e));
-	    if (!isNull(m)) {
-		mods=singleton(m);
-	    }
-	}
 	/* Re-exporting a module we didn't import isn't allowed. */
 	if (isNull(mods)) {
 	    ERRMSG(0) "Unknown module \"%s\" exported from module \"%s\"",
