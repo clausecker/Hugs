@@ -30,7 +30,7 @@ String s;
 Int n; {
     if (s) {
 	char *t;
-	if (strlen(s) < n)
+	if ((Int)strlen(s) < n)
 	    n = strlen(s);
 	if ((t=(char *)malloc(n+1))==0) {
 	    ERRMSG(0) "String storage space exhausted"

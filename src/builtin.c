@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: builtin.c,v $
- * $Revision: 1.60 $
- * $Date: 2003/07/24 13:07:36 $
+ * $Revision: 1.61 $
+ * $Date: 2003/07/24 13:39:41 $
  * ------------------------------------------------------------------------*/
 
 /* We include math.h before prelude.h because SunOS 4's cpp incorrectly
@@ -927,10 +927,10 @@ primFun(primShiftWord) {
     IntArg(y,1);
     if (y >= 0) {
 	/* << isn't defined for y larger than word size */
-	WordResult(y >= sizeof(x) * 8  ? 0 : x << y);
+	WordResult(y >= (Int)(sizeof(x) * 8)  ? 0 : x << y);
     } else {
         y = -y;
-	WordResult(y >= sizeof(x) * 8 ? 0 : x >> y);
+	WordResult(y >= (Int)(sizeof(x) * 8) ? 0 : x >> y);
     }
 }
 

@@ -8,8 +8,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: storage.h,v $
- * $Revision: 1.56 $
- * $Date: 2003/06/12 12:53:21 $
+ * $Revision: 1.57 $
+ * $Date: 2003/07/24 13:39:41 $
  * ------------------------------------------------------------------------*/
 #ifndef __STORAGE_H__
 #define __STORAGE_H__
@@ -97,7 +97,7 @@ extern  Text         subText            Args((String,Int));
 #define precOf(x)	((x)>>2)
 #define mkSyntax(a,p)	((a)|((p)<<2))
 #define DEF_OPSYNTAX	mkSyntax(DEF_ASS,DEF_PREC)
-#define NO_SYNTAX	(-1)
+#define NO_SYNTAX	((Syntax)(-1))
 
 #define FFI_NOSAFETY   0
 #define FFI_SAFE       1

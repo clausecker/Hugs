@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.152 $
- * $Date: 2003/05/12 08:14:47 $
+ * $Revision: 1.153 $
+ * $Date: 2003/07/24 13:39:41 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -4345,7 +4345,7 @@ Name p; {
 
     /* What kind of import is this? */
     ext = skipSpaces(ext);
-    if (e = matchToken("dynamic",ext)) { /* dynamic import */
+    if ((e = matchToken("dynamic",ext))) { /* dynamic import */
         Type ta = NIL;
         Bool isIO = FALSE;
 
@@ -4378,7 +4378,7 @@ Name p; {
             implementForeignImportDynamic(line,name(p).foreignId,name(p).extFun,argTys,isIO,t);
         }
 
-    } else if (e = matchToken("wrapper",ext)) { /* thunk builder */
+    } else if ((e = matchToken("wrapper",ext))) { /* thunk builder */
         Bool isIO = FALSE;
         Type ta = NIL;
 
@@ -4438,7 +4438,7 @@ Name p; {
 	Int  methFlags = FFI_DOTNET_METHOD;
 #endif
 
-        if (e = matchToken("static",ext)) {
+        if ((e = matchToken("static",ext))) {
 	    isStatic = TRUE;
 #ifdef DOTNET
 	    methFlags |= FFI_DOTNET_STATIC;
@@ -4460,7 +4460,7 @@ Name p; {
 	  }
 	} else {
 #endif
-        if (e = matchFname(ext)) {
+        if ((e = matchFname(ext))) {
             fn = subText(ext,e-ext);
             ext = skipSpaces(e);
         }
@@ -4468,7 +4468,7 @@ Name p; {
 	}
 #endif
 
-        if (e = matchToken("&",ext)) {
+        if ((e = matchToken("&",ext))) {
             isLabel = TRUE;
             ext = skipSpaces(e);
 #ifdef DOTNET
@@ -4476,7 +4476,7 @@ Name p; {
 #endif
         }
 
-        if (e = matchToken("[",ext)) {
+        if ((e = matchToken("[",ext))) {
             ext = skipToChar(e,']');
             if (*ext != ']' || ext == e) goto cantparse;
             libn = subText(e,ext-e);
@@ -5557,7 +5557,7 @@ Text t; {				            /* enclosing bindings		      */
 	bounds1   = tl(bounds1);
 	bindings1 = tl(bindings1);
     }
-    return (Syntax)NO_SYNTAX;
+    return NO_SYNTAX;
 }
 
 /* --------------------------------------------------------------------------

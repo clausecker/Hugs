@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: bignums.c,v $
- * $Revision: 1.10 $
- * $Date: 2003/04/10 15:07:33 $
+ * $Revision: 1.11 $
+ * $Date: 2003/07/24 13:39:40 $
  * ------------------------------------------------------------------------*/
 
 /*#define DEBUG_BIGNUMS*/
@@ -191,10 +191,10 @@ Bignum n; {
 		m = digitOf(hd(ds));
 		while (nonNull(ds=tl(ds))) {
 		    Int d = digitOf(hd(ds));
-		    if (b > (MAXHUGSWORD/BIGBASE))
+		    if (b > (Int)(MAXHUGSWORD/BIGBASE))
 			return NIL;
 		    b *= BIGBASE;
-		    if (d > (MAXHUGSWORD - m)/b)
+		    if (d > (Int)((MAXHUGSWORD - m)/b))
 			return NIL;
 		    m += b*d;
 		}

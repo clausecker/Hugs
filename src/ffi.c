@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: ffi.c,v $
- * $Revision: 1.31 $
- * $Date: 2003/07/24 13:07:37 $
+ * $Revision: 1.32 $
+ * $Date: 2003/07/24 13:39:41 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -23,7 +23,9 @@
  * ------------------------------------------------------------------------*/
 
 static Void local foreignType    Args((Int,Type));
+#ifdef DOTNET
 static Cell local foreignTypeTag Args((Int,Type));
+#endif
 static Void local foreignGet     Args((Int,Type,String,Int));
 static Void local foreignPut     Args((Int,Type,String,Int));
 static Void local ffiInclude     Args((Text));
@@ -216,6 +218,7 @@ List es; {
     compileAndLink(fn, ffiFlags);
 }
 
+#ifdef DOTNET
 static Cell foreignTypeTag(l,t)
 Int    l;
 Type   t; {
@@ -238,12 +241,10 @@ Type   t; {
     else if (getHead(t) == typeFunPtr)  return mkInt(FFI_TYPE_FUNPTR);
     else if (getHead(t) == typeForeign) return mkInt(FFI_TYPE_FOREIGN);
     else if (getHead(t) == typeStable)  return mkInt(FFI_TYPE_STABLE);
-#ifdef DOTNET
     else if (getHead(t) == typeObject)  return mkInt(FFI_TYPE_OBJECT);
 	 else if (getHead(t) == typeList && 
 		  nthArg(1,t) == typeChar) 
 		                        return mkInt(FFI_TYPE_STRING);
-#endif
     else {
         ERRMSG(l) "Illegal foreign type" ETHEN
         ERRTEXT " \"" ETHEN ERRTYPE(t);
@@ -253,6 +254,7 @@ Type   t; {
    return 0;
 
 } 
+#endif
 
 
 static Void local foreignType(l,t)

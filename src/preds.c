@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: preds.c,v $
- * $Revision: 1.32 $
- * $Date: 2003/07/03 17:30:46 $
+ * $Revision: 1.33 $
+ * $Date: 2003/07/24 13:39:41 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -1029,7 +1029,7 @@ Bool interactive; {			/* by default in the context of */
 	    if (c==classRealFrac   || c==classRealFloat ||
 		c==classFractional || c==classFloating  ||
 		c==classReal	   || c==classIntegral  || c==classNum ||
-		interactive && (c==classEq || c==classOrd || c==classShow))
+		(interactive && (c==classEq || c==classOrd || c==classShow)))
 		aNumClass = TRUE;
 	    else if (c!=classEq    && c!=classOrd  && c!=classShow &&
 		     c!=classRead  && c!=classIx   && c!=classEnum &&
