@@ -9,8 +9,8 @@
  * included in the distribution.
  *
  * $RCSfile: prelude.h,v $
- * $Revision: 1.24 $
- * $Date: 2001/08/20 13:24:35 $
+ * $Revision: 1.25 $
+ * $Date: 2001/08/20 13:29:22 $
  * ------------------------------------------------------------------------*/
 
 #include "config.h"
@@ -738,7 +738,7 @@ typedef void*    Pointer;
 #define NUM_TEXT           Pick(12000,  20000,      160000)
 #define NUM_TEXTH	   Pick(1,      10,         10)
 #define NUM_TYVARS         Pick(800,    2000,       4000)
-#define NUM_STACK          Pick(1800,   12000,      16000)
+#define NUM_STACK          Pick(1800,   12000,      160000)
 #define NUM_ADDRS          Pick(28000,  60000,      320000)
 #define MINIMUMHEAP	   Pick(7500,   19000,      19000)
 #define MAXIMUMHEAP	   Pick(32765,  0,          0)
