@@ -941,7 +941,6 @@ Cell e; {
 	       Name  nm;
 	       Tycon tc;
 	       Class cc;
-	       List clashes = NIL;
 	       
 	       /* Build the (alias) qualified entity and
 		  test whether it's in scope - ugly. */
@@ -981,20 +980,17 @@ Cell e; {
 		*/
 	       if ( ( (ent = findName(txtNm))            && 
 		      !isNull((nm = findQualName(qid)))  &&
-		      (nonNull((clashes = name(ent).clashes)) ||
+		      (nonNull((name(ent).clashes)) ||
 		       name(ent).mod == name(nm).mod))        ||
 		    ( (ent = findTycon(txtNm))           &&
 		      !isNull((tc = findQualTycon(qid))) &&
-		      (nonNull((clashes = tycon(ent).clashes)) ||
+		      (nonNull((tycon(ent).clashes)) ||
 		       tycon(ent).mod == tycon(tc).mod))       ||
 		    ( (ent = findClass(txtNm))           && 
 		      !isNull((cc = findQualClass(qid))) &&
-		      (nonNull((clashes = cclass(ent).clashes)) ||
+		      (nonNull((cclass(ent).clashes)) ||
 		       cclass(ent).mod == cclass(cc).mod))   ) {
 
-		   if (nonNull(clashes)) {
-		       reportAmbigEntity(module(modOfEntity(ent)).text,txtNm,clashes);
-		   }
 		   checkExportDistinct(exports,FALSE,hd(ents));
 		   exports=cons(hd(ents),exports);
 	       }
