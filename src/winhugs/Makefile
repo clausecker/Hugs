@@ -27,6 +27,7 @@ default		:: winhugs.exe
 
 CC		= cl /nologo 
 CFLAGS		= -ML 
+#CFLAGS		= -ML -DMONTH_YEAR="\"Oct 2002 RC1\""
 OPTFLAGS	= -O2
 RC		= rc
 
