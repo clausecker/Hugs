@@ -14,8 +14,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: iomonad.c,v $
- * $Revision: 1.45 $
- * $Date: 2003/02/14 06:12:18 $
+ * $Revision: 1.46 $
+ * $Date: 2003/02/17 11:12:04 $
  * ------------------------------------------------------------------------*/
  
 Name nameIORun;			        /* run IO code                     */
@@ -93,6 +93,7 @@ PROTO_PRIM(primPutStr);
 #if IO_HANDLES
 static Void local fwritePrim  Args((StackPtr,Bool,Bool,String));
 static Void local fopenPrim   Args((StackPtr,Bool,String));
+static int local getIOMode    Args((Cell));
 
 PROTO_PRIM(primHGetChar);
 PROTO_PRIM(primHPutChar);
@@ -937,13 +938,11 @@ primFun(primContents) {			/* Get contents of stdin	   */
     }
 }
 
-static Void local fopenPrim(root,binary,loc)/* Auxiliary function for          */
-StackPtr root;                              /* opening a file                  */
-Bool     binary;
-String   loc; {
+static int local getIOMode(mode)	/* From IOMode to internal form    */
+Cell mode; {
     Int    m = HCLOSED;
 
-    eval(IOArg(1));			/* Eval IOMode			   */
+    eval(mode);				/* Eval IOMode			   */
     if (isName(whnfHead) && isCfun(whnfHead))
 	switch (cfunOf(whnfHead)) {	/* we have to use numeric consts   */
 	    case 1 : m = HREAD;		/* here to avoid the need to put   */
@@ -955,7 +954,16 @@ String   loc; {
 	    case 4 : m = HREADWRITE;
 		     break;
 	}
+    return m;
+}
 
+static Void local fopenPrim(root,binary,loc)/* Auxiliary function for          */
+StackPtr root;                              /* opening a file                  */
+Bool     binary;
+String   loc; {
+    Int    m;
+
+    m = getIOMode(IOArg(1));
     if (m!=HCLOSED) {			/* Only accept legal modes	   */
 	Cell hnd = openHandle(root,IOArg(2),m,binary,loc);
 	if (!isNull(fst(hnd))) {
@@ -993,7 +1001,7 @@ primFun(primStderr) {			/* Standard error handle	   */
 }
 
 primFun(primOpenFd) {			/* open handle to file descriptor. */
-  Int  m;                                /* :: Int{-Fd-} -> Bool -> IOMode -> Bool -> IO Handle */
+  Int  m;                               /* :: Int{-Fd-} -> Bool -> IOMode -> Bool -> IO Handle */
   Int  fd;
   Bool binary;
   Bool isSock;
@@ -1002,20 +1010,7 @@ primFun(primOpenFd) {			/* open handle to file descriptor. */
   BoolArg(isSock,3+IOArity);
   BoolArg(binary,1+IOArity);
 
-  eval(IOArg(2));
-  if (isName(whnfHead) && isCfun(whnfHead)) {
-    switch (cfunOf(whnfHead)) {	/* we have to use numeric consts   */
-    case 1 : m = HREAD;		/* here to avoid the need to put   */
-      break;		/* IOMode in startup environment   */
-    case 2 : m = HWRITE;
-      break;
-    case 3 : m = HAPPEND;
-      break;
-    case 4 : m = HREADWRITE;
-      break;
-    }
-  }
-  
+  m = getIOMode(IOArg(2));
   if (m!=HCLOSED) {			/* Only accept legal modes	   */
       Cell hnd = openFdHandle(root,fd,isSock,m,binary,"openFd");
       if (!isNull(fst(hnd))) {
