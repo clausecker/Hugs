@@ -122,9 +122,9 @@ static@OBJ@	: static.c
 type@OBJ@	: type.c
 		  $(CC) -c $(CFLAGS) type.c
 
-#parser.c	: parser.y
-#		  -$(YACC) parser.y
-#		  mv y.tab.c parser.c
+parser.c	: parser.y
+		  -$(YACC) parser.y
+		  mv y.tab.c parser.c
 # veryclean	::
 # 		  $(RM) parser.c
 
