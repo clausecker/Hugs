@@ -1035,7 +1035,7 @@ undefined | False = undefined
 
 -- Standard functions on rational numbers {PreludeRatio} --------------------
 
-data Integral a => Ratio a = a :% a deriving (Eq)
+data Integral a => Ratio a = !a :% !a deriving (Eq)
 type Rational              = Ratio Integer
 
 (%)                       :: Integral a => a -> a -> Ratio a
@@ -1071,7 +1071,7 @@ instance Integral a => Real (Ratio a) where
 
 instance Integral a => Fractional (Ratio a) where
     (x:%y) / (x':%y')   = (x*y') % (y*x')
-    recip (x:%y)        = if x < 0 then (-y) :% (-x) else y :% x
+    recip (x:%y)        = y :% x
     fromRational (x:%y) = fromInteger x :% fromInteger y
     fromDouble 		= doubleToRatio
 
@@ -1488,13 +1488,14 @@ protectEsc p f             = f . cont
 
 -- Unsigned readers for various bases
 readDec, readOct, readHex :: Integral a => ReadS a
-readDec = readInt 10 isDigit (\d -> fromEnum d - fromEnum '0')
-readOct = readInt  8 isOctDigit (\d -> fromEnum d - fromEnum '0')
+readDec = readInt 10 isDigit    (\ d -> fromEnum d - fromEnum_0)
+readOct = readInt  8 isOctDigit (\ d -> fromEnum d - fromEnum_0)
 readHex = readInt 16 isHexDigit hex
-	  where hex d = fromEnum d -
-			(if isDigit d
-			   then fromEnum '0'
-			   else fromEnum (if isUpper d then 'A' else 'a') - 10)
+	    where hex d = fromEnum d - (if isDigit d then fromEnum_0
+				       else fromEnum (if isUpper d then 'A' else 'a') - 10)
+
+fromEnum_0 :: Int
+fromEnum_0 = fromEnum '0'
 
 -- readInt reads a string of digits using an arbitrary base.  
 -- Leading minus signs must be handled elsewhere.
