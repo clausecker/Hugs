@@ -9,8 +9,8 @@
  * included in the distribution.
  *
  * $RCSfile: printer.c,v $
- * $Revision: 1.5 $
- * $Date: 2001/04/02 04:05:13 $
+ * $Revision: 1.6 $
+ * $Date: 2001/06/09 15:55:13 $
  * ------------------------------------------------------------------------*/
 
 static Void   local printer		Args((Name,Int));
@@ -252,7 +252,14 @@ Int  d; {				/* precedence level		   */
 
 	case PTRCELL  : {   Pointer p = ptrOf(whnfHead);
 			    char buffer[32];
+			    char spec[16];
+			    /* Fall into line with how GHC shows Addrs  */
+			    sprintf(spec,"0x%%.%dx", (SIZEOF_INTP)*2);
+			    sprintf(buffer,spec,(long)p);
+#if 0
+			    /* Old skool */
 			    sprintf(buffer,"%p",p);
+#endif
 			    outStr(buffer);
 			    pr  = nameNPrint;
 			}
