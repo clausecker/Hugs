@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.19 $
- * $Date: 2000/03/08 14:31:10 $
+ * $Revision: 1.20 $
+ * $Date: 2000/03/10 18:39:26 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1193,7 +1193,7 @@ static Void local evaluator() {        /* evaluate expr and print value    */
 #endif
     {   Cell printer = namePrint;
 	if (useShow) {
-	    Cell d = provePred(ks,NIL,ap(classShow,bd));
+	    Cell d = resolvePred(ks,ap(classShow,bd));
 	    if (isNull(d)) {
 		printing = FALSE;
 		ERRMSG(0) "Cannot find \"show\" function for:" ETHEN
@@ -1351,7 +1351,6 @@ static Void local xplain() {         /* print type of expression (if any)*/
     parseContext();
     checkContext();
     showInstRes = TRUE;
-    /* ZZ this is now broken ... */
     d = provePred(NIL,NIL,hd(inputContext));
     if (isNull(d)) {
 	fprintf(stdout, "not Sat\n");

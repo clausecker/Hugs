@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: preds.c,v $
- * $Revision: 1.24 $
- * $Date: 2000/03/08 14:31:10 $
+ * $Revision: 1.25 $
+ * $Date: 2000/03/10 18:39:26 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -640,11 +640,24 @@ Inst ia, ib;
 }
 #endif
 
-Cell provePred(ks,ps,pi)		/* Find evidence for predicate pi  */
-Kinds ks;				/* assuming ps.  If ps is null,	   */
-List  ps;				/* then we get to decide whether   */
-Cell  pi; {				/* is tautological, and we can use */
-    Int  beta;				/* the evidence as a dictionary.   */
+Cell provePred(ks,ps,pi)                /* Find evidence for predicate pi  */
+Kinds ks;                               /* assuming ps.  If ps is null,    */
+List  ps;                               /* then we get to decide whether   */
+Cell  pi; {                             /* is tautological, and we can use */
+    Int  beta;                          /* the evidence as a dictionary.   */
+    Cell ev;
+    emptySubstitution();
+    beta = newKindedVars(ks);           /* (ks provides kinds for any      */
+    ps   = makePredAss(ps,beta);        /*  vars that appear in pi.)       */
+    ev   = entail(ps,pi,beta,0);
+    emptySubstitution();
+    return ev;
+}
+
+Cell resolvePred(ks,pi)			/* Find evidence for predicate pi. */
+Kinds ks;				/* Unlike `provePred', also uses   */
+Cell  pi; {				/* desparate measures like context */
+    Int  beta;				/* reduction and defaulting.       */
     List qs;
 
     emptySubstitution();

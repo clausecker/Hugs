@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: connect.h,v $
- * $Revision: 1.7 $
- * $Date: 1999/11/16 22:59:54 $
+ * $Revision: 1.8 $
+ * $Date: 2000/03/10 18:39:26 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -293,6 +293,7 @@ extern  Void   typeChecker      Args((Int));
 extern  Type   typeCheckExp	Args((Bool));
 extern  Void   typeCheckDefns	Args((Void));
 extern  Cell   provePred	Args((Kinds,List,Cell));
+extern  Cell   resolvePred	Args((Kinds,Cell));
 extern  List   simpleContext	Args((List,Int));
 extern  Cell   rhsExpr		Args((Cell));
 extern  Int    rhsLine		Args((Cell));
