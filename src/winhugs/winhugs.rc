@@ -139,7 +139,7 @@ BEGIN
     PUSHBUTTON      "&Ok",IDOK,275,136,51,13
     LTEXT           "Hugs 98: Based on the Haskell 98 standard",
                     -1,130,32,247,10
-    LTEXT           "Copyright © 1994-2001",
+    LTEXT           "Copyright © 1994-2002",
                     -1,130,42,238,10
     LTEXT           "Bug reports to: hugs-bugs@haskell.org",
                     -1,130,52,242,10
@@ -147,7 +147,7 @@ BEGIN
                     -1,130,62,242,10
     LTEXT           "Please see the distribution for License and Credits info",
                     -1,130,80,252,8
-//    LTEXT           "Based on a Windows interface by José E. Gallardo, 2001",
+//    LTEXT           "Based on a Windows interface by José E. Gallardo, 2002",
 //                    -1,130,80,250,8
     CONTROL         "",-1,"Static",SS_WHITEFRAME,9,98,324,1
     CONTROL         "",-1,"Static",SS_GRAYFRAME,9,97,324,1

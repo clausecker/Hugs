@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.100 $
- * $Date: 2002/10/14 15:27:13 $
+ * $Revision: 1.101 $
+ * $Date: 2002/10/16 14:56:29 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -238,7 +238,7 @@ static Void printBanner()
     svColor = SetForeColor(RED);     Printf("||   || ||  || ||  || ||__ ");
     SetForeColor(svColor);           Printf("     Hugs 98: Based on the Haskell 98 standard\n");
     svColor = SetForeColor(BLUE);    Printf("||___|| ||__|| ||__||  __||");
-    SetForeColor(svColor);           Printf("     Copyright (c) 1994-2001\n");
+    SetForeColor(svColor);           Printf("     Copyright (c) 1994-2002\n");
     svColor = SetForeColor(RED);     Printf("||---||         ___||      ");
     SetForeColor(svColor);           Printf("     World Wide Web: http://haskell.org/hugs\n");
     svColor = SetForeColor(BLUE);    Printf("||   ||                    ");
@@ -250,7 +250,7 @@ static Void printBanner()
 #else
     Printf("__   __ __  __  ____   ___      _________________________________________\n");
     Printf("||   || ||  || ||  || ||__      Hugs 98: Based on the Haskell 98 standard\n");
-    Printf("||___|| ||__|| ||__||  __||     Copyright (c) 1994-2001\n");
+    Printf("||___|| ||__|| ||__||  __||     Copyright (c) 1994-2002\n");
     Printf("||---||         ___||           World Wide Web: http://haskell.org/hugs\n");
     Printf("||   ||                         Report bugs to: hugs-bugs@haskell.org\n");
     Printf("||   || Version: %-14s _________________________________________\n\n",versionString);
