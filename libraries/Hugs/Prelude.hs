@@ -203,7 +203,7 @@ class (Num a) => Fractional a where
 
     -- Minimal complete definition: fromRational and ((/) or recip)
     recip x       = 1 / x
-    fromDouble    = fromRational . toRational
+    fromDouble    = fromRational . fromDouble
     x / y         = x * recip y
 
 
@@ -1091,12 +1091,18 @@ instance Integral a => Fractional (Ratio a) where
     fromDouble 		= doubleToRatio
 
 -- Hugs optimises code of the form fromRational (doubleToRatio x)
+-- Since this function is private, and only used to convert floating point
+-- literals, it yields a decimal fraction, hopefully the one the user
+-- specified in the first place (but some precision may be lost).  A real
+-- Haskell implementation would use Rational to represent these literals.
 doubleToRatio :: Integral a => Double -> Ratio a
 doubleToRatio x
-	    | n>=0      = (fromInteger m * fromInteger b ^ n) % 1
-	    | otherwise = fromInteger m % (fromInteger b ^ (-n))
+	    | n>=0      = (round (x / fromInteger pow) * fromInteger pow) % 1
+	    | otherwise = fromRational (round (x * fromInteger denom) % denom)
 			  where (m,n) = decodeFloat x
-				b     = floatRadix x
+				n_dec = ceiling (logBase 10 (encodeFloat 1 n))
+				denom = 10 ^ (-n_dec)
+				pow   = 10 ^ n_dec
 
 instance Integral a => RealFrac (Ratio a) where
     properFraction (x:%y) = (fromIntegral q, r:%y)
