@@ -12,8 +12,8 @@
  * Anyone else should use a different format to avoid confusion.    
  */
 #if MAJOR_RELEASE
-#define HUGS_VERSION "July 1999    "
+#define HUGS_VERSION "Sep 1999     "
 #else
-#define HUGS_VERSION "990810 Beta  "
+#define HUGS_VERSION "990913 Beta  "
 #endif
 

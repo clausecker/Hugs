@@ -2,14 +2,15 @@
  * Basic data type definitions, prototypes and standard macros including
  * machine dependent variations...
  *
- * Hugs 98 is Copyright (c) Mark P Jones, Alastair Reid and the Yale
- * Haskell Group 1994-99, and is distributed as Open Source software
- * under the Artistic License; see the file "Artistic" that is included
- * in the distribution for details.
+ * The Hugs 98 system is Copyright (c) Mark P Jones, Alastair Reid, the
+ * Yale Haskell Group, and the Oregon Graduate Institute of Science and
+ * Technology, 1994-1999, All rights reserved.  It is distributed as
+ * free software under the license in the file "License", which is
+ * included in the distribution.
  *
  * $RCSfile: prelude.h,v $
- * $Revision: 1.4 $
- * $Date: 1999/09/10 22:57:49 $
+ * $Revision: 1.5 $
+ * $Date: 1999/09/13 11:01:05 $
  * ------------------------------------------------------------------------*/
 
 #include "config.h"
