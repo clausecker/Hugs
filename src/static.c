@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.67 $
- * $Date: 2002/05/09 16:28:12 $
+ * $Revision: 1.68 $
+ * $Date: 2002/05/30 21:23:01 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -220,11 +220,12 @@ static List   local intersectBinds	Args((List bs1,List bs2));
 static List   local getBindVars		Args((List bs));
 #endif
 static Void   local depCaseAlt		Args((Int,Cell));
-static Cell   local depVar		Args((Int,Cell));
+static Cell   local depVar		Args((Int,Cell,Bool));
 static Cell   local depQVar		Args((Int,Cell));
 static Void   local depConFlds		Args((Int,Cell,Bool));
 static Void   local depUpdFlds		Args((Int,Cell));
 static List   local depFields		Args((Int,Cell,List,Bool));
+static Cell   local checkNameAmbig      Args((Int,Text,Cell));
 #if IPARAM
 static Void   local depWith		Args((Int,Cell));
 static List   local depDwFlds		Args((Int,Cell,List));
@@ -1360,9 +1361,11 @@ Cell  cd; {				/* definitions (w or w/o deriving) */
 	  /* A local repeated definition */
 	  duplicateError(line,name(n).mod,name(n).text,"constructor function");
 	} else if (name(n).defn!=PREDEFINED) {
+          Name oldnm = n;
 	  removeName(n);
 	  n            = newName(textOf(con),NIL);
 	  name(n).defn = PREDEFINED;
+	  name(n).clashes = cons(oldnm,name(n).clashes);
 	}
 
 	name(n).arity  = arity;		/* Save constructor fun details	   */
@@ -2201,9 +2204,11 @@ Class parent; {
 	  textToStr(name(m).text)
 	EEND;
     } else if (name(m).defn!=PREDEFINED) {
+	  Name oldnm = m;
 	  removeName(m);
 	  m            = newName(textOf(v),parent);
 	  name(m).defn = PREDEFINED;
+	  name(m).clashes = cons(oldnm,name(m).clashes);
     }
     name(m).line   = l;
     name(m).arity  = 1;
@@ -6262,7 +6267,7 @@ Cell e; {
     switch (whatIs(e)) {
 
 	case VARIDCELL	:
-	case VAROPCELL	: return depVar(line,e);
+	case VAROPCELL	: return depVar(line,e,TRUE);
 
 	case CONIDCELL	:
 	case CONOPCELL	: return conDefined(line,e);
@@ -7003,9 +7008,38 @@ Cell a; {
     restoreBvars(obvs);			/* Restore original list of bvars  */
 }
 
-static Cell local depVar(line,e)	/* Register occurrence of variable */
+static Cell local checkNameAmbig(line,t,e)
 Int line;
+Text t;
 Cell e; {
+    Name n;
+    
+    if (isName(e)) {
+	n = e;
+    } else {
+	n = findName(t);
+    }
+    
+    if (!isNull(n) && nonNull(name(n).clashes)) {
+	Text t = name(n).text;
+	List ls = name(n).clashes;
+	ERRMSG(line) "Ambiguous variable occurrence \"%s\"", textToStr(t) ETHEN
+	    ERRTEXT "\n*** Could refer to: " ETHEN
+	    ERRTEXT "%s.%s ", textToStr(module(name(n).mod).text), textToStr(name(n).text) ETHEN
+	    for(;nonNull(ls);ls=tl(ls)) {
+		ERRTEXT "%s.%s", textToStr(module(name(hd(ls)).mod).text), textToStr(name(hd(ls)).text)
+		ETHEN
+	    }
+	    ERRTEXT "\n" EEND;
+    }
+
+    return e;
+}
+
+static Cell local depVar(line,e,check)	/* Register occurrence of variable */
+Int line;
+Cell e;
+Bool check; {
     List bounds1   = bounds;
     List bindings1 = bindings;
     List depends1  = depends;
@@ -7018,7 +7052,7 @@ Cell e; {
 #if MUDO
 	    mdepends = cons(n,mdepends);
 #endif
-	    return n;
+	    return (check ? checkNameAmbig(line,t,n) : n);
 	}
 
 	n = findBinding(t,hd(bindings1)); /* look for t in var bindings    */
@@ -7029,6 +7063,9 @@ Cell e; {
 #if MUDO
 	    mdepends = cons(isVar(fst(n)) ? fst(n) : e,mdepends);
 #endif
+	    if (check) {
+		checkNameAmbig(line,t, isVar(fst(n)) ? fst(n) : e);
+	    }
 	    return (isVar(fst(n)) ? fst(n) : e);
 	}
 
@@ -7041,19 +7078,10 @@ Cell e; {
 	ERRMSG(line) "Undefined variable \"%s\"", textToStr(t)
 	EEND;
     }
-    
-    if (nonNull(name(n).clashes)) {
-        List ls = name(n).clashes;
-	ERRMSG(line) "Ambiguous variable occurrence \"%s\"", textToStr(t) ETHEN
-        ERRTEXT "\n*** Could refer to: " ETHEN
-       ERRTEXT "%s.%s ", textToStr(module(name(n).mod).text), textToStr(name(n).text) ETHEN
-	for(;nonNull(ls);ls=tl(ls)) {
-	  ERRTEXT "%s.%s", textToStr(module(name(hd(ls)).mod).text), textToStr(name(hd(ls)).text)
-	  ETHEN
-	}
-	ERRTEXT "\n" EEND;
+    if (check) {
+	checkNameAmbig(line,t,n);
     }
-
+    
     if (!moduleThisScript(name(n).mod)) {
 	return n;
     }
@@ -7093,7 +7121,7 @@ Cell e; {
     } else {
 	e = mkVarop(qtextOf(e));
     }
-    return depVar(line,e);
+    return depVar(line,e,FALSE);
 }
 
 static Void local depConFlds(line,e,isP)/* check construction using fields */
@@ -7522,9 +7550,11 @@ Cell v; {
 	/* A local repeated definition */
 	duplicateError(line,name(n).mod,name(n).text,"variable");
     } else if (name(n).defn!=PREDEFINED) {
+	Name oldnm = n;
 	removeName(n);
 	n            = newName(textOf(v),NIL);
 	name(n).defn = PREDEFINED;
+	name(n).clashes = cons(oldnm,name(n).clashes);
     }
     name(n).line = line;
 }
