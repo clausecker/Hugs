@@ -288,18 +288,20 @@ fi
 
 # Get values from the package description file
 
-get_pkg_field="$runhugs -98 $HUGSDIR/tools/get_pkg_field"
+get_pkg_field() {
+	$runhugs -98 $HUGSDIR/tools/get_pkg_field "$1" $conf | tr -d '",'
+}
 
 extra_libraries=
 extra_ld_opts=
 extra_cc_opts=
 c_includes=
 if [ -f "$conf" ]
-then	extra_libraries=`$get_pkg_field extra_libraries $conf | sed 's/HS[^ ]*_cbits *//'`
-	extra_ld_opts=`$get_pkg_field extra_ld_opts $conf`
-	extra_cc_opts=`$get_pkg_field extra_cc_opts $conf`
-	c_includes=`$get_pkg_field c_includes $conf`
-	extra_frameworks=`$get_pkg_field extra_frameworks $conf`
+then	extra_libraries=`get_pkg_field extra-libs | sed 's/HS[^ ]*_cbits *//'`
+	extra_ld_opts=`get_pkg_field extra-ld-opts`
+	extra_cc_opts=`get_pkg_field extra-cc-opts`
+	c_includes=`get_pkg_field includes`
+	extra_frameworks=`get_pkg_field extra-frameworks`
 fi
 
 while read modname

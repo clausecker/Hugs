@@ -16,8 +16,7 @@ INSTALL_DATA	= /bin/cp
 BUILD_DIR	= ../hugsdir
 
 TOOLSDIR	= tools
-TOOLS		= $(TOOLSDIR)/Package.hs $(TOOLSDIR)/ParsePkgConf.hs \
-		  $(TOOLSDIR)/get_pkg_field
+TOOLS		= $(TOOLSDIR)/get_pkg_field
 
 HEADERS		= ../src/HsFFI.h ../src/platform.h \
 		  include/MachDeps.h include/ghcconfig.h \
