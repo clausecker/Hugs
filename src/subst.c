@@ -9,8 +9,8 @@
  * included in the distribution.
  *
  * $RCSfile: subst.c,v $
- * $Revision: 1.7 $
- * $Date: 1999/09/15 21:39:05 $
+ * $Revision: 1.8 $
+ * $Date: 1999/09/20 20:01:00 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -578,6 +578,25 @@ Int  o; {
     }
 
     return t;
+}
+List debugContext(ps)
+List ps; {
+    Cell p;
+    List qs = NIL;
+    for (; nonNull(ps); ps=tl(ps)) {
+        p = debugPred(fst3(hd(ps)),intOf(snd3(hd(ps))));
+	qs = cons(p,qs);
+    }
+    return rev(qs);
+}
+
+Cell debugPred(pi,o)
+Cell pi;
+Int  o; {
+    if (isAp(pi)) {
+	return pair(debugPred(fun(pi),o),debugType(arg(pi),o));
+    }
+    return pi;
 }
 #endif /*DEBUG_TYPES*/
 

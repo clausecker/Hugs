@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: type.c,v $
- * $Revision: 1.9 $
- * $Date: 1999/09/15 21:39:06 $
+ * $Revision: 1.10 $
+ * $Date: 1999/09/20 20:01:01 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -130,6 +130,7 @@ static Cell   local typeExpr          Args((Int,Cell));
 
 static Cell   local typeAp	      Args((Int,Cell));
 static Type   local typeExpected      Args((Int,String,Cell,Type,Int,Int,Bool));
+static Type   local typeExpected2     Args((Int,String,Cell,Type,Int,Int));
 static Void   local typeAlt	      Args((String,Cell,Cell,Type,Int,Int));
 static Int    local funcType          Args((Int));
 static Void   local typeCase          Args((Int,Int,Cell));
@@ -635,8 +636,7 @@ Cell e; {
     Printf("%d) result: ",mynumber);
     printType(stdout,debugType(typeIs,typeOff));
     Printf("\n%d) preds: ",mynumber);
-    ps = copyPreds(preds);
-    printContext(stdout,ps);
+    printContext(stdout,debugContext(preds));
     Putchar('\n');
     return retv;
 }
@@ -940,7 +940,7 @@ Cell e; {				/* requires polymorphism, qualified*/
 	    Type expect = dropRank1(arg(fun(body)),alpha,m);
 	    if (isPolyOrQualType(expect)) {
 		if (tcMode==EXPRESSION)		/* poly/qual type in expr  */
-		    hd(as) = typeExpected(l,app,hd(as),expect,alpha,m,TRUE);
+		    hd(as) = typeExpected2(l,app,hd(as),expect,alpha,m);
 		else if (hd(as)!=WILDCARD) {	/* Pattern binding/match   */
 		    if (!isVar(hd(as))) {
 			ERRMSG(l) "Argument "    ETHEN ERREXPR(arg(as));
@@ -1058,6 +1058,59 @@ Bool   addEvid; {			/* TRUE => add \ev -> ...	   */
     }
     else
 	preds = revOnto(ps,savePreds);
+
+    inferType(t,o);
+    return e;
+}
+
+static Cell local typeExpected2(l,wh,e,reqd,alpha,n)
+Int    l;				/* Same as typeExpected, but for   */
+String wh;				/* use with rank 2 expressions	   */
+Cell   e;				/* (see typeAp)			   */
+Type   reqd;
+Int    alpha;
+Int    n; {
+    List savePreds = preds;
+    Type t;
+    Int  o;
+    Int  m;
+    List ps;
+    Int  i;
+
+    instantiate(reqd);
+    t     = typeIs;
+    o     = typeOff;
+    m     = typeFree;
+    ps    = makePredAss(predsAre,o);
+
+    preds = NIL;
+    check(l,e,NIL,wh,t,o);
+    improve(l,ps,preds);
+
+    clearMarks();
+    mapProc(markAssumList,defnBounds);
+    mapProc(markAssumList,varsBounds);
+    mapProc(markPred,savePreds);
+    markBtyvs();
+
+    for (i=0; i<n; i++)
+	markTyvar(alpha+i);
+
+    normPreds(l);
+    savePreds = elimPredsUsing(ps,savePreds);
+    if (nonNull(preds) && resolveDefs(genvarType(t,o,NIL)))
+	savePreds = elimPredsUsing(ps,savePreds);
+
+    resetGenerics();
+    for (i=0; i<m; i++)
+	if (copyTyvar(o+i)!=mkOffset(i)) {
+	    List qs = copyPreds(ps);
+	    Type it = copyType(t,o);
+	    tooGeneral(l,e,reqd,generalize(qs,it));
+	}
+
+    e     = qualifyExpr(l,ps,e);
+    preds = revOnto(preds,savePreds);
 
     inferType(t,o);
     return e;

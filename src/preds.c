@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: preds.c,v $
- * $Revision: 1.9 $
- * $Date: 1999/09/15 23:57:21 $
+ * $Revision: 1.10 $
+ * $Date: 1999/09/20 20:01:00 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -99,7 +99,6 @@ Text t; {
 	    prev = &tl(ps);
 	}
 }
-
 #endif
 
 static List local makePredAss(qs,o)	/* Make list of predicate assumps. */
@@ -758,7 +757,7 @@ List sps; {				/* context ps.  sps = savePreds.   */
 
 	if (nonNull(ev)) {		/* Discharge if ps ||- (pi,o)	   */
 	    overEvid(thd3(hd(p)),ev);
-	} else if (!isAp(pi) || (!anyGenerics(pi,o))) {
+	} else if (!isAp(pi) || isIP(fun(pi)) || !anyGenerics(pi,o)) {
 	    tl(p) = sps;		/* Defer if no generics		   */
 	    sps   = p;
 	}
