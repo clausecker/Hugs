@@ -11,7 +11,8 @@ compile_only=false
 extra_opts='-k'
 haskell98=true
 use_cpp=false
-cpp_flags='-P -traditional'
+cpp_flags=
+extra_cpp_flags='-P -traditional -D__HUGS__'
 
 # flags that also occur in source files
 handle_flag() {
@@ -33,6 +34,8 @@ handle_flag() {
 	esac
 }
 
+cc_args=
+
 while [ $# -gt 0 ]
 do
 	case "$1" in
@@ -47,8 +50,10 @@ do
 		done ;;
 	--make)	;;
 	-[dvOW]*) ;;
+	-[lL]*)	cc_args="$cc_args $1" ;;
 	-*)	handle_flag $1 ;;
-	*.o)	objects="$objects $1" ;;
+	*.o)	cc_args="$cc_args $1" ;;
+	*.c)	cc_args="$cc_args $1" ;;
 	*.hs|*.lhs)
 		sources="$sources $1" ;;
 	*)
@@ -61,8 +66,13 @@ do
 	shift
 done
 
-for f in $sources
-do	src_opts=`grep '^>*{-# OPTIONS ' $f | sed -e 's/.*{-# OPTIONS //' -e 's/ #-}//'`
+ffi_args=
+for arg in $cpp_flags $cc_args
+do	ffi_args="$ffi_args +L$arg"
+done
+
+for f in $sources; do
+	src_opts=`grep '^>*{-# OPTIONS ' $f | sed -e 's/.*{-# OPTIONS //' -e 's/ #-}//'`
 	for flag in $src_opts
 	do	handle_flag $flag
 	done
@@ -73,22 +83,40 @@ then	extra_opts="+98 $extra_opts"
 else	extra_opts="-98 $extra_opts"
 fi
 
-if $use_cpp; then
-	if hugs -F"cpp $cpp_flags" $extra_opts $sources </dev/null | tail +10 | fgrep -v 'Type :? for help' | fgrep -v '[Leaving Hugs]' | grep . >&2
-	then	exit 1
+for f in $sources; do
+	if grep '^foreign ' $f >/dev/null; then
+		if test -L $f; then	# ffihugs doesn't work with symlinks
+			mv $f $f.save
+			cp $f.save $f
+		fi
+		if $use_cpp; then
+			ffihugs +G -F"cpp $extra_cpp_flags $cpp_flags" $extra_opts $ffi_args $f || exit 1
+		else
+			ffihugs +G $extra_opts $ffi_args $f || exit 1
+		fi
+	elif $use_cpp; then
+		if hugs -F"cpp $extra_cpp_flags $cpp_flags" $extra_opts $f </dev/null | tail +10 | fgrep -v 'Type :? for help' | fgrep -v '[Leaving Hugs]' | grep . >&2
+		then	exit 1
+		fi
+	else
+		if hugs $extra_opts $f </dev/null | tail +10 | fgrep -v 'Type :? for help' | fgrep -v '[Leaving Hugs]' | grep . >&2
+		then	exit 1
+		fi
 	fi
-else
-	if hugs $extra_opts $sources </dev/null | tail +10 | fgrep -v 'Type :? for help' | fgrep -v '[Leaving Hugs]' | grep . >&2
-	then	exit 1
+
+	stem=`echo $f | sed 's/\.l*hs$//'`
+
+	# Generate empty "object" file
+
+	if $compile_only && [ -n "$out_file" ]
+	then	echo >$out_file
+	else	echo >$stem.o
 	fi
-fi
 
-# Generate "object" files containing the name of the source file, if the
-# source file was a Main module, otherwise nothing, we can "link" these.
+	# Generate "interface" file containing the name of the source
+	# file, if the source file was a Main module, otherwise nothing,
+	# we can "link" these.
 
-for f in $sources
-do	stem=`echo $f | sed 's/\.l*hs$//'`
-	echo $f >$stem.hi
 	if grep 'module[ 	][ 	]*Main' $f >/dev/null ||
 	   ( !  grep 'module[ 	][ 	]*[A-Z]' $f >/dev/null &&
 		grep -w main $f >/dev/null )
@@ -99,19 +127,16 @@ do	stem=`echo $f | sed 's/\.l*hs$//'`
 	/*)	;;
 	?*)	main_file="`pwd`/$main_file" ;;
 	esac
-	if $compile_only && [ -n "$out_file" ]
-	then	echo $main_file >$out_file
-	else	echo $main_file >$stem.o
-	fi
-	objects="$objects $stem.o"
+	echo $main_file >$stem.hi
+	interfaces="$interfaces $stem.hi"
 done
 
 # If not -c, generate an "executable" that invokes runhugs on the file
-# containing the Main module, whose name will be in on of the .o files.
+# containing the Main module, whose name will be in one of the .hi files.
 
 if ! $compile_only
 then
-	main_file=`cat $objects | grep . | head -1`
+	main_file=`cat $interfaces | grep . | head -1`
 	case "$main_file" in
 	?*)
 		: ${out_file:=a.out}
