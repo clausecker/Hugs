@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: input.c,v $
- * $Revision: 1.45 $
- * $Date: 2002/07/19 18:40:23 $
+ * $Revision: 1.46 $
+ * $Date: 2002/07/19 21:43:17 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -409,7 +409,7 @@ String nm;                              /* named file (specified length is */
 Long   len; {                           /* used to set target for reading) */
 #if SUPPORT_PREPROCESSOR
     if (preprocessor) {
-	Int reallen = strlen(preprocessor) + 1 + strlen(nm) + 1;
+	Int reallen = strlen(preprocessor) + 1 + strlen(nm) + 2;
 	char *cmd = malloc(reallen);
 	if (cmd == NULL) {
 	    ERRMSG(0) "Unable to allocate memory for filter command."
