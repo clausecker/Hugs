@@ -11,8 +11,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.98 $
- * $Date: 2003/10/04 04:01:32 $
+ * $Revision: 1.99 $
+ * $Date: 2003/10/08 15:47:25 $
  * ------------------------------------------------------------------------*/
 #include "prelude.h"
 #include "storage.h"
@@ -818,11 +818,29 @@ String s; {
 
 String dirname(filename)	/* Return the directory part of the filename */
 String filename; {		/* or "." if no directory.                   */
+    
+#if !defined(DOS_FILENAMES)
     String slash = strrchr(filename,SLASH);
-
-    if (!slash)
+    if (!slash) {
 	return strCopy(".");
-    return strnCopy(filename, slash - filename);
+    } else {
+	return strnCopy(filename, slash - filename);
+    }
+#else
+    /* Cannot make use of strrchr() as we support both / and \\ */
+    String slash;
+
+    slash = filename + strlen(filename) - 1;
+    while (slash > filename) {
+	if (isSLASH(*slash)) break;
+	slash--;
+    }
+    if (slash == filename) {
+	return strCopy(".");
+    } else {
+	return strnCopy(filename, slash - filename);
+    }
+#endif
 }
 
 /* --------------------------------------------------------------------------
