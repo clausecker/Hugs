@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: type.c,v $
- * $Revision: 1.45 $
- * $Date: 2002/04/17 05:41:59 $
+ * $Revision: 1.46 $
+ * $Date: 2002/05/14 22:43:16 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1763,16 +1763,17 @@ Cell e; {				/* bizarre manner for the benefit  */
 	for (; nonNull(predsAre); predsAre=tl(predsAre))
 	    assumeEvid(hd(predsAre),typeOff);
 
-	if (whatIs(typeIs)==RANK2) {
-	    ERRMSG(line) "Sorry, record update syntax cannot currently be used for datatypes with polymorphic components"
-	    EEND;
-	}
+	if (whatIs(td)==RANK2)	/* Skip rank2 annotation, if any   */
+	    td = snd(snd(td));
 
 	instantiate(name(c).type);	/* Range type			   */
 	tr = typeIs;
 	or = typeOff;
 	for (; nonNull(predsAre); predsAre=tl(predsAre))
 	    assumeEvid(hd(predsAre),typeOff);
+
+	if (whatIs(tr)==RANK2)	/* Skip rank2 annotation, if any   */
+	    tr = snd(snd(tr));
 
 	for (fs1=fs, i=1; nonNull(fs1); fs1=tl(fs1), i++) {
 	    Int n    = sfunPos(fst(hd(fs1)),c);
@@ -1789,13 +1790,22 @@ Cell e; {				/* bizarre manner for the benefit  */
 		Cell t = ts;
 		for (; n-- > 1; f=tl(f), t=tl(t))
 		    ;
+
+		if (isPolyOrQualType(arg(fun(td)))) {
+		    ERRMSG(line) "Sorry, record update syntax cannot currently be used for polymorphic components"
+		    EEND;
+		}
+
 		f = hd(f);
 		t = hd(t);
 		instantiate(t);
 		shouldBe(line,snd(f),e,update,arg(fun(tr)),or);
 	    }					/* Unmentioned component   */
+	    /* this is just a sanity check, and avoiding it lets us
+	       handle records with polymoprhic components
 	    else if (!unify(arg(fun(td)),od,arg(fun(tr)),or))
 		internal("typeUpdFlds");
+	    */
 
 	    tr = arg(tr);
 	    td = arg(td);
