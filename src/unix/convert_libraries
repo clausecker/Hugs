@@ -119,9 +119,12 @@ chmod 755 BuildFFI
 
 packages='base haskell98 haskell-src network unix'
 
-if [ -d /usr/X11R6 ]
-then	packages="$packages X11 HGL"
-fi
+. ./params
+
+case "$X_LIBS" in
+'')	;;
+*)	packages="$packages X11 HGL" ;;
+esac
 
 for package in $packages
 do

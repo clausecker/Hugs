@@ -22,10 +22,14 @@ cc=${CC-gcc}
 : ${greencard=green-card}
 : ${ffihugs=`dirname $0`/../ffihugs}
 
-# platform sensitive settings
 case `uname -a` in
-*CYGWIN*) # For Win32
-	CALLCONV=stdcall ;;
+*CYGWIN*) platform=Win32 ;;
+*)	platform=Unix ;;
+esac
+
+# platform sensitive settings
+case $platform in
+Win32)	CALLCONV=stdcall ;;
 *)	CALLCONV=ccall ;;
 esac
 
@@ -158,19 +162,29 @@ do	echo "Converting $modname"
 	fi
 done <$module_list
 
-# Pass 2: compile FFI modules (or generate a script to do so)
+# Pass 2: generate a script to compile FFI modules
+
+. ./params
+
+conf_in=`echo $source_dir/*.conf.in`
+conf=`echo $source_dir/*.conf`
+
+if [ -f "$conf_in" ]
+then	$cpp $cpp_flags $includes \
+		-DX_CFLAGS=",\"$X_CFLAGS\"" -DX_PRE_LIBS=",\"$X_PRE_LIBS\"" \
+		-DX_LIBS=",\"$X_LIBS\"" -DX_EXTRA_LIBS=",\"$X_EXTRA_LIBS\"" \
+		$conf_in >$tmp
+	conf=$tmp
+fi
+
+extra_libraries=
+extra_ld_opts=
+if [ -f "$conf" ]
+then	extra_libraries=`../runhugs ../../tools/get_libraries $conf`
+	extra_ld_opts=`../runhugs ../../tools/get_ld_options $conf`
+fi
 
 script=`dirname $0`/BuildFFI
-
-# kludge to add libraries
-lib_flags=
-case $source_dir in
-*/X11)	lib_flags='-L/usr/X11R6/lib -lX11' ;;
-*/network)
-	case `uname -a` in
-	*CYGWIN*) lib_flags=wsock32.lib ;;
-	esac ;;
-esac
 
 while read modname
 do
@@ -200,8 +214,14 @@ do
 		do	cmd="$cmd +L$source_dir/cbits/$file"
 		done
 		cmd="$cmd `echo $modname | tr / .`"
-		for flag in $lib_flags
+		for flag in $extra_ld_opts
 		do	cmd="$cmd +L$flag"
+		done
+		for lib in $extra_libraries
+		do	case $platform in
+			Win32)	cmd="$cmd +L$lib.lib" ;;
+			*)	cmd="$cmd +L-l$lib" ;;
+			esac
 		done
 
 		echo "echo 'Compiling $filename'" >>$script

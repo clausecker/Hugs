@@ -2,7 +2,7 @@
 
 # Test the status within Hugs of each module in the hierarchical libraries.
 
-packages='haskell98 base haskell-src network'
+packages='haskell98 base haskell-src network unix X11 HGL'
 
 this_dir="`dirname $0`"
 : ${this_dir:-.}
@@ -72,13 +72,14 @@ test_module() {
 (
 	cd $srcdir
 	for package in $packages
-	do	find $package -type f \( -name \*.hs  -o -name \*.lhs -o -name \*.y -o -name \*.ly -o -name \*.hsc \) |
+	do	find $package -type f \( -name \*.hs  -o -name \*.lhs -o -name \*.y -o -name \*.ly -o -name \*.hsc -o -name \*.gc \) -print |
 			sed 's:^[^/]*/::
 				s/\..*//
 				s:/:.:g' |
 			sort
 	done
-) | grep -v '^Prelude$' | grep -v '^[GN]HC' | grep -v '\.[a-z]' |
+) | grep -v '^Prelude$' | grep -v '^[GN]HC' |
+	grep -v '\.[a-z]' | grep -v '^[a-z]' |
 	while read module
 	do
 		test_module $module

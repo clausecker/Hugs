@@ -47,6 +47,9 @@
 /* Define if your <sys/time.h> declares struct tm.  */
 #undef TM_IN_SYS_TIME
 
+/* Define if the X Window System is missing or not being used.  */
+#undef X_DISPLAY_MISSING
+
 /* The following symbols are defined in options.h:
  * 
  *   BYTECODE_PRIMS

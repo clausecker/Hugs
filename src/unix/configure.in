@@ -113,6 +113,7 @@ dnl--------------------------------------------------------------------
 AC_CHECK_LIB_NOWARN(dl, dlopen)
 AC_CHECK_LIB_NOWARN(dld, shl_load)
 AC_CHECK_LIB_NOWARN(m, atan)
+AC_PATH_XTRA
 
 dnl--------------------------------------------------------------------
 dnl
@@ -766,7 +767,7 @@ if test -f ../../tests/config.in ; then
  TESTSCRIPT=../../tests/config
 fi
 
-AC_OUTPUT(../Makefile ../../docs/Makefile ../../docs/hugs.1 $TESTSCRIPT)
+AC_OUTPUT(../Makefile ../../docs/Makefile ../../docs/hugs.1 $TESTSCRIPT params)
 
 echo ''
 echo '************************************************'
