@@ -8,8 +8,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: prelude.h,v $
- * $Revision: 1.71 $
- * $Date: 2004/10/14 22:08:48 $
+ * $Revision: 1.72 $
+ * $Date: 2005/01/07 16:04:11 $
  * ------------------------------------------------------------------------*/
 #ifndef __PRELUDE_H__
 #define __PRELUDE_H__
@@ -782,20 +782,20 @@ typedef void*    Pointer;
 #define NUM_BRKPTS         Pick(100,    200,        200)
 #endif
 
-#define NUM_SCRIPTS        Pick(64,     100,        500)
+#define NUM_SCRIPTS        Pick(64,     200,        800)
 #define NUM_FIXUPS         Pick(400,    400,        1000)
-#define NUM_TYCON          Pick(60,     160,        800)
-#define NUM_NAME           Pick(1000,   2000,       16000)
-#define NUM_CLASSES        Pick(30,     240,        480)
-#define NUM_INSTS          Pick(200,    300,        2000)
+#define NUM_TYCON          Pick(60,     320,        2000)
+#define NUM_NAME           Pick(1000,   4000,       32000)
+#define NUM_CLASSES        Pick(30,     240,        1000)
+#define NUM_INSTS          Pick(200,    400,        4000)
 #define NUM_TEXT           Pick(12000,  20000,      320000)
 #define NUM_TEXTH	   Pick(1,      10,         10)
-#define NUM_TYVARS         Pick(800,    2000,       4000)
-#define NUM_STACK          Pick(1800,   12000,      160000)
-#define NUM_ADDRS          Pick(28000,  60000,      320000)
+#define NUM_TYVARS         Pick(800,    2000,       8000)
+#define NUM_STACK          Pick(1800,   16000,      160000)
+#define NUM_ADDRS          Pick(28000,  120000,     1280000)
 #define MINIMUMHEAP	   Pick(7500,   19000,      19000)
 #define MAXIMUMHEAP	   Pick(32765,  0,          0)
-#define DEFAULTHEAP        Pick(28000,  50000,      250000)
+#define DEFAULTHEAP        Pick(28000,  100000,      1000000)
 #define MAXPOSINT          Pick(0x7fff, 0x7fffffff, 0x7fffffff)
 #define MAXHUGSWORD        Pick(0xffffU, 0xffffffffU, 0xffffffffU)
 #define NUM_STABLEPTRS	   Pick(10,     100,        10000)
