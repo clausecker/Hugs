@@ -1,9 +1,7 @@
 -----------------------------------------------------------------------------
 -- Standard Library: System operations
 --
--- Warning: the implementation of these functions in Hugs 98 is very weak.
--- The functions themselves are best suited to uses in compiled programs,
--- and not to use in an interpreter-based environment like Hugs.
+-- Note: on Windows, system always yields ExitSuccess.
 --
 -- Suitable for use with Hugs 98
 -----------------------------------------------------------------------------
@@ -15,6 +13,8 @@ module Hugs.System (
 
 import Hugs.Prelude( ExitCode(..), catchException, throw )
 
+-- In interpretive mode, the initial values of these two are [] and "Hugs",
+-- but they can be (temporarily) changed using withArgs and withProgName.
 primitive getArgs     "primGetArgs"     :: IO [String]
 primitive getProgName "primGetProgName" :: IO String
 
