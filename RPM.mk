@@ -88,7 +88,8 @@ ${PACKAGE}.tar.gz:
 	cd ${TARTMP}/hugs98/src; bison -y parser.y; mv y.tab.c parser.c
 # Siggy deren't like these in distros
 	cd ${TARTMP}/hugs98; rm -rf tests
-	cd ${TARTMP}/hugs98; autoconf # ; autoheader
+	cd ${TARTMP}/hugs98; autoconf ; autoheader
+	echo timestamp for config.h.in >${TARTMP}/hugs98/src/stamp-h.in
 	mv ${TARTMP}/hugs98 ${TARTMP}/${PACKAGE}
 	cd ${TARTMP}; tar cf ${TMP}/${NAME}.tar ${PACKAGE}
 	gzip -9 ${TMP}/${NAME}.tar

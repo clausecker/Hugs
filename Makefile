@@ -79,8 +79,10 @@ src/Makefile: configure src/config.h.in
 configure: configure.ac aclocal.m4
 	-autoconf
 
-src/config.h.in: configure.ac aclocal.m4
+src/config.h.in: src/stamp-h.in
+src/stamp-h.in: configure.ac aclocal.m4
 	-autoheader
+	echo timestamp for config.h.in >$@
 
 # fetching library sources
 
