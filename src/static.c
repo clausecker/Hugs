@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.91 $
- * $Date: 2002/09/11 20:50:27 $
+ * $Revision: 1.92 $
+ * $Date: 2002/09/11 23:48:48 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -34,11 +34,9 @@ static List   local checkImportEntity	Args((List,Module,Bool,Cell));
 static List   local resolveImportList	Args((Module,Cell,Bool));
 static Void   local checkImportList	Args((Bool,Pair));
 static Void   local checkQualImportList	Args((Pair));
-static Cell   local lookupImport        Args((Text,List));
 static Cell   local entityIsMember      Args((Cell,List));
 static List   local addEntity           Args((Cell,Cell,List));
 static List   local addEntityPair       Args((Cell,List));
-static Text   local findImportText      Args((Cell));
 static List   local mergeImportLists    Args((List,List));
 
 static Cell   local importEntity	Args((Module,Cell));
@@ -482,7 +480,7 @@ Cell   entity; { /* Entry from import/hiding list */
 			    }
 			    break;
 			case SYNONYM:
-			    imports=addEntity(f,NIL,imports);
+			    imports=addEntity(f,DOTDOT,imports);
 			    break;
 			default:;
 			  /* deliberate fall thru */
@@ -608,26 +606,6 @@ Pair importSpec; {
   checkImportList(TRUE,importSpec);
 }
 
-static Cell local lookupImport(t,is)
-Text t;
-List is; {
-  List xs;
-  
-  for (xs=is;nonNull(xs);xs=tl(xs)) {
-    Cell e = hd(xs);
-    if (isPair(e)) {
-      Cell f= fst(e);
-      if ((isTycon(f) && tycon(f).text  == t) || 
-	  (isClass(f) && cclass(f).text == t)) {
-	return xs;
-      }
-    } else if (isName(e) && name(e).text == t) {
-      return xs;
-    }
-  }
-  return NIL;
-}
-
 static List local addEntityPair(e,is) /* For pair (e,ls) add ls to to the 'is' */
                                       /* import/export list.                   */
 Cell e;
@@ -637,7 +615,7 @@ List is; {
   } else if (isName(e)) {
       if (isClass(name(e).parent)) {
 	return addEntity(name(e).parent, singleton(e),is);
-      } else if (isTycon(name(e).parent)) {
+      } else if (isTycon(name(e).parent) && !findTycon(name(e).text)) {
 	return addEntity(name(e).parent, singleton(e),is);
       } else if (name(e).number == SELNAME) {
 	/* a field name */
@@ -692,49 +670,15 @@ List xs; {
     return NIL;
 }
 
-static Text local findImportText(c)
-Cell c; {
-    if (isName(c))  return name(c).text;
-    if (isTycon(c)) return tycon(c).text;
-    if (isClass(c)) return cclass(c).text;
-    if (isIdent(c)) return textOf(c);
-    if (isPair(c))  return findImportText(fst(c));
-    internal("findImportText");
-    return NIL;
-}
-
 static List local mergeImportLists(ls1,ls2)
 List ls1;
 List ls2; {
-  Text t;
   List xs;
-  List res = ls2;
-  Cell cs;
 
   for (xs=ls1;nonNull(xs);xs=tl(xs)) {
-    t = findImportText(hd(xs));
-    if ((cs = lookupImport(t,ls2)) != NIL) {
-      /* found a match, now combine the two */
-      if (isIdent(hd(xs)) || !isPair(hd(xs))) {
-	/* just a name doesn't add any more info than what's
-	   already in the list; continue. */
-	;
-      } else if ( isPair(hd(xs)) ) {
-	  if ( !isPair(hd(cs)) ) {
-	      /* just adding more information */
-	      hd(cs) = hd(xs);
-	  } else {
-	      /* join the constructors/members, no elimination of dups. */
-	      snd(hd(cs)) = dupOnto(snd(hd(xs)), snd(hd(cs)));
-	  }
-      } else {
-	internal("mergeImportLists2");
-      }
-    } else {
-      res = cons(hd(xs),res);
-    }
+      ls2 = addEntityPair(hd(xs),ls2);
   }
-  return res;
+  return ls2;
 }
 
 static Void local checkImportList(isQual,importSpec) /*Import a module (un)qualified*/
@@ -942,19 +886,23 @@ Cell e; {
 	Cell export = NIL;
 	List origExports = exports;
 	if (nonNull(export=findQualName(e))) {
-	    /* check to see whether the exported name N belongs to a class,
-	     * type constructor or data con (i.e., a field name), named P.
-	     * If so, process the export as P(N).
+	    /* check to see whether the exported name N belongs to a class
+	     * or data con (i.e., a field name), named P. If so, process
+	     * the export as P(N).
+	     */
+	    /* Note: data constructors can't appear in export lists,
+	     * so no need to test whether the name is such a thing. 
+	     * Should Haskell change in this regard, you need to be
+	     * a bit careful with testing for this here, i.e., just
+	     * checking whether the parent is a tycon isn't precise enough,
+	     * as type synonyms also have tycons as parents (their aliased
+	     * type.)
 	     */
 	    if (isClass(name(export).parent)) {
 		return checkExport(exports,mt,pair(mkCon(cclass(name(export).parent).text),
 						   singleton(mkVar(name(export).text))));
 	    }
-	    if (isTycon(name(export).parent)) {
-		return checkExport(exports,mt,pair(mkCon(tycon(name(export).parent).text),
-						   singleton(mkCon(name(export).text))));
-	    }
-	    if ( name(export).number == SELNAME ) {
+	    if ( isName(export) && name(export).number == SELNAME ) {
 		/* a field name */
 		Cell p = name(export).parent; /* the data constructor */
 		Cell t = name(p).parent;      /* the type constructor */
