@@ -3,6 +3,7 @@
 # or greater).
 
 RELEASE=hugs98-Feb2000
+PATCHLEVEL=`egrep ^Release: hugs98.spec  | colrm 1 14`
 
 all:
 	@echo "Make what?"
@@ -34,8 +35,8 @@ rpm-dirs:
 rpm: tar rpm-dirs
 	cp ${RELEASE}.tar.gz /tmp/rpm/SOURCES
 	rpm --define '_topdir /tmp/rpm' -ba hugs98.spec
-	mv /tmp/rpm/RPMS/i386/${RELEASE}-1.i386.rpm .
-	mv /tmp/rpm/SRPMS/${RELEASE}-1.src.rpm .
+	mv /tmp/rpm/RPMS/i386/${RELEASE}-${PATCHLEVEL}.i386.rpm .
+	mv /tmp/rpm/SRPMS/${RELEASE}-${PATCHLEVEL}.src.rpm .
 
 clean:
 	-cd src; make veryclean
