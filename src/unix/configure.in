@@ -396,11 +396,14 @@ AC_SUBST(HavePosixRegex)
 
 dnl check for OpenGL include files
 if test x"$enable_hopengl" != x"no"; then
+  fp_save_cppflags="$CPPFLAGS"
+  CPPFLAGS="$CPPFLAGS $X_CFLAGS"
   if test "$UseQuartzOpenGL" = YES ; then
     AC_CHECK_HEADERS(OpenGL/gl.h)
   else
     AC_CHECK_HEADERS(GL/gl.h)
   fi
+  CPPFLAGS="$fp_save_cppflags"
 fi
 
 dnl --------------------------------------------------

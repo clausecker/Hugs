@@ -7968,6 +7968,8 @@ done
 
 
 if test x"$enable_hopengl" != x"no"; then
+  fp_save_cppflags="$CPPFLAGS"
+  CPPFLAGS="$CPPFLAGS $X_CFLAGS"
   if test "$UseQuartzOpenGL" = YES ; then
 
 for ac_header in OpenGL/gl.h
@@ -8255,6 +8257,7 @@ fi
 done
 
   fi
+  CPPFLAGS="$fp_save_cppflags"
 fi
 
 
@@ -17956,7 +17959,9 @@ echo $ECHO_N "checking Haskell type for char... $ECHO_C" >&6
 if test "${fptools_cv_htype_char+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-  fptools_cv_htype_sup_char=yes;
+  fptools_cv_htype_sup_char=yes
+fp_check_htype_save_cppflags="$CPPFLAGS"
+CPPFLAGS="$CPPFLAGS $X_CFLAGS"
 if test "$cross_compiling" = yes; then
   fptools_cv_htype_char=NotReallyATypeCross; fptools_cv_htype_sup_char=no
 else
@@ -18006,12 +18011,16 @@ cat >>conftest.$ac_ext <<_ACEOF
 # include <ctype.h>
 #endif
 
-#if HAVE_GL_GL_H
+#if defined(HAVE_GL_GL_H)
 # include <GL/gl.h>
+#elif defined(HAVE_OPENGL_GL_H)
+# include <OpenGL/gl.h>
 #endif
 
-#if HAVE_OPENGL_GL_H
-# include <OpenGL/gl.h>
+#if defined(HAVE_AL_ALC_H)
+# include <AL/alc.h>
+#elif defined(HAVE_OPENAL_ALC_H)
+# include <OpenAL/alc.h>
 #endif
 
 #if HAVE_SYS_RESOURCE_H
@@ -18059,7 +18068,8 @@ fi
 rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
- if test "$fptools_cv_htype_sup_char" = yes; then
+ CPPFLAGS="$fp_check_htype_save_cppflags"
+if test "$fptools_cv_htype_sup_char" = yes; then
   echo "$as_me:$LINENO: result: $fptools_cv_htype_char" >&5
 echo "${ECHO_T}$fptools_cv_htype_char" >&6
 
@@ -18077,7 +18087,9 @@ echo $ECHO_N "checking Haskell type for signed char... $ECHO_C" >&6
 if test "${fptools_cv_htype_signed_char+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-  fptools_cv_htype_sup_signed_char=yes;
+  fptools_cv_htype_sup_signed_char=yes
+fp_check_htype_save_cppflags="$CPPFLAGS"
+CPPFLAGS="$CPPFLAGS $X_CFLAGS"
 if test "$cross_compiling" = yes; then
   fptools_cv_htype_signed_char=NotReallyATypeCross; fptools_cv_htype_sup_signed_char=no
 else
@@ -18127,12 +18139,16 @@ cat >>conftest.$ac_ext <<_ACEOF
 # include <ctype.h>
 #endif
 
-#if HAVE_GL_GL_H
+#if defined(HAVE_GL_GL_H)
 # include <GL/gl.h>
+#elif defined(HAVE_OPENGL_GL_H)
+# include <OpenGL/gl.h>
 #endif
 
-#if HAVE_OPENGL_GL_H
-# include <OpenGL/gl.h>
+#if defined(HAVE_AL_ALC_H)
+# include <AL/alc.h>
+#elif defined(HAVE_OPENAL_ALC_H)
+# include <OpenAL/alc.h>
 #endif
 
 #if HAVE_SYS_RESOURCE_H
@@ -18180,7 +18196,8 @@ fi
 rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
- if test "$fptools_cv_htype_sup_signed_char" = yes; then
+ CPPFLAGS="$fp_check_htype_save_cppflags"
+if test "$fptools_cv_htype_sup_signed_char" = yes; then
   echo "$as_me:$LINENO: result: $fptools_cv_htype_signed_char" >&5
 echo "${ECHO_T}$fptools_cv_htype_signed_char" >&6
 
@@ -18198,7 +18215,9 @@ echo $ECHO_N "checking Haskell type for unsigned char... $ECHO_C" >&6
 if test "${fptools_cv_htype_unsigned_char+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-  fptools_cv_htype_sup_unsigned_char=yes;
+  fptools_cv_htype_sup_unsigned_char=yes
+fp_check_htype_save_cppflags="$CPPFLAGS"
+CPPFLAGS="$CPPFLAGS $X_CFLAGS"
 if test "$cross_compiling" = yes; then
   fptools_cv_htype_unsigned_char=NotReallyATypeCross; fptools_cv_htype_sup_unsigned_char=no
 else
@@ -18248,12 +18267,16 @@ cat >>conftest.$ac_ext <<_ACEOF
 # include <ctype.h>
 #endif
 
-#if HAVE_GL_GL_H
+#if defined(HAVE_GL_GL_H)
 # include <GL/gl.h>
+#elif defined(HAVE_OPENGL_GL_H)
+# include <OpenGL/gl.h>
 #endif
 
-#if HAVE_OPENGL_GL_H
-# include <OpenGL/gl.h>
+#if defined(HAVE_AL_ALC_H)
+# include <AL/alc.h>
+#elif defined(HAVE_OPENAL_ALC_H)
+# include <OpenAL/alc.h>
 #endif
 
 #if HAVE_SYS_RESOURCE_H
@@ -18301,7 +18324,8 @@ fi
 rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
- if test "$fptools_cv_htype_sup_unsigned_char" = yes; then
+ CPPFLAGS="$fp_check_htype_save_cppflags"
+if test "$fptools_cv_htype_sup_unsigned_char" = yes; then
   echo "$as_me:$LINENO: result: $fptools_cv_htype_unsigned_char" >&5
 echo "${ECHO_T}$fptools_cv_htype_unsigned_char" >&6
 
@@ -18319,7 +18343,9 @@ echo $ECHO_N "checking Haskell type for short... $ECHO_C" >&6
 if test "${fptools_cv_htype_short+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-  fptools_cv_htype_sup_short=yes;
+  fptools_cv_htype_sup_short=yes
+fp_check_htype_save_cppflags="$CPPFLAGS"
+CPPFLAGS="$CPPFLAGS $X_CFLAGS"
 if test "$cross_compiling" = yes; then
   fptools_cv_htype_short=NotReallyATypeCross; fptools_cv_htype_sup_short=no
 else
@@ -18369,12 +18395,16 @@ cat >>conftest.$ac_ext <<_ACEOF
 # include <ctype.h>
 #endif
 
-#if HAVE_GL_GL_H
+#if defined(HAVE_GL_GL_H)
 # include <GL/gl.h>
+#elif defined(HAVE_OPENGL_GL_H)
+# include <OpenGL/gl.h>
 #endif
 
-#if HAVE_OPENGL_GL_H
-# include <OpenGL/gl.h>
+#if defined(HAVE_AL_ALC_H)
+# include <AL/alc.h>
+#elif defined(HAVE_OPENAL_ALC_H)
+# include <OpenAL/alc.h>
 #endif
 
 #if HAVE_SYS_RESOURCE_H
@@ -18422,7 +18452,8 @@ fi
 rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
- if test "$fptools_cv_htype_sup_short" = yes; then
+ CPPFLAGS="$fp_check_htype_save_cppflags"
+if test "$fptools_cv_htype_sup_short" = yes; then
   echo "$as_me:$LINENO: result: $fptools_cv_htype_short" >&5
 echo "${ECHO_T}$fptools_cv_htype_short" >&6
 
@@ -18440,7 +18471,9 @@ echo $ECHO_N "checking Haskell type for unsigned short... $ECHO_C" >&6
 if test "${fptools_cv_htype_unsigned_short+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-  fptools_cv_htype_sup_unsigned_short=yes;
+  fptools_cv_htype_sup_unsigned_short=yes
+fp_check_htype_save_cppflags="$CPPFLAGS"
+CPPFLAGS="$CPPFLAGS $X_CFLAGS"
 if test "$cross_compiling" = yes; then
   fptools_cv_htype_unsigned_short=NotReallyATypeCross; fptools_cv_htype_sup_unsigned_short=no
 else
@@ -18490,12 +18523,16 @@ cat >>conftest.$ac_ext <<_ACEOF
 # include <ctype.h>
 #endif
 
-#if HAVE_GL_GL_H
+#if defined(HAVE_GL_GL_H)
 # include <GL/gl.h>
+#elif defined(HAVE_OPENGL_GL_H)
+# include <OpenGL/gl.h>
 #endif
 
-#if HAVE_OPENGL_GL_H
-# include <OpenGL/gl.h>
+#if defined(HAVE_AL_ALC_H)
+# include <AL/alc.h>
+#elif defined(HAVE_OPENAL_ALC_H)
+# include <OpenAL/alc.h>
 #endif
 
 #if HAVE_SYS_RESOURCE_H
@@ -18543,7 +18580,8 @@ fi
 rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
- if test "$fptools_cv_htype_sup_unsigned_short" = yes; then
+ CPPFLAGS="$fp_check_htype_save_cppflags"
+if test "$fptools_cv_htype_sup_unsigned_short" = yes; then
   echo "$as_me:$LINENO: result: $fptools_cv_htype_unsigned_short" >&5
 echo "${ECHO_T}$fptools_cv_htype_unsigned_short" >&6
 
@@ -18561,7 +18599,9 @@ echo $ECHO_N "checking Haskell type for int... $ECHO_C" >&6
 if test "${fptools_cv_htype_int+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-  fptools_cv_htype_sup_int=yes;
+  fptools_cv_htype_sup_int=yes
+fp_check_htype_save_cppflags="$CPPFLAGS"
+CPPFLAGS="$CPPFLAGS $X_CFLAGS"
 if test "$cross_compiling" = yes; then
   fptools_cv_htype_int=NotReallyATypeCross; fptools_cv_htype_sup_int=no
 else
@@ -18611,12 +18651,16 @@ cat >>conftest.$ac_ext <<_ACEOF
 # include <ctype.h>
 #endif
 
-#if HAVE_GL_GL_H
+#if defined(HAVE_GL_GL_H)
 # include <GL/gl.h>
+#elif defined(HAVE_OPENGL_GL_H)
+# include <OpenGL/gl.h>
 #endif
 
-#if HAVE_OPENGL_GL_H
-# include <OpenGL/gl.h>
+#if defined(HAVE_AL_ALC_H)
+# include <AL/alc.h>
+#elif defined(HAVE_OPENAL_ALC_H)
+# include <OpenAL/alc.h>
 #endif
 
 #if HAVE_SYS_RESOURCE_H
@@ -18664,7 +18708,8 @@ fi
 rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
- if test "$fptools_cv_htype_sup_int" = yes; then
+ CPPFLAGS="$fp_check_htype_save_cppflags"
+if test "$fptools_cv_htype_sup_int" = yes; then
   echo "$as_me:$LINENO: result: $fptools_cv_htype_int" >&5
 echo "${ECHO_T}$fptools_cv_htype_int" >&6
 
@@ -18682,7 +18727,9 @@ echo $ECHO_N "checking Haskell type for unsigned int... $ECHO_C" >&6
 if test "${fptools_cv_htype_unsigned_int+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-  fptools_cv_htype_sup_unsigned_int=yes;
+  fptools_cv_htype_sup_unsigned_int=yes
+fp_check_htype_save_cppflags="$CPPFLAGS"
+CPPFLAGS="$CPPFLAGS $X_CFLAGS"
 if test "$cross_compiling" = yes; then
   fptools_cv_htype_unsigned_int=NotReallyATypeCross; fptools_cv_htype_sup_unsigned_int=no
 else
@@ -18732,12 +18779,16 @@ cat >>conftest.$ac_ext <<_ACEOF
 # include <ctype.h>
 #endif
 
-#if HAVE_GL_GL_H
+#if defined(HAVE_GL_GL_H)
 # include <GL/gl.h>
+#elif defined(HAVE_OPENGL_GL_H)
+# include <OpenGL/gl.h>
 #endif
 
-#if HAVE_OPENGL_GL_H
-# include <OpenGL/gl.h>
+#if defined(HAVE_AL_ALC_H)
+# include <AL/alc.h>
+#elif defined(HAVE_OPENAL_ALC_H)
+# include <OpenAL/alc.h>
 #endif
 
 #if HAVE_SYS_RESOURCE_H
@@ -18785,7 +18836,8 @@ fi
 rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
- if test "$fptools_cv_htype_sup_unsigned_int" = yes; then
+ CPPFLAGS="$fp_check_htype_save_cppflags"
+if test "$fptools_cv_htype_sup_unsigned_int" = yes; then
   echo "$as_me:$LINENO: result: $fptools_cv_htype_unsigned_int" >&5
 echo "${ECHO_T}$fptools_cv_htype_unsigned_int" >&6
 
@@ -18803,7 +18855,9 @@ echo $ECHO_N "checking Haskell type for long... $ECHO_C" >&6
 if test "${fptools_cv_htype_long+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-  fptools_cv_htype_sup_long=yes;
+  fptools_cv_htype_sup_long=yes
+fp_check_htype_save_cppflags="$CPPFLAGS"
+CPPFLAGS="$CPPFLAGS $X_CFLAGS"
 if test "$cross_compiling" = yes; then
   fptools_cv_htype_long=NotReallyATypeCross; fptools_cv_htype_sup_long=no
 else
@@ -18853,12 +18907,16 @@ cat >>conftest.$ac_ext <<_ACEOF
 # include <ctype.h>
 #endif
 
-#if HAVE_GL_GL_H
+#if defined(HAVE_GL_GL_H)
 # include <GL/gl.h>
+#elif defined(HAVE_OPENGL_GL_H)
+# include <OpenGL/gl.h>
 #endif
 
-#if HAVE_OPENGL_GL_H
-# include <OpenGL/gl.h>
+#if defined(HAVE_AL_ALC_H)
+# include <AL/alc.h>
+#elif defined(HAVE_OPENAL_ALC_H)
+# include <OpenAL/alc.h>
 #endif
 
 #if HAVE_SYS_RESOURCE_H
@@ -18906,7 +18964,8 @@ fi
 rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
- if test "$fptools_cv_htype_sup_long" = yes; then
+ CPPFLAGS="$fp_check_htype_save_cppflags"
+if test "$fptools_cv_htype_sup_long" = yes; then
   echo "$as_me:$LINENO: result: $fptools_cv_htype_long" >&5
 echo "${ECHO_T}$fptools_cv_htype_long" >&6
 
@@ -18924,7 +18983,9 @@ echo $ECHO_N "checking Haskell type for unsigned long... $ECHO_C" >&6
 if test "${fptools_cv_htype_unsigned_long+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-  fptools_cv_htype_sup_unsigned_long=yes;
+  fptools_cv_htype_sup_unsigned_long=yes
+fp_check_htype_save_cppflags="$CPPFLAGS"
+CPPFLAGS="$CPPFLAGS $X_CFLAGS"
 if test "$cross_compiling" = yes; then
   fptools_cv_htype_unsigned_long=NotReallyATypeCross; fptools_cv_htype_sup_unsigned_long=no
 else
@@ -18974,12 +19035,16 @@ cat >>conftest.$ac_ext <<_ACEOF
 # include <ctype.h>
 #endif
 
-#if HAVE_GL_GL_H
+#if defined(HAVE_GL_GL_H)
 # include <GL/gl.h>
+#elif defined(HAVE_OPENGL_GL_H)
+# include <OpenGL/gl.h>
 #endif
 
-#if HAVE_OPENGL_GL_H
-# include <OpenGL/gl.h>
+#if defined(HAVE_AL_ALC_H)
+# include <AL/alc.h>
+#elif defined(HAVE_OPENAL_ALC_H)
+# include <OpenAL/alc.h>
 #endif
 
 #if HAVE_SYS_RESOURCE_H
@@ -19027,7 +19092,8 @@ fi
 rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
- if test "$fptools_cv_htype_sup_unsigned_long" = yes; then
+ CPPFLAGS="$fp_check_htype_save_cppflags"
+if test "$fptools_cv_htype_sup_unsigned_long" = yes; then
   echo "$as_me:$LINENO: result: $fptools_cv_htype_unsigned_long" >&5
 echo "${ECHO_T}$fptools_cv_htype_unsigned_long" >&6
 
@@ -19046,7 +19112,9 @@ echo $ECHO_N "checking Haskell type for long long... $ECHO_C" >&6
 if test "${fptools_cv_htype_long_long+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-  fptools_cv_htype_sup_long_long=yes;
+  fptools_cv_htype_sup_long_long=yes
+fp_check_htype_save_cppflags="$CPPFLAGS"
+CPPFLAGS="$CPPFLAGS $X_CFLAGS"
 if test "$cross_compiling" = yes; then
   fptools_cv_htype_long_long=NotReallyATypeCross; fptools_cv_htype_sup_long_long=no
 else
@@ -19096,12 +19164,16 @@ cat >>conftest.$ac_ext <<_ACEOF
 # include <ctype.h>
 #endif
 
-#if HAVE_GL_GL_H
+#if defined(HAVE_GL_GL_H)
 # include <GL/gl.h>
+#elif defined(HAVE_OPENGL_GL_H)
+# include <OpenGL/gl.h>
 #endif
 
-#if HAVE_OPENGL_GL_H
-# include <OpenGL/gl.h>
+#if defined(HAVE_AL_ALC_H)
+# include <AL/alc.h>
+#elif defined(HAVE_OPENAL_ALC_H)
+# include <OpenAL/alc.h>
 #endif
 
 #if HAVE_SYS_RESOURCE_H
@@ -19149,7 +19221,8 @@ fi
 rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
- if test "$fptools_cv_htype_sup_long_long" = yes; then
+ CPPFLAGS="$fp_check_htype_save_cppflags"
+if test "$fptools_cv_htype_sup_long_long" = yes; then
   echo "$as_me:$LINENO: result: $fptools_cv_htype_long_long" >&5
 echo "${ECHO_T}$fptools_cv_htype_long_long" >&6
 
@@ -19167,7 +19240,9 @@ echo $ECHO_N "checking Haskell type for unsigned long long... $ECHO_C" >&6
 if test "${fptools_cv_htype_unsigned_long_long+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-  fptools_cv_htype_sup_unsigned_long_long=yes;
+  fptools_cv_htype_sup_unsigned_long_long=yes
+fp_check_htype_save_cppflags="$CPPFLAGS"
+CPPFLAGS="$CPPFLAGS $X_CFLAGS"
 if test "$cross_compiling" = yes; then
   fptools_cv_htype_unsigned_long_long=NotReallyATypeCross; fptools_cv_htype_sup_unsigned_long_long=no
 else
@@ -19217,12 +19292,16 @@ cat >>conftest.$ac_ext <<_ACEOF
 # include <ctype.h>
 #endif
 
-#if HAVE_GL_GL_H
+#if defined(HAVE_GL_GL_H)
 # include <GL/gl.h>
+#elif defined(HAVE_OPENGL_GL_H)
+# include <OpenGL/gl.h>
 #endif
 
-#if HAVE_OPENGL_GL_H
-# include <OpenGL/gl.h>
+#if defined(HAVE_AL_ALC_H)
+# include <AL/alc.h>
+#elif defined(HAVE_OPENAL_ALC_H)
+# include <OpenAL/alc.h>
 #endif
 
 #if HAVE_SYS_RESOURCE_H
@@ -19270,7 +19349,8 @@ fi
 rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
- if test "$fptools_cv_htype_sup_unsigned_long_long" = yes; then
+ CPPFLAGS="$fp_check_htype_save_cppflags"
+if test "$fptools_cv_htype_sup_unsigned_long_long" = yes; then
   echo "$as_me:$LINENO: result: $fptools_cv_htype_unsigned_long_long" >&5
 echo "${ECHO_T}$fptools_cv_htype_unsigned_long_long" >&6
 
@@ -19289,7 +19369,9 @@ echo $ECHO_N "checking Haskell type for float... $ECHO_C" >&6
 if test "${fptools_cv_htype_float+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-  fptools_cv_htype_sup_float=yes;
+  fptools_cv_htype_sup_float=yes
+fp_check_htype_save_cppflags="$CPPFLAGS"
+CPPFLAGS="$CPPFLAGS $X_CFLAGS"
 if test "$cross_compiling" = yes; then
   fptools_cv_htype_float=NotReallyATypeCross; fptools_cv_htype_sup_float=no
 else
@@ -19339,12 +19421,16 @@ cat >>conftest.$ac_ext <<_ACEOF
 # include <ctype.h>
 #endif
 
-#if HAVE_GL_GL_H
+#if defined(HAVE_GL_GL_H)
 # include <GL/gl.h>
+#elif defined(HAVE_OPENGL_GL_H)
+# include <OpenGL/gl.h>
 #endif
 
-#if HAVE_OPENGL_GL_H
-# include <OpenGL/gl.h>
+#if defined(HAVE_AL_ALC_H)
+# include <AL/alc.h>
+#elif defined(HAVE_OPENAL_ALC_H)
+# include <OpenAL/alc.h>
 #endif
 
 #if HAVE_SYS_RESOURCE_H
@@ -19392,7 +19478,8 @@ fi
 rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
- if test "$fptools_cv_htype_sup_float" = yes; then
+ CPPFLAGS="$fp_check_htype_save_cppflags"
+if test "$fptools_cv_htype_sup_float" = yes; then
   echo "$as_me:$LINENO: result: $fptools_cv_htype_float" >&5
 echo "${ECHO_T}$fptools_cv_htype_float" >&6
 
@@ -19410,7 +19497,9 @@ echo $ECHO_N "checking Haskell type for double... $ECHO_C" >&6
 if test "${fptools_cv_htype_double+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-  fptools_cv_htype_sup_double=yes;
+  fptools_cv_htype_sup_double=yes
+fp_check_htype_save_cppflags="$CPPFLAGS"
+CPPFLAGS="$CPPFLAGS $X_CFLAGS"
 if test "$cross_compiling" = yes; then
   fptools_cv_htype_double=NotReallyATypeCross; fptools_cv_htype_sup_double=no
 else
@@ -19460,12 +19549,16 @@ cat >>conftest.$ac_ext <<_ACEOF
 # include <ctype.h>
 #endif
 
-#if HAVE_GL_GL_H
+#if defined(HAVE_GL_GL_H)
 # include <GL/gl.h>
+#elif defined(HAVE_OPENGL_GL_H)
+# include <OpenGL/gl.h>
 #endif
 
-#if HAVE_OPENGL_GL_H
-# include <OpenGL/gl.h>
+#if defined(HAVE_AL_ALC_H)
+# include <AL/alc.h>
+#elif defined(HAVE_OPENAL_ALC_H)
+# include <OpenAL/alc.h>
 #endif
 
 #if HAVE_SYS_RESOURCE_H
@@ -19513,7 +19606,8 @@ fi
 rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
- if test "$fptools_cv_htype_sup_double" = yes; then
+ CPPFLAGS="$fp_check_htype_save_cppflags"
+if test "$fptools_cv_htype_sup_double" = yes; then
   echo "$as_me:$LINENO: result: $fptools_cv_htype_double" >&5
 echo "${ECHO_T}$fptools_cv_htype_double" >&6
 
@@ -19531,7 +19625,9 @@ echo $ECHO_N "checking Haskell type for ptrdiff_t... $ECHO_C" >&6
 if test "${fptools_cv_htype_ptrdiff_t+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-  fptools_cv_htype_sup_ptrdiff_t=yes;
+  fptools_cv_htype_sup_ptrdiff_t=yes
+fp_check_htype_save_cppflags="$CPPFLAGS"
+CPPFLAGS="$CPPFLAGS $X_CFLAGS"
 if test "$cross_compiling" = yes; then
   fptools_cv_htype_ptrdiff_t=NotReallyATypeCross; fptools_cv_htype_sup_ptrdiff_t=no
 else
@@ -19581,12 +19677,16 @@ cat >>conftest.$ac_ext <<_ACEOF
 # include <ctype.h>
 #endif
 
-#if HAVE_GL_GL_H
+#if defined(HAVE_GL_GL_H)
 # include <GL/gl.h>
+#elif defined(HAVE_OPENGL_GL_H)
+# include <OpenGL/gl.h>
 #endif
 
-#if HAVE_OPENGL_GL_H
-# include <OpenGL/gl.h>
+#if defined(HAVE_AL_ALC_H)
+# include <AL/alc.h>
+#elif defined(HAVE_OPENAL_ALC_H)
+# include <OpenAL/alc.h>
 #endif
 
 #if HAVE_SYS_RESOURCE_H
@@ -19634,7 +19734,8 @@ fi
 rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
- if test "$fptools_cv_htype_sup_ptrdiff_t" = yes; then
+ CPPFLAGS="$fp_check_htype_save_cppflags"
+if test "$fptools_cv_htype_sup_ptrdiff_t" = yes; then
   echo "$as_me:$LINENO: result: $fptools_cv_htype_ptrdiff_t" >&5
 echo "${ECHO_T}$fptools_cv_htype_ptrdiff_t" >&6
 
@@ -19652,7 +19753,9 @@ echo $ECHO_N "checking Haskell type for size_t... $ECHO_C" >&6
 if test "${fptools_cv_htype_size_t+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-  fptools_cv_htype_sup_size_t=yes;
+  fptools_cv_htype_sup_size_t=yes
+fp_check_htype_save_cppflags="$CPPFLAGS"
+CPPFLAGS="$CPPFLAGS $X_CFLAGS"
 if test "$cross_compiling" = yes; then
   fptools_cv_htype_size_t=NotReallyATypeCross; fptools_cv_htype_sup_size_t=no
 else
@@ -19702,12 +19805,16 @@ cat >>conftest.$ac_ext <<_ACEOF
 # include <ctype.h>
 #endif
 
-#if HAVE_GL_GL_H
+#if defined(HAVE_GL_GL_H)
 # include <GL/gl.h>
+#elif defined(HAVE_OPENGL_GL_H)
+# include <OpenGL/gl.h>
 #endif
 
-#if HAVE_OPENGL_GL_H
-# include <OpenGL/gl.h>
+#if defined(HAVE_AL_ALC_H)
+# include <AL/alc.h>
+#elif defined(HAVE_OPENAL_ALC_H)
+# include <OpenAL/alc.h>
 #endif
 
 #if HAVE_SYS_RESOURCE_H
@@ -19755,7 +19862,8 @@ fi
 rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
- if test "$fptools_cv_htype_sup_size_t" = yes; then
+ CPPFLAGS="$fp_check_htype_save_cppflags"
+if test "$fptools_cv_htype_sup_size_t" = yes; then
   echo "$as_me:$LINENO: result: $fptools_cv_htype_size_t" >&5
 echo "${ECHO_T}$fptools_cv_htype_size_t" >&6
 
@@ -19773,7 +19881,9 @@ echo $ECHO_N "checking Haskell type for wchar_t... $ECHO_C" >&6
 if test "${fptools_cv_htype_wchar_t+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-  fptools_cv_htype_sup_wchar_t=yes;
+  fptools_cv_htype_sup_wchar_t=yes
+fp_check_htype_save_cppflags="$CPPFLAGS"
+CPPFLAGS="$CPPFLAGS $X_CFLAGS"
 if test "$cross_compiling" = yes; then
   fptools_cv_htype_wchar_t=NotReallyATypeCross; fptools_cv_htype_sup_wchar_t=no
 else
@@ -19823,12 +19933,16 @@ cat >>conftest.$ac_ext <<_ACEOF
 # include <ctype.h>
 #endif
 
-#if HAVE_GL_GL_H
+#if defined(HAVE_GL_GL_H)
 # include <GL/gl.h>
+#elif defined(HAVE_OPENGL_GL_H)
+# include <OpenGL/gl.h>
 #endif
 
-#if HAVE_OPENGL_GL_H
-# include <OpenGL/gl.h>
+#if defined(HAVE_AL_ALC_H)
+# include <AL/alc.h>
+#elif defined(HAVE_OPENAL_ALC_H)
+# include <OpenAL/alc.h>
 #endif
 
 #if HAVE_SYS_RESOURCE_H
@@ -19876,7 +19990,8 @@ fi
 rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
- if test "$fptools_cv_htype_sup_wchar_t" = yes; then
+ CPPFLAGS="$fp_check_htype_save_cppflags"
+if test "$fptools_cv_htype_sup_wchar_t" = yes; then
   echo "$as_me:$LINENO: result: $fptools_cv_htype_wchar_t" >&5
 echo "${ECHO_T}$fptools_cv_htype_wchar_t" >&6
 
@@ -19894,7 +20009,9 @@ echo $ECHO_N "checking Haskell type for sig_atomic_t... $ECHO_C" >&6
 if test "${fptools_cv_htype_sig_atomic_t+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-  fptools_cv_htype_sup_sig_atomic_t=yes;
+  fptools_cv_htype_sup_sig_atomic_t=yes
+fp_check_htype_save_cppflags="$CPPFLAGS"
+CPPFLAGS="$CPPFLAGS $X_CFLAGS"
 if test "$cross_compiling" = yes; then
   fptools_cv_htype_sig_atomic_t=NotReallyATypeCross; fptools_cv_htype_sup_sig_atomic_t=no
 else
@@ -19944,12 +20061,16 @@ cat >>conftest.$ac_ext <<_ACEOF
 # include <ctype.h>
 #endif
 
-#if HAVE_GL_GL_H
+#if defined(HAVE_GL_GL_H)
 # include <GL/gl.h>
+#elif defined(HAVE_OPENGL_GL_H)
+# include <OpenGL/gl.h>
 #endif
 
-#if HAVE_OPENGL_GL_H
-# include <OpenGL/gl.h>
+#if defined(HAVE_AL_ALC_H)
+# include <AL/alc.h>
+#elif defined(HAVE_OPENAL_ALC_H)
+# include <OpenAL/alc.h>
 #endif
 
 #if HAVE_SYS_RESOURCE_H
@@ -19997,7 +20118,8 @@ fi
 rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
- if test "$fptools_cv_htype_sup_sig_atomic_t" = yes; then
+ CPPFLAGS="$fp_check_htype_save_cppflags"
+if test "$fptools_cv_htype_sup_sig_atomic_t" = yes; then
   echo "$as_me:$LINENO: result: $fptools_cv_htype_sig_atomic_t" >&5
 echo "${ECHO_T}$fptools_cv_htype_sig_atomic_t" >&6
 
@@ -20015,7 +20137,9 @@ echo $ECHO_N "checking Haskell type for clock_t... $ECHO_C" >&6
 if test "${fptools_cv_htype_clock_t+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-  fptools_cv_htype_sup_clock_t=yes;
+  fptools_cv_htype_sup_clock_t=yes
+fp_check_htype_save_cppflags="$CPPFLAGS"
+CPPFLAGS="$CPPFLAGS $X_CFLAGS"
 if test "$cross_compiling" = yes; then
   fptools_cv_htype_clock_t=NotReallyATypeCross; fptools_cv_htype_sup_clock_t=no
 else
@@ -20065,12 +20189,16 @@ cat >>conftest.$ac_ext <<_ACEOF
 # include <ctype.h>
 #endif
 
-#if HAVE_GL_GL_H
+#if defined(HAVE_GL_GL_H)
 # include <GL/gl.h>
+#elif defined(HAVE_OPENGL_GL_H)
+# include <OpenGL/gl.h>
 #endif
 
-#if HAVE_OPENGL_GL_H
-# include <OpenGL/gl.h>
+#if defined(HAVE_AL_ALC_H)
+# include <AL/alc.h>
+#elif defined(HAVE_OPENAL_ALC_H)
+# include <OpenAL/alc.h>
 #endif
 
 #if HAVE_SYS_RESOURCE_H
@@ -20118,7 +20246,8 @@ fi
 rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
- if test "$fptools_cv_htype_sup_clock_t" = yes; then
+ CPPFLAGS="$fp_check_htype_save_cppflags"
+if test "$fptools_cv_htype_sup_clock_t" = yes; then
   echo "$as_me:$LINENO: result: $fptools_cv_htype_clock_t" >&5
 echo "${ECHO_T}$fptools_cv_htype_clock_t" >&6
 
@@ -20136,7 +20265,9 @@ echo $ECHO_N "checking Haskell type for time_t... $ECHO_C" >&6
 if test "${fptools_cv_htype_time_t+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-  fptools_cv_htype_sup_time_t=yes;
+  fptools_cv_htype_sup_time_t=yes
+fp_check_htype_save_cppflags="$CPPFLAGS"
+CPPFLAGS="$CPPFLAGS $X_CFLAGS"
 if test "$cross_compiling" = yes; then
   fptools_cv_htype_time_t=NotReallyATypeCross; fptools_cv_htype_sup_time_t=no
 else
@@ -20186,12 +20317,16 @@ cat >>conftest.$ac_ext <<_ACEOF
 # include <ctype.h>
 #endif
 
-#if HAVE_GL_GL_H
+#if defined(HAVE_GL_GL_H)
 # include <GL/gl.h>
+#elif defined(HAVE_OPENGL_GL_H)
+# include <OpenGL/gl.h>
 #endif
 
-#if HAVE_OPENGL_GL_H
-# include <OpenGL/gl.h>
+#if defined(HAVE_AL_ALC_H)
+# include <AL/alc.h>
+#elif defined(HAVE_OPENAL_ALC_H)
+# include <OpenAL/alc.h>
 #endif
 
 #if HAVE_SYS_RESOURCE_H
@@ -20239,7 +20374,8 @@ fi
 rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
- if test "$fptools_cv_htype_sup_time_t" = yes; then
+ CPPFLAGS="$fp_check_htype_save_cppflags"
+if test "$fptools_cv_htype_sup_time_t" = yes; then
   echo "$as_me:$LINENO: result: $fptools_cv_htype_time_t" >&5
 echo "${ECHO_T}$fptools_cv_htype_time_t" >&6
 
@@ -20257,7 +20393,9 @@ echo $ECHO_N "checking Haskell type for dev_t... $ECHO_C" >&6
 if test "${fptools_cv_htype_dev_t+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-  fptools_cv_htype_sup_dev_t=yes;
+  fptools_cv_htype_sup_dev_t=yes
+fp_check_htype_save_cppflags="$CPPFLAGS"
+CPPFLAGS="$CPPFLAGS $X_CFLAGS"
 if test "$cross_compiling" = yes; then
   fptools_cv_htype_dev_t=NotReallyATypeCross; fptools_cv_htype_sup_dev_t=no
 else
@@ -20307,12 +20445,16 @@ cat >>conftest.$ac_ext <<_ACEOF
 # include <ctype.h>
 #endif
 
-#if HAVE_GL_GL_H
+#if defined(HAVE_GL_GL_H)
 # include <GL/gl.h>
+#elif defined(HAVE_OPENGL_GL_H)
+# include <OpenGL/gl.h>
 #endif
 
-#if HAVE_OPENGL_GL_H
-# include <OpenGL/gl.h>
+#if defined(HAVE_AL_ALC_H)
+# include <AL/alc.h>
+#elif defined(HAVE_OPENAL_ALC_H)
+# include <OpenAL/alc.h>
 #endif
 
 #if HAVE_SYS_RESOURCE_H
@@ -20360,7 +20502,8 @@ fi
 rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
- if test "$fptools_cv_htype_sup_dev_t" = yes; then
+ CPPFLAGS="$fp_check_htype_save_cppflags"
+if test "$fptools_cv_htype_sup_dev_t" = yes; then
   echo "$as_me:$LINENO: result: $fptools_cv_htype_dev_t" >&5
 echo "${ECHO_T}$fptools_cv_htype_dev_t" >&6
 
@@ -20378,7 +20521,9 @@ echo $ECHO_N "checking Haskell type for ino_t... $ECHO_C" >&6
 if test "${fptools_cv_htype_ino_t+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-  fptools_cv_htype_sup_ino_t=yes;
+  fptools_cv_htype_sup_ino_t=yes
+fp_check_htype_save_cppflags="$CPPFLAGS"
+CPPFLAGS="$CPPFLAGS $X_CFLAGS"
 if test "$cross_compiling" = yes; then
   fptools_cv_htype_ino_t=NotReallyATypeCross; fptools_cv_htype_sup_ino_t=no
 else
@@ -20428,12 +20573,16 @@ cat >>conftest.$ac_ext <<_ACEOF
 # include <ctype.h>
 #endif
 
-#if HAVE_GL_GL_H
+#if defined(HAVE_GL_GL_H)
 # include <GL/gl.h>
+#elif defined(HAVE_OPENGL_GL_H)
+# include <OpenGL/gl.h>
 #endif
 
-#if HAVE_OPENGL_GL_H
-# include <OpenGL/gl.h>
+#if defined(HAVE_AL_ALC_H)
+# include <AL/alc.h>
+#elif defined(HAVE_OPENAL_ALC_H)
+# include <OpenAL/alc.h>
 #endif
 
 #if HAVE_SYS_RESOURCE_H
@@ -20481,7 +20630,8 @@ fi
 rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
- if test "$fptools_cv_htype_sup_ino_t" = yes; then
+ CPPFLAGS="$fp_check_htype_save_cppflags"
+if test "$fptools_cv_htype_sup_ino_t" = yes; then
   echo "$as_me:$LINENO: result: $fptools_cv_htype_ino_t" >&5
 echo "${ECHO_T}$fptools_cv_htype_ino_t" >&6
 
@@ -20499,7 +20649,9 @@ echo $ECHO_N "checking Haskell type for mode_t... $ECHO_C" >&6
 if test "${fptools_cv_htype_mode_t+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-  fptools_cv_htype_sup_mode_t=yes;
+  fptools_cv_htype_sup_mode_t=yes
+fp_check_htype_save_cppflags="$CPPFLAGS"
+CPPFLAGS="$CPPFLAGS $X_CFLAGS"
 if test "$cross_compiling" = yes; then
   fptools_cv_htype_mode_t=NotReallyATypeCross; fptools_cv_htype_sup_mode_t=no
 else
@@ -20549,12 +20701,16 @@ cat >>conftest.$ac_ext <<_ACEOF
 # include <ctype.h>
 #endif
 
-#if HAVE_GL_GL_H
+#if defined(HAVE_GL_GL_H)
 # include <GL/gl.h>
+#elif defined(HAVE_OPENGL_GL_H)
+# include <OpenGL/gl.h>
 #endif
 
-#if HAVE_OPENGL_GL_H
-# include <OpenGL/gl.h>
+#if defined(HAVE_AL_ALC_H)
+# include <AL/alc.h>
+#elif defined(HAVE_OPENAL_ALC_H)
+# include <OpenAL/alc.h>
 #endif
 
 #if HAVE_SYS_RESOURCE_H
@@ -20602,7 +20758,8 @@ fi
 rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
- if test "$fptools_cv_htype_sup_mode_t" = yes; then
+ CPPFLAGS="$fp_check_htype_save_cppflags"
+if test "$fptools_cv_htype_sup_mode_t" = yes; then
   echo "$as_me:$LINENO: result: $fptools_cv_htype_mode_t" >&5
 echo "${ECHO_T}$fptools_cv_htype_mode_t" >&6
 
@@ -20620,7 +20777,9 @@ echo $ECHO_N "checking Haskell type for off_t... $ECHO_C" >&6
 if test "${fptools_cv_htype_off_t+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-  fptools_cv_htype_sup_off_t=yes;
+  fptools_cv_htype_sup_off_t=yes
+fp_check_htype_save_cppflags="$CPPFLAGS"
+CPPFLAGS="$CPPFLAGS $X_CFLAGS"
 if test "$cross_compiling" = yes; then
   fptools_cv_htype_off_t=NotReallyATypeCross; fptools_cv_htype_sup_off_t=no
 else
@@ -20670,12 +20829,16 @@ cat >>conftest.$ac_ext <<_ACEOF
 # include <ctype.h>
 #endif
 
-#if HAVE_GL_GL_H
+#if defined(HAVE_GL_GL_H)
 # include <GL/gl.h>
+#elif defined(HAVE_OPENGL_GL_H)
+# include <OpenGL/gl.h>
 #endif
 
-#if HAVE_OPENGL_GL_H
-# include <OpenGL/gl.h>
+#if defined(HAVE_AL_ALC_H)
+# include <AL/alc.h>
+#elif defined(HAVE_OPENAL_ALC_H)
+# include <OpenAL/alc.h>
 #endif
 
 #if HAVE_SYS_RESOURCE_H
@@ -20723,7 +20886,8 @@ fi
 rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
- if test "$fptools_cv_htype_sup_off_t" = yes; then
+ CPPFLAGS="$fp_check_htype_save_cppflags"
+if test "$fptools_cv_htype_sup_off_t" = yes; then
   echo "$as_me:$LINENO: result: $fptools_cv_htype_off_t" >&5
 echo "${ECHO_T}$fptools_cv_htype_off_t" >&6
 
@@ -20741,7 +20905,9 @@ echo $ECHO_N "checking Haskell type for pid_t... $ECHO_C" >&6
 if test "${fptools_cv_htype_pid_t+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-  fptools_cv_htype_sup_pid_t=yes;
+  fptools_cv_htype_sup_pid_t=yes
+fp_check_htype_save_cppflags="$CPPFLAGS"
+CPPFLAGS="$CPPFLAGS $X_CFLAGS"
 if test "$cross_compiling" = yes; then
   fptools_cv_htype_pid_t=NotReallyATypeCross; fptools_cv_htype_sup_pid_t=no
 else
@@ -20791,12 +20957,16 @@ cat >>conftest.$ac_ext <<_ACEOF
 # include <ctype.h>
 #endif
 
-#if HAVE_GL_GL_H
+#if defined(HAVE_GL_GL_H)
 # include <GL/gl.h>
+#elif defined(HAVE_OPENGL_GL_H)
+# include <OpenGL/gl.h>
 #endif
 
-#if HAVE_OPENGL_GL_H
-# include <OpenGL/gl.h>
+#if defined(HAVE_AL_ALC_H)
+# include <AL/alc.h>
+#elif defined(HAVE_OPENAL_ALC_H)
+# include <OpenAL/alc.h>
 #endif
 
 #if HAVE_SYS_RESOURCE_H
@@ -20844,7 +21014,8 @@ fi
 rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
- if test "$fptools_cv_htype_sup_pid_t" = yes; then
+ CPPFLAGS="$fp_check_htype_save_cppflags"
+if test "$fptools_cv_htype_sup_pid_t" = yes; then
   echo "$as_me:$LINENO: result: $fptools_cv_htype_pid_t" >&5
 echo "${ECHO_T}$fptools_cv_htype_pid_t" >&6
 
@@ -20862,7 +21033,9 @@ echo $ECHO_N "checking Haskell type for gid_t... $ECHO_C" >&6
 if test "${fptools_cv_htype_gid_t+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-  fptools_cv_htype_sup_gid_t=yes;
+  fptools_cv_htype_sup_gid_t=yes
+fp_check_htype_save_cppflags="$CPPFLAGS"
+CPPFLAGS="$CPPFLAGS $X_CFLAGS"
 if test "$cross_compiling" = yes; then
   fptools_cv_htype_gid_t=NotReallyATypeCross; fptools_cv_htype_sup_gid_t=no
 else
@@ -20912,12 +21085,16 @@ cat >>conftest.$ac_ext <<_ACEOF
 # include <ctype.h>
 #endif
 
-#if HAVE_GL_GL_H
+#if defined(HAVE_GL_GL_H)
 # include <GL/gl.h>
+#elif defined(HAVE_OPENGL_GL_H)
+# include <OpenGL/gl.h>
 #endif
 
-#if HAVE_OPENGL_GL_H
-# include <OpenGL/gl.h>
+#if defined(HAVE_AL_ALC_H)
+# include <AL/alc.h>
+#elif defined(HAVE_OPENAL_ALC_H)
+# include <OpenAL/alc.h>
 #endif
 
 #if HAVE_SYS_RESOURCE_H
@@ -20965,7 +21142,8 @@ fi
 rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
- if test "$fptools_cv_htype_sup_gid_t" = yes; then
+ CPPFLAGS="$fp_check_htype_save_cppflags"
+if test "$fptools_cv_htype_sup_gid_t" = yes; then
   echo "$as_me:$LINENO: result: $fptools_cv_htype_gid_t" >&5
 echo "${ECHO_T}$fptools_cv_htype_gid_t" >&6
 
@@ -20983,7 +21161,9 @@ echo $ECHO_N "checking Haskell type for uid_t... $ECHO_C" >&6
 if test "${fptools_cv_htype_uid_t+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-  fptools_cv_htype_sup_uid_t=yes;
+  fptools_cv_htype_sup_uid_t=yes
+fp_check_htype_save_cppflags="$CPPFLAGS"
+CPPFLAGS="$CPPFLAGS $X_CFLAGS"
 if test "$cross_compiling" = yes; then
   fptools_cv_htype_uid_t=NotReallyATypeCross; fptools_cv_htype_sup_uid_t=no
 else
@@ -21033,12 +21213,16 @@ cat >>conftest.$ac_ext <<_ACEOF
 # include <ctype.h>
 #endif
 
-#if HAVE_GL_GL_H
+#if defined(HAVE_GL_GL_H)
 # include <GL/gl.h>
+#elif defined(HAVE_OPENGL_GL_H)
+# include <OpenGL/gl.h>
 #endif
 
-#if HAVE_OPENGL_GL_H
-# include <OpenGL/gl.h>
+#if defined(HAVE_AL_ALC_H)
+# include <AL/alc.h>
+#elif defined(HAVE_OPENAL_ALC_H)
+# include <OpenAL/alc.h>
 #endif
 
 #if HAVE_SYS_RESOURCE_H
@@ -21086,7 +21270,8 @@ fi
 rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
- if test "$fptools_cv_htype_sup_uid_t" = yes; then
+ CPPFLAGS="$fp_check_htype_save_cppflags"
+if test "$fptools_cv_htype_sup_uid_t" = yes; then
   echo "$as_me:$LINENO: result: $fptools_cv_htype_uid_t" >&5
 echo "${ECHO_T}$fptools_cv_htype_uid_t" >&6
 
@@ -21104,7 +21289,9 @@ echo $ECHO_N "checking Haskell type for cc_t... $ECHO_C" >&6
 if test "${fptools_cv_htype_cc_t+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-  fptools_cv_htype_sup_cc_t=yes;
+  fptools_cv_htype_sup_cc_t=yes
+fp_check_htype_save_cppflags="$CPPFLAGS"
+CPPFLAGS="$CPPFLAGS $X_CFLAGS"
 if test "$cross_compiling" = yes; then
   fptools_cv_htype_cc_t=NotReallyATypeCross; fptools_cv_htype_sup_cc_t=no
 else
@@ -21154,12 +21341,16 @@ cat >>conftest.$ac_ext <<_ACEOF
 # include <ctype.h>
 #endif
 
-#if HAVE_GL_GL_H
+#if defined(HAVE_GL_GL_H)
 # include <GL/gl.h>
+#elif defined(HAVE_OPENGL_GL_H)
+# include <OpenGL/gl.h>
 #endif
 
-#if HAVE_OPENGL_GL_H
-# include <OpenGL/gl.h>
+#if defined(HAVE_AL_ALC_H)
+# include <AL/alc.h>
+#elif defined(HAVE_OPENAL_ALC_H)
+# include <OpenAL/alc.h>
 #endif
 
 #if HAVE_SYS_RESOURCE_H
@@ -21207,7 +21398,8 @@ fi
 rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
- if test "$fptools_cv_htype_sup_cc_t" = yes; then
+ CPPFLAGS="$fp_check_htype_save_cppflags"
+if test "$fptools_cv_htype_sup_cc_t" = yes; then
   echo "$as_me:$LINENO: result: $fptools_cv_htype_cc_t" >&5
 echo "${ECHO_T}$fptools_cv_htype_cc_t" >&6
 
@@ -21225,7 +21417,9 @@ echo $ECHO_N "checking Haskell type for speed_t... $ECHO_C" >&6
 if test "${fptools_cv_htype_speed_t+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-  fptools_cv_htype_sup_speed_t=yes;
+  fptools_cv_htype_sup_speed_t=yes
+fp_check_htype_save_cppflags="$CPPFLAGS"
+CPPFLAGS="$CPPFLAGS $X_CFLAGS"
 if test "$cross_compiling" = yes; then
   fptools_cv_htype_speed_t=NotReallyATypeCross; fptools_cv_htype_sup_speed_t=no
 else
@@ -21275,12 +21469,16 @@ cat >>conftest.$ac_ext <<_ACEOF
 # include <ctype.h>
 #endif
 
-#if HAVE_GL_GL_H
+#if defined(HAVE_GL_GL_H)
 # include <GL/gl.h>
+#elif defined(HAVE_OPENGL_GL_H)
+# include <OpenGL/gl.h>
 #endif
 
-#if HAVE_OPENGL_GL_H
-# include <OpenGL/gl.h>
+#if defined(HAVE_AL_ALC_H)
+# include <AL/alc.h>
+#elif defined(HAVE_OPENAL_ALC_H)
+# include <OpenAL/alc.h>
 #endif
 
 #if HAVE_SYS_RESOURCE_H
@@ -21328,7 +21526,8 @@ fi
 rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
- if test "$fptools_cv_htype_sup_speed_t" = yes; then
+ CPPFLAGS="$fp_check_htype_save_cppflags"
+if test "$fptools_cv_htype_sup_speed_t" = yes; then
   echo "$as_me:$LINENO: result: $fptools_cv_htype_speed_t" >&5
 echo "${ECHO_T}$fptools_cv_htype_speed_t" >&6
 
@@ -21346,7 +21545,9 @@ echo $ECHO_N "checking Haskell type for tcflag_t... $ECHO_C" >&6
 if test "${fptools_cv_htype_tcflag_t+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-  fptools_cv_htype_sup_tcflag_t=yes;
+  fptools_cv_htype_sup_tcflag_t=yes
+fp_check_htype_save_cppflags="$CPPFLAGS"
+CPPFLAGS="$CPPFLAGS $X_CFLAGS"
 if test "$cross_compiling" = yes; then
   fptools_cv_htype_tcflag_t=NotReallyATypeCross; fptools_cv_htype_sup_tcflag_t=no
 else
@@ -21396,12 +21597,16 @@ cat >>conftest.$ac_ext <<_ACEOF
 # include <ctype.h>
 #endif
 
-#if HAVE_GL_GL_H
+#if defined(HAVE_GL_GL_H)
 # include <GL/gl.h>
+#elif defined(HAVE_OPENGL_GL_H)
+# include <OpenGL/gl.h>
 #endif
 
-#if HAVE_OPENGL_GL_H
-# include <OpenGL/gl.h>
+#if defined(HAVE_AL_ALC_H)
+# include <AL/alc.h>
+#elif defined(HAVE_OPENAL_ALC_H)
+# include <OpenAL/alc.h>
 #endif
 
 #if HAVE_SYS_RESOURCE_H
@@ -21449,7 +21654,8 @@ fi
 rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
- if test "$fptools_cv_htype_sup_tcflag_t" = yes; then
+ CPPFLAGS="$fp_check_htype_save_cppflags"
+if test "$fptools_cv_htype_sup_tcflag_t" = yes; then
   echo "$as_me:$LINENO: result: $fptools_cv_htype_tcflag_t" >&5
 echo "${ECHO_T}$fptools_cv_htype_tcflag_t" >&6
 
@@ -21467,7 +21673,9 @@ echo $ECHO_N "checking Haskell type for nlink_t... $ECHO_C" >&6
 if test "${fptools_cv_htype_nlink_t+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-  fptools_cv_htype_sup_nlink_t=yes;
+  fptools_cv_htype_sup_nlink_t=yes
+fp_check_htype_save_cppflags="$CPPFLAGS"
+CPPFLAGS="$CPPFLAGS $X_CFLAGS"
 if test "$cross_compiling" = yes; then
   fptools_cv_htype_nlink_t=NotReallyATypeCross; fptools_cv_htype_sup_nlink_t=no
 else
@@ -21517,12 +21725,16 @@ cat >>conftest.$ac_ext <<_ACEOF
 # include <ctype.h>
 #endif
 
-#if HAVE_GL_GL_H
+#if defined(HAVE_GL_GL_H)
 # include <GL/gl.h>
+#elif defined(HAVE_OPENGL_GL_H)
+# include <OpenGL/gl.h>
 #endif
 
-#if HAVE_OPENGL_GL_H
-# include <OpenGL/gl.h>
+#if defined(HAVE_AL_ALC_H)
+# include <AL/alc.h>
+#elif defined(HAVE_OPENAL_ALC_H)
+# include <OpenAL/alc.h>
 #endif
 
 #if HAVE_SYS_RESOURCE_H
@@ -21570,7 +21782,8 @@ fi
 rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
- if test "$fptools_cv_htype_sup_nlink_t" = yes; then
+ CPPFLAGS="$fp_check_htype_save_cppflags"
+if test "$fptools_cv_htype_sup_nlink_t" = yes; then
   echo "$as_me:$LINENO: result: $fptools_cv_htype_nlink_t" >&5
 echo "${ECHO_T}$fptools_cv_htype_nlink_t" >&6
 
@@ -21588,7 +21801,9 @@ echo $ECHO_N "checking Haskell type for ssize_t... $ECHO_C" >&6
 if test "${fptools_cv_htype_ssize_t+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-  fptools_cv_htype_sup_ssize_t=yes;
+  fptools_cv_htype_sup_ssize_t=yes
+fp_check_htype_save_cppflags="$CPPFLAGS"
+CPPFLAGS="$CPPFLAGS $X_CFLAGS"
 if test "$cross_compiling" = yes; then
   fptools_cv_htype_ssize_t=NotReallyATypeCross; fptools_cv_htype_sup_ssize_t=no
 else
@@ -21638,12 +21853,16 @@ cat >>conftest.$ac_ext <<_ACEOF
 # include <ctype.h>
 #endif
 
-#if HAVE_GL_GL_H
+#if defined(HAVE_GL_GL_H)
 # include <GL/gl.h>
+#elif defined(HAVE_OPENGL_GL_H)
+# include <OpenGL/gl.h>
 #endif
 
-#if HAVE_OPENGL_GL_H
-# include <OpenGL/gl.h>
+#if defined(HAVE_AL_ALC_H)
+# include <AL/alc.h>
+#elif defined(HAVE_OPENAL_ALC_H)
+# include <OpenAL/alc.h>
 #endif
 
 #if HAVE_SYS_RESOURCE_H
@@ -21691,7 +21910,8 @@ fi
 rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
- if test "$fptools_cv_htype_sup_ssize_t" = yes; then
+ CPPFLAGS="$fp_check_htype_save_cppflags"
+if test "$fptools_cv_htype_sup_ssize_t" = yes; then
   echo "$as_me:$LINENO: result: $fptools_cv_htype_ssize_t" >&5
 echo "${ECHO_T}$fptools_cv_htype_ssize_t" >&6
 
@@ -21709,7 +21929,9 @@ echo $ECHO_N "checking Haskell type for rlim_t... $ECHO_C" >&6
 if test "${fptools_cv_htype_rlim_t+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-  fptools_cv_htype_sup_rlim_t=yes;
+  fptools_cv_htype_sup_rlim_t=yes
+fp_check_htype_save_cppflags="$CPPFLAGS"
+CPPFLAGS="$CPPFLAGS $X_CFLAGS"
 if test "$cross_compiling" = yes; then
   fptools_cv_htype_rlim_t=NotReallyATypeCross; fptools_cv_htype_sup_rlim_t=no
 else
@@ -21759,12 +21981,16 @@ cat >>conftest.$ac_ext <<_ACEOF
 # include <ctype.h>
 #endif
 
-#if HAVE_GL_GL_H
+#if defined(HAVE_GL_GL_H)
 # include <GL/gl.h>
+#elif defined(HAVE_OPENGL_GL_H)
+# include <OpenGL/gl.h>
 #endif
 
-#if HAVE_OPENGL_GL_H
-# include <OpenGL/gl.h>
+#if defined(HAVE_AL_ALC_H)
+# include <AL/alc.h>
+#elif defined(HAVE_OPENAL_ALC_H)
+# include <OpenAL/alc.h>
 #endif
 
 #if HAVE_SYS_RESOURCE_H
@@ -21812,7 +22038,8 @@ fi
 rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
- if test "$fptools_cv_htype_sup_rlim_t" = yes; then
+ CPPFLAGS="$fp_check_htype_save_cppflags"
+if test "$fptools_cv_htype_sup_rlim_t" = yes; then
   echo "$as_me:$LINENO: result: $fptools_cv_htype_rlim_t" >&5
 echo "${ECHO_T}$fptools_cv_htype_rlim_t" >&6
 
@@ -21832,7 +22059,9 @@ echo $ECHO_N "checking Haskell type for GLboolean... $ECHO_C" >&6
 if test "${fptools_cv_htype_GLboolean+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-  fptools_cv_htype_sup_GLboolean=yes;
+  fptools_cv_htype_sup_GLboolean=yes
+fp_check_htype_save_cppflags="$CPPFLAGS"
+CPPFLAGS="$CPPFLAGS $X_CFLAGS"
 if test "$cross_compiling" = yes; then
   fptools_cv_htype_GLboolean=NotReallyATypeCross; fptools_cv_htype_sup_GLboolean=no
 else
@@ -21882,12 +22111,16 @@ cat >>conftest.$ac_ext <<_ACEOF
 # include <ctype.h>
 #endif
 
-#if HAVE_GL_GL_H
+#if defined(HAVE_GL_GL_H)
 # include <GL/gl.h>
+#elif defined(HAVE_OPENGL_GL_H)
+# include <OpenGL/gl.h>
 #endif
 
-#if HAVE_OPENGL_GL_H
-# include <OpenGL/gl.h>
+#if defined(HAVE_AL_ALC_H)
+# include <AL/alc.h>
+#elif defined(HAVE_OPENAL_ALC_H)
+# include <OpenAL/alc.h>
 #endif
 
 #if HAVE_SYS_RESOURCE_H
@@ -21935,7 +22168,8 @@ fi
 rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
- if test "$fptools_cv_htype_sup_GLboolean" = yes; then
+ CPPFLAGS="$fp_check_htype_save_cppflags"
+if test "$fptools_cv_htype_sup_GLboolean" = yes; then
   echo "$as_me:$LINENO: result: $fptools_cv_htype_GLboolean" >&5
 echo "${ECHO_T}$fptools_cv_htype_GLboolean" >&6
 
@@ -21953,7 +22187,9 @@ echo $ECHO_N "checking Haskell type for GLbyte... $ECHO_C" >&6
 if test "${fptools_cv_htype_GLbyte+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-  fptools_cv_htype_sup_GLbyte=yes;
+  fptools_cv_htype_sup_GLbyte=yes
+fp_check_htype_save_cppflags="$CPPFLAGS"
+CPPFLAGS="$CPPFLAGS $X_CFLAGS"
 if test "$cross_compiling" = yes; then
   fptools_cv_htype_GLbyte=NotReallyATypeCross; fptools_cv_htype_sup_GLbyte=no
 else
@@ -22003,12 +22239,16 @@ cat >>conftest.$ac_ext <<_ACEOF
 # include <ctype.h>
 #endif
 
-#if HAVE_GL_GL_H
+#if defined(HAVE_GL_GL_H)
 # include <GL/gl.h>
+#elif defined(HAVE_OPENGL_GL_H)
+# include <OpenGL/gl.h>
 #endif
 
-#if HAVE_OPENGL_GL_H
-# include <OpenGL/gl.h>
+#if defined(HAVE_AL_ALC_H)
+# include <AL/alc.h>
+#elif defined(HAVE_OPENAL_ALC_H)
+# include <OpenAL/alc.h>
 #endif
 
 #if HAVE_SYS_RESOURCE_H
@@ -22056,7 +22296,8 @@ fi
 rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
- if test "$fptools_cv_htype_sup_GLbyte" = yes; then
+ CPPFLAGS="$fp_check_htype_save_cppflags"
+if test "$fptools_cv_htype_sup_GLbyte" = yes; then
   echo "$as_me:$LINENO: result: $fptools_cv_htype_GLbyte" >&5
 echo "${ECHO_T}$fptools_cv_htype_GLbyte" >&6
 
@@ -22074,7 +22315,9 @@ echo $ECHO_N "checking Haskell type for GLubyte... $ECHO_C" >&6
 if test "${fptools_cv_htype_GLubyte+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-  fptools_cv_htype_sup_GLubyte=yes;
+  fptools_cv_htype_sup_GLubyte=yes
+fp_check_htype_save_cppflags="$CPPFLAGS"
+CPPFLAGS="$CPPFLAGS $X_CFLAGS"
 if test "$cross_compiling" = yes; then
   fptools_cv_htype_GLubyte=NotReallyATypeCross; fptools_cv_htype_sup_GLubyte=no
 else
@@ -22124,12 +22367,16 @@ cat >>conftest.$ac_ext <<_ACEOF
 # include <ctype.h>
 #endif
 
-#if HAVE_GL_GL_H
+#if defined(HAVE_GL_GL_H)
 # include <GL/gl.h>
+#elif defined(HAVE_OPENGL_GL_H)
+# include <OpenGL/gl.h>
 #endif
 
-#if HAVE_OPENGL_GL_H
-# include <OpenGL/gl.h>
+#if defined(HAVE_AL_ALC_H)
+# include <AL/alc.h>
+#elif defined(HAVE_OPENAL_ALC_H)
+# include <OpenAL/alc.h>
 #endif
 
 #if HAVE_SYS_RESOURCE_H
@@ -22177,7 +22424,8 @@ fi
 rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
- if test "$fptools_cv_htype_sup_GLubyte" = yes; then
+ CPPFLAGS="$fp_check_htype_save_cppflags"
+if test "$fptools_cv_htype_sup_GLubyte" = yes; then
   echo "$as_me:$LINENO: result: $fptools_cv_htype_GLubyte" >&5
 echo "${ECHO_T}$fptools_cv_htype_GLubyte" >&6
 
@@ -22195,7 +22443,9 @@ echo $ECHO_N "checking Haskell type for GLshort... $ECHO_C" >&6
 if test "${fptools_cv_htype_GLshort+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-  fptools_cv_htype_sup_GLshort=yes;
+  fptools_cv_htype_sup_GLshort=yes
+fp_check_htype_save_cppflags="$CPPFLAGS"
+CPPFLAGS="$CPPFLAGS $X_CFLAGS"
 if test "$cross_compiling" = yes; then
   fptools_cv_htype_GLshort=NotReallyATypeCross; fptools_cv_htype_sup_GLshort=no
 else
@@ -22245,12 +22495,16 @@ cat >>conftest.$ac_ext <<_ACEOF
 # include <ctype.h>
 #endif
 
-#if HAVE_GL_GL_H
+#if defined(HAVE_GL_GL_H)
 # include <GL/gl.h>
+#elif defined(HAVE_OPENGL_GL_H)
+# include <OpenGL/gl.h>
 #endif
 
-#if HAVE_OPENGL_GL_H
-# include <OpenGL/gl.h>
+#if defined(HAVE_AL_ALC_H)
+# include <AL/alc.h>
+#elif defined(HAVE_OPENAL_ALC_H)
+# include <OpenAL/alc.h>
 #endif
 
 #if HAVE_SYS_RESOURCE_H
@@ -22298,7 +22552,8 @@ fi
 rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
- if test "$fptools_cv_htype_sup_GLshort" = yes; then
+ CPPFLAGS="$fp_check_htype_save_cppflags"
+if test "$fptools_cv_htype_sup_GLshort" = yes; then
   echo "$as_me:$LINENO: result: $fptools_cv_htype_GLshort" >&5
 echo "${ECHO_T}$fptools_cv_htype_GLshort" >&6
 
@@ -22316,7 +22571,9 @@ echo $ECHO_N "checking Haskell type for GLushort... $ECHO_C" >&6
 if test "${fptools_cv_htype_GLushort+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-  fptools_cv_htype_sup_GLushort=yes;
+  fptools_cv_htype_sup_GLushort=yes
+fp_check_htype_save_cppflags="$CPPFLAGS"
+CPPFLAGS="$CPPFLAGS $X_CFLAGS"
 if test "$cross_compiling" = yes; then
   fptools_cv_htype_GLushort=NotReallyATypeCross; fptools_cv_htype_sup_GLushort=no
 else
@@ -22366,12 +22623,16 @@ cat >>conftest.$ac_ext <<_ACEOF
 # include <ctype.h>
 #endif
 
-#if HAVE_GL_GL_H
+#if defined(HAVE_GL_GL_H)
 # include <GL/gl.h>
+#elif defined(HAVE_OPENGL_GL_H)
+# include <OpenGL/gl.h>
 #endif
 
-#if HAVE_OPENGL_GL_H
-# include <OpenGL/gl.h>
+#if defined(HAVE_AL_ALC_H)
+# include <AL/alc.h>
+#elif defined(HAVE_OPENAL_ALC_H)
+# include <OpenAL/alc.h>
 #endif
 
 #if HAVE_SYS_RESOURCE_H
@@ -22419,7 +22680,8 @@ fi
 rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
- if test "$fptools_cv_htype_sup_GLushort" = yes; then
+ CPPFLAGS="$fp_check_htype_save_cppflags"
+if test "$fptools_cv_htype_sup_GLushort" = yes; then
   echo "$as_me:$LINENO: result: $fptools_cv_htype_GLushort" >&5
 echo "${ECHO_T}$fptools_cv_htype_GLushort" >&6
 
@@ -22437,7 +22699,9 @@ echo $ECHO_N "checking Haskell type for GLint... $ECHO_C" >&6
 if test "${fptools_cv_htype_GLint+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-  fptools_cv_htype_sup_GLint=yes;
+  fptools_cv_htype_sup_GLint=yes
+fp_check_htype_save_cppflags="$CPPFLAGS"
+CPPFLAGS="$CPPFLAGS $X_CFLAGS"
 if test "$cross_compiling" = yes; then
   fptools_cv_htype_GLint=NotReallyATypeCross; fptools_cv_htype_sup_GLint=no
 else
@@ -22487,12 +22751,16 @@ cat >>conftest.$ac_ext <<_ACEOF
 # include <ctype.h>
 #endif
 
-#if HAVE_GL_GL_H
+#if defined(HAVE_GL_GL_H)
 # include <GL/gl.h>
+#elif defined(HAVE_OPENGL_GL_H)
+# include <OpenGL/gl.h>
 #endif
 
-#if HAVE_OPENGL_GL_H
-# include <OpenGL/gl.h>
+#if defined(HAVE_AL_ALC_H)
+# include <AL/alc.h>
+#elif defined(HAVE_OPENAL_ALC_H)
+# include <OpenAL/alc.h>
 #endif
 
 #if HAVE_SYS_RESOURCE_H
@@ -22540,7 +22808,8 @@ fi
 rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
- if test "$fptools_cv_htype_sup_GLint" = yes; then
+ CPPFLAGS="$fp_check_htype_save_cppflags"
+if test "$fptools_cv_htype_sup_GLint" = yes; then
   echo "$as_me:$LINENO: result: $fptools_cv_htype_GLint" >&5
 echo "${ECHO_T}$fptools_cv_htype_GLint" >&6
 
@@ -22558,7 +22827,9 @@ echo $ECHO_N "checking Haskell type for GLuint... $ECHO_C" >&6
 if test "${fptools_cv_htype_GLuint+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-  fptools_cv_htype_sup_GLuint=yes;
+  fptools_cv_htype_sup_GLuint=yes
+fp_check_htype_save_cppflags="$CPPFLAGS"
+CPPFLAGS="$CPPFLAGS $X_CFLAGS"
 if test "$cross_compiling" = yes; then
   fptools_cv_htype_GLuint=NotReallyATypeCross; fptools_cv_htype_sup_GLuint=no
 else
@@ -22608,12 +22879,16 @@ cat >>conftest.$ac_ext <<_ACEOF
 # include <ctype.h>
 #endif
 
-#if HAVE_GL_GL_H
+#if defined(HAVE_GL_GL_H)
 # include <GL/gl.h>
+#elif defined(HAVE_OPENGL_GL_H)
+# include <OpenGL/gl.h>
 #endif
 
-#if HAVE_OPENGL_GL_H
-# include <OpenGL/gl.h>
+#if defined(HAVE_AL_ALC_H)
+# include <AL/alc.h>
+#elif defined(HAVE_OPENAL_ALC_H)
+# include <OpenAL/alc.h>
 #endif
 
 #if HAVE_SYS_RESOURCE_H
@@ -22661,7 +22936,8 @@ fi
 rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
- if test "$fptools_cv_htype_sup_GLuint" = yes; then
+ CPPFLAGS="$fp_check_htype_save_cppflags"
+if test "$fptools_cv_htype_sup_GLuint" = yes; then
   echo "$as_me:$LINENO: result: $fptools_cv_htype_GLuint" >&5
 echo "${ECHO_T}$fptools_cv_htype_GLuint" >&6
 
@@ -22679,7 +22955,9 @@ echo $ECHO_N "checking Haskell type for GLsizei... $ECHO_C" >&6
 if test "${fptools_cv_htype_GLsizei+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-  fptools_cv_htype_sup_GLsizei=yes;
+  fptools_cv_htype_sup_GLsizei=yes
+fp_check_htype_save_cppflags="$CPPFLAGS"
+CPPFLAGS="$CPPFLAGS $X_CFLAGS"
 if test "$cross_compiling" = yes; then
   fptools_cv_htype_GLsizei=NotReallyATypeCross; fptools_cv_htype_sup_GLsizei=no
 else
@@ -22729,12 +23007,16 @@ cat >>conftest.$ac_ext <<_ACEOF
 # include <ctype.h>
 #endif
 
-#if HAVE_GL_GL_H
+#if defined(HAVE_GL_GL_H)
 # include <GL/gl.h>
+#elif defined(HAVE_OPENGL_GL_H)
+# include <OpenGL/gl.h>
 #endif
 
-#if HAVE_OPENGL_GL_H
-# include <OpenGL/gl.h>
+#if defined(HAVE_AL_ALC_H)
+# include <AL/alc.h>
+#elif defined(HAVE_OPENAL_ALC_H)
+# include <OpenAL/alc.h>
 #endif
 
 #if HAVE_SYS_RESOURCE_H
@@ -22782,7 +23064,8 @@ fi
 rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
- if test "$fptools_cv_htype_sup_GLsizei" = yes; then
+ CPPFLAGS="$fp_check_htype_save_cppflags"
+if test "$fptools_cv_htype_sup_GLsizei" = yes; then
   echo "$as_me:$LINENO: result: $fptools_cv_htype_GLsizei" >&5
 echo "${ECHO_T}$fptools_cv_htype_GLsizei" >&6
 
@@ -22800,7 +23083,9 @@ echo $ECHO_N "checking Haskell type for GLenum... $ECHO_C" >&6
 if test "${fptools_cv_htype_GLenum+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-  fptools_cv_htype_sup_GLenum=yes;
+  fptools_cv_htype_sup_GLenum=yes
+fp_check_htype_save_cppflags="$CPPFLAGS"
+CPPFLAGS="$CPPFLAGS $X_CFLAGS"
 if test "$cross_compiling" = yes; then
   fptools_cv_htype_GLenum=NotReallyATypeCross; fptools_cv_htype_sup_GLenum=no
 else
@@ -22850,12 +23135,16 @@ cat >>conftest.$ac_ext <<_ACEOF
 # include <ctype.h>
 #endif
 
-#if HAVE_GL_GL_H
+#if defined(HAVE_GL_GL_H)
 # include <GL/gl.h>
+#elif defined(HAVE_OPENGL_GL_H)
+# include <OpenGL/gl.h>
 #endif
 
-#if HAVE_OPENGL_GL_H
-# include <OpenGL/gl.h>
+#if defined(HAVE_AL_ALC_H)
+# include <AL/alc.h>
+#elif defined(HAVE_OPENAL_ALC_H)
+# include <OpenAL/alc.h>
 #endif
 
 #if HAVE_SYS_RESOURCE_H
@@ -22903,7 +23192,8 @@ fi
 rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
- if test "$fptools_cv_htype_sup_GLenum" = yes; then
+ CPPFLAGS="$fp_check_htype_save_cppflags"
+if test "$fptools_cv_htype_sup_GLenum" = yes; then
   echo "$as_me:$LINENO: result: $fptools_cv_htype_GLenum" >&5
 echo "${ECHO_T}$fptools_cv_htype_GLenum" >&6
 
@@ -22921,7 +23211,9 @@ echo $ECHO_N "checking Haskell type for GLbitfield... $ECHO_C" >&6
 if test "${fptools_cv_htype_GLbitfield+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-  fptools_cv_htype_sup_GLbitfield=yes;
+  fptools_cv_htype_sup_GLbitfield=yes
+fp_check_htype_save_cppflags="$CPPFLAGS"
+CPPFLAGS="$CPPFLAGS $X_CFLAGS"
 if test "$cross_compiling" = yes; then
   fptools_cv_htype_GLbitfield=NotReallyATypeCross; fptools_cv_htype_sup_GLbitfield=no
 else
@@ -22971,12 +23263,16 @@ cat >>conftest.$ac_ext <<_ACEOF
 # include <ctype.h>
 #endif
 
-#if HAVE_GL_GL_H
+#if defined(HAVE_GL_GL_H)
 # include <GL/gl.h>
+#elif defined(HAVE_OPENGL_GL_H)
+# include <OpenGL/gl.h>
 #endif
 
-#if HAVE_OPENGL_GL_H
-# include <OpenGL/gl.h>
+#if defined(HAVE_AL_ALC_H)
+# include <AL/alc.h>
+#elif defined(HAVE_OPENAL_ALC_H)
+# include <OpenAL/alc.h>
 #endif
 
 #if HAVE_SYS_RESOURCE_H
@@ -23024,7 +23320,8 @@ fi
 rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
- if test "$fptools_cv_htype_sup_GLbitfield" = yes; then
+ CPPFLAGS="$fp_check_htype_save_cppflags"
+if test "$fptools_cv_htype_sup_GLbitfield" = yes; then
   echo "$as_me:$LINENO: result: $fptools_cv_htype_GLbitfield" >&5
 echo "${ECHO_T}$fptools_cv_htype_GLbitfield" >&6
 
@@ -23042,7 +23339,9 @@ echo $ECHO_N "checking Haskell type for GLfloat... $ECHO_C" >&6
 if test "${fptools_cv_htype_GLfloat+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-  fptools_cv_htype_sup_GLfloat=yes;
+  fptools_cv_htype_sup_GLfloat=yes
+fp_check_htype_save_cppflags="$CPPFLAGS"
+CPPFLAGS="$CPPFLAGS $X_CFLAGS"
 if test "$cross_compiling" = yes; then
   fptools_cv_htype_GLfloat=NotReallyATypeCross; fptools_cv_htype_sup_GLfloat=no
 else
@@ -23092,12 +23391,16 @@ cat >>conftest.$ac_ext <<_ACEOF
 # include <ctype.h>
 #endif
 
-#if HAVE_GL_GL_H
+#if defined(HAVE_GL_GL_H)
 # include <GL/gl.h>
+#elif defined(HAVE_OPENGL_GL_H)
+# include <OpenGL/gl.h>
 #endif
 
-#if HAVE_OPENGL_GL_H
-# include <OpenGL/gl.h>
+#if defined(HAVE_AL_ALC_H)
+# include <AL/alc.h>
+#elif defined(HAVE_OPENAL_ALC_H)
+# include <OpenAL/alc.h>
 #endif
 
 #if HAVE_SYS_RESOURCE_H
@@ -23145,7 +23448,8 @@ fi
 rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
- if test "$fptools_cv_htype_sup_GLfloat" = yes; then
+ CPPFLAGS="$fp_check_htype_save_cppflags"
+if test "$fptools_cv_htype_sup_GLfloat" = yes; then
   echo "$as_me:$LINENO: result: $fptools_cv_htype_GLfloat" >&5
 echo "${ECHO_T}$fptools_cv_htype_GLfloat" >&6
 
@@ -23163,7 +23467,9 @@ echo $ECHO_N "checking Haskell type for GLclampf... $ECHO_C" >&6
 if test "${fptools_cv_htype_GLclampf+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-  fptools_cv_htype_sup_GLclampf=yes;
+  fptools_cv_htype_sup_GLclampf=yes
+fp_check_htype_save_cppflags="$CPPFLAGS"
+CPPFLAGS="$CPPFLAGS $X_CFLAGS"
 if test "$cross_compiling" = yes; then
   fptools_cv_htype_GLclampf=NotReallyATypeCross; fptools_cv_htype_sup_GLclampf=no
 else
@@ -23213,12 +23519,16 @@ cat >>conftest.$ac_ext <<_ACEOF
 # include <ctype.h>
 #endif
 
-#if HAVE_GL_GL_H
+#if defined(HAVE_GL_GL_H)
 # include <GL/gl.h>
+#elif defined(HAVE_OPENGL_GL_H)
+# include <OpenGL/gl.h>
 #endif
 
-#if HAVE_OPENGL_GL_H
-# include <OpenGL/gl.h>
+#if defined(HAVE_AL_ALC_H)
+# include <AL/alc.h>
+#elif defined(HAVE_OPENAL_ALC_H)
+# include <OpenAL/alc.h>
 #endif
 
 #if HAVE_SYS_RESOURCE_H
@@ -23266,7 +23576,8 @@ fi
 rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
- if test "$fptools_cv_htype_sup_GLclampf" = yes; then
+ CPPFLAGS="$fp_check_htype_save_cppflags"
+if test "$fptools_cv_htype_sup_GLclampf" = yes; then
   echo "$as_me:$LINENO: result: $fptools_cv_htype_GLclampf" >&5
 echo "${ECHO_T}$fptools_cv_htype_GLclampf" >&6
 
@@ -23284,7 +23595,9 @@ echo $ECHO_N "checking Haskell type for GLdouble... $ECHO_C" >&6
 if test "${fptools_cv_htype_GLdouble+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-  fptools_cv_htype_sup_GLdouble=yes;
+  fptools_cv_htype_sup_GLdouble=yes
+fp_check_htype_save_cppflags="$CPPFLAGS"
+CPPFLAGS="$CPPFLAGS $X_CFLAGS"
 if test "$cross_compiling" = yes; then
   fptools_cv_htype_GLdouble=NotReallyATypeCross; fptools_cv_htype_sup_GLdouble=no
 else
@@ -23334,12 +23647,16 @@ cat >>conftest.$ac_ext <<_ACEOF
 # include <ctype.h>
 #endif
 
-#if HAVE_GL_GL_H
+#if defined(HAVE_GL_GL_H)
 # include <GL/gl.h>
+#elif defined(HAVE_OPENGL_GL_H)
+# include <OpenGL/gl.h>
 #endif
 
-#if HAVE_OPENGL_GL_H
-# include <OpenGL/gl.h>
+#if defined(HAVE_AL_ALC_H)
+# include <AL/alc.h>
+#elif defined(HAVE_OPENAL_ALC_H)
+# include <OpenAL/alc.h>
 #endif
 
 #if HAVE_SYS_RESOURCE_H
@@ -23387,7 +23704,8 @@ fi
 rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
- if test "$fptools_cv_htype_sup_GLdouble" = yes; then
+ CPPFLAGS="$fp_check_htype_save_cppflags"
+if test "$fptools_cv_htype_sup_GLdouble" = yes; then
   echo "$as_me:$LINENO: result: $fptools_cv_htype_GLdouble" >&5
 echo "${ECHO_T}$fptools_cv_htype_GLdouble" >&6
 
@@ -23405,7 +23723,9 @@ echo $ECHO_N "checking Haskell type for GLclampd... $ECHO_C" >&6
 if test "${fptools_cv_htype_GLclampd+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-  fptools_cv_htype_sup_GLclampd=yes;
+  fptools_cv_htype_sup_GLclampd=yes
+fp_check_htype_save_cppflags="$CPPFLAGS"
+CPPFLAGS="$CPPFLAGS $X_CFLAGS"
 if test "$cross_compiling" = yes; then
   fptools_cv_htype_GLclampd=NotReallyATypeCross; fptools_cv_htype_sup_GLclampd=no
 else
@@ -23455,12 +23775,16 @@ cat >>conftest.$ac_ext <<_ACEOF
 # include <ctype.h>
 #endif
 
-#if HAVE_GL_GL_H
+#if defined(HAVE_GL_GL_H)
 # include <GL/gl.h>
+#elif defined(HAVE_OPENGL_GL_H)
+# include <OpenGL/gl.h>
 #endif
 
-#if HAVE_OPENGL_GL_H
-# include <OpenGL/gl.h>
+#if defined(HAVE_AL_ALC_H)
+# include <AL/alc.h>
+#elif defined(HAVE_OPENAL_ALC_H)
+# include <OpenAL/alc.h>
 #endif
 
 #if HAVE_SYS_RESOURCE_H
@@ -23508,7 +23832,8 @@ fi
 rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
- if test "$fptools_cv_htype_sup_GLclampd" = yes; then
+ CPPFLAGS="$fp_check_htype_save_cppflags"
+if test "$fptools_cv_htype_sup_GLclampd" = yes; then
   echo "$as_me:$LINENO: result: $fptools_cv_htype_GLclampd" >&5
 echo "${ECHO_T}$fptools_cv_htype_GLclampd" >&6
 
@@ -24247,7 +24572,7 @@ _ACEOF
 ac_save_LIBS="$LIBS"
 LIBS=;
 cat > conftest.$ac_ext <<EOF
-#line 24250 "configure"
+#line 24575 "configure"
 #include "confdefs.h"
 
 #if HAVE_WINDOWS_H
@@ -24288,7 +24613,7 @@ fi
 ac_save_LIBS="$LIBS"
 LIBS=;
 cat > conftest.$ac_ext <<EOF
-#line 24291 "configure"
+#line 24616 "configure"
 #include "confdefs.h"
 
 #if HAVE_WINDOWS_H
