@@ -80,7 +80,6 @@ instance Integral Word8 where
     x `mod` y     = to  (binop mod x y)
     x `quotRem` y = to2 (binop quotRem x y)
     divMod        = quotRem
-    even          = even      . from
     toInteger     = toInteger . from
     toInt         = word8ToInt
 
@@ -154,7 +153,6 @@ instance Integral Word16 where
   x `mod` y     = to  (binop mod x y)
   x `quotRem` y = to2 (binop quotRem x y)
   divMod        = quotRem
-  even          = even      . from
   toInteger     = toInteger . from
   toInt         = word16ToInt
 
@@ -225,7 +223,6 @@ instance Integral Word32 where
     mod       = primModWord
     quotRem   = primQrmWord
     divMod    = quotRem
-    even      = primEvenWord
     toInteger = primWordToInteger
     toInt     = word32ToInt 
 

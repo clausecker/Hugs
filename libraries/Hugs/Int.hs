@@ -79,7 +79,6 @@ instance Integral Int8 where
     x `rem` y     = to  (binop rem x y)
     x `mod` y     = to  (binop mod x y)
     x `quotRem` y = to2 (binop quotRem x y)
-    even          = even      . from
     toInteger     = toInteger . from
     toInt         = int8ToInt
 
@@ -154,7 +153,6 @@ instance Integral Int16 where
     x `rem` y     = to  (binop rem x y)
     x `mod` y     = to  (binop mod x y)
     x `quotRem` y = to2 (binop quotRem x y)
-    even          = even      . from
     toInteger     = toInteger . from
     toInt         = int16ToInt
 
@@ -231,7 +229,6 @@ instance Integral Int32 where
     x `rem` y     = intToInt32 (binop32 rem x y)
     x `mod` y     = intToInt32 (binop32 mod x y)
     x `quotRem` y = to2' (binop32 quotRem x y)
-    even          = even      . int32ToInt
     toInteger     = toInteger . int32ToInt
     toInt         = int32ToInt
 

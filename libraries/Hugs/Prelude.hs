@@ -90,7 +90,7 @@ module Hugs.Prelude (
     Num((+), (-), (*), negate, abs, signum, fromInteger, fromInt),
     Real(toRational),
 --  Integral(quot, rem, div, mod, quotRem, divMod, toInteger),
-    Integral(quot, rem, div, mod, quotRem, divMod, even, odd, toInteger, toInt),
+    Integral(quot, rem, div, mod, quotRem, divMod, toInteger, toInt),
 --  Fractional((/), recip, fromRational),
     Fractional((/), recip, fromRational, fromDouble),
     Floating(pi, exp, log, sqrt, (**), logBase, sin, cos, tan,
@@ -181,7 +181,6 @@ class (Num a, Ord a) => Real a where
 class (Real a, Enum a) => Integral a where
     quot, rem, div, mod :: a -> a -> a
     quotRem, divMod     :: a -> a -> (a,a)
-    even, odd           :: a -> Bool
     toInteger           :: a -> Integer
     toInt               :: a -> Int
 
@@ -192,8 +191,6 @@ class (Real a, Enum a) => Integral a where
     n `mod` d            = r where (q,r) = divMod n d
     divMod n d           = if signum r == - signum d then (q-1, r+d) else qr
 			   where qr@(q,r) = quotRem n d
-    even n               = n `rem` 2 == 0
-    odd                  = not . even
     toInt                = toInt . toInteger
 
 class (Num a) => Fractional a where
@@ -290,6 +287,10 @@ class (RealFrac a, Floating a) => RealFloat a where
 
 subtract       :: Num a => a -> a -> a
 subtract        = flip (-)
+
+even, odd        :: (Integral a) => a -> Bool
+even n           =  n `rem` 2 == 0
+odd              =  not . even
 
 gcd            :: Integral a => a -> a -> a
 gcd 0 0         = error "Prelude.gcd: gcd 0 0 is undefined"
@@ -721,7 +722,6 @@ primitive primDivInt,
 	  primRemInt,
 	  primModInt  :: Int -> Int -> Int
 primitive primQrmInt  :: Int -> Int -> (Int,Int)
-primitive primEvenInt :: Int -> Bool
 
 instance Integral Int where
     div       = primDivInt
@@ -729,16 +729,13 @@ instance Integral Int where
     rem       = primRemInt
     mod       = primModInt
     quotRem   = primQrmInt
-    even      = primEvenInt
     toInteger = primIntToInteger
     toInt x   = x
 
 primitive primQrmInteger  :: Integer -> Integer -> (Integer,Integer)
-primitive primEvenInteger :: Integer -> Bool
 
 instance Integral Integer where
     quotRem     = primQrmInteger
-    even        = primEvenInteger
     toInteger x = x
     toInt       = primIntegerToInt
 
