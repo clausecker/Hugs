@@ -210,7 +210,15 @@ case $HostPlatform in
   *) ;;
 esac
 
+if test "x$CP" != "xcopy"; then
+# Only check for RM&CP if they haven't been overridden already (cf. --with-nmake)
+AC_PATH_PROG(RM,rm)
+RM='${RM} -f'
+AC_PATH_PROG(CP,cp)
+fi
+
 AC_CHECK_PROG(LD,ld,ld)
+
 AC_CHECK_PROGS(PERL,perl)  dnl should test for perl5
 AC_PROG_MAKE_SET
 AC_CHECK_PROG(have_hp2ps,hp2ps,1,0)
@@ -856,6 +864,7 @@ AC_SUBST_DEF(DLL_ENDING,"-so")
 AC_SUBST_DEF(DEV_NULL,"/dev/null")
 AC_SUBST_DEF(RM,"/bin/rm -f")
 AC_SUBST_DEF(CP,"/bin/cp")
+
 AC_SUBST_FILE(MkInstall)  
 MkDepend=../MkDepend.in
 AC_SUBST_FILE(MkDepend)  
