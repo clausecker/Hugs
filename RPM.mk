@@ -20,7 +20,9 @@ ${PACKAGE}.tar.gz:
 	-rm -rf ${TARTMP}
 	-mkdir -p ${TARTMP}
 	cd ${TARTMP}; cvs -d ${CVSROOT} export -r${TAG} hugs98
-	cd ${TARTMP}/hugs98; cvs -d ${CVSROOT} export -r${HSLIBSTAG} $(addprefix fptools/,${HSLIBSDIRS})
+	cd ${TARTMP}/hugs98; cvs -d ${CVSROOT} export -r${HSLIBSTAG} $(addprefix fptools/hslibs/,${HSLIBSDIRS})
+	cd ${TARTMP}/hugs98; cvs -d ${CVSROOT} export -r${LIBRARIESTAG} $(addprefix fptools/libraries/,${LIBRARIESDIRS})
+	cd ${TARTMP}/hugs98/fptools/libraries/haskell-src/Language/Haskell; happy Parser.ly
 	# using `make parser.c' would be best, but by default yacc
 	# will be used, and yacc is, for some reason, incompatible
 	cp ${TARTMP}/hugs98/src/version.h /tmp/mktar
