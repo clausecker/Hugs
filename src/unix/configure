@@ -2208,10 +2208,4056 @@ fi
 
 
 
+echo $ac_n "checking whether ${CC} supports long long types""... $ac_c" 1>&6
+echo "configure:2213: checking whether ${CC} supports long long types" >&5
+if eval "test \"`echo '$''{'fptools_cv_have_long_long'+set}'`\" = set"; then
+  echo $ac_n "(cached) $ac_c" 1>&6
+else
+  
+
+ac_ext=c
+# CFLAGS is not in ac_cpp because -g, -O, etc. are not valid cpp options.
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='${CC-cc} -c $CFLAGS $CPPFLAGS conftest.$ac_ext 1>&5'
+ac_link='${CC-cc} -o conftest${ac_exeext} $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS 1>&5'
+cross_compiling=$ac_cv_prog_cc_cross
+
+cat > conftest.$ac_ext <<EOF
+#line 2227 "configure"
+#include "confdefs.h"
+
+int main() {
+long long a;
+; return 0; }
+EOF
+if { (eval echo configure:2234: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>&5; }; then
+  rm -rf conftest*
+  fptools_cv_have_long_long=yes
+else
+  echo "configure: failed program was:" >&5
+  cat conftest.$ac_ext >&5
+  rm -rf conftest*
+  fptools_cv_have_long_long=no
+fi
+rm -f conftest*
+ac_ext=c
+# CFLAGS is not in ac_cpp because -g, -O, etc. are not valid cpp options.
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='${CC-cc} -c $CFLAGS $CPPFLAGS conftest.$ac_ext 1>&5'
+ac_link='${CC-cc} -o conftest${ac_exeext} $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS 1>&5'
+cross_compiling=$ac_cv_prog_cc_cross
+
+
+fi
+
+echo "$ac_t""$fptools_cv_have_long_long" 1>&6
+if test "$fptools_cv_have_long_long" = yes; then
+cat >> confdefs.h <<\EOF
+#define HAVE_LONG_LONG 1
+EOF
+
+fi
+
+
+echo $ac_n "checking size of char""... $ac_c" 1>&6
+echo "configure:2264: checking size of char" >&5
+if eval "test \"`echo '$''{'ac_cv_sizeof_char'+set}'`\" = set"; then
+  echo $ac_n "(cached) $ac_c" 1>&6
+else
+  if test "$cross_compiling" = yes; then
+  ac_cv_sizeof_char=1
+else
+  cat > conftest.$ac_ext <<EOF
+#line 2272 "configure"
+#include "confdefs.h"
+#include <stdio.h>
+#include <sys/types.h>
+main()
+{
+  FILE *f=fopen("conftestval", "w");
+  if (!f) exit(1);
+  fprintf(f, "%d\n", sizeof(char));
+  exit(0);
+}
+EOF
+if { (eval echo configure:2284: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} && (./conftest; exit) 2>/dev/null
+then
+  ac_cv_sizeof_char=`cat conftestval`
+else
+  echo "configure: failed program was:" >&5
+  cat conftest.$ac_ext >&5
+  rm -fr conftest*
+  ac_cv_sizeof_char=0
+fi
+rm -fr conftest*
+fi
+
+fi
+echo "$ac_t""$ac_cv_sizeof_char" 1>&6
+cat >> confdefs.h <<EOF
+#define SIZEOF_CHAR $ac_cv_sizeof_char
+EOF
+
+
+echo $ac_n "checking size of double""... $ac_c" 1>&6
+echo "configure:2304: checking size of double" >&5
+if eval "test \"`echo '$''{'ac_cv_sizeof_double'+set}'`\" = set"; then
+  echo $ac_n "(cached) $ac_c" 1>&6
+else
+  if test "$cross_compiling" = yes; then
+  ac_cv_sizeof_double=8
+else
+  cat > conftest.$ac_ext <<EOF
+#line 2312 "configure"
+#include "confdefs.h"
+#include <stdio.h>
+#include <sys/types.h>
+main()
+{
+  FILE *f=fopen("conftestval", "w");
+  if (!f) exit(1);
+  fprintf(f, "%d\n", sizeof(double));
+  exit(0);
+}
+EOF
+if { (eval echo configure:2324: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} && (./conftest; exit) 2>/dev/null
+then
+  ac_cv_sizeof_double=`cat conftestval`
+else
+  echo "configure: failed program was:" >&5
+  cat conftest.$ac_ext >&5
+  rm -fr conftest*
+  ac_cv_sizeof_double=0
+fi
+rm -fr conftest*
+fi
+
+fi
+echo "$ac_t""$ac_cv_sizeof_double" 1>&6
+cat >> confdefs.h <<EOF
+#define SIZEOF_DOUBLE $ac_cv_sizeof_double
+EOF
+
+
+echo $ac_n "checking size of float""... $ac_c" 1>&6
+echo "configure:2344: checking size of float" >&5
+if eval "test \"`echo '$''{'ac_cv_sizeof_float'+set}'`\" = set"; then
+  echo $ac_n "(cached) $ac_c" 1>&6
+else
+  if test "$cross_compiling" = yes; then
+  ac_cv_sizeof_float=4
+else
+  cat > conftest.$ac_ext <<EOF
+#line 2352 "configure"
+#include "confdefs.h"
+#include <stdio.h>
+#include <sys/types.h>
+main()
+{
+  FILE *f=fopen("conftestval", "w");
+  if (!f) exit(1);
+  fprintf(f, "%d\n", sizeof(float));
+  exit(0);
+}
+EOF
+if { (eval echo configure:2364: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} && (./conftest; exit) 2>/dev/null
+then
+  ac_cv_sizeof_float=`cat conftestval`
+else
+  echo "configure: failed program was:" >&5
+  cat conftest.$ac_ext >&5
+  rm -fr conftest*
+  ac_cv_sizeof_float=0
+fi
+rm -fr conftest*
+fi
+
+fi
+echo "$ac_t""$ac_cv_sizeof_float" 1>&6
+cat >> confdefs.h <<EOF
+#define SIZEOF_FLOAT $ac_cv_sizeof_float
+EOF
+
+
+echo $ac_n "checking size of int""... $ac_c" 1>&6
+echo "configure:2384: checking size of int" >&5
+if eval "test \"`echo '$''{'ac_cv_sizeof_int'+set}'`\" = set"; then
+  echo $ac_n "(cached) $ac_c" 1>&6
+else
+  if test "$cross_compiling" = yes; then
+  ac_cv_sizeof_int=4
+else
+  cat > conftest.$ac_ext <<EOF
+#line 2392 "configure"
+#include "confdefs.h"
+#include <stdio.h>
+#include <sys/types.h>
+main()
+{
+  FILE *f=fopen("conftestval", "w");
+  if (!f) exit(1);
+  fprintf(f, "%d\n", sizeof(int));
+  exit(0);
+}
+EOF
+if { (eval echo configure:2404: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} && (./conftest; exit) 2>/dev/null
+then
+  ac_cv_sizeof_int=`cat conftestval`
+else
+  echo "configure: failed program was:" >&5
+  cat conftest.$ac_ext >&5
+  rm -fr conftest*
+  ac_cv_sizeof_int=0
+fi
+rm -fr conftest*
+fi
+
+fi
+echo "$ac_t""$ac_cv_sizeof_int" 1>&6
+cat >> confdefs.h <<EOF
+#define SIZEOF_INT $ac_cv_sizeof_int
+EOF
+
+
+echo $ac_n "checking size of long""... $ac_c" 1>&6
+echo "configure:2424: checking size of long" >&5
+if eval "test \"`echo '$''{'ac_cv_sizeof_long'+set}'`\" = set"; then
+  echo $ac_n "(cached) $ac_c" 1>&6
+else
+  if test "$cross_compiling" = yes; then
+  ac_cv_sizeof_long=4
+else
+  cat > conftest.$ac_ext <<EOF
+#line 2432 "configure"
+#include "confdefs.h"
+#include <stdio.h>
+#include <sys/types.h>
+main()
+{
+  FILE *f=fopen("conftestval", "w");
+  if (!f) exit(1);
+  fprintf(f, "%d\n", sizeof(long));
+  exit(0);
+}
+EOF
+if { (eval echo configure:2444: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} && (./conftest; exit) 2>/dev/null
+then
+  ac_cv_sizeof_long=`cat conftestval`
+else
+  echo "configure: failed program was:" >&5
+  cat conftest.$ac_ext >&5
+  rm -fr conftest*
+  ac_cv_sizeof_long=0
+fi
+rm -fr conftest*
+fi
+
+fi
+echo "$ac_t""$ac_cv_sizeof_long" 1>&6
+cat >> confdefs.h <<EOF
+#define SIZEOF_LONG $ac_cv_sizeof_long
+EOF
+
+
+if test "$fptools_cv_have_long_long" = yes; then
+echo $ac_n "checking size of long long""... $ac_c" 1>&6
+echo "configure:2465: checking size of long long" >&5
+if eval "test \"`echo '$''{'ac_cv_sizeof_long_long'+set}'`\" = set"; then
+  echo $ac_n "(cached) $ac_c" 1>&6
+else
+  if test "$cross_compiling" = yes; then
+  ac_cv_sizeof_long_long=8
+else
+  cat > conftest.$ac_ext <<EOF
+#line 2473 "configure"
+#include "confdefs.h"
+#include <stdio.h>
+#include <sys/types.h>
+main()
+{
+  FILE *f=fopen("conftestval", "w");
+  if (!f) exit(1);
+  fprintf(f, "%d\n", sizeof(long long));
+  exit(0);
+}
+EOF
+if { (eval echo configure:2485: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} && (./conftest; exit) 2>/dev/null
+then
+  ac_cv_sizeof_long_long=`cat conftestval`
+else
+  echo "configure: failed program was:" >&5
+  cat conftest.$ac_ext >&5
+  rm -fr conftest*
+  ac_cv_sizeof_long_long=0
+fi
+rm -fr conftest*
+fi
+
+fi
+echo "$ac_t""$ac_cv_sizeof_long_long" 1>&6
+cat >> confdefs.h <<EOF
+#define SIZEOF_LONG_LONG $ac_cv_sizeof_long_long
+EOF
+
+
+fi
+echo $ac_n "checking size of short""... $ac_c" 1>&6
+echo "configure:2506: checking size of short" >&5
+if eval "test \"`echo '$''{'ac_cv_sizeof_short'+set}'`\" = set"; then
+  echo $ac_n "(cached) $ac_c" 1>&6
+else
+  if test "$cross_compiling" = yes; then
+  ac_cv_sizeof_short=2
+else
+  cat > conftest.$ac_ext <<EOF
+#line 2514 "configure"
+#include "confdefs.h"
+#include <stdio.h>
+#include <sys/types.h>
+main()
+{
+  FILE *f=fopen("conftestval", "w");
+  if (!f) exit(1);
+  fprintf(f, "%d\n", sizeof(short));
+  exit(0);
+}
+EOF
+if { (eval echo configure:2526: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} && (./conftest; exit) 2>/dev/null
+then
+  ac_cv_sizeof_short=`cat conftestval`
+else
+  echo "configure: failed program was:" >&5
+  cat conftest.$ac_ext >&5
+  rm -fr conftest*
+  ac_cv_sizeof_short=0
+fi
+rm -fr conftest*
+fi
+
+fi
+echo "$ac_t""$ac_cv_sizeof_short" 1>&6
+cat >> confdefs.h <<EOF
+#define SIZEOF_SHORT $ac_cv_sizeof_short
+EOF
+
+
+echo $ac_n "checking size of unsigned char""... $ac_c" 1>&6
+echo "configure:2546: checking size of unsigned char" >&5
+if eval "test \"`echo '$''{'ac_cv_sizeof_unsigned_char'+set}'`\" = set"; then
+  echo $ac_n "(cached) $ac_c" 1>&6
+else
+  if test "$cross_compiling" = yes; then
+  ac_cv_sizeof_unsigned_char=1
+else
+  cat > conftest.$ac_ext <<EOF
+#line 2554 "configure"
+#include "confdefs.h"
+#include <stdio.h>
+#include <sys/types.h>
+main()
+{
+  FILE *f=fopen("conftestval", "w");
+  if (!f) exit(1);
+  fprintf(f, "%d\n", sizeof(unsigned char));
+  exit(0);
+}
+EOF
+if { (eval echo configure:2566: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} && (./conftest; exit) 2>/dev/null
+then
+  ac_cv_sizeof_unsigned_char=`cat conftestval`
+else
+  echo "configure: failed program was:" >&5
+  cat conftest.$ac_ext >&5
+  rm -fr conftest*
+  ac_cv_sizeof_unsigned_char=0
+fi
+rm -fr conftest*
+fi
+
+fi
+echo "$ac_t""$ac_cv_sizeof_unsigned_char" 1>&6
+cat >> confdefs.h <<EOF
+#define SIZEOF_UNSIGNED_CHAR $ac_cv_sizeof_unsigned_char
+EOF
+
+
+echo $ac_n "checking size of unsigned int""... $ac_c" 1>&6
+echo "configure:2586: checking size of unsigned int" >&5
+if eval "test \"`echo '$''{'ac_cv_sizeof_unsigned_int'+set}'`\" = set"; then
+  echo $ac_n "(cached) $ac_c" 1>&6
+else
+  if test "$cross_compiling" = yes; then
+  ac_cv_sizeof_unsigned_int=4
+else
+  cat > conftest.$ac_ext <<EOF
+#line 2594 "configure"
+#include "confdefs.h"
+#include <stdio.h>
+#include <sys/types.h>
+main()
+{
+  FILE *f=fopen("conftestval", "w");
+  if (!f) exit(1);
+  fprintf(f, "%d\n", sizeof(unsigned int));
+  exit(0);
+}
+EOF
+if { (eval echo configure:2606: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} && (./conftest; exit) 2>/dev/null
+then
+  ac_cv_sizeof_unsigned_int=`cat conftestval`
+else
+  echo "configure: failed program was:" >&5
+  cat conftest.$ac_ext >&5
+  rm -fr conftest*
+  ac_cv_sizeof_unsigned_int=0
+fi
+rm -fr conftest*
+fi
+
+fi
+echo "$ac_t""$ac_cv_sizeof_unsigned_int" 1>&6
+cat >> confdefs.h <<EOF
+#define SIZEOF_UNSIGNED_INT $ac_cv_sizeof_unsigned_int
+EOF
+
+
+echo $ac_n "checking size of unsigned long""... $ac_c" 1>&6
+echo "configure:2626: checking size of unsigned long" >&5
+if eval "test \"`echo '$''{'ac_cv_sizeof_unsigned_long'+set}'`\" = set"; then
+  echo $ac_n "(cached) $ac_c" 1>&6
+else
+  if test "$cross_compiling" = yes; then
+  ac_cv_sizeof_unsigned_long=4
+else
+  cat > conftest.$ac_ext <<EOF
+#line 2634 "configure"
+#include "confdefs.h"
+#include <stdio.h>
+#include <sys/types.h>
+main()
+{
+  FILE *f=fopen("conftestval", "w");
+  if (!f) exit(1);
+  fprintf(f, "%d\n", sizeof(unsigned long));
+  exit(0);
+}
+EOF
+if { (eval echo configure:2646: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} && (./conftest; exit) 2>/dev/null
+then
+  ac_cv_sizeof_unsigned_long=`cat conftestval`
+else
+  echo "configure: failed program was:" >&5
+  cat conftest.$ac_ext >&5
+  rm -fr conftest*
+  ac_cv_sizeof_unsigned_long=0
+fi
+rm -fr conftest*
+fi
+
+fi
+echo "$ac_t""$ac_cv_sizeof_unsigned_long" 1>&6
+cat >> confdefs.h <<EOF
+#define SIZEOF_UNSIGNED_LONG $ac_cv_sizeof_unsigned_long
+EOF
+
+
+if test "$fptools_cv_have_long_long" = yes; then
+echo $ac_n "checking size of unsigned long long""... $ac_c" 1>&6
+echo "configure:2667: checking size of unsigned long long" >&5
+if eval "test \"`echo '$''{'ac_cv_sizeof_unsigned_long_long'+set}'`\" = set"; then
+  echo $ac_n "(cached) $ac_c" 1>&6
+else
+  if test "$cross_compiling" = yes; then
+  ac_cv_sizeof_unsigned_long_long=8
+else
+  cat > conftest.$ac_ext <<EOF
+#line 2675 "configure"
+#include "confdefs.h"
+#include <stdio.h>
+#include <sys/types.h>
+main()
+{
+  FILE *f=fopen("conftestval", "w");
+  if (!f) exit(1);
+  fprintf(f, "%d\n", sizeof(unsigned long long));
+  exit(0);
+}
+EOF
+if { (eval echo configure:2687: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} && (./conftest; exit) 2>/dev/null
+then
+  ac_cv_sizeof_unsigned_long_long=`cat conftestval`
+else
+  echo "configure: failed program was:" >&5
+  cat conftest.$ac_ext >&5
+  rm -fr conftest*
+  ac_cv_sizeof_unsigned_long_long=0
+fi
+rm -fr conftest*
+fi
+
+fi
+echo "$ac_t""$ac_cv_sizeof_unsigned_long_long" 1>&6
+cat >> confdefs.h <<EOF
+#define SIZEOF_UNSIGNED_LONG_LONG $ac_cv_sizeof_unsigned_long_long
+EOF
+
+
+fi
+echo $ac_n "checking size of unsigned short""... $ac_c" 1>&6
+echo "configure:2708: checking size of unsigned short" >&5
+if eval "test \"`echo '$''{'ac_cv_sizeof_unsigned_short'+set}'`\" = set"; then
+  echo $ac_n "(cached) $ac_c" 1>&6
+else
+  if test "$cross_compiling" = yes; then
+  ac_cv_sizeof_unsigned_short=2
+else
+  cat > conftest.$ac_ext <<EOF
+#line 2716 "configure"
+#include "confdefs.h"
+#include <stdio.h>
+#include <sys/types.h>
+main()
+{
+  FILE *f=fopen("conftestval", "w");
+  if (!f) exit(1);
+  fprintf(f, "%d\n", sizeof(unsigned short));
+  exit(0);
+}
+EOF
+if { (eval echo configure:2728: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} && (./conftest; exit) 2>/dev/null
+then
+  ac_cv_sizeof_unsigned_short=`cat conftestval`
+else
+  echo "configure: failed program was:" >&5
+  cat conftest.$ac_ext >&5
+  rm -fr conftest*
+  ac_cv_sizeof_unsigned_short=0
+fi
+rm -fr conftest*
+fi
+
+fi
+echo "$ac_t""$ac_cv_sizeof_unsigned_short" 1>&6
+cat >> confdefs.h <<EOF
+#define SIZEOF_UNSIGNED_SHORT $ac_cv_sizeof_unsigned_short
+EOF
+
+
+echo $ac_n "checking size of void *""... $ac_c" 1>&6
+echo "configure:2748: checking size of void *" >&5
+if eval "test \"`echo '$''{'ac_cv_sizeof_void_p'+set}'`\" = set"; then
+  echo $ac_n "(cached) $ac_c" 1>&6
+else
+  if test "$cross_compiling" = yes; then
+  ac_cv_sizeof_void_p=4
+else
+  cat > conftest.$ac_ext <<EOF
+#line 2756 "configure"
+#include "confdefs.h"
+#include <stdio.h>
+#include <sys/types.h>
+main()
+{
+  FILE *f=fopen("conftestval", "w");
+  if (!f) exit(1);
+  fprintf(f, "%d\n", sizeof(void *));
+  exit(0);
+}
+EOF
+if { (eval echo configure:2768: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} && (./conftest; exit) 2>/dev/null
+then
+  ac_cv_sizeof_void_p=`cat conftestval`
+else
+  echo "configure: failed program was:" >&5
+  cat conftest.$ac_ext >&5
+  rm -fr conftest*
+  ac_cv_sizeof_void_p=0
+fi
+rm -fr conftest*
+fi
+
+fi
+echo "$ac_t""$ac_cv_sizeof_void_p" 1>&6
+cat >> confdefs.h <<EOF
+#define SIZEOF_VOID_P $ac_cv_sizeof_void_p
+EOF
+
+
+
+echo $ac_n "checking alignment of char""... $ac_c" 1>&6
+echo "configure:2789: checking alignment of char" >&5
+if eval "test \"`echo '$''{'ac_cv_alignment_char'+set}'`\" = set"; then
+  echo $ac_n "(cached) $ac_c" 1>&6
+else
+  if test "$cross_compiling" = yes; then
+  ac_cv_alignment_char=$ac_cv_sizeof_char
+else
+  cat > conftest.$ac_ext <<EOF
+#line 2797 "configure"
+#include "confdefs.h"
+
+#include <stdio.h>
+#if HAVE_STDDEF_H
+#include <stddef.h>
+#endif
+#ifndef offsetof
+#define offsetof(ty,field) ((size_t)((char *)&((ty *)0)->field - (char *)(ty *)0))
+#endif
+int
+main()
+{
+  FILE *f=fopen("conftestval", "w");
+  if (!f) exit(1);
+  fprintf(f, "%d", offsetof(struct { char c; char ty;},ty));
+  exit(0);
+}
+EOF
+if { (eval echo configure:2816: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} && (./conftest; exit) 2>/dev/null
+then
+  ac_cv_alignment_char=`cat conftestval`
+else
+  echo "configure: failed program was:" >&5
+  cat conftest.$ac_ext >&5
+  rm -fr conftest*
+  ac_cv_alignment_char=$ac_cv_sizeof_char
+fi
+rm -fr conftest*
+fi
+
+fi
+
+echo "$ac_t""$ac_cv_alignment_char" 1>&6
+cat >> confdefs.h <<EOF
+#define ALIGNMENT_CHAR $ac_cv_alignment_char
+EOF
+
+
+
+echo $ac_n "checking alignment of double""... $ac_c" 1>&6
+echo "configure:2838: checking alignment of double" >&5
+if eval "test \"`echo '$''{'ac_cv_alignment_double'+set}'`\" = set"; then
+  echo $ac_n "(cached) $ac_c" 1>&6
+else
+  if test "$cross_compiling" = yes; then
+  ac_cv_alignment_double=$ac_cv_sizeof_double
+else
+  cat > conftest.$ac_ext <<EOF
+#line 2846 "configure"
+#include "confdefs.h"
+
+#include <stdio.h>
+#if HAVE_STDDEF_H
+#include <stddef.h>
+#endif
+#ifndef offsetof
+#define offsetof(ty,field) ((size_t)((char *)&((ty *)0)->field - (char *)(ty *)0))
+#endif
+int
+main()
+{
+  FILE *f=fopen("conftestval", "w");
+  if (!f) exit(1);
+  fprintf(f, "%d", offsetof(struct { char c; double ty;},ty));
+  exit(0);
+}
+EOF
+if { (eval echo configure:2865: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} && (./conftest; exit) 2>/dev/null
+then
+  ac_cv_alignment_double=`cat conftestval`
+else
+  echo "configure: failed program was:" >&5
+  cat conftest.$ac_ext >&5
+  rm -fr conftest*
+  ac_cv_alignment_double=$ac_cv_sizeof_double
+fi
+rm -fr conftest*
+fi
+
+fi
+
+echo "$ac_t""$ac_cv_alignment_double" 1>&6
+cat >> confdefs.h <<EOF
+#define ALIGNMENT_DOUBLE $ac_cv_alignment_double
+EOF
+
+
+
+echo $ac_n "checking alignment of float""... $ac_c" 1>&6
+echo "configure:2887: checking alignment of float" >&5
+if eval "test \"`echo '$''{'ac_cv_alignment_float'+set}'`\" = set"; then
+  echo $ac_n "(cached) $ac_c" 1>&6
+else
+  if test "$cross_compiling" = yes; then
+  ac_cv_alignment_float=$ac_cv_sizeof_float
+else
+  cat > conftest.$ac_ext <<EOF
+#line 2895 "configure"
+#include "confdefs.h"
+
+#include <stdio.h>
+#if HAVE_STDDEF_H
+#include <stddef.h>
+#endif
+#ifndef offsetof
+#define offsetof(ty,field) ((size_t)((char *)&((ty *)0)->field - (char *)(ty *)0))
+#endif
+int
+main()
+{
+  FILE *f=fopen("conftestval", "w");
+  if (!f) exit(1);
+  fprintf(f, "%d", offsetof(struct { char c; float ty;},ty));
+  exit(0);
+}
+EOF
+if { (eval echo configure:2914: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} && (./conftest; exit) 2>/dev/null
+then
+  ac_cv_alignment_float=`cat conftestval`
+else
+  echo "configure: failed program was:" >&5
+  cat conftest.$ac_ext >&5
+  rm -fr conftest*
+  ac_cv_alignment_float=$ac_cv_sizeof_float
+fi
+rm -fr conftest*
+fi
+
+fi
+
+echo "$ac_t""$ac_cv_alignment_float" 1>&6
+cat >> confdefs.h <<EOF
+#define ALIGNMENT_FLOAT $ac_cv_alignment_float
+EOF
+
+
+
+echo $ac_n "checking alignment of int""... $ac_c" 1>&6
+echo "configure:2936: checking alignment of int" >&5
+if eval "test \"`echo '$''{'ac_cv_alignment_int'+set}'`\" = set"; then
+  echo $ac_n "(cached) $ac_c" 1>&6
+else
+  if test "$cross_compiling" = yes; then
+  ac_cv_alignment_int=$ac_cv_sizeof_int
+else
+  cat > conftest.$ac_ext <<EOF
+#line 2944 "configure"
+#include "confdefs.h"
+
+#include <stdio.h>
+#if HAVE_STDDEF_H
+#include <stddef.h>
+#endif
+#ifndef offsetof
+#define offsetof(ty,field) ((size_t)((char *)&((ty *)0)->field - (char *)(ty *)0))
+#endif
+int
+main()
+{
+  FILE *f=fopen("conftestval", "w");
+  if (!f) exit(1);
+  fprintf(f, "%d", offsetof(struct { char c; int ty;},ty));
+  exit(0);
+}
+EOF
+if { (eval echo configure:2963: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} && (./conftest; exit) 2>/dev/null
+then
+  ac_cv_alignment_int=`cat conftestval`
+else
+  echo "configure: failed program was:" >&5
+  cat conftest.$ac_ext >&5
+  rm -fr conftest*
+  ac_cv_alignment_int=$ac_cv_sizeof_int
+fi
+rm -fr conftest*
+fi
+
+fi
+
+echo "$ac_t""$ac_cv_alignment_int" 1>&6
+cat >> confdefs.h <<EOF
+#define ALIGNMENT_INT $ac_cv_alignment_int
+EOF
+
+
+
+echo $ac_n "checking alignment of long""... $ac_c" 1>&6
+echo "configure:2985: checking alignment of long" >&5
+if eval "test \"`echo '$''{'ac_cv_alignment_long'+set}'`\" = set"; then
+  echo $ac_n "(cached) $ac_c" 1>&6
+else
+  if test "$cross_compiling" = yes; then
+  ac_cv_alignment_long=$ac_cv_sizeof_long
+else
+  cat > conftest.$ac_ext <<EOF
+#line 2993 "configure"
+#include "confdefs.h"
+
+#include <stdio.h>
+#if HAVE_STDDEF_H
+#include <stddef.h>
+#endif
+#ifndef offsetof
+#define offsetof(ty,field) ((size_t)((char *)&((ty *)0)->field - (char *)(ty *)0))
+#endif
+int
+main()
+{
+  FILE *f=fopen("conftestval", "w");
+  if (!f) exit(1);
+  fprintf(f, "%d", offsetof(struct { char c; long ty;},ty));
+  exit(0);
+}
+EOF
+if { (eval echo configure:3012: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} && (./conftest; exit) 2>/dev/null
+then
+  ac_cv_alignment_long=`cat conftestval`
+else
+  echo "configure: failed program was:" >&5
+  cat conftest.$ac_ext >&5
+  rm -fr conftest*
+  ac_cv_alignment_long=$ac_cv_sizeof_long
+fi
+rm -fr conftest*
+fi
+
+fi
+
+echo "$ac_t""$ac_cv_alignment_long" 1>&6
+cat >> confdefs.h <<EOF
+#define ALIGNMENT_LONG $ac_cv_alignment_long
+EOF
+
+
+
+if test "$fptools_cv_have_long_long" = yes; then
+echo $ac_n "checking alignment of long long""... $ac_c" 1>&6
+echo "configure:3035: checking alignment of long long" >&5
+if eval "test \"`echo '$''{'ac_cv_alignment_long_long'+set}'`\" = set"; then
+  echo $ac_n "(cached) $ac_c" 1>&6
+else
+  if test "$cross_compiling" = yes; then
+  ac_cv_alignment_long_long=$ac_cv_sizeof_long_long
+else
+  cat > conftest.$ac_ext <<EOF
+#line 3043 "configure"
+#include "confdefs.h"
+
+#include <stdio.h>
+#if HAVE_STDDEF_H
+#include <stddef.h>
+#endif
+#ifndef offsetof
+#define offsetof(ty,field) ((size_t)((char *)&((ty *)0)->field - (char *)(ty *)0))
+#endif
+int
+main()
+{
+  FILE *f=fopen("conftestval", "w");
+  if (!f) exit(1);
+  fprintf(f, "%d", offsetof(struct { char c; long long ty;},ty));
+  exit(0);
+}
+EOF
+if { (eval echo configure:3062: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} && (./conftest; exit) 2>/dev/null
+then
+  ac_cv_alignment_long_long=`cat conftestval`
+else
+  echo "configure: failed program was:" >&5
+  cat conftest.$ac_ext >&5
+  rm -fr conftest*
+  ac_cv_alignment_long_long=$ac_cv_sizeof_long_long
+fi
+rm -fr conftest*
+fi
+
+fi
+
+echo "$ac_t""$ac_cv_alignment_long_long" 1>&6
+cat >> confdefs.h <<EOF
+#define ALIGNMENT_LONG_LONG $ac_cv_alignment_long_long
+EOF
+
+
+
+fi
+echo $ac_n "checking alignment of short""... $ac_c" 1>&6
+echo "configure:3085: checking alignment of short" >&5
+if eval "test \"`echo '$''{'ac_cv_alignment_short'+set}'`\" = set"; then
+  echo $ac_n "(cached) $ac_c" 1>&6
+else
+  if test "$cross_compiling" = yes; then
+  ac_cv_alignment_short=$ac_cv_sizeof_short
+else
+  cat > conftest.$ac_ext <<EOF
+#line 3093 "configure"
+#include "confdefs.h"
+
+#include <stdio.h>
+#if HAVE_STDDEF_H
+#include <stddef.h>
+#endif
+#ifndef offsetof
+#define offsetof(ty,field) ((size_t)((char *)&((ty *)0)->field - (char *)(ty *)0))
+#endif
+int
+main()
+{
+  FILE *f=fopen("conftestval", "w");
+  if (!f) exit(1);
+  fprintf(f, "%d", offsetof(struct { char c; short ty;},ty));
+  exit(0);
+}
+EOF
+if { (eval echo configure:3112: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} && (./conftest; exit) 2>/dev/null
+then
+  ac_cv_alignment_short=`cat conftestval`
+else
+  echo "configure: failed program was:" >&5
+  cat conftest.$ac_ext >&5
+  rm -fr conftest*
+  ac_cv_alignment_short=$ac_cv_sizeof_short
+fi
+rm -fr conftest*
+fi
+
+fi
+
+echo "$ac_t""$ac_cv_alignment_short" 1>&6
+cat >> confdefs.h <<EOF
+#define ALIGNMENT_SHORT $ac_cv_alignment_short
+EOF
+
+
+
+echo $ac_n "checking alignment of unsigned char""... $ac_c" 1>&6
+echo "configure:3134: checking alignment of unsigned char" >&5
+if eval "test \"`echo '$''{'ac_cv_alignment_unsigned_char'+set}'`\" = set"; then
+  echo $ac_n "(cached) $ac_c" 1>&6
+else
+  if test "$cross_compiling" = yes; then
+  ac_cv_alignment_unsigned_char=$ac_cv_sizeof_unsigned_char
+else
+  cat > conftest.$ac_ext <<EOF
+#line 3142 "configure"
+#include "confdefs.h"
+
+#include <stdio.h>
+#if HAVE_STDDEF_H
+#include <stddef.h>
+#endif
+#ifndef offsetof
+#define offsetof(ty,field) ((size_t)((char *)&((ty *)0)->field - (char *)(ty *)0))
+#endif
+int
+main()
+{
+  FILE *f=fopen("conftestval", "w");
+  if (!f) exit(1);
+  fprintf(f, "%d", offsetof(struct { char c; unsigned char ty;},ty));
+  exit(0);
+}
+EOF
+if { (eval echo configure:3161: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} && (./conftest; exit) 2>/dev/null
+then
+  ac_cv_alignment_unsigned_char=`cat conftestval`
+else
+  echo "configure: failed program was:" >&5
+  cat conftest.$ac_ext >&5
+  rm -fr conftest*
+  ac_cv_alignment_unsigned_char=$ac_cv_sizeof_unsigned_char
+fi
+rm -fr conftest*
+fi
+
+fi
+
+echo "$ac_t""$ac_cv_alignment_unsigned_char" 1>&6
+cat >> confdefs.h <<EOF
+#define ALIGNMENT_UNSIGNED_CHAR $ac_cv_alignment_unsigned_char
+EOF
+
+
+
+echo $ac_n "checking alignment of unsigned int""... $ac_c" 1>&6
+echo "configure:3183: checking alignment of unsigned int" >&5
+if eval "test \"`echo '$''{'ac_cv_alignment_unsigned_int'+set}'`\" = set"; then
+  echo $ac_n "(cached) $ac_c" 1>&6
+else
+  if test "$cross_compiling" = yes; then
+  ac_cv_alignment_unsigned_int=$ac_cv_sizeof_unsigned_int
+else
+  cat > conftest.$ac_ext <<EOF
+#line 3191 "configure"
+#include "confdefs.h"
+
+#include <stdio.h>
+#if HAVE_STDDEF_H
+#include <stddef.h>
+#endif
+#ifndef offsetof
+#define offsetof(ty,field) ((size_t)((char *)&((ty *)0)->field - (char *)(ty *)0))
+#endif
+int
+main()
+{
+  FILE *f=fopen("conftestval", "w");
+  if (!f) exit(1);
+  fprintf(f, "%d", offsetof(struct { char c; unsigned int ty;},ty));
+  exit(0);
+}
+EOF
+if { (eval echo configure:3210: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} && (./conftest; exit) 2>/dev/null
+then
+  ac_cv_alignment_unsigned_int=`cat conftestval`
+else
+  echo "configure: failed program was:" >&5
+  cat conftest.$ac_ext >&5
+  rm -fr conftest*
+  ac_cv_alignment_unsigned_int=$ac_cv_sizeof_unsigned_int
+fi
+rm -fr conftest*
+fi
+
+fi
+
+echo "$ac_t""$ac_cv_alignment_unsigned_int" 1>&6
+cat >> confdefs.h <<EOF
+#define ALIGNMENT_UNSIGNED_INT $ac_cv_alignment_unsigned_int
+EOF
+
+
+
+echo $ac_n "checking alignment of unsigned long""... $ac_c" 1>&6
+echo "configure:3232: checking alignment of unsigned long" >&5
+if eval "test \"`echo '$''{'ac_cv_alignment_unsigned_long'+set}'`\" = set"; then
+  echo $ac_n "(cached) $ac_c" 1>&6
+else
+  if test "$cross_compiling" = yes; then
+  ac_cv_alignment_unsigned_long=$ac_cv_sizeof_unsigned_long
+else
+  cat > conftest.$ac_ext <<EOF
+#line 3240 "configure"
+#include "confdefs.h"
+
+#include <stdio.h>
+#if HAVE_STDDEF_H
+#include <stddef.h>
+#endif
+#ifndef offsetof
+#define offsetof(ty,field) ((size_t)((char *)&((ty *)0)->field - (char *)(ty *)0))
+#endif
+int
+main()
+{
+  FILE *f=fopen("conftestval", "w");
+  if (!f) exit(1);
+  fprintf(f, "%d", offsetof(struct { char c; unsigned long ty;},ty));
+  exit(0);
+}
+EOF
+if { (eval echo configure:3259: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} && (./conftest; exit) 2>/dev/null
+then
+  ac_cv_alignment_unsigned_long=`cat conftestval`
+else
+  echo "configure: failed program was:" >&5
+  cat conftest.$ac_ext >&5
+  rm -fr conftest*
+  ac_cv_alignment_unsigned_long=$ac_cv_sizeof_unsigned_long
+fi
+rm -fr conftest*
+fi
+
+fi
+
+echo "$ac_t""$ac_cv_alignment_unsigned_long" 1>&6
+cat >> confdefs.h <<EOF
+#define ALIGNMENT_UNSIGNED_LONG $ac_cv_alignment_unsigned_long
+EOF
+
+
+
+if test "$fptools_cv_have_long_long" = yes; then
+echo $ac_n "checking alignment of unsigned long long""... $ac_c" 1>&6
+echo "configure:3282: checking alignment of unsigned long long" >&5
+if eval "test \"`echo '$''{'ac_cv_alignment_unsigned_long_long'+set}'`\" = set"; then
+  echo $ac_n "(cached) $ac_c" 1>&6
+else
+  if test "$cross_compiling" = yes; then
+  ac_cv_alignment_unsigned_long_long=$ac_cv_sizeof_unsigned_long_long
+else
+  cat > conftest.$ac_ext <<EOF
+#line 3290 "configure"
+#include "confdefs.h"
+
+#include <stdio.h>
+#if HAVE_STDDEF_H
+#include <stddef.h>
+#endif
+#ifndef offsetof
+#define offsetof(ty,field) ((size_t)((char *)&((ty *)0)->field - (char *)(ty *)0))
+#endif
+int
+main()
+{
+  FILE *f=fopen("conftestval", "w");
+  if (!f) exit(1);
+  fprintf(f, "%d", offsetof(struct { char c; unsigned long long ty;},ty));
+  exit(0);
+}
+EOF
+if { (eval echo configure:3309: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} && (./conftest; exit) 2>/dev/null
+then
+  ac_cv_alignment_unsigned_long_long=`cat conftestval`
+else
+  echo "configure: failed program was:" >&5
+  cat conftest.$ac_ext >&5
+  rm -fr conftest*
+  ac_cv_alignment_unsigned_long_long=$ac_cv_sizeof_unsigned_long_long
+fi
+rm -fr conftest*
+fi
+
+fi
+
+echo "$ac_t""$ac_cv_alignment_unsigned_long_long" 1>&6
+cat >> confdefs.h <<EOF
+#define ALIGNMENT_UNSIGNED_LONG_LONG $ac_cv_alignment_unsigned_long_long
+EOF
+
+
+
+fi
+echo $ac_n "checking alignment of unsigned short""... $ac_c" 1>&6
+echo "configure:3332: checking alignment of unsigned short" >&5
+if eval "test \"`echo '$''{'ac_cv_alignment_unsigned_short'+set}'`\" = set"; then
+  echo $ac_n "(cached) $ac_c" 1>&6
+else
+  if test "$cross_compiling" = yes; then
+  ac_cv_alignment_unsigned_short=$ac_cv_sizeof_unsigned_short
+else
+  cat > conftest.$ac_ext <<EOF
+#line 3340 "configure"
+#include "confdefs.h"
+
+#include <stdio.h>
+#if HAVE_STDDEF_H
+#include <stddef.h>
+#endif
+#ifndef offsetof
+#define offsetof(ty,field) ((size_t)((char *)&((ty *)0)->field - (char *)(ty *)0))
+#endif
+int
+main()
+{
+  FILE *f=fopen("conftestval", "w");
+  if (!f) exit(1);
+  fprintf(f, "%d", offsetof(struct { char c; unsigned short ty;},ty));
+  exit(0);
+}
+EOF
+if { (eval echo configure:3359: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} && (./conftest; exit) 2>/dev/null
+then
+  ac_cv_alignment_unsigned_short=`cat conftestval`
+else
+  echo "configure: failed program was:" >&5
+  cat conftest.$ac_ext >&5
+  rm -fr conftest*
+  ac_cv_alignment_unsigned_short=$ac_cv_sizeof_unsigned_short
+fi
+rm -fr conftest*
+fi
+
+fi
+
+echo "$ac_t""$ac_cv_alignment_unsigned_short" 1>&6
+cat >> confdefs.h <<EOF
+#define ALIGNMENT_UNSIGNED_SHORT $ac_cv_alignment_unsigned_short
+EOF
+
+
+
+echo $ac_n "checking alignment of void *""... $ac_c" 1>&6
+echo "configure:3381: checking alignment of void *" >&5
+if eval "test \"`echo '$''{'ac_cv_alignment_void_p'+set}'`\" = set"; then
+  echo $ac_n "(cached) $ac_c" 1>&6
+else
+  if test "$cross_compiling" = yes; then
+  ac_cv_alignment_void_p=$ac_cv_sizeof_void_p
+else
+  cat > conftest.$ac_ext <<EOF
+#line 3389 "configure"
+#include "confdefs.h"
+
+#include <stdio.h>
+#if HAVE_STDDEF_H
+#include <stddef.h>
+#endif
+#ifndef offsetof
+#define offsetof(ty,field) ((size_t)((char *)&((ty *)0)->field - (char *)(ty *)0))
+#endif
+int
+main()
+{
+  FILE *f=fopen("conftestval", "w");
+  if (!f) exit(1);
+  fprintf(f, "%d", offsetof(struct { char c; void * ty;},ty));
+  exit(0);
+}
+EOF
+if { (eval echo configure:3408: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} && (./conftest; exit) 2>/dev/null
+then
+  ac_cv_alignment_void_p=`cat conftestval`
+else
+  echo "configure: failed program was:" >&5
+  cat conftest.$ac_ext >&5
+  rm -fr conftest*
+  ac_cv_alignment_void_p=$ac_cv_sizeof_void_p
+fi
+rm -fr conftest*
+fi
+
+fi
+
+echo "$ac_t""$ac_cv_alignment_void_p" 1>&6
+cat >> confdefs.h <<EOF
+#define ALIGNMENT_VOID_P $ac_cv_alignment_void_p
+EOF
+
+
+
+
+echo $ac_n "checking Haskell type for char""... $ac_c" 1>&6
+echo "configure:3431: checking Haskell type for char" >&5
+if eval "test \"`echo '$''{'fptools_cv_htype_char'+set}'`\" = set"; then
+  echo $ac_n "(cached) $ac_c" 1>&6
+else
+  if test "$cross_compiling" = yes; then
+  fptools_cv_htype_char=NotReallyATypeCross
+else
+  cat > conftest.$ac_ext <<EOF
+#line 3439 "configure"
+#include "confdefs.h"
+#include <stdio.h>
+#include <stddef.h>
+
+#ifdef HAVE_SYS_TYPES_H
+# include <sys/types.h>
+#endif
+
+#ifdef HAVE_UNISTD_H
+# include <unistd.h>
+#endif
+
+#ifdef HAVE_SYS_STAT_H
+# include <sys/stat.h>
+#endif
+
+#ifdef HAVE_FCNTL_H
+# include <fcntl.h>
+#endif
+
+#ifdef HAVE_SIGNAL_H
+# include <signal.h>
+#endif
+
+#ifdef HAVE_TIME_H
+# include <time.h>
+#endif
+
+#ifdef HAVE_TERMIOS_H
+# include <termios.h>
+#endif
+
+#ifdef HAVE_STRING_H
+# include <string.h>
+#endif
+
+#ifdef HAVE_CTYPE_H
+# include <ctype.h>
+#endif
+
+#ifdef HAVE_GL_GL_H
+# include <GL/gl.h>
+#endif
+
+typedef char testing;
+
+main() {
+  FILE *f=fopen("conftestval", "w");
+  if (!f) exit(1);
+  if (((testing)((int)((testing)1.4))) == ((testing)1.4)) {
+    fprintf(f, "%s%d\n",
+           ((testing)(-1) < (testing)0) ? "Int" : "Word",
+           sizeof(testing)*8);
+  } else {
+    fprintf(f,"%s\n",
+           (sizeof(testing) >  sizeof(double)) ? "LDouble" :
+           (sizeof(testing) == sizeof(double)) ? "Double"  : "Float");
+  }
+  fclose(f);
+  exit(0);
+}
+EOF
+if { (eval echo configure:3502: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} && (./conftest; exit) 2>/dev/null
+then
+  fptools_cv_htype_char=`cat conftestval`
+else
+  echo "configure: failed program was:" >&5
+  cat conftest.$ac_ext >&5
+  rm -fr conftest*
+  fptools_cv_htype_char=NotReallyAType
+fi
+rm -fr conftest*
+fi
+
+fi
+ echo "$ac_t""$fptools_cv_htype_char" 1>&6
+cat >> confdefs.h <<EOF
+#define HTYPE_CHAR $fptools_cv_htype_char
+EOF
+
+
+echo $ac_n "checking Haskell type for signed char""... $ac_c" 1>&6
+echo "configure:3522: checking Haskell type for signed char" >&5
+if eval "test \"`echo '$''{'fptools_cv_htype_signed_char'+set}'`\" = set"; then
+  echo $ac_n "(cached) $ac_c" 1>&6
+else
+  if test "$cross_compiling" = yes; then
+  fptools_cv_htype_signed_char=NotReallyATypeCross
+else
+  cat > conftest.$ac_ext <<EOF
+#line 3530 "configure"
+#include "confdefs.h"
+#include <stdio.h>
+#include <stddef.h>
+
+#ifdef HAVE_SYS_TYPES_H
+# include <sys/types.h>
+#endif
+
+#ifdef HAVE_UNISTD_H
+# include <unistd.h>
+#endif
+
+#ifdef HAVE_SYS_STAT_H
+# include <sys/stat.h>
+#endif
+
+#ifdef HAVE_FCNTL_H
+# include <fcntl.h>
+#endif
+
+#ifdef HAVE_SIGNAL_H
+# include <signal.h>
+#endif
+
+#ifdef HAVE_TIME_H
+# include <time.h>
+#endif
+
+#ifdef HAVE_TERMIOS_H
+# include <termios.h>
+#endif
+
+#ifdef HAVE_STRING_H
+# include <string.h>
+#endif
+
+#ifdef HAVE_CTYPE_H
+# include <ctype.h>
+#endif
+
+#ifdef HAVE_GL_GL_H
+# include <GL/gl.h>
+#endif
+
+typedef signed char testing;
+
+main() {
+  FILE *f=fopen("conftestval", "w");
+  if (!f) exit(1);
+  if (((testing)((int)((testing)1.4))) == ((testing)1.4)) {
+    fprintf(f, "%s%d\n",
+           ((testing)(-1) < (testing)0) ? "Int" : "Word",
+           sizeof(testing)*8);
+  } else {
+    fprintf(f,"%s\n",
+           (sizeof(testing) >  sizeof(double)) ? "LDouble" :
+           (sizeof(testing) == sizeof(double)) ? "Double"  : "Float");
+  }
+  fclose(f);
+  exit(0);
+}
+EOF
+if { (eval echo configure:3593: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} && (./conftest; exit) 2>/dev/null
+then
+  fptools_cv_htype_signed_char=`cat conftestval`
+else
+  echo "configure: failed program was:" >&5
+  cat conftest.$ac_ext >&5
+  rm -fr conftest*
+  fptools_cv_htype_signed_char=NotReallyAType
+fi
+rm -fr conftest*
+fi
+
+fi
+ echo "$ac_t""$fptools_cv_htype_signed_char" 1>&6
+cat >> confdefs.h <<EOF
+#define HTYPE_SIGNED_CHAR $fptools_cv_htype_signed_char
+EOF
+
+
+echo $ac_n "checking Haskell type for unsigned char""... $ac_c" 1>&6
+echo "configure:3613: checking Haskell type for unsigned char" >&5
+if eval "test \"`echo '$''{'fptools_cv_htype_unsigned_char'+set}'`\" = set"; then
+  echo $ac_n "(cached) $ac_c" 1>&6
+else
+  if test "$cross_compiling" = yes; then
+  fptools_cv_htype_unsigned_char=NotReallyATypeCross
+else
+  cat > conftest.$ac_ext <<EOF
+#line 3621 "configure"
+#include "confdefs.h"
+#include <stdio.h>
+#include <stddef.h>
+
+#ifdef HAVE_SYS_TYPES_H
+# include <sys/types.h>
+#endif
+
+#ifdef HAVE_UNISTD_H
+# include <unistd.h>
+#endif
+
+#ifdef HAVE_SYS_STAT_H
+# include <sys/stat.h>
+#endif
+
+#ifdef HAVE_FCNTL_H
+# include <fcntl.h>
+#endif
+
+#ifdef HAVE_SIGNAL_H
+# include <signal.h>
+#endif
+
+#ifdef HAVE_TIME_H
+# include <time.h>
+#endif
+
+#ifdef HAVE_TERMIOS_H
+# include <termios.h>
+#endif
+
+#ifdef HAVE_STRING_H
+# include <string.h>
+#endif
+
+#ifdef HAVE_CTYPE_H
+# include <ctype.h>
+#endif
+
+#ifdef HAVE_GL_GL_H
+# include <GL/gl.h>
+#endif
+
+typedef unsigned char testing;
+
+main() {
+  FILE *f=fopen("conftestval", "w");
+  if (!f) exit(1);
+  if (((testing)((int)((testing)1.4))) == ((testing)1.4)) {
+    fprintf(f, "%s%d\n",
+           ((testing)(-1) < (testing)0) ? "Int" : "Word",
+           sizeof(testing)*8);
+  } else {
+    fprintf(f,"%s\n",
+           (sizeof(testing) >  sizeof(double)) ? "LDouble" :
+           (sizeof(testing) == sizeof(double)) ? "Double"  : "Float");
+  }
+  fclose(f);
+  exit(0);
+}
+EOF
+if { (eval echo configure:3684: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} && (./conftest; exit) 2>/dev/null
+then
+  fptools_cv_htype_unsigned_char=`cat conftestval`
+else
+  echo "configure: failed program was:" >&5
+  cat conftest.$ac_ext >&5
+  rm -fr conftest*
+  fptools_cv_htype_unsigned_char=NotReallyAType
+fi
+rm -fr conftest*
+fi
+
+fi
+ echo "$ac_t""$fptools_cv_htype_unsigned_char" 1>&6
+cat >> confdefs.h <<EOF
+#define HTYPE_UNSIGNED_CHAR $fptools_cv_htype_unsigned_char
+EOF
+
+
+echo $ac_n "checking Haskell type for short""... $ac_c" 1>&6
+echo "configure:3704: checking Haskell type for short" >&5
+if eval "test \"`echo '$''{'fptools_cv_htype_short'+set}'`\" = set"; then
+  echo $ac_n "(cached) $ac_c" 1>&6
+else
+  if test "$cross_compiling" = yes; then
+  fptools_cv_htype_short=NotReallyATypeCross
+else
+  cat > conftest.$ac_ext <<EOF
+#line 3712 "configure"
+#include "confdefs.h"
+#include <stdio.h>
+#include <stddef.h>
+
+#ifdef HAVE_SYS_TYPES_H
+# include <sys/types.h>
+#endif
+
+#ifdef HAVE_UNISTD_H
+# include <unistd.h>
+#endif
+
+#ifdef HAVE_SYS_STAT_H
+# include <sys/stat.h>
+#endif
+
+#ifdef HAVE_FCNTL_H
+# include <fcntl.h>
+#endif
+
+#ifdef HAVE_SIGNAL_H
+# include <signal.h>
+#endif
+
+#ifdef HAVE_TIME_H
+# include <time.h>
+#endif
+
+#ifdef HAVE_TERMIOS_H
+# include <termios.h>
+#endif
+
+#ifdef HAVE_STRING_H
+# include <string.h>
+#endif
+
+#ifdef HAVE_CTYPE_H
+# include <ctype.h>
+#endif
+
+#ifdef HAVE_GL_GL_H
+# include <GL/gl.h>
+#endif
+
+typedef short testing;
+
+main() {
+  FILE *f=fopen("conftestval", "w");
+  if (!f) exit(1);
+  if (((testing)((int)((testing)1.4))) == ((testing)1.4)) {
+    fprintf(f, "%s%d\n",
+           ((testing)(-1) < (testing)0) ? "Int" : "Word",
+           sizeof(testing)*8);
+  } else {
+    fprintf(f,"%s\n",
+           (sizeof(testing) >  sizeof(double)) ? "LDouble" :
+           (sizeof(testing) == sizeof(double)) ? "Double"  : "Float");
+  }
+  fclose(f);
+  exit(0);
+}
+EOF
+if { (eval echo configure:3775: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} && (./conftest; exit) 2>/dev/null
+then
+  fptools_cv_htype_short=`cat conftestval`
+else
+  echo "configure: failed program was:" >&5
+  cat conftest.$ac_ext >&5
+  rm -fr conftest*
+  fptools_cv_htype_short=NotReallyAType
+fi
+rm -fr conftest*
+fi
+
+fi
+ echo "$ac_t""$fptools_cv_htype_short" 1>&6
+cat >> confdefs.h <<EOF
+#define HTYPE_SHORT $fptools_cv_htype_short
+EOF
+
+
+echo $ac_n "checking Haskell type for unsigned short""... $ac_c" 1>&6
+echo "configure:3795: checking Haskell type for unsigned short" >&5
+if eval "test \"`echo '$''{'fptools_cv_htype_unsigned_short'+set}'`\" = set"; then
+  echo $ac_n "(cached) $ac_c" 1>&6
+else
+  if test "$cross_compiling" = yes; then
+  fptools_cv_htype_unsigned_short=NotReallyATypeCross
+else
+  cat > conftest.$ac_ext <<EOF
+#line 3803 "configure"
+#include "confdefs.h"
+#include <stdio.h>
+#include <stddef.h>
+
+#ifdef HAVE_SYS_TYPES_H
+# include <sys/types.h>
+#endif
+
+#ifdef HAVE_UNISTD_H
+# include <unistd.h>
+#endif
+
+#ifdef HAVE_SYS_STAT_H
+# include <sys/stat.h>
+#endif
+
+#ifdef HAVE_FCNTL_H
+# include <fcntl.h>
+#endif
+
+#ifdef HAVE_SIGNAL_H
+# include <signal.h>
+#endif
+
+#ifdef HAVE_TIME_H
+# include <time.h>
+#endif
+
+#ifdef HAVE_TERMIOS_H
+# include <termios.h>
+#endif
+
+#ifdef HAVE_STRING_H
+# include <string.h>
+#endif
+
+#ifdef HAVE_CTYPE_H
+# include <ctype.h>
+#endif
+
+#ifdef HAVE_GL_GL_H
+# include <GL/gl.h>
+#endif
+
+typedef unsigned short testing;
+
+main() {
+  FILE *f=fopen("conftestval", "w");
+  if (!f) exit(1);
+  if (((testing)((int)((testing)1.4))) == ((testing)1.4)) {
+    fprintf(f, "%s%d\n",
+           ((testing)(-1) < (testing)0) ? "Int" : "Word",
+           sizeof(testing)*8);
+  } else {
+    fprintf(f,"%s\n",
+           (sizeof(testing) >  sizeof(double)) ? "LDouble" :
+           (sizeof(testing) == sizeof(double)) ? "Double"  : "Float");
+  }
+  fclose(f);
+  exit(0);
+}
+EOF
+if { (eval echo configure:3866: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} && (./conftest; exit) 2>/dev/null
+then
+  fptools_cv_htype_unsigned_short=`cat conftestval`
+else
+  echo "configure: failed program was:" >&5
+  cat conftest.$ac_ext >&5
+  rm -fr conftest*
+  fptools_cv_htype_unsigned_short=NotReallyAType
+fi
+rm -fr conftest*
+fi
+
+fi
+ echo "$ac_t""$fptools_cv_htype_unsigned_short" 1>&6
+cat >> confdefs.h <<EOF
+#define HTYPE_UNSIGNED_SHORT $fptools_cv_htype_unsigned_short
+EOF
+
+
+echo $ac_n "checking Haskell type for int""... $ac_c" 1>&6
+echo "configure:3886: checking Haskell type for int" >&5
+if eval "test \"`echo '$''{'fptools_cv_htype_int'+set}'`\" = set"; then
+  echo $ac_n "(cached) $ac_c" 1>&6
+else
+  if test "$cross_compiling" = yes; then
+  fptools_cv_htype_int=NotReallyATypeCross
+else
+  cat > conftest.$ac_ext <<EOF
+#line 3894 "configure"
+#include "confdefs.h"
+#include <stdio.h>
+#include <stddef.h>
+
+#ifdef HAVE_SYS_TYPES_H
+# include <sys/types.h>
+#endif
+
+#ifdef HAVE_UNISTD_H
+# include <unistd.h>
+#endif
+
+#ifdef HAVE_SYS_STAT_H
+# include <sys/stat.h>
+#endif
+
+#ifdef HAVE_FCNTL_H
+# include <fcntl.h>
+#endif
+
+#ifdef HAVE_SIGNAL_H
+# include <signal.h>
+#endif
+
+#ifdef HAVE_TIME_H
+# include <time.h>
+#endif
+
+#ifdef HAVE_TERMIOS_H
+# include <termios.h>
+#endif
+
+#ifdef HAVE_STRING_H
+# include <string.h>
+#endif
+
+#ifdef HAVE_CTYPE_H
+# include <ctype.h>
+#endif
+
+#ifdef HAVE_GL_GL_H
+# include <GL/gl.h>
+#endif
+
+typedef int testing;
+
+main() {
+  FILE *f=fopen("conftestval", "w");
+  if (!f) exit(1);
+  if (((testing)((int)((testing)1.4))) == ((testing)1.4)) {
+    fprintf(f, "%s%d\n",
+           ((testing)(-1) < (testing)0) ? "Int" : "Word",
+           sizeof(testing)*8);
+  } else {
+    fprintf(f,"%s\n",
+           (sizeof(testing) >  sizeof(double)) ? "LDouble" :
+           (sizeof(testing) == sizeof(double)) ? "Double"  : "Float");
+  }
+  fclose(f);
+  exit(0);
+}
+EOF
+if { (eval echo configure:3957: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} && (./conftest; exit) 2>/dev/null
+then
+  fptools_cv_htype_int=`cat conftestval`
+else
+  echo "configure: failed program was:" >&5
+  cat conftest.$ac_ext >&5
+  rm -fr conftest*
+  fptools_cv_htype_int=NotReallyAType
+fi
+rm -fr conftest*
+fi
+
+fi
+ echo "$ac_t""$fptools_cv_htype_int" 1>&6
+cat >> confdefs.h <<EOF
+#define HTYPE_INT $fptools_cv_htype_int
+EOF
+
+
+echo $ac_n "checking Haskell type for unsigned int""... $ac_c" 1>&6
+echo "configure:3977: checking Haskell type for unsigned int" >&5
+if eval "test \"`echo '$''{'fptools_cv_htype_unsigned_int'+set}'`\" = set"; then
+  echo $ac_n "(cached) $ac_c" 1>&6
+else
+  if test "$cross_compiling" = yes; then
+  fptools_cv_htype_unsigned_int=NotReallyATypeCross
+else
+  cat > conftest.$ac_ext <<EOF
+#line 3985 "configure"
+#include "confdefs.h"
+#include <stdio.h>
+#include <stddef.h>
+
+#ifdef HAVE_SYS_TYPES_H
+# include <sys/types.h>
+#endif
+
+#ifdef HAVE_UNISTD_H
+# include <unistd.h>
+#endif
+
+#ifdef HAVE_SYS_STAT_H
+# include <sys/stat.h>
+#endif
+
+#ifdef HAVE_FCNTL_H
+# include <fcntl.h>
+#endif
+
+#ifdef HAVE_SIGNAL_H
+# include <signal.h>
+#endif
+
+#ifdef HAVE_TIME_H
+# include <time.h>
+#endif
+
+#ifdef HAVE_TERMIOS_H
+# include <termios.h>
+#endif
+
+#ifdef HAVE_STRING_H
+# include <string.h>
+#endif
+
+#ifdef HAVE_CTYPE_H
+# include <ctype.h>
+#endif
+
+#ifdef HAVE_GL_GL_H
+# include <GL/gl.h>
+#endif
+
+typedef unsigned int testing;
+
+main() {
+  FILE *f=fopen("conftestval", "w");
+  if (!f) exit(1);
+  if (((testing)((int)((testing)1.4))) == ((testing)1.4)) {
+    fprintf(f, "%s%d\n",
+           ((testing)(-1) < (testing)0) ? "Int" : "Word",
+           sizeof(testing)*8);
+  } else {
+    fprintf(f,"%s\n",
+           (sizeof(testing) >  sizeof(double)) ? "LDouble" :
+           (sizeof(testing) == sizeof(double)) ? "Double"  : "Float");
+  }
+  fclose(f);
+  exit(0);
+}
+EOF
+if { (eval echo configure:4048: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} && (./conftest; exit) 2>/dev/null
+then
+  fptools_cv_htype_unsigned_int=`cat conftestval`
+else
+  echo "configure: failed program was:" >&5
+  cat conftest.$ac_ext >&5
+  rm -fr conftest*
+  fptools_cv_htype_unsigned_int=NotReallyAType
+fi
+rm -fr conftest*
+fi
+
+fi
+ echo "$ac_t""$fptools_cv_htype_unsigned_int" 1>&6
+cat >> confdefs.h <<EOF
+#define HTYPE_UNSIGNED_INT $fptools_cv_htype_unsigned_int
+EOF
+
+
+echo $ac_n "checking Haskell type for long""... $ac_c" 1>&6
+echo "configure:4068: checking Haskell type for long" >&5
+if eval "test \"`echo '$''{'fptools_cv_htype_long'+set}'`\" = set"; then
+  echo $ac_n "(cached) $ac_c" 1>&6
+else
+  if test "$cross_compiling" = yes; then
+  fptools_cv_htype_long=NotReallyATypeCross
+else
+  cat > conftest.$ac_ext <<EOF
+#line 4076 "configure"
+#include "confdefs.h"
+#include <stdio.h>
+#include <stddef.h>
+
+#ifdef HAVE_SYS_TYPES_H
+# include <sys/types.h>
+#endif
+
+#ifdef HAVE_UNISTD_H
+# include <unistd.h>
+#endif
+
+#ifdef HAVE_SYS_STAT_H
+# include <sys/stat.h>
+#endif
+
+#ifdef HAVE_FCNTL_H
+# include <fcntl.h>
+#endif
+
+#ifdef HAVE_SIGNAL_H
+# include <signal.h>
+#endif
+
+#ifdef HAVE_TIME_H
+# include <time.h>
+#endif
+
+#ifdef HAVE_TERMIOS_H
+# include <termios.h>
+#endif
+
+#ifdef HAVE_STRING_H
+# include <string.h>
+#endif
+
+#ifdef HAVE_CTYPE_H
+# include <ctype.h>
+#endif
+
+#ifdef HAVE_GL_GL_H
+# include <GL/gl.h>
+#endif
+
+typedef long testing;
+
+main() {
+  FILE *f=fopen("conftestval", "w");
+  if (!f) exit(1);
+  if (((testing)((int)((testing)1.4))) == ((testing)1.4)) {
+    fprintf(f, "%s%d\n",
+           ((testing)(-1) < (testing)0) ? "Int" : "Word",
+           sizeof(testing)*8);
+  } else {
+    fprintf(f,"%s\n",
+           (sizeof(testing) >  sizeof(double)) ? "LDouble" :
+           (sizeof(testing) == sizeof(double)) ? "Double"  : "Float");
+  }
+  fclose(f);
+  exit(0);
+}
+EOF
+if { (eval echo configure:4139: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} && (./conftest; exit) 2>/dev/null
+then
+  fptools_cv_htype_long=`cat conftestval`
+else
+  echo "configure: failed program was:" >&5
+  cat conftest.$ac_ext >&5
+  rm -fr conftest*
+  fptools_cv_htype_long=NotReallyAType
+fi
+rm -fr conftest*
+fi
+
+fi
+ echo "$ac_t""$fptools_cv_htype_long" 1>&6
+cat >> confdefs.h <<EOF
+#define HTYPE_LONG $fptools_cv_htype_long
+EOF
+
+
+echo $ac_n "checking Haskell type for unsigned long""... $ac_c" 1>&6
+echo "configure:4159: checking Haskell type for unsigned long" >&5
+if eval "test \"`echo '$''{'fptools_cv_htype_unsigned_long'+set}'`\" = set"; then
+  echo $ac_n "(cached) $ac_c" 1>&6
+else
+  if test "$cross_compiling" = yes; then
+  fptools_cv_htype_unsigned_long=NotReallyATypeCross
+else
+  cat > conftest.$ac_ext <<EOF
+#line 4167 "configure"
+#include "confdefs.h"
+#include <stdio.h>
+#include <stddef.h>
+
+#ifdef HAVE_SYS_TYPES_H
+# include <sys/types.h>
+#endif
+
+#ifdef HAVE_UNISTD_H
+# include <unistd.h>
+#endif
+
+#ifdef HAVE_SYS_STAT_H
+# include <sys/stat.h>
+#endif
+
+#ifdef HAVE_FCNTL_H
+# include <fcntl.h>
+#endif
+
+#ifdef HAVE_SIGNAL_H
+# include <signal.h>
+#endif
+
+#ifdef HAVE_TIME_H
+# include <time.h>
+#endif
+
+#ifdef HAVE_TERMIOS_H
+# include <termios.h>
+#endif
+
+#ifdef HAVE_STRING_H
+# include <string.h>
+#endif
+
+#ifdef HAVE_CTYPE_H
+# include <ctype.h>
+#endif
+
+#ifdef HAVE_GL_GL_H
+# include <GL/gl.h>
+#endif
+
+typedef unsigned long testing;
+
+main() {
+  FILE *f=fopen("conftestval", "w");
+  if (!f) exit(1);
+  if (((testing)((int)((testing)1.4))) == ((testing)1.4)) {
+    fprintf(f, "%s%d\n",
+           ((testing)(-1) < (testing)0) ? "Int" : "Word",
+           sizeof(testing)*8);
+  } else {
+    fprintf(f,"%s\n",
+           (sizeof(testing) >  sizeof(double)) ? "LDouble" :
+           (sizeof(testing) == sizeof(double)) ? "Double"  : "Float");
+  }
+  fclose(f);
+  exit(0);
+}
+EOF
+if { (eval echo configure:4230: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} && (./conftest; exit) 2>/dev/null
+then
+  fptools_cv_htype_unsigned_long=`cat conftestval`
+else
+  echo "configure: failed program was:" >&5
+  cat conftest.$ac_ext >&5
+  rm -fr conftest*
+  fptools_cv_htype_unsigned_long=NotReallyAType
+fi
+rm -fr conftest*
+fi
+
+fi
+ echo "$ac_t""$fptools_cv_htype_unsigned_long" 1>&6
+cat >> confdefs.h <<EOF
+#define HTYPE_UNSIGNED_LONG $fptools_cv_htype_unsigned_long
+EOF
+
+
+if test "$fptools_cv_have_long_long" = yes; then
+echo $ac_n "checking Haskell type for long long""... $ac_c" 1>&6
+echo "configure:4251: checking Haskell type for long long" >&5
+if eval "test \"`echo '$''{'fptools_cv_htype_long_long'+set}'`\" = set"; then
+  echo $ac_n "(cached) $ac_c" 1>&6
+else
+  if test "$cross_compiling" = yes; then
+  fptools_cv_htype_long_long=NotReallyATypeCross
+else
+  cat > conftest.$ac_ext <<EOF
+#line 4259 "configure"
+#include "confdefs.h"
+#include <stdio.h>
+#include <stddef.h>
+
+#ifdef HAVE_SYS_TYPES_H
+# include <sys/types.h>
+#endif
+
+#ifdef HAVE_UNISTD_H
+# include <unistd.h>
+#endif
+
+#ifdef HAVE_SYS_STAT_H
+# include <sys/stat.h>
+#endif
+
+#ifdef HAVE_FCNTL_H
+# include <fcntl.h>
+#endif
+
+#ifdef HAVE_SIGNAL_H
+# include <signal.h>
+#endif
+
+#ifdef HAVE_TIME_H
+# include <time.h>
+#endif
+
+#ifdef HAVE_TERMIOS_H
+# include <termios.h>
+#endif
+
+#ifdef HAVE_STRING_H
+# include <string.h>
+#endif
+
+#ifdef HAVE_CTYPE_H
+# include <ctype.h>
+#endif
+
+#ifdef HAVE_GL_GL_H
+# include <GL/gl.h>
+#endif
+
+typedef long long testing;
+
+main() {
+  FILE *f=fopen("conftestval", "w");
+  if (!f) exit(1);
+  if (((testing)((int)((testing)1.4))) == ((testing)1.4)) {
+    fprintf(f, "%s%d\n",
+           ((testing)(-1) < (testing)0) ? "Int" : "Word",
+           sizeof(testing)*8);
+  } else {
+    fprintf(f,"%s\n",
+           (sizeof(testing) >  sizeof(double)) ? "LDouble" :
+           (sizeof(testing) == sizeof(double)) ? "Double"  : "Float");
+  }
+  fclose(f);
+  exit(0);
+}
+EOF
+if { (eval echo configure:4322: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} && (./conftest; exit) 2>/dev/null
+then
+  fptools_cv_htype_long_long=`cat conftestval`
+else
+  echo "configure: failed program was:" >&5
+  cat conftest.$ac_ext >&5
+  rm -fr conftest*
+  fptools_cv_htype_long_long=NotReallyAType
+fi
+rm -fr conftest*
+fi
+
+fi
+ echo "$ac_t""$fptools_cv_htype_long_long" 1>&6
+cat >> confdefs.h <<EOF
+#define HTYPE_LONG_LONG $fptools_cv_htype_long_long
+EOF
+
+
+echo $ac_n "checking Haskell type for unsigned long long""... $ac_c" 1>&6
+echo "configure:4342: checking Haskell type for unsigned long long" >&5
+if eval "test \"`echo '$''{'fptools_cv_htype_unsigned_long_long'+set}'`\" = set"; then
+  echo $ac_n "(cached) $ac_c" 1>&6
+else
+  if test "$cross_compiling" = yes; then
+  fptools_cv_htype_unsigned_long_long=NotReallyATypeCross
+else
+  cat > conftest.$ac_ext <<EOF
+#line 4350 "configure"
+#include "confdefs.h"
+#include <stdio.h>
+#include <stddef.h>
+
+#ifdef HAVE_SYS_TYPES_H
+# include <sys/types.h>
+#endif
+
+#ifdef HAVE_UNISTD_H
+# include <unistd.h>
+#endif
+
+#ifdef HAVE_SYS_STAT_H
+# include <sys/stat.h>
+#endif
+
+#ifdef HAVE_FCNTL_H
+# include <fcntl.h>
+#endif
+
+#ifdef HAVE_SIGNAL_H
+# include <signal.h>
+#endif
+
+#ifdef HAVE_TIME_H
+# include <time.h>
+#endif
+
+#ifdef HAVE_TERMIOS_H
+# include <termios.h>
+#endif
+
+#ifdef HAVE_STRING_H
+# include <string.h>
+#endif
+
+#ifdef HAVE_CTYPE_H
+# include <ctype.h>
+#endif
+
+#ifdef HAVE_GL_GL_H
+# include <GL/gl.h>
+#endif
+
+typedef unsigned long long testing;
+
+main() {
+  FILE *f=fopen("conftestval", "w");
+  if (!f) exit(1);
+  if (((testing)((int)((testing)1.4))) == ((testing)1.4)) {
+    fprintf(f, "%s%d\n",
+           ((testing)(-1) < (testing)0) ? "Int" : "Word",
+           sizeof(testing)*8);
+  } else {
+    fprintf(f,"%s\n",
+           (sizeof(testing) >  sizeof(double)) ? "LDouble" :
+           (sizeof(testing) == sizeof(double)) ? "Double"  : "Float");
+  }
+  fclose(f);
+  exit(0);
+}
+EOF
+if { (eval echo configure:4413: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} && (./conftest; exit) 2>/dev/null
+then
+  fptools_cv_htype_unsigned_long_long=`cat conftestval`
+else
+  echo "configure: failed program was:" >&5
+  cat conftest.$ac_ext >&5
+  rm -fr conftest*
+  fptools_cv_htype_unsigned_long_long=NotReallyAType
+fi
+rm -fr conftest*
+fi
+
+fi
+ echo "$ac_t""$fptools_cv_htype_unsigned_long_long" 1>&6
+cat >> confdefs.h <<EOF
+#define HTYPE_UNSIGNED_LONG_LONG $fptools_cv_htype_unsigned_long_long
+EOF
+
+
+fi
+echo $ac_n "checking Haskell type for float""... $ac_c" 1>&6
+echo "configure:4434: checking Haskell type for float" >&5
+if eval "test \"`echo '$''{'fptools_cv_htype_float'+set}'`\" = set"; then
+  echo $ac_n "(cached) $ac_c" 1>&6
+else
+  if test "$cross_compiling" = yes; then
+  fptools_cv_htype_float=NotReallyATypeCross
+else
+  cat > conftest.$ac_ext <<EOF
+#line 4442 "configure"
+#include "confdefs.h"
+#include <stdio.h>
+#include <stddef.h>
+
+#ifdef HAVE_SYS_TYPES_H
+# include <sys/types.h>
+#endif
+
+#ifdef HAVE_UNISTD_H
+# include <unistd.h>
+#endif
+
+#ifdef HAVE_SYS_STAT_H
+# include <sys/stat.h>
+#endif
+
+#ifdef HAVE_FCNTL_H
+# include <fcntl.h>
+#endif
+
+#ifdef HAVE_SIGNAL_H
+# include <signal.h>
+#endif
+
+#ifdef HAVE_TIME_H
+# include <time.h>
+#endif
+
+#ifdef HAVE_TERMIOS_H
+# include <termios.h>
+#endif
+
+#ifdef HAVE_STRING_H
+# include <string.h>
+#endif
+
+#ifdef HAVE_CTYPE_H
+# include <ctype.h>
+#endif
+
+#ifdef HAVE_GL_GL_H
+# include <GL/gl.h>
+#endif
+
+typedef float testing;
+
+main() {
+  FILE *f=fopen("conftestval", "w");
+  if (!f) exit(1);
+  if (((testing)((int)((testing)1.4))) == ((testing)1.4)) {
+    fprintf(f, "%s%d\n",
+           ((testing)(-1) < (testing)0) ? "Int" : "Word",
+           sizeof(testing)*8);
+  } else {
+    fprintf(f,"%s\n",
+           (sizeof(testing) >  sizeof(double)) ? "LDouble" :
+           (sizeof(testing) == sizeof(double)) ? "Double"  : "Float");
+  }
+  fclose(f);
+  exit(0);
+}
+EOF
+if { (eval echo configure:4505: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} && (./conftest; exit) 2>/dev/null
+then
+  fptools_cv_htype_float=`cat conftestval`
+else
+  echo "configure: failed program was:" >&5
+  cat conftest.$ac_ext >&5
+  rm -fr conftest*
+  fptools_cv_htype_float=NotReallyAType
+fi
+rm -fr conftest*
+fi
+
+fi
+ echo "$ac_t""$fptools_cv_htype_float" 1>&6
+cat >> confdefs.h <<EOF
+#define HTYPE_FLOAT $fptools_cv_htype_float
+EOF
+
+
+echo $ac_n "checking Haskell type for double""... $ac_c" 1>&6
+echo "configure:4525: checking Haskell type for double" >&5
+if eval "test \"`echo '$''{'fptools_cv_htype_double'+set}'`\" = set"; then
+  echo $ac_n "(cached) $ac_c" 1>&6
+else
+  if test "$cross_compiling" = yes; then
+  fptools_cv_htype_double=NotReallyATypeCross
+else
+  cat > conftest.$ac_ext <<EOF
+#line 4533 "configure"
+#include "confdefs.h"
+#include <stdio.h>
+#include <stddef.h>
+
+#ifdef HAVE_SYS_TYPES_H
+# include <sys/types.h>
+#endif
+
+#ifdef HAVE_UNISTD_H
+# include <unistd.h>
+#endif
+
+#ifdef HAVE_SYS_STAT_H
+# include <sys/stat.h>
+#endif
+
+#ifdef HAVE_FCNTL_H
+# include <fcntl.h>
+#endif
+
+#ifdef HAVE_SIGNAL_H
+# include <signal.h>
+#endif
+
+#ifdef HAVE_TIME_H
+# include <time.h>
+#endif
+
+#ifdef HAVE_TERMIOS_H
+# include <termios.h>
+#endif
+
+#ifdef HAVE_STRING_H
+# include <string.h>
+#endif
+
+#ifdef HAVE_CTYPE_H
+# include <ctype.h>
+#endif
+
+#ifdef HAVE_GL_GL_H
+# include <GL/gl.h>
+#endif
+
+typedef double testing;
+
+main() {
+  FILE *f=fopen("conftestval", "w");
+  if (!f) exit(1);
+  if (((testing)((int)((testing)1.4))) == ((testing)1.4)) {
+    fprintf(f, "%s%d\n",
+           ((testing)(-1) < (testing)0) ? "Int" : "Word",
+           sizeof(testing)*8);
+  } else {
+    fprintf(f,"%s\n",
+           (sizeof(testing) >  sizeof(double)) ? "LDouble" :
+           (sizeof(testing) == sizeof(double)) ? "Double"  : "Float");
+  }
+  fclose(f);
+  exit(0);
+}
+EOF
+if { (eval echo configure:4596: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} && (./conftest; exit) 2>/dev/null
+then
+  fptools_cv_htype_double=`cat conftestval`
+else
+  echo "configure: failed program was:" >&5
+  cat conftest.$ac_ext >&5
+  rm -fr conftest*
+  fptools_cv_htype_double=NotReallyAType
+fi
+rm -fr conftest*
+fi
+
+fi
+ echo "$ac_t""$fptools_cv_htype_double" 1>&6
+cat >> confdefs.h <<EOF
+#define HTYPE_DOUBLE $fptools_cv_htype_double
+EOF
+
+
+echo $ac_n "checking Haskell type for ptrdiff_t""... $ac_c" 1>&6
+echo "configure:4616: checking Haskell type for ptrdiff_t" >&5
+if eval "test \"`echo '$''{'fptools_cv_htype_ptrdiff_t'+set}'`\" = set"; then
+  echo $ac_n "(cached) $ac_c" 1>&6
+else
+  if test "$cross_compiling" = yes; then
+  fptools_cv_htype_ptrdiff_t=NotReallyATypeCross
+else
+  cat > conftest.$ac_ext <<EOF
+#line 4624 "configure"
+#include "confdefs.h"
+#include <stdio.h>
+#include <stddef.h>
+
+#ifdef HAVE_SYS_TYPES_H
+# include <sys/types.h>
+#endif
+
+#ifdef HAVE_UNISTD_H
+# include <unistd.h>
+#endif
+
+#ifdef HAVE_SYS_STAT_H
+# include <sys/stat.h>
+#endif
+
+#ifdef HAVE_FCNTL_H
+# include <fcntl.h>
+#endif
+
+#ifdef HAVE_SIGNAL_H
+# include <signal.h>
+#endif
+
+#ifdef HAVE_TIME_H
+# include <time.h>
+#endif
+
+#ifdef HAVE_TERMIOS_H
+# include <termios.h>
+#endif
+
+#ifdef HAVE_STRING_H
+# include <string.h>
+#endif
+
+#ifdef HAVE_CTYPE_H
+# include <ctype.h>
+#endif
+
+#ifdef HAVE_GL_GL_H
+# include <GL/gl.h>
+#endif
+
+typedef ptrdiff_t testing;
+
+main() {
+  FILE *f=fopen("conftestval", "w");
+  if (!f) exit(1);
+  if (((testing)((int)((testing)1.4))) == ((testing)1.4)) {
+    fprintf(f, "%s%d\n",
+           ((testing)(-1) < (testing)0) ? "Int" : "Word",
+           sizeof(testing)*8);
+  } else {
+    fprintf(f,"%s\n",
+           (sizeof(testing) >  sizeof(double)) ? "LDouble" :
+           (sizeof(testing) == sizeof(double)) ? "Double"  : "Float");
+  }
+  fclose(f);
+  exit(0);
+}
+EOF
+if { (eval echo configure:4687: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} && (./conftest; exit) 2>/dev/null
+then
+  fptools_cv_htype_ptrdiff_t=`cat conftestval`
+else
+  echo "configure: failed program was:" >&5
+  cat conftest.$ac_ext >&5
+  rm -fr conftest*
+  fptools_cv_htype_ptrdiff_t=NotReallyAType
+fi
+rm -fr conftest*
+fi
+
+fi
+ echo "$ac_t""$fptools_cv_htype_ptrdiff_t" 1>&6
+cat >> confdefs.h <<EOF
+#define HTYPE_PTRDIFF_T $fptools_cv_htype_ptrdiff_t
+EOF
+
+
+echo $ac_n "checking Haskell type for size_t""... $ac_c" 1>&6
+echo "configure:4707: checking Haskell type for size_t" >&5
+if eval "test \"`echo '$''{'fptools_cv_htype_size_t'+set}'`\" = set"; then
+  echo $ac_n "(cached) $ac_c" 1>&6
+else
+  if test "$cross_compiling" = yes; then
+  fptools_cv_htype_size_t=NotReallyATypeCross
+else
+  cat > conftest.$ac_ext <<EOF
+#line 4715 "configure"
+#include "confdefs.h"
+#include <stdio.h>
+#include <stddef.h>
+
+#ifdef HAVE_SYS_TYPES_H
+# include <sys/types.h>
+#endif
+
+#ifdef HAVE_UNISTD_H
+# include <unistd.h>
+#endif
+
+#ifdef HAVE_SYS_STAT_H
+# include <sys/stat.h>
+#endif
+
+#ifdef HAVE_FCNTL_H
+# include <fcntl.h>
+#endif
+
+#ifdef HAVE_SIGNAL_H
+# include <signal.h>
+#endif
+
+#ifdef HAVE_TIME_H
+# include <time.h>
+#endif
+
+#ifdef HAVE_TERMIOS_H
+# include <termios.h>
+#endif
+
+#ifdef HAVE_STRING_H
+# include <string.h>
+#endif
+
+#ifdef HAVE_CTYPE_H
+# include <ctype.h>
+#endif
+
+#ifdef HAVE_GL_GL_H
+# include <GL/gl.h>
+#endif
+
+typedef size_t testing;
+
+main() {
+  FILE *f=fopen("conftestval", "w");
+  if (!f) exit(1);
+  if (((testing)((int)((testing)1.4))) == ((testing)1.4)) {
+    fprintf(f, "%s%d\n",
+           ((testing)(-1) < (testing)0) ? "Int" : "Word",
+           sizeof(testing)*8);
+  } else {
+    fprintf(f,"%s\n",
+           (sizeof(testing) >  sizeof(double)) ? "LDouble" :
+           (sizeof(testing) == sizeof(double)) ? "Double"  : "Float");
+  }
+  fclose(f);
+  exit(0);
+}
+EOF
+if { (eval echo configure:4778: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} && (./conftest; exit) 2>/dev/null
+then
+  fptools_cv_htype_size_t=`cat conftestval`
+else
+  echo "configure: failed program was:" >&5
+  cat conftest.$ac_ext >&5
+  rm -fr conftest*
+  fptools_cv_htype_size_t=NotReallyAType
+fi
+rm -fr conftest*
+fi
+
+fi
+ echo "$ac_t""$fptools_cv_htype_size_t" 1>&6
+cat >> confdefs.h <<EOF
+#define HTYPE_SIZE_T $fptools_cv_htype_size_t
+EOF
+
+
+echo $ac_n "checking Haskell type for wchar_t""... $ac_c" 1>&6
+echo "configure:4798: checking Haskell type for wchar_t" >&5
+if eval "test \"`echo '$''{'fptools_cv_htype_wchar_t'+set}'`\" = set"; then
+  echo $ac_n "(cached) $ac_c" 1>&6
+else
+  if test "$cross_compiling" = yes; then
+  fptools_cv_htype_wchar_t=NotReallyATypeCross
+else
+  cat > conftest.$ac_ext <<EOF
+#line 4806 "configure"
+#include "confdefs.h"
+#include <stdio.h>
+#include <stddef.h>
+
+#ifdef HAVE_SYS_TYPES_H
+# include <sys/types.h>
+#endif
+
+#ifdef HAVE_UNISTD_H
+# include <unistd.h>
+#endif
+
+#ifdef HAVE_SYS_STAT_H
+# include <sys/stat.h>
+#endif
+
+#ifdef HAVE_FCNTL_H
+# include <fcntl.h>
+#endif
+
+#ifdef HAVE_SIGNAL_H
+# include <signal.h>
+#endif
+
+#ifdef HAVE_TIME_H
+# include <time.h>
+#endif
+
+#ifdef HAVE_TERMIOS_H
+# include <termios.h>
+#endif
+
+#ifdef HAVE_STRING_H
+# include <string.h>
+#endif
+
+#ifdef HAVE_CTYPE_H
+# include <ctype.h>
+#endif
+
+#ifdef HAVE_GL_GL_H
+# include <GL/gl.h>
+#endif
+
+typedef wchar_t testing;
+
+main() {
+  FILE *f=fopen("conftestval", "w");
+  if (!f) exit(1);
+  if (((testing)((int)((testing)1.4))) == ((testing)1.4)) {
+    fprintf(f, "%s%d\n",
+           ((testing)(-1) < (testing)0) ? "Int" : "Word",
+           sizeof(testing)*8);
+  } else {
+    fprintf(f,"%s\n",
+           (sizeof(testing) >  sizeof(double)) ? "LDouble" :
+           (sizeof(testing) == sizeof(double)) ? "Double"  : "Float");
+  }
+  fclose(f);
+  exit(0);
+}
+EOF
+if { (eval echo configure:4869: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} && (./conftest; exit) 2>/dev/null
+then
+  fptools_cv_htype_wchar_t=`cat conftestval`
+else
+  echo "configure: failed program was:" >&5
+  cat conftest.$ac_ext >&5
+  rm -fr conftest*
+  fptools_cv_htype_wchar_t=NotReallyAType
+fi
+rm -fr conftest*
+fi
+
+fi
+ echo "$ac_t""$fptools_cv_htype_wchar_t" 1>&6
+cat >> confdefs.h <<EOF
+#define HTYPE_WCHAR_T $fptools_cv_htype_wchar_t
+EOF
+
+
+echo $ac_n "checking Haskell type for sig_atomic_t""... $ac_c" 1>&6
+echo "configure:4889: checking Haskell type for sig_atomic_t" >&5
+if eval "test \"`echo '$''{'fptools_cv_htype_sig_atomic_t'+set}'`\" = set"; then
+  echo $ac_n "(cached) $ac_c" 1>&6
+else
+  if test "$cross_compiling" = yes; then
+  fptools_cv_htype_sig_atomic_t=NotReallyATypeCross
+else
+  cat > conftest.$ac_ext <<EOF
+#line 4897 "configure"
+#include "confdefs.h"
+#include <stdio.h>
+#include <stddef.h>
+
+#ifdef HAVE_SYS_TYPES_H
+# include <sys/types.h>
+#endif
+
+#ifdef HAVE_UNISTD_H
+# include <unistd.h>
+#endif
+
+#ifdef HAVE_SYS_STAT_H
+# include <sys/stat.h>
+#endif
+
+#ifdef HAVE_FCNTL_H
+# include <fcntl.h>
+#endif
+
+#ifdef HAVE_SIGNAL_H
+# include <signal.h>
+#endif
+
+#ifdef HAVE_TIME_H
+# include <time.h>
+#endif
+
+#ifdef HAVE_TERMIOS_H
+# include <termios.h>
+#endif
+
+#ifdef HAVE_STRING_H
+# include <string.h>
+#endif
+
+#ifdef HAVE_CTYPE_H
+# include <ctype.h>
+#endif
+
+#ifdef HAVE_GL_GL_H
+# include <GL/gl.h>
+#endif
+
+typedef sig_atomic_t testing;
+
+main() {
+  FILE *f=fopen("conftestval", "w");
+  if (!f) exit(1);
+  if (((testing)((int)((testing)1.4))) == ((testing)1.4)) {
+    fprintf(f, "%s%d\n",
+           ((testing)(-1) < (testing)0) ? "Int" : "Word",
+           sizeof(testing)*8);
+  } else {
+    fprintf(f,"%s\n",
+           (sizeof(testing) >  sizeof(double)) ? "LDouble" :
+           (sizeof(testing) == sizeof(double)) ? "Double"  : "Float");
+  }
+  fclose(f);
+  exit(0);
+}
+EOF
+if { (eval echo configure:4960: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} && (./conftest; exit) 2>/dev/null
+then
+  fptools_cv_htype_sig_atomic_t=`cat conftestval`
+else
+  echo "configure: failed program was:" >&5
+  cat conftest.$ac_ext >&5
+  rm -fr conftest*
+  fptools_cv_htype_sig_atomic_t=Int32
+fi
+rm -fr conftest*
+fi
+
+fi
+ echo "$ac_t""$fptools_cv_htype_sig_atomic_t" 1>&6
+cat >> confdefs.h <<EOF
+#define HTYPE_SIG_ATOMIC_T $fptools_cv_htype_sig_atomic_t
+EOF
+
+
+echo $ac_n "checking Haskell type for clock_t""... $ac_c" 1>&6
+echo "configure:4980: checking Haskell type for clock_t" >&5
+if eval "test \"`echo '$''{'fptools_cv_htype_clock_t'+set}'`\" = set"; then
+  echo $ac_n "(cached) $ac_c" 1>&6
+else
+  if test "$cross_compiling" = yes; then
+  fptools_cv_htype_clock_t=NotReallyATypeCross
+else
+  cat > conftest.$ac_ext <<EOF
+#line 4988 "configure"
+#include "confdefs.h"
+#include <stdio.h>
+#include <stddef.h>
+
+#ifdef HAVE_SYS_TYPES_H
+# include <sys/types.h>
+#endif
+
+#ifdef HAVE_UNISTD_H
+# include <unistd.h>
+#endif
+
+#ifdef HAVE_SYS_STAT_H
+# include <sys/stat.h>
+#endif
+
+#ifdef HAVE_FCNTL_H
+# include <fcntl.h>
+#endif
+
+#ifdef HAVE_SIGNAL_H
+# include <signal.h>
+#endif
+
+#ifdef HAVE_TIME_H
+# include <time.h>
+#endif
+
+#ifdef HAVE_TERMIOS_H
+# include <termios.h>
+#endif
+
+#ifdef HAVE_STRING_H
+# include <string.h>
+#endif
+
+#ifdef HAVE_CTYPE_H
+# include <ctype.h>
+#endif
+
+#ifdef HAVE_GL_GL_H
+# include <GL/gl.h>
+#endif
+
+typedef clock_t testing;
+
+main() {
+  FILE *f=fopen("conftestval", "w");
+  if (!f) exit(1);
+  if (((testing)((int)((testing)1.4))) == ((testing)1.4)) {
+    fprintf(f, "%s%d\n",
+           ((testing)(-1) < (testing)0) ? "Int" : "Word",
+           sizeof(testing)*8);
+  } else {
+    fprintf(f,"%s\n",
+           (sizeof(testing) >  sizeof(double)) ? "LDouble" :
+           (sizeof(testing) == sizeof(double)) ? "Double"  : "Float");
+  }
+  fclose(f);
+  exit(0);
+}
+EOF
+if { (eval echo configure:5051: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} && (./conftest; exit) 2>/dev/null
+then
+  fptools_cv_htype_clock_t=`cat conftestval`
+else
+  echo "configure: failed program was:" >&5
+  cat conftest.$ac_ext >&5
+  rm -fr conftest*
+  fptools_cv_htype_clock_t=NotReallyAType
+fi
+rm -fr conftest*
+fi
+
+fi
+ echo "$ac_t""$fptools_cv_htype_clock_t" 1>&6
+cat >> confdefs.h <<EOF
+#define HTYPE_CLOCK_T $fptools_cv_htype_clock_t
+EOF
+
+
+echo $ac_n "checking Haskell type for time_t""... $ac_c" 1>&6
+echo "configure:5071: checking Haskell type for time_t" >&5
+if eval "test \"`echo '$''{'fptools_cv_htype_time_t'+set}'`\" = set"; then
+  echo $ac_n "(cached) $ac_c" 1>&6
+else
+  if test "$cross_compiling" = yes; then
+  fptools_cv_htype_time_t=NotReallyATypeCross
+else
+  cat > conftest.$ac_ext <<EOF
+#line 5079 "configure"
+#include "confdefs.h"
+#include <stdio.h>
+#include <stddef.h>
+
+#ifdef HAVE_SYS_TYPES_H
+# include <sys/types.h>
+#endif
+
+#ifdef HAVE_UNISTD_H
+# include <unistd.h>
+#endif
+
+#ifdef HAVE_SYS_STAT_H
+# include <sys/stat.h>
+#endif
+
+#ifdef HAVE_FCNTL_H
+# include <fcntl.h>
+#endif
+
+#ifdef HAVE_SIGNAL_H
+# include <signal.h>
+#endif
+
+#ifdef HAVE_TIME_H
+# include <time.h>
+#endif
+
+#ifdef HAVE_TERMIOS_H
+# include <termios.h>
+#endif
+
+#ifdef HAVE_STRING_H
+# include <string.h>
+#endif
+
+#ifdef HAVE_CTYPE_H
+# include <ctype.h>
+#endif
+
+#ifdef HAVE_GL_GL_H
+# include <GL/gl.h>
+#endif
+
+typedef time_t testing;
+
+main() {
+  FILE *f=fopen("conftestval", "w");
+  if (!f) exit(1);
+  if (((testing)((int)((testing)1.4))) == ((testing)1.4)) {
+    fprintf(f, "%s%d\n",
+           ((testing)(-1) < (testing)0) ? "Int" : "Word",
+           sizeof(testing)*8);
+  } else {
+    fprintf(f,"%s\n",
+           (sizeof(testing) >  sizeof(double)) ? "LDouble" :
+           (sizeof(testing) == sizeof(double)) ? "Double"  : "Float");
+  }
+  fclose(f);
+  exit(0);
+}
+EOF
+if { (eval echo configure:5142: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} && (./conftest; exit) 2>/dev/null
+then
+  fptools_cv_htype_time_t=`cat conftestval`
+else
+  echo "configure: failed program was:" >&5
+  cat conftest.$ac_ext >&5
+  rm -fr conftest*
+  fptools_cv_htype_time_t=NotReallyAType
+fi
+rm -fr conftest*
+fi
+
+fi
+ echo "$ac_t""$fptools_cv_htype_time_t" 1>&6
+cat >> confdefs.h <<EOF
+#define HTYPE_TIME_T $fptools_cv_htype_time_t
+EOF
+
+
+echo $ac_n "checking Haskell type for dev_t""... $ac_c" 1>&6
+echo "configure:5162: checking Haskell type for dev_t" >&5
+if eval "test \"`echo '$''{'fptools_cv_htype_dev_t'+set}'`\" = set"; then
+  echo $ac_n "(cached) $ac_c" 1>&6
+else
+  if test "$cross_compiling" = yes; then
+  fptools_cv_htype_dev_t=NotReallyATypeCross
+else
+  cat > conftest.$ac_ext <<EOF
+#line 5170 "configure"
+#include "confdefs.h"
+#include <stdio.h>
+#include <stddef.h>
+
+#ifdef HAVE_SYS_TYPES_H
+# include <sys/types.h>
+#endif
+
+#ifdef HAVE_UNISTD_H
+# include <unistd.h>
+#endif
+
+#ifdef HAVE_SYS_STAT_H
+# include <sys/stat.h>
+#endif
+
+#ifdef HAVE_FCNTL_H
+# include <fcntl.h>
+#endif
+
+#ifdef HAVE_SIGNAL_H
+# include <signal.h>
+#endif
+
+#ifdef HAVE_TIME_H
+# include <time.h>
+#endif
+
+#ifdef HAVE_TERMIOS_H
+# include <termios.h>
+#endif
+
+#ifdef HAVE_STRING_H
+# include <string.h>
+#endif
+
+#ifdef HAVE_CTYPE_H
+# include <ctype.h>
+#endif
+
+#ifdef HAVE_GL_GL_H
+# include <GL/gl.h>
+#endif
+
+typedef dev_t testing;
+
+main() {
+  FILE *f=fopen("conftestval", "w");
+  if (!f) exit(1);
+  if (((testing)((int)((testing)1.4))) == ((testing)1.4)) {
+    fprintf(f, "%s%d\n",
+           ((testing)(-1) < (testing)0) ? "Int" : "Word",
+           sizeof(testing)*8);
+  } else {
+    fprintf(f,"%s\n",
+           (sizeof(testing) >  sizeof(double)) ? "LDouble" :
+           (sizeof(testing) == sizeof(double)) ? "Double"  : "Float");
+  }
+  fclose(f);
+  exit(0);
+}
+EOF
+if { (eval echo configure:5233: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} && (./conftest; exit) 2>/dev/null
+then
+  fptools_cv_htype_dev_t=`cat conftestval`
+else
+  echo "configure: failed program was:" >&5
+  cat conftest.$ac_ext >&5
+  rm -fr conftest*
+  fptools_cv_htype_dev_t=Word32
+fi
+rm -fr conftest*
+fi
+
+fi
+ echo "$ac_t""$fptools_cv_htype_dev_t" 1>&6
+cat >> confdefs.h <<EOF
+#define HTYPE_DEV_T $fptools_cv_htype_dev_t
+EOF
+
+
+echo $ac_n "checking Haskell type for ino_t""... $ac_c" 1>&6
+echo "configure:5253: checking Haskell type for ino_t" >&5
+if eval "test \"`echo '$''{'fptools_cv_htype_ino_t'+set}'`\" = set"; then
+  echo $ac_n "(cached) $ac_c" 1>&6
+else
+  if test "$cross_compiling" = yes; then
+  fptools_cv_htype_ino_t=NotReallyATypeCross
+else
+  cat > conftest.$ac_ext <<EOF
+#line 5261 "configure"
+#include "confdefs.h"
+#include <stdio.h>
+#include <stddef.h>
+
+#ifdef HAVE_SYS_TYPES_H
+# include <sys/types.h>
+#endif
+
+#ifdef HAVE_UNISTD_H
+# include <unistd.h>
+#endif
+
+#ifdef HAVE_SYS_STAT_H
+# include <sys/stat.h>
+#endif
+
+#ifdef HAVE_FCNTL_H
+# include <fcntl.h>
+#endif
+
+#ifdef HAVE_SIGNAL_H
+# include <signal.h>
+#endif
+
+#ifdef HAVE_TIME_H
+# include <time.h>
+#endif
+
+#ifdef HAVE_TERMIOS_H
+# include <termios.h>
+#endif
+
+#ifdef HAVE_STRING_H
+# include <string.h>
+#endif
+
+#ifdef HAVE_CTYPE_H
+# include <ctype.h>
+#endif
+
+#ifdef HAVE_GL_GL_H
+# include <GL/gl.h>
+#endif
+
+typedef ino_t testing;
+
+main() {
+  FILE *f=fopen("conftestval", "w");
+  if (!f) exit(1);
+  if (((testing)((int)((testing)1.4))) == ((testing)1.4)) {
+    fprintf(f, "%s%d\n",
+           ((testing)(-1) < (testing)0) ? "Int" : "Word",
+           sizeof(testing)*8);
+  } else {
+    fprintf(f,"%s\n",
+           (sizeof(testing) >  sizeof(double)) ? "LDouble" :
+           (sizeof(testing) == sizeof(double)) ? "Double"  : "Float");
+  }
+  fclose(f);
+  exit(0);
+}
+EOF
+if { (eval echo configure:5324: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} && (./conftest; exit) 2>/dev/null
+then
+  fptools_cv_htype_ino_t=`cat conftestval`
+else
+  echo "configure: failed program was:" >&5
+  cat conftest.$ac_ext >&5
+  rm -fr conftest*
+  fptools_cv_htype_ino_t=NotReallyAType
+fi
+rm -fr conftest*
+fi
+
+fi
+ echo "$ac_t""$fptools_cv_htype_ino_t" 1>&6
+cat >> confdefs.h <<EOF
+#define HTYPE_INO_T $fptools_cv_htype_ino_t
+EOF
+
+
+echo $ac_n "checking Haskell type for mode_t""... $ac_c" 1>&6
+echo "configure:5344: checking Haskell type for mode_t" >&5
+if eval "test \"`echo '$''{'fptools_cv_htype_mode_t'+set}'`\" = set"; then
+  echo $ac_n "(cached) $ac_c" 1>&6
+else
+  if test "$cross_compiling" = yes; then
+  fptools_cv_htype_mode_t=NotReallyATypeCross
+else
+  cat > conftest.$ac_ext <<EOF
+#line 5352 "configure"
+#include "confdefs.h"
+#include <stdio.h>
+#include <stddef.h>
+
+#ifdef HAVE_SYS_TYPES_H
+# include <sys/types.h>
+#endif
+
+#ifdef HAVE_UNISTD_H
+# include <unistd.h>
+#endif
+
+#ifdef HAVE_SYS_STAT_H
+# include <sys/stat.h>
+#endif
+
+#ifdef HAVE_FCNTL_H
+# include <fcntl.h>
+#endif
+
+#ifdef HAVE_SIGNAL_H
+# include <signal.h>
+#endif
+
+#ifdef HAVE_TIME_H
+# include <time.h>
+#endif
+
+#ifdef HAVE_TERMIOS_H
+# include <termios.h>
+#endif
+
+#ifdef HAVE_STRING_H
+# include <string.h>
+#endif
+
+#ifdef HAVE_CTYPE_H
+# include <ctype.h>
+#endif
+
+#ifdef HAVE_GL_GL_H
+# include <GL/gl.h>
+#endif
+
+typedef mode_t testing;
+
+main() {
+  FILE *f=fopen("conftestval", "w");
+  if (!f) exit(1);
+  if (((testing)((int)((testing)1.4))) == ((testing)1.4)) {
+    fprintf(f, "%s%d\n",
+           ((testing)(-1) < (testing)0) ? "Int" : "Word",
+           sizeof(testing)*8);
+  } else {
+    fprintf(f,"%s\n",
+           (sizeof(testing) >  sizeof(double)) ? "LDouble" :
+           (sizeof(testing) == sizeof(double)) ? "Double"  : "Float");
+  }
+  fclose(f);
+  exit(0);
+}
+EOF
+if { (eval echo configure:5415: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} && (./conftest; exit) 2>/dev/null
+then
+  fptools_cv_htype_mode_t=`cat conftestval`
+else
+  echo "configure: failed program was:" >&5
+  cat conftest.$ac_ext >&5
+  rm -fr conftest*
+  fptools_cv_htype_mode_t=NotReallyAType
+fi
+rm -fr conftest*
+fi
+
+fi
+ echo "$ac_t""$fptools_cv_htype_mode_t" 1>&6
+cat >> confdefs.h <<EOF
+#define HTYPE_MODE_T $fptools_cv_htype_mode_t
+EOF
+
+
+echo $ac_n "checking Haskell type for off_t""... $ac_c" 1>&6
+echo "configure:5435: checking Haskell type for off_t" >&5
+if eval "test \"`echo '$''{'fptools_cv_htype_off_t'+set}'`\" = set"; then
+  echo $ac_n "(cached) $ac_c" 1>&6
+else
+  if test "$cross_compiling" = yes; then
+  fptools_cv_htype_off_t=NotReallyATypeCross
+else
+  cat > conftest.$ac_ext <<EOF
+#line 5443 "configure"
+#include "confdefs.h"
+#include <stdio.h>
+#include <stddef.h>
+
+#ifdef HAVE_SYS_TYPES_H
+# include <sys/types.h>
+#endif
+
+#ifdef HAVE_UNISTD_H
+# include <unistd.h>
+#endif
+
+#ifdef HAVE_SYS_STAT_H
+# include <sys/stat.h>
+#endif
+
+#ifdef HAVE_FCNTL_H
+# include <fcntl.h>
+#endif
+
+#ifdef HAVE_SIGNAL_H
+# include <signal.h>
+#endif
+
+#ifdef HAVE_TIME_H
+# include <time.h>
+#endif
+
+#ifdef HAVE_TERMIOS_H
+# include <termios.h>
+#endif
+
+#ifdef HAVE_STRING_H
+# include <string.h>
+#endif
+
+#ifdef HAVE_CTYPE_H
+# include <ctype.h>
+#endif
+
+#ifdef HAVE_GL_GL_H
+# include <GL/gl.h>
+#endif
+
+typedef off_t testing;
+
+main() {
+  FILE *f=fopen("conftestval", "w");
+  if (!f) exit(1);
+  if (((testing)((int)((testing)1.4))) == ((testing)1.4)) {
+    fprintf(f, "%s%d\n",
+           ((testing)(-1) < (testing)0) ? "Int" : "Word",
+           sizeof(testing)*8);
+  } else {
+    fprintf(f,"%s\n",
+           (sizeof(testing) >  sizeof(double)) ? "LDouble" :
+           (sizeof(testing) == sizeof(double)) ? "Double"  : "Float");
+  }
+  fclose(f);
+  exit(0);
+}
+EOF
+if { (eval echo configure:5506: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} && (./conftest; exit) 2>/dev/null
+then
+  fptools_cv_htype_off_t=`cat conftestval`
+else
+  echo "configure: failed program was:" >&5
+  cat conftest.$ac_ext >&5
+  rm -fr conftest*
+  fptools_cv_htype_off_t=NotReallyAType
+fi
+rm -fr conftest*
+fi
+
+fi
+ echo "$ac_t""$fptools_cv_htype_off_t" 1>&6
+cat >> confdefs.h <<EOF
+#define HTYPE_OFF_T $fptools_cv_htype_off_t
+EOF
+
+
+echo $ac_n "checking Haskell type for pid_t""... $ac_c" 1>&6
+echo "configure:5526: checking Haskell type for pid_t" >&5
+if eval "test \"`echo '$''{'fptools_cv_htype_pid_t'+set}'`\" = set"; then
+  echo $ac_n "(cached) $ac_c" 1>&6
+else
+  if test "$cross_compiling" = yes; then
+  fptools_cv_htype_pid_t=NotReallyATypeCross
+else
+  cat > conftest.$ac_ext <<EOF
+#line 5534 "configure"
+#include "confdefs.h"
+#include <stdio.h>
+#include <stddef.h>
+
+#ifdef HAVE_SYS_TYPES_H
+# include <sys/types.h>
+#endif
+
+#ifdef HAVE_UNISTD_H
+# include <unistd.h>
+#endif
+
+#ifdef HAVE_SYS_STAT_H
+# include <sys/stat.h>
+#endif
+
+#ifdef HAVE_FCNTL_H
+# include <fcntl.h>
+#endif
+
+#ifdef HAVE_SIGNAL_H
+# include <signal.h>
+#endif
+
+#ifdef HAVE_TIME_H
+# include <time.h>
+#endif
+
+#ifdef HAVE_TERMIOS_H
+# include <termios.h>
+#endif
+
+#ifdef HAVE_STRING_H
+# include <string.h>
+#endif
+
+#ifdef HAVE_CTYPE_H
+# include <ctype.h>
+#endif
+
+#ifdef HAVE_GL_GL_H
+# include <GL/gl.h>
+#endif
+
+typedef pid_t testing;
+
+main() {
+  FILE *f=fopen("conftestval", "w");
+  if (!f) exit(1);
+  if (((testing)((int)((testing)1.4))) == ((testing)1.4)) {
+    fprintf(f, "%s%d\n",
+           ((testing)(-1) < (testing)0) ? "Int" : "Word",
+           sizeof(testing)*8);
+  } else {
+    fprintf(f,"%s\n",
+           (sizeof(testing) >  sizeof(double)) ? "LDouble" :
+           (sizeof(testing) == sizeof(double)) ? "Double"  : "Float");
+  }
+  fclose(f);
+  exit(0);
+}
+EOF
+if { (eval echo configure:5597: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} && (./conftest; exit) 2>/dev/null
+then
+  fptools_cv_htype_pid_t=`cat conftestval`
+else
+  echo "configure: failed program was:" >&5
+  cat conftest.$ac_ext >&5
+  rm -fr conftest*
+  fptools_cv_htype_pid_t=NotReallyAType
+fi
+rm -fr conftest*
+fi
+
+fi
+ echo "$ac_t""$fptools_cv_htype_pid_t" 1>&6
+cat >> confdefs.h <<EOF
+#define HTYPE_PID_T $fptools_cv_htype_pid_t
+EOF
+
+
+echo $ac_n "checking Haskell type for gid_t""... $ac_c" 1>&6
+echo "configure:5617: checking Haskell type for gid_t" >&5
+if eval "test \"`echo '$''{'fptools_cv_htype_gid_t'+set}'`\" = set"; then
+  echo $ac_n "(cached) $ac_c" 1>&6
+else
+  if test "$cross_compiling" = yes; then
+  fptools_cv_htype_gid_t=NotReallyATypeCross
+else
+  cat > conftest.$ac_ext <<EOF
+#line 5625 "configure"
+#include "confdefs.h"
+#include <stdio.h>
+#include <stddef.h>
+
+#ifdef HAVE_SYS_TYPES_H
+# include <sys/types.h>
+#endif
+
+#ifdef HAVE_UNISTD_H
+# include <unistd.h>
+#endif
+
+#ifdef HAVE_SYS_STAT_H
+# include <sys/stat.h>
+#endif
+
+#ifdef HAVE_FCNTL_H
+# include <fcntl.h>
+#endif
+
+#ifdef HAVE_SIGNAL_H
+# include <signal.h>
+#endif
+
+#ifdef HAVE_TIME_H
+# include <time.h>
+#endif
+
+#ifdef HAVE_TERMIOS_H
+# include <termios.h>
+#endif
+
+#ifdef HAVE_STRING_H
+# include <string.h>
+#endif
+
+#ifdef HAVE_CTYPE_H
+# include <ctype.h>
+#endif
+
+#ifdef HAVE_GL_GL_H
+# include <GL/gl.h>
+#endif
+
+typedef gid_t testing;
+
+main() {
+  FILE *f=fopen("conftestval", "w");
+  if (!f) exit(1);
+  if (((testing)((int)((testing)1.4))) == ((testing)1.4)) {
+    fprintf(f, "%s%d\n",
+           ((testing)(-1) < (testing)0) ? "Int" : "Word",
+           sizeof(testing)*8);
+  } else {
+    fprintf(f,"%s\n",
+           (sizeof(testing) >  sizeof(double)) ? "LDouble" :
+           (sizeof(testing) == sizeof(double)) ? "Double"  : "Float");
+  }
+  fclose(f);
+  exit(0);
+}
+EOF
+if { (eval echo configure:5688: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} && (./conftest; exit) 2>/dev/null
+then
+  fptools_cv_htype_gid_t=`cat conftestval`
+else
+  echo "configure: failed program was:" >&5
+  cat conftest.$ac_ext >&5
+  rm -fr conftest*
+  fptools_cv_htype_gid_t=NotReallyAType
+fi
+rm -fr conftest*
+fi
+
+fi
+ echo "$ac_t""$fptools_cv_htype_gid_t" 1>&6
+cat >> confdefs.h <<EOF
+#define HTYPE_GID_T $fptools_cv_htype_gid_t
+EOF
+
+
+echo $ac_n "checking Haskell type for uid_t""... $ac_c" 1>&6
+echo "configure:5708: checking Haskell type for uid_t" >&5
+if eval "test \"`echo '$''{'fptools_cv_htype_uid_t'+set}'`\" = set"; then
+  echo $ac_n "(cached) $ac_c" 1>&6
+else
+  if test "$cross_compiling" = yes; then
+  fptools_cv_htype_uid_t=NotReallyATypeCross
+else
+  cat > conftest.$ac_ext <<EOF
+#line 5716 "configure"
+#include "confdefs.h"
+#include <stdio.h>
+#include <stddef.h>
+
+#ifdef HAVE_SYS_TYPES_H
+# include <sys/types.h>
+#endif
+
+#ifdef HAVE_UNISTD_H
+# include <unistd.h>
+#endif
+
+#ifdef HAVE_SYS_STAT_H
+# include <sys/stat.h>
+#endif
+
+#ifdef HAVE_FCNTL_H
+# include <fcntl.h>
+#endif
+
+#ifdef HAVE_SIGNAL_H
+# include <signal.h>
+#endif
+
+#ifdef HAVE_TIME_H
+# include <time.h>
+#endif
+
+#ifdef HAVE_TERMIOS_H
+# include <termios.h>
+#endif
+
+#ifdef HAVE_STRING_H
+# include <string.h>
+#endif
+
+#ifdef HAVE_CTYPE_H
+# include <ctype.h>
+#endif
+
+#ifdef HAVE_GL_GL_H
+# include <GL/gl.h>
+#endif
+
+typedef uid_t testing;
+
+main() {
+  FILE *f=fopen("conftestval", "w");
+  if (!f) exit(1);
+  if (((testing)((int)((testing)1.4))) == ((testing)1.4)) {
+    fprintf(f, "%s%d\n",
+           ((testing)(-1) < (testing)0) ? "Int" : "Word",
+           sizeof(testing)*8);
+  } else {
+    fprintf(f,"%s\n",
+           (sizeof(testing) >  sizeof(double)) ? "LDouble" :
+           (sizeof(testing) == sizeof(double)) ? "Double"  : "Float");
+  }
+  fclose(f);
+  exit(0);
+}
+EOF
+if { (eval echo configure:5779: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} && (./conftest; exit) 2>/dev/null
+then
+  fptools_cv_htype_uid_t=`cat conftestval`
+else
+  echo "configure: failed program was:" >&5
+  cat conftest.$ac_ext >&5
+  rm -fr conftest*
+  fptools_cv_htype_uid_t=NotReallyAType
+fi
+rm -fr conftest*
+fi
+
+fi
+ echo "$ac_t""$fptools_cv_htype_uid_t" 1>&6
+cat >> confdefs.h <<EOF
+#define HTYPE_UID_T $fptools_cv_htype_uid_t
+EOF
+
+
+echo $ac_n "checking Haskell type for cc_t""... $ac_c" 1>&6
+echo "configure:5799: checking Haskell type for cc_t" >&5
+if eval "test \"`echo '$''{'fptools_cv_htype_cc_t'+set}'`\" = set"; then
+  echo $ac_n "(cached) $ac_c" 1>&6
+else
+  if test "$cross_compiling" = yes; then
+  fptools_cv_htype_cc_t=NotReallyATypeCross
+else
+  cat > conftest.$ac_ext <<EOF
+#line 5807 "configure"
+#include "confdefs.h"
+#include <stdio.h>
+#include <stddef.h>
+
+#ifdef HAVE_SYS_TYPES_H
+# include <sys/types.h>
+#endif
+
+#ifdef HAVE_UNISTD_H
+# include <unistd.h>
+#endif
+
+#ifdef HAVE_SYS_STAT_H
+# include <sys/stat.h>
+#endif
+
+#ifdef HAVE_FCNTL_H
+# include <fcntl.h>
+#endif
+
+#ifdef HAVE_SIGNAL_H
+# include <signal.h>
+#endif
+
+#ifdef HAVE_TIME_H
+# include <time.h>
+#endif
+
+#ifdef HAVE_TERMIOS_H
+# include <termios.h>
+#endif
+
+#ifdef HAVE_STRING_H
+# include <string.h>
+#endif
+
+#ifdef HAVE_CTYPE_H
+# include <ctype.h>
+#endif
+
+#ifdef HAVE_GL_GL_H
+# include <GL/gl.h>
+#endif
+
+typedef cc_t testing;
+
+main() {
+  FILE *f=fopen("conftestval", "w");
+  if (!f) exit(1);
+  if (((testing)((int)((testing)1.4))) == ((testing)1.4)) {
+    fprintf(f, "%s%d\n",
+           ((testing)(-1) < (testing)0) ? "Int" : "Word",
+           sizeof(testing)*8);
+  } else {
+    fprintf(f,"%s\n",
+           (sizeof(testing) >  sizeof(double)) ? "LDouble" :
+           (sizeof(testing) == sizeof(double)) ? "Double"  : "Float");
+  }
+  fclose(f);
+  exit(0);
+}
+EOF
+if { (eval echo configure:5870: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} && (./conftest; exit) 2>/dev/null
+then
+  fptools_cv_htype_cc_t=`cat conftestval`
+else
+  echo "configure: failed program was:" >&5
+  cat conftest.$ac_ext >&5
+  rm -fr conftest*
+  fptools_cv_htype_cc_t=NotReallyAType
+fi
+rm -fr conftest*
+fi
+
+fi
+ echo "$ac_t""$fptools_cv_htype_cc_t" 1>&6
+cat >> confdefs.h <<EOF
+#define HTYPE_CC_T $fptools_cv_htype_cc_t
+EOF
+
+
+echo $ac_n "checking Haskell type for speed_t""... $ac_c" 1>&6
+echo "configure:5890: checking Haskell type for speed_t" >&5
+if eval "test \"`echo '$''{'fptools_cv_htype_speed_t'+set}'`\" = set"; then
+  echo $ac_n "(cached) $ac_c" 1>&6
+else
+  if test "$cross_compiling" = yes; then
+  fptools_cv_htype_speed_t=NotReallyATypeCross
+else
+  cat > conftest.$ac_ext <<EOF
+#line 5898 "configure"
+#include "confdefs.h"
+#include <stdio.h>
+#include <stddef.h>
+
+#ifdef HAVE_SYS_TYPES_H
+# include <sys/types.h>
+#endif
+
+#ifdef HAVE_UNISTD_H
+# include <unistd.h>
+#endif
+
+#ifdef HAVE_SYS_STAT_H
+# include <sys/stat.h>
+#endif
+
+#ifdef HAVE_FCNTL_H
+# include <fcntl.h>
+#endif
+
+#ifdef HAVE_SIGNAL_H
+# include <signal.h>
+#endif
+
+#ifdef HAVE_TIME_H
+# include <time.h>
+#endif
+
+#ifdef HAVE_TERMIOS_H
+# include <termios.h>
+#endif
+
+#ifdef HAVE_STRING_H
+# include <string.h>
+#endif
+
+#ifdef HAVE_CTYPE_H
+# include <ctype.h>
+#endif
+
+#ifdef HAVE_GL_GL_H
+# include <GL/gl.h>
+#endif
+
+typedef speed_t testing;
+
+main() {
+  FILE *f=fopen("conftestval", "w");
+  if (!f) exit(1);
+  if (((testing)((int)((testing)1.4))) == ((testing)1.4)) {
+    fprintf(f, "%s%d\n",
+           ((testing)(-1) < (testing)0) ? "Int" : "Word",
+           sizeof(testing)*8);
+  } else {
+    fprintf(f,"%s\n",
+           (sizeof(testing) >  sizeof(double)) ? "LDouble" :
+           (sizeof(testing) == sizeof(double)) ? "Double"  : "Float");
+  }
+  fclose(f);
+  exit(0);
+}
+EOF
+if { (eval echo configure:5961: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} && (./conftest; exit) 2>/dev/null
+then
+  fptools_cv_htype_speed_t=`cat conftestval`
+else
+  echo "configure: failed program was:" >&5
+  cat conftest.$ac_ext >&5
+  rm -fr conftest*
+  fptools_cv_htype_speed_t=NotReallyAType
+fi
+rm -fr conftest*
+fi
+
+fi
+ echo "$ac_t""$fptools_cv_htype_speed_t" 1>&6
+cat >> confdefs.h <<EOF
+#define HTYPE_SPEED_T $fptools_cv_htype_speed_t
+EOF
+
+
+echo $ac_n "checking Haskell type for tcflag_t""... $ac_c" 1>&6
+echo "configure:5981: checking Haskell type for tcflag_t" >&5
+if eval "test \"`echo '$''{'fptools_cv_htype_tcflag_t'+set}'`\" = set"; then
+  echo $ac_n "(cached) $ac_c" 1>&6
+else
+  if test "$cross_compiling" = yes; then
+  fptools_cv_htype_tcflag_t=NotReallyATypeCross
+else
+  cat > conftest.$ac_ext <<EOF
+#line 5989 "configure"
+#include "confdefs.h"
+#include <stdio.h>
+#include <stddef.h>
+
+#ifdef HAVE_SYS_TYPES_H
+# include <sys/types.h>
+#endif
+
+#ifdef HAVE_UNISTD_H
+# include <unistd.h>
+#endif
+
+#ifdef HAVE_SYS_STAT_H
+# include <sys/stat.h>
+#endif
+
+#ifdef HAVE_FCNTL_H
+# include <fcntl.h>
+#endif
+
+#ifdef HAVE_SIGNAL_H
+# include <signal.h>
+#endif
+
+#ifdef HAVE_TIME_H
+# include <time.h>
+#endif
+
+#ifdef HAVE_TERMIOS_H
+# include <termios.h>
+#endif
+
+#ifdef HAVE_STRING_H
+# include <string.h>
+#endif
+
+#ifdef HAVE_CTYPE_H
+# include <ctype.h>
+#endif
+
+#ifdef HAVE_GL_GL_H
+# include <GL/gl.h>
+#endif
+
+typedef tcflag_t testing;
+
+main() {
+  FILE *f=fopen("conftestval", "w");
+  if (!f) exit(1);
+  if (((testing)((int)((testing)1.4))) == ((testing)1.4)) {
+    fprintf(f, "%s%d\n",
+           ((testing)(-1) < (testing)0) ? "Int" : "Word",
+           sizeof(testing)*8);
+  } else {
+    fprintf(f,"%s\n",
+           (sizeof(testing) >  sizeof(double)) ? "LDouble" :
+           (sizeof(testing) == sizeof(double)) ? "Double"  : "Float");
+  }
+  fclose(f);
+  exit(0);
+}
+EOF
+if { (eval echo configure:6052: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} && (./conftest; exit) 2>/dev/null
+then
+  fptools_cv_htype_tcflag_t=`cat conftestval`
+else
+  echo "configure: failed program was:" >&5
+  cat conftest.$ac_ext >&5
+  rm -fr conftest*
+  fptools_cv_htype_tcflag_t=NotReallyAType
+fi
+rm -fr conftest*
+fi
+
+fi
+ echo "$ac_t""$fptools_cv_htype_tcflag_t" 1>&6
+cat >> confdefs.h <<EOF
+#define HTYPE_TCFLAG_T $fptools_cv_htype_tcflag_t
+EOF
+
+
+echo $ac_n "checking Haskell type for nlink_t""... $ac_c" 1>&6
+echo "configure:6072: checking Haskell type for nlink_t" >&5
+if eval "test \"`echo '$''{'fptools_cv_htype_nlink_t'+set}'`\" = set"; then
+  echo $ac_n "(cached) $ac_c" 1>&6
+else
+  if test "$cross_compiling" = yes; then
+  fptools_cv_htype_nlink_t=NotReallyATypeCross
+else
+  cat > conftest.$ac_ext <<EOF
+#line 6080 "configure"
+#include "confdefs.h"
+#include <stdio.h>
+#include <stddef.h>
+
+#ifdef HAVE_SYS_TYPES_H
+# include <sys/types.h>
+#endif
+
+#ifdef HAVE_UNISTD_H
+# include <unistd.h>
+#endif
+
+#ifdef HAVE_SYS_STAT_H
+# include <sys/stat.h>
+#endif
+
+#ifdef HAVE_FCNTL_H
+# include <fcntl.h>
+#endif
+
+#ifdef HAVE_SIGNAL_H
+# include <signal.h>
+#endif
+
+#ifdef HAVE_TIME_H
+# include <time.h>
+#endif
+
+#ifdef HAVE_TERMIOS_H
+# include <termios.h>
+#endif
+
+#ifdef HAVE_STRING_H
+# include <string.h>
+#endif
+
+#ifdef HAVE_CTYPE_H
+# include <ctype.h>
+#endif
+
+#ifdef HAVE_GL_GL_H
+# include <GL/gl.h>
+#endif
+
+typedef nlink_t testing;
+
+main() {
+  FILE *f=fopen("conftestval", "w");
+  if (!f) exit(1);
+  if (((testing)((int)((testing)1.4))) == ((testing)1.4)) {
+    fprintf(f, "%s%d\n",
+           ((testing)(-1) < (testing)0) ? "Int" : "Word",
+           sizeof(testing)*8);
+  } else {
+    fprintf(f,"%s\n",
+           (sizeof(testing) >  sizeof(double)) ? "LDouble" :
+           (sizeof(testing) == sizeof(double)) ? "Double"  : "Float");
+  }
+  fclose(f);
+  exit(0);
+}
+EOF
+if { (eval echo configure:6143: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} && (./conftest; exit) 2>/dev/null
+then
+  fptools_cv_htype_nlink_t=`cat conftestval`
+else
+  echo "configure: failed program was:" >&5
+  cat conftest.$ac_ext >&5
+  rm -fr conftest*
+  fptools_cv_htype_nlink_t=NotReallyAType
+fi
+rm -fr conftest*
+fi
+
+fi
+ echo "$ac_t""$fptools_cv_htype_nlink_t" 1>&6
+cat >> confdefs.h <<EOF
+#define HTYPE_NLINK_T $fptools_cv_htype_nlink_t
+EOF
+
+
+echo $ac_n "checking Haskell type for ssize_t""... $ac_c" 1>&6
+echo "configure:6163: checking Haskell type for ssize_t" >&5
+if eval "test \"`echo '$''{'fptools_cv_htype_ssize_t'+set}'`\" = set"; then
+  echo $ac_n "(cached) $ac_c" 1>&6
+else
+  if test "$cross_compiling" = yes; then
+  fptools_cv_htype_ssize_t=NotReallyATypeCross
+else
+  cat > conftest.$ac_ext <<EOF
+#line 6171 "configure"
+#include "confdefs.h"
+#include <stdio.h>
+#include <stddef.h>
+
+#ifdef HAVE_SYS_TYPES_H
+# include <sys/types.h>
+#endif
+
+#ifdef HAVE_UNISTD_H
+# include <unistd.h>
+#endif
+
+#ifdef HAVE_SYS_STAT_H
+# include <sys/stat.h>
+#endif
+
+#ifdef HAVE_FCNTL_H
+# include <fcntl.h>
+#endif
+
+#ifdef HAVE_SIGNAL_H
+# include <signal.h>
+#endif
+
+#ifdef HAVE_TIME_H
+# include <time.h>
+#endif
+
+#ifdef HAVE_TERMIOS_H
+# include <termios.h>
+#endif
+
+#ifdef HAVE_STRING_H
+# include <string.h>
+#endif
+
+#ifdef HAVE_CTYPE_H
+# include <ctype.h>
+#endif
+
+#ifdef HAVE_GL_GL_H
+# include <GL/gl.h>
+#endif
+
+typedef ssize_t testing;
+
+main() {
+  FILE *f=fopen("conftestval", "w");
+  if (!f) exit(1);
+  if (((testing)((int)((testing)1.4))) == ((testing)1.4)) {
+    fprintf(f, "%s%d\n",
+           ((testing)(-1) < (testing)0) ? "Int" : "Word",
+           sizeof(testing)*8);
+  } else {
+    fprintf(f,"%s\n",
+           (sizeof(testing) >  sizeof(double)) ? "LDouble" :
+           (sizeof(testing) == sizeof(double)) ? "Double"  : "Float");
+  }
+  fclose(f);
+  exit(0);
+}
+EOF
+if { (eval echo configure:6234: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} && (./conftest; exit) 2>/dev/null
+then
+  fptools_cv_htype_ssize_t=`cat conftestval`
+else
+  echo "configure: failed program was:" >&5
+  cat conftest.$ac_ext >&5
+  rm -fr conftest*
+  fptools_cv_htype_ssize_t=NotReallyAType
+fi
+rm -fr conftest*
+fi
+
+fi
+ echo "$ac_t""$fptools_cv_htype_ssize_t" 1>&6
+cat >> confdefs.h <<EOF
+#define HTYPE_SSIZE_T $fptools_cv_htype_ssize_t
+EOF
+
+
+
+
+
+
+
 ac_save_LIBS="$LIBS"
 LIBS=;
 cat > conftest.$ac_ext <<EOF
-#line 2215 "configure"
+#line 6261 "configure"
 #include "confdefs.h"
 
 #if HAVE_WINDOWS_H
@@ -2224,7 +6270,7 @@ main() {
 
 int t() { return 0; }
 EOF
-if { (eval echo configure:2228: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; }; then
+if { (eval echo configure:6274: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; }; then
   
     LIBS="$ac_save_LIBS"
     rm -rf conftest*
@@ -2248,7 +6294,7 @@ fi
 ac_save_LIBS="$LIBS"
 LIBS=;
 cat > conftest.$ac_ext <<EOF
-#line 2252 "configure"
+#line 6298 "configure"
 #include "confdefs.h"
 
 #if HAVE_WINDOWS_H
@@ -2262,7 +6308,7 @@ main() {
 
 int t() { return 0; }
 EOF
-if { (eval echo configure:2266: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; }; then
+if { (eval echo configure:6312: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; }; then
   
     LIBS="$ac_save_LIBS"
     rm -rf conftest*
@@ -2285,12 +6331,12 @@ fi
 for ac_func in strcasecmp _stricmp stricmp strcmpi
 do
 echo $ac_n "checking for $ac_func""... $ac_c" 1>&6
-echo "configure:2289: checking for $ac_func" >&5
+echo "configure:6335: checking for $ac_func" >&5
 if eval "test \"`echo '$''{'ac_cv_func_$ac_func'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
   cat > conftest.$ac_ext <<EOF
-#line 2294 "configure"
+#line 6340 "configure"
 #include "confdefs.h"
 /* System header to define __stub macros and hopefully few prototypes,
     which can conflict with char $ac_func(); below.  */
@@ -2313,7 +6359,7 @@ $ac_func();
 
 ; return 0; }
 EOF
-if { (eval echo configure:2317: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
+if { (eval echo configure:6363: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
   rm -rf conftest*
   eval "ac_cv_func_$ac_func=yes"
 else
@@ -2340,12 +6386,12 @@ done
 for ac_func in strcmp
 do
 echo $ac_n "checking for $ac_func""... $ac_c" 1>&6
-echo "configure:2344: checking for $ac_func" >&5
+echo "configure:6390: checking for $ac_func" >&5
 if eval "test \"`echo '$''{'ac_cv_func_$ac_func'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
   cat > conftest.$ac_ext <<EOF
-#line 2349 "configure"
+#line 6395 "configure"
 #include "confdefs.h"
 /* System header to define __stub macros and hopefully few prototypes,
     which can conflict with char $ac_func(); below.  */
@@ -2368,7 +6414,7 @@ $ac_func();
 
 ; return 0; }
 EOF
-if { (eval echo configure:2372: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
+if { (eval echo configure:6418: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
   rm -rf conftest*
   eval "ac_cv_func_$ac_func=yes"
 else
@@ -2395,12 +6441,12 @@ done
 for ac_func in rindex
 do
 echo $ac_n "checking for $ac_func""... $ac_c" 1>&6
-echo "configure:2399: checking for $ac_func" >&5
+echo "configure:6445: checking for $ac_func" >&5
 if eval "test \"`echo '$''{'ac_cv_func_$ac_func'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
   cat > conftest.$ac_ext <<EOF
-#line 2404 "configure"
+#line 6450 "configure"
 #include "confdefs.h"
 /* System header to define __stub macros and hopefully few prototypes,
     which can conflict with char $ac_func(); below.  */
@@ -2423,7 +6469,7 @@ $ac_func();
 
 ; return 0; }
 EOF
-if { (eval echo configure:2427: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
+if { (eval echo configure:6473: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
   rm -rf conftest*
   eval "ac_cv_func_$ac_func=yes"
 else
@@ -2450,12 +6496,12 @@ done
 for ac_func in strrchr
 do
 echo $ac_n "checking for $ac_func""... $ac_c" 1>&6
-echo "configure:2454: checking for $ac_func" >&5
+echo "configure:6500: checking for $ac_func" >&5
 if eval "test \"`echo '$''{'ac_cv_func_$ac_func'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
   cat > conftest.$ac_ext <<EOF
-#line 2459 "configure"
+#line 6505 "configure"
 #include "confdefs.h"
 /* System header to define __stub macros and hopefully few prototypes,
     which can conflict with char $ac_func(); below.  */
@@ -2478,7 +6524,7 @@ $ac_func();
 
 ; return 0; }
 EOF
-if { (eval echo configure:2482: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
+if { (eval echo configure:6528: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
   rm -rf conftest*
   eval "ac_cv_func_$ac_func=yes"
 else
@@ -2505,12 +6551,12 @@ done
 for ac_func in realpath _fullpath
 do
 echo $ac_n "checking for $ac_func""... $ac_c" 1>&6
-echo "configure:2509: checking for $ac_func" >&5
+echo "configure:6555: checking for $ac_func" >&5
 if eval "test \"`echo '$''{'ac_cv_func_$ac_func'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
   cat > conftest.$ac_ext <<EOF
-#line 2514 "configure"
+#line 6560 "configure"
 #include "confdefs.h"
 /* System header to define __stub macros and hopefully few prototypes,
     which can conflict with char $ac_func(); below.  */
@@ -2533,7 +6579,7 @@ $ac_func();
 
 ; return 0; }
 EOF
-if { (eval echo configure:2537: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
+if { (eval echo configure:6583: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
   rm -rf conftest*
   eval "ac_cv_func_$ac_func=yes"
 else
@@ -2560,12 +6606,12 @@ done
 for ac_func in PBHSetVolSync macsystem
 do
 echo $ac_n "checking for $ac_func""... $ac_c" 1>&6
-echo "configure:2564: checking for $ac_func" >&5
+echo "configure:6610: checking for $ac_func" >&5
 if eval "test \"`echo '$''{'ac_cv_func_$ac_func'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
   cat > conftest.$ac_ext <<EOF
-#line 2569 "configure"
+#line 6615 "configure"
 #include "confdefs.h"
 /* System header to define __stub macros and hopefully few prototypes,
     which can conflict with char $ac_func(); below.  */
@@ -2588,7 +6634,7 @@ $ac_func();
 
 ; return 0; }
 EOF
-if { (eval echo configure:2592: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
+if { (eval echo configure:6638: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
   rm -rf conftest*
   eval "ac_cv_func_$ac_func=yes"
 else
@@ -2615,12 +6661,12 @@ done
 for ac_func in fgetpos fsetpos fseek ftell
 do
 echo $ac_n "checking for $ac_func""... $ac_c" 1>&6
-echo "configure:2619: checking for $ac_func" >&5
+echo "configure:6665: checking for $ac_func" >&5
 if eval "test \"`echo '$''{'ac_cv_func_$ac_func'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
   cat > conftest.$ac_ext <<EOF
-#line 2624 "configure"
+#line 6670 "configure"
 #include "confdefs.h"
 /* System header to define __stub macros and hopefully few prototypes,
     which can conflict with char $ac_func(); below.  */
@@ -2643,7 +6689,7 @@ $ac_func();
 
 ; return 0; }
 EOF
-if { (eval echo configure:2647: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
+if { (eval echo configure:6693: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
   rm -rf conftest*
   eval "ac_cv_func_$ac_func=yes"
 else
@@ -2670,12 +6716,12 @@ done
 for ac_func in vsnprintf _vsnprintf
 do
 echo $ac_n "checking for $ac_func""... $ac_c" 1>&6
-echo "configure:2674: checking for $ac_func" >&5
+echo "configure:6720: checking for $ac_func" >&5
 if eval "test \"`echo '$''{'ac_cv_func_$ac_func'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
   cat > conftest.$ac_ext <<EOF
-#line 2679 "configure"
+#line 6725 "configure"
 #include "confdefs.h"
 /* System header to define __stub macros and hopefully few prototypes,
     which can conflict with char $ac_func(); below.  */
@@ -2698,7 +6744,7 @@ $ac_func();
 
 ; return 0; }
 EOF
-if { (eval echo configure:2702: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
+if { (eval echo configure:6748: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
   rm -rf conftest*
   eval "ac_cv_func_$ac_func=yes"
 else
@@ -2725,12 +6771,12 @@ done
 for ac_func in snprintf  _snprintf 
 do
 echo $ac_n "checking for $ac_func""... $ac_c" 1>&6
-echo "configure:2729: checking for $ac_func" >&5
+echo "configure:6775: checking for $ac_func" >&5
 if eval "test \"`echo '$''{'ac_cv_func_$ac_func'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
   cat > conftest.$ac_ext <<EOF
-#line 2734 "configure"
+#line 6780 "configure"
 #include "confdefs.h"
 /* System header to define __stub macros and hopefully few prototypes,
     which can conflict with char $ac_func(); below.  */
@@ -2753,7 +6799,7 @@ $ac_func();
 
 ; return 0; }
 EOF
-if { (eval echo configure:2757: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
+if { (eval echo configure:6803: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
   rm -rf conftest*
   eval "ac_cv_func_$ac_func=yes"
 else
@@ -2780,12 +6826,12 @@ done
 for ac_func in popen     _popen 
 do
 echo $ac_n "checking for $ac_func""... $ac_c" 1>&6
-echo "configure:2784: checking for $ac_func" >&5
+echo "configure:6830: checking for $ac_func" >&5
 if eval "test \"`echo '$''{'ac_cv_func_$ac_func'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
   cat > conftest.$ac_ext <<EOF
-#line 2789 "configure"
+#line 6835 "configure"
 #include "confdefs.h"
 /* System header to define __stub macros and hopefully few prototypes,
     which can conflict with char $ac_func(); below.  */
@@ -2808,7 +6854,7 @@ $ac_func();
 
 ; return 0; }
 EOF
-if { (eval echo configure:2812: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
+if { (eval echo configure:6858: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
   rm -rf conftest*
   eval "ac_cv_func_$ac_func=yes"
 else
@@ -2835,12 +6881,12 @@ done
 for ac_func in pclose    _pclose 
 do
 echo $ac_n "checking for $ac_func""... $ac_c" 1>&6
-echo "configure:2839: checking for $ac_func" >&5
+echo "configure:6885: checking for $ac_func" >&5
 if eval "test \"`echo '$''{'ac_cv_func_$ac_func'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
   cat > conftest.$ac_ext <<EOF
-#line 2844 "configure"
+#line 6890 "configure"
 #include "confdefs.h"
 /* System header to define __stub macros and hopefully few prototypes,
     which can conflict with char $ac_func(); below.  */
@@ -2863,7 +6909,7 @@ $ac_func();
 
 ; return 0; }
 EOF
-if { (eval echo configure:2867: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
+if { (eval echo configure:6913: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
   rm -rf conftest*
   eval "ac_cv_func_$ac_func=yes"
 else
@@ -2890,12 +6936,12 @@ done
 for ac_func in sigprocmask
 do
 echo $ac_n "checking for $ac_func""... $ac_c" 1>&6
-echo "configure:2894: checking for $ac_func" >&5
+echo "configure:6940: checking for $ac_func" >&5
 if eval "test \"`echo '$''{'ac_cv_func_$ac_func'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
   cat > conftest.$ac_ext <<EOF
-#line 2899 "configure"
+#line 6945 "configure"
 #include "confdefs.h"
 /* System header to define __stub macros and hopefully few prototypes,
     which can conflict with char $ac_func(); below.  */
@@ -2918,7 +6964,7 @@ $ac_func();
 
 ; return 0; }
 EOF
-if { (eval echo configure:2922: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
+if { (eval echo configure:6968: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
   rm -rf conftest*
   eval "ac_cv_func_$ac_func=yes"
 else
@@ -2945,12 +6991,12 @@ done
 for ac_func in getrusage
 do
 echo $ac_n "checking for $ac_func""... $ac_c" 1>&6
-echo "configure:2949: checking for $ac_func" >&5
+echo "configure:6995: checking for $ac_func" >&5
 if eval "test \"`echo '$''{'ac_cv_func_$ac_func'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
   cat > conftest.$ac_ext <<EOF
-#line 2954 "configure"
+#line 7000 "configure"
 #include "confdefs.h"
 /* System header to define __stub macros and hopefully few prototypes,
     which can conflict with char $ac_func(); below.  */
@@ -2973,7 +7019,7 @@ $ac_func();
 
 ; return 0; }
 EOF
-if { (eval echo configure:2977: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
+if { (eval echo configure:7023: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
   rm -rf conftest*
   eval "ac_cv_func_$ac_func=yes"
 else
@@ -3000,12 +7046,12 @@ done
 for ac_func in times
 do
 echo $ac_n "checking for $ac_func""... $ac_c" 1>&6
-echo "configure:3004: checking for $ac_func" >&5
+echo "configure:7050: checking for $ac_func" >&5
 if eval "test \"`echo '$''{'ac_cv_func_$ac_func'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
   cat > conftest.$ac_ext <<EOF
-#line 3009 "configure"
+#line 7055 "configure"
 #include "confdefs.h"
 /* System header to define __stub macros and hopefully few prototypes,
     which can conflict with char $ac_func(); below.  */
@@ -3028,7 +7074,7 @@ $ac_func();
 
 ; return 0; }
 EOF
-if { (eval echo configure:3032: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
+if { (eval echo configure:7078: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
   rm -rf conftest*
   eval "ac_cv_func_$ac_func=yes"
 else
@@ -3055,12 +7101,12 @@ done
 for ac_func in isatty
 do
 echo $ac_n "checking for $ac_func""... $ac_c" 1>&6
-echo "configure:3059: checking for $ac_func" >&5
+echo "configure:7105: checking for $ac_func" >&5
 if eval "test \"`echo '$''{'ac_cv_func_$ac_func'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
   cat > conftest.$ac_ext <<EOF
-#line 3064 "configure"
+#line 7110 "configure"
 #include "confdefs.h"
 /* System header to define __stub macros and hopefully few prototypes,
     which can conflict with char $ac_func(); below.  */
@@ -3083,7 +7129,7 @@ $ac_func();
 
 ; return 0; }
 EOF
-if { (eval echo configure:3087: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
+if { (eval echo configure:7133: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
   rm -rf conftest*
   eval "ac_cv_func_$ac_func=yes"
 else
@@ -3110,12 +7156,12 @@ done
 for ac_func in fstat
 do
 echo $ac_n "checking for $ac_func""... $ac_c" 1>&6
-echo "configure:3114: checking for $ac_func" >&5
+echo "configure:7160: checking for $ac_func" >&5
 if eval "test \"`echo '$''{'ac_cv_func_$ac_func'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
   cat > conftest.$ac_ext <<EOF
-#line 3119 "configure"
+#line 7165 "configure"
 #include "confdefs.h"
 /* System header to define __stub macros and hopefully few prototypes,
     which can conflict with char $ac_func(); below.  */
@@ -3138,7 +7184,7 @@ $ac_func();
 
 ; return 0; }
 EOF
-if { (eval echo configure:3142: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
+if { (eval echo configure:7188: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
   rm -rf conftest*
   eval "ac_cv_func_$ac_func=yes"
 else
@@ -3165,12 +7211,12 @@ done
 for ac_func in select
 do
 echo $ac_n "checking for $ac_func""... $ac_c" 1>&6
-echo "configure:3169: checking for $ac_func" >&5
+echo "configure:7215: checking for $ac_func" >&5
 if eval "test \"`echo '$''{'ac_cv_func_$ac_func'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
   cat > conftest.$ac_ext <<EOF
-#line 3174 "configure"
+#line 7220 "configure"
 #include "confdefs.h"
 /* System header to define __stub macros and hopefully few prototypes,
     which can conflict with char $ac_func(); below.  */
@@ -3193,7 +7239,7 @@ $ac_func();
 
 ; return 0; }
 EOF
-if { (eval echo configure:3197: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
+if { (eval echo configure:7243: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
   rm -rf conftest*
   eval "ac_cv_func_$ac_func=yes"
 else
@@ -3220,12 +7266,12 @@ done
 for ac_func in gettimeofday
 do
 echo $ac_n "checking for $ac_func""... $ac_c" 1>&6
-echo "configure:3224: checking for $ac_func" >&5
+echo "configure:7270: checking for $ac_func" >&5
 if eval "test \"`echo '$''{'ac_cv_func_$ac_func'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
   cat > conftest.$ac_ext <<EOF
-#line 3229 "configure"
+#line 7275 "configure"
 #include "confdefs.h"
 /* System header to define __stub macros and hopefully few prototypes,
     which can conflict with char $ac_func(); below.  */
@@ -3248,7 +7294,7 @@ $ac_func();
 
 ; return 0; }
 EOF
-if { (eval echo configure:3252: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
+if { (eval echo configure:7298: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
   rm -rf conftest*
   eval "ac_cv_func_$ac_func=yes"
 else
@@ -3275,12 +7321,12 @@ done
 for ac_func in ftime
 do
 echo $ac_n "checking for $ac_func""... $ac_c" 1>&6
-echo "configure:3279: checking for $ac_func" >&5
+echo "configure:7325: checking for $ac_func" >&5
 if eval "test \"`echo '$''{'ac_cv_func_$ac_func'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
   cat > conftest.$ac_ext <<EOF
-#line 3284 "configure"
+#line 7330 "configure"
 #include "confdefs.h"
 /* System header to define __stub macros and hopefully few prototypes,
     which can conflict with char $ac_func(); below.  */
@@ -3303,7 +7349,7 @@ $ac_func();
 
 ; return 0; }
 EOF
-if { (eval echo configure:3307: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
+if { (eval echo configure:7353: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
   rm -rf conftest*
   eval "ac_cv_func_$ac_func=yes"
 else
@@ -3330,12 +7376,12 @@ done
 for ac_func in time
 do
 echo $ac_n "checking for $ac_func""... $ac_c" 1>&6
-echo "configure:3334: checking for $ac_func" >&5
+echo "configure:7380: checking for $ac_func" >&5
 if eval "test \"`echo '$''{'ac_cv_func_$ac_func'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
   cat > conftest.$ac_ext <<EOF
-#line 3339 "configure"
+#line 7385 "configure"
 #include "confdefs.h"
 /* System header to define __stub macros and hopefully few prototypes,
     which can conflict with char $ac_func(); below.  */
@@ -3358,7 +7404,7 @@ $ac_func();
 
 ; return 0; }
 EOF
-if { (eval echo configure:3362: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
+if { (eval echo configure:7408: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
   rm -rf conftest*
   eval "ac_cv_func_$ac_func=yes"
 else
@@ -3385,12 +7431,12 @@ done
 for ac_func in localtime
 do
 echo $ac_n "checking for $ac_func""... $ac_c" 1>&6
-echo "configure:3389: checking for $ac_func" >&5
+echo "configure:7435: checking for $ac_func" >&5
 if eval "test \"`echo '$''{'ac_cv_func_$ac_func'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
   cat > conftest.$ac_ext <<EOF
-#line 3394 "configure"
+#line 7440 "configure"
 #include "confdefs.h"
 /* System header to define __stub macros and hopefully few prototypes,
     which can conflict with char $ac_func(); below.  */
@@ -3413,7 +7459,7 @@ $ac_func();
 
 ; return 0; }
 EOF
-if { (eval echo configure:3417: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
+if { (eval echo configure:7463: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
   rm -rf conftest*
   eval "ac_cv_func_$ac_func=yes"
 else
@@ -3440,12 +7486,12 @@ done
 for ac_func in gmtime
 do
 echo $ac_n "checking for $ac_func""... $ac_c" 1>&6
-echo "configure:3444: checking for $ac_func" >&5
+echo "configure:7490: checking for $ac_func" >&5
 if eval "test \"`echo '$''{'ac_cv_func_$ac_func'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
   cat > conftest.$ac_ext <<EOF
-#line 3449 "configure"
+#line 7495 "configure"
 #include "confdefs.h"
 /* System header to define __stub macros and hopefully few prototypes,
     which can conflict with char $ac_func(); below.  */
@@ -3468,7 +7514,7 @@ $ac_func();
 
 ; return 0; }
 EOF
-if { (eval echo configure:3472: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
+if { (eval echo configure:7518: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
   rm -rf conftest*
   eval "ac_cv_func_$ac_func=yes"
 else
@@ -3495,12 +7541,12 @@ done
 for ac_func in mktime
 do
 echo $ac_n "checking for $ac_func""... $ac_c" 1>&6
-echo "configure:3499: checking for $ac_func" >&5
+echo "configure:7545: checking for $ac_func" >&5
 if eval "test \"`echo '$''{'ac_cv_func_$ac_func'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
   cat > conftest.$ac_ext <<EOF
-#line 3504 "configure"
+#line 7550 "configure"
 #include "confdefs.h"
 /* System header to define __stub macros and hopefully few prototypes,
     which can conflict with char $ac_func(); below.  */
@@ -3523,7 +7569,7 @@ $ac_func();
 
 ; return 0; }
 EOF
-if { (eval echo configure:3527: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
+if { (eval echo configure:7573: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
   rm -rf conftest*
   eval "ac_cv_func_$ac_func=yes"
 else
@@ -3550,12 +7596,12 @@ done
 
 
 echo $ac_n "checking whether struct tm is in sys/time.h or time.h""... $ac_c" 1>&6
-echo "configure:3554: checking whether struct tm is in sys/time.h or time.h" >&5
+echo "configure:7600: checking whether struct tm is in sys/time.h or time.h" >&5
 if eval "test \"`echo '$''{'ac_cv_struct_tm'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
   cat > conftest.$ac_ext <<EOF
-#line 3559 "configure"
+#line 7605 "configure"
 #include "confdefs.h"
 #include <sys/types.h>
 #include <time.h>
@@ -3563,7 +7609,7 @@ int main() {
 struct tm *tp; tp->tm_sec;
 ; return 0; }
 EOF
-if { (eval echo configure:3567: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>&5; }; then
+if { (eval echo configure:7613: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>&5; }; then
   rm -rf conftest*
   ac_cv_struct_tm=time.h
 else
@@ -3584,12 +7630,12 @@ EOF
 fi
 
 echo $ac_n "checking for tm_zone in struct tm""... $ac_c" 1>&6
-echo "configure:3588: checking for tm_zone in struct tm" >&5
+echo "configure:7634: checking for tm_zone in struct tm" >&5
 if eval "test \"`echo '$''{'ac_cv_struct_tm_zone'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
   cat > conftest.$ac_ext <<EOF
-#line 3593 "configure"
+#line 7639 "configure"
 #include "confdefs.h"
 #include <sys/types.h>
 #include <$ac_cv_struct_tm>
@@ -3597,7 +7643,7 @@ int main() {
 struct tm tm; tm.tm_zone;
 ; return 0; }
 EOF
-if { (eval echo configure:3601: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>&5; }; then
+if { (eval echo configure:7647: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>&5; }; then
   rm -rf conftest*
   ac_cv_struct_tm_zone=yes
 else
@@ -3617,12 +7663,12 @@ EOF
 
 else
   echo $ac_n "checking for tzname""... $ac_c" 1>&6
-echo "configure:3621: checking for tzname" >&5
+echo "configure:7667: checking for tzname" >&5
 if eval "test \"`echo '$''{'ac_cv_var_tzname'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
   cat > conftest.$ac_ext <<EOF
-#line 3626 "configure"
+#line 7672 "configure"
 #include "confdefs.h"
 #include <time.h>
 #ifndef tzname /* For SGI.  */
@@ -3632,7 +7678,7 @@ int main() {
 atoi(*tzname);
 ; return 0; }
 EOF
-if { (eval echo configure:3636: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
+if { (eval echo configure:7682: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
   rm -rf conftest*
   ac_cv_var_tzname=yes
 else
@@ -3654,12 +7700,12 @@ EOF
 fi
 
 echo $ac_n "checking timezone""... $ac_c" 1>&6
-echo "configure:3658: checking timezone" >&5
+echo "configure:7704: checking timezone" >&5
 if eval "test \"`echo '$''{'fptools_cv_have_timezone'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
   cat > conftest.$ac_ext <<EOF
-#line 3663 "configure"
+#line 7709 "configure"
 #include "confdefs.h"
 #if TIME_WITH_SYS_TIME
 # include <sys/time.h>
@@ -3676,7 +7722,7 @@ int main() {
 return timezone/1;
 ; return 0; }
 EOF
-if { (eval echo configure:3680: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>&5; }; then
+if { (eval echo configure:7726: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>&5; }; then
   rm -rf conftest*
   fptools_cv_have_timezone=yes
 else
@@ -3697,12 +7743,12 @@ EOF
 fi
 
 echo $ac_n "checking altzone""... $ac_c" 1>&6
-echo "configure:3701: checking altzone" >&5
+echo "configure:7747: checking altzone" >&5
 if eval "test \"`echo '$''{'fptools_cv_altzone'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
   cat > conftest.$ac_ext <<EOF
-#line 3706 "configure"
+#line 7752 "configure"
 #include "confdefs.h"
 #if TIME_WITH_SYS_TIME
 # include <sys/time.h>
@@ -3719,7 +7765,7 @@ int main() {
 return altzone;
 ; return 0; }
 EOF
-if { (eval echo configure:3723: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
+if { (eval echo configure:7769: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
   rm -rf conftest*
   fptools_cv_altzone=yes
 else
@@ -3745,19 +7791,19 @@ fi
 # The Ultrix 4.2 mips builtin alloca declared by alloca.h only works
 # for constant arguments.  Useless!
 echo $ac_n "checking for working alloca.h""... $ac_c" 1>&6
-echo "configure:3749: checking for working alloca.h" >&5
+echo "configure:7795: checking for working alloca.h" >&5
 if eval "test \"`echo '$''{'ac_cv_header_alloca_h'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
   cat > conftest.$ac_ext <<EOF
-#line 3754 "configure"
+#line 7800 "configure"
 #include "confdefs.h"
 #include <alloca.h>
 int main() {
 char *p = alloca(2 * sizeof(int));
 ; return 0; }
 EOF
-if { (eval echo configure:3761: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
+if { (eval echo configure:7807: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
   rm -rf conftest*
   ac_cv_header_alloca_h=yes
 else
@@ -3778,12 +7824,12 @@ EOF
 fi
 
 echo $ac_n "checking for alloca""... $ac_c" 1>&6
-echo "configure:3782: checking for alloca" >&5
+echo "configure:7828: checking for alloca" >&5
 if eval "test \"`echo '$''{'ac_cv_func_alloca_works'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
   cat > conftest.$ac_ext <<EOF
-#line 3787 "configure"
+#line 7833 "configure"
 #include "confdefs.h"
 
 #ifdef __GNUC__
@@ -3811,7 +7857,7 @@ int main() {
 char *p = (char *) alloca(1);
 ; return 0; }
 EOF
-if { (eval echo configure:3815: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
+if { (eval echo configure:7861: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
   rm -rf conftest*
   ac_cv_func_alloca_works=yes
 else
@@ -3843,12 +7889,12 @@ EOF
 
 
 echo $ac_n "checking whether alloca needs Cray hooks""... $ac_c" 1>&6
-echo "configure:3847: checking whether alloca needs Cray hooks" >&5
+echo "configure:7893: checking whether alloca needs Cray hooks" >&5
 if eval "test \"`echo '$''{'ac_cv_os_cray'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
   cat > conftest.$ac_ext <<EOF
-#line 3852 "configure"
+#line 7898 "configure"
 #include "confdefs.h"
 #if defined(CRAY) && ! defined(CRAY2)
 webecray
@@ -3873,12 +7919,12 @@ echo "$ac_t""$ac_cv_os_cray" 1>&6
 if test $ac_cv_os_cray = yes; then
 for ac_func in _getb67 GETB67 getb67; do
   echo $ac_n "checking for $ac_func""... $ac_c" 1>&6
-echo "configure:3877: checking for $ac_func" >&5
+echo "configure:7923: checking for $ac_func" >&5
 if eval "test \"`echo '$''{'ac_cv_func_$ac_func'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
   cat > conftest.$ac_ext <<EOF
-#line 3882 "configure"
+#line 7928 "configure"
 #include "confdefs.h"
 /* System header to define __stub macros and hopefully few prototypes,
     which can conflict with char $ac_func(); below.  */
@@ -3901,7 +7947,7 @@ $ac_func();
 
 ; return 0; }
 EOF
-if { (eval echo configure:3905: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
+if { (eval echo configure:7951: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
   rm -rf conftest*
   eval "ac_cv_func_$ac_func=yes"
 else
@@ -3928,7 +7974,7 @@ done
 fi
 
 echo $ac_n "checking stack direction for C alloca""... $ac_c" 1>&6
-echo "configure:3932: checking stack direction for C alloca" >&5
+echo "configure:7978: checking stack direction for C alloca" >&5
 if eval "test \"`echo '$''{'ac_cv_c_stack_direction'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -3936,7 +7982,7 @@ else
   ac_cv_c_stack_direction=0
 else
   cat > conftest.$ac_ext <<EOF
-#line 3940 "configure"
+#line 7986 "configure"
 #include "confdefs.h"
 find_stack_direction ()
 {
@@ -3955,7 +8001,7 @@ main ()
   exit (find_stack_direction() < 0);
 }
 EOF
-if { (eval echo configure:3959: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} && (./conftest; exit) 2>/dev/null
+if { (eval echo configure:8005: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} && (./conftest; exit) 2>/dev/null
 then
   ac_cv_c_stack_direction=1
 else
@@ -3977,12 +8023,12 @@ EOF
 fi
    
 echo $ac_n "checking for _alloca""... $ac_c" 1>&6
-echo "configure:3981: checking for _alloca" >&5
+echo "configure:8027: checking for _alloca" >&5
 if eval "test \"`echo '$''{'ac_cv_c__alloca'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
   cat > conftest.$ac_ext <<EOF
-#line 3986 "configure"
+#line 8032 "configure"
 #include "confdefs.h"
 
 #include <malloc.h>
@@ -3994,7 +8040,7 @@ int main() {
 int i;
 ; return 0; }
 EOF
-if { (eval echo configure:3998: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
+if { (eval echo configure:8044: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
   rm -rf conftest*
   ac_cv_c__alloca=yes
 else
@@ -4018,12 +8064,12 @@ fi
 for ac_func in stime poly
 do
 echo $ac_n "checking for $ac_func""... $ac_c" 1>&6
-echo "configure:4022: checking for $ac_func" >&5
+echo "configure:8068: checking for $ac_func" >&5
 if eval "test \"`echo '$''{'ac_cv_func_$ac_func'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
   cat > conftest.$ac_ext <<EOF
-#line 4027 "configure"
+#line 8073 "configure"
 #include "confdefs.h"
 /* System header to define __stub macros and hopefully few prototypes,
     which can conflict with char $ac_func(); below.  */
@@ -4046,7 +8092,7 @@ $ac_func();
 
 ; return 0; }
 EOF
-if { (eval echo configure:4050: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
+if { (eval echo configure:8096: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
   rm -rf conftest*
   eval "ac_cv_func_$ac_func=yes"
 else
@@ -4074,12 +8120,12 @@ done
 
 
 echo $ac_n "checking for working const""... $ac_c" 1>&6
-echo "configure:4078: checking for working const" >&5
+echo "configure:8124: checking for working const" >&5
 if eval "test \"`echo '$''{'ac_cv_c_const'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
   cat > conftest.$ac_ext <<EOF
-#line 4083 "configure"
+#line 8129 "configure"
 #include "confdefs.h"
 
 int main() {
@@ -4128,7 +8174,7 @@ ccp = (char const *const *) p;
 
 ; return 0; }
 EOF
-if { (eval echo configure:4132: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>&5; }; then
+if { (eval echo configure:8178: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>&5; }; then
   rm -rf conftest*
   ac_cv_c_const=yes
 else
@@ -4148,12 +8194,12 @@ EOF
 
 fi
                echo $ac_n "checking prototypes""... $ac_c" 1>&6
-echo "configure:4152: checking prototypes" >&5
+echo "configure:8198: checking prototypes" >&5
 if eval "test \"`echo '$''{'ac_cv_prototypes'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
   cat > conftest.$ac_ext <<EOF
-#line 4157 "configure"
+#line 8203 "configure"
 #include "confdefs.h"
 
 void foo(int);
@@ -4166,7 +8212,7 @@ int main() {
 int i;
 ; return 0; }
 EOF
-if { (eval echo configure:4170: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>&5; }; then
+if { (eval echo configure:8216: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>&5; }; then
   rm -rf conftest*
   ac_cv_prototypes=yes
 else
@@ -4186,12 +8232,12 @@ EOF
 
 fi
           echo $ac_n "checking for arrays of jmp_bufs""... $ac_c" 1>&6
-echo "configure:4190: checking for arrays of jmp_bufs" >&5
+echo "configure:8236: checking for arrays of jmp_bufs" >&5
 if eval "test \"`echo '$''{'ac_cv_c_jmp_buf_array'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
   cat > conftest.$ac_ext <<EOF
-#line 4195 "configure"
+#line 8241 "configure"
 #include "confdefs.h"
 
 #include <setjmp.h>
@@ -4205,7 +8251,7 @@ int main() {
 int i;
 ; return 0; }
 EOF
-if { (eval echo configure:4209: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>&5; }; then
+if { (eval echo configure:8255: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>&5; }; then
   rm -rf conftest*
   ac_cv_c_jmp_buf_array=yes
 else
@@ -4225,12 +8271,12 @@ EOF
 
 fi
         echo $ac_n "checking labels as values""... $ac_c" 1>&6
-echo "configure:4229: checking labels as values" >&5
+echo "configure:8275: checking labels as values" >&5
 if eval "test \"`echo '$''{'ac_cv_labels_as_values'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
   cat > conftest.$ac_ext <<EOF
-#line 4234 "configure"
+#line 8280 "configure"
 #include "confdefs.h"
 
 int foo(int);
@@ -4246,7 +8292,7 @@ int main() {
 int i;
 ; return 0; }
 EOF
-if { (eval echo configure:4250: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>&5; }; then
+if { (eval echo configure:8296: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>&5; }; then
   rm -rf conftest*
   ac_cv_labels_as_values=yes
 else
@@ -4268,12 +8314,12 @@ fi
     
 
 echo $ac_n "checking whether struct tm is in sys/time.h or time.h""... $ac_c" 1>&6
-echo "configure:4272: checking whether struct tm is in sys/time.h or time.h" >&5
+echo "configure:8318: checking whether struct tm is in sys/time.h or time.h" >&5
 if eval "test \"`echo '$''{'ac_cv_struct_tm'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
   cat > conftest.$ac_ext <<EOF
-#line 4277 "configure"
+#line 8323 "configure"
 #include "confdefs.h"
 #include <sys/types.h>
 #include <time.h>
@@ -4281,7 +8327,7 @@ int main() {
 struct tm *tp; tp->tm_sec;
 ; return 0; }
 EOF
-if { (eval echo configure:4285: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>&5; }; then
+if { (eval echo configure:8331: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>&5; }; then
   rm -rf conftest*
   ac_cv_struct_tm=time.h
 else
@@ -4305,12 +8351,12 @@ fi
 
 
 echo $ac_n "checking return type of signal handlers""... $ac_c" 1>&6
-echo "configure:4309: checking return type of signal handlers" >&5
+echo "configure:8355: checking return type of signal handlers" >&5
 if eval "test \"`echo '$''{'ac_cv_type_signal'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
   cat > conftest.$ac_ext <<EOF
-#line 4314 "configure"
+#line 8360 "configure"
 #include "confdefs.h"
 #include <sys/types.h>
 #include <signal.h>
@@ -4327,7 +8373,7 @@ int main() {
 int i;
 ; return 0; }
 EOF
-if { (eval echo configure:4331: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>&5; }; then
+if { (eval echo configure:8377: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>&5; }; then
   rm -rf conftest*
   ac_cv_type_signal=void
 else
@@ -4354,7 +8400,7 @@ fi
 
 
 echo $ac_n "checking for nlist in -lelf""... $ac_c" 1>&6
-echo "configure:4358: checking for nlist in -lelf" >&5
+echo "configure:8404: checking for nlist in -lelf" >&5
 ac_lib_var=`echo elf'_'nlist | sed 'y%./+-%__p_%'`
 if eval "test \"`echo '$''{'ac_cv_lib_$ac_lib_var'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
@@ -4362,7 +8408,7 @@ else
   ac_save_LIBS="$LIBS"
 LIBS="-lelf  $LIBS"
 cat > conftest.$ac_ext <<EOF
-#line 4366 "configure"
+#line 8412 "configure"
 #include "confdefs.h"
 /* Override any gcc2 internal prototype to avoid an error.  */
 /* We use char because int might match the return type of a gcc2
@@ -4373,7 +8419,7 @@ int main() {
 nlist()
 ; return 0; }
 EOF
-if { (eval echo configure:4377: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
+if { (eval echo configure:8423: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
   rm -rf conftest*
   eval "ac_cv_lib_$ac_lib_var=yes"
 else
@@ -4393,7 +8439,7 @@ else
   echo "$ac_t""no" 1>&6
 fi
 echo $ac_n "checking leading underscore in symbol names""... $ac_c" 1>&6
-echo "configure:4397: checking leading underscore in symbol names" >&5
+echo "configure:8443: checking leading underscore in symbol names" >&5
 if eval "test \"`echo '$''{'fptools_cv_lead_uscore'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -4407,7 +8453,7 @@ if test "$cross_compiling" = yes; then
   fptools_cv_lead_uscore=NO
 else
   cat > conftest.$ac_ext <<EOF
-#line 4411 "configure"
+#line 8457 "configure"
 #include "confdefs.h"
 #ifdef HAVE_NLIST_H
 #include <nlist.h>
@@ -4429,7 +8475,7 @@ char **argv;
     exit(1);
 }
 EOF
-if { (eval echo configure:4433: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} && (./conftest; exit) 2>/dev/null
+if { (eval echo configure:8479: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} && (./conftest; exit) 2>/dev/null
 then
   fptools_cv_lead_uscore=yes
 else
@@ -4597,7 +8643,7 @@ fi
 
 if test "$with_readline" = yes; then
     echo $ac_n "checking for tputs in -lncurses""... $ac_c" 1>&6
-echo "configure:4601: checking for tputs in -lncurses" >&5
+echo "configure:8647: checking for tputs in -lncurses" >&5
 ac_lib_var=`echo ncurses'_'tputs | sed 'y%./+-%__p_%'`
 if eval "test \"`echo '$''{'ac_cv_lib_$ac_lib_var'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
@@ -4605,7 +8651,7 @@ else
   ac_save_LIBS="$LIBS"
 LIBS="-lncurses  $LIBS"
 cat > conftest.$ac_ext <<EOF
-#line 4609 "configure"
+#line 8655 "configure"
 #include "confdefs.h"
 /* Override any gcc2 internal prototype to avoid an error.  */
 /* We use char because int might match the return type of a gcc2
@@ -4616,7 +8662,7 @@ int main() {
 tputs()
 ; return 0; }
 EOF
-if { (eval echo configure:4620: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
+if { (eval echo configure:8666: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
   rm -rf conftest*
   eval "ac_cv_lib_$ac_lib_var=yes"
 else
@@ -4635,7 +8681,7 @@ if eval "test \"`echo '$ac_cv_lib_'$ac_lib_var`\" = yes"; then
 else
   echo "$ac_t""no" 1>&6
 echo $ac_n "checking for tputs in -ltermcap""... $ac_c" 1>&6
-echo "configure:4639: checking for tputs in -ltermcap" >&5
+echo "configure:8685: checking for tputs in -ltermcap" >&5
 ac_lib_var=`echo termcap'_'tputs | sed 'y%./+-%__p_%'`
 if eval "test \"`echo '$''{'ac_cv_lib_$ac_lib_var'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
@@ -4643,7 +8689,7 @@ else
   ac_save_LIBS="$LIBS"
 LIBS="-ltermcap  $LIBS"
 cat > conftest.$ac_ext <<EOF
-#line 4647 "configure"
+#line 8693 "configure"
 #include "confdefs.h"
 /* Override any gcc2 internal prototype to avoid an error.  */
 /* We use char because int might match the return type of a gcc2
@@ -4654,7 +8700,7 @@ int main() {
 tputs()
 ; return 0; }
 EOF
-if { (eval echo configure:4658: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
+if { (eval echo configure:8704: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
   rm -rf conftest*
   eval "ac_cv_lib_$ac_lib_var=yes"
 else
@@ -4673,7 +8719,7 @@ if eval "test \"`echo '$ac_cv_lib_'$ac_lib_var`\" = yes"; then
 else
   echo "$ac_t""no" 1>&6
 echo $ac_n "checking for tputs in -lcurses""... $ac_c" 1>&6
-echo "configure:4677: checking for tputs in -lcurses" >&5
+echo "configure:8723: checking for tputs in -lcurses" >&5
 ac_lib_var=`echo curses'_'tputs | sed 'y%./+-%__p_%'`
 if eval "test \"`echo '$''{'ac_cv_lib_$ac_lib_var'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
@@ -4681,7 +8727,7 @@ else
   ac_save_LIBS="$LIBS"
 LIBS="-lcurses  $LIBS"
 cat > conftest.$ac_ext <<EOF
-#line 4685 "configure"
+#line 8731 "configure"
 #include "confdefs.h"
 /* Override any gcc2 internal prototype to avoid an error.  */
 /* We use char because int might match the return type of a gcc2
@@ -4692,7 +8738,7 @@ int main() {
 tputs()
 ; return 0; }
 EOF
-if { (eval echo configure:4696: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
+if { (eval echo configure:8742: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
   rm -rf conftest*
   eval "ac_cv_lib_$ac_lib_var=yes"
 else
@@ -4720,7 +8766,7 @@ fi
     if test $HaveLibTermcap = YES ; then
        LIBS="-l$LibTermcap $LIBS"
        echo $ac_n "checking for readline in -lreadline""... $ac_c" 1>&6
-echo "configure:4724: checking for readline in -lreadline" >&5
+echo "configure:8770: checking for readline in -lreadline" >&5
 ac_lib_var=`echo readline'_'readline | sed 'y%./+-%__p_%'`
 if eval "test \"`echo '$''{'ac_cv_lib_$ac_lib_var'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
@@ -4728,7 +8774,7 @@ else
   ac_save_LIBS="$LIBS"
 LIBS="-lreadline  $LIBS"
 cat > conftest.$ac_ext <<EOF
-#line 4732 "configure"
+#line 8778 "configure"
 #include "confdefs.h"
 /* Override any gcc2 internal prototype to avoid an error.  */
 /* We use char because int might match the return type of a gcc2
@@ -4739,7 +8785,7 @@ int main() {
 readline()
 ; return 0; }
 EOF
-if { (eval echo configure:4743: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
+if { (eval echo configure:8789: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
   rm -rf conftest*
   eval "ac_cv_lib_$ac_lib_var=yes"
 else
@@ -4764,7 +8810,7 @@ fi
     
     if test x"$HaveLibReadline" != xYES ; then
 	    echo $ac_n "checking for readline in -leditline""... $ac_c" 1>&6
-echo "configure:4768: checking for readline in -leditline" >&5
+echo "configure:8814: checking for readline in -leditline" >&5
 ac_lib_var=`echo editline'_'readline | sed 'y%./+-%__p_%'`
 if eval "test \"`echo '$''{'ac_cv_lib_$ac_lib_var'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
@@ -4772,7 +8818,7 @@ else
   ac_save_LIBS="$LIBS"
 LIBS="-leditline  $LIBS"
 cat > conftest.$ac_ext <<EOF
-#line 4776 "configure"
+#line 8822 "configure"
 #include "confdefs.h"
 /* Override any gcc2 internal prototype to avoid an error.  */
 /* We use char because int might match the return type of a gcc2
@@ -4783,7 +8829,7 @@ int main() {
 readline()
 ; return 0; }
 EOF
-if { (eval echo configure:4787: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
+if { (eval echo configure:8833: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
   rm -rf conftest*
   eval "ac_cv_lib_$ac_lib_var=yes"
 else
@@ -4878,7 +8924,7 @@ fi
 
 
 echo $ac_n "checking size of int""... $ac_c" 1>&6
-echo "configure:4882: checking size of int" >&5
+echo "configure:8928: checking size of int" >&5
 if eval "test \"`echo '$''{'ac_cv_sizeof_int'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -4886,7 +8932,7 @@ else
   ac_cv_sizeof_int=4
 else
   cat > conftest.$ac_ext <<EOF
-#line 4890 "configure"
+#line 8936 "configure"
 #include "confdefs.h"
 #include <stdio.h>
 #include <sys/types.h>
@@ -4898,7 +8944,7 @@ main()
   exit(0);
 }
 EOF
-if { (eval echo configure:4902: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} && (./conftest; exit) 2>/dev/null
+if { (eval echo configure:8948: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} && (./conftest; exit) 2>/dev/null
 then
   ac_cv_sizeof_int=`cat conftestval`
 else
@@ -4918,7 +8964,7 @@ EOF
 
 
 echo $ac_n "checking size of float""... $ac_c" 1>&6
-echo "configure:4922: checking size of float" >&5
+echo "configure:8968: checking size of float" >&5
 if eval "test \"`echo '$''{'ac_cv_sizeof_float'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -4926,7 +8972,7 @@ else
   ac_cv_sizeof_float=4
 else
   cat > conftest.$ac_ext <<EOF
-#line 4930 "configure"
+#line 8976 "configure"
 #include "confdefs.h"
 #include <stdio.h>
 #include <sys/types.h>
@@ -4938,7 +8984,7 @@ main()
   exit(0);
 }
 EOF
-if { (eval echo configure:4942: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} && (./conftest; exit) 2>/dev/null
+if { (eval echo configure:8988: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} && (./conftest; exit) 2>/dev/null
 then
   ac_cv_sizeof_float=`cat conftestval`
 else
@@ -4958,7 +9004,7 @@ EOF
 
 
 echo $ac_n "checking size of double""... $ac_c" 1>&6
-echo "configure:4962: checking size of double" >&5
+echo "configure:9008: checking size of double" >&5
 if eval "test \"`echo '$''{'ac_cv_sizeof_double'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -4966,7 +9012,7 @@ else
   ac_cv_sizeof_double=8
 else
   cat > conftest.$ac_ext <<EOF
-#line 4970 "configure"
+#line 9016 "configure"
 #include "confdefs.h"
 #include <stdio.h>
 #include <sys/types.h>
@@ -4978,7 +9024,7 @@ main()
   exit(0);
 }
 EOF
-if { (eval echo configure:4982: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} && (./conftest; exit) 2>/dev/null
+if { (eval echo configure:9028: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} && (./conftest; exit) 2>/dev/null
 then
   ac_cv_sizeof_double=`cat conftestval`
 else
@@ -4998,7 +9044,7 @@ EOF
 
 
 echo $ac_n "checking size of int*""... $ac_c" 1>&6
-echo "configure:5002: checking size of int*" >&5
+echo "configure:9048: checking size of int*" >&5
 if eval "test \"`echo '$''{'ac_cv_sizeof_intp'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -5006,7 +9052,7 @@ else
   ac_cv_sizeof_intp=4
 else
   cat > conftest.$ac_ext <<EOF
-#line 5010 "configure"
+#line 9056 "configure"
 #include "confdefs.h"
 #include <stdio.h>
 #include <sys/types.h>
@@ -5018,7 +9064,7 @@ main()
   exit(0);
 }
 EOF
-if { (eval echo configure:5022: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} && (./conftest; exit) 2>/dev/null
+if { (eval echo configure:9068: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} && (./conftest; exit) 2>/dev/null
 then
   ac_cv_sizeof_intp=`cat conftestval`
 else
