@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.103 $
- * $Date: 2002/10/21 17:04:31 $
+ * $Revision: 1.104 $
+ * $Date: 2002/10/22 13:53:08 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1405,7 +1405,7 @@ Script scno; {
     for (i=scno; i<namesUpto; ++i)
 	if (scriptName[i])
 	    free(scriptName[i]);
-    dropScriptsFrom(scno); /* don't count prelude as script  */
+    dropScriptsFrom(scno-1); /* don't count prelude as script  */
     namesUpto = scno;
     if (numScripts>namesUpto)
 	numScripts = scno;
