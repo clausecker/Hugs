@@ -44,7 +44,7 @@
  * Typical value: "gcc -shared"
  * Must evaluate to a literal C string.
  */
-#define MKDLL_CMD "cl /LD"
+#define MKDLL_CMD "cl /LD /ML /nologo"
 
 /* Define if using alloca.c.  */
 #define C_ALLOCA 1
@@ -182,6 +182,9 @@
 /* Define if time.h or sys/time.h define the timezone variable.  */
 #define HAVE_TIMEZONE 1
  
+/* The number of bytes in a char.  */
+#define SIZEOF_CHAR 1
+
 /* The number of bytes in a double.  */
 #define SIZEOF_DOUBLE 8
 
@@ -193,6 +196,33 @@
 
 /* The number of bytes in a int*.  */
 #define SIZEOF_INTP 4
+
+/* The number of bytes in a long.  */
+#define SIZEOF_LONG 4
+
+/* The number of bytes in a long long.  */
+#define SIZEOF_LONG_LONG 8
+
+/* The number of bytes in a short.  */
+#define SIZEOF_SHORT 2
+
+/* The number of bytes in a unsigned char.  */
+#define SIZEOF_UNSIGNED_CHAR 1
+
+/* The number of bytes in a unsigned int.  */
+#define SIZEOF_UNSIGNED_INT 4
+
+/* The number of bytes in a unsigned long.  */
+#define SIZEOF_UNSIGNED_LONG 4
+
+/* The number of bytes in a unsigned long long.  */
+#define SIZEOF_UNSIGNED_LONG_LONG 8
+
+/* The number of bytes in a unsigned short.  */
+#define SIZEOF_UNSIGNED_SHORT 2
+
+/* The number of bytes in a void *.  */
+#define SIZEOF_VOID_P 4
 
 /* Define if you have the PBHSetVolSync function.  */
 /* #undef HAVE_PBHSETVOLSYNC */
