@@ -30,7 +30,8 @@ make -C docs/users_guide html
 %install
 rm -rf $RPM_BUILD_ROOT
 
-make -C src DESTDIR=${RPM_BUILD_ROOT} install_man
+make -C src DESTDIR=${RPM_BUILD_ROOT} install
+make -C docs DESTDIR=${RPM_BUILD_ROOT} install_man
 
 %files
 %defattr(-,root,root)
