@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.105 $
- * $Date: 2002/10/03 18:15:48 $
+ * $Revision: 1.106 $
+ * $Date: 2002/10/08 15:19:58 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -243,7 +243,6 @@ static Cell   local depRecord		Args((Int,Cell));
 #endif
 
 #if MUDO
-static Void   local mdoStart            Args((Void));
 static Void   local mdoLoad             Args((Void));
 static Void   local mdoUsed             Args((Void));
 static List   local mdoGetPatVarsLet	Args((Int,List,List));
@@ -6887,10 +6886,6 @@ List qs; {
  */
 static Bool mdoLibsNeeded = FALSE;
 
-static Void local mdoStart() {
-    mdoLibsNeeded = FALSE;
-}
-
 static Void local mdoUsed() {
     mdoLibsNeeded = TRUE;
 }
@@ -6910,14 +6905,20 @@ static Void local mdoLoad() {
 	Cell monadRecName = mkQCon(alias,findText(fixClass));
 	Cell mfixName     = mkQCon(alias,findText("mfix"));
 
+	/* Reset this flag before signalling errors, so we won't inadvertently
+	 * loop.
+	 */
+	mdoLibsNeeded = FALSE; 
+
 	if( !(classMonadRec = findQualClass(monadRecName)) &&
-	    !(classMonadRec = findClass(findText(fixClass))) ) {
+	    !(classMonadRec = findClass(qtextOf(monadRecName))) ) {
 	    ERRMSG(0) "%s class not defined", fixClass ETHEN
 		ERRTEXT   "\n*** Possible cause: \"%s\" library not loaded", fixLib
 		EEND;
 	}
 	
-	if(!(nameMFix = findQualName(mfixName))) {
+	if( !(nameMFix = findQualName(mfixName)) &&
+	    !(nameMFix = findName(qtextOf(mfixName))) ) {
 	    ERRMSG(0) "%s class does not define the mfix method", fixClass
 		EEND;
 	}
@@ -7916,10 +7917,6 @@ Void checkDefns() {			/* Top level static analysis	   */
 
     setCurrModule(thisModule);
 
-#if MUDO
-    mdoStart();
-#endif
-
     /* Resolve module references */
     mapProc(checkQualImport,  module(thisModule).modAliases);
     mapProc(checkUnqualImport,unqualImports);
@@ -8025,17 +8022,13 @@ Void checkDefns() {			/* Top level static analysis	   */
     /* ToDo: evalDefaults should match current evaluation module */
     evalDefaults = defaultDefns;	/* Set defaults for evaluator	   */
 
-#if MUDO
-    mdoLoad();
-#endif
-
     /* A module's 'modImports' list is only used to construct a precise export
      * list in the presence of module re-exportation. We've now finished
      * computing the export list, so 'modImports' can now be stubbed out.
      *
      */
-    module(thisModule).modImports = NIL;
     staticAnalysis(RESET);
+    module(thisModule).modImports = NIL;
 }
 
 static Void local addRSsigdecls(pr)	/* add sigdecls from TYPE ... IN ..*/
@@ -8208,7 +8201,11 @@ String wh; {
 Void staticAnalysis(what)
 Int what; {
     switch (what) {
-	case RESET   : cfunSfuns    = NIL;
+	case RESET   : 
+#if MUDO
+	               mdoLoad();
+#endif
+	               cfunSfuns    = NIL;
 		       daSccs	    = NIL;
 		       patVars	    = NIL;
 		       bounds	    = NIL;
