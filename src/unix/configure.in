@@ -411,6 +411,7 @@ AC_ARG_ENABLE(ffi,		[  --enable-ffi              include modules that use the FF
 AC_SUBST(FPTOOLS)
 AC_SUBST(INSTALL_FFI)
 
+DEFAULT_FPTOOLS=../../fptools
 if test "x$FPTOOLS" != x ; then
   AC_MSG_CHECKING([directory $FPTOOLS])
   if test -d "$FPTOOLS/hslibs" && test -d "$FPTOOLS/libraries"
@@ -420,6 +421,9 @@ if test "x$FPTOOLS" != x ; then
 The argument to --with-fptools must be a directory containing copies of
 hslibs and libraries from the Haskell CVS repository.])
   fi
+elif test -d "$DEFAULT_FPTOOLS/hslibs" && test -d "$DEFAULT_FPTOOLS/libraries"
+then
+  FPTOOLS=$DEFAULT_FPTOOLS
 fi
 
 dnl Disabled for now because the plugin-code can't handle the change.
