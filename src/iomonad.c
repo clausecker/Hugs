@@ -18,8 +18,8 @@
  * in the distribution for details.
  *
  * $RCSfile: iomonad.c,v $
- * $Revision: 1.3 $
- * $Date: 1999/08/12 17:45:56 $
+ * $Revision: 1.4 $
+ * $Date: 1999/08/13 00:13:06 $
  * ------------------------------------------------------------------------*/
  
 Name nameIORun;			        /* run IO code                     */
@@ -160,6 +160,7 @@ PROTO_PRIM(primFinalizerWaiting);
 
 #if STABLE_NAMES
 PROTO_PRIM(primMakeSN);
+PROTO_PRIM(primDerefSN);
 PROTO_PRIM(primHashSN);
 #endif
 
@@ -266,6 +267,7 @@ static struct primitive iomonadPrimTable[] = {
 
 #if STABLE_NAMES
   {"makeStableName",	3, primMakeSN},
+  {"deRefStableName",	1, primDerefSN},
   {"hashStableName",	1, primHashSN},
 #endif
 
@@ -997,6 +999,11 @@ primFun(primEqFO) {			/* ForeignObj -> ForeignObj -> Bool*/
 
 primFun(primMakeSN) {			/* a -> IO (StableName a)	   */
     IOReturn(ap(STABLENAME,IOArg(1)));
+}
+
+primFun(primDerefSN) {			/* StableName a -> a		   */
+    eval(primArg(1));
+    updateRoot(snd(whnfHead));
 }
 
 primFun(primHashSN) {			/* StableName a -> Int		   */
