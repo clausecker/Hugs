@@ -56,4 +56,5 @@ make -C docs DESTDIR=${RPM_BUILD_ROOT} install_man
 %{_prefix}/lib/hugs/include
 %{_prefix}/lib/hugs/libraries
 %{_prefix}/lib/hugs/oldlib
+%{_prefix}/lib/hugs/packages
 %{_prefix}/lib/hugs/tools

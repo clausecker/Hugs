@@ -135,30 +135,44 @@ cd `pwd`
 " >$BuildFFI
 chmod 755 $BuildFFI
 
-packages='base haskell98 haskell-src mtl network parsec QuickCheck fgl'
+# Distinguish two classes of package:
+# core_packages - released with Hugs and not independently updated
+#	(these go in a unified hierarchy under {Hugs}/libraries)
+# extra_packages - packaged with Hugs, but may also be independently updated
+#	(each of these goes in a separate hierarchy under {Hugs}/packages)
+
+core_packages='base haskell98 haskell-src network parsec QuickCheck'
+extra_packages='mtl fgl'
 
 #
 # ToDo: fix -- cygwin supports 'unix' only when no -mno-cygwin is given to gcc
 #
 case `uname -a` in
 CYGWIN*|MINGW32*) ;;
-*)	packages="$packages unix";;
+*)	core_packages="$core_packages unix";;
 esac
 
 # crude check whether HOpenGL was enabled in configure
 if grep '^#define HTYPE_GLBOOLEAN ' src/config.h >/dev/null
-then	packages="$packages OpenGL GLUT"
+then	extra_packages="$extra_packages OpenGL GLUT"
 fi
 
 # if grep '^#define X_DISPLAY_MISSING' src/config.h >/dev/null
 # then	:
-# else	packages="$packages X11 HGL"
+# else	extra_packages="$extra_packages X11 HGL"
 # fi
 
-for package in $packages
+for package in $core_packages
 do
 	sh $HugsPackage -o $BuildFFI $src/$package
 	copy_examples $src/$package $HUGSDIR/demos/$package
+done
+
+for package in $extra_packages
+do
+	mkdir -p $HUGSDIR/packages/$package
+	sh $HugsPackage -o $BuildFFI $src/$package $HUGSDIR/packages/$package
+	copy_examples $src/$package $HUGSDIR/packages/$package/examples
 done
 
 # Compatibility with lib/exts:

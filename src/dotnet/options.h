@@ -9,8 +9,8 @@
  * included in the distribution.
  *
  * $RCSfile: options.h,v $
- * $Revision: 1.3 $
- * $Date: 2003/07/16 11:06:28 $
+ * $Revision: 1.4 $
+ * $Date: 2004/02/16 11:45:18 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -29,7 +29,7 @@
  * for HUGSFLAGS in the registry (Win32 only).  In all cases, use a 
  * string of the form -P"...".  
  */
-#define HUGSPATH ".;{Hugs}\\libraries:{Hugs}\\oldlib:{Hugs}\\dotnet\\lib:{Hugs}\\lib\\win32"
+#define HUGSPATH ".;{Hugs}\\libraries;{Hugs}\\packages\\*;{Hugs}\\oldlib;{Hugs}\\dotnet\\lib;{Hugs}\\lib\\win32"
 
 /* The list of suffixes used by Haskell source files, separated either
  * by colons (Unix) or semicolons (Macintosh, Windows, DOS).
