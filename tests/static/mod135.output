@@ -1,0 +1,2 @@
+ERROR "static/mod135.hs" - Unknown module "List" exported from module "M"
+Hugs:[Leaving Hugs]
