@@ -4,6 +4,7 @@ module TestRead where
 
 import Ratio(Ratio,Rational,(%))
 import List(zip4,zip5,zip6,zip7)
+import Char(isLatin1)
 
 -- test that expected equality holds
 tst :: (Read a, Show a, Eq a) => a -> Bool
@@ -19,7 +20,7 @@ diff x = read (show x) - x
 
 test1 = tst ()
 test2 = all tst [False,True]
-test3 = all tst [minBound::Char ..]
+test3 = all tst $ takeWhile isLatin1 [minBound::Char ..]
 test4 = all tst [Nothing, Just (Just True)]
 test5 = all tst [Left True, Right (Just True)]
 test6 = all tst [LT .. GT]

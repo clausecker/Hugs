@@ -2,6 +2,8 @@
 
 module TestEnum where
 
+import Char(isLatin1)
+
 -- Tests for derived instances
 
 data T = C1 | C2 | C3 | C4 | C5 | C6 | C7 deriving (Eq, Ord, Enum, Show)
@@ -26,13 +28,13 @@ test14 = show $ pred C1 -- should fail
 
 -- Tests for built in Enum instances
 
-test20 = show $ ['a' ..]
+test20 = show $ takeWhile isLatin1 $ ['a' ..]
 test21 = show $ ['a' ..'z']
-test22 = show $ ['a', 'd' ..]
+test22 = show $ takeWhile isLatin1 $ ['a', 'd' ..]
 test23 = show $ ['a', 'd' .. 'z']
 test24 = show $ ['z','y'..'a']
-test25 = show $ map fromEnum ['a' ..]
-test26 = show $ map fromEnum ['a', 'd' ..]
+test25 = show $ map fromEnum $ takeWhile isLatin1 ['a' ..]
+test26 = show $ map fromEnum $ takeWhile isLatin1 ['a', 'd' ..]
 test27 = show $ map fromEnum ['a'..'z']
 test28 = show (map toEnum [fromEnum 'a'..fromEnum 'z'] :: [Char])
 
