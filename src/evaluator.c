@@ -52,7 +52,8 @@ Void startEvaluator(Void)
  * ------------------------------------------------------------------------*/
 Void stopEvaluator() {
   /* Let go of dynamic storage */  
-  if (hugsPath)  free(hugsPath);
+  if (hugsPath)     free(hugsPath);
+  if (hugsSuffixes) free(hugsSuffixes);
 }
 
 Void evaluator(m)
