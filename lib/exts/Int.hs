@@ -25,13 +25,6 @@ import Bits
 -- The "official" coercion functions
 -----------------------------------------------------------------------------
 
-int8ToInt  :: Int8  -> Int
-intToInt8  :: Int   -> Int8
-int16ToInt :: Int16 -> Int
-intToInt16 :: Int   -> Int16
-int32ToInt :: Int32 -> Int
-intToInt32 :: Int   -> Int32
-
 -- And some non-exported ones
 
 int8ToInt16  :: Int8  -> Int16
@@ -41,22 +34,19 @@ int16ToInt32 :: Int16 -> Int32
 int32ToInt8  :: Int32 -> Int8
 int32ToInt16 :: Int32 -> Int16
 
-int8ToInt16  = I16 . int8ToInt
-int8ToInt32  = I32 . int8ToInt
-int16ToInt8  = I8  . int16ToInt
-int16ToInt32 = I32 . int16ToInt
-int32ToInt8  = I8  . int32ToInt
-int32ToInt16 = I16 . int32ToInt
+int8ToInt16  = intToInt16 . int8ToInt
+int8ToInt32  = intToInt32 . int8ToInt
+int16ToInt8  = intToInt8  . int16ToInt
+int16ToInt32 = intToInt32 . int16ToInt
+int32ToInt8  = intToInt8  . int32ToInt
+int32ToInt16 = intToInt16 . int32ToInt
 
 -----------------------------------------------------------------------------
 -- Int8
 -----------------------------------------------------------------------------
 
-newtype Int8  = I8 Int
-
-int8ToInt (I8 x) = if x' <= 0x7f then x' else x' - 0x100
- where x' = x `primAnd` 0xff
-intToInt8 = I8
+primitive int8ToInt "primInt8ToInt" :: Int8  -> Int
+primitive intToInt8 "primIntToInt8" :: Int -> Int8
 
 instance Eq  Int8     where (==)    = binop (==)
 instance Ord Int8     where compare = binop compare
@@ -130,11 +120,8 @@ instance Bits Int8 where
 -- Int16
 -----------------------------------------------------------------------------
 
-newtype Int16  = I16 Int
-
-int16ToInt (I16 x) = if x' <= 0x7fff then x' else x' - 0x10000
- where x' = x `primAnd` 0xffff
-intToInt16 = I16
+primitive int16ToInt "primInt16ToInt" :: Int16 -> Int
+primitive intToInt16 "primIntToInt16" :: Int -> Int16
 
 instance Eq  Int16     where (==)    = binop (==)
 instance Ord Int16     where compare = binop compare

@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: builtin.c,v $
- * $Revision: 1.21 $
- * $Date: 2002/04/17 15:22:55 $
+ * $Revision: 1.22 $
+ * $Date: 2002/05/18 16:22:11 $
  * ------------------------------------------------------------------------*/
 
 /* We include math.h before prelude.h because SunOS 4's cpp incorrectly
@@ -581,8 +581,8 @@ PROTO_PRIM(primTestInt);
 
 PROTO_PRIM(primCharToInt);
 PROTO_PRIM(primIntToChar);
-PROTO_PRIM(primWordToInt);
-PROTO_PRIM(primIntToWord);
+PROTO_PRIM(primWord32ToInt);
+PROTO_PRIM(primIntToWord32);
 PROTO_PRIM(primIntToFloat);
 PROTO_PRIM(primDummyCvt);
 
@@ -609,6 +609,24 @@ PROTO_PRIM(primShiftWord);
 PROTO_PRIM(primRotateWord);
 PROTO_PRIM(primBitWord);
 PROTO_PRIM(primTestWord);
+
+PROTO_PRIM(primItoI8);
+PROTO_PRIM(primItoI16);
+PROTO_PRIM(primItoI32);
+PROTO_PRIM(primItoI64);
+
+PROTO_PRIM(primI8toI);
+PROTO_PRIM(primI16toI);
+PROTO_PRIM(primI32toI);
+PROTO_PRIM(primI64toI);
+
+PROTO_PRIM(primW32toW8);
+PROTO_PRIM(primW32toW16);
+PROTO_PRIM(primW32toW64);
+
+PROTO_PRIM(primW8toW32);
+PROTO_PRIM(primW16toW32);
+PROTO_PRIM(primW64toW32);
 #endif
 
 PROTO_PRIM(primPlusFloat);
@@ -743,6 +761,24 @@ static struct primitive builtinPrimTable[] = {
   {"primRotateWord",    3, primRotateWord},
   {"primBitWord",       1, primBitWord},
   {"primTestWord",      2, primTestWord},
+
+  {"primIntToInt8",     1, primItoI8},
+  {"primIntToInt16",    1, primItoI16},
+  {"primIntToInt32",    1, primItoI32},
+  {"primIntToInt64",    2, primItoI64},
+
+  {"primInt8ToInt",     1, primI8toI},
+  {"primInt16ToInt",    1, primI16toI},
+  {"primInt32ToInt",    1, primI32toI},
+  {"primInt64ToInt",    1, primI64toI},
+
+  {"primWord32ToWord8", 1, primW32toW8},
+  {"primWord32ToWord16",1, primW32toW16},
+  {"primWord32ToWord64",2, primW32toW64},
+                        
+  {"primWord8ToWord32", 1, primW8toW32},
+  {"primWord16ToWord32",1, primW16toW32},
+  {"primWord64ToWord32",1, primW64toW32},
 #endif
 
 #if !BIGNUMS                            /* Implement Integer as Int        */
@@ -809,8 +845,8 @@ static struct primitive builtinPrimTable[] = {
 
   {"primIntToChar",     1, primIntToChar},
   {"primCharToInt",     1, primCharToInt},
-  {"intToWord",         1, primIntToWord},
-  {"wordToInt",         1, primWordToInt},
+  {"intToWord32",       1, primIntToWord32},
+  {"word32ToInt",       1, primWord32ToInt},
   {"primIntToFloat",    1, primIntToFloat},
   {"primIntToDouble",   1, primIntToFloat},     /* Currently Float */
   {"doubleToFloat",     1, primDummyCvt},       /* dummy           */
@@ -1278,6 +1314,51 @@ primFun(primRotateWord) {
 	WordResult((x >> (-y)) | (x << (z + y)));
     }
 }
+
+Int2Int(primItoI8,  x&0xff)
+Int2Int(primItoI16, x&0xffff)
+Int2Int(primItoI32, x&0xffffffff)
+
+Int2Int(primI8toI, x)
+Int2Int(primI16toI,x)
+Int2Int(primI32toI,x)
+
+Word2Word(primW32toW8 , x&0xff);
+Word2Word(primW32toW16, x&0xffff);
+
+Word2Word(primW8toW32 , x);
+Word2Word(primW16toW32, x);
+
+primFun(primI64toI) {
+    Int x, y;
+    eval(primArg(1)); 
+    x = intOf(fst(snd(whnfHead)));
+    y = intOf(snd(snd(whnfHead)));
+    IntIntResult(x,y);
+}
+
+primFun(primItoI64) {
+    Int x, y;
+    IntArg(x,2);
+    IntArg(y,1);
+    updateRoot(pair(I64CELL,pair(x,y)));
+}
+
+primFun(primW64toW32) {
+    Unsigned x, y;
+    eval(primArg(1)); 
+    x = intOf(fst(snd(whnfHead)));
+    y = intOf(snd(snd(whnfHead)));
+    WordWordResult(x,y);
+}
+
+primFun(primW32toW64) {
+    Unsigned x, y;
+    WordArg(x,2);
+    WordArg(y,1);
+    updateRoot(pair(I64CELL,pair(x,y)));
+}
+
 #endif /* WORD_OPS */
 
 /* --------------------------------------------------------------------------
@@ -1306,13 +1387,13 @@ primFun(primIntToChar) {               /* Integer to character primitive   */
     CharResult(i);
 }
 
-primFun(primWordToInt) {               /* Word to integer primitive        */
+primFun(primWord32ToInt) {             /* Word to integer primitive        */
     Unsigned x;
     WordArg(x,1);
     IntResult(x);
 }
 
-primFun(primIntToWord) {               /* Integer to word primitive        */
+primFun(primIntToWord32) {             /* Integer to word primitive        */
     Int i;
     IntArg(i,1);
     WordResult(i);

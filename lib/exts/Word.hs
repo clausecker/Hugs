@@ -26,11 +26,6 @@ import Numeric ( readDec, showInt )
 -- The "official" coercion functions
 -----------------------------------------------------------------------------
 
-word8ToWord32  :: Word8  -> Word32
-word32ToWord8  :: Word32 -> Word8
-word16ToWord32 :: Word16 -> Word32
-word32ToWord16 :: Word32 -> Word16
-
 word8ToInt   :: Word8  -> Int
 intToWord8   :: Int    -> Word8
 word16ToInt  :: Word16 -> Int
@@ -41,17 +36,15 @@ intToWord8  = word32ToWord8  . intToWord32
 word16ToInt = word32ToInt    . word16ToWord32
 intToWord16 = word32ToWord16 . intToWord32
 
-primitive intToWord32 "intToWord" :: Int    -> Word32
-primitive word32ToInt "wordToInt" :: Word32 -> Int
+primitive intToWord32 "intToWord32" :: Int    -> Word32
+primitive word32ToInt "word32ToInt" :: Word32 -> Int
 
 -----------------------------------------------------------------------------
 -- Word8
 -----------------------------------------------------------------------------
 
-newtype Word8  = W8 Word32
-
-word8ToWord32 (W8 x) = x .&. 0xff
-word32ToWord8 = W8
+primitive word8ToWord32 "primWord8ToWord32" :: Word8  -> Word32
+primitive word32ToWord8 "primWord32ToWord8" :: Word32 -> Word8
 
 instance Eq  Word8     where (==)    = binop (==)
 instance Ord Word8     where compare = binop compare
@@ -124,10 +117,8 @@ instance Bits Word8 where
 -- Word16
 -----------------------------------------------------------------------------
 
-newtype Word16 = W16 Word32
-
-word16ToWord32 (W16 x) = x .&. 0xffff
-word32ToWord16 = W16
+primitive word16ToWord32 "primWord16ToWord32" :: Word16 -> Word32
+primitive word32ToWord16 "primWord32ToWord16" :: Word32 -> Word16
 
 instance Eq  Word16     where (==)    = binop (==)
 instance Ord Word16     where compare = binop compare
@@ -199,8 +190,6 @@ instance Bits Word16 where
 -----------------------------------------------------------------------------
 -- Word32
 -----------------------------------------------------------------------------
-
-data Word32     -- builtin datatype of 32 bit naturals
 
 instance Eq  Word32     where (==)    = primEqWord
 instance Ord Word32     where compare = primCmpWord

@@ -60,7 +60,11 @@ module Prelude (
 --  module Ratio,
     Ratio, Rational, (%), numerator, denominator, approxRational,
 --  Non-standard exports
-    IO(..), IOResult(..), primExitWith, Addr, Word, StablePtr, ForeignObj,
+    IO(..), IOResult(..), primExitWith, 
+    FunPtr, Ptr, Addr,
+    Word, StablePtr, ForeignObj,
+    Int8, Int16, Int32, Int64,
+    Word8, Word16, Word32, Word64,
     basicIORun, blockIO, IOFinished(..),
     threadToIOResult,
     HugsException, catchHugsException, primThrowException,
@@ -1702,8 +1706,18 @@ instance Monad IO where
 -- Hooks for primitives: -----------------------------------------------------
 -- Do not mess with these!
 
-data Addr     -- builtin datatype of C pointers
-data Word     -- builtin datatype of unsigned ints
+data FunPtr a -- builtin datatype of C function pointers
+data Ptr a    -- builtin datatype of C pointers
+data Addr     -- builtin datatype of C pointers (deprecated)
+data Word     -- builtin datatype of unsigned ints (deprecated)
+data Int8
+data Int16
+data Int32
+data Int64
+data Word8
+data Word16
+data Word32
+data Word64
 data ForeignObj
 data StablePtr a
 

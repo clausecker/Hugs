@@ -18,8 +18,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: iomonad.c,v $
- * $Revision: 1.24 $
- * $Date: 2002/04/11 23:20:18 $
+ * $Revision: 1.25 $
+ * $Date: 2002/05/18 16:22:11 $
  * ------------------------------------------------------------------------*/
  
 Name nameIORun;			        /* run IO code                     */
@@ -160,6 +160,8 @@ PROTO_PRIM(primEqRef);
 PROTO_PRIM(primMakeSP);
 PROTO_PRIM(primDerefSP);
 PROTO_PRIM(primFreeSP);
+PROTO_PRIM(primCastSPToP);
+PROTO_PRIM(primCastPToSP);
 
 PROTO_PRIM(primMakeFO);
 PROTO_PRIM(primWriteFO);
@@ -268,6 +270,8 @@ static struct primitive iomonadPrimTable[] = {
   {"makeStablePtr",	3, primMakeSP},
   {"deRefStablePtr",	3, primDerefSP},
   {"freeStablePtr",	3, primFreeSP},
+  {"castStablePtrToPtr",1, primCastSPToP},
+  {"castPtrToStablePtr",1, primCastPToSP},
 
   {"makeForeignObj",	4, primMakeFO},
   {"writeForeignObj",	4, primWriteFO},
@@ -1520,6 +1524,23 @@ primFun(primEqRef) {			/* Ref a -> Ref a -> Bool	   */
  * Stable Pointers
  * ------------------------------------------------------------------------*/
 
+#if CHECK_TAGS
+#define checkSP() checkInt()
+#else
+#define checkSP() /* do nothing */
+#endif
+
+#define SPArg(nm,offset)                          \
+    eval(primArg(offset));                        \
+    checkSP();                                    \
+    nm = whnfInt
+
+/* nm should be a variable in which result is stored.
+   If you use an expression, reevaluation might occur */
+#define SPResult(nm)                              \
+   updateRoot(mkInt(nm))
+
+
 primFun(primMakeSP) {			/* a -> IO (StablePtr a)	   */
     Int sp = mkStablePtr(IOArg(1));
     if (sp > 0) {
@@ -1538,10 +1559,25 @@ primFun(primDerefSP) {			/* StablePtr a -> IO a   	   */
 }
 
 primFun(primFreeSP) {			/* StablePtr a -> IO ()   	   */
-    eval(IOArg(1));
-    freeStablePtr(whnfInt);
+    Int x;
+    IntArg(x,1);
+    freeStablePtr(x);
     IOReturn(nameUnit);
 }
+
+primFun(primCastSPToP) {		/* StablePtr a -> Ptr ()   	   */
+    Int x;
+    IntArg(x,1);
+    PtrResult((Pointer)x);
+}
+
+primFun(primCastPToSP) {		/* Ptr () -> StablePtr a   	   */
+    Pointer x;
+    PtrArg(x,1);
+    SPResult((Int)x);
+}
+
+
     
 /* --------------------------------------------------------------------------
  * Foreign Objects

@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: ffi.c,v $
- * $Revision: 1.4 $
- * $Date: 2002/04/11 23:20:18 $
+ * $Revision: 1.5 $
+ * $Date: 2002/05/18 16:22:11 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -145,6 +145,8 @@ Int    l;
 Type   t; {
     if      (t == typeInt)    fprintf(out,"int");
     else if (t == typeWord)   fprintf(out,"unsigned int");
+    else if (t == typeFunPtr) fprintf(out,"void*");
+    else if (t == typePtr)    fprintf(out,"void*");
     else if (t == typeAddr)   fprintf(out,"void*");
     else if (t == typeFloat)  fprintf(out,"float");
     else if (t == typeDouble) fprintf(out,"double");
@@ -167,6 +169,8 @@ String nm;
 Int    num; {
     if      (t == typeInt)    fprintf(out,"%s%d = hugs->getInt();\n",       nm, num);
     else if (t == typeWord)   fprintf(out,"%s%d = hugs->getWord();\n",      nm, num);
+    else if (t == typeFunPtr) fprintf(out,"%s%d = hugs->getAddr();\n",      nm, num);
+    else if (t == typePtr)    fprintf(out,"%s%d = hugs->getAddr();\n",      nm, num);
     else if (t == typeAddr)   fprintf(out,"%s%d = hugs->getAddr();\n",      nm, num);
     else if (t == typeFloat)  fprintf(out,"%s%d = hugs->getFloat();\n",     nm, num);
     else if (t == typeDouble) fprintf(out,"%s%d = hugs->getDouble();\n",    nm, num);
@@ -189,6 +193,8 @@ String nm;
 Int    num; {
     if      (t == typeInt)    fprintf(out,"hugs->putInt(%s%d);\n",       nm, num);
     else if (t == typeWord)   fprintf(out,"hugs->putWord(%s%d);\n",      nm, num);
+    else if (t == typeFunPtr) fprintf(out,"hugs->putAddr(%s%d);\n",      nm, num);
+    else if (t == typePtr)    fprintf(out,"hugs->putAddr(%s%d);\n",      nm, num);
     else if (t == typeAddr)   fprintf(out,"hugs->putAddr(%s%d);\n",      nm, num);
     else if (t == typeFloat)  fprintf(out,"hugs->putFloat(%s%d);\n",     nm, num);
     else if (t == typeDouble) fprintf(out,"hugs->putDouble(%s%d);\n",    nm, num);

@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: type.c,v $
- * $Revision: 1.46 $
- * $Date: 2002/05/14 22:43:16 $
+ * $Revision: 1.47 $
+ * $Date: 2002/05/18 16:22:11 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -34,7 +34,17 @@ Type typeUnit;
 Module modulePrelude;
 
 Type typeInt;                          
+Type typeInt8;                          
+Type typeInt16;                          
+Type typeInt32;                          
+Type typeInt64;                          
 Type typeWord;
+Type typeWord8;
+Type typeWord16;
+Type typeWord32;
+Type typeWord64;
+Type typeFunPtr;
+Type typePtr;
 Type typeAddr;
 Type typeFloat;
 Type typeDouble;
@@ -3159,7 +3169,17 @@ Void linkPreludeTC() {			/* Hook to tycons and classes in   */
 	Int i;
 
 	typeInt      = linkTycon("Int");
+	typeInt8     = linkTycon("Int8");
+	typeInt16    = linkTycon("Int16");
+	typeInt32    = linkTycon("Int32");
+	typeInt64    = linkTycon("Int64");
 	typeWord     = linkTycon("Word");
+	typeWord8    = linkTycon("Word8");
+	typeWord16   = linkTycon("Word16");
+	typeWord32   = linkTycon("Word32");
+	typeWord64   = linkTycon("Word64");
+	typeFunPtr   = linkTycon("FunPtr");
+	typePtr      = linkTycon("Ptr");
 	typeAddr     = linkTycon("Addr");
 	typeFloat    = linkTycon("Float");
 	typeDouble   = linkTycon("Double");

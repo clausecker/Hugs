@@ -8,8 +8,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: storage.h,v $
- * $Revision: 1.35 $
- * $Date: 2002/05/14 16:13:00 $
+ * $Revision: 1.36 $
+ * $Date: 2002/05/18 16:22:11 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -388,6 +388,8 @@ extern void growDynTable       Args((DynTable*));
 #if ZIP_COMP
 #define ZCOMP        93 	  /* ZCOMP	snd :: (Exp,[[Qual]])	   */
 #endif
+
+#define I64CELL      98           /* Int/Word64 snd :: (Int,Int)           */
 
 #if SIZEOF_INTP != SIZEOF_INT
 #define PTRCELL      99           /* C Heap Pointer snd :: (Int,Int)       */

@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: storage.c,v $
- * $Revision: 1.39 $
- * $Date: 2002/05/15 18:11:23 $
+ * $Revision: 1.40 $
+ * $Date: 2002/05/18 16:22:11 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -3028,7 +3028,7 @@ Void (*cleanup) Args((Pointer)); {
 	    ;					/* and try again ...	   */
     }
     if (i>=NUM_MALLOCPTRS) {			/* ... before we give up   */
-	ERRMSG(0) "Too many ForeignObjs open"
+	ERRMSG(0) "Too many ForeignPtrs open"
 	EEND;
     }
     mallocPtrs[i].ptr      = ptr;
