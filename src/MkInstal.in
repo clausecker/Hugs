@@ -23,7 +23,7 @@ install		:: install_notes                      # Readme, etc
 install_libs    :: install_libhugs 		      # Hugs libraries
 install_libs    :: install_libexts  		      # ghc compatability
 
-install_bin	:: hugs$(EXE) runhugs$(EXE)
+install_bin	:: hugs$(EXE) runhugs$(EXE) ffihugs$(EXE)
 		$(INSTALL) -d $(bindir)
 		$(INSTALL) -c hugs$(EXE) $(bindir)
 		$(INSTALL) -c runhugs$(EXE) $(bindir)
