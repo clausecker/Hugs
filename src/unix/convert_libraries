@@ -100,6 +100,25 @@ hslibs() {
 	cp $hs_src/$1/$2 $compat/$2
 }
 
+# Copy package examples (if any) to the demos directory
+
+copy_examples() {
+	from_dir=$1
+	to_dir=$2
+	if [ -d $from_dir/examples ]
+	then	(cd $from_dir;
+		 find examples -name CVS -prune -o -type f -print) |
+			sed 's:^examples/::' |
+			egrep -v '^(\.cvsignore|Makefile|makefile)' |
+			while read name
+			do
+				target_file="$to_dir/$name"
+				mkdir -p `dirname $target_file`
+				cp $from_dir/examples/$name $target_file
+			done
+	fi
+}
+
 # Convert hierarchical modules
 
 HUGSDIR="$target"
@@ -139,6 +158,7 @@ fi
 for package in $packages
 do
 	sh $HugsPackage -o $BuildFFI $src/$package
+	copy_examples $src/$package $HUGSDIR/demos/$package
 done
 
 # Compatibility with lib/exts:
