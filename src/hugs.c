@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.109 $
- * $Date: 2002/11/23 03:33:19 $
+ * $Revision: 1.110 $
+ * $Date: 2002/11/29 12:59:34 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -3054,7 +3054,7 @@ Int what; {                     /* system to respond as appropriate ...    */
 static Void local loopInBackground (Void) { 
     MSG msg;
 
-   //WaitForSingleObject(evaluatorThread, INFINITE);
+    /* WaitForSingleObject(evaluatorThread, INFINITE); */
     while ( evaluatorThreadRunning && GetMessage(&msg, NULL, 0, 0) ) {
       if (!TranslateAccelerator(hWndMain, hAccelTable, &msg)) {
          TranslateMessage(&msg);

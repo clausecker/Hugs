@@ -11,8 +11,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.72 $
- * $Date: 2002/10/31 01:43:02 $
+ * $Revision: 1.73 $
+ * $Date: 2002/11/29 12:59:34 $
  * ------------------------------------------------------------------------*/
 #include <math.h>
 
@@ -1572,7 +1572,7 @@ Bool   useShell; {
 	if (dwResult == WAIT_OBJECT_0) {
 	  return 0;
 	} else if (dwResult == (WAIT_OBJECT_0 + 1)) {
-	  // Dispatch waiting messages.
+	  /* Dispatch waiting messages. */
 	  while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) {
 	    TranslateMessage(&msg);
 	    DispatchMessage(&msg);
@@ -1887,7 +1887,7 @@ String dll; {
 	ERRMSG(0) "Error while importing DLL \"%s\"", dll
 	EEND;
     }
-    //    fprintf(stderr, "Loaded DLL 0x%p\n",instance); fflush(stderr);
+    /* fprintf(stderr, "Loaded DLL 0x%p\n",instance); fflush(stderr); */
     return instance;
 }
 
@@ -1900,7 +1900,7 @@ String symbol; {
 Void freeDLL(dll)
 void* dll; {
   if (dll) {
-    //    fprintf(stderr, "Freeing DLL 0x%p\n",dll); fflush(stderr);
+    /* fprintf(stderr, "Freeing DLL 0x%p\n",dll); fflush(stderr); */
     FreeLibrary(dll);
   }
   return;

@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: builtin.c,v $
- * $Revision: 1.35 $
- * $Date: 2002/10/24 22:26:21 $
+ * $Revision: 1.36 $
+ * $Date: 2002/11/29 12:59:34 $
  * ------------------------------------------------------------------------*/
 
 /* We include math.h before prelude.h because SunOS 4's cpp incorrectly
@@ -2302,34 +2302,34 @@ static void* mkThunk(void (*app)(void), HugsStablePtr s) {
 
      {
          unsigned long *adj_code = (unsigned long*)pc;
-         // make room for extra arguments
-         adj_code[0] = 0x7d2a4b78;    //mr r10,r9
-         adj_code[1] = 0x7d094378;    //mr r9,r8
-         adj_code[2] = 0x7ce83b78;    //mr r8,r7
-         adj_code[3] = 0x7cc73378;    //mr r7,r6
-         adj_code[4] = 0x7ca62b78;    //mr r6,r5
-         adj_code[5] = 0x7c852378;    //mr r5,r4
-         adj_code[6] = 0x7c641b78;    //mr r4,r3
+         /* make room for extra arguments */
+         adj_code[0] = 0x7d2a4b78;    /* mr r10,r9 */
+         adj_code[1] = 0x7d094378;    /* mr r9,r8  */
+         adj_code[2] = 0x7ce83b78;    /* mr r8,r7  */
+         adj_code[3] = 0x7cc73378;    /* mr r7,r6  */
+         adj_code[4] = 0x7ca62b78;    /* mr r6,r5  */
+         adj_code[5] = 0x7c852378;    /* mr r5,r4  */
+         adj_code[6] = 0x7c641b78;    /* mr r4,r3  */
 
-         adj_code[7] = 0x3c000000; //lis r0,hi(app)
+         adj_code[7] = 0x3c000000; /* lis r0,hi(app) */
          adj_code[7] |= ((unsigned long)app) >> 16;
 
-         adj_code[8] = 0x3c600000; //lis r3,hi(s)
+         adj_code[8] = 0x3c600000; /* lis r3,hi(s) */
          adj_code[8] |= ((unsigned long)s) >> 16;
 
-         adj_code[9] = 0x60000000; //ori r0,r0,lo(app)
+         adj_code[9] = 0x60000000; /* ori r0,r0,lo(app) */
          adj_code[9] |= ((unsigned long)app) & 0xFFFF;
 
-         adj_code[10] = 0x60630000; //ori r3,r3,lo(s)
+         adj_code[10] = 0x60630000; /* ori r3,r3,lo(s) */
          adj_code[10] |= ((unsigned long)s) & 0xFFFF;
 
-         adj_code[11] = 0x7c0903a6; //mtctr r0
-         adj_code[12] = 0x4e800420; //bctr
+         adj_code[11] = 0x7c0903a6; /* mtctr r0 */
+         adj_code[12] = 0x4e800420; /* bctr */
 
          pc = (char*) &adj_code[13];
 
-         // Flush the Instruction cache:
-         //MakeDataExecutable(adjustor,4*13);
+         /* Flush the Instruction cache: */
+         /* MakeDataExecutable(adjustor,4*13); */
              /* This would require us to link with CoreServices.framework */
          { /* this should do the same: */
              int n = 13;

@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: type.c,v $
- * $Revision: 1.57 $
- * $Date: 2002/10/10 14:58:37 $
+ * $Revision: 1.58 $
+ * $Date: 2002/11/29 12:59:35 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -2902,9 +2902,9 @@ List bs; {				/* (one top level scc)		   */
 static Void local typeForeignExport(n)	/* Typecheck a foreign export decl */
 Name n; {				
     Int line = name(n).line;
-    // todo
+    /* todo */
 #if 0
-    // Old comment from checkForeignExport:
+    /* Old comment from checkForeignExport: */
 
     /* The following doesn't work because the type written into the
      * dummy binding has been through the typechecker once already

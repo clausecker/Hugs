@@ -8,9 +8,9 @@ extern void setHugsModule(HMODULE);
 BOOL
 WINAPI
 DllMain(
-  HINSTANCE hinstDLL,  // handle to the DLL module
-  DWORD fdwReason,     // reason for calling function
-  LPVOID lpvReserved   // reserved
+  HINSTANCE hinstDLL,  /* handle to the DLL module    */
+  DWORD fdwReason,     /* reason for calling function */
+  LPVOID lpvReserved   /* reserved                    */
 )
 {
     switch(fdwReason) {
