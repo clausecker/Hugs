@@ -14,8 +14,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: iomonad.c,v $
- * $Revision: 1.85 $
- * $Date: 2004/11/01 11:49:18 $
+ * $Revision: 1.86 $
+ * $Date: 2004/11/10 18:41:22 $
  * ------------------------------------------------------------------------*/
  
 Name nameIORun;			        /* run IO code                     */
@@ -37,6 +37,7 @@ static String local modeString     Args((Int,Bool));
 static Cell   local openHandle     Args((StackPtr,Cell *,Int,Bool,String));
 static Cell   local openFdHandle   Args((StackPtr,Int,Int,Bool,String));
 static Char   local hGetChar       Args((Int,String));
+static Void   local setRWState     Args((Int,Int));
 #endif
 
 #if IO_HANDLES
@@ -420,12 +421,12 @@ Bool binary; {
     if (binary) {
 	return (hmode&HAPPEND)    ? "ab"  :
 	       (hmode&HWRITE)     ? "wb"  :
-	       (hmode&HREADWRITE) ? "wb+" :
+	       (hmode&HREADWRITE) ? "rb+" :
 	       (hmode&HREAD)      ? "rb"  : (String)0;
     } else {
 	return (hmode&HAPPEND)    ? "a"   :
 	       (hmode&HWRITE)     ? "w"   :
-	       (hmode&HREADWRITE) ? "w+"  :
+	       (hmode&HREADWRITE) ? "r+"  :
 	       (hmode&HREAD)      ? "r"   : (String)0;
     }
 }
@@ -454,7 +455,12 @@ String loc; {
     i = newHandle(sCell,loc);
 
     /* prepare to open file    */
-    if (!stmode || !(handles[i].hfp=fopen(s,stmode))) {
+    if (stmode) {
+	handles[i].hfp = fopen(s,stmode);
+	if (hmode==HREADWRITE && handles[i].hfp==NULL) /* try to create it */
+	    handles[i].hfp = fopen(s, binary ? "wb+" : "w+");
+    }
+    if (!stmode || !handles[i].hfp) {
 	IOFail(mkIOError(NULL,
 			 toIOError(errno),
 			 loc,
@@ -465,9 +471,7 @@ String loc; {
     handles[i].hmode = hmode;
     handles[i].hbufMode = HUNKNOWN_BUFFERING;
     handles[i].hbufSize = (-1);
-    if (hmode&HREADWRITE) {
-	handles[i].hHaveRead = FALSE;
-    }
+    setRWState(i, RW_NEUTRAL);
 #if CHAR_ENCODING
     handles[i].hBinaryMode = binary;
     handles[i].hLookAhead = -1;
@@ -498,9 +502,7 @@ String loc; {
     handles[i].hmode = hmode;
     handles[i].hbufMode = HANDLE_NOTBUFFERED;
     handles[i].hbufSize = 0;
-    if (hmode&HREADWRITE) {
-	handles[i].hHaveRead = FALSE;
-    }
+    setRWState(i, RW_NEUTRAL);
 #if CHAR_ENCODING
     handles[i].hBinaryMode = binary;
     handles[i].hLookAhead = -1;
@@ -539,6 +541,23 @@ static Char local hGetChar(Int h, String fname) {
     }
 #endif /* CHAR_ENCODING */
     return c;
+}
+
+/* If the stream is read-write, set the state, otherwise do nothing */
+static Void local setRWState(Int h, Int newState) {
+    if (handles[h].hmode&HREADWRITE) {
+	/* ANSI C requires repositioning between writes and reads */
+	if (newState==RW_READING) {
+	    if (handles[h].hRWState==RW_WRITING) {
+		fflush(handles[h].hfp);
+		fseek(handles[h].hfp, 0L, SEEK_CUR);
+	    }
+	} else if (newState==RW_WRITING) {
+	    if (handles[h].hRWState==RW_READING)
+		fseek(handles[h].hfp, 0L, SEEK_CUR);
+	}
+	handles[h].hRWState = newState;
+    }
 }
 
 /* --------------------------------------------------------------------------
@@ -807,12 +826,6 @@ primFun(primHGetChar) {			/* Read character from handle	   */
     Int h;
     Int c;
     HandleArg(h,1+IOArity);
-    
-    /* Flush output buffer for R/W handles */
-    if (handles[h].hmode&HREADWRITE && !handles[h].hHaveRead) {
-	fflush(handles[h].hfp);
-	handles[h].hHaveRead = TRUE;
-    }
 
     if (!(handles[h].hmode&(HREAD|HREADWRITE))) {
 	IOFail(mkIOError(&handles[h].hcell,
@@ -821,8 +834,10 @@ primFun(primHGetChar) {			/* Read character from handle	   */
 			 "handle is not readable",
 			 NULL));
     }
+    setRWState(h, RW_READING);
     c = hGetChar(h, "IO.hGetChar");
     if (c==EOF) {
+	setRWState(h, RW_NEUTRAL);
 	IOFail(mkIOError(&handles[h].hcell,
 			 nameEOFErr,
 			 "IO.hGetChar",
@@ -839,11 +854,6 @@ primFun(primHPutChar) {			/* print character on handle	   */
     HandleArg(h,2+IOArity);
     CharArg(c,1+IOArity);
 
-    /* Flush input buffer for R/W handles */
-    if (handles[h].hmode&HREADWRITE && handles[h].hHaveRead) {
-	fflush(handles[h].hfp);
-	handles[h].hHaveRead = FALSE;
-    }
     if (!(handles[h].hmode&(HWRITE|HAPPEND|HREADWRITE))) {
 	IOFail(mkIOError(&handles[h].hcell,
 			 nameIllegal,
@@ -852,6 +862,7 @@ primFun(primHPutChar) {			/* print character on handle	   */
 			 NULL));
     }
 
+    setRWState(h, RW_WRITING);
 #if CHAR_ENCODING
     if (handles[h].hBinaryMode)
 	retval = fputc(c, handles[h].hfp);
@@ -877,11 +888,6 @@ primFun(primHPutStr) {			/* print string on handle	   */
     push(primArg(1+IOArity));
     primArg(1+IOArity) = NIL;
 
-    /* Make sure the input buffer is flushed for R/W handles */
-    if (handles[h].hmode&HREADWRITE && handles[h].hHaveRead) {
-	fflush(handles[h].hfp);
-	handles[h].hHaveRead = FALSE;
-    }
     if (!(handles[h].hmode&(HWRITE|HAPPEND|HREADWRITE))) {
 	IOFail(mkIOError(&handles[h].hcell,
 			 nameIllegal,
@@ -889,6 +895,7 @@ primFun(primHPutStr) {			/* print string on handle	   */
 			 "handle is not writable",
 			 NULL));
     }
+    setRWState(h, RW_WRITING);
     blackHoleRoot();
     eval(pop());
     while (whnfHead==nameCons) {
@@ -935,10 +942,7 @@ primFun(primHContents) {		/* hGetContents :: Handle -> IO Str*/
 		         NULL));
     }
 
-    if (handles[h].hmode&HREADWRITE && !handles[h].hHaveRead) {
-	fflush(handles[h].hfp);
-	handles[h].hHaveRead = TRUE;
-    }
+    setRWState(h, RW_READING);
     handles[h].hmode = HSEMICLOSED; /* semi-close handle		   */
     IOReturn(ap(nameHreader,IOArg(1)));
 }
@@ -1116,9 +1120,13 @@ primFun(primHIsEOF) {	/* Test for end of file on handle  */
 	IOReturn(nameFalse);
 #endif
     } else {
-	Int c = fgetc(fp);
-	isEOF = feof(fp);
+	Int c;
 
+	setRWState(h, RW_READING);
+	c = fgetc(fp);
+	isEOF = feof(fp);
+	if (isEOF)
+	    setRWState(h, RW_NEUTRAL);
 	/* Put the char back and clear any flags. */
 	ungetc(c,fp);
 	clearerr(fp);
@@ -1138,9 +1146,6 @@ primFun(primHFlush) {			/* Flush handle			   */
 			 NULL));
     }
     fflush(handles[h].hfp);
-    if (handles[h].hmode&HREADWRITE) {
-	handles[h].hHaveRead = FALSE;
-    }
     IOReturn(nameUnit);
 }
 
@@ -1198,6 +1203,7 @@ primFun(primHSetPosn) {			/* Set file position               */
 			 NULL));
     }
 #if HAVE_FSEEK
+    setRWState(h, RW_NEUTRAL);
     fflush(handles[h].hfp);
     if (fseek(handles[h].hfp,pos,SEEK_SET) == 0) {
 	IOReturn(nameUnit);
@@ -1244,9 +1250,7 @@ primFun(primHSeek) {	/* Seek to new file posn */
 			 NULL));
     }
 
-    if (handles[h].hmode&HREADWRITE) {
-	handles[h].hHaveRead = FALSE;
-    }
+    setRWState(h, RW_NEUTRAL);
 
     IOReturn(nameUnit);
 }
@@ -1278,8 +1282,10 @@ primFun(primHLookAhead) { /* Peek at the next char */
 	return;
     }
 #endif
+    setRWState(h, RW_READING);
     if (feof(handles[h].hfp) ||
 	(c = hGetChar(h, "IO.hLookAhead")) == EOF) {
+	setRWState(h, RW_NEUTRAL);
 	IOFail(mkIOError(&handles[h].hcell,
 			 nameEOFErr,
 			 "IO.hLookAhead",
@@ -1411,7 +1417,7 @@ primFun(primHIsClosed) {		/* Test is handle closed           */
 primFun(primHIsReadable) {		/* Test is handle readable         */
     Int h;
     HandleArg(h,1+IOArity);
-    IOBoolResult(handles[h].hmode&HREAD || handles[h].hmode&HREADWRITE);
+    IOBoolResult(handles[h].hmode&(HREAD|HREADWRITE));
 }
 
 primFun(primHIsWritable) {		/* Test is handle writable         */
@@ -1562,12 +1568,7 @@ primFun(primHPutBuf) {			/* write binary data from a buffer   */
 			 NULL));
     }
 #endif
-
-    /* Flush input buffer for R/W handles */
-    if ((handles[h].hmode & HREADWRITE) && handles[h].hHaveRead) {
-	fflush(handles[h].hfp);
-	handles[h].hHaveRead = FALSE;
-    }
+    setRWState(h, RW_WRITING);
 
     errno = 0;
     while (size > 0) {
@@ -1616,12 +1617,7 @@ primFun(primHGetBuf) {			/* read binary data into a buffer   */
 			 NULL));
     }
 #endif
-
-    /* Flush output buffer for R/W handles */
-    if ((handles[h].hmode & HREADWRITE) && !handles[h].hHaveRead) {
-	fflush(handles[h].hfp);
-	handles[h].hHaveRead = TRUE;
-    }
+    setRWState(h, RW_READING);
 
     numRead = (Int)fread(buf, 1, size, handles[h].hfp);
     if (numRead < size && ferror(handles[h].hfp)) {
