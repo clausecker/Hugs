@@ -9,8 +9,8 @@
  * included in the distribution.
  *
  * $RCSfile: storage.h,v $
- * $Revision: 1.18 $
- * $Date: 2001/04/02 04:05:13 $
+ * $Revision: 1.19 $
+ * $Date: 2001/06/08 23:33:13 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -736,14 +736,17 @@ struct strClass {
 extern struct strClass    DECTABLE(tabClass);
 extern struct strInst far *tabInst;
 
-extern Class newClass	   Args((Text));
-extern Class classMax	   Args((Void));
-extern Class findClass	   Args((Text));
-extern Class addClass	   Args((Class));
-extern Class findQualClass Args((Cell));
-extern Inst  newInst	   Args((Void));
-extern Inst  findFirstInst Args((Tycon));
-extern Inst  findNextInst  Args((Tycon,Inst));
+extern Class newClass	    Args((Text));
+extern Class classMax	    Args((Void));
+extern Class findClass	    Args((Text));
+extern Class addClass	    Args((Class));
+extern Class findQualClass  Args((Cell));
+extern Inst  newInst	    Args((Void));
+extern Inst  findFirstInst  Args((Tycon));
+extern Inst  findNextInst   Args((Tycon,Inst));
+#if !IGNORE_MODULES
+extern Module findQualifier Args((Text));
+#endif
 
 /* --------------------------------------------------------------------------
  * Character values:
@@ -938,9 +941,16 @@ extern Void	   dropScriptsFrom  Args((Script));
 #define HSTDERR		2
 
 struct strHandle {		/* Handle description and status flags	   */
-    Cell hcell;			/* Heap representation of handle (or NIL)  */
-    FILE *hfp;			/* Corresponding file pointer		   */
-    Int  hmode;			/* Current mode: see below		   */
+    Cell  hcell;		/* Heap representation of handle (or NIL)  */
+    FILE  *hfp;			/* Corresponding file pointer		   */
+    Int   hmode;		/* Current mode: see below		   */
+    Int   hbufMode;             /* Buffering mode.                         */
+    Int   hbufSize;             /* < 0 => not yet known.                   */
+    Bool  hHaveRead;            /* TRUE => chars have been read from handle 
+				   (used for R/W handles to determine whether
+				    a fflush() is required before writing).
+				   FALSE=> for R/W handles, a read needs to
+				   fflush() first.                         */
 };
 
 #define HCLOSED		0000	/* no I/O permitted			   */
@@ -948,8 +958,15 @@ struct strHandle {		/* Handle description and status flags	   */
 #define HREAD		0002	/* set to enable reads from handle 	   */
 #define HWRITE		0004	/* set to enable writes to handle	   */
 #define HAPPEND		0010	/* opened in append mode		   */
+#define HREADWRITE      0020    /* set to enable both reading and writing  */
 
-extern Cell   openHandle Args((String,Int,Bool));
+#define HUNKNOWN_BUFFERING (-1) /* the buffering mode of a handle is lazily
+				   determined. */
+
+#define HANDLE_NOTBUFFERED    1
+#define HANDLE_LINEBUFFERED   2
+#define HANDLE_BLOCKBUFFERED  3
+
 extern struct strHandle  DECTABLE(handles);
 #endif
 

@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: storage.c,v $
- * $Revision: 1.15 $
- * $Date: 2001/03/19 17:43:41 $
+ * $Revision: 1.16 $
+ * $Date: 2001/06/08 23:33:13 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -26,9 +26,6 @@
 
 static Int  local hash                  Args((String));
 static Int  local saveText              Args((Text));
-#if !IGNORE_MODULES
-static Module local findQualifier       Args((Text));
-#endif
 static Void local hashTycon             Args((Tycon));
 static List local insertTycon           Args((Tycon,List));
 static Void local hashName              Args((Name));
@@ -1257,7 +1254,7 @@ Cell c; {
     return NIL;/*NOTUSED*/
 }
 
-static local Module findQualifier(t)    /* locate Module in import list   */
+Module findQualifier(t)    /* locate Module in import list   */
 Text t; {
     Module ms;
     for (ms=module(currentModule).qualImports; nonNull(ms); ms=tl(ms)) {
@@ -2746,48 +2743,15 @@ List args; {
 }
 
 /* --------------------------------------------------------------------------
- * Handle operations:
+ * Handle table - declared here for the GC to access.
  * ------------------------------------------------------------------------*/
 
 #if IO_HANDLES
 struct strHandle DEFTABLE(handles,NUM_HANDLES);
 
-Cell openHandle(s,hmode,binary)         /* open handle to file named s in  */
-String s;                               /* the specified hmode             */
-Int    hmode; 
-Bool   binary; {
-    Int i;
-
-    for (i=0; i<NUM_HANDLES && nonNull(handles[i].hcell); ++i)
-	;                                       /* Search for unused handle*/
-    if (i>=NUM_HANDLES) {                       /* If at first we don't    */
-	garbageCollect();                       /* succeed, garbage collect*/
-	for (i=0; i<NUM_HANDLES && nonNull(handles[i].hcell); ++i)
-	    ;                                   /* and try again ...       */
-    }
-    if (i>=NUM_HANDLES) {                       /* ... before we give up   */
-	ERRMSG(0) "Too many handles open; cannot open \"%s\"", s
-	EEND;
-    }
-    else {                                      /* prepare to open file    */
-	String stmode;
-	if (binary) {
-	    stmode = (hmode&HAPPEND) ? "ab+" :
-		     (hmode&HWRITE)  ? "wb+" :
-		     (hmode&HREAD)   ? "rb" : (String)0;
-	} else {
-	    stmode = (hmode&HAPPEND) ? "a+"  :
-		     (hmode&HWRITE)  ? "w+"  :
-		     (hmode&HREAD)   ? "r"  : (String)0;
-	}
-	if (stmode && (handles[i].hfp=fopen(s,stmode))) {
-	    handles[i].hmode = hmode;
-	    return (handles[i].hcell = ap(HANDCELL,i));
-	}
-    }
-    return NIL;
-}
-
+/* --------------------------------------------------------------------------
+ * Freeing a handle.
+ * ------------------------------------------------------------------------*/
 static Void local freeHandle(n)         /* release handle storage when no  */
 Int n; {                                /* heap references to it remain    */
     if (0<=n && n<NUM_HANDLES && nonNull(handles[n].hcell)) {
@@ -3035,8 +2999,11 @@ Int what; {
 #endif
 #if IO_HANDLES
 		       handles[HSTDIN].hmode  = HREAD;
+		       handles[HSTDIN].hbufMode = HUNKNOWN_BUFFERING;
 		       handles[HSTDOUT].hmode = HAPPEND;
+		       handles[HSTDOUT].hbufMode = HUNKNOWN_BUFFERING;
 		       handles[HSTDERR].hmode = HAPPEND;
+		       handles[HSTDERR].hbufMode = HUNKNOWN_BUFFERING;
 #endif
 #if GC_MALLOCPTRS
 		       for (i=0; i<NUM_MALLOCPTRS; i++)

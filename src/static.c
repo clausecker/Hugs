@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.35 $
- * $Date: 2001/04/27 01:00:35 $
+ * $Revision: 1.36 $
+ * $Date: 2001/06/08 23:33:13 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1992,7 +1992,7 @@ List   bs; {				/* sort into approp. member order  */
 	Cell body = snd(snd(b));
 	Name mnm;
 
-	if ( !(isVar(fst(b)) || isQVar(fst(b))) ) { /* Only allow function bindings    */
+	if ( !(isQVar(fst(b))) ) { /* Only allow function bindings    */
 	    ERRMSG(rhsLine(snd(body)))
 		"Pattern binding illegal in %s declaration", where
 	    EEND;
@@ -2004,6 +2004,19 @@ List   bs; {				/* sort into approp. member order  */
 	} else {
 	  nm = qtextOf(fst(b));
 	}
+
+#if !IGNORE_MODULES
+	/* If the class member is qualified, verify that its
+	   modid match up with that of the class itself. */
+	if (!isVar(fst(b))) {
+	  if (cclass(c).mod != findQualifier(qmodOf(fst(b)))) {
+	    ERRMSG(rhsLine(snd(hd(body))))
+		"No member \"%s.%s\" (%s) in class \"%s\"",
+		textToStr(qmodOf(fst(b))), textToStr(nm), textToStr(module(findQualifier(qmodOf(fst(b)))).text),textToStr(cclass(c).text)
+	    EEND;
+	  }
+	}
+#endif
 
 	if (isNull(mnm=memberName(c,nm))) {
 	    ERRMSG(rhsLine(snd(hd(body))))
@@ -7089,6 +7102,7 @@ Void checkDefns() {			/* Top level static analysis	   */
     clearScope();
     withinScope(valDefns);
     valDefns = topDependAnal(valDefns); /* top level dependency ordering   */
+    linkPreludeFuns();			/* Get prelude funs 	   */
     mapProc(depDefaults,classDefns);    /* dep. analysis on class defaults */
     mapProc(depInsts,instDefns);        /* dep. analysis on inst defns	   */
     leaveScope();

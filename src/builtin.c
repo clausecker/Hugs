@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: builtin.c,v $
- * $Revision: 1.13 $
- * $Date: 2001/05/30 03:15:37 $
+ * $Revision: 1.14 $
+ * $Date: 2001/06/08 23:33:12 $
  * ------------------------------------------------------------------------*/
 
 /* We include math.h before prelude.h because SunOS 4's cpp incorrectly
@@ -25,6 +25,61 @@
 #if HAVE_IO_H
 #include <io.h>
 #endif
+
+/* Header files needed to compile the IO primitives */
+#ifdef IO_MONAD
+#ifdef HAVE_SYS_TYPES_H
+# include <sys/types.h>
+#else
+# ifdef HAVE_TYPES_H
+#  include <types.h>
+# endif
+#endif
+#ifdef HAVE_SYS_STAT_H
+# include <sys/stat.h>
+#else
+# ifdef HAVE_STAT_H
+#  include <stat.h>
+# endif
+#endif
+
+#ifdef HAVE_UNISTD_H
+#include <unistd.h>
+#endif
+
+#ifndef __MINGW__
+# ifdef HAVE_SYS_TIMES_H
+#  include <sys/times.h>
+# endif
+#endif
+
+#ifdef HAVE_SYS_TIME_H
+#include <sys/time.h>
+#endif
+
+#ifndef __MINGW__
+# if defined(HAVE_SYS_RESOURCE_H)
+#  include <sys/resource.h>
+# endif
+#endif
+
+#ifdef HAVE_ERRNO_H
+# include <errno.h>
+#endif
+
+#ifdef HAVE_SYS_TIMEB_H
+#include <sys/timeb.h>
+#endif
+
+#ifdef HAVE_WINDOWS_H
+# include <windows.h>
+#endif
+
+#ifdef HAVE_DIRENT_H
+#include <dirent.h>
+#endif
+
+#endif /* IO_MONAD */
 
 Name nameNegate,  nameFlip;             /* primitives reqd for parsing     */
 Name nameFrom,    nameFromThen;

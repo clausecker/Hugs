@@ -2,8 +2,8 @@ dnl ################################################################
 dnl Process this file with autoconf to produce a configure script.
 dnl
 dnl $RCSfile: configure.in,v $
-dnl $Revision: 1.8 $
-dnl $Date: 2001/06/04 23:24:08 $
+dnl $Revision: 1.9 $
+dnl $Date: 2001/06/08 23:33:13 $
 dnl ################################################################
 
 AC_INIT(../hugs.c)
@@ -50,11 +50,11 @@ AC_CHECK_HEADERS(
   stdarg.h stdlib.h unistd.h assert.h ctype.h string.h \
   fcntl.h sgtty.h termio.h termios.h signal.h \
   sys/stat.h sys/types.h sys/ioctl.h sys/resource.h sys/param.h \
-  console.h pascal.h Files.h errno.h stat.h nlist.h ftw.h
+  console.h pascal.h Files.h errno.h stat.h nlist.h ftw.h dirent.h
   )
 
 AC_HEADER_TIME
-AC_CHECK_HEADERS(time.h sys/time.h)
+AC_CHECK_HEADERS(time.h sys/time.h sys/timeb.h sys/times.h)
 
 dnl One of these two is used to obtain floating point parameters
 AC_CHECK_HEADERS(float.h values.h)
@@ -123,6 +123,11 @@ AC_CHECK_FUNCS(snprintf  _snprintf )
 AC_CHECK_FUNCS(popen     _popen )  
 AC_CHECK_FUNCS(pclose    _pclose )  
 AC_CHECK_FUNCS(sigprocmask)  
+AC_CHECK_FUNCS(getrusage)
+AC_CHECK_FUNCS(times)
+AC_CHECK_FUNCS(isatty)
+AC_CHECK_FUNCS(fstat)
+AC_CHECK_FUNCS(select)
 
 dnl This always fails unless you also #include <windows.h>
 dnl AC_CHECK_FUNCS(GetModuleFileName GetModuleFileNameA)      dnl Windows

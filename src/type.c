@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: type.c,v $
- * $Revision: 1.32 $
- * $Date: 2001/04/27 01:00:35 $
+ * $Revision: 1.33 $
+ * $Date: 2001/06/08 23:33:13 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -100,12 +100,16 @@ Name nameStrict,  nameSeq;		/* Members of class Eval	   */
 #if    IO_MONAD
 Type   typeIO;			        /* For the IO monad, IO 	   */
 Type   typeProgIO;			/* For the IO monad, IO ()	   */
-Name   nameUserErr;			/* loosely coupled IOError cfuns   */
-Name   nameNameErr,  nameSearchErr;
+
+Name   nameIOError, nameUserErr;	/* loosely coupled IOError cfuns   */
+Name   namePermDenied;
+Name   nameAlreadyExists, nameAlreadyInUse, nameDoesNotExist, nameIsFull;
+Name   nameIllegal;
+Name   nameGetErrorString;
+Name   nameGetFilename;
 #endif
 #if    IO_HANDLES
-Name   nameWriteErr, nameIllegal;
-Name   nameEOFErr;
+Name   nameWriteErr, nameEOFErr;
 #endif
 
 #if TREX
@@ -3085,16 +3089,6 @@ Int what; {
 		       addPrimCfun(findText("EmptyRow"), 0,0,typeUnit);
 		       addPrimCfun(findText("EmptyRec"), 0,0,typeUnit);
 #endif
-#if IO_MONAD
-		       nameUserErr  = addPrimCfun(inventText(),1,1,NIL);
-		       nameNameErr  = addPrimCfun(inventText(),1,2,NIL);
-		       nameSearchErr= addPrimCfun(inventText(),1,3,NIL);
-#if IO_HANDLES
-		       nameIllegal  = addPrimCfun(inventText(),0,4,NIL);
-		       nameWriteErr = addPrimCfun(inventText(),1,5,NIL);
-		       nameEOFErr   = addPrimCfun(inventText(),1,6,NIL);
-#endif
-#endif
 
 #if MUDO
 		       {   /* This isn't quite right. t must be the text
@@ -3267,7 +3261,38 @@ Void linkPreludeCM() {			/* Hook to cfuns and mfuns in	   */
 	nameReturn      = linkName("return");
 	nameBind        = linkName(">>=");
 	nameMFail       = linkName("fail");
+
+#if IO_MONAD
+        /* The constructor names better match up with the defn
+	   of IOErrorKind in Prelude. 
+	   
+	   Why do it this way? Because reaching out and linking
+	   to names in the Prelude here allows us to keep the
+	   IOError type abstract, as mandated by Haskell98's
+	   Prelude definition. (An alternative is to make the
+	   IOError type builtin.)
+	*/
+	nameIOError        = linkName("IOError");
+        nameUserErr        = linkName("IOError_UserError");
+	nameIllegal        = linkName("IOError_IllegalError");
+	namePermDenied     = linkName("IOError_PermDenied");
+	nameAlreadyExists  = linkName("IOError_AlreadyExists");
+	nameAlreadyInUse   = linkName("IOError_AlreadyInUse");
+	nameDoesNotExist   = linkName("IOError_DoesNotExist");
+	nameIsFull         = linkName("IOError_FullError");
+	nameEOFErr         = linkName("IOError_EOF");
+	nameWriteErr       = linkName("IOError_WriteError");
+
+#endif
     }
 }
 
+Void linkPreludeFuns() {		/* Hook to cfuns and mfuns in	   */
+#ifdef IO_MONAD
+    if (isNull(nameGetErrorString)) {	/* prelude when first loaded	   */
+	nameGetErrorString = linkName("ioeGetErrorString__");
+	nameGetFilename    = linkName("ioeGetFilename__");
+    }
+#endif
+}
 /*-------------------------------------------------------------------------*/

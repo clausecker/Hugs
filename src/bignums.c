@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: bignums.c,v $
- * $Revision: 1.3 $
- * $Date: 1999/09/13 11:00:59 $
+ * $Revision: 1.4 $
+ * $Date: 2001/06/08 23:33:12 $
  * ------------------------------------------------------------------------*/
 
 /*#define DEBUG_BIGNUMS*/
@@ -91,11 +91,13 @@ Int what; {
 
 static struct primInfo bignumPrims = { bignumControl, bignumPrimTable, 0 };
 
+/* Used by the IO implementation, so not 'static' like the rest. */
+extern Bignum bigWord   Args((Unsigned));
+
 /* --------------------------------------------------------------------------
  * Local function prototypes:
  * ------------------------------------------------------------------------*/
 
-static Bignum local bigWord   Args((Unsigned));
 static Bool   local bigEven   Args((Bignum));
 static Int    local digitsCmp Args((List,List));
 static Bignum local bigAdd    Args((Bignum,Bignum));
@@ -133,7 +135,7 @@ Int n; {
     }
 }
 
-static Bignum local bigWord(n)		      /* convert Word to bignum	   */
+Bignum bigWord(n)		      /* convert Word to bignum	   */
 Unsigned n; {
     if (n==0)
 	return ZERONUM;

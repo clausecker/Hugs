@@ -9,8 +9,8 @@
  * included in the distribution.
  *
  * $RCSfile: prelude.h,v $
- * $Revision: 1.18 $
- * $Date: 2001/05/17 23:29:53 $
+ * $Revision: 1.19 $
+ * $Date: 2001/06/08 23:33:13 $
  * ------------------------------------------------------------------------*/
 
 #include "config.h"
@@ -147,6 +147,8 @@
 #define REDIRECT_OUTPUT (!HUGS_FOR_WINDOWS)
 #define WORD_OPS        1
 #define ADDR_OPS        1
+#define DIRECTORY_OPS   1
+#define CPUTIME_OPS     1
 
 #define SHORT_CIRCUIT_COERCIONS 1
 
