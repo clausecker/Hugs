@@ -7,7 +7,7 @@ ROOT	     = users_guide
 PARTS	     = $(ROOT).sgml commands.sgml haskell98.sgml hugs_ghc.sgml \
 	       hugs_only.sgml introduction.sgml license.sgml running.sgml
 # Options needed for non-SuSE $(DOCBOOK2HTML)
-HTML_OPTS    = -o $(ROOT) -V '%use-id-as-filename%'
+HTML_OPTS    = --output $(ROOT) -V '%use-id-as-filename%'
 
 # Don't use $(ROOT)/index.html, because depending on $(DOCBOOK2HTML) it
 # could be $(ROOT)/$(ROOT).html instead.
@@ -28,7 +28,7 @@ pdf: $(ROOT).pdf
 $(HTML): $(PARTS)
 	rm -rf $(ROOT)
 	test -z '$(DOCBOOK2HTML)' || \
-	  if $(DOCBOOK2HTML) --help | grep -e -o > /dev/null 2>&1 ; then \
+	  if $(DOCBOOK2HTML) --help | grep -e --output > /dev/null 2>&1 ; then \
 	    $(DOCBOOK2HTML) $(HTML_OPTS) $(ROOT).sgml ; \
 	  else \
 	    $(DOCBOOK2HTML) $(ROOT).sgml ; \
