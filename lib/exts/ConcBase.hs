@@ -41,7 +41,7 @@
 module ConcBase(
 	forkIO,
 	MVar,
-	newEmptyMVar, newMVar, takeMVar, putMVar,
+	newEmptyMVar, newMVar, takeMVar, tryTakeMVar, putMVar, tryPutMVar,
 	swapMVar, readMVar, isEmptyMVar,
         yield
 	) where
@@ -60,6 +60,8 @@ newEmptyMVar :: IO (MVar a)
 newMVar      :: a -> IO (MVar a)
 takeMVar     :: MVar a -> IO a
 putMVar      :: MVar a -> a -> IO ()
+tryPutMVar   :: MVar a -> a -> IO Bool
+tryTakeMVar  :: MVar a -> IO (Maybe a)
 
 instance Eq (MVar a) where
   (==) = primEqMVar
@@ -128,10 +130,21 @@ takeMVar (MkMVar v) =
   Right cs ->
     blockIO (\cc -> writeIORef v (Right (cs ++ [cc])))
 
+-- tryTakeMVar is a non-blocking takeMVar
+tryTakeMVar (MkMVar v) =
+  readIORef v >>= \ state ->
+  case state of
+  Left a ->
+    writeIORef v (Right []) >>
+    return (Just a)
+  Right cs ->
+    return Nothing
+
 putMVar (MkMVar v) a =
   readIORef v >>= \ state ->
   case state of
   Left a ->
+    -- ToDo: I think GHC blocks if you do this
     error "putMVar {full MVar}"
   Right [] ->
     writeIORef v (Left a)   >>
@@ -141,9 +154,37 @@ putMVar (MkMVar v) a =
     continueIO (c a)   -- schedule the blocked thread
                        -- and continue with this thread
 
+tryPutMVar (MkMVar v) a =
+  readIORef v >>= \ state ->
+  case state of
+  Left a ->
+    return False
+  Right [] ->
+    writeIORef v (Left a)   >>
+    return True
+  Right (c:cs) ->
+    writeIORef v (Right cs) >>
+    continueIO (c a)  >> -- schedule the blocked thread
+                         -- and continue with this thread
+    return True
+
 primEqMVar   :: MVar a -> MVar a -> Bool
 MkMVar v1 `primEqMVar` MkMVar v2 = v1 == v2
 
+{- 
+ Low-level op. for checking whether an MVar is filled-in or not.
+ Notice that the boolean value returned  is just a snapshot of
+ the state of the MVar. By the time you get to react on its result,
+ the MVar may have been filled (or emptied) - so be extremely
+ careful when using this operation.  
+
+ Use tryTakeMVar instead if possible.
+
+ If you can re-work your abstractions to avoid having to
+ depend on isEmptyMVar, then you're encouraged to do so,
+ i.e., consider yourself warned about the imprecision in
+ general of isEmptyMVar :-)
+-}
 isEmptyMVar (MkMVar v) =
   readIORef v >>= \state -> case state of
                               Left a  -> return False
