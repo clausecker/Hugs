@@ -541,6 +541,12 @@
 /* Define if struct msghdr contains msg_control field */
 #undef HAVE_MSGHDR_MSG_CONTROL
 
+/* Host cpu architecture */
+#undef HOST_ARCH
+
+/* Host operating system */
+#undef HOST_OS
+
 /* Define to Haskell type for cc_t */
 #undef HTYPE_CC_T
 

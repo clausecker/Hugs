@@ -30,6 +30,12 @@ if test x"$TargetPlatform" != x"$HostPlatform" ; then
     exit 1
 fi
 
+host_cpu=`echo $HostPlatform | sed 's/-.*//'`
+host_os=[`echo $HostPlatform | sed 's/^\([^-]*\)-\([^-]*\)-\([^-]*\).*/\3/'`]
+
+AC_DEFINE_UNQUOTED(HOST_ARCH, "$host_cpu")
+AC_DEFINE_UNQUOTED(HOST_OS, "$host_os")
+
 dnl--------------------------------------------------------------------
 dnl
 dnl Check for programs
