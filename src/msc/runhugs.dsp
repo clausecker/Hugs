@@ -25,7 +25,7 @@ CFG=runhugs - Win32 Debug
 # PROP AllowPerConfigDependencies 0
 # PROP Scc_ProjName ""
 # PROP Scc_LocalPath ""
-CPP=xicl6.exe
+CPP=cl.exe
 RSC=rc.exe
 
 !IF  "$(CFG)" == "runhugs - Win32 Release"
@@ -47,14 +47,13 @@ RSC=rc.exe
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
 # ADD BSC32 /nologo
-LINK32=xilink6.exe
+LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /machine:I386
 # ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /machine:I386
 # Begin Special Build Tool
-OutDir=.\Release
 SOURCE="$(InputPath)"
 PostBuild_Desc=Installing runhugs binary
-PostBuild_Cmds=copy $(OutDir)\runhugs.exe ..\..
+PostBuild_Cmds=copy   runhugs.exe   ..\ 
 # End Special Build Tool
 
 !ELSEIF  "$(CFG)" == "runhugs - Win32 Debug"
@@ -68,6 +67,7 @@ PostBuild_Cmds=copy $(OutDir)\runhugs.exe ..\..
 # PROP Use_Debug_Libraries 1
 # PROP Output_Dir "runhugs___Win32_Debug"
 # PROP Intermediate_Dir "runhugs___Win32_Debug"
+# PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /GZ /c
 # ADD CPP /nologo /W3 /Gm /GX /ZI /Od /I "." /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /GZ /c
@@ -76,14 +76,14 @@ PostBuild_Cmds=copy $(OutDir)\runhugs.exe ..\..
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
 # ADD BSC32 /nologo
-LINK32=xilink6.exe
+LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /debug /machine:I386 /pdbtype:sept
 # ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /debug /machine:I386 /pdbtype:sept
 # Begin Special Build Tool
-OutDir=.\runhugs___Win32_Debug
+TargetPath=.\runhugs___Win32_Debug\runhugs.exe
 SOURCE="$(InputPath)"
 PostBuild_Desc=Installing runhugs binary
-PostBuild_Cmds=copy $(OutDir)\runhugs.exe ..\..
+PostBuild_Cmds=copy   $(TargetPath)  ..\ 
 # End Special Build Tool
 
 !ENDIF 
@@ -146,6 +146,10 @@ SOURCE=..\subst.c
 # Begin Source File
 
 SOURCE=..\type.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\version.c
 # End Source File
 # End Group
 # Begin Group "Header Files"
