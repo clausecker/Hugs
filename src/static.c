@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.92 $
- * $Date: 2002/09/11 23:48:48 $
+ * $Revision: 1.93 $
+ * $Date: 2002/09/12 13:50:40 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -468,8 +468,17 @@ Cell   entity; { /* Entry from import/hiding list */
 			case NEWTYPE:
 			case DATATYPE:
 			    if (DOTDOT == snd(entity)) {
-				imports=addEntity(f,tycon(f).defn,imports);
-				imports=dupOnto(tycon(f).defn,imports);
+				/* Want all dcons that are _exported_ by
+				   the importing module.
+				*/
+				Cell dcons;
+				if (snd(e) == DOTDOT) {
+				    dcons = tycon(f).defn;
+				} else {
+				    dcons = snd(e);
+				}
+				imports=addEntity(f,dcons,imports);
+				imports=dupOnto(dcons,imports);
 			    } else if ( NIL == snd(entity)) {
 				imports=addEntity(f,NIL,imports);
 			    } else {
@@ -494,7 +503,15 @@ Cell   entity; { /* Entry from import/hiding list */
 		    impFound = TRUE;
 		    if (!isIdent(entity)) {
 			if (DOTDOT == snd(entity)) {
-			    List sigs = cclass(f).members;
+ 			    /* Want all members that are _exported_ by
+			       the importing module.
+			    */
+			    List sigs;
+			    if (snd(e) == DOTDOT) {
+				sigs = cclass(f).members;
+			    } else {
+				sigs = snd(e);
+			    }
 			    imports=addEntity(f,sigs,imports);
 			    return dupOnto(sigs,imports);
 			} else if ( NIL == snd(entity)) {
