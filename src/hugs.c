@@ -3,12 +3,12 @@
  *
  * The Hugs 98 system is Copyright (c) Mark P Jones, Alastair Reid, the
  * Yale Haskell Group, and the OGI School of Science & Engineering at OHSU,
- * 1994-2002, All rights reserved.  It is distributed as free software under
+ * 1994-2003, All rights reserved.  It is distributed as free software under
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.127 $
- * $Date: 2003/08/07 13:14:33 $
+ * $Revision: 1.128 $
+ * $Date: 2003/10/14 13:56:22 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -164,7 +164,7 @@ static Void printBanner()
     svColor = SetForeColor(RED);     Printf("||   || ||  || ||  || ||__ ");
     SetForeColor(svColor);           Printf("     Hugs 98: Based on the Haskell 98 standard\n");
     svColor = SetForeColor(BLUE);    Printf("||___|| ||__|| ||__||  __||");
-    SetForeColor(svColor);           Printf("     Copyright (c) 1994-2002\n");
+    SetForeColor(svColor);           Printf("     Copyright (c) 1994-2003\n");
     svColor = SetForeColor(RED);     Printf("||---||         ___||      ");
     SetForeColor(svColor);           Printf("     World Wide Web: http://haskell.org/hugs\n");
     svColor = SetForeColor(BLUE);    Printf("||   ||                    ");
@@ -176,7 +176,7 @@ static Void printBanner()
 #else
     Printf("__   __ __  __  ____   ___      _________________________________________\n");
     Printf("||   || ||  || ||  || ||__      Hugs 98: Based on the Haskell 98 standard\n");
-    Printf("||___|| ||__|| ||__||  __||     Copyright (c) 1994-2002\n");
+    Printf("||___|| ||__|| ||__||  __||     Copyright (c) 1994-2003\n");
     Printf("||---||         ___||           World Wide Web: http://haskell.org/hugs\n");
     Printf("||   ||                         Report bugs to: hugs-bugs@haskell.org\n");
     Printf("||   || Version: %-14s _________________________________________\n\n",versionString);

@@ -3,12 +3,12 @@
  *
  * The Hugs 98 system is Copyright (c) Mark P Jones, Alastair Reid, the
  * Yale Haskell Group, and the OGI School of Science & Engineering at OHSU,
- * 1994-2002, All rights reserved.  It is distributed as free software under
+ * 1994-2003, All rights reserved.  It is distributed as free software under
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: preds.c,v $
- * $Revision: 1.34 $
- * $Date: 2003/09/19 10:04:38 $
+ * $Revision: 1.35 $
+ * $Date: 2003/10/14 13:56:23 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------

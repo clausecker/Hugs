@@ -139,7 +139,7 @@ BEGIN
     PUSHBUTTON      "&Ok",IDOK,275,136,51,13
     LTEXT           "Hugs 98: Based on the Haskell 98 standard",
                     -1,130,32,247,10
-    LTEXT           "Copyright © 1994-2002",
+    LTEXT           "Copyright © 1994-2003",
                     -1,130,42,238,10
     LTEXT           "Bug reports to: hugs-bugs@haskell.org",
                     -1,130,52,242,10
