@@ -9,9 +9,8 @@
  *
  * Defines for menus and dialog boxes
  * ------------------------------------------------------------------------*/
-
-
-#define __WINMENU_H
+#ifndef __WINMENU_H__
+#define __WINMENU_H__
 
 #define ID_FILESMENU	  	  1
 #define ID_EDITMENU	  	  2
@@ -138,3 +137,4 @@
 #define ID_PLACEBITMAP		20000
 
 
+#endif /* __WINMENU_H__ */

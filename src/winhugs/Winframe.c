@@ -9,31 +9,19 @@
  *
  * This file contains the implementation for a frame window definition
  * ------------------------------------------------------------------------*/
-
-
-#include "..\Prelude.h"
+#include "prelude.h"
 
 #if HUGS_FOR_WINDOWS
 #define STRICT 1
 
-#ifndef __WINFRAME_H
-#include "WinFrame.h"
-#endif
-#ifndef __WINSTLN_H
-#include "WinSTLN.h"
-#endif
-#ifndef __WINTOOLB_H
-#include "WinToolB.h"
-#endif
-#ifndef __WINUTILS_H
-#include "WinUtils.h"
-#endif
-#ifndef __ALLOC_H
 #include <malloc.h>
-#endif
-
 #include <ctl3d.h>
 #include <shellapi.h>
+
+#include "WinFrame.h"
+#include "WinSTLN.h"
+#include "WinToolB.h"
+#include "WinUtils.h"
 
 /* --------------------------------------------------------------------------
  * Some defined values:

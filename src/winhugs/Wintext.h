@@ -10,9 +10,8 @@
  *
  * This file contains the interface to Text.c module
  * ------------------------------------------------------------------------*/
-
-
-#define __WINTEXT_H
+#ifndef __WINTEXT_H__
+#define __WINTEXT_H__
 
 #ifndef __STDIO_H
 #include <stdio.h>
@@ -100,3 +99,4 @@ extern char stdstrbuff[];
 #define WM_GETTEXTMETRIC      	WM_USER+12
 #define WM_SETTEXTFONT       	WM_USER+13
 
+#endif /* __WINTEXT_H__ */

@@ -9,8 +9,8 @@
  *
  * This file contains prototypes for functions in WinHugs.c
  * ------------------------------------------------------------------------*/
-
-#define __WINHUGS_H
+#ifndef __WINHUGS_H__
+#define __WINHUGS_H__
 
 
 #define FILES_TO_REMEMBER	10
@@ -73,3 +73,6 @@ extern Void loopInBackground  Args((Void));
 extern Void startEvaluatorThread Args((Void));
 
 extern Bool InAutoReloadFiles;
+
+#endif /* __WINHUGS_H__ */
+

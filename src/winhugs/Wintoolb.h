@@ -9,9 +9,8 @@
  *
  * This file contains Header file for a toolbar  definition
  * ------------------------------------------------------------------------*/
-
-
-#define __WINTOOLB_H
+#ifndef __WINTOOLB_H__
+#define __WINTOOLB_H__
 
 #define MAXLNG	64
 #define MAXBTS	35
@@ -48,3 +47,4 @@ HWND 	       TBCreateWindow	   	(HINSTANCE, HWND, LPCSTR, LPCSTR);
 BOOL 	       TBRegisterClass   	(HINSTANCE);
 BOOL	       TBAppendButton		(HWND, WPARAM, LPCSTR, UINT, BOOL);
 
+#endif /* __WINTOOLB_H__ */

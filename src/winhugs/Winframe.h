@@ -9,9 +9,8 @@
  *
  * This file contains the Header file for a frame window definition
  * ------------------------------------------------------------------------*/
-
-
-#define __WINFRAME_H
+#ifndef __WINFRAME_H__
+#define __WINFRAME_H__
 
 typedef struct TagFRAME {
    HWND		hWndSTLN;
@@ -33,3 +32,4 @@ INT 	       FRAMEGetRightBorderSize	(HWND);
 VOID	       FRAMESetChild		(HWND, HWND);
 BOOL	       FRAMESuperclass 		(HINSTANCE, LPCSTR, LPCSTR, LPCSTR);
 
+#endif /* __WINFRAME_H__ */

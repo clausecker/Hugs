@@ -9,8 +9,8 @@
  *
  * This file contains the Header file for a status line definition
  * ------------------------------------------------------------------------*/
-
-#define __WINSTLN_H
+#ifndef __WINSTLN_H__
+#define __WINSTLN_H__
 
 typedef struct TagSTLN {
    CHAR 	LeftText[256];
@@ -26,3 +26,4 @@ typedef STLN 	*HSTLN;
 HWND 	       STLNCreateWindow	   	(HINSTANCE, HWND, LPCSTR);
 BOOL 	       STLNRegisterClass   	(HINSTANCE);
 
+#endif /* __WINSTLN_H__ */

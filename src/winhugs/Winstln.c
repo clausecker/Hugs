@@ -10,21 +10,15 @@
  * This file contains the implementation of a status line
  * ------------------------------------------------------------------------*/
 
-#include "..\Prelude.h"
+#include "prelude.h"
 
 #if HUGS_FOR_WINDOWS
 #define STRICT 1
 
-#ifndef __WINSTLN_H
-#include "WinSTLN.h"
-#endif
-#ifndef __WINUTILS_H
-#include "WinUtils.h"
-#endif
-#ifndef __ALLOC_H
 #include <malloc.h>
-#endif
 
+#include "WinSTLN.h"
+#include "WinUtils.h"
 
 /* --------------------------------------------------------------------------
  * Local functions protoypes:

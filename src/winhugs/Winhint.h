@@ -9,13 +9,10 @@
  *
  * This file contains the Header file for a hint window definition
  * ------------------------------------------------------------------------*/
-
-#define __WINHINT_H
+#ifndef __WINHINT_H__
+#define __WINHINT_H__
 
 #define MAXLNG	64
-
-
-
 
 typedef struct tagHINT {
   CHAR		HintStr[MAXLNG];	/* The message on the hint */
@@ -23,8 +20,9 @@ typedef struct tagHINT {
 
 typedef HINT *HHINT;
 
-
 /* Functions defined in WinTip.c that are exported */
 HWND 	       HintCreateWindow	   	(HINSTANCE, HWND);
 BOOL 	       HintRegisterClass   	(HINSTANCE);
+
+#endif /* __WINHINT_H__ */
 

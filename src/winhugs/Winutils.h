@@ -9,8 +9,8 @@
  *
  * This file contains the Header file for some common functions
  * ------------------------------------------------------------------------*/
-
-#define __WINUTILS_H
+#ifndef __WINUTILS_H__
+#define __WINUTILS_H__
 
 VOID 	CenterDialogInParent 	(HWND);
 VOID	SetDialogFont		(HWND, HFONT);
@@ -25,3 +25,5 @@ HBITMAP ResizeBitmap            (HBITMAP, UINT, UINT);
 INT 	SetWorkingDir 		(LPCSTR);
 VOID 	StrReplace		(CHAR*, CHAR*, CHAR*, CHAR*);
 VOID    ShortFileName           (CHAR *, CHAR *);
+
+#endif /* __WINUTILS_H__ */
