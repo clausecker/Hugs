@@ -12,10 +12,10 @@ Program error: undefined array element
 
 Hugs:'c'
 Hugs:
-Program error: index: Index out of range
+Program error: Prelude.Ix{Int}.index: Index out of range
 
 Hugs:
-Program error: index: Index out of range
+Program error: Prelude.Ix{Int}.index: Index out of range
 
 Hugs:[1,4,9,16,25,36,49,64,81,100]
 Hugs:Hugs:[Leaving Hugs]
