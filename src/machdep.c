@@ -11,8 +11,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.116 $
- * $Date: 2004/01/31 00:59:10 $
+ * $Revision: 1.117 $
+ * $Date: 2004/07/22 22:40:53 $
  * ------------------------------------------------------------------------*/
 #include "prelude.h"
 #include "storage.h"
@@ -793,7 +793,7 @@ String name; {
 	    while (*pathpt && !isPATHSEP(pathpt))
 		searchChr(*pathpt++);
 	    /* If the path entry ends in SLASH '*', search immediate subdirs */
-	    if (searchPos >= 2 && pathpt[-2] == SLASH && pathpt[-1] == '*') {
+	    if (searchPos >= 2 && isSLASH(pathpt[-2]) && pathpt[-1] == '*') {
 		searchPos -= 2;
 		searchBuf[searchPos] = '\0';
 		if (scanSubDirs(name))
