@@ -86,19 +86,6 @@ Win32)	# stay away from -m (older versions of 'cygpath' doesn't support it.)
 		target=`cygpath -w $target | sed -e 's@\\\\@/@g'`
 esac
 
-if test -f $source_dir/config.mk; then
-	GLU_CFLAGS="`sed -n 's/^GLU_CFLAGS=//p' $source_dir/config.mk`"
-	GLU_FRAMEWORKS="`sed -n 's/^GLU_FRAMEWORKS=//p' $source_dir/config.mk`"
-	GLU_LIBS="`sed -n 's/^GLU_LIBS=//p' $source_dir/config.mk`"
-	GLUT_EXTRA_LIBS="`sed -n 's/^GLUT_EXTRA_LIBS=//p' $source_dir/config.mk`"
-	test -n "$GLUT_EXTRA_LIBS" && GLUT_EXTRA_LIBS=", \"$GLUT_EXTRA_LIBS\""
-	GLUT_CFLAGS="`sed -n 's/^GLUT_CFLAGS=//p' $source_dir/config.mk`"
-	GLUT_FRAMEWORKS="`sed -n 's/^GLUT_FRAMEWORKS=//p' $source_dir/config.mk`"
-	GLUT_LIBS="`sed -n 's/^GLUT_LIBS=//p' $source_dir/config.mk`"
-	AL_FRAMEWORKS="`sed -n 's/^AL_FRAMEWORKS=//p' $source_dir/config.mk`"
-	AL_LIBS="`sed -n 's/^AL_LIBS=//p' $source_dir/config.mk`"
-fi
-
 includes="-I$HUGSDIR/include -I$source_dir/include"
 
 # create all scratch files in $tmpdir
@@ -276,12 +263,7 @@ conf_in=$source_dir/package.conf.in
 
 if [ -f "$conf_in" ]
 then	conf=$tmpdir/package.conf
-	through_cpp $conf_in \
-		-DLIBDIR= -DLIBRARY= \
-		-DGLU_CFLAGS=",\"$GLU_CFLAGS\"" -DGLU_FRAMEWORKS="\"$GLU_FRAMEWORKS\"" -DGLU_LIBS=",\"$GLU_LIBS\"" \
-		-DGLUT_EXTRA_LIBS="$GLUT_EXTRA_LIBS" -DGLUT_CFLAGS=",\"$GLUT_CFLAGS\"" -DGLUT_FRAMEWORKS="\"$GLUT_FRAMEWORKS\"" -DGLUT_LIBS=",\"$GLUT_LIBS\"" \
-		-DAL_FRAMEWORKS="\"$AL_FRAMEWORKS\"" -DAL_LIBS=",\"$AL_LIBS\"" \
-		>$conf
+	through_cpp $conf_in -DLIBDIR= -DLIBRARY= >$conf
 else
 	conf=`echo $source_dir/*.conf`
 fi
