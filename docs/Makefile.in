@@ -17,9 +17,16 @@ hugs.man:	hugs.1
 hugs.ps:	hugs.1
 		groff -Tps -man hugs.1 >$@
 
+hugs-package.man: hugs-package.1
+		groff -Tascii -man hugs-package.1 | cat -s >$@
+
+hugs-package.ps: hugs-package.1
+		groff -Tps -man hugs-package.1 >$@
+
 distclean:
 		$(RM) server.ps server.dvi
 		$(RM) hugs.man hugs.ps
+		$(RM) hugs-package.man hugs-package.ps
 
 veryclean:	distclean
 		$(RM) Makefile hugs.1

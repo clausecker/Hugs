@@ -33,6 +33,7 @@ make
 cd src
 make DESTDIR=${RPM_BUILD_ROOT} install_rpm
 gzip -f -9 ${RPM_BUILD_ROOT}%{_mandir}/man1/hugs.1
+gzip -f -9 ${RPM_BUILD_ROOT}%{_mandir}/man1/hugs-package.1
 
 %files
 %defattr(-,root,root)
@@ -47,6 +48,7 @@ gzip -f -9 ${RPM_BUILD_ROOT}%{_mandir}/man1/hugs.1
 %doc docs/server.tex
 %doc docs/winhugs-notes.txt
 %{_mandir}/man1/hugs.1.gz
+%{_mandir}/man1/hugs-package.1.gz
 %{prefix}/bin/ffihugs
 %{prefix}/bin/hugs
 %{prefix}/bin/hugs-package

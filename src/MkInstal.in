@@ -49,6 +49,7 @@ install_demos	::
 install_man	::
 		$(INSTALL) -d $(DESTDIR)$(mandir)/man1
 		$(INSTALL_DATA) ../docs/hugs.1 $(DESTDIR)$(mandir)/man1
+		$(INSTALL_DATA) ../docs/hugs-package.1 $(DESTDIR)$(mandir)/man1
 
 install_notes	::
 		$(INSTALL) -d $(DESTDIR)$(hugsdir)/docs
