@@ -519,12 +519,16 @@ staticMethod_7 cls mName a1 a2 a3 a4 a5 a6 a7
 data System obj
 data Delegate obj
 
+foreign import dotnet
+  "static [HugsWrapper.dll]HugsWrapper.DefineDelegator"
+  defineDelegator :: String -> StablePtr a -> IO String
+
 newDelegator :: (Object a -> Object b -> IO ())
 	     -> IO (Object (System (Delegate ())))
 newDelegator fun = do
   sp   <- newStablePtr (delegatorWrapper fun)
   let methArg = "Delegate#1 " -- ++show (stablePtrToInt sp)
-  tyNm <- invokeStatic "HugsWrapper" "DefineDelegator" methArg
+  tyNm <- defineDelegator "Delegate" sp
   obj  <- new tyNm
   obj # getField2 "Delegate_handler"
  where
