@@ -3,37 +3,6 @@ Notes on the Foreign Function Interface (ffi) - 22 June 2002
 N.B. The Hugs FFI implementation has changed significantly since the
 December 2001 release.
 
-Suppose you have some C functions in test.c and some ffi declarations
-for those functions in Test.hs and the code in test.c needs to be
-compiled with -lm.  You can use these with Hugs as follows:
-
-  # Use ffihugs to generate Test.c compile it and link it against 
-  # test.c and -lm to produce Test.so
-  #
-  # [If Test.hs depends on other ffi modules, you'll have to compile
-  # them first.]
-  ffihugs +G +L"test.c" +L"-lm" Test.hs 
-
-  # Run Hugs as normal - when Test.hs is loaded, it will load Test.so
-  hugs Test.hs
-
-  # And now try using the imported or exported functions.
-
-This release implements the Haskell foreign function interface
-definition release candidate 7:
-
-  http://www.cse.unsw.edu.au/~chak/haskell/ffi/
-
-with a few minor caveats (excruciating details appended at the end).
-
-
-Enjoy!
-
---
-Alastair Reid                 alastair@reid-consulting-uk.ltd.uk  
-Reid Consulting (UK) Limited  http://www.reid-consulting-uk.ltd.uk/alastair/
-
-
 Known limitations:
 
 o Only the ccall calling convention is supported.  All others are flagged as

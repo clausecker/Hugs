@@ -1,0 +1,24 @@
+<!DOCTYPE BOOK PUBLIC "-//OASIS//DTD DocBook V3.1//EN" [
+<!ENTITY commands       SYSTEM "commands.sgml">
+<!ENTITY extensions     SYSTEM "extensions.sgml">
+<!ENTITY haskell98      SYSTEM "haskell98.sgml">
+<!ENTITY install        SYSTEM "install.sgml">
+<!ENTITY introduction   SYSTEM "introduction.sgml">
+<!ENTITY license        SYSTEM "license.sgml">
+<!ENTITY running        SYSTEM "running.sgml">
+]>
+  
+<book id="users-guide">
+<bookInfo>
+<title>The Hugs User's Guide</title>
+</bookInfo>
+
+&license;
+&introduction;
+&install;
+&running;
+&commands;
+&haskell98;
+&extensions;
+
+</book>

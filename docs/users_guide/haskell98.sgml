@@ -1,0 +1,296 @@
+<chapter id="bugs">
+<title>Hugs <foreignphrase>vs</foreignphrase> Haskell 98 and addenda</title>
+
+<para>
+In <option>+98</option> mode, Hugs supports
+<ulink url="http://www.haskell.org/definition/">Haskell 98</ulink>
+with extensions that are standardized between Hugs
+and the Haskell compilers
+<ulink url="http://www.haskell.org/ghc/">GHC</ulink> and
+<ulink url="http://www.cs.york.ac.uk/fp/nhc98/">Nhc</ulink>.
+<para>
+
+<sect1 id="extensions">
+<title>Addenda to Haskell 98</title>
+
+<sect2 id="ffi">
+<title>Haskell Foreign Function Interface</title>
+
+<para>
+The Haskell Foreign Function Interface, as described in the
+<ulink url="http://www.cse.unsw.edu.au/~chak/haskell/ffi/">FFI addendum</ulink>
+is implemented except for the following limitations:
+</para>
+<itemizedlist>
+<listitem><para>
+Only the <literal>ccall</literal> calling convention is supported.
+All others are flagged as errors.
+</para></listitem>
+
+<listitem><para>
+<literal>foreign export</literal> is not implemented.
+</para></listitem>
+
+<listitem><para>
+<literal>foreign import wrapper</literal> are only implemented for the
+x86, PowerPC and Sparc architectures and has been most thoroughly tested on
+Windows and Linux using gcc.
+</para></listitem>
+</itemizedlist>
+<para>
+Modules containing <literal>foreign</literal> declarations must be compiled
+with <command>ffihugs</command> before use (see <xref linkend="ffihugs">).
+</para>
+
+</sect2>
+
+<sect2 id="long-names">
+<title>Extended module names</title>
+
+<para>
+Module names may contain dots, e.g. <literal>System.IO.Error</literal>,
+to support a hierarchical module namespace.
+When searching for the corresponding source file,
+Hugs replaces the dots with slashes.
+</para>
+
+</sect2>
+
+</sect1>
+
+<sect1 id="bugs-haskell98">
+<title>Haskell 98 non-compliance</title>
+
+<sect2 id="bugs-lexical">
+<title>Lexical structure</title>
+
+<variablelist>
+
+<varlistentry>
+<term>Restricted character set</term>
+<listitem><para>
+The Haskell report specifies that programs may be written using Unicode.
+Hugs only accepts the ISO8859-1 (Latin-1) subset at the moment.
+</para></listitem>
+</varlistentry>
+
+</variablelist>
+
+</sect2>
+
+<sect2 id="bugs-syntax">
+<title>Syntax</title>
+
+<variablelist>
+
+<varlistentry>
+<term>Interaction of fixities with the
+<literal>let</literal>/<literal>lambda</literal> meta-rule</term>
+<listitem><para>
+Hugs doesn't use the fixity of operators until after parsing, and so
+fails to accept legal (but wierd) Haskell 98 expressions like
+<programlisting>
+  let x = True in x == x == True
+</programlisting>
+</para></listitem>
+</varlistentry>
+
+<varlistentry>
+<term>Restricted syntax for left sections</term>
+<listitem><para>
+In Hugs, the expression must be an fexp
+(or <literal>case</literal> or <literal>do</literal>).
+Legal expressions like <literal>(a+b+)</literal>) and
+<literal>(a*b+)</literal>) are rejected.
+</para></listitem>
+</varlistentry>
+
+</variablelist>
+
+</sect2>
+
+<sect2 id="bugs-types">
+<title>Type system</title>
+
+<variablelist>
+
+<varlistentry>
+<term>Slight relaxation of polymorphic recursion</term>
+<listitem><para>
+Hugs uses a more refined dependency analysis than that specified by Haskell 98,
+and as a result accepts a slightly more general form of polymorphic recursion.
+(It could be argued that this is a bug in Haskell 98.)
+Consider the following declarations:
+<programlisting>
+  f  :: Eq a => a -> Bool
+  f x = x==x || g True || g 'a'
+  g y = y<=y || f True || f 'b'
+</programlisting>
+In Haskell 98, the bindings of <literal>f</literal> and <literal>g</literal>
+are interdependent, and thus constitute a single binding group.
+When type inference is performed on this group,
+<literal>f</literal> may be used at different types,
+because it has a user-supplied polymorphic signature.
+However, <literal>g</literal> may not, and the example is rejected,
+unless we add an explicit type signature for <literal>g</literal>.
+</para>
+
+<para>
+In Hugs, the binding of <literal>f</literal> depends on that of
+<literal>g</literal>, but not vice versa.
+(The binding of <literal>g</literal> is considered to depend only on
+the explicit signature of <literal>f</literal>.)
+Using the user-supplied signature for <literal>f</literal>,
+tye type of <literal>g</literal> is inferred as
+<literal>forall a. Ord a => a -> Bool</literal>.
+Using this type, the type of <literal>f</literal> is inferred as
+<literal>forall a. Eq a => a -> Bool</literal>, which matches its signature.
+</para></listitem>
+</varlistentry>
+
+<varlistentry>
+<term>Relaxation of type classes</term>
+<listitem><para>
+Contrary to the the Report (4.3.1), Hugs allows the types of the member
+functions of a class <replaceable>C</replaceable> <replaceable>a</replaceable>
+to impose further constraints on <replaceable>a</replaceable>, as in
+<programlisting>
+  class Foo a where
+    op :: Num a => a -> a -> a
+</programlisting>
+</para></listitem>
+
+<varlistentry>
+<term>Different implementation of the monomorphism restriction for top-level bindings</term>
+<listitem><para>
+For example, Hugs rejects the following example from the
+Haskell 98 Report, 4.5.5:
+<programlisting>
+  module M where
+    import List
+    len1 = genericLength "Hello"
+    len2 = (2*len1) :: Rational
+</programlisting>
+This module consists of two binding groups, containing <literal>len1</literal>
+and <literal>len2</literal> respectively.
+Tye inference on the first (<literal>len1</literal>) triggers the monomorphism
+restriction, so that <literal>len1</literal> is assigned the monomorphic type
+<literal>(Num a => a)</literal>.
+The next step differs between Haskell 98 and Hugs:
+<itemizedlist>
+<listitem><para>
+In Haskell 98,
+type inference is then performed on <literal>len2</literal>,
+resolving the type variable <literal>a</literal>
+to <literal>Rational</literal>, and the module is legal.
+</para></listitem>
+
+<listitem><para>
+In Hugs, the defaulting rule is applied to <literal>len1</literal>,
+instantiating the type variable <literal>a</literal> to
+<literal>Integer</literal>.
+Then type inference on <literal>len2</literal> fails.
+</para></listitem>
+</itemizedlist>
+<!--
+<http://www.mail-archive.com/haskell@haskell.org/msg05160.html>
+-->
+</para></listitem>
+</varlistentry>
+
+</variablelist>
+
+</sect2>
+
+<sect2 id="bugs-modules">
+<title>Module system</title>
+
+<variablelist>
+
+<varlistentry>
+<term>Type synonyms in export and import lists</term>
+<listitem><para>
+Hugs allows the <replaceable>T</replaceable><literal>(..)</literal>
+syntax for type synonyms in export and import lists.
+It also allows the form <replaceable>T</replaceable><literal>()</literal>
+for type synonyms in import lists.
+</para></listitem>
+</varlistentry>
+
+<varlistentry>
+<term>Mutually recursive modules are not supported</term>
+<listitem><para>
+Note that although the Haskell 98 specification of the
+<literal>Prelude</literal> and library modules is recursive,
+Hugs achieves the same effect by putting most of these definitions
+in a module <literal>Hugs.Prelude</literal> that these modules import.
+</para></listitem>
+</varlistentry>
+
+</variablelist>
+
+</sect2>
+
+<sect2 id="bugs-primitives">
+<title>Primitive types</title>
+
+<variablelist>
+
+<varlistentry>
+<term>Unicode is not supported</term>
+<listitem><para>
+The type <literal>Char</literal> is limited to the ISO8859-1 subset of Unicode.
+</para></listitem>
+
+<varlistentry>
+<term>Rational literals lose precision</term>
+<listitem><para>
+In Haskell 98, a floating point literal like <literal>1.234e-5</literal>
+stands for <quote><literal>fromRational (1234 % 100000000)</literal></quote>.
+In particular, if the literal is of <literal>Rational</literal> type,
+the fraction is exact.
+In Hugs such literals are stored as double precision floating point numbers.
+If the literal is of <literal>Rational</literal> type,
+it usually denotes the same number, but some precision may be lost.
+</para></listitem>
+</varlistentry>
+
+<varlistentry>
+<term>
+Floating point values are printed differently
+</term>
+<listitem><para>
+Haskell 98 specifes that <literal>show</literal> for floating point numbers
+is the function <literal>Numeric.showFloat</literal>,
+but Hugs uses an internal function with slightly different semantics.
+</para></listitem>
+</varlistentry>
+
+<varlistentry>
+<term>
+Derived <literal>Read</literal> instances do not work for some infix
+constructors.
+</term>
+<listitem><para>
+</para></listitem>
+</varlistentry>
+
+<varlistentry>
+<term>Derived instances for large tuples are not supplied</term>
+<listitem><para>
+In Haskell 98, all tuple types are instances of
+<literal>Eq</literal>, <literal>Ord</literal>, <literal>Bounded</literal>,
+<literal>Read</literal>, and <literal>Show</literal>
+if all their component types are.
+Hugs defines these instances only for tuple types of size 5 or less
+(3 in the small Hugs configuration).
+</para></listitem>
+</varlistentry>
+
+</variablelist>
+
+</sect2>
+
+</sect1>
+
+</chapter>

@@ -1,0 +1,316 @@
+<chapter>
+<title>Hugs commands</title>
+
+<sect1 id="basic-commands">
+<title>Basic commands</title>
+<variablelist>
+
+<varlistentry id="eval-command">
+<term>
+<cmdsynopsis>
+<arg choice=plain><replaceable>expr</replaceable></arg>
+</cmdsynopsis>
+</term>
+
+<listitem>
+<para>
+Evaluate expression.
+</para>
+</listitem>
+</varlistentry>
+
+<varlistentry id="type-command">
+<term>
+<cmdsynopsis>
+<command>:type</command> <arg choice=plain><replaceable>expr</replaceable></arg>
+</cmdsynopsis>
+</term>
+
+<listitem>
+<para>
+Print the type of <replaceable>expr</replaceable>.
+</para>
+</listitem>
+</varlistentry>
+
+<varlistentry id="set-command">
+<term>
+<cmdsynopsis>
+<command>:set</command> <arg rep=repeat><replaceable>option</replaceable></arg>
+</cmdsynopsis>
+</term>
+
+<listitem>
+<para>
+Set command line options.
+See <xref linkend="options-list"> for a list of available options.
+</para>
+<para>
+If no options are given, list the available options and their current settings.
+</para>
+</listitem>
+</varlistentry>
+
+<varlistentry id="quit-command">
+<term>
+<cmdsynopsis>
+<command>:quit</command>
+</cmdsynopsis>
+</term>
+
+<listitem>
+<para>
+Exit the interpreter.
+</para>
+</listitem>
+</varlistentry>
+
+</variablelist>
+</sect1>
+
+<sect1 id="module-commands">
+<title>Module loading and editing</title>
+<variablelist>
+
+<varlistentry id="load-command">
+<term>
+<cmdsynopsis>
+<command>:load</command> <arg rep=repeat><replaceable>file</replaceable></arg>
+</cmdsynopsis>
+</term>
+
+<listitem>
+<para>
+Clear all files except the <literal>Prelude</literal>,
+and then load modules from the specified files (if any).
+The last module loaded becomes the current module.
+</para>
+</listitem>
+</varlistentry>
+
+<varlistentry id="also-command">
+<term>
+<cmdsynopsis>
+<command>:also</command> <arg rep=repeat choice=plain><replaceable>file</replaceable></arg>
+</cmdsynopsis>
+</term>
+
+<listitem>
+<para>
+Read additional modules from the specified files.
+The last module loaded becomes the current module.
+</para>
+</listitem>
+</varlistentry>
+
+<varlistentry id="reload-command">
+<term>
+<cmdsynopsis>
+<command>:reload</command>
+</cmdsynopsis>
+</term>
+
+<listitem>
+<para>
+Clear all files except the <literal>Prelude</literal>,
+and then reload all the previously loaded modules.
+</para>
+</listitem>
+</varlistentry>
+
+<varlistentry id="module-command">
+<term>
+<cmdsynopsis>
+<command>:module</command> <arg choice=plain><replaceable>module</replaceable></arg>
+</cmdsynopsis>
+</term>
+
+<listitem>
+<para>
+Set module for evaluating expressions.
+</para>
+</listitem>
+</varlistentry>
+
+<varlistentry id="project-command">
+<term>
+<cmdsynopsis>
+<command>:project</command> <arg choice=plain><replaceable>file</replaceable></arg>
+</cmdsynopsis>
+</term>
+
+<listitem>
+<para>
+Use project file.
+</para>
+</listitem>
+</varlistentry>
+
+<varlistentry id="edit-command">
+<term>
+<cmdsynopsis>
+<command>:edit</command> <arg choice=opt><replaceable>file</replaceable></arg>
+</cmdsynopsis>
+</term>
+
+<listitem>
+<para>
+The <literal>:edit</literal> command starts an editor program to modify
+or view a Haskell module.
+Hugs suspends until the editor terminates,
+and then reloads the currently loaded modules.
+The <option>-E</option> option (see <xref linkend="options-editor">)
+can be used to configure Hugs to your editor of choice.
+</para>
+
+<para>
+If no filename is specified, Hugs edits the current module.
+</para>
+
+</listitem>
+</varlistentry>
+
+<varlistentry id="find-command">
+<term>
+<cmdsynopsis>
+<command>:find</command> <arg choice=plain><replaceable>name</replaceable></arg>
+</cmdsynopsis>
+</term>
+
+<listitem>
+<para>
+edit module containing definition of <replaceable>name</replaceable>.
+</para>
+</listitem>
+</varlistentry>
+
+</variablelist>
+</sect1>
+
+<sect1 id="info-commands">
+<title>Informational commands</title>
+<variablelist>
+
+<varlistentry id="help-command">
+<term>
+<cmdsynopsis>
+<command>:?</command>
+</cmdsynopsis>
+</term>
+
+<listitem>
+<para>
+Display a brief summary of commands.
+</para>
+</listitem>
+</varlistentry>
+
+<varlistentry id="names-command">
+<term>
+<cmdsynopsis>
+<command>:names</command> <arg choice=opt><replaceable>pat</replaceable></arg>
+</cmdsynopsis>
+</term>
+
+<listitem>
+<para>
+List names currently in scope.
+</para>
+</listitem>
+</varlistentry>
+
+<varlistentry id="info-command">
+<term>
+<cmdsynopsis>
+<command>:info</command> <arg choice=opt><replaceable>pat</replaceable></arg>
+</cmdsynopsis>
+</term>
+
+<listitem>
+<para>
+Describe the named objects.
+</para>
+</listitem>
+</varlistentry>
+
+<varlistentry id="browse-command">
+<term>
+<cmdsynopsis>
+<command>:browse</command> <arg rep=repeat choice=plain><replaceable>module</replaceable></arg>
+</cmdsynopsis>
+</term>
+
+<listitem>
+<para>
+Browse names defined in the specified modules.
+</para>
+</listitem>
+</varlistentry>
+
+<varlistentry id="version-command">
+<term>
+<cmdsynopsis>
+<command>:version</command>
+</cmdsynopsis>
+</term>
+
+<listitem>
+<para>
+Print Hugs version.
+</para>
+</listitem>
+</varlistentry>
+
+</variablelist>
+</sect1>
+
+<sect1 id="misc-commands">
+<title>Miscellaneous commands</title>
+<variablelist>
+
+<varlistentry id="shell-command">
+<term>
+<cmdsynopsis>
+<command>:!</command><arg choice=plain><replaceable>command</replaceable></arg>
+</cmdsynopsis>
+</term>
+
+<listitem>
+<para>
+Shell escape.
+</para>
+</listitem>
+</varlistentry>
+
+<varlistentry id="cd-command">
+<term>
+<cmdsynopsis>
+<command>:cd</command> <arg choice=plain><replaceable>dir</replaceable></arg>
+</cmdsynopsis>
+</term>
+
+<listitem>
+<para>
+Change the working directory of Hugs to <replaceable>dir</replaceable>.
+</para>
+</listitem>
+</varlistentry>
+
+<varlistentry id="gc-command">
+<term>
+<cmdsynopsis>
+<command>:gc</command>
+</cmdsynopsis>
+</term>
+
+<listitem>
+<para>
+Force a garbage collection.
+</para>
+</listitem>
+</varlistentry>
+
+</variablelist>
+</sect1>
+
+</chapter>

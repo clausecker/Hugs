@@ -1,0 +1,703 @@
+<chapter>
+<title>Running Hugs</title>
+
+<sect1>
+<title>Passing options to Hugs</title>
+
+<cmdsynopsis>
+<command>hugs</command>
+<arg rep=repeat choice=opt><replaceable>option</replaceable></arg>
+<arg rep=repeat choice=opt><replaceable>file</replaceable></arg>
+</cmdsynopsis>
+
+<para>
+See <ulink url="http://cvs.haskell.org/Hugs/pages/hugsman/started.html">Section 4 of the <citetitle pubwork=article>Hugs 98 User Manual</citetitle></ulink>.
+</para>
+
+</sect1>
+
+<sect1 id="options-list">
+<title>Hugs options</title>
+
+<para>
+Hugs takes two kinds of options:
+<itemizedlist>
+<listitem>
+<para>
+Toggles like <option>+t</option> or <option>-t</option>,
+which start with <literal>+</literal> or <literal>-</literal>
+to turn them on  or  off,  respectively.
+</para>
+</listitem>
+
+<listitem>
+<para>
+Options that set a parameter value, like
+<option>-P</option><replaceable>str</replaceable>,
+in which <literal>-</literal> could be replaced by <literal>+</literal>,
+the choice making no difference.
+</para>
+</listitem>
+</itemizedlist>
+</para>
+
+<sect2 id="options-language">
+<title>Language options</title>
+
+<variablelist>
+
+<varlistentry>
+<term><option>+98</option></term>
+<listitem>
+<para>
+Accept only Haskell 98.
+This is on by default, and cannot be changed within Hugs.
+Turning this off enables several special Hugs extensions,
+which are described in <xref linkend="extensions"> and
+the <citetitle pubwork=article>Hugs 98 User Manual</citetitle>.
+</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term><option>+o</option></term>
+<listitem>
+<para>
+Allow overlapping instances (a Hugs extension; default: off)
+</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term><option>+O</option></term>
+<listitem>
+<para>
+Allow overlapping instances (a Hugs extension; default: off)
+</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term><option>+H</option></term>
+<listitem>
+<para>
+Support <emphasis>here documents</emphasis>
+(named after similar things in Unix shells),
+another way of writing string literals, often useful for large strings.
+Everything from <literal>``</literal> to <literal>''</literal>
+(including newlines and backslashes, but not <literal>$</literal> characters)
+is treated as literal text, and layout is ignored.
+The exception is the <literal>$</literal> character,
+so that you can embed the value of the variable <replaceable>var</replaceable>
+in the string by writing
+<literal>$(</literal><replaceable>var</replaceable><literal>)</literal>.
+To get a literal <literal>$</literal> character,
+write <literal>$$</literal> &mdash;
+single <literal>$</literal> characters are not allowed.
+</para>
+<para>
+This extension is turned off by default.
+When <option>+H</option> is given, the following
+<programlisting>
+  letter name = ``Dear $(name),
+Here are some characters: \ ' ` ".
+To learn more, send $$10 to the address below.''
+</programlisting>
+is equivalent the Haskell 98 declaration
+<programlisting>
+  letter name = "Dear " ++ quote name ++ ",\n\
+                \Here are some characters: \\ ' ` \".\n\
+                \To learn more, send $10 to the address below."
+</programlisting>
+The function
+<programlisting>
+  class Quote where
+      quote :: a -> String
+</programlisting>
+(basically no change for <literal>String</literal> and <literal>Char</literal>,
+and <literal>show</literal> for everything else)
+comes from the Quote module, which also defines several common instances,
+and should be imported if you use the
+<literal>$(</literal><replaceable>var</replaceable><literal>)</literal> form.
+(This module also requires the <option>-98</option> option.)
+</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term><option>+W</option></term>
+<listitem>
+<para>
+Use old implicit parameter syntax.
+</para>
+<para>
+Allow overlapping instances (a Hugs extension; default: off)
+With the <option>-98</option> option, Hugs supports implicit parameters,
+as described in
+<citetitle pubwork=article>Implicit parameters: dynamic scoping with static types</citetitle>, J Lewis,
+MB Shields, E Meijer, J Launchbury,
+<citetitle pubwork=book>27th ACM Symposium on Principles of Programming Languages (POPL'00)</citetitle>, Boston, Jan 2000.
+The syntax used in that paper, using new keywords <literal>dlet</literal>
+and <literal>with</literal>, is now deprecated in favour of the form
+<programlisting>
+  let ?var = exp in exp
+</programlisting>
+The old syntax is still supported,
+unless the <option>-W</option> option is given.
+(If <option>+98</option> is in effect, neither syntax is available.)
+This frees <literal>dlet</literal> and <literal>with</literal>
+for use by programs, and is required by some libraries,
+e.g. <literal>Foreign</literal>.
+</para>
+</listitem>
+</varlistentry>
+
+</variablelist>
+</sect2>
+
+<sect2 id="options-loading">
+<title>Module loading</title>
+
+<variablelist>
+
+<varlistentry>
+<term><option>+l</option></term>
+<listitem>
+<para>
+Literate scripts as default (default: off)
+</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term><option>+e</option></term>
+<listitem>
+<para>
+Warn about errors in literate scripts (default: on)
+</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term><option>+.</option></term>
+<listitem>
+<para>
+Print dots to show progress while loading modules (default: off)
+</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term><option>+q</option></term>
+<listitem>
+<para>
+Print nothing to show progress while loading modules (default: off)
+</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term><option>+w</option></term>
+<listitem>
+<para>
+Always show which files were loaded (default: on)
+</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term><option>+i</option></term>
+<listitem>
+<para>
+Chase imports while loading files (default: on)
+</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term><option>-F</option><replaceable>cmd</replaceable></term>
+<listitem>
+<para>
+Preprocess source files before loading.
+</para>
+<para>
+Instead of reading a source file directly, Hugs will
+execute <replaceable>cmd</replaceable> with the source file name as argument,
+and read the standard output.
+</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term><option>-P</option><replaceable>str</replaceable></term>
+<listitem>
+<para>
+Set search path for source files to <replaceable>str</replaceable>,
+which should be a list of directories separated by colons
+(semicolons on Windows, DOS or Macs).
+A null entry in this list will be replaced by the previous search path;
+a null <replaceable>str</replaceable> means the default path.
+Any occurrences of <literal>{Hugs}</literal> in this string will be replaced
+by the Hugs library directory.
+The default value is
+<programlisting>
+{Hugs}/libraries:{Hugs}/oldlib
+</programlisting>
+</para>
+<para>
+The interpreter won't let you change the search path if that would
+prevent it from reading the <literal>Prelude</literal>.
+</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term><option>-S</option><replaceable>str</replaceable></term>
+<listitem>
+<para>
+Set list of filename suffixes.
+</para>
+<para>
+Normally, when you import a module <replaceable>M</replaceable>,
+Hugs looks for files <replaceable>M</replaceable><literal>.hs</literal>
+and <replaceable>M</replaceable><literal>.lhs</literal>
+in each directory in you search path.
+With this option, you can change this list,
+in a similar way to the <option>-P</option> option for the search path.
+By default, the suffix list is <quote><literal>.hs:.lhs</literal></quote>,
+which gives the behaviour just described.
+(NB: the <quote><literal>:</literal></quote> is the Unix separator.
+Windows or Macs use <quote><literal>;</literal></quote> instead.)
+If you use <literal>-S:.xhs</literal> then the suffix
+list becomes <quote><literal>.hs:.lhs:.xhs</literal></quote>,
+so Hugs will look for
+<replaceable>M</replaceable><literal>.hs</literal>,
+<replaceable>M</replaceable><literal>.lhs</literal>
+and <replaceable>M</replaceable><literal>.xhs</literal>.
+</para>
+<para>
+A null entry in this list will be replaced by the previous suffix list;
+a null <replaceable>str</replaceable> means the default list.
+</para>
+<para>
+The interpreter won't let you change the suffix list if that would
+prevent it from reading the <literal>Prelude</literal>,
+i.e. you must include <quote><literal>.hs</literal></quote>.
+Note also that the interpreter knows that files ending in
+<quote><literal>.lhs</literal></quote> are literate scripts;
+no other suffix is treated that way.
+</para>
+<para>
+This option can be useful in conjunction with the preprocessor option
+(<option>-F</option>).
+The preprocessor can examine the filename to decide what to do with the file.
+</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term><option>+X</option></term>
+<listitem>
+<para>
+Add loaded module's directory to search path.
+</para>
+<para>
+By default, the interpreter adds the directory of the file being
+loaded to its import search path. This is so that when resolving
+an import of a module named <replaceable>M</replaceable>,
+you'll pick up <replaceable>M</replaceable> from the
+directory of the loaded file, if present.
+This fits nicely with the scenario when you invoke Hugs as follows
+(either directly or via GUI shell file associations):
+<programlisting>
+  hugs /path/to/my/project/code.hs
+</programlisting>
+avoiding the user from having to explicitly add
+<quote><literal>/path/to/my/project/</literal></quote>
+to his/her search path first.
+</para>
+<para>
+This behaviour does introduce a potential problem when used in
+conjunction with hierarchical module names though.
+Consider the modules <literal>A.B.C</literal> and <literal>A.B.Char</literal>,
+with <literal>A.B.C</literal> containing an
+import of the Haskell 98 module <literal>Char</literal>.
+When Hugs loads up <literal>A/B/C.hs</literal>,
+it adds <literal>A/B/</literal> to its search path.
+This will cause the interpreter to resolve the import of
+<literal>Char</literal> to <filename>A/B/Char.hs</filename>, which is wrong.
+</para>
+<para>
+However the impact is slight, because hierarchical modules tend to
+import other modules with compound names.
+If the module <literal>A.B.C</literal> had imported the same module
+by its longer name <literal>Data.Char</literal>,
+no confusion would arise unless <filename>A/B/Data/Char.hs</filename>
+were found.
+In particular, the hierarchical libraries provided with Hugs are unaffected.
+</para>
+</listitem>
+</varlistentry>
+
+</variablelist>
+</sect2>
+
+<sect2 id="options-editor">
+<title>Source file editor</title>
+
+<variablelist>
+
+<varlistentry>
+<term><option>-E</option><replaceable>str</replaceable></term>
+<listitem>
+<para>
+Specify the editor used by the <literal>:edit</literal> command
+(see <xref linkend="module-commands">).
+For example, to have Hugs invoke <literal>vi</literal> to edit your files,
+use
+<programlisting>
+  -Evi
+</programlisting>
+The argument string is actually a template string that gets expanded
+by Hugs, via the following rules:
+<itemizedlist>
+
+<listitem>
+<para>
+all occurrences of <literal>%d</literal> are replaced by the line number
+of where the last error occurred (if any).
+Please consult your editor's documentation for ways of specifying the
+line number.
+</para>
+</listitem>
+
+<listitem>
+<para>
+all occurrences of <literal>%s</literal> are replaced by the name of the file.
+If an occurrence of <literal>%s</literal> is both preceded by and followed
+by space, the filename is enclosed in double-quotes.
+</para>
+</listitem>
+
+<listitem>
+<para>
+all occurrences of <literal>%f</literal> are replaced by the absolute filename
+(provided your platform lets you find the absolute path to a file.)
+Most of the time, <literal>%s</literal> will be just fine, but in case your
+editor doesn't handle relative filenames correctly, try
+using <literal>%f</literal>.
+</para>
+</listitem>
+
+<listitem>
+<para>
+all occurrences of <literal>%%</literal> are replaced by <literal>%</literal>.
+</para>
+</listitem>
+
+<listitem>
+<para>
+(win32 only): if the <option>-E</option> string is prefixed with
+the character <quote><literal>&amp;</literal></quote>,
+then the invocation is asynchronous, that is, the editor process
+is created, but Hugs won't wait for the editor to terminate.
+</para>
+</listitem>
+
+<listitem>
+<para>
+(win32 only): if the <option>-E</option> string is prefixed with
+the character <quote><literal>!</literal></quote>,
+then the invocation will be asynchronous and use the underlying
+command processor/shell to execute the command.
+</para>
+</listitem>
+
+</itemizedlist>
+<para>
+If neither <literal>%s</literal> nor <literal>%f</literal> occurs within
+the <option>-E</option> string,
+then the filename is appended before invoking the editor.
+</para>
+
+<para>
+Here are some example editor configurations:
+</para>
+
+<itemizedlist>
+<listitem>
+<para>
+TextPad
+<programlisting>
+  -E"c:/Program Files/TextPad 4/textpad \"%s\"(%d)"
+</programlisting>
+</para>
+</listitem>
+       
+<listitem>
+<para>
+vi and clones
+<programlisting>
+  -E"vi +%d %s"
+</programlisting>
+</para>
+</listitem>
+
+<listitem>
+<para>
+gnuclient (for use with (X)Emacs)
+<programlisting>
+  -E"gnuclient +%d %s"
+</programlisting>
+</para>
+</listitem>
+</itemizedlist>
+
+</listitem>
+</varlistentry>
+
+</variablelist>
+</sect2>
+
+<sect2 id="options-evaluation">
+<title>Expression evaluation and printing</title>
+
+<variablelist>
+
+<varlistentry>
+<term><option>-h</option><replaceable>num</replaceable></term>
+<listitem>
+<para>
+Set heap size (cannot be changed within Hugs; default: 250K)
+</para>
+
+<varlistentry>
+<term><option>-p</option><replaceable>str</replaceable></term>
+<listitem>
+<para>
+Set prompt string to <replaceable>str</replaceable>
+(default: <quote><literal>%s> </literal></quote>).
+Any <literal>%s</literal> in <replaceable>str</replaceable>
+will be replaced by the current module name.
+</para>
+
+<varlistentry>
+<term><option>-r</option><replaceable>str</replaceable></term>
+<listitem>
+<para>
+Set repeat last expression string to <replaceable>str</replaceable>
+(default: <quote><literal>$$</literal></quote>).
+</para>
+
+<varlistentry>
+<term><option>-c</option><replaceable>num</replaceable></term>
+<listitem>
+<para>
+Set constraint cutoff limit in the type checker to
+<replaceable>num</replaceable> (default: 40).
+</para>
+
+<varlistentry>
+<term><option>+s</option></term>
+<listitem>
+<para>
+Print number of reductions/cells after each evaluation (default: off)
+</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term><option>+t</option></term>
+<listitem>
+<para>
+Print type after each evaluation (default: off)
+</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term><option>+k</option></term>
+<listitem>
+<para>
+Show kind errors in full (default: off)
+</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term><option>+u</option></term>
+<listitem>
+<para>
+Use <literal>show</literal> to display results (default: on)
+</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term><option>+g</option></term>
+<listitem>
+<para>
+Print number of cells recovered after each garbage collection (default: off)
+</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term><option>+Q</option></term>
+<listitem>
+<para>
+Qualify names when printing (default: off)
+</para>
+<para>
+By default, the interpreter will print out names without qualifying
+them with their defining modules.
+Most of the time that's exactly what you want,
+but can become confusing if you re-define types and functions;
+the error messages not pinning down what entity it is referring to.
+To have the interpreter qualify the names, use <option>+Q</option>.
+Typically, you use <option>+Q</option> when resolving errors,
+but turn it back off again afterwards.
+</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term><option>+I</option></term>
+<listitem>
+<para>
+Display results of IO programs (default: off)
+</para>
+<para>
+By default, an expression of <literal>IO</literal> type typed at the prompt
+is executed for effect, but the final value it produces is discarded.
+When <option>+I</option> is used, such an expression is evaluated,
+and then its result is printed with <literal>Prelude.print</literal>:
+<programlisting>
+  Prelude> :set +I
+  Prelude> (return 'a' :: IO Char)
+  'a'
+  Prelude>
+</programlisting>
+i.e., evaluating an IO action <replaceable>m</replaceable>
+with <option>+I</option> in effect is equivalent to evaluating
+<quote><literal>do { x <- m ; print x }</literal></quote>
+with <option>-I</option>.
+</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term><option>+Q</option></term>
+<listitem>
+<para>
+Qualify names when printing (default: off)
+</para>
+<para>
+By default, the interpreter will print out names without qualifying
+them with their defining modules. Most of the time that's exactly what
+you want, but can become confusing if you re-define types and functions;
+the error messages not pinning down what entity it is referring to.
+To have the interpreter qualify the names, use <option>+Q</option>.
+Typically, you use <option>+Q</option> when resolving errors,
+but turn it back off again afterwards.
+</para>
+</listitem>
+
+</varlistentry>
+
+<varlistentry>
+<term><option>+T</option></term>
+<listitem>
+<para>
+Defaulting types when printing (default: off)
+</para>
+<para>
+When printing out types, the interpreter will not try to
+simplify types by applying Haskell's defaulting rules for
+numeric types, e.g.,
+<programlisting>
+  Prelude> :t 1
+  1 :: Num a => a
+  Prelude>
+</programlisting>
+With the <option>+T</option>,
+the interpreter attempts to <quote>default</quote> types first:
+<programlisting>
+  Prelude> :set +T
+  Prelude> :t 1
+  1 :: Integer
+  Prelude>
+</programlisting>
+Default: -T
+</para>
+</listitem>
+</varlistentry>
+
+</variablelist>
+</sect2>
+
+</sect1>
+
+<sect1 id="runhugs">
+<title>Standalone programs</title>
+
+<cmdsynopsis>
+<command>runhugs</command>
+<arg rep=repeat choice=opt><replaceable>option</replaceable></arg>
+<arg choice=plain><replaceable>file</replaceable></arg>
+</cmdsynopsis>
+
+<para>
+The <command>runhugs</command> command is an interpreter for an executable Hugs
+script, which must be a literate script containing a Haskell
+<literal>Main</literal> module.
+For example, an executable file might contain the lines
+<programlisting> 
+  #!/usr/local/bin/runhugs
+
+  > module Main where
+  > main = putStr "Hello, World\n"
+</programlisting> 
+When this file is executed, <command>runhugs</command> will invoke
+the <literal>main</literal> function.
+Any arguments given on the command line will be available through
+the <literal>getArgs</literal> action.
+</para>
+
+</sect1>
+
+<sect1 id="ffihugs">
+<title>Compiling modules that use the Foreign Function Interface</title>
+
+<cmdsynopsis>
+<command>ffihugs</command> <arg><option>+G</option></arg>
+<arg rep=repeat choice=opt><replaceable>option</replaceable></arg>
+<arg rep=repeat choice=opt><option>+L</option><replaceable>cc-option</replaceable></arg>
+<arg choice=plain><replaceable>file</replaceable></arg>
+</cmdsynopsis>
+
+<para>
+Suppose you have some C functions in <literal>test.c</literal>
+and some ffi declarations for those functions in <literal>Test.hs</literal>
+and the code in <literal>test.c</literal> needs to be
+compiled with <option>-lm</option>.
+To use these with Hugs, you must first use <command>ffihugs</command>
+to generate <literal>Test.c</literal>, compile it and link it against
+<literal>test.c</literal> with <option>-lm</option> to produce
+<literal>Test.so</literal>:
+<programlisting>
+  ffihugs +G +L"test.c" +L"-lm" Test.hs 
+</programlisting>
+(If <literal>Test.hs</literal> depends on other ffi modules,
+you'll have to compile them first.)
+Now you can run Hugs as normal;
+when <literal>Test.hs</literal> is loaded,
+Hugs will load <literal>Test.so</literal>.)
+<programlisting>
+  hugs Test.hs
+</programlisting>
+and then use the imported or exported functions.
+
+</sect1>
+
+</chapter>
