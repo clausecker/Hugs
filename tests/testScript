@@ -29,8 +29,8 @@ test_static() {
   perl runstdtest $HUGS $STDOPTS "-Ostatic/syntax.hs" "-o1static/syntax.output"
 
   # ToDo: test for duplicate modules 
-  perl runstdtest $HUGS -O-i $STDOPTS "-Ostatic/mod1.hs"   "-o1static/mod1.output"
-  perl runstdtest $HUGS -O-i $STDOPTS "-Ostatic/mod2.hs"   "-o1static/mod2.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod1.hs"   "-o1static/mod1.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod2.hs"   "-o1static/mod2.output"
   perl runstdtest $HUGS $STDOPTS "-Ostatic/mod3.hs"   "-o1static/mod3.output"
   perl runstdtest $HUGS $STDOPTS "-Ostatic/mod4.hs"   "-o1static/mod4.output"
   perl runstdtest $HUGS $STDOPTS "-Ostatic/mod5.hs"   "-o1static/mod5.output"

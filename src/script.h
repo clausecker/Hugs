@@ -15,9 +15,8 @@
  * known to the interpreter. 
  *
  * When the interpreter processes a module, it adds the module's
- * imports to the script stack [this is only in 'chaseImports'
- * mode, btw], which are then subsequently loaded in. Assuming
- * the imported modules were all found and loaded without error,
+ * imports to the script stack which are then subsequently loaded in.
+ * Assuming the imported modules were all found and loaded without error,
  * the original module and its imports is then processed again, 
  * but this time all the imports are found on the stack of scripts
  * already loaded in.

@@ -97,9 +97,6 @@ Print nothing to show progress while loading modules (default: off)
 .B +w
 Always show which files loaded (default: on)
 .TP
-.B +i
-Chase imports while loading files (default: on)
-.TP
 .B +X
 Implicitly add path of importing module to search path (default: on)
 .SS "Expression evaluation"

@@ -206,15 +206,6 @@ Always show which files were loaded (default: on)
 </varlistentry>
 
 <varlistentry>
-<term><option>+i</option></term>
-<listitem>
-<para>
-Chase imports while loading files (default: on)
-</para>
-</listitem>
-</varlistentry>
-
-<varlistentry>
 <term><option>-F</option><replaceable>cmd</replaceable></term>
 <listitem>
 <para>

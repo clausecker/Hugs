@@ -25,7 +25,6 @@ Bool   useShow      = TRUE;      /* TRUE => use Text/show printer   */
 Bool   displayIO    = FALSE;     /* TRUE => use printer for IO result*/
 Bool   useDots      = RISCOS;    /* TRUE => use dots in progress    */
 Bool   listScripts  = TRUE;      /* TRUE => list scripts after loading*/
-Bool   chaseImports = TRUE;      /* TRUE => chase imports on load   */
 Bool   quiet        = FALSE;     /* TRUE => don't show progress     */
 Bool   generateFFI  = FALSE;     /* TRUE => generate ffi code       */
 Bool   printing     = FALSE;     /* TRUE => currently printing value*/
@@ -136,7 +135,6 @@ struct options toggle[] = {     /* List of command line toggles    */
     Option('O', 0, "Allow unsafe overlapping instances",    &allowUnsafeOverlap),
     Option('u', 1, "Use \"show\" to display results",       &useShow),
     Option('I', 1, "Display results of IO programs",        &displayIO),
-    Option('i', 1, "Chase imports while loading modules",   &chaseImports),
     Option('T', 1, "Apply 'defaulting' when printing types", &printTypeUseDefaults),
     Option('X', 1, "Implicitly add path of importing module to search path", &optImplicitImportRoot),
 /* Conditional toggles: */

@@ -45,7 +45,6 @@ extern Bool  allowUnsafeOverlap;       /* TRUE => in addition, allow        */
 				       /* overlapping instances             */
 extern Bool  useShow;                  /* TRUE => use Text/show printer     */
 extern Bool  displayIO;                /* TRUE => use printer for IO result */
-extern Bool  chaseImports;             /* TRUE => chase imports on load     */
 extern Bool  printTypeUseDefaults;     /* TRUE => use 'default'ing when printing types */
 extern Bool  optImplicitImportRoot;    /* TRUE => directory of importing    */
 				       /* module added to search path while */

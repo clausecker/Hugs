@@ -184,60 +184,57 @@ Long   len; {                           /* length of script file   */
 
 Bool chase(imps)                 /* Process list of import requests */
 List imps; {
-    if (chaseImports) {
-	Int    origPos  = numScripts;   /* keep track of original position */
-	String origName = scriptName[origPos];
-	for (; nonNull(imps); imps=tl(imps)) {
-	    String iname = findPathname(origName,textToStr(textOf(hd(imps))));
-	    String rname = RealPath(iname);
-	    Int    i     = 0;
-	    for (; i<namesUpto; i++)
-		if (filenamecmp(scriptReal[i],rname)==0)
-		    break;
-	    if (i>=origPos) {           /* Neither loaded or queued        */
-		String theName;
-		String theReal;
-		Time   theTime;
-		Bool   thePost;
-		Bool   theChase;
+    Int    origPos  = numScripts;   /* keep track of original position */
+    String origName = scriptName[origPos];
+    for (; nonNull(imps); imps=tl(imps)) {
+	String iname = findPathname(origName,textToStr(textOf(hd(imps))));
+	String rname = RealPath(iname);
+	Int    i     = 0;
+	for (; i<namesUpto; i++)
+	    if (filenamecmp(scriptReal[i],rname)==0)
+		break;
+	if (i>=origPos) {           /* Neither loaded or queued        */
+	    String theName;
+	    String theReal;
+	    Time   theTime;
+	    Bool   thePost;
+	    Bool   theChase;
 
-		postponed[origPos] = TRUE;
-		needsImports       = TRUE;
+	    postponed[origPos] = TRUE;
+	    needsImports       = TRUE;
 
-		if (i>=namesUpto)       /* Name not found (i==namesUpto)   */
-		    addScriptName(iname,FALSE);
-		else if (postponed[i]) {/* Check for recursive dependency  */
-		    ERRMSG(0)
-		      "Recursive import dependency between \"%s\" and \"%s\"",
-		      scriptName[origPos], iname
-		    EEND;
-		}
-		/* Right rotate section of tables between numScripts and i so
-		 * that i ends up with other imports in front of orig. script
-		 */
-		theName = scriptName[i];
-		theReal = scriptReal[i];
-		thePost = postponed[i];
-		theChase = chased[i];
-		timeSet(theTime,lastChange[i]);
-		for (; i>numScripts; i--) {
-		    scriptName[i] = scriptName[i-1];
-		    scriptReal[i] = scriptReal[i-1];
-		    postponed[i]  = postponed[i-1];
-		    chased[i]     = chased[i-1];
-		    timeSet(lastChange[i],lastChange[i-1]);
-		}
-		scriptName[numScripts] = theName;
-		scriptReal[numScripts] = theReal;
-		postponed[numScripts]  = thePost;
-		chased[numScripts]     = theChase;
-		timeSet(lastChange[numScripts],theTime);
-		origPos++;
+	    if (i>=namesUpto)       /* Name not found (i==namesUpto)   */
+		addScriptName(iname,FALSE);
+	    else if (postponed[i]) {/* Check for recursive dependency  */
+		ERRMSG(0)
+		  "Recursive import dependency between \"%s\" and \"%s\"",
+		  scriptName[origPos], iname
+		EEND;
 	    }
+	    /* Right rotate section of tables between numScripts and i so
+	     * that i ends up with other imports in front of orig. script
+	     */
+	    theName = scriptName[i];
+	    theReal = scriptReal[i];
+	    thePost = postponed[i];
+	    theChase = chased[i];
+	    timeSet(theTime,lastChange[i]);
+	    for (; i>numScripts; i--) {
+		scriptName[i] = scriptName[i-1];
+		scriptReal[i] = scriptReal[i-1];
+		postponed[i]  = postponed[i-1];
+		chased[i]     = chased[i-1];
+		timeSet(lastChange[i],lastChange[i-1]);
+	    }
+	    scriptName[numScripts] = theName;
+	    scriptReal[numScripts] = theReal;
+	    postponed[numScripts]  = thePost;
+	    chased[numScripts]     = theChase;
+	    timeSet(lastChange[numScripts],theTime);
+	    origPos++;
 	}
-	return needsImports;
     }
-    return FALSE;
+    return needsImports;
 }
 
 /* --------------------------------------------------------------------------
