@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: input.c,v $
- * $Revision: 1.31 $
- * $Date: 2001/12/06 22:05:57 $
+ * $Revision: 1.32 $
+ * $Date: 2001/12/11 00:58:58 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1427,6 +1427,83 @@ static Void local skipWhitespace() {   /* Skip over whitespace/comments    */
 	    return;
 }
 
+static Bool allDashes(char* s) {
+  char* ptr = s;
+  while ( *ptr != '\0' ) {
+    if (*ptr != '-') return FALSE;
+    ptr++;
+  }
+  return TRUE;
+}
+
+static Bool foundDashedOp = FALSE;
+
+/*
+ * Haskell98 makes it harder to detect one-line comment markup,
+ * "--" is now only the start of a one-line comment if it isn't
+ * followed by symbol chars other than "-". i.e., need to tokenise
+ * anything that starts with "--" as an operator and check whether
+ * the lexeme consists of all dashes or not.
+ */
+static Void local skipWhitespaceTok() { /* Skip over whitespace/comments    */
+    for (;;)                            /* Strictly speaking, this code is  */
+	if (c0==EOF)                    /* a little more liberal than the   */
+	    return;                     /* report allows ...                */
+	else if (isIn(c0,NEWLINE))	       					   
+	    newlineSkip();	       					   
+	else if (isIn(c0,SPACE))       					   
+	    skip();		       					   
+	else if (c0=='{' && c1=='-') { /* (potentially) nested comment     */
+	    Int nesting = 1;	       					   
+	    Int origRow = row;         /* Save original row number         */
+	    skip();
+	    skip();
+	    while (nesting>0 && c0!=EOF)
+		if (c0=='{' && c1=='-') {
+		    skip();
+		    skip();
+		    nesting++;
+		}
+		else if (c0=='-' && c1=='}') {
+		    skip();
+		    skip();
+		    nesting--;
+		}
+		else if (isIn(c0,NEWLINE))
+		    newlineSkip();
+		else
+		    skip();
+	    if (nesting>0) {
+		ERRMSG(origRow) "Unterminated nested comment {- ..."
+		EEND;
+	    }
+	}
+	else if (c0=='-' && c1=='-') {  /* One line comment...   */
+	    /* ..possibly, could also be the start of an operator, so 
+	       tokenise the operator symbol & check whether it
+	       consists of all dashes or not. */
+   	    readOperator();
+	    if (!allDashes(tokenStr)) {
+	      /* Yep, return (with the operator in the token buffer). */
+	      foundDashedOp = TRUE;
+	      return;
+	    } else {
+	      /* Reset token buffer */
+	      startToken();
+	    }
+
+	    while (!isIn(c0,NEWLINE) && c0!=EOF) {
+	      skip();
+	    }
+	    if (isIn(c0,NEWLINE))
+		newlineSkip();
+	}
+	else
+	    return;
+}
+
+
+
 static Bool firstToken;                /* Set to TRUE for first token      */
 static Int  firstTokenIs;              /* ... with token value stored here */
 
@@ -1495,7 +1572,7 @@ static Int local yylex() {             /* Read next input token ...        */
      * Skip white space, and insert tokens to support layout rules as reqd.
      * --------------------------------------------------------------------*/
 
-    skipWhitespace();
+    skipWhitespaceTok();
     startColumn = column;
     push(yylval = mkInt(row));         /* default token value is line no.  */
     /* subsequent changes to yylval must also set top() to the same value  */
@@ -1524,6 +1601,13 @@ static Int local yylex() {             /* Read next input token ...        */
     /* ----------------------------------------------------------------------
      * Now try to identify token type:
      * --------------------------------------------------------------------*/
+     
+    if (foundDashedOp) {
+      /* as it turns out, skipping whitespace turned up an operator. */
+      top() = yylval = ap(VAROPCELL,findText(tokenStr));
+      foundDashedOp = FALSE;
+      return VAROP;
+    }
 
     switch (c0) {
 	case EOF  : return 0;                   /* End of file/input       */
