@@ -373,17 +373,6 @@ if test x"$enable_opengl" != x"no"; then
   CPPFLAGS="$fp_save_cppflags"
 fi
 
-dnl used by System.Posix.Signals
-dnl --------------------------------------------------
-AC_MSG_CHECKING([for SIGPOLL])
-AC_EGREP_CPP(we_have_sigpoll,
-[#include <signal.h>
-#ifdef SIGPOLL
-we_have_sigpoll
-#endif
-], AC_DEFINE([HAVE_SIGPOLL], [1], [Define to 1 if you have the sigpoll function.]) haveSIGPOLL=yes, haveSIGPOLL=no)
-AC_MSG_RESULT([$haveSIGPOLL])
-
 dnl--------------------------------------------------------------------
 dnl Check for Unicode support, and select encoding
 dnl--------------------------------------------------------------------
