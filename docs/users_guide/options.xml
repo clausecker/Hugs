@@ -269,9 +269,10 @@ Similarly, <literal>{Home}</literal> is expanded to your home directory.
 An entry of the form
 <quote><replaceable>directory</replaceable><literal>/*</literal></quote>
 means all the immediate subdirectories of <replaceable>directory</replaceable>.
+(See <xref linkend="packages"/> for a way of using this.)
 The default value is
 <screen>
-.:{Hugs}/libraries:{Hugs}/oldlib
+.:{Hugs}/libraries:{Hugs}/packages/*:{Hugs}/oldlib
 </screen>
 </para>
 <para>
@@ -1125,6 +1126,70 @@ Note the necessary quoting of the <option>+i</option> options here.
 </varlistentry>
 
 </variablelist>
+
+</sect1>
+
+<sect1 id="packages">
+<title>Adding packages to a Hugs installation</title>
+
+<para>
+The recommended way to add Haskell libraries and programs to a Hugs
+installation (or any other Haskell implementation) is to use the
+<ulink url="http://www.haskell.org/cabal/">Cabal</ulink> packaging system.
+The necessary support library is included in the Hugs installation.
+For Hugs, a Cabal package will be installed in the following places,
+where <replaceable>prefix</replaceable> is the directory prefix given
+to the Cabal <command>setup</command> script:
+</para>
+
+<variablelist>
+
+<varlistentry>
+<term><filename><replaceable>prefix</replaceable>/lib/hugs/packages/<replaceable>package</replaceable></filename></term>
+<listitem>
+<para>
+A directory containing the module hierarchy for the package,
+with associated binary shared objects (if required).
+To enable Hugs to find these modules, you will need to ensure that the
+Hugs search path (see <xref linkend="option-search-path"/>) includes
+<quote><literal><replaceable>prefix</replaceable>/lib/hugs/packages/*</literal></quote>
+(with a literal <quote><literal>*</literal></quote>).
+</para>
+</listitem>
+
+<varlistentry>
+<term><filename><replaceable>prefix</replaceable>/lib/hugs/programs/<replaceable>program</replaceable></filename></term>
+<listitem>
+<para>
+A directory containing the modules of an executable Haskell program,
+with associated binary shared objects (if required).
+</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term><filename><replaceable>prefix</replaceable>/bin/<replaceable>program</replaceable></filename></term>
+<listitem>
+<para>
+An executable shell script that invokes <command>runhugs</command>
+(see <xref linkend="runhugs"/>) on the <literal>Main</literal> module
+of an executable Haskell program from the above directory.  This program
+will be runnable if your program search path includes the directory
+<quote><filename><replaceable>prefix</replaceable>/bin</filename></quote>.
+</para>
+</listitem>
+</varlistentry>
+
+</variablelist>
+
+<note>
+<para>
+Cabal should work with Hugs on Windows for simple packages,
+but not yet for more complex ones.
+Also the package manipulation tool <command>hugs-pkg</command> does not
+yet exist.
+</para>
+</note>
 
 </sect1>
 

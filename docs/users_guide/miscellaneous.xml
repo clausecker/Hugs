@@ -366,7 +366,7 @@ and the <command>:project</command> command have been removed.
 </sect2>
 
 <sect2>
-<title>Under development</title>
+<title>Current version</title>
 
 <para>
 In addition to numerous bug fixes, user-visible changes include:
@@ -400,6 +400,12 @@ The syntax of the <command>ffihugs</command> command has changed
 (see <xref linkend="ffihugs"/>).
 The <option>+G</option> and <option>+L</option> options are gone,
 and a new <option>+i</option> option can be used to specify include files.
+</para></listitem>
+
+<listitem><para>
+Hugs now has basic support for the
+<ulink url="http://www.haskell.org/cabal/">Cabal</ulink> packaging system
+(see <xref linkend="packages"/>).
 </para></listitem>
 
 </itemizedlist>
