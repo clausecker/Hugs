@@ -14,8 +14,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: iomonad.c,v $
- * $Revision: 1.74 $
- * $Date: 2004/02/21 01:06:38 $
+ * $Revision: 1.75 $
+ * $Date: 2004/02/21 01:32:40 $
  * ------------------------------------------------------------------------*/
  
 Name nameIORun;			        /* run IO code                     */
@@ -1292,7 +1292,10 @@ primFun(primHLookAhead) { /* Peek at the next char */
 			 NIL));
     }
 #if CHAR_ENCODING
-    handles[h].hLookAhead = c;
+    if (handles[h].hBinaryMode)
+	ungetc(c, handles[h].hfp);
+    else
+	handles[h].hLookAhead = c;
 #else
     ungetc(c, handles[h].hfp);
 #endif
@@ -1552,6 +1555,15 @@ primFun(primHPutBuf) {			/* write binary data from a buffer   */
 			 "illegal buffer size",
 			 NIL));
     }
+#if CHAR_ENCODING
+    if (!handles[h].hBinaryMode) {
+	IOFail(mkIOError(handles[h].hcell,
+			 nameIllegal,
+			 "System.IO.hPutBuf",
+			 "not a binary handle",
+			 NIL));
+    }
+#endif
 
     /* Flush input buffer for R/W handles */
     if ((handles[h].hmode & HREADWRITE) && handles[h].hHaveRead) {
@@ -1598,21 +1610,21 @@ primFun(primHGetBuf) {			/* read binary data into a buffer   */
 			 "illegal buffer size",
 			 NIL));
     }
+#if CHAR_ENCODING
+    if (!handles[h].hBinaryMode) {
+	IOFail(mkIOError(handles[h].hcell,
+			 nameIllegal,
+			 "System.IO.hGetBuf",
+			 "not a binary handle",
+			 NIL));
+    }
+#endif
 
     /* Flush output buffer for R/W handles */
     if ((handles[h].hmode & HREADWRITE) && !handles[h].hHaveRead) {
 	fflush(handles[h].hfp);
 	handles[h].hHaveRead = TRUE;
     }
-
-    /* use lookahead character, if any (note the characte/byte confusion here) */
-#if CHAR_ENCODING
-    if (size > 0 && handles[h].hLookAhead >= 0) {
-	*((char*)buf)++ = (char)(handles[h].hLookAhead);
-	handles[h].hLookAhead = -1;
-	size--;
-    }
-#endif
 
     if (h == HSTDIN) {
 	while (size > 0) {

@@ -8,8 +8,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: storage.h,v $
- * $Revision: 1.64 $
- * $Date: 2004/01/29 16:30:52 $
+ * $Revision: 1.65 $
+ * $Date: 2004/02/21 01:32:41 $
  * ------------------------------------------------------------------------*/
 #ifndef __STORAGE_H__
 #define __STORAGE_H__
@@ -1169,6 +1169,7 @@ struct strHandle {		/* Handle description and status flags	   */
 #if CHAR_ENCODING
     Bool  hBinaryMode;		/* TRUE => Handle opened in binary mode    */
     Char  hLookAhead;		/* Char read by hLookAhead (or <0 if none) */
+    				/* This is only used in text mode.         */
 #endif
 };
 
