@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: runhugs.c,v $
- * $Revision: 1.18 $
- * $Date: 2003/04/06 23:42:30 $
+ * $Revision: 1.19 $
+ * $Date: 2003/07/03 13:45:48 $
  * ------------------------------------------------------------------------*/
 
 #include <stdio.h>
@@ -131,7 +131,7 @@ char* argv[]; {
     check();
 
     hugs->setHugsArgs(argc,argv);
-    hugs->pushHVal(hugs->compileExpr("Main","main >> return ()"));
+    hugs->pushHVal(hugs->compileExpr("Main","main >> return () :: IO ()"));
     exitCode = hugs->doIO();
     check();
 #endif
