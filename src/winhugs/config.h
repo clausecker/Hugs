@@ -20,6 +20,13 @@
 /* Define if you have <sys/wait.h> that is POSIX.1 compatible.  */
 /* #undef HAVE_SYS_WAIT_H */
 
+/* Define if your struct tm has tm_zone.  */
+/* #undef HAVE_TM_ZONE */
+
+/* Define if you don't have tm_zone but do have the external array
+   tzname.  */
+#define HAVE_TZNAME 1
+
 /* Define as the return type of signal handlers (int or void).  */
 #define RETSIGTYPE void
 
@@ -62,6 +69,7 @@
  *   SMALL_BANNER
  *   SMALL_HUGS
  *   TREX
+ *   IPARAM
  *   USE_DOUBLE_PRECISION
  *   USE_PREPROCESSOR
  *   USE_READLINE
@@ -122,6 +130,12 @@
  */
 #define VOID_INT_SIGNALS 1
 
+/* Define if time.h or sys/time.h define the altzone variable.  */
+/* #undef HAVE_ALTZONE */
+
+/* Define if time.h or sys/time.h define the timezone variable.  */
+#define HAVE_TIMEZONE 1
+ 
 /* The number of bytes in a double.  */
 #define SIZEOF_DOUBLE 8
 
@@ -167,11 +181,35 @@
 /* Define if you have the fsetpos function.  */
 #define HAVE_FSETPOS 1
 
+/* Define if you have the fstat function.  */
+/* #undef HAVE_FSTAT */
+
 /* Define if you have the ftell function.  */
 #define HAVE_FTELL 1
 
+/* Define if you have the ftime function.  */
+/* #undef HAVE_FTIME */
+
+/* Define if you have the getrusage function.  */
+/* #undef HAVE_GETRUSAGE */
+
+/* Define if you have the gettimeofday function.  */
+/* #undef HAVE_GETTIMEOFDAY */
+
+/* Define if you have the gmtime function.  */
+#define HAVE_GMTIME 1
+
+/* Define if you have the isatty function.  */
+#define HAVE_ISATTY 1
+
+/* Define if you have the localtime function.  */
+#define HAVE_LOCALTIME 1
+
 /* Define if you have the macsystem function.  */
 /* #undef HAVE_MACSYSTEM */
+
+/* Define if you have the mktime function.  */
+#define HAVE_MKTIME 1
 
 /* Define if you have the pclose function.  */
 /* #undef HAVE_PCLOSE */
@@ -184,6 +222,12 @@
 
 /* Define if you have the realpath function.  */
 /* #undef HAVE_REALPATH */
+
+/* Define if you have the select function.  */
+/* #undef HAVE_SELECT */
+
+/* Define if you have the sigprocmask function.  */
+/* #undef HAVE_SIGPROCMASK */
 
 /* Define if you have the snprintf function.  */
 /* #undef HAVE_SNPRINTF */
@@ -202,6 +246,12 @@
 
 /* Define if you have the stricmp function.  */
 #define HAVE_STRICMP 1
+
+/* Define if you have the time function.  */
+#define HAVE_TIME 1
+
+/* Define if you have the times function.  */
+/* #undef HAVE_TIMES */
 
 /* Define if you have the valloc function.  */
 /* #undef HAVE_VALLOC */
@@ -224,6 +274,12 @@
 /* Define if you have the <ctype.h> header file.  */
 #define HAVE_CTYPE_H 1
 
+/* Define if you have the <direct.h> header file.  */
+#define HAVE_DIRECT_H 1
+
+/* Define if you have the <dirent.h> header file.  */
+/* #undef HAVE_DIRENT_H */
+
 /* Define if you have the <dl.h> header file.  */
 /* #undef HAVE_DL_H */
 
@@ -241,6 +297,9 @@
 
 /* Define if you have the <float.h> header file.  */
 #define HAVE_FLOAT_H 1
+
+/* Define if you have the <ftw.h> header file.  */
+/* #undef HAVE_FTW_H */
 
 /* Define if you have the <io.h> header file.  */
 #define HAVE_IO_H 1
@@ -286,6 +345,12 @@
 
 /* Define if you have the <sys/time.h> header file.  */
 /* #undef HAVE_SYS_TIME_H */
+
+/* Define if you have the <sys/timeb.h> header file.  */
+/* #undef HAVE_SYS_TIMEB_H */
+
+/* Define if you have the <sys/times.h> header file.  */
+/* #undef HAVE_SYS_TIMES_H */
 
 /* Define if you have the <sys/types.h> header file.  */
 #define HAVE_SYS_TYPES_H 1

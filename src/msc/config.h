@@ -17,15 +17,15 @@
 /* Define if you have <alloca.h> and it should be used (not on Ultrix).  */
 /* #undef HAVE_ALLOCA_H */
 
-/* Define if your struct tm has tm_zone. */
+/* Define if you have <sys/wait.h> that is POSIX.1 compatible.  */
+/* #undef HAVE_SYS_WAIT_H */
+
+/* Define if your struct tm has tm_zone.  */
 /* #undef HAVE_TM_ZONE */
 
 /* Define if you don't have tm_zone but do have the external array
-   tzname. */
+   tzname.  */
 #define HAVE_TZNAME 1
-
-/* Define if you have <sys/wait.h> that is POSIX.1 compatible.  */
-/* #undef HAVE_SYS_WAIT_H */
 
 /* Define as the return type of signal handlers (int or void).  */
 #define RETSIGTYPE void
@@ -181,11 +181,20 @@
 /* Define if you have the fsetpos function.  */
 #define HAVE_FSETPOS 1
 
+/* Define if you have the fstat function.  */
+/* #undef HAVE_FSTAT */
+
 /* Define if you have the ftell function.  */
 #define HAVE_FTELL 1
 
+/* Define if you have the ftime function.  */
+/* #undef HAVE_FTIME */
+
 /* Define if you have the getrusage function.  */
 /* #undef HAVE_GETRUSAGE */
+
+/* Define if you have the gettimeofday function.  */
+/* #undef HAVE_GETTIMEOFDAY */
 
 /* Define if you have the gmtime function.  */
 #define HAVE_GMTIME 1
