@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: type.c,v $
- * $Revision: 1.44 $
- * $Date: 2002/04/16 16:02:58 $
+ * $Revision: 1.45 $
+ * $Date: 2002/04/17 05:41:59 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1948,8 +1948,10 @@ List bs; {
 
 	clearMarks();
 	reducePreds();
-	if (nonNull(preds) && resolveDefs(NIL))	/* Nearly Haskell 1.4?	   */
-	    elimTauts();
+	improve(line,NIL,preds);
+	if (nonNull(preds))
+	    resolveDefs(NIL);		/* Nearly Haskell 1.4?		   */
+	elimTauts();
 
 	if (nonNull(preds)) {		/* Look for unresolved overloading */
 	    Cell v   = isVar(fst(hd(bs))) ? fst(hd(bs)) : hd(fst(hd(bs)));
