@@ -1,4 +1,5 @@
-Hugs:User error: foo
+Hugs:IO Error: User error
+Reason: foo
 Hugs:True
 Hugs:Caught error
 
@@ -6,5 +7,6 @@ Hugs:Caught error
 Continuing
 
 Hugs:
-User error: foo
+IO Error: User error
+Reason: foo
 Hugs:[Leaving Hugs]

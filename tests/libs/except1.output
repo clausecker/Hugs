@@ -11,6 +11,30 @@ Program error: x
 
 Hugs:y
 
+Hugs:Hugs:a worked
+a worked
+a worked
+y
+y
+b worked
+b failed
+b failed
+
+Hugs:a worked
+a worked
+a worked
+y
+a worked
+b worked
+y
+b worked
+a worked
+b worked
+b failed
+a worked
+b worked
+b failed
+
 Hugs:Hugs:b failed
 a worked
 b failed
@@ -35,55 +59,31 @@ b worked
 a worked
 y
 
-Hugs:Hugs:b failed
+Hugs:Hugs:a worked
 a worked
-b failed
 a worked
 y
-b worked
-a worked
 y
 
-Hugs:b failed
-a worked
-b worked
-a worked
-b failed
-a worked
-b worked
-a worked
-y
-b worked
-a worked
-b worked
-a worked
-y
+Thread raised exception: x
 
-Hugs:Hugs:
 Thread raised error:
 IO Error: User error
 Reason: x
+
+Hugs:a worked
+a worked
+a worked
+y
+a worked
+y
 a worked
 
 Thread raised exception: x
 a worked
-y
-a worked
-y
 
-Hugs:
 Thread raised error:
 IO Error: User error
 Reason: x
-a worked
-a worked
-
-Thread raised exception: x
-a worked
-a worked
-y
-a worked
-a worked
-y
 
 Hugs:Hugs:[Leaving Hugs]

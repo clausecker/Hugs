@@ -255,12 +255,12 @@ test_rts() {
 
   perl runstdtest $HUGS +q -pHugs: -s17 "-Orts/primexc.hs" "-irts/primexc.input" "-o1rts/primexc.output"
 
-  perl runstdtest $HUGS +q -pHugs: -s36 "-Orts/refs.hs" "-irts/refs.input" "-o1rts/refs.output"
-  perl runstdtest $HUGS +q -98 -pHugs: -s40 "-Orts/mutvars.hs" "-irts/mutvars.input" "-o1rts/mutvars.output"
+  perl runstdtest $HUGS +q -pHugs: -s34 "-Orts/refs.hs" "-irts/refs.input" "-o1rts/refs.output"
+  perl runstdtest $HUGS +q -98 -pHugs: -s38 "-Orts/mutvars.hs" "-irts/mutvars.input" "-o1rts/mutvars.output"
   perl runstdtest $HUGS +q -pHugs: -s23 "-Orts/ioerror1.hs" "-irts/ioerror1.input" "-o1rts/ioerror1.output"
   perl runstdtest $HUGS +q -pHugs: -s17 "-Orts/ioerror2.hs" "-irts/ioerror2.input" "-o1rts/ioerror2.output"
 
-  perl runstdtest $HUGS +q -pHugs: -s57 "-Orts/mvar.hs" "-irts/mvar.input" "-o1rts/mvar.output"
+  perl runstdtest $HUGS +q -pHugs: -s55 "-Orts/mvar.hs" "-irts/mvar.input" "-o1rts/mvar.output"
 
   # Old test code - it will probably get resurrected at some stage
   # 

@@ -6,10 +6,10 @@ Hugs:ab
 Hugs:
 Program error: no more threads (deadlock?)
 
-Hugs:abcd
+Hugs:adcb
 Program error: no more threads (deadlock?)
 
 Hugs:aa
-Hugs:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
-Hugs:ab
+Hugs:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+Hugs:ba
 Hugs:[Leaving Hugs]
