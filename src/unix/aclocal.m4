@@ -871,6 +871,8 @@ dnl and we don't want to be global namespace polluters.
 dnl Simplistic implementation of autoconf 2.50 macros for earlier versions
 
 ifndef([AC_HELP_STRING],
-  AC_DEFUN(AC_HELP_STRING, [  $1	  $2]))
+  AC_DEFUN([AC_HELP_STRING],
+    [  ifelse(builtin([eval],len([$1])<24),1,[builtin([format], [%-23s], [$1])],[$1
+                         ]) $2]))
 
 dnl End of file
