@@ -78,11 +78,11 @@ hack_foreign() {
 
 	mkdir -p $dstdir
 
-	if [ -f $stem.hs ]; then
-		$cpp $cpp_flags $includes $stem.hs | cat -s >$target_stem.hs
-	elif [ -f $stem.lhs ]; then
-		$cpp $cpp_flags $includes $stem.lhs | cat -s >$target_stem.lhs
-	elif [ -f ${stem}_hsc_make.c ]; then
+	# Prefer *_hsc_make.c to *.hsc, and *.hs to *.[l]y,
+	# so that if these are present we don't need hsc2hs and happy.
+	# (But don't take .hs if .hsc is present.)
+
+	if [ -f ${stem}_hsc_make.c ]; then
 		# with hacks to extract the -#include directives and
 		# to substitute CALLCONV in Network.Socket (ugh)
 		header="${basename}_aux.h"
@@ -105,6 +105,10 @@ hack_foreign() {
 		rm "$copy"
 
 		extract_includes $target_stem.hs >"$dstdir/$header"
+	elif [ -f $stem.hs ]; then
+		$cpp $cpp_flags $includes $stem.hs | cat -s >$target_stem.hs
+	elif [ -f $stem.lhs ]; then
+		$cpp $cpp_flags $includes $stem.lhs | cat -s >$target_stem.lhs
 	elif [ -f $stem.y ]; then
 		mkdir $tmpdir
 		cp $stem.y $tmpdir
