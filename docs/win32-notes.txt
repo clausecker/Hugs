@@ -64,10 +64,10 @@ Last updated: 11/03/2003
 * Building the Hugs sources using MSVC
 
 - To compile the interpreter using an MS VC++ compiler, you need
-  to copy msc/config.h and msc/options.h into the src/ directory:
+  to copy msc/{config,options,platform}.h into the src/ directory:
 
     foo$ cd /path/to/hugs98/src/
-    foo$ cp msc/config.h msc/options.h .
+    foo$ cp msc/config.h msc/options.h msc/platform.h .
     foo$ nmake -f msc/Makefile
 
   (Using 'make' would also work.)
@@ -78,7 +78,7 @@ Last updated: 11/03/2003
   use the winhugs/ subdirectory:
 
     foo$ cd /path/to/hugs98/src/
-    foo$ cp winhugs/config.h winhugs/options.h .
+    foo$ cp winhugs/config.h winhugs/options.h winhugs/platform.h .
     foo$ nmake -f winhugs/Makefile
 
   (Using 'make' would also work.)
