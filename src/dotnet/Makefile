@@ -24,7 +24,7 @@
 # TAGS:           build emacs TAGS table
 
 # This rule goes first to make it the default choice
-default		:: hugs.exe runhugs.exe hugsscript.dll
+default		:: hugs.exe dotnet\HugsWrapper.dll runhugs.exe hugsscript.dll
 
 CC		= cl /nologo
 CFLAGS		= -clr -DDOTNET -DMONTH_YEAR="\"Nov 2002\""
@@ -38,7 +38,6 @@ LDFLAGS    	=
 DLL_FLAGS	= /LD
 PIC_FLAGS	= 
 LIBS		=  kernel32.lib advapi32.lib
-LINK_FLAGS      = /link /assemblymodule:dotnet\HugsWrapper.netmodule
 
 YACC		= bison
 RM		= -del
@@ -49,33 +48,37 @@ CP		= copy
 .SUFFIXES	:
 .SUFFIXES	: .c .h .obj
 HFILES		= prelude.h config.h options.h storage.h connect.h \
-		  errors.h command.h server.h HsFFI.h module.h machdep.h
+		  errors.h command.h server.h HsFFI.h module.h machdep.h \
+		  script.h opts.h strutil.h evaluator.h goal.h observe.h
 DOTNET_FILES    = dotnet\Invoker.cpp dotnet\prim.cpp dotnet\HugsServ.cpp
 CFILES		= hugs.c storage.c input.c static.c type.c subst.c \
 		  output.c compiler.c machine.c interp.c builtin.c \
-		  server.c ffi.c module.c machdep.c $(DOTNET_FILES)
+		  server.c ffi.c module.c machdep.c script.c opts.c \
+		  strutil.c errors.c evaluator.c goal.c observe.c \
+		  $(DOTNET_FILES)
 INCFILES	= parser.c preds.c bignums.c scc.c timer.c \
 		  printer.c iomonad.c interns.c stmonad.c array.c
 YFILES		= parser.y
 SOURCES		= $(HFILES) $(CFILES) $(INCFILES) $(YFILES) 
 OBJECTS		= storage.obj input.obj static.obj type.obj subst.obj \
-	          compiler.obj plugin.obj builtin.obj machine.obj output.obj ffi.obj \
-		  version.obj module.obj machdep.obj
+	          compiler.obj plugin.obj builtin.obj machine.obj output.obj \
+		  ffi.obj version.obj module.obj machdep.obj script.obj \
+		  opts.obj strutil.obj errors.obj evaluator.obj goal.obj
 
-DOBJECTS        = dotnet\Invoker.obj dotnet\prim.obj
+DOBJECTS        = dotnet\Invoker.obj dotnet\HugsServ.obj dotnet\prim.obj 
 		  
-IOBJECTS	= hugs.obj hugs.res $(OBJECTS) $(DOBJECTS)
+IOBJECTS	= hugs.obj server.obj observe.obj hugs.res $(OBJECTS) $(DOBJECTS)
 PRELUDE		= config.h options.h prelude.h
 
 ################################################################
 # Hugs interpreter and standalone evaluator
 ################################################################
 
-hugs.exe	: $(IOBJECTS) dotnet\HugsWrapper.netmodule
+hugs.exe	: $(IOBJECTS) 
 		  $(LD) $(LDFLAGS) $(IOBJECTS)  $(LIBS) -o hugs.exe  $(LINK_FLAGS)
 		  
 
-SERVER_OBJECTS	= server.obj runhugs.res $(OBJECTS) $(DOBJECTS)
+SERVER_OBJECTS	= runhugs.res $(OBJECTS) server.obj $(DOBJECTS)
 runhugs.obj	: $(PRELUDE) hugs.c machdep.h timer.c runhugs.c
 runhugs.exe	: runhugs.obj $(SERVER_OBJECTS)
 		  $(LD) $(LDFLAGS) runhugs.obj $(SERVER_OBJECTS) $(LIBS) -o runhugs.exe $(LINK_FLAGS)
@@ -166,8 +169,8 @@ dotnet\HugsServ.obj : dotnet\HugsServ.cpp
 
 dotnet\HugsServ.cpp : dotnet\HugsServ.h
 
-dotnet\HugsWrapper.netmodule : dotnet\HugsWrapper.cs
-		  csc /t:module /unsafe /out:dotnet\HugsWrapper.netmodule dotnet\HugsWrapper.cs  /addmodule:dotnet\HugsServ.obj /addmodule:dotnet\Invoker.obj
+dotnet\HugsWrapper.dll : hugs.exe dotnet\HugsWrapper.cs
+		  csc /t:library /unsafe /out:dotnet\HugsWrapper.dll dotnet\HugsWrapper.cs  /r:hugs.exe
 
 # These are compiled with less optimisation to avoid optimisation bugs in
 # certain compilers.  This may be overly conservative on some compilers.
@@ -193,30 +196,44 @@ runhugs.res	: msc\runhugs.rc ..\icons\hsxicon.ico
 # Dependencies
 ################################################################
 
-server.obj	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h \
-		  command.h machdep.h timer.c hugs.c server.c server.h
-hugs.obj	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h \
-		  command.h machdep.h timer.c
-storage.obj	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h
-input.obj	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h \
-		  parser.c command.h
-subst.obj	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h subst.h
-static.obj	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h subst.h \
-		  scc.c module.h
-type.obj	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h subst.h \
-		  preds.c scc.c
-output.obj	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h
-compiler.obj	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h 
-machine.obj	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h
-plugin.obj	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h
-builtin.obj	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h builtin.h \
-		  bignums.c printer.c iomonad.c interns.c stmonad.c array.c dirprim.c timeprim.c
-ffi.obj		: $(PRELUDE) storage.h HsFFI.h connect.h errors.h
-module.obj	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h module.h
-machdep.obj	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h machdep.h
+server.obj	: $(PRELUDE) storage.h connect.h errors.h script.h \
+		  machdep.h evaluator.h opts.h strutil.h server.h
+hugs.obj	: $(PRELUDE) storage.h connect.h errors.h command.h \
+		  script.h opts.h strutil.h evaluator.h machdep.h \
+		  goal.h output.h timer.c 
+storage.obj	: $(PRELUDE) storage.h connect.h errors.h opts.h \
+		  machdep.h evaluator.h
+input.obj	: $(PRELUDE) storage.h connect.h errors.h command.h \
+		  module.h script.h opts.h goal.h machdep.h parser.c 
+subst.obj	: $(PRELUDE) storage.h connect.h errors.h output.h \
+                  opts.h subst.h
+static.obj	: $(PRELUDE) storage.h connect.h errors.h machdep.h \
+		  output.h subst.h module.h opts.h goal.h scc.c 
+type.obj	: $(PRELUDE) storage.h connect.h errors.h output.h \
+		  subst.h goal.h preds.c scc.c
+output.obj	: $(PRELUDE) storage.h connect.h errors.h output.h
+compiler.obj	: $(PRELUDE) storage.h connect.h errors.h goal.h
+machine.obj	: $(PRELUDE) storage.h connect.h errors.h
+plugin.obj	: $(PRELUDE) storage.h connect.h errors.h
+builtin.obj	: $(PRELUDE) storage.h connect.h errors.h machdep.h \
+		  builtin.h bignums.c printer.c iomonad.c interns.c \
+		  stmonad.c array.c dirprim.c timeprim.c
+ffi.obj		: $(PRELUDE) storage.h connect.h errors.h output.h
+module.obj	: $(PRELUDE) storage.h connect.h errors.h module.h
+machdep.obj	: $(PRELUDE) storage.h connect.h errors.h command.h \
+		  opts.h machdep.h
+script.obj	: $(PRELUDE) storage.h connect.h errors.h machdep.h \
+		  opts.h strutil.h script.h 
+strutil.obj	: $(PRELUDE) storage.h connect.h errors.h strutil.h
+errors.obj	: $(PRELUDE) storage.h connect.h errors.h output.h \
+		  opts.h goal.h evaluator.h
+goal.obj	: $(PRELUDE) storage.h machdep.h opts.h goal.h
+observe.obj	: $(PRELUDE) storage.h connect.h errors.h command.h \
+		  machdep.h builtin.h output.h observe.h
+evaluator.obj	: $(PRELUDE) storage.h connect.h errors.h script.h \
+		  output.h strutil.h opts.h machdep.h evaluator.h
 
-
-dotnet\HugsWrapper.netmodule: $(PRELUDE) dotnet\HugsServ.obj dotnet\Invoker.obj
+dotnet\HugsWrapper.dll: $(PRELUDE) dotnet\HugsWrapper.cs
 dotnet\prim.obj : $(PRELUDE) dotnet\prim.cpp dotnet\Invoker.h dotnet\Invoker.cpp
 
 ################################################################
