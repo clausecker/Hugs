@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: preds.c,v $
- * $Revision: 1.27 $
- * $Date: 2000/12/13 07:43:37 $
+ * $Revision: 1.28 $
+ * $Date: 2001/05/17 23:16:14 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -463,6 +463,7 @@ Int  d; {
 #endif
 	for (es=inst(in).specifics; nonNull(es); es=tl(es)) {
 	    Cell ev;
+	    improve1(0,ps,hd(es),beta);
 	    ev = entail(ps,hd(es),beta,d);
 	    if (nonNull(ev))
 		e = ap(e,ev);
