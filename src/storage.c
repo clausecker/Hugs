@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: storage.c,v $
- * $Revision: 1.44 $
- * $Date: 2002/06/22 17:01:35 $
+ * $Revision: 1.45 $
+ * $Date: 2002/07/05 05:21:26 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -748,6 +748,7 @@ Text v; {
 
 struct primInfoDef {
     Module              prim_module; /* module that defined prim-table */
+    void*               prim_dll;    /* if in a dll, handle to it. */
     struct primInfo*    p_info;
     struct primInfoDef* nextPrimInfoDef; /* subsumes nextPrimInfo (ToDo: nuke it) */
 };
@@ -767,6 +768,7 @@ struct primInfo *info; {
     } else {
        new_entry->prim_module = currentModule;
        new_entry->p_info      = info;
+       new_entry->prim_dll    = NULL;
     }
     if (0 == firstPrimInfo)		/* first entry in queue		   */
 	firstPrimInfo = lastPrimInfo = new_entry;
@@ -774,6 +776,44 @@ struct primInfo *info; {
 	lastPrimInfo = lastPrimInfo->nextPrimInfoDef = new_entry;
 
     lastPrimInfo->nextPrimInfoDef = 0;
+}
+
+struct primInfoDef* setPrimInfoDll(dll)
+void* dll; {
+  /* After a module has registered its primitives, we set
+     its primInfoDef (==lastPrimInfo) to point to the DLL
+     the prims are located in, so that we can 
+  */
+  lastPrimInfo->prim_dll = dll;
+  return lastPrimInfo;
+}
+
+Void freePrimInfo(p)
+struct primInfoDef* p; {
+  struct primInfoDef* info = firstPrimInfo;
+  struct primInfoDef* prev = 0;
+
+  if (p && p->prim_dll) {
+    freeDLL(p->prim_dll);
+  }
+  while (info) {
+    if (info == p) {
+      /* Remove it from the list */
+      if (prev) {
+	prev->nextPrimInfoDef = info->nextPrimInfoDef;
+      } else {
+	firstPrimInfo = info->nextPrimInfoDef;
+	prev = firstPrimInfo;
+      }
+      if (lastPrimInfo == info) {
+	lastPrimInfo = prev;
+      }
+      free(p);
+      return;
+    }
+    prev = info;
+    info = info->nextPrimInfoDef;
+  }
 }
 
 Void addPrim(l,n,s,mod,ty)               /* Add primitive function value    */
@@ -829,27 +869,6 @@ Type   ty; {
 
     ERRMSG(name(n).line) "Unknown primitive reference \"%s\"", s
     EEND;
-}
-
-Void controlFuns(what)
-Int what; {
-    struct primInfoDef *info_def = firstPrimInfo;
-    for(; 0 != info_def; info_def=info_def->nextPrimInfoDef) {
-	if (info_def->p_info->controlFun) {
-	    (*(info_def->p_info->controlFun))(what);
-	}
-    }
-
-    if (EXIT == what) {
-      struct primInfoDef *ptr, *tmp;
-      ptr = firstPrimInfo;
-			 
-      while (ptr) {
-	tmp = ptr->nextPrimInfoDef;
-	free(ptr);
-	ptr = tmp;
-      }
-    }
 }
 
 Name addPrimCfun(t,arity,no,type)       /* add primitive constructor func  */
@@ -1532,6 +1551,11 @@ typedef struct strScript{              /* record of storage state prior to */
 #if TREX
     Ext   extHw;
 #endif
+    /*
+     * handle to the script's primInfoDef containing primops associated
+     * with this script (if any.)
+     */
+    struct primInfoDef* prims;
 } script;
 
 #ifdef  DEBUG_SHOWUSE
@@ -1594,6 +1618,7 @@ String f; {                             /* of status for later restoration  */
 #if TREX
     scripts[scriptHw].extHw        = extHw;
 #endif
+    scripts[scriptHw].prims        = NULL;
 
 #if !WANT_FIXED_SIZE_TABLES
     dynTabScripts->idx++;
@@ -1682,6 +1707,11 @@ Script sno; {
 #if TREX
 	scripts[i-1].extHw = scripts[i].extHw;
 #endif
+	if (scripts[i-1].prims) {
+	  freePrimInfo(scripts[i-1].prims);
+	}
+	scripts[i-1].prims = scripts[i].prims;
+
 	i++;
     }
 }
@@ -1738,8 +1768,21 @@ Script sno; {                           /* to reading script sno           */
 #if !WANT_FIXED_SIZE_TABLES
 	dynTabScripts->idx = sno;
 #endif
+	i = sno;
+	while (i < scriptHw) {
+	  if (scripts[i].prims) {
+	    freePrimInfo(scripts[i].prims);
+	  }
+	  i++;
+	}
 	scriptHw = sno;
     }
+}
+
+Void setScriptPrims(p)  /* set the current script's primitive record. */
+void* p; {
+  scripts[scriptHw-1].prims = (struct primInfoDef*)p;
+  return;
 }
 
 /* --------------------------------------------------------------------------
@@ -3327,6 +3370,39 @@ DynTable* tab; {
      tab->maxIdx = newSize;
      tab->data   = newData;
    }
+}
+
+
+Void controlFuns(what)
+Int what; {
+    Int i;
+    struct primInfoDef *info_def = firstPrimInfo;
+    for(; 0 != info_def; info_def=info_def->nextPrimInfoDef) {
+	if (info_def->p_info->controlFun) {
+	    (*(info_def->p_info->controlFun))(what);
+	}
+    }
+
+    if (EXIT == what) {
+      struct primInfoDef *ptr, *tmp;
+
+      /* Release all primitive DLLs */
+      i = 0;
+      while (i < scriptHw) {
+	if (scripts[i].prims) {
+	  freePrimInfo(scripts[i].prims);
+	}
+	i++;
+      }
+
+      ptr = firstPrimInfo;
+      while (ptr) {
+	tmp = ptr->nextPrimInfoDef;
+	free(ptr);
+	ptr = tmp;
+      }
+      
+    }
 }
 
 Void storage(what)

@@ -8,8 +8,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: storage.h,v $
- * $Revision: 1.38 $
- * $Date: 2002/06/15 00:29:09 $
+ * $Revision: 1.39 $
+ * $Date: 2002/07/05 05:21:26 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -126,6 +126,8 @@ struct primInfo {
 extern  Void registerPrims Args((struct primInfo*)); 
 extern  Void controlFuns   Args((Int)); /* Call all control functions in   */
 					/* prim list.                      */
+extern  struct primInfoDef* setPrimInfoDll Args((void*));
+extern  Void                freePrimInfo   Args((void*));
 
 /* --------------------------------------------------------------------------
  * Program code storage: for holding compiled function defns etc...
@@ -592,6 +594,7 @@ struct strModule {
     List  modImports; /* :: [ (modName{-Module-},[Entity]) ] */
 };
 
+
 extern Module currentModule;           /* Module currently being processed */
 extern struct strModule DECTABLE(tabModule);
 
@@ -971,6 +974,7 @@ extern Script	   scriptThisClass  Args((Class));
 extern String      fileOfModule     Args((Module));
 extern Void	   dropAScript      Args((Script));
 extern Void	   dropScriptsFrom  Args((Script));
+extern Void        setScriptPrims   Args((void*));
 
 /* --------------------------------------------------------------------------
  * I/O Handles:

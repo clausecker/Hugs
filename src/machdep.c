@@ -11,8 +11,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.55 $
- * $Date: 2002/06/24 17:00:56 $
+ * $Revision: 1.56 $
+ * $Date: 2002/07/05 05:21:26 $
  * ------------------------------------------------------------------------*/
 #include <math.h>
 
@@ -1767,16 +1767,16 @@ int snprintf(char* buffer, int count, const char* fmt, ...) {
  * Dynamic loading:
  * ------------------------------------------------------------------------*/
 
-static void* local getDLLSymbol Args((String,String));
+static void* local getDLL Args((String));
+static void* local getDLLSymbol Args((void*,String));
 
 #if HAVE_DLFCN_H /* eg LINUX, SOLARIS, ULTRIX */
 
 #include <stdio.h>
 #include <dlfcn.h>
 
-static void* local getDLLSymbol(dll,symbol)  /* load dll and lookup symbol */
-String dll;
-String symbol; {
+static void* local getDLL(dll)  /* load dll */
+String dll; {
 #if defined(RTLD_LAZY) /* eg SunOS4 doesn't have RTLD_NOW */
     void *instance = dlopen(dll,RTLD_LAZY | RTLD_GLOBAL);
 #elif defined(RTLD_NOW)
@@ -1784,12 +1784,19 @@ String symbol; {
 #else /* eg FreeBSD doesn't have RTLD_LAZY */
     void *instance = dlopen(dll,1);
 #endif
-    void *sym;
-
     if (NULL == instance) {
 	ERRMSG(0) "Error while importing DLL \"%s\":\n%s\n", dll, dlerror()
 	EEND;
     }
+    
+    return instance;
+}
+
+static void* local getDLLSymbol(instance,symbol)  /* lookup dll symbol */
+void*  instance;
+String symbol; {
+    void *sym;
+
     if ((sym = dlsym(instance,symbol)) != 0) {
         return sym;
     }
@@ -1798,27 +1805,50 @@ String symbol; {
     EEND;
 }
 
+void freeDLL (dll) /* free up DLL */
+void* dll; {
+  if (dll) {
+    /* No error checking done. */
+    dlclose(dll);
+  }
+  return;
+}
+
 #elif HAVE_DL_H /* eg HPUX */
 
 #include <dl.h>
 
-static void* local getDLLSymbol(dll,symbol)  /* load dll and lookup symbol */
-String dll;
-String symbol; {
+static void* local getDLL(dll)  /* load dll */
+String dll; {
     shl_t instance = shl_load(dll,BIND_IMMEDIATE,0L);
-    void* r;
+
     if (NULL == instance) {
 	ERRMSG(0) "Error while importing DLL \"%s\"", dll
 	EEND;
     }
-    return (0 == shl_findsym(&instance,symbol,TYPE_PROCEDURE,&r)) ? r : 0;
+    /* Assuming that shl_t can be converted into a void* with
+       loss of information here... is this OK? */
+    return instance;
+}
+static void* local getDLLSymbol(dll,symbol)  /* lookup dll symbol */
+void* dll;
+String symbol; {
+    void* r;
+    return (0 == shl_findsym(&(shl_t)dll,symbol,TYPE_PROCEDURE,&r)) ? r : 0;
+}
+
+Void freeDLL(dll)
+void* dll; {
+  if (dll) {
+    shl_unload((shl_t)dll);
+  }
+  return;
 }
 
 #elif HAVE_WINDOWS_H && !defined(__MSDOS__)
 
-static void* local getDLLSymbol(dll,symbol)  /* load dll and lookup symbol */
-String dll;
-String symbol; {
+static void* local getDLL(dll)  /* load dll */
+String dll; {
     HINSTANCE instance = LoadLibrary(dll);
     if (NULL == instance) {
 	/* GetLastError allegedly provides more detail - in practice,
@@ -1827,8 +1857,25 @@ String symbol; {
 	ERRMSG(0) "Error while importing DLL \"%s\"", dll
 	EEND;
     }
-    return (void*)GetProcAddress(instance,symbol);
+    //    fprintf(stderr, "Loaded DLL 0x%p\n",instance); fflush(stderr);
+    return instance;
 }
+
+static void* local getDLLSymbol(instance,symbol)  /* lookup dll symbol */
+void* instance;
+String symbol; {
+    return (void*)GetProcAddress((HINSTANCE)instance,symbol);
+}
+
+Void freeDLL(dll)
+void* dll; {
+  if (dll) {
+    //    fprintf(stderr, "Freeing DLL 0x%p\n",dll); fflush(stderr);
+    FreeLibrary(dll);
+  }
+  return;
+}
+
 
 #elif HAVE_MACH_O_DYLD_H         /* MacOS X */
 
@@ -1895,16 +1942,21 @@ void* dlsym( void* handle, char* symbol ) {
 
 /*****************************************************************************/
 
-static void* local getDLLSymbol(dll,symbol)  /* load dll and lookup symbol */
-String dll;
-String symbol; {
+static void* local getDLL(dll)  /* load dll */
+String dll; {
   void *instance = dlopen(dll,1);
-  void *sym;
-  
   if (NULL == instance) {
     ERRMSG(0) "Error while importing DLL \"%s\":\n%s\n", dll, dlerror()
       EEND;
   }
+  return instance;
+}
+
+static void* local getDLLSymbol(dll,symbol)  /* lookup dll symbol */
+void* instance;
+String symbol; {
+  void *sym;
+  
   if (sym = dlsym(instance,symbol))
     return sym;
   
@@ -1912,10 +1964,27 @@ String symbol; {
     EEND;
 }
 
+Void freeDLL(dll)
+void* dll; {
+  if (dll) {
+    dlclose(dll);
+  }
+  return;
+}
+
 #else /* Dynamic loading not available */
 
+static void* local getDLL(dll)  /* load dll */
+String dll; {
+#if 1 /* very little to choose between these options */
+    return 0;
+#else
+    ERRMSG(0) "This Hugs build does not support plugins\n"
+    EEND;
+#endif
+}
 static void* local getDLLSymbol(dll,symbol)  /* load dll and lookup symbol */
-String dll;
+void* dll;
 String symbol; {
 #if 1 /* very little to choose between these options */
     return 0;
@@ -1923,6 +1992,10 @@ String symbol; {
     ERRMSG(0) "This Hugs build does not support plugins\n"
     EEND;
 #endif
+}
+
+Void freeDLL(dll)
+void* dll; {
 }
 
 #endif /* Dynamic loading not available */
@@ -1990,40 +2063,48 @@ Int version; {
     switch (version) { 
     case 1 : 
 	{ 
-	    InitModuleFun1 initModule = (InitModuleFun1) 
-		getDLLSymbol(mkDLLFilename(scriptFile),INIT_MODULE_FUN);
+	    InitModuleFun1 initModule;
+	    void* dll = getDLL(mkDLLFilename(scriptFile));
+	    initModule = (InitModuleFun1)getDLLSymbol(dll,INIT_MODULE_FUN);
 	    if (initModule) {
 		(*initModule)(hugsAPI1()); 
+		setScriptPrims(setPrimInfoDll(dll));
 		return;
 	    }
 	    break;
 	}
     case 2 : 
 	{ 
-	    InitModuleFun2 initModule = (InitModuleFun2) 
-		getDLLSymbol(mkDLLFilename(scriptFile),INIT_MODULE_FUN);
+	    InitModuleFun2 initModule;
+	    void* dll = getDLL(mkDLLFilename(scriptFile));
+	    initModule = (InitModuleFun2)getDLLSymbol(dll,INIT_MODULE_FUN);
 	    if (initModule) {
 		(*initModule)(hugsAPI2()); 
+		setScriptPrims(setPrimInfoDll(dll));
 		return;
 	    }
 	    break;
 	}
     case 3 : 
 	{ 
-	    InitModuleFun3 initModule = (InitModuleFun3) 
-		getDLLSymbol(mkDLLFilename(scriptFile),INIT_MODULE_FUN);
+	    InitModuleFun3 initModule;
+	    void* dll = getDLL(mkDLLFilename(scriptFile));
+	    initModule = (InitModuleFun3)getDLLSymbol(dll,INIT_MODULE_FUN);
 	    if (initModule) {
 		(*initModule)(hugsAPI3()); 
+		setScriptPrims(setPrimInfoDll(dll));
 		return;
 	    }
 	    break;
 	}
     case 4 : 
 	{ 
-	    InitModuleFun4 initModule = (InitModuleFun4) 
-		getDLLSymbol(mkDLLFilename(scriptFile),INIT_MODULE_FUN);
+	    InitModuleFun4 initModule;
+	    void* dll = getDLL(mkDLLFilename(scriptFile));
+	    initModule = (InitModuleFun4)getDLLSymbol(dll,INIT_MODULE_FUN);
 	    if (initModule) {
 		(*initModule)(hugsAPI4()); 
+		setScriptPrims(setPrimInfoDll(dll));
 		return;
 	    }
 	    break;
