@@ -128,7 +128,7 @@ primFun(primGetCalTime) { /* Int   -> Int -> IO (.....) */
   zoneNm = NULL;
 # endif
 
-# ifdef HAVE_TM_GMTOFF
+# ifdef HAVE_TM_ZONE
   utcOff = tm->tm_gmtoff;
 # elif HAVE_TIMEZONE
 #  ifdef HAVE_ALTZONE
@@ -211,7 +211,7 @@ primFun(primMkTime) { /* Int{-year-}  -> Int{-month-} -> Int{-day-} ->
      offset, that is, the difference between toClockTime's UTC offset and
      the UTC offset returned by mktime().
   */
-# ifdef HAVE_TM_GMTOFF
+# ifdef HAVE_TM_ZONE
   tz -= tm.tm_gmtoff;
 # elif HAVE_TIMEZONE
 #  ifdef HAVE_ALTZONE
