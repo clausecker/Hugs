@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: builtin.c,v $
- * $Revision: 1.54 $
- * $Date: 2003/03/14 15:16:21 $
+ * $Revision: 1.55 $
+ * $Date: 2003/03/20 18:15:26 $
  * ------------------------------------------------------------------------*/
 
 /* We include math.h before prelude.h because SunOS 4's cpp incorrectly
@@ -1932,7 +1932,11 @@ struct thunk_data {
 #endif
 };
 
-struct thunk_data* foreignThunks = 0;
+static void* mkThunk      Args((void (*)(void), HugsStablePtr));
+static void freeThunkAux  Args((struct thunk_data*));
+static void freeAllThunks Args((void));
+
+static struct thunk_data* foreignThunks = 0;
 
 static void* mkThunk(void (*app)(void), HugsStablePtr s) {
     struct thunk_data* thunk 
