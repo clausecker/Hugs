@@ -39,7 +39,6 @@ exposed-modules:
 	Hugs.System,
 	Hugs.Time,
 	Hugs.Trex,
-	Hugs.Unicode,
 	Hugs.Weak,
 	Hugs.Word
 c-sources: Hugs/Storable_aux.c
