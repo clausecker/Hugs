@@ -98,6 +98,7 @@ if test -f $source_dir/config.mk; then
 	GLU_LIBS="`sed -n 's/^GLU_LIBS=//p' $source_dir/config.mk`"
 	GLUT_CFLAGS="`sed -n 's/^GLUT_CFLAGS=//p' $source_dir/config.mk`"
 	GLUT_LIBS="`sed -n 's/^GLUT_LIBS=//p' $source_dir/config.mk`"
+	AL_LIBS="`sed -n 's/^AL_LIBS=//p' $source_dir/config.mk`"
 fi
 
 includes="-I$HUGSDIR/include -I$source_dir/include"
@@ -304,6 +305,7 @@ then	conf=$tmpdir/package.conf
 		-DX_LIBS="\"$X_LIBS\"" -DX_EXTRA_LIBS="\"$X_EXTRA_LIBS\"" \
 		-DGLU_CFLAGS=",\"$GLU_CFLAGS\"" -DGLU_LIBS=",\"$GLU_LIBS\"" \
 		-DGLUT_CFLAGS=",\"$GLUT_CFLAGS\"" -DGLUT_LIBS=",\"$GLUT_LIBS\"" \
+		-DAL_LIBS=",\"$AL_LIBS\"" \
 		>$conf
 else
 	conf=`echo $source_dir/*.conf`
