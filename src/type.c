@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: type.c,v $
- * $Revision: 1.30 $
- * $Date: 2001/01/31 02:52:13 $
+ * $Revision: 1.31 $
+ * $Date: 2001/04/03 03:00:07 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -2230,6 +2230,7 @@ Class c; {				/* defaults for class c		   */
 	static String deftext = "default_";
 	String s	      = textToStr(name(hd(mems)).text);
 	Name   n;
+        i = j = 0;
 	for (; i<FILENAME_MAX && deftext[i]!='\0'; i++) {
 	    buf[i] = deftext[i];
 	}
