@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.8 $
- * $Date: 1999/09/13 11:01:01 $
+ * $Revision: 1.9 $
+ * $Date: 1999/09/13 21:36:51 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1168,10 +1168,12 @@ static Void local showtype() {         /* print type of expression (if any)*/
     Putchar('\n');
 }
 
-static Void local browseit(mod)
-Module mod; {
+static Void local browseit(mod,t)
+Module mod; 
+Text t; {
     if (nonNull(mod)) {
 	Cell cs;
+	Printf("module %s where\n",textToStr(module(mod).text));
 	for (cs = module(mod).names; nonNull(cs); cs=tl(cs)) {
 	    Name nm = hd(cs);
 	    /* only look at things defined in this module */
@@ -1196,6 +1198,10 @@ Module mod; {
 		}
 	    }
 	}
+    } else {
+      if (isNull(mod)) {
+	Printf("Unknown module %s\n",t);
+      }
     }
 }
 
@@ -1206,7 +1212,7 @@ static Void local browse() {            /* browse modules                  */
     setCurrModule(findEvalModule());
     startNewScript(0);                  /* for recovery of storage         */
     for (; (s=readFilename())!=0; count++) {
-	browseit(findModule(findText(s)));
+	browseit(findModule(findText(s)),s);
     }
     if (count == 0) {
 	whatScripts();
@@ -1462,12 +1468,7 @@ Text t; {
 	Printf("\n\n");
     }
 
-    if (nonNull(mod)) {                 /* as a module                     */
-	Printf("-- module\n");
-        browseit(mod);
-    }
-
-    if (isNull(tc) && isNull(cl) && isNull(nm) && isNull(mod)) {
+    if (isNull(tc) && isNull(cl) && isNull(nm)) {
 	Printf("Unknown reference `%s'\n",textToStr(t));
     }
 }
