@@ -1,7 +1,7 @@
 /* --------------------------------------------------------------------------
  * Hugs parser (included as part of input.c)
  *
- * Expect 6 shift/reduce conflicts when passing this grammar through yacc,
+ * Expect 15 shift/reduce conflicts when passing this grammar through yacc,
  * but don't worry; they should all be resolved in an appropriate manner.
  *
  * The Hugs 98 system is Copyright (c) Mark P Jones, Alastair Reid, the
@@ -11,8 +11,8 @@
  * included in the distribution.
  *
  * $RCSfile: parser.y,v $
- * $Revision: 1.13 $
- * $Date: 2001/01/08 21:43:06 $
+ * $Revision: 1.14 $
+ * $Date: 2001/01/31 21:27:23 $
  * ------------------------------------------------------------------------*/
 
 %{
