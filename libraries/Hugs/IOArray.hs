@@ -18,7 +18,6 @@ module Hugs.IOArray
 	) where
 
 import Hugs.Array
-import Data.Dynamic
 
 -----------------------------------------------------------------------------
 
