@@ -12,8 +12,8 @@
  * included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.22 $
- * $Date: 2001/08/07 23:29:59 $
+ * $Revision: 1.23 $
+ * $Date: 2001/08/10 00:59:30 $
  * ------------------------------------------------------------------------*/
 
 #ifdef HAVE_SIGNAL_H
@@ -1588,6 +1588,87 @@ String symbol; {
     return (void*)GetProcAddress(instance,symbol);
 }
 
+#elif HAVE_MACH_O_DYLD_H         /* MacOS X */
+
+/*****************************************************************************/
+
+#include <stdio.h>
+#include <mach-o/dyld.h>
+
+/* static char* dl_last_error = ( char* ) 0; */
+
+static int dlerror_index = 1;
+
+static char* dlerror(  ) {
+  static char* OFIErrorStrings[] = {
+    "Object Image Load Failure\n",
+    "Object Image Load Success\n",
+    "Not an recognisable object file\n",
+    "No valid architecture\n",
+    "Object image has an invalid format\n",
+    "Invalid access (permissions?)\n",
+    "Unknown error code from NSCreateObjectFileImageFromFile\n",
+  };
+
+#define NUM_OFI_ERRORS ( sizeof( OFIErrorStrings ) /\
+                         sizeof( OFIErrorStrings[ 0 ] ) )
+
+  if( dlerror_index > NUM_OFI_ERRORS - 1 )
+    dlerror_index = NUM_OFI_ERRORS - 1;
+
+  return OFIErrorStrings[ dlerror_index ];
+}
+
+int dlclose( void* handle ) {
+  NSUnLinkModule( handle, FALSE );
+  return 0;
+}
+
+static void* dlopen( char* path, int mode /* mode is ignored */ ) {
+  int dyld_result;
+  NSObjectFileImage ofile;
+  NSModule handle = NULL;
+
+  dyld_result = NSCreateObjectFileImageFromFile( path, &ofile );
+  if( dyld_result != NSObjectFileImageSuccess )
+    dlerror_index = dyld_result;
+  else {
+    handle = NSLinkModule( ofile, path, TRUE );
+  }
+
+  return handle;
+}
+
+void* dlsym( void* handle, char* symbol ) {
+  void* addr;
+
+  if( NSIsSymbolNameDefined( symbol ) )
+    addr = NSAddressOfSymbol( NSLookupAndBindSymbol( symbol ) );
+  else
+    addr = NULL;
+  
+  return addr;
+}
+
+/*****************************************************************************/
+
+static void* local getDLLSymbol(dll,symbol)  /* load dll and lookup symbol */
+String dll;
+String symbol; {
+  void *instance = dlopen(dll,1);
+  void *sym;
+  
+  if (NULL == instance) {
+    ERRMSG(0) "Error while importing DLL \"%s\":\n%s\n", dll, dlerror()
+      EEND;
+  }
+  if (sym = dlsym(instance,symbol))
+    return sym;
+  
+  ERRMSG(0) "Error loading sym:\n%s\n", dlerror()
+    EEND;
+}
+
 #else /* Dynamic loading not available */
 
 static void* local getDLLSymbol(dll,symbol)  /* load dll and lookup symbol */
@@ -1626,14 +1707,9 @@ String file; {
 #else
     static char path[FILENAME_MAX+1];
 #endif
-    String dot;
-    String slash;
-    slash = strrchr(file,SLASH);        /* drop path to file                */
-    if (slash) {
-	file = slash;
-    }
-    dot = strrchr(file,'.');           /* patch file extension             */
-    dot = dot ? dot : file + strlen(file);
+    String dot = strrchr(file,'.');             /* patch file extension    */
+    if (isNull(dot))
+        dot = file + strlen(file);
     strcpy(path, file);
     strcpy(path + (dot - file),".c");
     return path;
