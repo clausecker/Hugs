@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.72 $
- * $Date: 2002/06/17 21:46:47 $
+ * $Revision: 1.73 $
+ * $Date: 2002/06/18 00:19:48 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -460,6 +460,8 @@ Cell   entity; { /* Entry from import/hiding list */
 			    if (DOTDOT == snd(entity)) {
 				imports=cons(pair(f,tycon(f).defn),imports);
 				imports=dupOnto(tycon(f).defn,imports);
+			    } else if ( NIL == snd(entity)) {
+				imports=cons(f,imports);
 			    } else {
 				List xs = NIL;
 				xs = checkSubentities(xs, snd(entity), tycon(f).defn,"constructor of type",t);
@@ -484,6 +486,8 @@ Cell   entity; { /* Entry from import/hiding list */
 			  List sigs = cclass(f).members;
 			    imports=cons(pair(f,sigs),imports);
 			    return dupOnto(sigs,imports);
+			} else if ( NIL == snd(entity)) {
+			    imports=cons(f,imports);
 			} else {
 			    List xs = NIL;
 			    xs = checkSubentities(xs, snd(entity), cclass(f).members,"member of class",t);
