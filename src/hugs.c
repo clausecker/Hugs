@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.62 $
- * $Date: 2002/01/31 05:09:26 $
+ * $Revision: 1.63 $
+ * $Date: 2002/02/12 16:35:49 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1120,10 +1120,11 @@ Bool   sch; {                           /* TRUE => requires pathname search*/
 		  NUM_SCRIPTS
 	EEND;
     }
-    else
+    else {
 	scriptName[namesUpto] = strCopy(sch ? findPathname(NULL,s) : s);
 	scriptReal[namesUpto] = strCopy(RealPath(scriptName[namesUpto]));
 	namesUpto++;
+    }
 }
 
 static Bool local addScript(fname,len)  /* read single script file */
