@@ -25,7 +25,7 @@ Hugs 98 is an interpreter for Haskell, a lazy functional programming language.
 
 %build
 cd src/unix
-./configure --prefix=%{prefix} --enable-ffi
+./configure --prefix=%{prefix} --with-fptools=../../fptools --enable-ffi
 cd ..
 make
 
