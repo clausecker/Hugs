@@ -308,7 +308,7 @@ ac_includes_default="\
 # include <unistd.h>
 #endif"
 
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS build build_cpu build_vendor build_os host host_cpu host_vendor host_os target target_cpu target_vendor target_os HostPlatform TargetPlatform BuildPlatform HostOS HostArch TargetOS TargetArch BuildOS BuildArch FPTOOLS YACC CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT CPP EGREP PTHREAD_CC PTHREAD_LIBS PTHREAD_CFLAGS RM CP LD PERL SET_MAKE have_hp2ps DOCBOOK2HTML DOCBOOK2DVI DOCBOOK2PDF DOCBOOK2PS Find2Cmd FindCmd Sort2Cmd SortCmd DIFF CONTEXT_DIFF X_CFLAGS X_PRE_LIBS X_LIBS X_EXTRA_LIBS GL_CFLAGS GL_LIBS GLUT_LIBS FFI_LIBRARIES HavePosixRegex HAVE_STRUCT_MSGHDR_MSG_ACCRIGHTS HAVE_STRUCT_MSGHDR_MSG_CONTROL ALLOCA OPTFLAGS DEBUGFLAGS LDDEBUGFLAGS HUGSPATH HUGSSUFFIXES hugsdir HUGSDIR BINDIR EXE OBJ DLL DLL_ENDING DEV_NULL WOBJECTS RC_FILES STRIP LIBOBJS LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS build build_cpu build_vendor build_os host host_cpu host_vendor host_os target target_cpu target_vendor target_os HostPlatform TargetPlatform BuildPlatform HostOS HostArch TargetOS TargetArch BuildOS BuildArch FPTOOLS YACC CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT CPP EGREP PTHREAD_CC PTHREAD_LIBS PTHREAD_CFLAGS RM CP LD PERL SET_MAKE have_hp2ps DOCBOOK2HTML DOCBOOK2DVI DOCBOOK2PDF DOCBOOK2PS fp_prog_find FindCmd fp_prog_sort SortCmd DIFF CONTEXT_DIFF X_CFLAGS X_PRE_LIBS X_LIBS X_EXTRA_LIBS GL_CFLAGS GL_LIBS GLUT_LIBS FFI_LIBRARIES HavePosixRegex HAVE_STRUCT_MSGHDR_MSG_ACCRIGHTS HAVE_STRUCT_MSGHDR_MSG_CONTROL ALLOCA OPTFLAGS DEBUGFLAGS LDDEBUGFLAGS HUGSPATH HUGSSUFFIXES hugsdir HUGSDIR BINDIR EXE OBJ DLL DLL_ENDING DEV_NULL WOBJECTS RC_FILES STRIP LIBOBJS LTLIBOBJS'
 ac_subst_files='MkInstall MkDepend'
 
 # Initialize some variables set by options.
@@ -3728,17 +3728,16 @@ fi
 done
 
 
-
 # Extract the first word of "find", so it can be a program name with args.
 set dummy find; ac_word=$2
 echo "$as_me:$LINENO: checking for $ac_word" >&5
 echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6
-if test "${ac_cv_path_Find2Cmd+set}" = set; then
+if test "${ac_cv_path_fp_prog_find+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-  case $Find2Cmd in
+  case $fp_prog_find in
   [\\/]* | ?:[\\/]*)
-  ac_cv_path_Find2Cmd="$Find2Cmd" # Let the user override the test with a path.
+  ac_cv_path_fp_prog_find="$fp_prog_find" # Let the user override the test with a path.
   ;;
   *)
   as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
@@ -3748,7 +3747,7 @@ do
   test -z "$as_dir" && as_dir=.
   for ac_exec_ext in '' $ac_executable_extensions; do
   if $as_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
-    ac_cv_path_Find2Cmd="$as_dir/$ac_word$ac_exec_ext"
+    ac_cv_path_fp_prog_find="$as_dir/$ac_word$ac_exec_ext"
     echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
     break 2
   fi
@@ -3758,26 +3757,26 @@ done
   ;;
 esac
 fi
-Find2Cmd=$ac_cv_path_Find2Cmd
+fp_prog_find=$ac_cv_path_fp_prog_find
 
-if test -n "$Find2Cmd"; then
-  echo "$as_me:$LINENO: result: $Find2Cmd" >&5
-echo "${ECHO_T}$Find2Cmd" >&6
+if test -n "$fp_prog_find"; then
+  echo "$as_me:$LINENO: result: $fp_prog_find" >&5
+echo "${ECHO_T}$fp_prog_find" >&6
 else
   echo "$as_me:$LINENO: result: no" >&5
 echo "${ECHO_T}no" >&6
 fi
 
-$Find2Cmd --version > conftest.out 2>&1
-if grep "FIND: Parameter format" conftest.out >/dev/null 2>&1 ; then
-   # Encountered MS' find utility, which is not what we're after.
-   #
-   # HACK - AC_CHECK_PROG is useful here in that does let you reject
-   # an (absolute) entry in the path (Find2Cmd). It is not so useful
-   # in that it doesn't let you (AFAIU) set VARIABLE equal to the
-   # absolute path eventually found. So, hack around this by inspecting
-   # what variables hold the abs. path & use them directly.
-   # Extract the first word of "find", so it can be a program name with args.
+echo foo > conftest.txt
+$fp_prog_find conftest.txt -print > conftest.out 2>&1
+if grep '^conftest.txt$' conftest.out > /dev/null 2>&1 ; then
+  # OK, looks like a real "find".
+  FindCmd="$fp_prog_find"
+else
+  # Found a poor WinDoze version of "find", ignore it.
+  { echo "$as_me:$LINENO: WARNING: $fp_prog_find looks like a non-*nix find, ignoring it" >&5
+echo "$as_me: WARNING: $fp_prog_find looks like a non-*nix find, ignoring it" >&2;}
+  # Extract the first word of "find", so it can be a program name with args.
 set dummy find; ac_word=$2
 echo "$as_me:$LINENO: checking for $ac_word" >&5
 echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6
@@ -3795,11 +3794,11 @@ do
   test -z "$as_dir" && as_dir=.
   for ac_exec_ext in '' $ac_executable_extensions; do
   if $as_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
-    if test "$as_dir/$ac_word$ac_exec_ext" = "$Find2Cmd"; then
+    if test "$as_dir/$ac_word$ac_exec_ext" = "$fp_prog_find"; then
        ac_prog_rejected=yes
        continue
      fi
-    ac_cv_prog_FindCmd="`echo $ac_dir/$ac_word`"
+    ac_cv_prog_FindCmd="$as_dir/$ac_word$ac_exec_ext"
     echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
     break 2
   fi
@@ -3816,14 +3815,8 @@ if test $ac_prog_rejected = yes; then
     # first if we set FindCmd to just the basename; use the full file name.
     shift
     ac_cv_prog_FindCmd="$as_dir/$ac_word${1+' '}$@"
-  else
-    # Default is a loser.
-    { { echo "$as_me:$LINENO: error: FindCmd=$Find2Cmd unacceptable, but no other find found in \$PATH" >&5
-echo "$as_me: error: FindCmd=$Find2Cmd unacceptable, but no other find found in \$PATH" >&2;}
-   { (exit 1); exit 1; }; }
   fi
 fi
-  test -z "$ac_cv_prog_FindCmd" && ac_cv_prog_FindCmd="find"
 fi
 fi
 FindCmd=$ac_cv_prog_FindCmd
@@ -3835,22 +3828,19 @@ else
 echo "${ECHO_T}no" >&6
 fi
 
-else
-FindCmd=$Find2Cmd
-
 fi
-
+rm -f conftest.txt conftest.out
 
 # Extract the first word of "sort", so it can be a program name with args.
 set dummy sort; ac_word=$2
 echo "$as_me:$LINENO: checking for $ac_word" >&5
 echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6
-if test "${ac_cv_path_Sort2Cmd+set}" = set; then
+if test "${ac_cv_path_fp_prog_sort+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-  case $Sort2Cmd in
+  case $fp_prog_sort in
   [\\/]* | ?:[\\/]*)
-  ac_cv_path_Sort2Cmd="$Sort2Cmd" # Let the user override the test with a path.
+  ac_cv_path_fp_prog_sort="$fp_prog_sort" # Let the user override the test with a path.
   ;;
   *)
   as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
@@ -3860,7 +3850,7 @@ do
   test -z "$as_dir" && as_dir=.
   for ac_exec_ext in '' $ac_executable_extensions; do
   if $as_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
-    ac_cv_path_Sort2Cmd="$as_dir/$ac_word$ac_exec_ext"
+    ac_cv_path_fp_prog_sort="$as_dir/$ac_word$ac_exec_ext"
     echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
     break 2
   fi
@@ -3870,22 +3860,26 @@ done
   ;;
 esac
 fi
-Sort2Cmd=$ac_cv_path_Sort2Cmd
+fp_prog_sort=$ac_cv_path_fp_prog_sort
 
-if test -n "$Sort2Cmd"; then
-  echo "$as_me:$LINENO: result: $Sort2Cmd" >&5
-echo "${ECHO_T}$Sort2Cmd" >&6
+if test -n "$fp_prog_sort"; then
+  echo "$as_me:$LINENO: result: $fp_prog_sort" >&5
+echo "${ECHO_T}$fp_prog_sort" >&6
 else
   echo "$as_me:$LINENO: result: no" >&5
 echo "${ECHO_T}no" >&6
 fi
 
-$Sort2Cmd --version > conftest.out 2>&1
-if grep "^--version" conftest.out >/dev/null 2>&1 ; then
-   # Encountered MS' sort utility, which is not what we're after.
-   #
-   # HACK - see FPTOOLS_FIND_FIND remark.
-   # Extract the first word of "sort", so it can be a program name with args.
+echo foo > conftest.txt
+$fp_prog_sort -u conftest.txt > conftest.out 2>&1
+if grep '^foo$' conftest.out > /dev/null 2>&1 ; then
+  # OK, looks like a real "sort".
+  SortCmd="$fp_prog_sort"
+else
+  # Found a poor WinDoze version of "sort", ignore it.
+  { echo "$as_me:$LINENO: WARNING: $fp_prog_sort looks like a non-*nix sort, ignoring it" >&5
+echo "$as_me: WARNING: $fp_prog_sort looks like a non-*nix sort, ignoring it" >&2;}
+  # Extract the first word of "sort", so it can be a program name with args.
 set dummy sort; ac_word=$2
 echo "$as_me:$LINENO: checking for $ac_word" >&5
 echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6
@@ -3903,11 +3897,11 @@ do
   test -z "$as_dir" && as_dir=.
   for ac_exec_ext in '' $ac_executable_extensions; do
   if $as_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
-    if test "$as_dir/$ac_word$ac_exec_ext" = "$Sort2Cmd"; then
+    if test "$as_dir/$ac_word$ac_exec_ext" = "$fp_prog_sort"; then
        ac_prog_rejected=yes
        continue
      fi
-    ac_cv_prog_SortCmd="`echo $ac_dir/$ac_word`"
+    ac_cv_prog_SortCmd="$as_dir/$ac_word$ac_exec_ext"
     echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
     break 2
   fi
@@ -3924,14 +3918,8 @@ if test $ac_prog_rejected = yes; then
     # first if we set SortCmd to just the basename; use the full file name.
     shift
     ac_cv_prog_SortCmd="$as_dir/$ac_word${1+' '}$@"
-  else
-    # Default is a loser.
-    { { echo "$as_me:$LINENO: error: SortCmd=$Sort2Cmd unacceptable, but no other sort found in \$PATH" >&5
-echo "$as_me: error: SortCmd=$Sort2Cmd unacceptable, but no other sort found in \$PATH" >&2;}
-   { (exit 1); exit 1; }; }
   fi
 fi
-  test -z "$ac_cv_prog_SortCmd" && ac_cv_prog_SortCmd="sort"
 fi
 fi
 SortCmd=$ac_cv_prog_SortCmd
@@ -3943,10 +3931,8 @@ else
 echo "${ECHO_T}no" >&6
 fi
 
-else
-SortCmd=$Sort2Cmd
-
 fi
+rm -f conftest.txt conftest.out
 
 
 
@@ -4036,7 +4022,7 @@ else
 ac_save_LIBS="$LIBS"
 LIBS="";
 cat > conftest.$ac_ext <<EOF
-#line 4039 "configure"
+#line 4025 "configure"
 #include "confdefs.h"
 main() { extern char dlopen(); dlopen();; exit(0); }
 int t() { return 0; }
@@ -4079,7 +4065,7 @@ else
 ac_save_LIBS="$LIBS"
 LIBS="-ldl";
 cat > conftest.$ac_ext <<EOF
-#line 4082 "configure"
+#line 4068 "configure"
 #include "confdefs.h"
 main() { extern char dlopen(); dlopen();; exit(0); }
 int t() { return 0; }
@@ -4134,7 +4120,7 @@ else
 ac_save_LIBS="$LIBS"
 LIBS="";
 cat > conftest.$ac_ext <<EOF
-#line 4137 "configure"
+#line 4123 "configure"
 #include "confdefs.h"
 main() { extern char shl_load(); shl_load();; exit(0); }
 int t() { return 0; }
@@ -4177,7 +4163,7 @@ else
 ac_save_LIBS="$LIBS"
 LIBS="-ldld";
 cat > conftest.$ac_ext <<EOF
-#line 4180 "configure"
+#line 4166 "configure"
 #include "confdefs.h"
 main() { extern char shl_load(); shl_load();; exit(0); }
 int t() { return 0; }
@@ -4232,7 +4218,7 @@ else
 ac_save_LIBS="$LIBS"
 LIBS="";
 cat > conftest.$ac_ext <<EOF
-#line 4235 "configure"
+#line 4221 "configure"
 #include "confdefs.h"
 main() { extern char atan(); atan();; exit(0); }
 int t() { return 0; }
@@ -4275,7 +4261,7 @@ else
 ac_save_LIBS="$LIBS"
 LIBS="-lm";
 cat > conftest.$ac_ext <<EOF
-#line 4278 "configure"
+#line 4264 "configure"
 #include "confdefs.h"
 main() { extern char atan(); atan();; exit(0); }
 int t() { return 0; }
@@ -24258,7 +24244,7 @@ _ACEOF
 ac_save_LIBS="$LIBS"
 LIBS=;
 cat > conftest.$ac_ext <<EOF
-#line 24261 "configure"
+#line 24247 "configure"
 #include "confdefs.h"
 
 #if HAVE_WINDOWS_H
@@ -24299,7 +24285,7 @@ fi
 ac_save_LIBS="$LIBS"
 LIBS=;
 cat > conftest.$ac_ext <<EOF
-#line 24302 "configure"
+#line 24288 "configure"
 #include "confdefs.h"
 
 #if HAVE_WINDOWS_H
@@ -31636,9 +31622,9 @@ s,@DOCBOOK2HTML@,$DOCBOOK2HTML,;t t
 s,@DOCBOOK2DVI@,$DOCBOOK2DVI,;t t
 s,@DOCBOOK2PDF@,$DOCBOOK2PDF,;t t
 s,@DOCBOOK2PS@,$DOCBOOK2PS,;t t
-s,@Find2Cmd@,$Find2Cmd,;t t
+s,@fp_prog_find@,$fp_prog_find,;t t
 s,@FindCmd@,$FindCmd,;t t
-s,@Sort2Cmd@,$Sort2Cmd,;t t
+s,@fp_prog_sort@,$fp_prog_sort,;t t
 s,@SortCmd@,$SortCmd,;t t
 s,@DIFF@,$DIFF,;t t
 s,@CONTEXT_DIFF@,$CONTEXT_DIFF,;t t

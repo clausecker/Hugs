@@ -287,8 +287,8 @@ AC_CHECK_PROGS(DOCBOOK2PDF,[docbook2pdf db2pdf],[])
 AC_CHECK_PROGS(DOCBOOK2PS,[docbook2ps db2ps],[])
 
 dnl Look for right versions of 'find' and 'sort' (win32 only, really.)
-FPTOOLS_FIND_FIND
-FPTOOLS_FIND_SORT
+FP_PROG_FIND
+FP_PROG_SORT
 
 dnl AC_PROG_INSTALL
 

@@ -901,23 +901,52 @@ AC_SUBST(FindCmd)
 fi
 ])
 
-dnl
-dnl Getting at the right version of 'sort'
-dnl (i.e., not the MS util on a Win32 box).
-dnl
-AC_DEFUN(FPTOOLS_FIND_SORT,
-[
-AC_PATH_PROG(Sort2Cmd, sort)
-$Sort2Cmd --version > conftest.out 2>&1 
-if grep "^--version" conftest.out >/dev/null 2>&1 ; then
-   # Encountered MS' sort utility, which is not what we're after.
-   #
-   # HACK - see FPTOOLS_FIND_FIND remark.
-   AC_CHECK_PROG(SortCmd,sort,`echo $ac_dir/$ac_word`,sort,,$Sort2Cmd)
-else
-SortCmd=$Sort2Cmd
-AC_SUBST(SortCmd)
-fi
-])
 
-dnl End of file
+# FP_CHECK_PROG(VARIABLE, PROG-TO-CHECK-FOR,
+#               [VALUE-IF-NOT-FOUND], [PATH], [REJECT])
+# -----------------------------------------------------
+# HACK: A small wrapper around AC_CHECK_PROG, setting VARIABLE to the full path
+# of PROG-TO-CHECK-FOR when found.
+AC_DEFUN([FP_CHECK_PROG],
+[AC_CHECK_PROG([$1], [$2], [$as_dir/$ac_word$ac_exec_ext], [$3], [$4], [$5])][]dnl
+)# FP_CHECK_PROC
+
+
+# FP_PROG_FIND
+# ------------
+# Find a non-WinDoze version of the "find" utility.
+AC_DEFUN([FP_PROG_FIND],
+[AC_PATH_PROG([fp_prog_find], [find])
+echo foo > conftest.txt
+$fp_prog_find conftest.txt -print > conftest.out 2>&1
+if grep '^conftest.txt$' conftest.out > /dev/null 2>&1 ; then
+  # OK, looks like a real "find".
+  FindCmd="$fp_prog_find"
+else
+  # Found a poor WinDoze version of "find", ignore it.
+  AC_MSG_WARN([$fp_prog_find looks like a non-*nix find, ignoring it])
+  FP_CHECK_PROG([FindCmd], [find], [], [], [$fp_prog_find])
+fi
+rm -f conftest.txt conftest.out
+AC_SUBST([FindCmd])[]dnl
+])# FP_PROG_FIND
+
+
+# FP_PROG_SORT
+# ------------
+# Find a non-WinDoze version of the "sort" utility.
+AC_DEFUN([FP_PROG_SORT],
+[AC_PATH_PROG([fp_prog_sort], [sort])
+echo foo > conftest.txt
+$fp_prog_sort -u conftest.txt > conftest.out 2>&1
+if grep '^foo$' conftest.out > /dev/null 2>&1 ; then
+  # OK, looks like a real "sort".
+  SortCmd="$fp_prog_sort"
+else
+  # Found a poor WinDoze version of "sort", ignore it.
+  AC_MSG_WARN([$fp_prog_sort looks like a non-*nix sort, ignoring it])
+  FP_CHECK_PROG([SortCmd], [sort], [], [], [$fp_prog_sort])
+fi
+rm -f conftest.txt conftest.out
+AC_SUBST([SortCmd])[]dnl
+])# FP_PROG_SORT
