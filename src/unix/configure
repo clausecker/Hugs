@@ -18581,7 +18581,7 @@ fi
 for ac_const_name in E2BIG EACCES EADDRINUSE EADDRNOTAVAIL EADV EAFNOSUPPORT EAGAIN EALREADY EBADF EBADMSG EBADRPC EBUSY ECHILD ECOMM ECONNABORTED ECONNREFUSED ECONNRESET EDEADLK EDESTADDRREQ EDIRTY EDOM EDQUOT EEXIST EFAULT EFBIG EFTYPE EHOSTDOWN EHOSTUNREACH EIDRM EILSEQ EINPROGRESS EINTR EINVAL EIO EISCONN EISDIR ELOOP EMFILE EMLINK EMSGSIZE EMULTIHOP ENAMETOOLONG ENETDOWN ENETRESET ENETUNREACH ENFILE ENOBUFS ENODATA ENODEV ENOENT ENOEXEC ENOLCK ENOLINK ENOMEM ENOMSG ENONET ENOPROTOOPT ENOSPC ENOSR ENOSTR ENOSYS ENOTBLK ENOTCONN ENOTDIR ENOTEMPTY ENOTSOCK ENOTTY ENXIO EOPNOTSUPP EPERM EPFNOSUPPORT EPIPE EPROCLIM EPROCUNAVAIL EPROGMISMATCH EPROGUNAVAIL EPROTO EPROTONOSUPPORT EPROTOTYPE ERANGE EREMCHG EREMOTE EROFS ERPCMISMATCH ERREMOTE ESHUTDOWN ESOCKTNOSUPPORT ESPIPE ESRCH ESRMNT ESTALE ETIME ETIMEDOUT ETOOMANYREFS ETXTBSY EUSERS EWOULDBLOCK EXDEV
 do
 
-eval "def_name=CCONST_$ac_const_name"
+eval "def_name=CONST_$ac_const_name"
 eval "cv_name=ac_cv_cconst_$ac_const_name"
 echo "$as_me:$LINENO: checking value of $ac_const_name" >&5
 echo $ECHO_N "checking value of $ac_const_name... $ECHO_C" >&6
@@ -18643,13 +18643,74 @@ done
 
 
 
+eval "def_name=CONST_O_BINARY"
+eval "cv_name=ac_cv_cconst_O_BINARY"
+echo "$as_me:$LINENO: checking value of O_BINARY" >&5
+echo $ECHO_N "checking value of O_BINARY... $ECHO_C" >&6
+if eval "test \"\${$cv_name+set}\" = set"; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  if test "$cross_compiling" = yes; then
+  eval "$cv_name=-1"
+else
+  cat >conftest.$ac_ext <<_ACEOF
+#line $LINENO "configure"
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+#include <stdio.h>
+#include <errno.h>
+main()
+{
+  FILE *f=fopen("conftestval", "w");
+  if (!f) exit(1);
+  fprintf(f, "%d\n", O_BINARY);
+  exit(0);
+}
+_ACEOF
+rm -f conftest$ac_exeext
+if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
+  (eval $ac_link) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } && { ac_try='./conftest$ac_exeext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  eval "$cv_name=`cat conftestval`"
+else
+  echo "$as_me: program exited with status $ac_status" >&5
+echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+( exit $ac_status )
+eval "$cv_name=-1"
+fi
+rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+fi
+fi
+eval "fptools_check_cconst_result=`echo '$'{$cv_name}`"
+echo "$as_me:$LINENO: result: $fptools_check_cconst_result" >&5
+echo "${ECHO_T}$fptools_check_cconst_result" >&6
+cat >>confdefs.h <<_ACEOF
+#define $def_name $fptools_check_cconst_result
+_ACEOF
+
+unset fptools_check_cconst_result
+
+
+
 
 
 
 ac_save_LIBS="$LIBS"
 LIBS=;
 cat > conftest.$ac_ext <<EOF
-#line 18652 "configure"
+#line 18713 "configure"
 #include "confdefs.h"
 
 #if HAVE_WINDOWS_H
@@ -18690,7 +18751,7 @@ fi
 ac_save_LIBS="$LIBS"
 LIBS=;
 cat > conftest.$ac_ext <<EOF
-#line 18693 "configure"
+#line 18754 "configure"
 #include "confdefs.h"
 
 #if HAVE_WINDOWS_H

@@ -698,295 +698,298 @@
 #undef HTYPE_WCHAR_T
 
 /* The value of E2BIG.  */
-#undef CCONST_E2BIG
+#undef CONST_E2BIG
 
 /* The value of EACCES.  */
-#undef CCONST_EACCES
+#undef CONST_EACCES
 
 /* The value of EADDRINUSE.  */
-#undef CCONST_EADDRINUSE
+#undef CONST_EADDRINUSE
 
 /* The value of EADDRNOTAVAIL.  */
-#undef CCONST_EADDRNOTAVAIL
+#undef CONST_EADDRNOTAVAIL
 
 /* The value of EADV.  */
-#undef CCONST_EADV
+#undef CONST_EADV
 
 /* The value of EAFNOSUPPORT.  */
-#undef CCONST_EAFNOSUPPORT
+#undef CONST_EAFNOSUPPORT
 
 /* The value of EAGAIN.  */
-#undef CCONST_EAGAIN
+#undef CONST_EAGAIN
 
 /* The value of EALREADY.  */
-#undef CCONST_EALREADY
+#undef CONST_EALREADY
 
 /* The value of EBADF.  */
-#undef CCONST_EBADF
+#undef CONST_EBADF
 
 /* The value of EBADMSG.  */
-#undef CCONST_EBADMSG
+#undef CONST_EBADMSG
 
 /* The value of EBADRPC.  */
-#undef CCONST_EBADRPC
+#undef CONST_EBADRPC
 
 /* The value of EBUSY.  */
-#undef CCONST_EBUSY
+#undef CONST_EBUSY
 
 /* The value of ECHILD.  */
-#undef CCONST_ECHILD
+#undef CONST_ECHILD
 
 /* The value of ECOMM.  */
-#undef CCONST_ECOMM
+#undef CONST_ECOMM
 
 /* The value of ECONNABORTED.  */
-#undef CCONST_ECONNABORTED
+#undef CONST_ECONNABORTED
 
 /* The value of ECONNREFUSED.  */
-#undef CCONST_ECONNREFUSED
+#undef CONST_ECONNREFUSED
 
 /* The value of ECONNRESET.  */
-#undef CCONST_ECONNRESET
+#undef CONST_ECONNRESET
 
 /* The value of EDEADLK.  */
-#undef CCONST_EDEADLK
+#undef CONST_EDEADLK
 
 /* The value of EDESTADDRREQ.  */
-#undef CCONST_EDESTADDRREQ
+#undef CONST_EDESTADDRREQ
 
 /* The value of EDIRTY.  */
-#undef CCONST_EDIRTY
+#undef CONST_EDIRTY
 
 /* The value of EDOM.  */
-#undef CCONST_EDOM
+#undef CONST_EDOM
 
 /* The value of EDQUOT.  */
-#undef CCONST_EDQUOT
+#undef CONST_EDQUOT
 
 /* The value of EEXIST.  */
-#undef CCONST_EEXIST
+#undef CONST_EEXIST
 
 /* The value of EFAULT.  */
-#undef CCONST_EFAULT
+#undef CONST_EFAULT
 
 /* The value of EFBIG.  */
-#undef CCONST_EFBIG
+#undef CONST_EFBIG
 
 /* The value of EFTYPE.  */
-#undef CCONST_EFTYPE
+#undef CONST_EFTYPE
 
 /* The value of EHOSTDOWN.  */
-#undef CCONST_EHOSTDOWN
+#undef CONST_EHOSTDOWN
 
 /* The value of EHOSTUNREACH.  */
-#undef CCONST_EHOSTUNREACH
+#undef CONST_EHOSTUNREACH
 
 /* The value of EIDRM.  */
-#undef CCONST_EIDRM
+#undef CONST_EIDRM
 
 /* The value of EILSEQ.  */
-#undef CCONST_EILSEQ
+#undef CONST_EILSEQ
 
 /* The value of EINPROGRESS.  */
-#undef CCONST_EINPROGRESS
+#undef CONST_EINPROGRESS
 
 /* The value of EINTR.  */
-#undef CCONST_EINTR
+#undef CONST_EINTR
 
 /* The value of EINVAL.  */
-#undef CCONST_EINVAL
+#undef CONST_EINVAL
 
 /* The value of EIO.  */
-#undef CCONST_EIO
+#undef CONST_EIO
 
 /* The value of EISCONN.  */
-#undef CCONST_EISCONN
+#undef CONST_EISCONN
 
 /* The value of EISDIR.  */
-#undef CCONST_EISDIR
+#undef CONST_EISDIR
 
 /* The value of ELOOP.  */
-#undef CCONST_ELOOP
+#undef CONST_ELOOP
 
 /* The value of EMFILE.  */
-#undef CCONST_EMFILE
+#undef CONST_EMFILE
 
 /* The value of EMLINK.  */
-#undef CCONST_EMLINK
+#undef CONST_EMLINK
 
 /* The value of EMSGSIZE.  */
-#undef CCONST_EMSGSIZE
+#undef CONST_EMSGSIZE
 
 /* The value of EMULTIHOP.  */
-#undef CCONST_EMULTIHOP
+#undef CONST_EMULTIHOP
 
 /* The value of ENAMETOOLONG.  */
-#undef CCONST_ENAMETOOLONG
+#undef CONST_ENAMETOOLONG
 
 /* The value of ENETDOWN.  */
-#undef CCONST_ENETDOWN
+#undef CONST_ENETDOWN
 
 /* The value of ENETRESET.  */
-#undef CCONST_ENETRESET
+#undef CONST_ENETRESET
 
 /* The value of ENETUNREACH.  */
-#undef CCONST_ENETUNREACH
+#undef CONST_ENETUNREACH
 
 /* The value of ENFILE.  */
-#undef CCONST_ENFILE
+#undef CONST_ENFILE
 
 /* The value of ENOBUFS.  */
-#undef CCONST_ENOBUFS
+#undef CONST_ENOBUFS
 
 /* The value of ENODATA.  */
-#undef CCONST_ENODATA
+#undef CONST_ENODATA
 
 /* The value of ENODEV.  */
-#undef CCONST_ENODEV
+#undef CONST_ENODEV
 
 /* The value of ENOENT.  */
-#undef CCONST_ENOENT
+#undef CONST_ENOENT
 
 /* The value of ENOEXEC.  */
-#undef CCONST_ENOEXEC
+#undef CONST_ENOEXEC
 
 /* The value of ENOLCK.  */
-#undef CCONST_ENOLCK
+#undef CONST_ENOLCK
 
 /* The value of ENOLINK.  */
-#undef CCONST_ENOLINK
+#undef CONST_ENOLINK
 
 /* The value of ENOMEM.  */
-#undef CCONST_ENOMEM
+#undef CONST_ENOMEM
 
 /* The value of ENOMSG.  */
-#undef CCONST_ENOMSG
+#undef CONST_ENOMSG
 
 /* The value of ENONET.  */
-#undef CCONST_ENONET
+#undef CONST_ENONET
 
 /* The value of ENOPROTOOPT.  */
-#undef CCONST_ENOPROTOOPT
+#undef CONST_ENOPROTOOPT
 
 /* The value of ENOSPC.  */
-#undef CCONST_ENOSPC
+#undef CONST_ENOSPC
 
 /* The value of ENOSR.  */
-#undef CCONST_ENOSR
+#undef CONST_ENOSR
 
 /* The value of ENOSTR.  */
-#undef CCONST_ENOSTR
+#undef CONST_ENOSTR
 
 /* The value of ENOSYS.  */
-#undef CCONST_ENOSYS
+#undef CONST_ENOSYS
 
 /* The value of ENOTBLK.  */
-#undef CCONST_ENOTBLK
+#undef CONST_ENOTBLK
 
 /* The value of ENOTCONN.  */
-#undef CCONST_ENOTCONN
+#undef CONST_ENOTCONN
 
 /* The value of ENOTDIR.  */
-#undef CCONST_ENOTDIR
+#undef CONST_ENOTDIR
 
 /* The value of ENOTEMPTY.  */
-#undef CCONST_ENOTEMPTY
+#undef CONST_ENOTEMPTY
 
 /* The value of ENOTSOCK.  */
-#undef CCONST_ENOTSOCK
+#undef CONST_ENOTSOCK
 
 /* The value of ENOTTY.  */
-#undef CCONST_ENOTTY
+#undef CONST_ENOTTY
 
 /* The value of ENXIO.  */
-#undef CCONST_ENXIO
+#undef CONST_ENXIO
 
 /* The value of EOPNOTSUPP.  */
-#undef CCONST_EOPNOTSUPP
+#undef CONST_EOPNOTSUPP
 
 /* The value of EPERM.  */
-#undef CCONST_EPERM
+#undef CONST_EPERM
 
 /* The value of EPFNOSUPPORT.  */
-#undef CCONST_EPFNOSUPPORT
+#undef CONST_EPFNOSUPPORT
 
 /* The value of EPIPE.  */
-#undef CCONST_EPIPE
+#undef CONST_EPIPE
 
 /* The value of EPROCLIM.  */
-#undef CCONST_EPROCLIM
+#undef CONST_EPROCLIM
 
 /* The value of EPROCUNAVAIL.  */
-#undef CCONST_EPROCUNAVAIL
+#undef CONST_EPROCUNAVAIL
 
 /* The value of EPROGMISMATCH.  */
-#undef CCONST_EPROGMISMATCH
+#undef CONST_EPROGMISMATCH
 
 /* The value of EPROGUNAVAIL.  */
-#undef CCONST_EPROGUNAVAIL
+#undef CONST_EPROGUNAVAIL
 
 /* The value of EPROTO.  */
-#undef CCONST_EPROTO
+#undef CONST_EPROTO
 
 /* The value of EPROTONOSUPPORT.  */
-#undef CCONST_EPROTONOSUPPORT
+#undef CONST_EPROTONOSUPPORT
 
 /* The value of EPROTOTYPE.  */
-#undef CCONST_EPROTOTYPE
+#undef CONST_EPROTOTYPE
 
 /* The value of ERANGE.  */
-#undef CCONST_ERANGE
+#undef CONST_ERANGE
 
 /* The value of EREMCHG.  */
-#undef CCONST_EREMCHG
+#undef CONST_EREMCHG
 
 /* The value of EREMOTE.  */
-#undef CCONST_EREMOTE
+#undef CONST_EREMOTE
 
 /* The value of EROFS.  */
-#undef CCONST_EROFS
+#undef CONST_EROFS
 
 /* The value of ERPCMISMATCH.  */
-#undef CCONST_ERPCMISMATCH
+#undef CONST_ERPCMISMATCH
 
 /* The value of ERREMOTE.  */
-#undef CCONST_ERREMOTE
+#undef CONST_ERREMOTE
 
 /* The value of ESHUTDOWN.  */
-#undef CCONST_ESHUTDOWN
+#undef CONST_ESHUTDOWN
 
 /* The value of ESOCKTNOSUPPORT.  */
-#undef CCONST_ESOCKTNOSUPPORT
+#undef CONST_ESOCKTNOSUPPORT
 
 /* The value of ESPIPE.  */
-#undef CCONST_ESPIPE
+#undef CONST_ESPIPE
 
 /* The value of ESRCH.  */
-#undef CCONST_ESRCH
+#undef CONST_ESRCH
 
 /* The value of ESRMNT.  */
-#undef CCONST_ESRMNT
+#undef CONST_ESRMNT
 
 /* The value of ESTALE.  */
-#undef CCONST_ESTALE
+#undef CONST_ESTALE
 
 /* The value of ETIME.  */
-#undef CCONST_ETIME
+#undef CONST_ETIME
 
 /* The value of ETIMEDOUT.  */
-#undef CCONST_ETIMEDOUT
+#undef CONST_ETIMEDOUT
 
 /* The value of ETOOMANYREFS.  */
-#undef CCONST_ETOOMANYREFS
+#undef CONST_ETOOMANYREFS
 
 /* The value of ETXTBSY.  */
-#undef CCONST_ETXTBSY
+#undef CONST_ETXTBSY
 
 /* The value of EUSERS.  */
-#undef CCONST_EUSERS
+#undef CONST_EUSERS
 
 /* The value of EWOULDBLOCK.  */
-#undef CCONST_EWOULDBLOCK
+#undef CONST_EWOULDBLOCK
 
 /* The value of EXDEV.  */
-#undef CCONST_EXDEV
+#undef CONST_EXDEV
+
+/* The value of O_BINARY.  */
+#undef CONST_O_BINARY

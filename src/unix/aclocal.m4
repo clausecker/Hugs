@@ -418,7 +418,7 @@ dnl    This is set up so that the argument can be a shell variable.
 dnl
 AC_DEFUN(FPTOOLS_CHECK_CCONST,
 [
-eval "def_name=CCONST_$1"
+eval "def_name=CONST_$1"
 eval "cv_name=ac_cv_cconst_$1"
 AC_MSG_CHECKING(value of $1)
 AC_CACHE_VAL($cv_name,
