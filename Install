@@ -173,12 +173,6 @@ Hugs specific configuration options
 	all I/O.  Note that this option also disables readline, so the
 	locale-based option with a UTF-8 locale may be preferable if
 	you have recent enough libraries.
-   Note that the same encoding is also used for strings manipulated
-   by Hugs.  An unfortunate consequence is that string literals cannot
-   contain numeric character escapes that cannot be represented in the
-   selected encoding.  (Char literals can, though.)  For example, in a
-   C or POSIX locale, only ASCII characters are representable.
-
    You will then need to run Hugs in an environment that supports your
    chosen encoding.  For example (with the appropriate locale settings)
 	UTF-8 works with glibc 2.2, xterm 4.0, bash 2.05b and readline 4.3

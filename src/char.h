@@ -98,12 +98,8 @@ extern	Int	uni_gencat	Args((Char));
  * In an ideal world, we would use Unicode characters uniformly inside
  * the program.  However, to minimize changes to the rest of the program,
  * and to save space, we also encode strings in the text table with the
- * same encoding as we use for I/O.
- *
- * An unfortunate consequence is that string literals cannot contain
- * numeric character escapes that cannot be represented in the selected
- * encoding.  (Char literals can, though.)  For example, in a C or POSIX
- * locale, only ASCII characters are representable.
+ * same encoding as we use for I/O (but with special treatment of chars
+ * not representable in that encoding: see saveStrChr()/getStrChr().)
  *
  * The interface is:
  *

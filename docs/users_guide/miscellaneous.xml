@@ -365,6 +365,21 @@ and the <command>:project</command> command have been removed.
 
 </sect2>
 
+<sect2>
+<title>Under development</title>
+
+<itemizedlist>
+<listitem><para>
+The <literal>Char</literal> type and the <literal>Char</literal> module
+now support Unicode as specified in the Haskell 98 Report
+(contributed by Dmitry Golubovsky).
+Character oriented I/O uses a byte encoding of characters determined
+by the current locale.
+</para></listitem>
+</itemizedlist>
+
+</sect2>
+
 </sect1>
 
 </chapter>

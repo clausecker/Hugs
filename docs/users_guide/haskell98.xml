@@ -25,7 +25,8 @@ listed here corresponding to the relevant sections of the Report.
 <term>Restricted character set</term>
 <listitem><para>
 The Haskell report specifies that programs may be written using Unicode.
-Hugs only accepts the ISO8859-1 (Latin-1) subset at the moment.
+Hugs permits Unicode in strings and comments (in the appropriate locale),
+but identifiers are limited to the ISO8859-1 (Latin-1) subset at the moment.
 </para></listitem>
 </varlistentry>
 
@@ -246,13 +247,6 @@ This means that Hugs incorrectly rejects the following:
 <title>Predefined types and classes</title>
 
 <variablelist>
-
-<varlistentry>
-<term>Unicode is not supported</term>
-<listitem><para>
-The type <literal>Char</literal> is limited to the ISO8859-1 subset of Unicode.
-</para></listitem>
-</varlistentry>
 
 <varlistentry>
 <term>Rational literals lose precision</term>
