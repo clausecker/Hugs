@@ -252,6 +252,9 @@ Void optionInfo(Void) {                 /* Print information about command */
     Putchar('\n');
 }
 
+/* Get rid off superfluous trailing space(s) */
+#define TRIMSPC() while (*(next-1) == ' ') { next--; charsLeft++; }
+
 #define PUTC(c)                         \
     if (charsLeft > 1) {                \
       *next++=(c);charsLeft--;          \
@@ -289,10 +292,12 @@ Int*   chLeft;
 Char   c;
 String s; {
     Int charsLeft = *chLeft;
-    if (s) { 
+    Int len;
+    if (s && (len = strlen(s)) > 0 ) {
 	String t = 0;
+	len = strlen(s);
 
-	if ( (Int)(strlen(s) + 10) > charsLeft ) {
+	if ( (Int)(len + 10) > charsLeft ) {
 	    *next = '\0';
 	    /* optionsToStr() will not to break off immediately,
 	     * but soon enough. 
@@ -304,6 +309,15 @@ String s; {
 	*next++=c;
 	*next++='"';
 	charsLeft -= 3;
+	/* 
+	 * Subtlety if *s == '\0': for-loop below bails out right away,
+	 * causing strlen(next) to report quite possibly an inappropriate 
+	 * result. => always zero-terminate first.
+	 *
+	 * Do this even if we now explicitly test for 's' not being "" at
+	 * the start.
+	 */
+	*next = '\0';
 	for(t=s; *t; ++t) {
 	    PUTS(unlexChar(*(unsigned char *)t,'"'));
 	}
@@ -341,11 +355,14 @@ String optionsToStr() {          /* convert options to string */
 #if PROFILING
     PUTInt('d',profiling ? profInterval : 0);
 #endif
+    TRIMSPC();
     PUTC('\0');
+
     return buffer;
 }
 
 
+#undef TRIMSPC
 #undef PUTC
 #undef PUTS
 #undef PUTInt
@@ -469,6 +486,10 @@ String s; {              /* return FALSE if none found.     */
 #if SUPPORT_PREPROCESSOR
 	    case 'F' : if (preprocessor) free(preprocessor);
 		       preprocessor = strCopy(s+1);
+		       if (preprocessor && strlen(preprocessor) == 0) {
+			   free(preprocessor);
+			   preprocessor = NULL;
+		       }
 		       return TRUE;
 #endif
 
