@@ -18,8 +18,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: iomonad.c,v $
- * $Revision: 1.31 $
- * $Date: 2002/09/05 14:38:19 $
+ * $Revision: 1.32 $
+ * $Date: 2002/09/13 17:10:48 $
  * ------------------------------------------------------------------------*/
  
 Name nameIORun;			        /* run IO code                     */
@@ -1384,10 +1384,6 @@ primFun(primAppendBinaryFile) {		/* append string to specified file */
     fwritePrim(root,TRUE,TRUE,"IOExtensions.appendBinaryFile");
 }
 
-#if HAVE_GETFINFO
-extern int access(char *fileName, int dummy);
-#endif
-
 static Void local fwritePrim(root,append,binary,loc)
                                  /* Auxiliary function for  */
 StackPtr root;			 /* writing/appending to    */
@@ -1402,12 +1398,11 @@ String   loc; {
 			 loc,
 		         "illegal file name",
 			 IOArg(2)));
-    }
-    else if (append && access(s,0)!=0) {	/* Check that file exists  */
-        IOFail(mkIOError(nameDoesNotExist,
-			 loc,
-		         "file name does not exist",
-			 IOArg(2)));
+    /* Note: there used to be a test here which would signal an
+       IO error if the file didn't exist and the user was
+       attempting to append to it. Haskell98 requires, quite
+       sensibly, this to succeed, hence the test has been removed.
+    */
     } else {
 	String stmode;
 
