@@ -129,6 +129,7 @@ $(LIBRARIES)	: runhugs@EXEEXT@ ffihugs@EXEEXT@ ../libraries/Hugs/*.* $(CONVERTER
 		  mkdir -p $(BUILD_DIR)/tools
 		  $(CP) $(TOOLS) $(BUILD_DIR)/tools
 		  mkdir -p $(BUILD_DIR)/libraries/Hugs
+		  echo 'module Hugs where' >$(BUILD_DIR)/libraries/Hugs.hs
 		  $(CP) ../libraries/Hugs/*.* $(BUILD_DIR)/libraries/Hugs
 		  cd ..; src/unix/convert_libraries fptools hugsdir
 

@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.132 $
- * $Date: 2003/12/18 16:21:53 $
+ * $Revision: 1.133 $
+ * $Date: 2004/04/23 18:06:31 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -139,6 +139,16 @@ String argv[]; {
 
     /* Figure out what Prelude module we're using + hoist it in. */
     loadPrelude();
+
+    /* Add an empty module as the default, to avoid being inside the Prelude */
+    addScriptName(STD_EMPTY_MODULE, TRUE);
+
+    /* We record the number of scripts that loading the Prelude
+     * brought about, so that when the user comes to clear the module
+     * stack (e.g., ":l<ENTER>"), only modules later than the Prelude
+     * ones are scratched.
+     */
+    setScriptStableMark();
     
     addScriptsFromArgs(argc,argv);
     setHugsArgs(1, defaultArgv);

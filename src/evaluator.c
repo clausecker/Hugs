@@ -220,13 +220,6 @@ Void loadPrelude() {  /* load in the Prelude module(s). */
     listScripts = FALSE;
     readScripts(0);
     listScripts = listFlg;
-
-    /* We record the number of scripts that loading the Prelude
-     * brought about, so that when the user comes to clear the module
-     * stack (e.g., ":l<ENTER>"), only modules later than the Prelude
-     * ones are scratched.
-     */
-    setScriptStableMark();
 }
 
 /* --------------------------------------------------------------------------

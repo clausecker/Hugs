@@ -2,6 +2,7 @@
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
                     "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd" 
                       [
+<!ENTITY faq            SYSTEM "faq.xml">
 <!ENTITY haskell98      SYSTEM "haskell98.xml">
 <!ENTITY hugs-ghc       SYSTEM "hugs_ghc.xml">
 <!ENTITY hugs-only      SYSTEM "hugs_only.xml">
@@ -31,6 +32,7 @@
 &haskell98;
 &hugs-ghc;
 &hugs-only;
+&faq;
 &miscellaneous;
 
 </book>
