@@ -12,6 +12,7 @@
 #include "prelude.h"
 #include "storage.h"
 #include "connect.h"
+#include "errors.h"
 #include "char.h"
 
 #if UNICODE_CHARS
@@ -90,6 +91,7 @@ const Char max_uni_char = MAX_UNI_CHAR;
 static Void local initConsCharTable	Args((Void));
 static Void local markConsCharTable	Args((Void));
 #if UNICODE_CHARS
+static Void local freeConsCharTable	Args((Void));
 static const struct CharProperties * local get_properties Args((Char));
 #endif
 
@@ -241,7 +243,122 @@ Char c; {
 
 /* --------------------------------------------------------------------------
  * Build array of character conses:
+ * a tabulation of (:) c for each character c.
  * ------------------------------------------------------------------------*/
+
+#ifdef UNICODE_CHARS
+
+/* --------------------------------------------------------------------------
+ * To save space, we maintain a sparse array of character conses,
+ * allocated and filled lazily.  The sparseness is achieved by making the
+ * table a 3-level array.  The top level array is statically allocated,
+ * as are the first array are each of the other levels.  The rest will
+ * be allocated on demand.
+ * ------------------------------------------------------------------------*/
+
+#define	AllocArray(ty,n)	((ty *)malloc((n)*sizeof(ty)))
+
+#define NUM_LEVEL3 256		/* size of subarrays at the bottom level */
+#define NUM_LEVEL2 256		/* size of subarrays at the middle level */
+#define NUM_LEVEL1 (MAX_UNI_CHAR / (NUM_LEVEL3 * NUM_LEVEL2) + 1)
+
+/* To speed up a common case (i.e. ASCII), a small initial subset of
+ * chars have pre-built conses, so that they can be accessed directly,
+ * bypassing the 3-level array.
+ */
+
+/* Number of char conses to pre-build: must be <= NUM_LEVEL3 */
+#define	NUM_PRE_BUILT 128
+
+/* indices at each level */
+#define IDX1(c) ((c) / (NUM_LEVEL3 * NUM_LEVEL2))
+#define IDX2(c) ((c) / NUM_LEVEL3 % NUM_LEVEL2)
+#define IDX3(c) ((c) % NUM_LEVEL3 )
+
+/* statically allocated parts of the table */
+static Cell **consCharTable[NUM_LEVEL1];
+static Cell *consCharTable_0[NUM_LEVEL2];
+static Cell consCharTable_0_0[NUM_LEVEL3];
+
+static void local initConsCharTable() {
+    Char c;
+
+    consCharTable[0] = consCharTable_0;
+    consCharTable_0[0] = consCharTable_0_0;
+    for (c=0; c<NUM_PRE_BUILT; c++)
+	consCharTable_0_0[c] = ap(nameCons,mkChar(c));
+}
+
+/* --------------------------------------------------------------------------
+ * Get a character cons: follow the three-level lookup table.
+ * If a level does not exist, allocate it.
+ * ------------------------------------------------------------------------*/
+Cell consChar(c)                /* return application (:) c */
+Char c; {
+    Int i, j, k;
+    Cell **consCharTable_i;
+    Cell *consCharTable_i_j;
+
+    if (c<NUM_PRE_BUILT)	/* short cut for a common case */
+	return consCharTable_0_0[c];
+
+    i = IDX1(c);
+    consCharTable_i = consCharTable[i];
+    if (consCharTable_i==NULL) {	/* level 2 entry */
+	consCharTable_i = consCharTable[i] = AllocArray(Cell *, NUM_LEVEL2);
+	if (consCharTable_i==NULL) {
+	    ERRMSG(0) "Cannot allocate char cons table"
+	    EEND;
+	}
+	for (j=0; j<NUM_LEVEL2; j++)
+	    consCharTable_i[j] = NULL;
+    }
+
+    j = IDX2(c);
+    consCharTable_i_j = consCharTable_i[j];
+    if (consCharTable_i_j==NULL) {	/* level 3 entry */
+	consCharTable_i_j = consCharTable_i[j] = AllocArray(Cell, NUM_LEVEL3);
+	if (consCharTable_i_j==NULL) {
+	    ERRMSG(0) "Cannot allocate char cons table"
+	    EEND;
+	}
+	for (k=0; k<NUM_LEVEL3; k++)
+	    consCharTable_i_j[k] = NIL;
+    }
+
+    k = IDX3(c);
+    if (isNull(consCharTable_i_j[k]))
+	consCharTable_i_j[k] = ap(nameCons,mkChar(c));
+    return consCharTable_i_j[k];
+}
+
+static void local markConsCharTable() {
+    int i, j, k;
+
+    for (i=0; i<NUM_LEVEL1; i++)
+	if (consCharTable[i]!=NULL)
+	    for (j=0; j<NUM_LEVEL2; j++)
+		if (consCharTable[i][j]!=NULL)
+		    for (k=0; k<NUM_LEVEL3; k++)
+			mark(consCharTable[i][j][k]);
+}
+
+static void local freeConsCharTable() {
+    int i, j;
+
+    for (j=1; j<NUM_LEVEL2; j++)
+	if (consCharTable[0][j]!=NULL)
+	    free(consCharTable[0][j]);
+    for (i=1; i<NUM_LEVEL1; i++)
+	if (consCharTable[i]!=NULL) {
+	    for (j=0; j<NUM_LEVEL2; j++)
+		if (consCharTable[i][j]!=NULL)
+		    free(consCharTable[i][j]);
+	    free(consCharTable[i]);
+	}
+}
+
+#else /* !UNICODE_CHARS */
 
 static Cell consCharArray[NUM_LAT1_CHARS];
 
@@ -265,6 +382,8 @@ static void local markConsCharTable() {
 	mark(consCharArray[i]);
 }
 
+#endif /* !UNICODE_CHARS */
+
 Void charOps(what)
 Int what; {
     switch (what) {
@@ -274,5 +393,10 @@ Int what; {
 
 	case MARK    : markConsCharTable();
 		       break;
+
+#if UNICODE_CHARS
+	case EXIT    : freeConsCharTable();
+		       break;
+#endif
     }
 }
