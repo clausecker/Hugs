@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.37 $
- * $Date: 2001/06/08 23:26:25 $
+ * $Revision: 1.38 $
+ * $Date: 2001/06/22 18:35:44 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1091,12 +1091,9 @@ Bool   sch; {                           /* TRUE => requires pathname search*/
 	namesUpto++;
 }
 
-static Bool local addScript(fname,len)  /* read single script file
-*/
-String fname;                           /* name of script file
-*/
-Long   len; {                           /* length of script file
-*/
+static Bool local addScript(fname,len)  /* read single script file */
+String fname;                           /* name of script file     */
+Long   len; {                           /* length of script file   */
     scriptFile = fname;
 
 #if HUGS_FOR_WINDOWS         /* Set clock cursor while loading   */
@@ -1105,14 +1102,12 @@ Long   len; {                           /* length of script file
     AddFileToFileNamesMenu(&FilesMenu, RealPath(fname));
 #endif
 
-    Printf("Reading file \"%s\":\n",fname);
+    Printf("Reading file \"%s\":\n",fname);  FlushStdout();
     setLastEdit(fname,0);
 
     needsImports = FALSE;
-    parseScript(fname,len);             /* process script file
-*/
-    if (needsImports)
- return FALSE;
+    parseScript(fname,len);             /* process script file */
+    if (needsImports) return FALSE;
     checkDefns();
     typeCheckDefns();
     compileDefns();
