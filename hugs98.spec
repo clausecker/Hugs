@@ -50,6 +50,7 @@ gzip -f -9 $RPM_BUILD_ROOT%{prefix}/man/man1/hugs.1
 %{prefix}/man/man1/hugs.1.gz
 %{prefix}/bin/hugs
 %{prefix}/bin/runhugs
+%{prefix}/bin/ffihugs
 %{prefix}/lib/hugs/demos
 %{prefix}/lib/hugs/include
 %{prefix}/lib/hugs/lib
