@@ -24,8 +24,8 @@ Bool   addType      = FALSE;     /* TRUE => print type with value   */
 Bool   useShow      = TRUE;      /* TRUE => use Text/show printer   */
 Bool   displayIO    = FALSE;     /* TRUE => use printer for IO result*/
 Bool   useDots      = RISCOS;    /* TRUE => use dots in progress    */
-Bool   listScripts  = TRUE;      /* TRUE => list scripts after loading*/
-Bool   quiet        = FALSE;     /* TRUE => don't show progress     */
+Bool   listScripts  = FALSE;     /* TRUE => list scripts after loading*/
+Bool   quiet        = TRUE;      /* TRUE => don't show progress     */
 Bool   generateFFI  = FALSE;     /* TRUE => generate ffi code       */
 Bool   printing     = FALSE;     /* TRUE => currently printing value*/
 String  hugsEdit   = 0;	         /* String for editor command       */

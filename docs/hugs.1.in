@@ -92,10 +92,10 @@ Warn about errors in literate scripts (default: on)
 Print dots to show progress while loading modules (default: off)
 .TP
 .B +q
-Print nothing to show progress while loading modules (default: off)
+Print nothing to show progress while loading modules (default: on)
 .TP
 .B +w
-Always show which files loaded (default: on)
+Always show which files loaded (default: off)
 .SS "Expression evaluation"
 .TP
 .B +s

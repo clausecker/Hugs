@@ -191,7 +191,7 @@ Print dots to show progress while loading modules (default: off)
 <term><option>+q</option></term>
 <listitem>
 <para>
-Print nothing to show progress while loading modules (default: off)
+Print nothing to show progress while loading modules (default: on)
 </para>
 </listitem>
 </varlistentry>
@@ -200,7 +200,7 @@ Print nothing to show progress while loading modules (default: off)
 <term><option>+w</option></term>
 <listitem>
 <para>
-Always show which files were loaded (default: on)
+Always show which files were loaded (default: off)
 </para>
 </listitem>
 </varlistentry>
