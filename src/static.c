@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.148 $
- * $Date: 2003/03/23 01:42:25 $
+ * $Revision: 1.149 $
+ * $Date: 2003/04/06 23:38:28 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -7260,7 +7260,7 @@ Void checkDefns() {			/* Top level static analysis	   */
             foreignFooter(scriptFile, module(thisModule).text,
 			  foreignImports, foreignExports);
         }
-	if (need_stubs) {
+	if (need_stubs && (generate_ffi || !generateFFI)) {
 	  needPrims(0);
 	  mapProc(linkForeign,foreignImports);
 	  mapProc(linkForeign,foreignExports);
