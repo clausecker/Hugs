@@ -501,8 +501,11 @@ primFun(primGetDirContents) { /* FilePath -> IO [FilePath] */
   ls = nameNil;
   
   while (rc >= 0) {
+    Cell n;
+    push(ls);
     pushString(fData.name);
-    ls = ap2(nameCons, pop(), ls);
+    n = ap(nameCons, pop());
+    ls = ap(n, pop());
     rc = _findnext(dirHandle, &fData);
   }
   if (errno != ENOENT)
@@ -541,8 +544,11 @@ primFun(primGetDirContents) { /* FilePath -> IO [FilePath] */
   errno = 0;
   
   while ( (pDir = readdir(dir)) ) {
+    Cell n;
+    push(ls);
     pushString(pDir->d_name);
-    ls = ap2(nameCons, pop(), ls);
+    n = ap(nameCons, pop());
+    ls = ap(n, pop());
   }
   
   if (errno != 0
