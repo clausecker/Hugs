@@ -31,9 +31,10 @@ but identifiers are limited to the ISO8859-1 (Latin-1) subset at the moment.
 </varlistentry>
 
 <varlistentry>
-<term>Floating point literals</term>
+<term>Limited lookahead</term>
 <listitem><para>
 Hugs is confused by such things as
+<quote><literal>Just.if</literal></quote>,
 <quote><literal>0xy</literal></quote>,
 <quote><literal>0oy</literal></quote>,
 <quote><literal>9e+y</literal></quote> and
@@ -269,15 +270,6 @@ Floating point values are printed differently
 Haskell 98 specifies that <literal>show</literal> for floating point numbers
 is the function <literal>Numeric.showFloat</literal>,
 but Hugs uses an internal function with slightly different semantics.
-</para></listitem>
-</varlistentry>
-
-<varlistentry>
-<term>
-Derived <literal>Read</literal> instances do not work for some infix
-constructors.
-</term>
-<listitem><para>
 </para></listitem>
 </varlistentry>
 
