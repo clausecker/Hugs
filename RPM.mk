@@ -84,7 +84,7 @@ rc-rpm:
 	${MAKE} VERSION_SUBSTS='${RC_VERSION_SUBSTS}' rpm
 
 clean:
-	-cd src; if test -f Makefile; then make veryclean; fi
-	-cd docs; if test -f Makefile; then make veryclean; fi
+	-cd src; if test -f Makefile; then $(MAKE) veryclean; fi
+	-cd docs; if test -f Makefile; then $(MAKE) veryclean; fi
 	-rm -f ${PACKAGE}.tar.gz
 	-rm -f ${PACKAGE}-*.rpm

@@ -4,7 +4,7 @@
 include Defs.mk
 
 all: fptools pp-fptools src/Makefile
-	cd src; make
+	cd src; $(MAKE)
 
 src/Makefile:
 	cd src/unix; $(MAKE) config
