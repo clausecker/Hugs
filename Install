@@ -5,12 +5,12 @@ if you have a suitable C compiler.)
 
 Short version (for Unix-like environments):
 
-    cd Hugs98/src/unix
+    cd src/unix
     ./configure --prefix=$HOME
     cd ..
     make install  
     make clean
-    $HOME/bin/hugs $HOME/share/hugs/demos/Say
+    $HOME/bin/hugs $HOME/lib/hugs/demos/Say
     putStr (say "  /Hugs")
     :quit
 
@@ -35,7 +35,7 @@ Long version:
       -- This tests the capabilities of your C compiler and OS
       -- and arranges to install binaries in the directories places.
 
-      Read Hugs98/src/unix/INSTALL to find out about other configuration
+      Read Hugs98/src/unix/INSTALL to find out about general configuration
       options.  Hugs specific options are listed at the end of this file.
 
     On Windows:
@@ -148,17 +148,11 @@ Long version:
 
 Hugs specific configuration options:
 
- --with-readline
+ --enable-ffi
 
-   Use command line editor (if available) when the interpreter is used
-   interactively.  We highly recommend this option.
-
-   There are two choices of command line editor that can be used with Hugs:
-
-     GNU readline:      usual GNU sources (e.g. bash distribution)
-     editline:          (comp.sources.misc, vol 31, issue 71)
-
-   As you might expect, the GNU library is a bit larger but more powerful.
+   Provide libraries that use the Foreign Function Interface.  This is
+   recommended, provided the FFI works on your system, which it does
+   for the common architectures.
 
  --enable-timer
 
@@ -220,6 +214,7 @@ Hugs specific configuration options:
  --with-preprocessor
 
    This is an experimental feature and may change in future versions.
+   (It's turned on by default at the moment.)
 
    Enable the use of a preprocessor for processing Haskell source files
    before compiling them with Hugs.  When configured with preprocessing
