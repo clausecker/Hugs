@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.63 $
- * $Date: 2002/04/16 20:01:24 $
+ * $Revision: 1.64 $
+ * $Date: 2002/04/16 21:06:03 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -7482,6 +7482,7 @@ Cell v; {
 	/* A local repeated definition */
 	duplicateError(line,name(n).mod,name(n).text,"variable");
     } else if (name(n).defn!=PREDEFINED) {
+	removeName(n);
 	n            = newName(textOf(v),NIL);
 	name(n).defn = PREDEFINED;
     }

@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: storage.c,v $
- * $Revision: 1.34 $
- * $Date: 2002/04/16 17:35:45 $
+ * $Revision: 1.35 $
+ * $Date: 2002/04/16 21:06:02 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -529,6 +529,24 @@ Name nm; {
     nameHash[h]           = nm;
 }
 
+/*
+ * Remove 'n' from a module's 'names' list; used to implement 
+ * local overrides of imported decls.
+ */
+Void removeName(n)
+Name n; {
+    List ls   = module(currentModule).names;
+    List* prev = &(module(currentModule).names);
+    
+    for (;nonNull(ls);ls=tl(ls)) {
+	if (hd(ls) == n) {
+	    *prev = tl(ls);
+	    break;
+	}
+	prev = &(tl(ls));
+    }
+}
+
 Name findQualName(id)			/* Locate (possibly qualified) name*/
 Cell id; {				/* in name table		   */
     if (!isPair(id))
@@ -595,9 +613,11 @@ Cell id; {				/* in name table		     */
 	case CONOPCELL :
   	    return singleton(findName(textOf(id)));
 	case QUALIDENT : {
-	    Text   t  = qtextOf(id);
-	    List  ms  = findQualifiers(qmodOf(id));
-	    List res  = NIL;
+	    Text  t        = qtextOf(id);
+	    Text  aliasMod = qmodOf(id);
+	    List  ms       = findQualifiers(aliasMod);
+	    List res       = NIL;
+	    Bool fromHome  = FALSE;
 	    if (isNull(ms)) return NIL;
 	    while (nonNull(ms)) {
 	      Module m  = hd(ms);
@@ -605,26 +625,38 @@ Cell id; {				/* in name table		     */
 	      ms = tl(ms);
 	      if (m == currentModule) {
 		es = module(m).names;
+		fromHome = TRUE;
 	      } else {
 		es = getModuleImports(m);
 	      }
 	      for(; nonNull(es); es=tl(es)) {
 		Cell e = hd(es);
-		if (isName(e) && name(e).text==t && !cellIsMember(e,res)) {
-		  res = cons(e,res);
-		} else if (isPair(e) && DOTDOT==snd(e)) {
+		if (isName(e) && name(e).text==t 
+		    && !cellIsMember(e,res)) {
+		    if (fromHome && name(e).mod != currentModule) {
+			continue;
+		    }
+		    res = cons(e,res);
+		} else if (isPair(e)) {
 		    List subentities = NIL;
 		    Cell c = fst(e);
-		    if (isTycon(c)
-			&& (tycon(c).what==DATATYPE || tycon(c).what==NEWTYPE))
-			subentities = tycon(c).defn;
-		    else if (isClass(c))
-			subentities = cclass(c).members;
+		    if (DOTDOT==snd(e)) {
+			if (isTycon(c)
+			    && (tycon(c).what==DATATYPE || tycon(c).what==NEWTYPE))
+			    subentities = tycon(c).defn;
+			else if (isClass(c))
+			    subentities = cclass(c).members;
+		    } else {
+			subentities = snd(e);
+		    }
 		    for(; nonNull(subentities); subentities=tl(subentities)) {
-		      if (name(hd(subentities)).text == t 
-		          && !cellIsMember(hd(subentities),res) ) {
-			res=cons(hd(subentities),res);
-		      }
+			if (name(hd(subentities)).text == t
+			    && !cellIsMember(hd(subentities),res) ) {
+			    if (fromHome && name(hd(subentities)).mod != currentModule) {
+				continue;
+			    }
+			    res=cons(hd(subentities),res);
+			}
 		    }
 		}
 	      }
@@ -1369,10 +1401,9 @@ Text t; {
     List res = NIL;
     
     for (ms = module(currentModule).modAliases; nonNull(ms); ms=tl(ms)) {
-      if ( textOf(fst(hd(ms))) == t ) {
-	if (!cellIsMember(snd(hd(ms)),res)) {
+      if ( textOf(fst(hd(ms))) == t 
+	   && !cellIsMember(snd(hd(ms)),res)) {
 	  res = cons(snd(hd(ms)), res);
-	}
       }
     }
    /* Legal? "module Foo where { import Bar as Foo; ... }" */

@@ -8,8 +8,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: storage.h,v $
- * $Revision: 1.31 $
- * $Date: 2002/04/16 16:02:58 $
+ * $Revision: 1.32 $
+ * $Date: 2002/04/16 21:06:03 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -695,6 +695,7 @@ extern struct strName DECTABLE(tabName);
 
 extern Name   newName	    Args((Text,Cell));
 extern Name   findName	    Args((Text));
+extern Void   removeName    Args((Text));
 extern Name   addName	    Args((Name));
 extern Name   findQualName  Args((Cell));
 extern List   findQualNames Args((Cell));
