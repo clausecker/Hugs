@@ -32,7 +32,9 @@ fptools:
 # Preprocess fptools checkout, so the package can be built
 # without happy & ghc changes here should be reflected also
 # in RPM.mk (sorry)
-pp-fptools: fptools
+pp-fptools: fptools fptools/stamp-fptools
+
+fptools/stamp-fptools:
 	$(FIND) fptools/libraries -name "*.ly" -o -name "*.y" |\
 		xargs -l $(HAPPY)
 ifneq "$(USING_AN_OLDER_HSC2HS)" "YES"
@@ -44,5 +46,6 @@ else
 	$(FIND) fptools/libraries -name "*_hsc_make.c" |\
 		xargs src/unix/hsc_kludge
 endif
+	@touch fptools/stamp-fptools
 
 include RPM.mk
