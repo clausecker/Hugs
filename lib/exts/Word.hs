@@ -265,7 +265,7 @@ instance Bits Word32 where
   xor           = primXorWord
   complement    = primComplementWord
   shift         = primShiftWord
---  rotate      
+  rotate        = primRotateWord
   bit           = primBitWord
   setBit x i    = x .|. bit i
   clearBit x i  = x .&. complement (bit i)
@@ -357,6 +357,7 @@ primitive primOrWord        :: Word32 -> Word32 -> Word32
 primitive primXorWord       :: Word32 -> Word32 -> Word32
 primitive primComplementWord:: Word32 -> Word32
 primitive primShiftWord     :: Word32 -> Int -> Word32
+primitive primRotateWord    :: Word32 -> Int -> Word32
 primitive primBitWord       :: Int -> Word32
 primitive primTestWord      :: Word32 -> Int -> Bool
 
