@@ -146,7 +146,8 @@ but this can be changed with the
 <para>
 Set command line options.
 See <xref linkend="options-list"/> for a list of available options.
-On Win32, the new option settings are saved to the registry,
+On Win32, the new option settings are saved to the registry
+under the <literal>HKEY_CURRENT_USER</literal> key,
 and so persist across Hugs sessions.
 To make settings persistent on other systems,
 put them in the <literal>HUGSFLAGS</literal> environment variable.

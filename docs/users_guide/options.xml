@@ -18,6 +18,8 @@ and then read from the following sources in order:
 <listitem>
 <para>
 (Windows only) the registry under the <literal>HKEY_CURRENT_USER</literal> key.
+This is where options set using the <command>:set</command> command are saved
+(see <xref linkend="basic-commands"/>).
 This step is skipped if the environment variable
 <envar>IGNORE_USER_REGISTRY</envar> is set,
 providing an emergency workaround if the settings are invalid.
