@@ -9,8 +9,8 @@
  * included in the distribution.
  *
  * $RCSfile: storage.h,v $
- * $Revision: 1.16 $
- * $Date: 2001/02/14 12:15:05 $
+ * $Revision: 1.17 $
+ * $Date: 2001/03/19 17:43:41 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -550,6 +550,15 @@ struct Module {
      * evaluating an expression in the context of the current module.
      */
     List  qualImports;
+    /* For each module imported, record the names that was
+     * effectively imported, taking into consideration
+     * import lists and 'hiding's. Used to handle re-exportation
+     * of modules only -- that is, if a subset S of module A is
+     * imported in module B, then the presence of 'module A' in
+     * the export list of B, means that S should be re-exported
+     * from B, not all of A.
+     */
+    List  modImports;
 };
 
 extern Module currentModule;           /* Module currently being processed */

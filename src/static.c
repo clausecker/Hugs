@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.31 $
- * $Date: 2001/02/14 22:53:19 $
+ * $Revision: 1.32 $
+ * $Date: 2001/03/19 17:43:40 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -36,7 +36,7 @@ static List   local checkImportEntity	Args((List,Module,Cell));
 static List   local resolveImportList	Args((Module,Cell));
 static Void   local checkImportList	Args((Pair));
 
-static Void   local importEntity	Args((Module,Cell));
+static Cell   local importEntity	Args((Module,Cell));
 static Void   local importName		Args((Module,Name));
 static Void   local importTycon		Args((Module,Tycon));
 static Void   local importClass		Args((Module,Class));
@@ -524,6 +524,9 @@ Pair importSpec; {
     List   imports = NIL; /* entities we want to import */
     List   hidden  = NIL; /* entities we want to hide   */
 
+    List   modImps = NIL; /* The effective import list */
+    List   es = NIL;
+
     if (moduleThisScript(m)) { 
 	ERRMSG(0) "Module \"%s\" recursively imports itself",
 		  textToStr(module(m).text)
@@ -535,30 +538,56 @@ Pair importSpec; {
 	 */
 	hidden  = resolveImportList(m, snd(impList));
 	imports = resolveImportList(m, DOTDOT);
+
+	/* The loop over the 'imports' list happens in both
+	 * branches, but, for efficiency reasons only, we
+	 * don't float it outwards.
+	 */
+	for(; nonNull(imports); imports=tl(imports)) {
+	  Cell e = hd(imports);
+	  if (!cellIsMember(e,hidden)) {
+	    modImps = cons(importEntity(m,e), modImps);
+	  }
+	}
     } else {
 	imports = resolveImportList(m, impList);
+        for(; nonNull(imports); imports=tl(imports)) {
+          modImps = cons(importEntity(m,hd(imports)), modImps);
+	}
     }
-    for(; nonNull(imports); imports=tl(imports)) {
-	Cell e = hd(imports);
-	if (!cellIsMember(e,hidden))
-	    importEntity(m,e);
-    }
-    /* ToDo: hang onto the imports list for processing export list entries
-     * of the form "module Foo"
+    /* To be able to handle re-exportation of modules, each module
+     * keeps track of the effective import list of all its imports,
+     * so that we later on can constrain re-exportation to only
+     * contain what was imported.
      */
+
+    /* If there's more than one import decl for the same module,
+     * combine the import lists.
+     */
+    for(es=module(currentModule).modImports;nonNull(es);es=tl(es)) {
+      if (isPair(hd(es)) && fst(hd(es)) == m) {
+	snd(es) = appendOnto(modImps, snd(es));
+	break;
+      }
+    }
+    if (isNull(es)) {
+      /* Module not already present, add it. */
+      module(currentModule).modImports = cons(pair(m,modImps),module(currentModule).modImports);
+    }
 }
 
-static Void local importEntity(source,e)
+static Cell local importEntity(source,e)
 Module source;
 Cell e; {
     switch (whatIs(e)) {
       case NAME  : importName(source,e); 
-		   break;
+	           return e;
       case TYCON : importTycon(source,e); 
-		   break;
+	           return pair(e,NIL);
       case CLASS : importClass(source,e);
-		   break;
+	           return pair(e,NIL);
       default: internal("importEntity");
+	       return NIL;
     }
 }
 
@@ -566,7 +595,19 @@ static Void local importName(source,n)
 Module source;
 Name n; {
     Name clash = addName(n);
-    if (nonNull(clash) && clash!=n) {
+    if (nonNull(clash) && clash!=n
+#if !IGNORE_MODULES
+	/* 'n' contains a name imported from another module's
+	 * export list. Due to module re-exportation, its 'home
+	 * module' (i.e., the module where 'n' was actually declared)
+	 * may not be equal to that of the module we're now importing
+	 * from here ('source'.) So, we've only got a name clash if
+	 * the home module of 'n' is different from that of 'clash'.
+	 */
+     && name(n).mod != name(clash).mod ) {
+#else
+      ) {
+#endif
 	ERRMSG(0) "Entity \"%s\" imported from module \"%s\" already defined in module \"%s\"",
 		  textToStr(name(n).text), 
 		  textToStr(module(source).text),
@@ -579,7 +620,13 @@ static Void local importTycon(source,tc)
 Module source;
 Tycon tc; {
     Tycon clash=addTycon(tc);
-    if (nonNull(clash) && clash!=tc) {
+    if (nonNull(clash) && clash!=tc
+#if !IGNORE_MODULES
+      /* See importName() comment. */
+     && tycon(tc).mod != tycon(clash).mod ) {
+#else
+      ) {
+#endif
 	ERRMSG(0) "Tycon \"%s\" imported from \"%s\" already defined in module \"%s\"",
 		  textToStr(tycon(tc).text),
 		  textToStr(module(source).text),
@@ -598,7 +645,13 @@ static Void local importClass(source,c)
 Module source;
 Class c; {
     Class clash=addClass(c);
-    if (nonNull(clash) && clash!=c) {
+    if (nonNull(clash) && clash!=c
+#if !IGNORE_MODULES
+      /* See importName() comment. */
+     && cclass(c).mod != cclass(clash).mod ) {
+#else
+      ) {
+#endif
 	ERRMSG(0) "Class \"%s\" imported from \"%s\" already defined in module \"%s\"",
 		  textToStr(cclass(c).text),
 		  textToStr(module(source).text),
@@ -663,7 +716,7 @@ Cell e; {
 	return exports;
     } else if (MODULEENT == fst(e)) {
 	Module m = findModid(snd(e));
-	/* ToDo: shouldn't allow export of module we didn't import */
+	/* Re-exporting a module we didn't import isn't allowed. */
 	if (isNull(m)) {
 	    ERRMSG(0) "Unknown module \"%s\" exported from module \"%s\"",
 		      textToStr(textOf(snd(e))),
@@ -688,11 +741,18 @@ Cell e; {
 	} else {
 	    /* Exporting other modules imports all things imported 
 	     * unqualified from it.  
-	     * ToDo: we reexport everything exported by a module -
-	     * whether we imported it or not.  This gives the wrong
-	     * result for "module M(module N) where import N(x)"
 	     */
-	    exports = dupOnto(module(m).exports,exports);
+	    List xs = NIL;
+
+	    for(xs=module(currentModule).modImports;nonNull(xs);xs=tl(xs)) {
+	      if (isPair(hd(xs)) && fst(hd(xs)) == m) {
+		exports = dupOnto(snd(hd(xs)),exports);
+		break;
+	      }
+	    }
+	    if (isNull(xs)) {
+	      exports = dupOnto(module(m).exports,exports);
+	    }
 	}
 	return exports;
     } else {
@@ -7009,6 +7069,11 @@ Void checkDefns() {			/* Top level static analysis	   */
     /* analysis so that references to Prelude.foo will be resolved         */
     /* when compiling the prelude.                                         */
     module(thisModule).exports = checkExports(module(thisModule).exports);
+    /* A module's 'modImports' list is only used to construct a precise export
+     * list in the presence of module re-exportation. We've now finished
+     * computing the export list, so 'modImports' can then be stubbed out.
+     */
+    module(thisModule).modImports = NIL;
 #endif
 
     mapProc(checkTypeIn,typeInDefns);	/* check restricted synonym defns  */

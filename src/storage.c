@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: storage.c,v $
- * $Revision: 1.14 $
- * $Date: 2001/02/14 12:15:05 $
+ * $Revision: 1.15 $
+ * $Date: 2001/03/19 17:43:41 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1228,6 +1228,7 @@ Text t; {
     module(moduleHw).text          = t; /* clear new module record         */
     module(moduleHw).qualImports   = NIL;
     module(moduleHw).exports       = NIL;
+    module(moduleHw).modImports    = NIL;
     module(moduleHw).tycons        = NIL;
     module(moduleHw).names         = NIL;
     module(moduleHw).classes       = NIL;
@@ -3073,6 +3074,7 @@ Int what; {
 			   mark(module(i).names);
 			   mark(module(i).classes);
 			   mark(module(i).exports);
+			   mark(module(i).modImports);
 			   mark(module(i).qualImports);
 		       }
 		       end("Modules", moduleHw-MODMIN);
