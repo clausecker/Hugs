@@ -11,8 +11,8 @@
  * included in the distribution.
  *
  * $RCSfile: parser.y,v $
- * $Revision: 1.22 $
- * $Date: 2001/09/13 20:14:12 $
+ * $Revision: 1.23 $
+ * $Date: 2001/09/19 21:36:03 $
  * ------------------------------------------------------------------------*/
 
 %{
@@ -325,7 +325,7 @@ constrs	  : constrs '|' pconstr		{$$ = gc3(cons($3,$1));}
 	  ;
 pconstr	  : ALL varids '.' qconstr	{$$ = gc4(ap(POLYTYPE,
 						     pair(rev($2),$4)));}
-	  | qconstr			{$$ = $1;}
+	  | constr			{$$ = $1;}
 	  ;
 qconstr	  : context IMPLIES constr	{$$ = gc3(qualify($1,$3));}
 	  | constr			{$$ = $1;}
@@ -476,7 +476,6 @@ topType1  : bpolyType ARROW topType1	{$$ = gc3(fn($1,$3));}
 	  ;
 polyType  : ALL varids '.' sigType	{$$ = gc4(ap(POLYTYPE,
 						     pair(rev($2),$4)));}
-	  | context IMPLIES type	{$$ = gc3(qualify($1,$3));}
 	  | bpolyType			{$$ = $1;}
 	  ;
 bpolyType : '(' polyType ')'		{$$ = gc3($2);}
