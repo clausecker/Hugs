@@ -8,8 +8,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: storage.h,v $
- * $Revision: 1.33 $
- * $Date: 2002/04/17 14:23:46 $
+ * $Revision: 1.34 $
+ * $Date: 2002/05/09 15:56:52 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -571,7 +571,8 @@ struct strModule {
      * evaluating an expression in the context of the current module.
      */
    List  qualImports; /* [ (modName{-Text-},[Entity]) ] */
-                      /* static.c:checkQualImport() modifies 'modName' to a Module */
+                      /* NOTE: static.c:checkQualImport() modifies 'modName' to a Module */
+
     /* For each module imported, record the names that was
      * effectively imported, taking into consideration
      * import lists and 'hiding's. Used to handle re-exportation
@@ -580,7 +581,7 @@ struct strModule {
      * the export list of B, means that S should be re-exported
      * from B, not all of A.
      */
-    List  modImports;
+    List  modImports; /* :: [ (modName{-Module-},[Entity]) ] */
 };
 
 extern Module currentModule;           /* Module currently being processed */
