@@ -17,6 +17,7 @@ install		:: install_bin install_libraries      # the bare minimum
 install		:: install_demos		      # goodies
 install		:: install_man                        # manual page
 install		:: install_notes                      # Readme, etc
+install		:: install_guide                      # User's Guide
 
 install_rpm	:: install_bin install_libraries
 install_rpm	:: install_demos
@@ -56,6 +57,13 @@ install_notes	::
 		$(INSTALL_DATA) ../Readme  $(DESTDIR)$(hugsdir)
 		$(INSTALL_DATA) ../License $(DESTDIR)$(hugsdir)
 		$(INSTALL_DATA) ../Credits $(DESTDIR)$(hugsdir)
+
+install_guide	::
+		cd ../docs/users_guide; make html
+		if test -d ../docs/users_guide/users_guide ; \
+		then	$(INSTALL) -d $(DESTDIR)$(hugsdir)/docs/users_guide; \
+			$(INSTALL_DATA) ../docs/users_guide/users_guide/*.html $(DESTDIR)$(hugsdir)/docs/users_guide; \
+		fi
 
 install_libraries :: libraries
 		$(INSTALL) -d $(DESTDIR)$(hugsdir)/include
