@@ -28,7 +28,7 @@ default		:: hugs.exe runhugs.exe ffihugs.exe hugsscript.dll
 
 CC		= cl /nologo
 CFLAGS          = -ML
-#CFLAGS		= -ML -DMONTH_YEAR="\"Nov 2002"" -Zi
+#CFLAGS		= -ML -Zi -DMONTH_YEAR="\"Nov 2002\""
 # When debugging:
 #CFLAGS		= -ML -Zi
 OPTFLAGS	= -O2
