@@ -19,10 +19,21 @@ module Hugs.IOExts
 	, unsafePtrEq
 	, unsafePtrToInt
 	, unsafeCoerce
+	
+	  -- backward compatibility with IOExtensions
+	, readBinaryFile        -- :: FilePath -> IO String
+	, writeBinaryFile       -- :: FilePath -> String -> IO ()
+	, appendBinaryFile      -- :: FilePath -> String -> IO ()
+	, openBinaryFile        -- :: FilePath -> IOMode -> IO Handle
+
+	   -- non-echoing getchar
+	, getCh                 -- :: IO Char
+	, argv                  -- :: [String]
 	) where
 
 import Hugs.Prelude
 import Hugs.IO( IOMode(..), Handle, openFile )
+import Hugs.System ( getArgs )
 
 -----------------------------------------------------------------------------
 
@@ -65,4 +76,12 @@ openFileEx fp m =
     BinaryMode m -> openBinaryFile fp m
     TextMode m   -> openFile fp m
 
+argv :: [String]
+argv = unsafePerformIO getArgs
+
+primitive writeBinaryFile   	 :: FilePath -> String -> IO ()
+primitive appendBinaryFile  	 :: FilePath -> String -> IO ()
+primitive readBinaryFile    	 :: FilePath -> IO String
 primitive openBinaryFile         :: FilePath -> IOMode -> IO Handle
+
+primitive getCh                  :: IO Char -- non-echoing getchar
