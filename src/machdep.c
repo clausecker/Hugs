@@ -11,8 +11,8 @@
  * in the distribution for details.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.3 $
- * $Date: 1999/08/16 15:25:20 $
+ * $Revision: 1.4 $
+ * $Date: 1999/08/16 21:26:47 $
  * ------------------------------------------------------------------------*/
 
 #ifdef HAVE_SIGNAL_H
@@ -1357,13 +1357,13 @@ String symbol; {
     void *sym;
 
     if (NULL == instance) {
-	ERRMSG(0) "Error %s while importing DLL \"%s\"", dlerror(), dll
+	ERRMSG(0) "Error while importing DLL \"%s\":\n%s\n", dll, dlerror()
 	EEND;
     }
     if (sym = dlsym(instance,symbol))
         return sym;
 
-    ERRMSG(0) "Error loading sym: %s\n", dlerror()
+    ERRMSG(0) "Error loading sym:\n%s\n", dlerror()
     EEND;
 }
 
