@@ -83,13 +83,14 @@ extract_includes() {
 hack_foreign() {
 	sed '	/^[ 	]*foreign[	 ]/ {
 			s/CALLCONV/'"$CALLCONV"'/
-			/export/ n
-			/"dynamic/ n
-			/"wrapper/ n
+			/export/ b end
+			/"dynamic/ b end
+			/"wrapper/ b end
 			s/"\([^ ]*\)"/"'"$1"' \1"/
 			s/"static \([^ ]*\)"/"static '"$1"' \1"/
 			s/"static"/"static '"$1"'"/
 			/"/ ! s/\([a-z][a-zA-Z0-9_]*\)[ 	]*::/"'"$1"' \1" &/
+			: end
 		}'
 }
 
