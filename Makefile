@@ -19,6 +19,7 @@ ${RELEASE}.tar.gz:
 	# cd src; make parser.c
 	cd src; bison -y parser.y; mv y.tab.c parser.c
 	cd src/unix; autoconf; autoheader
+	rm -rf /tmp/${RELEASE}
 	mkdir /tmp/${RELEASE}
 	tar cf - `find . ! -type d -print | egrep -v CVS` | (cd /tmp/${RELEASE}; tar xfBp -)
 	cd /tmp; tar cf /tmp/hugs98.tar ${RELEASE}
