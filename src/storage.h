@@ -8,8 +8,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: storage.h,v $
- * $Revision: 1.49 $
- * $Date: 2003/02/01 06:36:51 $
+ * $Revision: 1.50 $
+ * $Date: 2003/02/02 02:23:30 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -945,6 +945,7 @@ extern  List	     take	   Args((Int,List));	/* destructive	   */
 extern  List	     splitAt	   Args((Int,List));	/* non-destructive */
 extern  Cell	     nth	   Args((Int,List));
 extern  List	     removeCell	   Args((Cell,List));	/* destructive	   */
+extern  List         nubList       Args((List));        /* non-destructive */
 
 /* The following macros provide `inline expansion' of some common ways of
  * traversing, using and modifying lists:

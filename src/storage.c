@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: storage.c,v $
- * $Revision: 1.61 $
- * $Date: 2003/02/01 06:36:50 $
+ * $Revision: 1.62 $
+ * $Date: 2003/02/02 02:23:30 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -3010,6 +3010,19 @@ List ns; {
     }
   }
   return NIL;
+}
+
+List nubList(ls)   /* (non-destructively) remove duplicates from list */
+List ls; {
+  List res = NIL;
+  
+  while (nonNull(ls)) {
+    if (!cellIsMember(hd(ls),res)) {
+      res = cons(hd(ls),res);
+    }
+    ls = tl(ls);
+  }
+  return res;
 }
 
 Cell intIsMember(n,xs)                 /* Test if integer n is member of   */
