@@ -1,11 +1,11 @@
-/* This file is included into various Haskell files in the hierarchial 
+/* This file is included into various Haskell files in the hierarchical 
  * libraries.
  *
  * It provides a variety of constants and symbols required by the
  * foreign function interface libraries.
  */
 
-#include "config.h"
+#include "ghcconfig.h"
 
 #define SIZEOF_HSCHAR      SIZEOF_INT
 #define SIZEOF_HSINT	   SIZEOF_INT

@@ -1,22 +1,10 @@
 # @configure_input@
 ################################################################
-# Libraries, converted from raw sources out of the fptools tree
+# Conversion of libraries from raw sources in the fptools tree
 # (this should be a POSIX 1003.2-1992 Makefile)
 ################################################################
 
-# These variables determine where various parts of the Hugs system are
-# installed.  (They are ignored in Windows or DOS.)
-# Binaries are installed in $(bindir); libraries go in $(hugsdir)/libraries
-prefix		= @prefix@
-exec_prefix	= @exec_prefix@
-bindir		= @bindir@
-libdir		= @libdir@
-datadir		= @datadir@
-mandir          = @mandir@
-hugsdir		= @hugsdir@
-
-RM		= @RM@
-CP		= @CP@
+@MkDefs@
 
 # We use the autoconf-supplied install-sh to create directories
 # but use /bin/cp to copy data because install-sh can't copy
@@ -31,8 +19,9 @@ TOOLSDIR	= tools
 TOOLS		= $(TOOLSDIR)/Package.hs $(TOOLSDIR)/ParsePkgConf.hs \
 		  $(TOOLSDIR)/get_pkg_field
 
-HEADERS		= ../src/HsFFI.h ../src/platform.h ../src/config.h \
-		  include/MachDeps.h include/template-hsc.h
+HEADERS		= ../src/HsFFI.h ../src/platform.h \
+		  include/MachDeps.h include/ghcconfig.h \
+		  include/template-hsc.h
 
 # a file created by make libraries
 LIBRARIES	= $(BUILD_DIR)/libraries/Prelude.hs
@@ -40,9 +29,11 @@ LIBRARIES	= $(BUILD_DIR)/libraries/Prelude.hs
 # a file created by make include
 INCLUDES	= $(BUILD_DIR)/include/HsFFI.h
 
+FFI_LIBRARIES	= $(BUILD_DIR)/libraries/Hugs/Storable$(DLL)
+
 CONVERTERS	= tools/convert_libraries tools/hugs-package
 
-all: $(LIBRARIES) @FFI_LIBRARIES@
+all: $(LIBRARIES) $(FFI_LIBRARIES)
 
 $(LIBRARIES): Hugs/*.* $(CONVERTERS) $(TOOLS) $(INCLUDES)
 	mkdir -p $(BUILD_DIR)/tools
@@ -54,13 +45,6 @@ $(LIBRARIES): Hugs/*.* $(CONVERTERS) $(TOOLS) $(INCLUDES)
 $(INCLUDES): $(HEADERS)
 	mkdir -p $(BUILD_DIR)/include
 	$(CP) $(HEADERS) $(BUILD_DIR)/include
-	echo '#include "config.h"' >$(BUILD_DIR)/include/ghcconfig.h
-	# Ultra-evil...
-	( echo '#undef PACKAGE_NAME'      ; \
-	  echo '#undef PACKAGE_TARNAME'   ; \
-	  echo '#undef PACKAGE_VERSION'   ; \
-	  echo '#undef PACKAGE_STRING'    ; \
-	  echo '#undef PACKAGE_BUGREPORT' ) >>$(BUILD_DIR)/include/ghcconfig.h
 
 clean:
 	$(RM) LibStatus
@@ -75,10 +59,6 @@ veryclean: distclean
 ################################################################
 # Library modules that use the Foreign Function Interface
 ################################################################
-
-FFI_LIBRARIES	= $(BUILD_DIR)/libraries/Hugs/Storable@DLL@
-
-ffi_libraries	: $(FFI_LIBRARIES)
 
 # The script BuildFFI is created by tools/convert_libraries,
 # and runs ffihugs on library modules that need it.

@@ -1,7 +1,7 @@
 dnl--------------------------------------------------------------------
 dnl
-dnl Hugs98 configure script template. Process this file with autoreconf
-dnl to produce a configure script.
+dnl Hugs98 interpreter configure script template.
+dnl Process this file with autoreconf to produce a configure script.
 dnl
 dnl--------------------------------------------------------------------
 
@@ -11,7 +11,7 @@ AC_CONFIG_SRCDIR([src/hugs.c])
 dnl We need 2.50 for AC_HELP_STRING.
 AC_PREREQ([2.50])
 
-AC_CONFIG_SUBDIRS([fptools/libraries])
+AC_CONFIG_SUBDIRS([libraries fptools/libraries])
 
 AC_CONFIG_HEADER(src/config.h src/options.h)
 AH_TOP([/* platform-specific defines */
@@ -67,9 +67,6 @@ ultrix*) target_os=ultrix ;;
 esac
 host_os="$target_os"	# hack: we can't cross-compile
 build_os="$target_os"	# hack: we can't cross-compile
-
-AC_DEFINE_UNQUOTED(HOST_ARCH, "$host_cpu", [Host cpu architecture])
-AC_DEFINE_UNQUOTED(HOST_OS, "$host_os", [Host operating system])
 
 # ToDo: We should probably use AS_TR_CPP here, but this changes case, too, and
 # I'm a bit reluctant to do this without closer inspection of the Hugs code.
@@ -238,9 +235,7 @@ fi
 OPTFLAGS="-O2"
 
 AC_PROG_CC
-AC_PROG_CPP
 AC_PROG_GCC_TRADITIONAL
-ICE_PROG_CPP_TRADITIONAL
 
 if test "$with_pthreads" = yes; then
    ACX_PTHREAD
@@ -303,10 +298,6 @@ AC_CHECK_PROGS(DOCBOOK2DVI,[docbook2dvi db2dvi],[])
 AC_CHECK_PROGS(DOCBOOK2PDF,[docbook2pdf db2pdf],[])
 AC_CHECK_PROGS(DOCBOOK2PS,[docbook2ps db2ps],[])
 
-dnl Look for right versions of 'find' and 'sort' (win32 only, really.)
-FP_PROG_FIND
-FP_PROG_SORT
-
 dnl AC_PROG_INSTALL
 
 dnl POSIX systems prefer "diff -C 1"; SunOS4 prefers "diff -c1".
@@ -324,7 +315,6 @@ dnl--------------------------------------------------------------------
 AC_CHECK_LIB([dl], [dlopen])
 AC_CHECK_LIB([dld], [shl_load])
 AC_CHECK_LIB([m], [atan])
-FP_CHECK_GLUT
 
 dnl--------------------------------------------------------------------
 dnl
@@ -339,10 +329,8 @@ AC_CHECK_HEADERS(
   stdarg.h stdlib.h unistd.h assert.h ctype.h string.h limits.h \
   fcntl.h sgtty.h termio.h termios.h signal.h \
   sys/stat.h sys/types.h sys/ioctl.h sys/resource.h sys/param.h \
-  sys/timers.h sys/utsname.h \
-  console.h pascal.h Files.h errno.h stat.h nlist.h ftw.h direct.h \
-  grp.h pwd.h \
-  dirent.h utime.h vfork.h
+  console.h Files.h errno.h stat.h direct.h \
+  dirent.h
   )
 
 AC_HEADER_TIME
@@ -355,7 +343,7 @@ dnl DOS include files
 AC_CHECK_HEADERS(dos.h conio.h io.h std.h) 
 
 dnl Windows include files
-AC_CHECK_HEADERS(windows.h winsock.h)
+AC_CHECK_HEADERS(windows.h)
 
 dnl dynamic loading include files
 AC_CHECK_HEADERS([dlfcn.h dl.h mach-o/dyld.h], [break])
@@ -367,23 +355,6 @@ AC_CHECK_HEADER(alloc.h,[AC_CHECK_FUNCS(farcalloc)])
 if test "${ac_cv_header_stdlib_h+set}" = set ||
    test "${ac_cv_header_unistd_h+set}" = set; then
   AC_CHECK_FUNCS(valloc)
-fi
-
-dnl ** check for POSIX regex
-HavePosixRegex=NO
-AC_CHECK_HEADERS(regex.h,[AC_CHECK_FUNCS(regcomp, [HavePosixRegex=YES])])
-AC_SUBST(HavePosixRegex)
-
-dnl check for OpenGL include files
-if test x"$enable_opengl" != x"no"; then
-  fp_save_cppflags="$CPPFLAGS"
-  CPPFLAGS="$CPPFLAGS $X_CFLAGS"
-  if test x"$use_quartz_opengl" = xyes ; then
-    AC_CHECK_HEADERS(OpenGL/gl.h)
-  else
-    AC_CHECK_HEADERS(GL/gl.h)
-  fi
-  CPPFLAGS="$fp_save_cppflags"
 fi
 
 dnl--------------------------------------------------------------------
@@ -441,113 +412,6 @@ esac
 
 dnl--------------------------------------------------------------------
 dnl
-dnl Check for types 
-dnl
-dnl--------------------------------------------------------------------
-
-dnl ** do we have long longs?
-AC_CHECK_TYPES([long long])
-
-dnl ** what are the sizes of various types
-AC_CHECK_SIZEOF(char,               1)
-AC_CHECK_SIZEOF(double,             8)
-AC_CHECK_SIZEOF(float,              4)
-AC_CHECK_SIZEOF(int,                4)
-AC_CHECK_SIZEOF(long,               4)
-if test "$ac_cv_type_long_long" = yes; then
-AC_CHECK_SIZEOF(long long,          8)
-fi
-AC_CHECK_SIZEOF(short,              2)
-AC_CHECK_SIZEOF(unsigned char,      1)
-AC_CHECK_SIZEOF(unsigned int,       4)
-AC_CHECK_SIZEOF(unsigned long,      4)
-if test "$ac_cv_type_long_long" = yes; then
-AC_CHECK_SIZEOF(unsigned long long, 8)
-fi
-AC_CHECK_SIZEOF(unsigned short,     2)
-AC_CHECK_SIZEOF(void *,             4)
-
-dnl ** what are alignment constraints on various types
-FP_CHECK_ALIGNMENT(char)
-FP_CHECK_ALIGNMENT(double)
-FP_CHECK_ALIGNMENT(float)
-FP_CHECK_ALIGNMENT(int)
-FP_CHECK_ALIGNMENT(long)
-if test "$ac_cv_type_long_long" = yes; then
-FP_CHECK_ALIGNMENT(long long)
-fi
-FP_CHECK_ALIGNMENT(short)
-FP_CHECK_ALIGNMENT(unsigned char)
-FP_CHECK_ALIGNMENT(unsigned int)
-FP_CHECK_ALIGNMENT(unsigned long)
-if test "$ac_cv_type_long_long" = yes; then
-FP_CHECK_ALIGNMENT(unsigned long long)
-fi
-FP_CHECK_ALIGNMENT(unsigned short)
-FP_CHECK_ALIGNMENT(void *)
-
-dnl ** map standard C types and ISO types to Haskell types
-FPTOOLS_CHECK_HTYPE(char)
-FPTOOLS_CHECK_HTYPE(signed char)
-FPTOOLS_CHECK_HTYPE(unsigned char)
-FPTOOLS_CHECK_HTYPE(short)
-FPTOOLS_CHECK_HTYPE(unsigned short)
-FPTOOLS_CHECK_HTYPE(int)
-FPTOOLS_CHECK_HTYPE(unsigned int)
-FPTOOLS_CHECK_HTYPE(long)
-FPTOOLS_CHECK_HTYPE(unsigned long)
-if test "$ac_cv_type_long_long" = yes; then
-FPTOOLS_CHECK_HTYPE(long long)
-FPTOOLS_CHECK_HTYPE(unsigned long long)
-fi
-FPTOOLS_CHECK_HTYPE(float)
-FPTOOLS_CHECK_HTYPE(double)
-FPTOOLS_CHECK_HTYPE(ptrdiff_t)
-FPTOOLS_CHECK_HTYPE(size_t)
-FPTOOLS_CHECK_HTYPE(wchar_t)
-dnl Int32 is a HACK for non-ISO C compilers
-FPTOOLS_CHECK_HTYPE(sig_atomic_t, Int32)
-FPTOOLS_CHECK_HTYPE(clock_t)
-FPTOOLS_CHECK_HTYPE(time_t)
-FPTOOLS_CHECK_HTYPE(dev_t, Word32)
-FPTOOLS_CHECK_HTYPE(ino_t)
-FPTOOLS_CHECK_HTYPE(mode_t)
-FPTOOLS_CHECK_HTYPE(off_t)
-FPTOOLS_CHECK_HTYPE(pid_t)
-FPTOOLS_CHECK_HTYPE(gid_t)
-FPTOOLS_CHECK_HTYPE(uid_t)
-FPTOOLS_CHECK_HTYPE(cc_t)
-FPTOOLS_CHECK_HTYPE(speed_t)
-FPTOOLS_CHECK_HTYPE(tcflag_t)
-FPTOOLS_CHECK_HTYPE(nlink_t)
-FPTOOLS_CHECK_HTYPE(ssize_t)
-FPTOOLS_CHECK_HTYPE(rlim_t)
-
-dnl ** Map OpenGL data types to Haskell types
-if test x"$enable_opengl" != x"no"; then
-FPTOOLS_CHECK_HTYPE(GLboolean)
-FPTOOLS_CHECK_HTYPE(GLbyte)
-FPTOOLS_CHECK_HTYPE(GLubyte)
-FPTOOLS_CHECK_HTYPE(GLshort)
-FPTOOLS_CHECK_HTYPE(GLushort)
-FPTOOLS_CHECK_HTYPE(GLint)
-FPTOOLS_CHECK_HTYPE(GLuint)
-FPTOOLS_CHECK_HTYPE(GLsizei)
-FPTOOLS_CHECK_HTYPE(GLenum)
-FPTOOLS_CHECK_HTYPE(GLbitfield)
-FPTOOLS_CHECK_HTYPE(GLfloat)
-FPTOOLS_CHECK_HTYPE(GLclampf)
-FPTOOLS_CHECK_HTYPE(GLdouble)
-FPTOOLS_CHECK_HTYPE(GLclampd)
-fi
-
-FP_CHECK_CONSTS([E2BIG EACCES EADDRINUSE EADDRNOTAVAIL EADV EAFNOSUPPORT EAGAIN EALREADY EBADF EBADMSG EBADRPC EBUSY ECHILD ECOMM ECONNABORTED ECONNREFUSED ECONNRESET EDEADLK EDESTADDRREQ EDIRTY EDOM EDQUOT EEXIST EFAULT EFBIG EFTYPE EHOSTDOWN EHOSTUNREACH EIDRM EILSEQ EINPROGRESS EINTR EINVAL EIO EISCONN EISDIR ELOOP EMFILE EMLINK EMSGSIZE EMULTIHOP ENAMETOOLONG ENETDOWN ENETRESET ENETUNREACH ENFILE ENOBUFS ENODATA ENODEV ENOENT ENOEXEC ENOLCK ENOLINK ENOMEM ENOMSG ENONET ENOPROTOOPT ENOSPC ENOSR ENOSTR ENOSYS ENOTBLK ENOTCONN ENOTDIR ENOTEMPTY ENOTSOCK ENOTTY ENXIO EOPNOTSUPP EPERM EPFNOSUPPORT EPIPE EPROCLIM EPROCUNAVAIL EPROGMISMATCH EPROGUNAVAIL EPROTO EPROTONOSUPPORT EPROTOTYPE ERANGE EREMCHG EREMOTE EROFS ERPCMISMATCH ERREMOTE ESHUTDOWN ESOCKTNOSUPPORT ESPIPE ESRCH ESRMNT ESTALE ETIME ETIMEDOUT ETOOMANYREFS ETXTBSY EUSERS EWOULDBLOCK EXDEV], [#include <stdio.h>
-#include <errno.h>])
-
-FP_CHECK_CONST([O_BINARY], [#include <fcntl.h>], [0])
-
-dnl--------------------------------------------------------------------
-dnl
 dnl Check for library functions.
 dnl
 dnl--------------------------------------------------------------------
@@ -566,28 +430,25 @@ AC_CHECK_FUNCS(strcasecmp _stricmp stricmp strcmpi)
 AC_CHECK_FUNCS(strcmp)
 AC_CHECK_FUNCS(rindex)
 AC_CHECK_FUNCS(strrchr)
-AC_CHECK_FUNCS(canonicalize_file_name realpath _fullpath)  
-AC_CHECK_FUNCS(PBHSetVolSync macsystem)  
-AC_CHECK_FUNCS(fgetpos fsetpos fseek ftell)
+AC_CHECK_FUNCS(realpath _fullpath)  
+AC_CHECK_FUNCS(macsystem)  
+AC_CHECK_FUNCS(fseek ftell)
 AC_CHECK_FUNCS(vsnprintf _vsnprintf)
 AC_CHECK_FUNCS(snprintf  _snprintf )  
 AC_CHECK_FUNCS(popen     _popen )  
 AC_CHECK_FUNCS(pclose    _pclose )  
-AC_CHECK_FUNCS(setenv unsetenv)
 AC_CHECK_FUNCS(sigprocmask)  
 AC_CHECK_FUNCS(getrusage)
 AC_CHECK_FUNCS(times)
 AC_CHECK_FUNCS(isatty)
-AC_CHECK_FUNCS(fstat lstat)
+AC_CHECK_FUNCS(fstat)
 AC_CHECK_FUNCS(select)
-AC_CHECK_FUNCS(getclock)
 AC_CHECK_FUNCS(gettimeofday)
 AC_CHECK_FUNCS(ftime)
 AC_CHECK_FUNCS(time)
 AC_CHECK_FUNCS(localtime)
 AC_CHECK_FUNCS(gmtime)
 AC_CHECK_FUNCS(mktime)
-AC_CHECK_FUNCS(readdir_r)
 AC_CHECK_FUNCS(dup)
 
 dnl--------------------------------------------------------------------
@@ -635,8 +496,6 @@ dnl--------------------------------------------------------------------
 
 
 AC_C_CONST               dnl can we use "const"?
-AC_C_INLINE              dnl can we use "inline"?
-AC_C_INLINE_ONLY         dnl should we use "inline" or "inline extern"?
 AC_C_PROTOTYPES          dnl can we use function prototypes?
 AC_C_JMPBUF_ARRAY        dnl can we take address of jmpbufs?
 AC_C_LABELS_AS_VALUES    dnl can we use gcc's "labels as values" feature?
@@ -1040,9 +899,7 @@ if test -f tests/config.in ; then
  TESTSCRIPT=tests/config
 fi
 
-AC_OUTPUT(src/Makefile src/platform.h \
-	libraries/Makefile \
-	libraries/tools/config libraries/tools/hugs-package \
+AC_OUTPUT(MkDefs src/Makefile src/platform.h \
 	docs/Makefile docs/users_guide/Makefile \
 	docs/hugs.1 $TESTSCRIPT \
 	demos/Makefile)
@@ -1053,4 +910,4 @@ echo '*** NOW DO: make ; make install'
 echo '************************************************'
 exit 0
 
-dnl End of configure.in
+dnl End of configure.ac

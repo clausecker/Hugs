@@ -5,6 +5,9 @@
 #ifndef __PLATFORM_H__
 #define __PLATFORM_H__
 
+#define HOST_OS        "@HostOS_CPP@"
+#define HOST_ARCH      "@HostArch_CPP@"
+
 #define HostPlatform   @HostPlatform_CPP@
 #define TargetPlatform @TargetPlatform_CPP@
 #define BuildPlatform  @BuildPlatform_CPP@
