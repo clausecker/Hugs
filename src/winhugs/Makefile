@@ -74,6 +74,24 @@ runhugs.obj	: $(PRELUDE) hugs.c machdep.c timer.c runhugs.c
 runhugs.exe	: runhugs.obj $(SERVER_OBJECTS)
 		  $(CC) $(LDFLAGS) runhugs.obj $(SERVER_OBJECTS) $(LIBS) -o runhugs.exe
 
+#
+# Create all the FFI extension DLLs.
+#
+FFIHUGS=..\ffihugs
+FFIHUGS_OPTS=+N +G -W -98 
+FFIHUGS_OPTS_OLD=+G -W -98 -P{Hugs}/lib:{Hugs}/lib/exts:{Hugs}/lib/hugs
+
+.PHONY: ffi-dlls
+
+ffi-dlls:
+	$(FFIHUGS) $(FFIHUGS_OPTS) +L../libraries/Hugs/Storable_aux.c Hugs.Storable
+	$(FFIHUGS) $(FFIHUGS_OPTS) Foreign.Marshal.Alloc
+	$(FFIHUGS) $(FFIHUGS_OPTS) Foreign.Marshal.Utils
+	$(FFIHUGS) $(FFIHUGS_OPTS) +L../libraries/Foreign/C/errno.c Foreign.C.Error
+	$(FFIHUGS) $(FFIHUGS_OPTS_OLD) +L"../lib/exts/Storable_aux.c" HugsStorable 
+	$(FFIHUGS) $(FFIHUGS_OPTS_OLD) MarshalAlloc
+	$(FFIHUGS) $(FFIHUGS_OPTS_OLD) MarshalUtils
+
 ################################################################
 # Clean, distclean, veryclean, TAGS
 ################################################################
