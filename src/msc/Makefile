@@ -75,6 +75,13 @@ runhugs.obj	: $(PRELUDE) hugs.c machdep.c timer.c runhugs.c
 runhugs.exe	: runhugs.obj $(SERVER_OBJECTS)
 		  $(CC) $(LDFLAGS) runhugs.obj $(SERVER_OBJECTS) $(LIBS) -o runhugs.exe
 
+ffihugs.obj	: $(PRELUDE) hugs.c machdep.c timer.c runhugs.c
+ffihugs.exe	: ffihugs.obj $(SERVER_OBJECTS)
+		  $(CC) $(LDFLAGS) ffihugs.obj $(SERVER_OBJECTS) $(LIBS) -o ffihugs.exe
+
+ffihugs.obj	: runhugs.c
+		  $(CC) -c $(CFLAGS) $(OPTFLAGS) -DFFI_COMPILER runhugs.c -o ffihugs.obj
+
 hugsscript.obj  : hugsscript.c
 hugsscript.dll  : $(SERVER_OBJECTS) hugsscript.obj
 		  $(CC) $(DLL_FLAGS) $(LDFLAGS) $(SERVER_OBJECTS) hugsscript.obj $(LIBS) -o hugsscript.dll

@@ -44,7 +44,7 @@
  * Typical value: "gcc -shared"
  * Must evaluate to a literal C string.
  */
-#define MKDLL_CMD "cl /LD"
+#define MKDLL_CMD "cl /LD /ML /nologo"
 
 /* Define if using alloca.c.  */
 #define C_ALLOCA 1

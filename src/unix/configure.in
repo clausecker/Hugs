@@ -572,6 +572,7 @@ dnl--------------------------------------------------------------------
 
 dnl Try the MS Visual C flags
 HUGS_TRY_DYNLINK("/LD")                
+HUGS_TRY_DYNLINK("/LD /ML /nologo")                
 
 dnl Try the gcc flags
 HUGS_TRY_DYNLINK("-shared")            
