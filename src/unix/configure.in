@@ -128,6 +128,7 @@ dnl
 dnl--------------------------------------------------------------------
 
 AC_HEADER_STDC
+dnl checks for sys/wait.h
 AC_HEADER_SYS_WAIT
 AC_CHECK_HEADERS(
   stdarg.h stdlib.h unistd.h assert.h ctype.h string.h limits.h \
@@ -135,7 +136,7 @@ AC_CHECK_HEADERS(
   arpa/inet.h \
   netdb.h netinet/tcp.h \
   sys/stat.h sys/types.h sys/ioctl.h sys/resource.h sys/param.h \
-  sys/socket.h sys/timers.h sys/uio.h sys/un.h sys/utsname.h sys/wait.h \
+  sys/socket.h sys/timers.h sys/uio.h sys/un.h sys/utsname.h \
   console.h pascal.h Files.h errno.h stat.h nlist.h ftw.h direct.h \
   grp.h pwd.h \
   dirent.h utime.h vfork.h
