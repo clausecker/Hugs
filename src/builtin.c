@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: builtin.c,v $
- * $Revision: 1.64 $
- * $Date: 2003/09/19 14:44:19 $
+ * $Revision: 1.65 $
+ * $Date: 2003/10/04 04:01:30 $
  * ------------------------------------------------------------------------*/
 
 /* We include math.h before prelude.h because SunOS 4's cpp incorrectly
@@ -260,7 +260,7 @@ PROTO_PRIM(primMulDouble);
 PROTO_PRIM(primDivDouble);
 PROTO_PRIM(primNegDouble);
 
-#ifdef HAVE_LIBM
+#ifdef FLOATS_SUPPORTED
 PROTO_PRIM(primSinFloat);
 PROTO_PRIM(primCosFloat);
 PROTO_PRIM(primTanFloat);
@@ -299,7 +299,7 @@ PROTO_PRIM(primDoubleMinExp);
 PROTO_PRIM(primDoubleMaxExp);
 PROTO_PRIM(primDoubleDecode);
 PROTO_PRIM(primDoubleEncode);
-#endif /* HAVE_LIBM */
+#endif /* FLOATS_SUPPORTED */
 
 PROTO_PRIM(primNullPtr);
 PROTO_PRIM(primPlusPtr);
@@ -457,7 +457,7 @@ static struct primitive builtinPrimTable[] = {
   {"primDivDouble",     2, primDivDouble},
   {"primNegDouble",     1, primNegDouble},
 
-#ifdef HAVE_LIBM
+#ifdef FLOATS_SUPPORTED
   {"primSinFloat",      1, primSinFloat},
   {"primCosFloat",      1, primCosFloat},
   {"primTanFloat",      1, primTanFloat},
@@ -1124,7 +1124,7 @@ DoubleDouble2Double(primMulDouble,x*y)  /* Double multiplication primitive  */
 Double2Double(primNegDouble,-x)         /* Double negation primitive        */
 DoubleDouble2Double(primDivDouble,x/y)  /* Double division primitive  */
 
-#ifdef HAVE_LIBM
+#ifdef FLOATS_SUPPORTED
 Float2Float(primSinFloat,sin(x))       /* Float sin (trig) primitive       */
 Float2Float(primCosFloat,cos(x))       /* Float cos (trig) primitive       */
 Float2Float(primTanFloat,tan(x))       /* Float tan (trig) primitive       */
@@ -1240,7 +1240,7 @@ primFun(primDoubleEncode) {            /* Double encode primitive          */
     DoubleResult(ldexp(f,n));
 }
 
-#endif /* HAVE_LIBM */
+#endif /* FLOATS_SUPPORTED */
 
 /* --------------------------------------------------------------------------
  * Ptr primitives:

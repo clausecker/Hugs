@@ -8,8 +8,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: prelude.h,v $
- * $Revision: 1.51 $
- * $Date: 2003/09/19 10:04:38 $
+ * $Revision: 1.52 $
+ * $Date: 2003/10/04 04:01:33 $
  * ------------------------------------------------------------------------*/
 #ifndef __PRELUDE_H__
 #define __PRELUDE_H__
@@ -466,10 +466,15 @@ extern  int  kbhit	Args((void));
  * Floating point support
  *-------------------------------------------------------------------------*/
 
+#if defined(HAVE_LIBM) || defined(_WIN32)
+#define FLOATS_SUPPORTED
+#endif
+
+
 /* Can we fit floats into ints? */
 #define BREAK_FLOATS (SIZEOF_FLOAT > SIZEOF_INT)
 
-#ifdef  HAVE_LIBM
+#ifdef  FLOATS_SUPPORTED
 
 #define FloatImpType	   float
 #define FloatPro	   double  /* type to use in prototypes		   */
@@ -541,7 +546,7 @@ extern  int  kbhit	Args((void));
 #define HUGS_DBL_MAX_EXP   1024
 #endif
 
-#else /* !HAVE_LIBM */
+#else /* !FLOATS_SUPPORTED */
 
 #define FloatImpType	   int     /*dummy*/
 #define FloatPro	   int
@@ -550,7 +555,7 @@ extern  int  kbhit	Args((void));
 #define DoublePro	   int
 #define DoubleFMT	   "%d"
 
-#endif /* !HAVE_LIBM */
+#endif /* !FLOATS_SUPPORTED */
 
 /*---------------------------------------------------------------------------
  * Memory allocation

@@ -11,8 +11,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.97 $
- * $Date: 2003/09/26 09:41:54 $
+ * $Revision: 1.98 $
+ * $Date: 2003/10/04 04:01:32 $
  * ------------------------------------------------------------------------*/
 #include "prelude.h"
 #include "storage.h"
@@ -1447,7 +1447,7 @@ int chdir(char *s) {                    /* RISCOS PRM p. 885    -- JBS     */
  * Floating point support:
  * ------------------------------------------------------------------------*/
 
-#ifdef HAVE_LIBM
+#ifdef FLOATS_SUPPORTED
 #if BREAK_FLOATS
 static union {
     Float  flVal;
@@ -1606,7 +1606,7 @@ DoublePro stringToDouble(s)
 String s; {
     return atof(s);
 }
-#else /* !HAVE_LIBM */
+#else /* !FLOATS_SUPPORTED */
 Cell mkFloat(fl)
 FloatPro fl; {
     internal("mkFloat");
@@ -1642,7 +1642,7 @@ DoublePro fl; {
     internal("doubleToString");
     return "";/*NOTREACHED*/
 }
-#endif /* !HAVE_LIBM */
+#endif /* !FLOATS_SUPPORTED */
 
 /*---------------------------------------------------------------------------
  * Int64-related operations:
@@ -2406,7 +2406,7 @@ Void machdep(what)                      /* Handle machine specific         */
 Int what; {                             /* initialisation etc..            */
     switch (what) {
 	case MARK    :
-#ifdef HAVE_LIBM
+#ifdef FLOATS_SUPPORTED
 #if BREAK_FLOATS
 		       mark(bfTemp);
 #endif
@@ -2416,7 +2416,7 @@ Int what; {                             /* initialisation etc..            */
 	case INSTALL : installHandlers();
 		       break;
 	case RESET   :
-#ifdef HAVE_LIBM
+#ifdef FLOATS_SUPPORTED
 #if BREAK_FLOATS
 		       bfTemp = NIL;
 #endif
