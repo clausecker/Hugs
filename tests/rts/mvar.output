@@ -4,7 +4,10 @@ Program error: no more threads (deadlock?)
 Hugs:a
 Hugs:ab
 Hugs:
-Program error: putMVar {full MVar}
+Program error: no more threads (deadlock?)
+
+Hugs:abcd
+Program error: no more threads (deadlock?)
 
 Hugs:aa
 Hugs:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb

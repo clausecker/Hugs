@@ -115,17 +115,29 @@ forkExnHandler e = do
     putStr "\n"           
     kill
 
-newtype MVar a = MkMVar (IORef (Either a [a -> IOResult]))
+-- An MVar can be either:
+-- o full : Left (a,ts)
+--   Has a value 'a' and a list 'ts' of value-thread pairs blocked waiting
+--   to write to the MVar.
+--   The ()-> part of the thread is because blocked threads have to be
+--   functions. :-(
+-- o empty : Right ts
+--   Has a list of threads 'ts' waiting to receive a value
+newtype MVar a = MkMVar (IORef (Either (a,[(a,()->IOResult)]) [a -> IOResult]))
 
 newEmptyMVar = fmap MkMVar (newIORef (Right []))
 
-newMVar x    = fmap MkMVar (newIORef (Left x))
+newMVar x    = fmap MkMVar (newIORef (Left (x,[])))
 
 takeMVar (MkMVar v) =
   readIORef v >>= \ state ->
   case state of
-  Left a ->
+  Left (a,[]) ->
     writeIORef v (Right []) >>
+    return a
+  Left (a,(a',t):ts) ->
+    writeIORef v (Left (a', ts)) >>
+    continueIO (t ())            >>  -- reschedule t
     return a
   Right cs ->
     blockIO (\cc -> writeIORef v (Right (cs ++ [cc])))
@@ -134,8 +146,12 @@ takeMVar (MkMVar v) =
 tryTakeMVar (MkMVar v) =
   readIORef v >>= \ state ->
   case state of
-  Left a ->
+  Left (a,[]) ->
     writeIORef v (Right []) >>
+    return (Just a)
+  Left (a,(a',t):ts) ->
+    writeIORef v (Left (a', ts)) >>
+    continueIO (t ())            >> -- reschedule t
     return (Just a)
   Right cs ->
     return Nothing
@@ -143,29 +159,25 @@ tryTakeMVar (MkMVar v) =
 putMVar (MkMVar v) a =
   readIORef v >>= \ state ->
   case state of
-  Left a ->
-    -- ToDo: I think GHC blocks if you do this
-    error "putMVar {full MVar}"
+  Left (a',ts) ->
+    blockIO (\cc -> writeIORef v (Left (a',(ts++[(a,cc)]))))
   Right [] ->
-    writeIORef v (Left a)   >>
-    return ()
+    writeIORef v (Left (a,[]))
   Right (c:cs) ->
     writeIORef v (Right cs) >>
-    continueIO (c a)   -- schedule the blocked thread
-                       -- and continue with this thread
+    continueIO (c a)   -- reschedule the blocked thread
 
 tryPutMVar (MkMVar v) a =
   readIORef v >>= \ state ->
   case state of
-  Left a ->
+  Left _ ->
     return False
   Right [] ->
-    writeIORef v (Left a)   >>
+    writeIORef v (Left (a,[]))   >>
     return True
   Right (c:cs) ->
     writeIORef v (Right cs) >>
-    continueIO (c a)  >> -- schedule the blocked thread
-                         -- and continue with this thread
+    continueIO (c a)  >> -- reschedule the blocked thread
     return True
 
 primEqMVar   :: MVar a -> MVar a -> Bool
@@ -186,8 +198,10 @@ MkMVar v1 `primEqMVar` MkMVar v2 = v1 == v2
  general of isEmptyMVar :-)
 -}
 isEmptyMVar (MkMVar v) =
-  readIORef v >>= \state -> case state of
-                              Left a  -> return False
-                              Right a -> return True
+  readIORef v >>= \state -> 
+  case state of
+  Left  _ -> return False
+  Right _ -> return True
 
 -----------------------------------------------------------------------------
+

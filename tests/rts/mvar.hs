@@ -46,11 +46,27 @@ test4 =
    put v1 'a'     >>
    get v2
 
--- should abort: primPutMVar: full MVar
+-- used to abort: primPutMVar: full MVar
+-- under the new semantics, it blocks leading to deadlock
 test5 = 
   newEmptyMVar    >>= \ v ->
   put v 'a'       >>
   put v 'b'
+
+-- tests multiple writes to the same mvar and fairness
+-- should output a{bcd} and then deadlock
+-- where {bcd} stands for some permutation of b c and d
+test5a = do
+  v <- newEmptyMVar
+  put v 'a'
+  forkIO $ put v 'b'
+  forkIO $ put v 'c'
+  forkIO $ put v 'd'
+  get v
+  get v
+  get v
+  get v
+  get v
 
 -- Tests blocking of two processes on the same variable.
 -- should print "aa"
@@ -110,3 +126,4 @@ put v x =
 get v =
   takeMVar v      >>= \ x ->
   putChar x
+
