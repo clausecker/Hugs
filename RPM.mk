@@ -65,8 +65,6 @@ $(PACKAGE).tar.gz:
 	  cvs export -r $(HSLIBSTAG) `for lib in $(HSLIBSDIRS); do echo fptools/hslibs/$$lib; done`; \
 	  cvs export -r $(LIBRARIESTAG) fptools/config.sub fptools/config.guess fptools/install-sh `for lib in $(LIBRARIESDIRS); do echo fptools/libraries/$$lib; done`; \
 	  cvs export -r $(HSC2HSTAG) fptools/ghc/utils/hsc2hs
-# Unused, and the pathnames in there are too long for portable tar
-	cd $(TARTMP)/hugs98; rm -rf fptools/libraries/parsec/examples
 # preprocess these, so the package can be built without happy & ghc
 	$(FIND) $(TARTMP)/hugs98/fptools/libraries -name "*.ly" -o -name "*.y" | \
 		xargs -l $(HAPPY)
