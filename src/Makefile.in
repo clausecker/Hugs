@@ -60,7 +60,7 @@ YFILES		= parser.y
 SOURCES		= $(HFILES) $(CFILES) $(INCFILES) $(YFILES) 
 OBJECTS		= storage@OBJ@ input@OBJ@    static@OBJ@ type@OBJ@    \
 		  subst@OBJ@   compiler@OBJ@ plugin@OBJ@ builtin@OBJ@ \
-		  machine@OBJ@ output@OBJ@ ffi@OBJ@
+		  machine@OBJ@ output@OBJ@ ffi@OBJ@ version@OBJ@
 IOBJECTS	= hugs@OBJ@ $(OBJECTS)
 PRELUDE		= config.h options.h prelude.h
 
@@ -72,11 +72,11 @@ hugs@EXE@	: $(IOBJECTS) @WOBJECTS@ @RC_FILES@
 		  $(CC) $(LDFLAGS) $(IOBJECTS) @WOBJECTS@ $(LIBS) -o hugs@EXE@ 
 		  @STRIP@
 
-version.h	: version.h.in $(SOURCES)
-		  @echo "/* version.h - generated from version.h.in by Makefile */" > version.h
-		  @sed -e "s/MONTH_YEAR/`date +"%B %Y" 2> /dev/null`/" \
-		      -e "s/YYYYMMDD/`date +"%Y%m%d" 2> /dev/null`/" \
-		      < version.h.in >> version.h
+version@OBJ@	: version.c $(SOURCES)
+		  @$(CC) \
+		      -DMONTH_YEAR='"'"`date +"%B %Y" 2> /dev/null`"'"' \
+		      -DYYYYMMDD='"'"`date +"%Y%m%d" 2> /dev/null`"'"' \
+		      -c $(CFLAGS) $(OPTFLAGS) $<
 
 SERVER_OBJECTS	= server@OBJ@ $(OBJECTS) 
 runhugs@OBJ@	: $(PRELUDE) runhugs.c server.h
@@ -172,9 +172,9 @@ parser.c	: parser.y
 # veryclean	::
 # 		  $(RM) parser.c
 
-server@OBJ@	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h version.h \
+server@OBJ@	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h \
 		  command.h machdep.c timer.c hugs.c server.c server.h
-hugs@OBJ@	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h version.h \
+hugs@OBJ@	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h \
 		  command.h machdep.c timer.c
 storage@OBJ@	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h
 input@OBJ@	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h \

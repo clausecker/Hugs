@@ -46,7 +46,7 @@ INCFILES	= parser.c preds.c bignums.c scc.c machdep.c timer.c \
 YFILES		= parser.y
 SOURCES		= $(HFILES) $(CFILES) $(INCFILES) $(YFILES) 
 OBJECTS		= storage.o input.o static.o type.o subst.o compiler.o \
-		  plugin.o builtin.o machine.o output.o ffi.o
+		  plugin.o builtin.o machine.o output.o ffi.o version.o
 IOBJECTS	= hugs.o $(OBJECTS)
 PRELUDE		= config.h options.h prelude.h
 
@@ -119,9 +119,9 @@ static.o	: static.c
 # veryclean	::
 # 		  $(RM) parser.c
 
-server.o	: $(PRELUDE) storage.h connect.h errors.h version.h \
+server.o	: $(PRELUDE) storage.h connect.h errors.h \
 		  command.h machdep.c timer.c server.c server.h
-hugs.o		: $(PRELUDE) storage.h connect.h errors.h version.h \
+hugs.o		: $(PRELUDE) storage.h connect.h errors.h \
 		  command.h machdep.c timer.c
 ffi.o		: $(PRELUDE) storage.h connect.h errors.h
 storage.o	: $(PRELUDE) storage.h connect.h errors.h

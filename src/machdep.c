@@ -11,8 +11,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.67 $
- * $Date: 2002/09/13 15:08:07 $
+ * $Revision: 1.68 $
+ * $Date: 2002/10/10 16:18:08 $
  * ------------------------------------------------------------------------*/
 #include <math.h>
 
@@ -116,9 +116,9 @@ int allow_break_count = 0;
 #endif
 
 #if HUGS_FOR_WINDOWS
-#define HugsRoot ("SOFTWARE\\Haskell\\Hugs\\Winhugs" HUGS_VERSION "\\")
+#define HugsRoot ("SOFTWARE\\Haskell\\Hugs\\Winhugs" versionString "\\")
 #else
-#define HugsRoot ("SOFTWARE\\Haskell\\Hugs\\" HUGS_VERSION "\\")
+#define HugsRoot ("SOFTWARE\\Haskell\\Hugs\\" versionString "\\")
 #endif
 #define ProjectRoot ("SOFTWARE\\Haskell\\Projects\\")
 

@@ -56,7 +56,7 @@ SOURCES		= $(HFILES) $(CFILES) $(INCFILES) $(YFILES)
 OBJECTS		= storage.obj input.obj static.obj type.obj subst.obj \
                   compiler.obj plugin.obj builtin.obj machine.obj output.obj \
                   winframe.obj wintext.obj  winhint.obj \
-                  winstln.obj wintoolb.obj winutils.obj ffi.obj
+                  winstln.obj wintoolb.obj winutils.obj ffi.obj version.obj
 IOBJECTS	= hugs.obj $(OBJECTS)
 PRELUDE		= config.h options.h prelude.h "winhugs\wintext.h"
 
@@ -129,9 +129,9 @@ static.obj	: static.c
 # veryclean	::
 # 		  $(RM) parser.c
 
-server.obj	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h version.h \
+server.obj	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h \
 		  command.h machdep.c timer.c hugs.c server.c server.h
-hugs.obj	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h version.h \
+hugs.obj	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h \
 		  command.h machdep.c timer.c winhugs\winhugs.c winhugs\winbrows.c
 storage.obj	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h
 input.obj	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h \

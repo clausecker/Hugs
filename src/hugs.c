@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.97 $
- * $Date: 2002/10/08 14:54:35 $
+ * $Revision: 1.98 $
+ * $Date: 2002/10/10 16:18:07 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -16,7 +16,6 @@
 #include "command.h"
 #include "connect.h"
 #include "errors.h"
-#include "version.h"
 #include <setjmp.h>
 #include <ctype.h>
 
@@ -230,7 +229,7 @@ static Void printBanner Args((Void));
 static Void printBanner()
 {
 #if SMALL_BANNER
-    Printf("Hugs98 - http://haskell.org/hugs - %s\n", HUGS_VERSION);
+    Printf("Hugs98 - http://haskell.org/hugs - %s\n", versionString);
 #elif HUGS_FOR_WINDOWS
     INT svColor;
     svColor = SetForeColor(BLUE);    Printf( "__   __ __  __  ____   ___");
@@ -245,7 +244,7 @@ static Void printBanner()
     svColor = SetForeColor(BLUE);    Printf("||   ||                    ");
     SetForeColor(svColor);           Printf("     Report bugs to: hugs-bugs@haskell.org\n");
     svColor = SetForeColor(RED);     Printf("||   || ");
-    SetForeColor(svColor);           Printf("Version: %-14s",HUGS_VERSION);
+    SetForeColor(svColor);           Printf("Version: %-14s",versionString);
     svColor = SetForeColor(BLUE);    Printf(" _______________________________________________\n\n");
     SetForeColor(svColor);
 #else
@@ -254,7 +253,7 @@ static Void printBanner()
     Printf("||___|| ||__|| ||__||  __||     Copyright (c) 1994-2001\n");
     Printf("||---||         ___||           World Wide Web: http://haskell.org/hugs\n");
     Printf("||   ||                         Report bugs to: hugs-bugs@haskell.org\n");
-    Printf("||   || Version: %-14s _________________________________________\n\n",HUGS_VERSION);
+    Printf("||   || Version: %-14s _________________________________________\n\n",versionString);
 #endif
 
     FlushStdout();
@@ -2491,8 +2490,7 @@ String argv[]; {
 #endif
                           info();
 			  break;
-	    case PNTVER: Printf("-- Hugs Version %s\n",
-				 HUGS_VERSION);
+	    case PNTVER: Printf("-- Hugs Version %s\n", versionString);
 			  break;
 	    case QUIT   : breakOn(FALSE);
 			  return;

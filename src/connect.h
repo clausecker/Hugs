@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: connect.h,v $
- * $Revision: 1.49 $
- * $Date: 2002/10/03 17:28:05 $
+ * $Revision: 1.50 $
+ * $Date: 2002/10/10 16:18:07 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -141,6 +141,7 @@ extern String hugsEdit;			/* String for editor command	   */
 extern String hugsPath;			/* String for file search path	   */
 extern String projectPath;		/* String for project search path  */
 extern String hugsSuffixes;		/* Source filename suffixes        */
+extern String versionString;		/* String containing version name  */
 
 extern Type  typeArrow;			/* Builtin type constructors	   */
 extern Type  typeList;
