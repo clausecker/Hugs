@@ -8,8 +8,8 @@
  * in the distribution for details.
  *
  * $RCSfile: prelude.h,v $
- * $Revision: 1.2 $
- * $Date: 1999/07/28 18:48:19 $
+ * $Revision: 1.3 $
+ * $Date: 1999/08/12 17:45:56 $
  * ------------------------------------------------------------------------*/
 
 #include "config.h"
@@ -86,6 +86,7 @@
  *   GC_MALLOCPTRS  to include support for automatic deallocation of 
  *                  C objects when Haskell is done with them.
  *   GC_WEAKPTRS    to include support for weak pointers.
+ *   STABLE_NAMES   stable names a la Simon PJ
  *   EVAL_INSTANCES to generate instances of the Eval class automatically.
  *   MONAD_COMPS    to allow monad comprehensions.
  *   REDIRECT_OUTPUT ability to redirect stdout/stderr to a buffer.
@@ -113,6 +114,7 @@
 #define GC_STABLEPTRS   1 /* May be required by external libraries         */
 #define GC_MALLOCPTRS   1 /* May be required by external libraries         */
 #define GC_WEAKPTRS     1
+#define STABLE_NAMES    1
 #define EVAL_INSTANCES  0
 #define MONAD_COMPS	0
 #define REDIRECT_OUTPUT (!HUGS_FOR_WINDOWS)

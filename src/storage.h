@@ -8,8 +8,8 @@
  * in the distribution for details.
  *
  * $RCSfile: storage.h,v $
- * $Revision: 1.2 $
- * $Date: 1999/07/28 18:48:23 $
+ * $Revision: 1.3 $
+ * $Date: 1999/08/12 17:45:56 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -312,6 +312,9 @@ extern  Pointer         ptrOf           Args((Cell));
 #define MUTVAR	     56		  /* Mutvar	snd :: Cell		   */
 #if INTERNAL_PRIMS
 #define HUGSOBJECT   57		  /* HUGSOBJECT	snd :: Cell	           */
+#endif
+#if STABLE_NAMES
+#define STABLENAME   58		  /* Stable Nm  snd :: Cell		   */
 #endif
 
 #if IPARAM

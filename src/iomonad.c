@@ -18,8 +18,8 @@
  * in the distribution for details.
  *
  * $RCSfile: iomonad.c,v $
- * $Revision: 1.2 $
- * $Date: 1999/07/28 18:48:15 $
+ * $Revision: 1.3 $
+ * $Date: 1999/08/12 17:45:56 $
  * ------------------------------------------------------------------------*/
  
 Name nameIORun;			        /* run IO code                     */
@@ -158,6 +158,11 @@ PROTO_PRIM(primRunFinalizer);
 PROTO_PRIM(primFinalizerWaiting);
 #endif
 
+#if STABLE_NAMES
+PROTO_PRIM(primMakeSN);
+PROTO_PRIM(primHashSN);
+#endif
+
 #ifdef HSCRIPT
 PROTO_PRIM(primGetCurrentScript);
 #endif
@@ -257,6 +262,11 @@ static struct primitive iomonadPrimTable[] = {
   {"finalize",		3, primFinalize},
   {"runFinalizer",	2, primRunFinalizer},
   {"finalizerWaiting",	2, primFinalizerWaiting},
+#endif
+
+#if STABLE_NAMES
+  {"makeStableName",	3, primMakeSN},
+  {"hashStableName",	1, primHashSN},
 #endif
 
 #ifdef HSCRIPT
@@ -979,6 +989,21 @@ primFun(primEqFO) {			/* ForeignObj -> ForeignObj -> Bool*/
     checkForeign();
     updateRoot(pop()==whnfHead ? nameTrue : nameFalse);
 }
+
+#if STABLE_NAMES
+/* --------------------------------------------------------------------------
+ * Stable Names
+ * ------------------------------------------------------------------------*/
+
+primFun(primMakeSN) {			/* a -> IO (StableName a)	   */
+    IOReturn(ap(STABLENAME,IOArg(1)));
+}
+
+primFun(primHashSN) {			/* StableName a -> Int		   */
+    eval(primArg(1));
+    updateRoot(mkInt(whnfHead));
+}
+#endif
 
 #if GC_WEAKPTRS
 /* --------------------------------------------------------------------------
