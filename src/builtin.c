@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: builtin.c,v $
- * $Revision: 1.53 $
- * $Date: 2003/03/14 15:13:28 $
+ * $Revision: 1.54 $
+ * $Date: 2003/03/14 15:16:21 $
  * ------------------------------------------------------------------------*/
 
 /* We include math.h before prelude.h because SunOS 4's cpp incorrectly
@@ -1642,8 +1642,8 @@ static HsPtr          getPtr         Args((void));
 static HsFunPtr       getFunPtr      Args((void));
 static HsForeignPtr   getForeignPtr  Args((void));	      
 static HsStablePtr    getStablePtr4  Args((void));
-static HsFloat        getFloat4      Args((void));
-static HsDouble       getDouble4     Args((void));
+static HsFloat        getFloat       Args((void));
+static HsDouble       getDouble      Args((void));
 
 static void           putInt         Args((HsInt));
 static void           putWord        Args((HsWord));
@@ -1663,8 +1663,8 @@ static void           putWord64      Args((HsWord64));
 static void           putPtr         Args((HsPtr));
 static void           putFunPtr      Args((HsFunPtr));
 static void           putForeignPtr  Args((HsForeignPtr));
-static void           putFloat4      Args((HsFloat));
-static void           putDouble4     Args((HsDouble));
+static void           putFloat       Args((HsFloat));
+static void           putDouble      Args((HsDouble));
 
 static void           freeStablePtr4 Args((HsStablePtr));
 
@@ -1757,14 +1757,14 @@ static Void freeStablePtr4(HsStablePtr x) {
     if (x) freeStablePtr((HugsStablePtr)x);
 }
 
-static HsFloat        getFloat4()    { eval(pop()); checkFloat(); return whnfFloat; }
-static HsDouble       getDouble4()   { eval(pop()); checkDouble(); return whnfDouble; }
+static HsFloat        getFloat()     { eval(pop()); checkFloat(); return whnfFloat; }
+static HsDouble       getDouble()    { eval(pop()); checkDouble(); return whnfDouble; }
 
-static void putFloat4(HsFloat x) {
+static void putFloat(HsFloat x) {
   push(mkFloat(x));
 }
 
-static void putDouble4(HsDouble x) {
+static void putDouble(HsDouble x) {
   push(mkDouble(x));
 }
 
@@ -2126,8 +2126,8 @@ HugsAPI4* hugsAPI4() { /* build virtual function table */
       	api.getInt        = getInt;
 	api.getWord       = getWord;
 	api.getAddr       = getAddr;
-	api.getFloat      = getFloat4;
-	api.getDouble     = getDouble4;
+	api.getFloat      = getFloat;
+	api.getDouble     = getDouble;
 	api.getChar       = getChar;
 	api.getForeign    = getForeign;
         api.getInt8       = getInt8;
@@ -2147,8 +2147,8 @@ HugsAPI4* hugsAPI4() { /* build virtual function table */
 	api.putInt        = putInt;
 	api.putWord       = putWord;
 	api.putAddr       = putAddr;
-	api.putFloat      = putFloat4;
-	api.putDouble     = putDouble4;
+	api.putFloat      = putFloat;
+	api.putDouble     = putDouble;
 	api.putChar       = putChar;
 	api.putForeign    = putForeign;
         api.putInt8       = putInt8;
