@@ -14,13 +14,16 @@ namespace HsWrapGen
 		private System.Reflection.MemberInfo[] m_members;
         private System.Collections.Specialized.StringCollection m_names;
         private System.Collections.Specialized.StringCollection m_imports;
+	private System.String m_modname;
 
 	public HsOutput(System.Type ty,System.Reflection.MemberInfo[] mems) {
 	  m_type = ty;
 	  m_members = mems;
 	  m_names   = new System.Collections.Specialized.StringCollection();
 	  m_imports = new System.Collections.Specialized.StringCollection();
+	  m_modname = "Dotnet." + m_type.FullName;
 	}
+	
 
         protected void OutputHeader(System.IO.StreamWriter st) {
             st.WriteLine("module Dotnet.{0} where", m_type.FullName);
@@ -83,7 +86,7 @@ namespace HsWrapGen
 
         private void AddImport(System.String nm) {
 
-            if (!m_imports.Contains(nm) && String.Compare(nm, m_type.FullName) != 0) {
+            if (!m_imports.Contains(nm) && String.Compare(nm, m_modname) != 0) {
                 m_imports.Add(nm);
             }
         }
@@ -141,14 +144,15 @@ namespace HsWrapGen
               sb.Append("()"); return;
             }
             if (ty.FullName == "System.Object") {
+	        AddImport("Dotnet.System.Object");
                 sb.AppendFormat("Dotnet.System.Object.Object a{0}",idx); return;
             }
 
             if (ty.IsArray) {
-                String eltNm = ty.GetElementType().FullName;
                 AddImport("Dotnet.System.Array");
-                AddImport("Dotnet."+eltNm);
-                sb.AppendFormat("Dotnet.System.Array.Array ({0}.{1} a{2})", eltNm, ty.GetElementType().Name, idx);
+                sb.Append("Dotnet.System.Array.Array (");
+		OutputHaskellType(sb, ty.GetElementType(), idx);
+		sb.Append(")");
             } else {
                 AddImport("Dotnet." + ty.FullName);
                 sb.AppendFormat("Dotnet.{0}.{1} a{2}", ty.FullName, ty.Name, idx);
