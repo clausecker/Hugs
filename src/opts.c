@@ -264,9 +264,10 @@ Void optionInfo(Void) {                 /* Print information about command */
     }
 
 #define PUTS(s)                         \
-    do { Int len = strlen(s);           \
+    do { String sref = (s);             \
+         Int len = strlen(sref);        \
          if ( charsLeft > len ) {       \
-            strcpy(next,s);             \
+            strcpy(next,sref);          \
             next+=len;                  \
             charsLeft -= len;           \
          } else {                       \
@@ -320,7 +321,11 @@ String s; {
 	 */
 	*next = '\0';
 	for(t=s; *t; ) {
-	    PUTS(unlexChar(ExtractChar(t),'"'));
+	    /* Explicitly bind result to a local to avoid 
+	     * duplicating work within PUTS() macro. Ugly.
+	     */
+	    String strChar = unlexChar(ExtractChar(t),'"');
+	    PUTS(strChar);
 	}
 	next+=strlen(next);
 	PUTS("\" ");
