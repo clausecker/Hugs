@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: ffi.c,v $
- * $Revision: 1.11 $
- * $Date: 2002/06/17 22:56:14 $
+ * $Revision: 1.12 $
+ * $Date: 2002/06/18 00:41:58 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -67,7 +67,7 @@ String s; {
 #ifdef _MSC_VER
 #define INSERT_QUOTE()   insert("\"")
 #else
-#define INSERT_QUOTE()   insert("'")
+#define INSERT_QUOTE()
 #endif
 
 static Void local compileAndLink(fn,libs)
