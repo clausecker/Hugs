@@ -9,7 +9,7 @@
 -----------------------------------------------------------------------------
 
 module Hugs.System (
-	ExitCode(..), exitWith
+	ExitCode(..), exitWith,
 	getArgs, getProgName, getEnv, 
 	system
 	) where
