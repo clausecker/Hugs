@@ -9,8 +9,8 @@
  * included in the distribution.
  *
  * $RCSfile: prelude.h,v $
- * $Revision: 1.20 $
- * $Date: 2001/06/14 21:28:52 $
+ * $Revision: 1.21 $
+ * $Date: 2001/06/23 21:46:43 $
  * ------------------------------------------------------------------------*/
 
 #include "config.h"
@@ -54,7 +54,7 @@
 #ifdef __SYMBIAN32__
 #define IS_WIN32 0
 #else
-#if defined _WIN32 | defined __WIN32__
+#if defined(_WIN32) || defined(__WIN32__)
 # define IS_WIN32 1
 #else
 # define IS_WIN32 0
@@ -127,28 +127,28 @@
 #define OBSERVATIONS    0
 #define ZIP_COMP	0
 #endif
-#define HERE_DOC	0
-#define HASKELL_ARRAYS	1
-#define IO_MONAD	1
-#define IO_HANDLES      1
-#define IO_REFS		1 /* Experimental IO Ref type			   */
-#define FLUSHEVERY	1
-#define LAZY_ST		(IO_MONAD)
-#define NPLUSK		1 /* Warning: There are those that would prefer 0  */
-#define BIGNUMS		1 /* Experimental bignum implementation		   */
-#define FIXED_SUBST	0 /* Warning: This may not be appropriate for PCs  */
-#define DYN_TABLES	SMALL_HUGS /* For dynamically allocated tables	   */
-#define GC_STABLEPTRS   1 /* May be required by external libraries         */
-#define GC_MALLOCPTRS   1 /* May be required by external libraries         */
-#define GC_WEAKPTRS     1
-#define STABLE_NAMES    1
-#define EVAL_INSTANCES  0
-#define MONAD_COMPS	0
-#define REDIRECT_OUTPUT (!HUGS_FOR_WINDOWS)
-#define WORD_OPS        1
-#define ADDR_OPS        1
-#define DIRECTORY_OPS   1
-#define CPUTIME_OPS     1
+#define HERE_DOC	 0
+#define HASKELL_ARRAYS	 1
+#define IO_MONAD	 1
+#define IO_HANDLES       1
+#define IO_REFS		 1 /* Experimental IO Ref type			   */
+#define FLUSHEVERY	 1
+#define LAZY_ST		 (IO_MONAD)
+#define NPLUSK		 1 /* Warning: There are those that would prefer 0  */
+#define BIGNUMS		 1 /* Experimental bignum implementation		   */
+#define FIXED_SUBST	 0 /* Warning: This may not be appropriate for PCs  */
+#define DYN_TABLES	 SMALL_HUGS /* For dynamically allocated tables	   */
+#define GC_STABLEPTRS    1 /* May be required by external libraries         */
+#define GC_MALLOCPTRS    1 /* May be required by external libraries         */
+#define GC_WEAKPTRS      1
+#define STABLE_NAMES     1
+#define EVAL_INSTANCES   0
+#define MONAD_COMPS	 0
+#define REDIRECT_OUTPUT  (!HUGS_FOR_WINDOWS)
+#define WORD_OPS         1
+#define ADDR_OPS         1
+#define TIME_MODULE      1
+#define DIRECTORY_MODULE 1
 
 #define SHORT_CIRCUIT_COERCIONS 1
 

@@ -17,6 +17,13 @@
 /* Define if you have <alloca.h> and it should be used (not on Ultrix).  */
 /* #undef HAVE_ALLOCA_H */
 
+/* Define if your struct tm has tm_zone. */
+/* #undef HAVE_TM_ZONE */
+
+/* Define if you don't have tm_zone but do have the external array
+   tzname. */
+#define HAVE_TZNAME 1
+
 /* Define if you have <sys/wait.h> that is POSIX.1 compatible.  */
 /* #undef HAVE_SYS_WAIT_H */
 
@@ -123,6 +130,12 @@
  */
 #define VOID_INT_SIGNALS 1
 
+/* Define if time.h or sys/time.h define the altzone variable.  */
+/* #undef HAVE_ALTZONE */
+
+/* Define if time.h or sys/time.h define the timezone variable.  */
+#define HAVE_TIMEZONE 1
+ 
 /* The number of bytes in a double.  */
 #define SIZEOF_DOUBLE 8
 
@@ -174,11 +187,20 @@
 /* Define if you have the getrusage function.  */
 /* #undef HAVE_GETRUSAGE */
 
+/* Define if you have the gmtime function.  */
+#define HAVE_GMTIME 1
+
 /* Define if you have the isatty function.  */
 #define HAVE_ISATTY 1
 
+/* Define if you have the localtime function.  */
+#define HAVE_LOCALTIME 1
+
 /* Define if you have the macsystem function.  */
 /* #undef HAVE_MACSYSTEM */
+
+/* Define if you have the mktime function.  */
+#define HAVE_MKTIME 1
 
 /* Define if you have the pclose function.  */
 /* #undef HAVE_PCLOSE */
@@ -215,6 +237,9 @@
 
 /* Define if you have the stricmp function.  */
 #define HAVE_STRICMP 1
+
+/* Define if you have the time function.  */
+#define HAVE_TIME 1
 
 /* Define if you have the times function.  */
 /* #undef HAVE_TIMES */

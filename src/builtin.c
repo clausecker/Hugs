@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: builtin.c,v $
- * $Revision: 1.15 $
- * $Date: 2001/06/22 23:00:36 $
+ * $Revision: 1.16 $
+ * $Date: 2001/06/23 21:46:43 $
  * ------------------------------------------------------------------------*/
 
 /* We include math.h before prelude.h because SunOS 4's cpp incorrectly
@@ -1557,6 +1557,22 @@ FILE *fp; {                             /* and print it on fp              */
 #endif
 
 /* --------------------------------------------------------------------------
+ * Time and CPUTime module implementations
+ * ------------------------------------------------------------------------*/
+
+#if TIME_MODULE
+#include "timeprim.c"
+#endif
+
+/* --------------------------------------------------------------------------
+ * Directory module implementation
+ * ------------------------------------------------------------------------*/
+
+#if DIRECTORY_MODULE
+#include "dirprim.c"
+#endif
+
+/* --------------------------------------------------------------------------
  * Error catching primitives
  * (not standard Haskell but jolly useful)
  * ------------------------------------------------------------------------*/
@@ -2207,6 +2223,12 @@ Int what; {
 #endif
 #if IO_MONAD
 		       registerPrims(&iomonadPrims);
+#endif
+#if TIME_MODULE
+		       registerPrims(&timePrims);
+#endif
+#if DIRECTORY_MODULE
+		       registerPrims(&dirPrims);
 #endif
 #if INTERNAL_PRIMS
 		       registerPrims(&internalPrims);
