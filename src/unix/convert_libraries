@@ -427,6 +427,7 @@ nocvt hugs Hugs/Memo.hs			exts/Memo.hs
 nocvt hugs Hugs/Observe.lhs		exts/Observe.lhs
 nocvt hugs Hugs/Quote.hs		hugs/Quote.hs
 nocvt hugs Hugs/Trace.hs		hugs/Trace.hs
+nocvt hugs Hugs/Trex.hs			hugs/Trex.hs
 
 # Compatibility with lib/exts:
 
@@ -592,4 +593,4 @@ mkdir -p $compat
      stub Quote			Hugs.Quote	# only hugs supports here docs
   libhugs StdLibs				# only useful for testing
      stub Trace			Hugs.Trace
-  libhugs Trex					# only hugs supports Trex
+     stub Trex			Hugs.Trex	# only hugs supports Trex

@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.109 $
- * $Date: 2002/10/18 14:10:30 $
+ * $Revision: 1.110 $
+ * $Date: 2002/10/19 00:03:04 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -7834,7 +7834,7 @@ static Void local trexUsed() {
 
 static Void local trexLoad() {
     if (trexLibNeeded) {
-	String trexLib    = "Trex";
+	String trexLib    = (newLibraries ? "Hugs.Trex" : "Trex");
     
 	/* Locate the module */
 	Module m          = findModule(findText(trexLib));
