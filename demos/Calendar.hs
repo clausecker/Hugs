@@ -124,12 +124,12 @@ cal year = unlines (banner year `above` body year)
 calProg = do
          args <- getArgs
          case args of 
-         [year] -> calFor year
-         _      -> do
-                     putStr "Usage: "
-                     getProgName >>= putStr
-                     putStrLn " year" 
-                     exitWith (ExitFailure 1)
+          [year] -> calFor year
+          _      -> do
+                      putStr "Usage: "
+                      getProgName >>= putStr
+                      putStrLn " year" 
+                      exitWith (ExitFailure 1)
 
 calFor year | illFormed = hPutStr stderr "Bad argument" >>
                           exitWith (ExitFailure 1)
