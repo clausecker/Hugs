@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: builtin.c,v $
- * $Revision: 1.30 $
- * $Date: 2002/08/25 22:23:27 $
+ * $Revision: 1.31 $
+ * $Date: 2002/08/27 17:25:46 $
  * ------------------------------------------------------------------------*/
 
 /* We include math.h before prelude.h because SunOS 4's cpp incorrectly
@@ -2203,6 +2203,8 @@ int n; {
     sp -= n;
     /* stack = ap(...(ap(fun,arg1),...),argn) : rest */
 }
+
+static int runId Args((int));
 
 static int runId(n)
 int n; {
