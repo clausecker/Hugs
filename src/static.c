@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.141 $
- * $Date: 2003/02/12 03:13:37 $
+ * $Revision: 1.142 $
+ * $Date: 2003/02/14 02:01:51 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -787,17 +787,25 @@ List ss; {				/* list of existing selectors	   */
 	if (nonNull(ns)) {
 	    name(hd(ns)).defn = cons(pair(c,mkInt(sn)),name(hd(ns)).defn);
 	} else {
-	    Name n = findName(t);
-	    if (nonNull(n)) {
-		ERRMSG(line) "Repeated definition for selector \"%s\"",
-			     textToStr(t)
-		EEND;
+	    Name n;
+	    Name oldnm = findName(t);
+	    if ( nonNull(oldnm) ) {
+	        if ( name(oldnm).mod == currentModule ) {
+		    ERRMSG(line) "Repeated definition for selector \"%s\"",
+			         textToStr(t)
+		    EEND;
+		} else {
+		  removeName(oldnm);
+		}
 	    }
-	    n              = newName(t,c);
-	    name(n).line   = line;
-	    name(n).number = SELNAME;
-	    name(n).defn   = singleton(pair(c,mkInt(sn)));
-	    ss             = cons(n,ss);
+	    n               = newName(t,c);
+	    name(n).line    = line;
+	    name(n).number  = SELNAME;
+	    name(n).defn    = singleton(pair(c,mkInt(sn)));
+	    if (nonNull(oldnm)) {
+	      name(n).clashes = cons(oldnm,name(n).clashes);
+	    }
+	    ss              = cons(n,ss);
 	}
     }
     return ss;
