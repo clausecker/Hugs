@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.12 $
- * $Date: 1999/10/11 21:14:40 $
+ * $Revision: 1.13 $
+ * $Date: 1999/10/11 23:53:03 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -87,6 +87,8 @@ static Void   local forgetScriptsFrom Args((Script));
 static Void   local setLastEdit       Args((String,Int));
 static Void   local failed            Args((Void));
 static String local strCopy           Args((String));
+static Void   local browseit	      Args((Module,String));
+static Void   local browse	      Args((Void));
 
 /* --------------------------------------------------------------------------
  * Machine dependent code for Hugs interpreter:
@@ -173,12 +175,12 @@ char *argv[]; {
 
     CStackBase = &argc;                 /* Save stack base for use in gc   */
 
-    Printf("__   __ __  __  ____   ___     _________________________________________\n");
-    Printf("||   || ||  || ||  || ||__     Hugs 98: Based on the Haskell 98 standard\n");
-    Printf("||___|| ||__|| ||__||  __||    Copyright (c) 1994-1999\n");
-    Printf("||---||         ___||          World Wide Web: http://haskell.org/hugs\n");
-    Printf("||   ||                        Report bugs to: hugs-bugs@haskell.org\n");
-    Printf("||   || Version: %s ________________________________________\n\n",HUGS_VERSION);
+    Printf("__   __ __  __  ____   ___      _________________________________________\n");
+    Printf("||   || ||  || ||  || ||__      Hugs 98: Based on the Haskell 98 standard\n");
+    Printf("||___|| ||__|| ||__||  __||     Copyright (c) 1994-1999\n");
+    Printf("||---||         ___||           World Wide Web: http://haskell.org/hugs\n");
+    Printf("||   ||                         Report bugs to: hugs-bugs@haskell.org\n");
+    Printf("||   || Version: %s _________________________________________\n\n",HUGS_VERSION);
 
 #if SYMANTEC_C
     Printf("   Ported to Macintosh by Hans Aberg, compiled " __DATE__ ".\n\n");
@@ -1174,7 +1176,7 @@ static Void local showtype() {         /* print type of expression (if any)*/
 
 static Void local browseit(mod,t)
 Module mod; 
-Text t; {
+String t; {
     if (nonNull(mod)) {
 	Cell cs;
 	Printf("module %s where\n",textToStr(module(mod).text));

@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.12 $
- * $Date: 1999/10/11 21:02:15 $
+ * $Revision: 1.13 $
+ * $Date: 1999/10/11 23:53:04 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -104,10 +104,12 @@ static Void   local addDerInst		Args((Int,Class,List,List,Type,Int));
 static Void   local deriveContexts	Args((List));
 static Void   local initDerInst		Args((Inst));
 static Void   local calcInstPreds	Args((Inst));
+static List   local calcFunDeps		Args((List));
 static Void   local maybeAddPred	Args((Cell,Int,Int,List));
 static Cell   local copyAdj		Args((Cell,Int,Int));
 static Void   local tidyDerInst		Args((Inst));
 
+static List   local otvarsZonk		Args((Cell,List,Int));
 static Void   local addDerivImp		Args((Inst));
 static List   local getDiVars		Args((Int));
 static Cell   local mkBind		Args((String,List));
@@ -217,6 +219,8 @@ static List   local bscc		Args((List));
 static Void   local addRSsigdecls	Args((Pair));
 static Void   local allNoPrevDef	Args((Cell));
 static Void   local noPrevDef		Args((Int,Cell));
+static Bool   local odiff		Args((List,List));
+
 #if IGNORE_MODULES
 static Void   local duplicateErrorAux	Args((Int,Text,String));
 #define duplicateError(l,m,t,k) duplicateErrorAux(l,t,k)

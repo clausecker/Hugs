@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: connect.h,v $
- * $Revision: 1.5 $
- * $Date: 1999/09/22 08:38:11 $
+ * $Revision: 1.6 $
+ * $Date: 1999/10/11 23:53:03 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -370,5 +370,7 @@ extern  Void   needPrims        Args((Int));
 
 extern  Void   plugins          Args((Int));
 extern  Bool   havePlugin       Args((String));
+extern  List   calcFunDepsPreds Args((List));
+extern  Inst   findInstFor      Args((Cell,Int));
 
 /*-------------------------------------------------------------------------*/
