@@ -1012,8 +1012,8 @@ instance Enum Float where
     fromEnum		  = fromInteger . truncate   -- may overflow
     enumFrom		  = numericEnumFrom
     enumFromThen	  = numericEnumFromThen
-    enumFromTo n m	  = numericEnumFromTo n (m+1/2)
-    enumFromThenTo n n' m = numericEnumFromThenTo n n' (m + (n'-n)/2)
+    enumFromTo		  = numericEnumFromTo
+    enumFromThenTo	  = numericEnumFromThenTo
 
 instance Enum Double where
     succ x                = x+1
@@ -1022,8 +1022,8 @@ instance Enum Double where
     fromEnum		  = fromInteger . truncate   -- may overflow
     enumFrom		  = numericEnumFrom
     enumFromThen	  = numericEnumFromThen
-    enumFromTo n m	  = numericEnumFromTo n (m+1/2)
-    enumFromThenTo n n' m = numericEnumFromThenTo n n' (m + (n'-n)/2)
+    enumFromTo		  = numericEnumFromTo
+    enumFromThenTo	  = numericEnumFromThenTo
 
 primitive primShowsFloat :: Int -> Float -> ShowS
 
