@@ -692,13 +692,13 @@ static VOID local DoInitMenu (HWND hWnd, UINT message, WPARAM wParam, LPARAM lPa
   EnableMenuItem((HMENU)wParam, ID_OPENSELECTED,  (CanCopy  ? MF_ENABLED : MF_GRAYED)|MF_BYCOMMAND);
   EnableMenuItem((HMENU)wParam, ID_EDITSELECTED,  (CanCopy  ? MF_ENABLED : MF_GRAYED)|MF_BYCOMMAND);
 
-  EnableMenuItem((HMENU)wParam, ID_MAKE,	(projectLoaded	? MF_ENABLED : MF_GRAYED)|MF_BYCOMMAND);
+  EnableMenuItem((HMENU)wParam, ID_MAKE,	MF_ENABLED|MF_BYCOMMAND);
 
-  EnableMenuItem((HMENU)wParam, ID_CLEARALL,	(!projectLoaded && (getScriptHwMark() > 1)
-								? MF_ENABLED : MF_GRAYED)|MF_BYCOMMAND);
+  EnableMenuItem((HMENU)wParam, ID_CLEARALL,	((getScriptHwMark() > 1)
+						 ? MF_ENABLED : MF_GRAYED)|MF_BYCOMMAND);
 
-  EnableMenuItem((HMENU)wParam, ID_COMPILE,	(!projectLoaded && (getScriptHwMark() > 1)
-								? MF_ENABLED : MF_GRAYED)|MF_BYCOMMAND);
+  EnableMenuItem((HMENU)wParam, ID_COMPILE,	((getScriptHwMark() > 1)
+						  ? MF_ENABLED : MF_GRAYED)|MF_BYCOMMAND);
 }
 
 
@@ -1882,15 +1882,19 @@ static DWORD local evaluatorThreadBody(LPDWORD notUsed) {
 }
 
 Void startEvaluatorThread(Void) {
-    if (!evaluatorThread)
+  if (!evaluatorThread) {
+    /* Note: I'm assuming that the reason why _beginthreadex() isn't
+     * used is that there's no need to..?
+     */
       evaluatorThread = CreateThread(NULL,
                                    0,
                                    (LPTHREAD_START_ROUTINE)evaluatorThreadBody,
                                    NULL,
                                    CREATE_SUSPENDED,
                                    &evaluatorThreadId);
-    evaluatorThreadRunning = TRUE;
-    ResumeThread(evaluatorThread);
+  }
+  evaluatorThreadRunning = TRUE;
+  ResumeThread(evaluatorThread);
 }
 
 #endif /* USE_THREADS */
