@@ -374,7 +374,13 @@ The <literal>Char</literal> type and the <literal>Char</literal> module
 now support Unicode as specified in the Haskell 98 Report
 (contributed by Dmitry Golubovsky).
 Character oriented I/O uses a byte encoding of characters determined
-by the current locale.
+by the current locale (see <xref linkend="locale"/>).
+</para></listitem>
+
+<listitem><para>
+The default current module is now the empty module <literal>Hugs.Base</literal>
+instead of the <literal>Prelude</literal>
+(see <xref linkend="module-commands"/>).
 </para></listitem>
 </itemizedlist>
 

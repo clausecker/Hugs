@@ -25,7 +25,8 @@ listed here corresponding to the relevant sections of the Report.
 <term>Restricted character set</term>
 <listitem><para>
 The Haskell report specifies that programs may be written using Unicode.
-Hugs permits Unicode in strings and comments (in the appropriate locale),
+Hugs permits Unicode in strings and comments (in the appropriate locale,
+see <xref linkend="locale"/>),
 but identifiers are limited to the ISO8859-1 (Latin-1) subset at the moment.
 </para></listitem>
 </varlistentry>

@@ -859,6 +859,17 @@ somehow.
 </listitem>
 </varlistentry>
 
+<varlistentry id="LCCTYPE">
+<term><envar>LC_CTYPE</envar></term>
+<listitem>
+<para>
+The locale used for external representation of Haskell <literal>Char</literal>
+values
+(see <xref linkend="locale"/>).
+</para>
+</listitem>
+</varlistentry>
+
 <varlistentry id="SHELL">
 <term><envar>SHELL</envar></term>
 <listitem>
@@ -870,6 +881,56 @@ The shell that is invoked by the <command>:!</command> command
 </varlistentry>
 
 </variablelist>
+
+</sect1>
+
+<sect1 id="locale">
+<title>Locale-based character encoding</title>
+
+<para>
+The Haskell 98 Report defines values of the <literal>Char</literal> type
+as the code points of Unicode (or equivalently ISO/IEC 10646).
+However files and other I/O streams typically consist of bytes,
+with characters in text files encoded as one or more bytes.
+In many systems, a similar encoding is also required for interactions
+with the system.
+Therefore at these points Hugs converts characters to and from sequences
+of bytes in a manner determined by the <literal>LC_CTYPE</literal>
+category of the current <emphasis>locale</emphasis>.
+</para>
+
+<para>
+This conversion is not applied to the contents of files opened in binary mode.
+It is applied to program text, so you can use all the characters
+representable in your locale within comments and string literals.
+However only ISO Latin-1 characters are permitted in identifiers.
+</para>
+
+<para>
+The form of the locale string, and how it is set, vary between systems.
+</para>
+
+<itemizedlist>
+
+<listitem>
+<para>
+On POSIX systems, this value is taken from the first nonempty environment
+variable from <envar>LC_ALL</envar>, <envar>LC_CTYPE</envar> and
+<envar>LANG</envar>.
+</para>
+</listitem>
+
+<listitem>
+<para>
+On Windows, this value is the <quote>user-default ANSI code page</quote>
+(not the <quote>current OEM code page</quote> or
+the <quote>ANSI code page</quote>).
+This may be set using the General tab of the
+<quote>Regional Options</quote> control panel.
+</para>
+</listitem>
+
+</itemizedlist>
 
 </sect1>
 
