@@ -8,8 +8,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: options.h,v $
- * $Revision: 1.8 $
- * $Date: 2002/09/13 15:08:08 $
+ * $Revision: 1.9 $
+ * $Date: 2002/09/13 22:55:54 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -73,6 +73,11 @@
  */
 #define PATH_CANONICALIZATION 0
 
+/* Define if you want path entries ending in / to be recursively
+ * searched for Haskell code.
+ */
+#define SEARCH_DIR 0   /* Not ready yet! */
+
 /* Define if a command line editor is available and should be used. 
  * There are two choices of command line editor that can be used with Hugs:
  * GNU readline and editline (from comp.sources.misc, vol 31, issue 71)
@@ -105,6 +110,12 @@
 /* --------------------------------------------------------------------------
  * Fancy features
  * ------------------------------------------------------------------------*/
+
+/* Define to omit Hugs extensions                                          */
+#define HASKELL_98_ONLY 0
+
+/* Define if :xplain should be enabled					   */
+#define EXPLAIN_INSTANCE_RESOLUTION 0
 
 /* Define if heap profiling should be used                                 */
 #define PROFILING 0
