@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: input.c,v $
- * $Revision: 1.71 $
- * $Date: 2003/10/14 13:56:22 $
+ * $Revision: 1.72 $
+ * $Date: 2003/10/30 15:56:58 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -313,12 +313,8 @@ Char c; {
     return isIn(c,LARGE);
 }
 
-#if HAVE_GETDELIM_H
-static char *lineBuffer = NULL;   /* getline() does the initial allocation */
-#else
 #define LINEBUFFER_SIZE 1000
 static char lineBuffer[LINEBUFFER_SIZE];
-#endif
 static int lineLength = 0;
 static int inCodeBlock = FALSE; /* Inside \begin{code}..\end{code} */
 static int linePtr = 0;
