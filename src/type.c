@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: type.c,v $
- * $Revision: 1.26 $
- * $Date: 2000/12/13 07:55:34 $
+ * $Revision: 1.27 $
+ * $Date: 2000/12/13 08:44:30 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -34,10 +34,19 @@ Type typeUnit;
 
 Module modulePrelude;
 
-static Type typeInt,     typeDouble;
-static Type typeInteger, typeAddr;
-static Type typeString,  typeChar;
-static Type typeBool,    typeMaybe;
+Type typeInt;                          
+Type typeWord;
+Type typeAddr;
+Type typeFloat;
+Type typeDouble;
+Type typeChar;
+Type typeForeign;
+Type typeStable;
+Type typeBool;
+
+static Type typeInteger; 
+static Type typeString;
+static Type typeMaybe;
 static Type typeOrdering;
 
 Class classEq,    classOrd;		/* `standard' classes		   */
@@ -81,6 +90,7 @@ Name nameStrict,  nameSeq;		/* Members of class Eval	   */
 #endif
 
 #if    IO_MONAD
+Type   typeIO;			        /* For the IO monad, IO 	   */
 Type   typeProgIO;			/* For the IO monad, IO ()	   */
 Name   nameUserErr;			/* loosely coupled IOError cfuns   */
 Name   nameNameErr,  nameSearchErr;
@@ -2943,13 +2953,17 @@ Void linkPreludeTC() {			/* Hook to tycons and classes in   */
     if (isNull(typeBool)) {		/* prelude when first loaded	   */
 	Int i;
 
-	typeBool     = linkTycon("Bool");
-	typeChar     = linkTycon("Char");
-	typeString   = linkTycon("String");
 	typeInt      = linkTycon("Int");
-	typeInteger  = linkTycon("Integer");
-	typeDouble   = linkTycon("Double");
+	typeWord     = linkTycon("Word");
 	typeAddr     = linkTycon("Addr");
+	typeFloat    = linkTycon("Float");
+	typeDouble   = linkTycon("Double");
+	typeChar     = linkTycon("Char");
+	typeForeign  = linkTycon("ForeignObj");
+	typeStable   = linkTycon("StablePtr");
+	typeBool     = linkTycon("Bool");
+	typeString   = linkTycon("String");
+	typeInteger  = linkTycon("Integer");
 	typeMaybe    = linkTycon("Maybe");
 	typeOrdering = linkTycon("Ordering");
 	stdDefaults  = cons(typeInteger,cons(typeDouble,NIL));
@@ -2977,12 +2991,11 @@ Void linkPreludeTC() {			/* Hook to tycons and classes in   */
 	predIntegral    = ap(classIntegral,aVar);
 
 	classMonad      = linkClass("Monad");
-	predMonad  = ap(classMonad,aVar);
+	predMonad       = ap(classMonad,aVar);
 
 #if IO_MONAD
-	{   Type typeIO = linkTycon("IO");
-	    typeProgIO = ap(typeIO,aVar);
-	}
+	typeIO          = linkTycon("IO");
+	typeProgIO      = ap(typeIO,aVar);
 #endif
 
 	/* The following primitives are referred to in derived instances and

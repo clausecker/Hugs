@@ -61,7 +61,8 @@ module Prelude (
 --  module Ratio,
     Ratio, Rational, (%), numerator, denominator, approxRational,
 --  Non-standard exports
-    IO(..), IOResult(..), primExitWith, Addr, basicIORun, IOFinished(..),
+    IO(..), IOResult(..), primExitWith, Addr, Word, StablePtr, ForeignObj,
+    basicIORun, IOFinished(..),
     threadToIOResult,
 
     Bool(False, True),
@@ -1604,6 +1605,9 @@ instance Monad IO where
 -- Do not mess with these!
 
 data Addr     -- builtin datatype of C pointers
+data Word     -- builtin datatype of unsigned ints
+data ForeignObj
+data StablePtr a
 
 primitive unsafeCoerce "primUnsafeCoerce" :: a -> b
 

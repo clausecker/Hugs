@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: connect.h,v $
- * $Revision: 1.11 $
- * $Date: 2000/09/14 05:49:35 $
+ * $Revision: 1.12 $
+ * $Date: 2000/12/13 08:44:30 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -83,6 +83,7 @@ extern Name  nameIStrict, nameISeq;	/* ... and their implementations   */
 extern Name  namePrint;			/* printing primitive		   */
 
 #if    IO_MONAD
+extern Type   typeIO;		        /* For the IO monad, IO 	   */
 extern Type   typeProgIO;		/* For the IO monad, IO ()	   */
 extern Name   nameIORun;	        /* IO monad executor		   */
 extern Name   nameIOBind;	        /* IO bind executor		   */
@@ -125,6 +126,16 @@ extern String projectPath;		/* String for project search path  */
 extern Type  typeArrow;			/* Builtin type constructors	   */
 extern Type  typeList;
 extern Type  typeUnit;
+
+extern Type  typeInt;                          
+extern Type  typeWord;
+extern Type  typeAddr;
+extern Type  typeFloat;
+extern Type  typeDouble;
+extern Type  typeChar;
+extern Type  typeForeign;
+extern Type  typeStable;
+extern Type  typeBool;
 
 #define fn(from,to)  ap(ap(typeArrow,from),to)	/* make type: from -> to   */
 

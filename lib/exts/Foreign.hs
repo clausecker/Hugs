@@ -6,13 +6,13 @@ module Foreign
 
 import Addr( Addr )
 
-data StablePtr a
+-- data StablePtr a -- in Prelude
 
 primitive makeStablePtr   :: a -> IO (StablePtr a)
 primitive deRefStablePtr  :: StablePtr a -> IO a
 primitive freeStablePtr   :: StablePtr a -> IO ()
 
-data ForeignObj
+-- data ForeignObj -- in Prelude
 
 primitive makeForeignObj  :: Addr{-x-} -> Addr{-free-} -> IO ForeignObj
 primitive writeForeignObj :: ForeignObj -> Addr -> IO ()
