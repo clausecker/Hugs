@@ -4,7 +4,7 @@
 --
 module NewObj where
 
-import DotNet
+import Dotnet
 import List
 
 {- from DotNet; for reference:

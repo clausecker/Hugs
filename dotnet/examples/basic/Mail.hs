@@ -3,7 +3,7 @@
 --
 module Mail where
 
-import DotNet
+import Dotnet
 
 foreign import dotnet
   "static System.Web.Mail.SmtpMail.Send"

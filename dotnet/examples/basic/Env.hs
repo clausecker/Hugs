@@ -3,7 +3,7 @@
 --
 module Env where
 
-import DotNet
+import Dotnet
 
 foreign import dotnet
   "static System.Environment.GetEnvironmentVariable"

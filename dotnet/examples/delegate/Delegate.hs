@@ -8,7 +8,7 @@
 --
 module Delegate where
 
-import DotNet
+import Dotnet
 
 foreign import dotnet
   "static System.Windows.Forms.Application.Run"

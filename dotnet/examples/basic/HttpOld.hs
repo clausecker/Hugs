@@ -1,9 +1,9 @@
 --
 -- Based on Mondrian example in DDJ.
 --
-module Http where
+module HttpOld where
 
-import DotNet 
+import Dotnet 
 import IOExts
 
 --

@@ -3,8 +3,14 @@
 --
 module Http where
 
-import DotNet 
+import Dotnet 
 import IOExts ( unsafeInterleaveIO )
+
+--
+-- This version of the Http example uses the FFI to access
+-- .NET; see HttpOld.hs for an alternate (and older) approach
+-- to .NET interop.
+--
 
 --
 -- 'http url' dumps out the response from issuing a HTTP GET

@@ -3,14 +3,14 @@
 --
 module Xml where
 
-import DotNet
-import qualified System.Xml.XmlDocument
-import System.Xml.XmlNode
-import qualified System.Xml.XmlNodeType as Type
-import System.Xml.XmlNodeList
-import qualified System.Xml.XmlAttributeCollection as Attr
-import qualified System.Xml.XmlNamedNodeMap as Attr
-import qualified System.Xml.XmlAttribute as At
+import Dotnet
+import qualified Dotnet.System.Xml.XmlDocument
+import Dotnet.System.Xml.XmlNode
+import qualified Dotnet.System.Xml.XmlNodeType as Type
+import Dotnet.System.Xml.XmlNodeList
+import qualified Dotnet.System.Xml.XmlAttributeCollection as Attr
+import qualified Dotnet.System.Xml.XmlNamedNodeMap as Attr
+import qualified Dotnet.System.Xml.XmlAttribute as At
 import XMLSyn
 import Maybe
 
@@ -24,7 +24,7 @@ import Maybe
 loadXML :: String -> IO XMLDoc
 loadXML url = do
   doc <- newDoc
-  doc # System.Xml.XmlDocument.load_3 url
+  doc # Dotnet.System.Xml.XmlDocument.load_3 url
   l   <- doc # get_FirstChild
   tag <- doc # get_NodeType
   let v = Type.fromXmlNodeType tag
@@ -76,4 +76,4 @@ getAttribute attr = do
 
 foreign import dotnet
   "ctor System.Xml.XmlDocument"
-  newDoc :: IO (System.Xml.XmlDocument.XmlDocument ())
+  newDoc :: IO (Dotnet.System.Xml.XmlDocument.XmlDocument ())
