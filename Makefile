@@ -2,7 +2,7 @@
 # somewhat redhat specific (and rpm version 3 specific - i.e. RedHat 6.0
 # or greater).
 
-RELEASE=hugs98-Nov1999
+RELEASE=hugs98-Feb2000
 
 all:
 	@echo "Make what?"
@@ -12,7 +12,7 @@ tar: ${RELEASE}.tar.gz
 
 ${RELEASE}.tar.gz:
 	# using `make parser.c' would be best, but by default yacc
-	# will be used, and yacc is for some reason incompatible
+	# will be used, and yacc is, for some reason, incompatible
 	# cd src; make parser.c
 	cd src; bison -y parser.y; mv y.tab.c parser.c
 	cd src/unix; autoconf; autoheader
