@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: machine.c,v $
- * $Revision: 1.7 $
- * $Date: 2002/04/11 23:20:19 $
+ * $Revision: 1.8 $
+ * $Date: 2002/05/11 16:09:58 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -365,9 +365,23 @@ static Void local asEND() {            /* Fix addresses in assembled code  */
 #define asFAIL()     instrNone(iFAIL)
 
 static Void local asEVAL() {            /* load and eval stack element     */
-    if (instrAt(lastInstr)==iLOAD)
-	instrAt(lastInstr) = iLEVAL;
-    else
+#if 0
+  /* This optimisation is unsafe to do if we're at the start of a new
+     'basic block' -- e.g., 
+     
+         f a b = if (if a then True else b) then foo else bar
+
+     After having emitted the code for the conditional, we want to evaluate
+     it, BUT we better _not_ look at the last instruction of the code comprising
+     the conditional expression and decide whether or not to peephole the
+     EVAL into an LEVAL.
+     
+     For now, I've disabled this optimisation.  [sof 5/2002.]
+  */
+     if (instrAt(lastInstr)==iLOAD)
+  	instrAt(lastInstr) = iLEVAL;
+     else
+#endif
 	instrNone(iEVAL);
     srsp--;
 }
