@@ -20,6 +20,7 @@ module Random(
 	getStdRandom, getStdGen, setStdGen, newStdGen
   ) where
 
+import Char
 import IOExts  ( IORef, newIORef, writeIORef, readIORef,
 		 unsafePerformIO
 	       )

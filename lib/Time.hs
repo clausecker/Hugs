@@ -67,6 +67,7 @@ module Time
 	) where
 
 import Locale
+import Ix
 import Char ( intToDigit )
 import IOExts ( unsafePerformIO )
 import Ix ( Ix )

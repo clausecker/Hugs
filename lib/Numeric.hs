@@ -43,6 +43,7 @@ module Numeric
 -- Reversed the move to avoid polluting Prelude export list with
 -- non-standard functions.  -- sof 11/01.
 
+import Prelude
 import Char   ( isDigit, isOctDigit, isHexDigit
 	      , digitToInt, intToDigit )
 import Ratio  ( (%), numerator, denominator )

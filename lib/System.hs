@@ -14,6 +14,8 @@ module System (
 	system
 	) where
 
+import Prelude
+
 data ExitCode = ExitSuccess | ExitFailure Int
                 deriving (Eq, Ord, Read, Show)
 
