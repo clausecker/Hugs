@@ -613,19 +613,6 @@ if test "$want_timer" = yes; then
     small variations in Hugs code.])
 fi
 
-dnl These flags are gcc specific.  
-dnl They detecting many common programming errors but can get fooled
-dnl by perfectly safe code so we usually turn them off.
-dnl We don't use -Wstrict-prototypes because some definitions in 
-dnl storage.h tickle this flag and can't be rewritten the 'correct' way
-dnl without generating a warning/error from Microsoft's compiler.
-GCC_LINT_FLAGS="-Wall \
-  -Wpointer-arith -Wbad-function-cast -Wcast-qual \
-  -Wmissing-prototypes \
-  -Wmissing-declarations -Wnested-externs \
-  -Wno-parentheses \
-  "
-
 dnl--------------------------------------------------------------------
 dnl
 dnl Debugging flags (assumed to be mutually exclusive with optimisation)
@@ -767,6 +754,20 @@ dnl Lint flags
 dnl (placed after DLL stuff, so not included in MKDLL_CMD)
 dnl
 dnl--------------------------------------------------------------------
+
+dnl These flags are gcc specific.  
+dnl They detecting many common programming errors but can get fooled
+dnl by perfectly safe code so we usually turn them off.
+dnl We don't use -Wstrict-prototypes because some definitions in 
+dnl storage.h tickle this flag and can't be rewritten the 'correct' way
+dnl without generating a warning/error from Microsoft's compiler.
+GCC_LINT_FLAGS="-Wall \
+  -Wpointer-arith -Wbad-function-cast -Wcast-qual \
+  -Wmissing-prototypes \
+  -Wmissing-declarations -Wnested-externs \
+  -Wno-parentheses \
+  "
+
 if test "$enable_lint" = yes; then
     if test "$CC" = "gcc"; then
         LINT_FLAGS="$GCC_LINT_FLAGS"
