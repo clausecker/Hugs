@@ -38,6 +38,7 @@
  *   USE_PREPROCESSOR
  *   USE_READLINE
  *   WANT_TIMER
+ *   HASKELL_98_ONLY
  */
 
 /* Define if you have malloc.h and it defines _alloca - eg for Visual C++. */
