@@ -551,7 +551,7 @@ instance Bounded Char where
 
 primitive primMaxChar :: Char
 
-isSpace, isAlpha, isDigit :: Char -> Bool
+isSpace, isDigit :: Char -> Bool
 
 isSpace c              =  c == ' '  ||
 			  c == '\t' ||
@@ -561,12 +561,11 @@ isSpace c              =  c == ' '  ||
 			  c == '\v' ||
 			  c == '\xa0'
 
-primitive isUpper      :: Char -> Bool
-primitive isLower      :: Char -> Bool
-
-isAlpha c              =  isUpper c  ||  isLower c
 isDigit c              =  c >= '0'   &&  c <= '9'
 
+primitive isUpper      :: Char -> Bool
+primitive isLower      :: Char -> Bool
+primitive isAlpha      :: Char -> Bool
 primitive isAlphaNum   :: Char -> Bool
 
 -- Maybe type ---------------------------------------------------------------

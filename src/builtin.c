@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: builtin.c,v $
- * $Revision: 1.80 $
- * $Date: 2004/11/05 15:47:30 $
+ * $Revision: 1.81 $
+ * $Date: 2004/11/16 14:59:17 $
  * ------------------------------------------------------------------------*/
 
 /* We include math.h before prelude.h because SunOS 4's cpp incorrectly
@@ -321,6 +321,7 @@ PROTO_PRIM(primCmpDouble);
 PROTO_PRIM(primMaxChar);
 PROTO_PRIM(primIsUpper);
 PROTO_PRIM(primIsLower);
+PROTO_PRIM(primIsAlpha);
 PROTO_PRIM(primIsAlphaNum);
 PROTO_PRIM(primIsPrint);
 PROTO_PRIM(primToUpper);
@@ -538,6 +539,7 @@ static struct primitive builtinPrimTable[] = {
   {"primMaxChar",	0, primMaxChar},
   {"isUpper",		1, primIsUpper},
   {"isLower",		1, primIsLower},
+  {"isAlpha",		1, primIsAlpha},
   {"isAlphaNum",	1, primIsAlphaNum},
   {"isPrint",		1, primIsPrint},
   {"toUpper",		1, primToUpper},
@@ -1451,6 +1453,7 @@ CAFChar(primMaxChar,MAXCHARVAL)
 
 Char2Bool(primIsUpper,isUpper(x))
 Char2Bool(primIsLower,isLower(x))
+Char2Bool(primIsAlpha,isAlpha(x))
 Char2Bool(primIsAlphaNum,isAlphaNum(x))
 Char2Bool(primIsPrint,isPrint(x))
 

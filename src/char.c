@@ -161,7 +161,7 @@ Void initCharTab() {			/* Initialize char decode table    */
 
 #if UNICODE_CHARS
 
-#define	UPPER_MASK	((1<<GENCAT_Lu)|(1<<GENCAT_Lt)|(1<<GENCAT_Lm))
+#define	UPPER_MASK	((1<<GENCAT_Lu)|(1<<GENCAT_Lt))
 
 Bool isLower(Char c) {
     return isLatin1(c) ? isLowerLat1(c) :
@@ -171,6 +171,11 @@ Bool isLower(Char c) {
 Bool isUpper(Char c) {
     return isLatin1(c) ? isUpperLat1(c) :
 	    ((1<<get_properties(c)->category)&UPPER_MASK)!=0;
+}
+
+Bool isAlpha(Char c) {
+    return isLatin1(c) ? isAlphaLat1(c) :
+	    (get_properties(c)->category<=GENCAT_Lo);
 }
 
 Bool isAlphaNum(Char c) {

@@ -50,6 +50,7 @@ extern  unsigned char   charTable[];
 
 #define	isLowerLat1(c)	(isIn((c),SMALL) && (c)!='_')
 #define	isUpperLat1(c)	isIn((c),LARGE)
+#define	isAlphaLat1(c)	(isIn((c),(SMALL|LARGE)) && (c)!='_')
 #define	isAlphaNumLat1(c) (isIn((c),IDAFTER) && (c)!='_' && (c)!='\'')
 #define	isPrintLat1(c)	isIn((c),PRINT)
 
@@ -57,6 +58,7 @@ extern  unsigned char   charTable[];
 
 extern	Bool	isLower		Args((Char));
 extern	Bool	isUpper		Args((Char));
+extern	Bool	isAlpha		Args((Char));
 extern	Bool	isAlphaNum	Args((Char));
 extern	Bool	isPrint 	Args((Char));
 
@@ -64,6 +66,7 @@ extern	Bool	isPrint 	Args((Char));
 
 #define	isLower(c)	isLowerLat1(c)
 #define	isUpper(c)	isUpperLat1(c)
+#define	isAlpha(c)	isAlphaLat1(c)
 #define	isAlphaNum(c)	isAlphaNumLat1(c)
 #define	isPrint(c)	isPrintLat1(c)
 
