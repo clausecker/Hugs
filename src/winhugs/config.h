@@ -440,4 +440,138 @@
 /* Define if you have the editline library (-leditline).  */
 /* #undef HAVE_LIBREADLINE */
 
+/* Define to Haskell type for cc_t */
+#define HTYPE_CC_T NotReallyAType
+
+/* Define to Haskell type for char */
+#define HTYPE_CHAR Int8
+
+/* Define to Haskell type for clock_t */
+#define HTYPE_CLOCK_T Int32
+
+/* Define to Haskell type for dev_t */
+#define HTYPE_DEV_T Word32
+
+/* Define to Haskell type for signed double */
+#define HTYPE_DOUBLE Double
+
+/* Define to Haskell type for float */
+#define HTYPE_FLOAT Float
+
+/* Define to Haskell type for gid_t */
+#define HTYPE_GID_T NotReallyAType
+
+/* Define to Haskell type for GLbitfield */
+/* #undef HTYPE_GLBITFIELD */
+
+/* Define to Haskell type for GLboolean */
+/* #undef HTYPE_GLBOOLEAN */
+
+/* Define to Haskell type for GLbyte */
+/* #undef HTYPE_GLBYTE */
+
+/* Define to Haskell type for GLclampd */
+/* #undef HTYPE_GLCLAMPD */
+ 
+/* Define to Haskell type for GLclampf */
+/* #undef HTYPE_GLCLAMPF */
+
+/* Define to Haskell type for GLdouble */
+/* #undef HTYPE_GLDOUBLE */
+
+/* Define to Haskell type for GLenum */
+/* #undef HTYPE_GLENUM */
+
+/* Define to Haskell type for GLfloat */
+/* #undef HTYPE_GLFLOAT */
+
+/* Define to Haskell type for GLint */
+/* #undef HTYPE_GLINT */
+
+/* Define to Haskell type for GLshort */
+/* #undef HTYPE_GLSHORT */
+
+/* Define to Haskell type for GLsizei */
+/* #undef HTYPE_GLSIZEI */
+
+/* Define to Haskell type for GLubyte */
+/* #undef HTYPE_GLUBYTE */
+
+/* Define to Haskell type for GLuint */
+/* #undef HTYPE_GLUINT */
+
+/* Define to Haskell type for GLushort */
+/* #undef HTYPE_GLUSHORT */
+
+/* Define to Haskell type for int */
+#define HTYPE_INT Int32
+
+/* Define to Haskell type for ino_t */
+#define HTYPE_INO_T Int16
+
+/* Define to Haskell type for long */
+#define HTYPE_LONG Int32
+
+/* Define to Haskell type for long long */
+#define HTYPE_LONG_LONG Int64
+
+/* Define to Haskell type for mode_t */
+#define HTYPE_MODE_T Word16
+
+/* Define to Haskell type for nlink_t */
+#define HTYPE_NLINK_T NotReallyAType
+
+/* Define to Haskell type for off_t */
+#define HTYPE_OFF_T Int32
+
+/* Define to Haskell type for pid_t */
+#define HTYPE_PID_T Int32
+
+/* Define to Haskell type for ptrdiff_t */
+#define HTYPE_PTRDIFF_T Int32
+
+/* Define to Haskell type for short */
+#define HTYPE_SHORT Int16
+
+/* Define to Haskell type for sig_atomic_t */
+#define HTYPE_SIG_ATOMIC_T Int32
+
+/* Define to Haskell type for signed char */
+#define HTYPE_SIGNED_CHAR Int8
+
+/* Define to Haskell type for size_t */
+#define HTYPE_SIZE_T Word32
+
+/* Define to Haskell type for speed_t */
+#define HTYPE_SPEED_T NotReallyAType
+
+/* Define to Haskell type for ssize_t */
+#define HTYPE_SSIZE_T NotReallyAType
+
+/* Define to Haskell type for time_t */
+#define HTYPE_TIME_T Int32
+
+/* Define to Haskell type for tcflag_t */
+#define HTYPE_TCFLAG_T NotReallyAType
+
+/* Define to Haskell type for uid_t */
+#define HTYPE_UID_T NotReallyAType
+
+/* Define to Haskell type for unsigned char */
+#define HTYPE_UNSIGNED_CHAR Word8
+
+/* Define to Haskell type for unsigned int */
+#define HTYPE_UNSIGNED_INT Word32
+
+/* Define to Haskell type for unsigned long */
+#define HTYPE_UNSIGNED_LONG Word32
+
+/* Define to Haskell type for unsigned long long */
+#define HTYPE_UNSIGNED_LONG_LONG Word64
+
+/* Define to Haskell type for unsigned short */
+#define HTYPE_UNSIGNED_SHORT Word16
+
+/* Define to Haskell type for wchar_t */
+#define HTYPE_WCHAR_T Word16
 
