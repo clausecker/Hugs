@@ -1,5 +1,7 @@
+# @configure_input@
 # --------------------------------------------------------------------------
-# Makefile for Hugs
+# Makefile for Hugs interpreter
+# (this should be a POSIX 1003.2-1992 Makefile)
 #
 # The Hugs 98 system is Copyright (c) Mark P Jones, Alastair Reid, the
 # Yale Haskell Group, and the OGI School of Science & Engineering at OHSU,
@@ -128,6 +130,7 @@ distclean	::
 		  $(RM) Makefile
 		  $(RM) config.h
 		  $(RM) options.h
+		  $(RM) platform.h
 		  $(RM) *.pdf
 		  $(RM) TAGS
 		  $(RM) *~

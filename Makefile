@@ -55,13 +55,16 @@ clean:
 	cd src; if test -f Makefile; then $(MAKE) clean; fi
 	cd libraries; if test -f Makefile; then $(MAKE) clean; fi
 	cd docs; if test -f Makefile; then $(MAKE) clean; fi
+	cd demos; if test -f Makefile; then $(MAKE) clean; fi
 
 distclean:
 	$(RM) *.tar.gz *.rpm Defs.mk
 	$(RM) -r config.log config.cache autom4te.cache
+	$(RM) tests/config
 	cd src; if test -f Makefile; then $(MAKE) distclean; fi
 	cd libraries; if test -f Makefile; then $(MAKE) distclean; fi
 	cd docs; if test -f Makefile; then $(MAKE) distclean; fi
+	cd demos; if test -f Makefile; then $(MAKE) distclean; fi
 
 veryclean:
 	$(RM) *.tar.gz *.rpm Defs.mk
@@ -69,6 +72,7 @@ veryclean:
 	cd src; if test -f Makefile; then $(MAKE) veryclean; fi
 	cd libraries; if test -f Makefile; then $(MAKE) veryclean; fi
 	cd docs; if test -f Makefile; then $(MAKE) veryclean; fi
+	cd demos; if test -f Makefile; then $(MAKE) veryclean; fi
 
 ################################################################
 # Regression tests (Unix only)

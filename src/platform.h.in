@@ -1,4 +1,5 @@
 /*
+ * @configure_input@
  * configure-sussed platform #defines.
  */
 #ifndef __PLATFORM_H__

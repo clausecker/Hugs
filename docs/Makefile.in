@@ -1,4 +1,6 @@
+# @configure_input@
 # Makefile for Documentation
+# (this should be a POSIX 1003.2-1992 Makefile)
 # Note that some documentation is in other directories.
 
 INSTALL		= ../install-sh
@@ -63,9 +65,9 @@ distclean:
 		$(RM) server.ps server.dvi
 		$(RM) hugs.man hugs.ps
 		$(RM) hugs-package.man hugs-package.ps
+		$(RM) Makefile hugs.1
 		cd users_guide; $(MAKE) distclean
 
 veryclean:	distclean
-		$(RM) Makefile hugs.1
 
 # End of Makefile

@@ -1,3 +1,7 @@
+# @configure_input@
+# Makefile (just install) for Hugs demo programs
+# (this should be a POSIX 1003.2-1992 Makefile)
+
 # These variables determine where various parts of the Hugs system are
 # installed.  (They are ignored in Windows or DOS.)
 # Binaries are installed in $(bindir); libraries go in $(hugsdir)/libraries
@@ -9,10 +13,10 @@ datadir		= @datadir@
 mandir          = @mandir@
 hugsdir		= @hugsdir@
 
+RM		= @RM@
+
 INSTALL		= ../install-sh
 INSTALL_DATA	= /bin/cp
-
-BUILD_DIR	= ../hugsdir
 
 all:
 
@@ -27,5 +31,6 @@ install: all
 clean:
 
 distclean: clean
+	$(RM) Makefile
 
 veryclean: distclean

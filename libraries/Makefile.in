@@ -1,5 +1,7 @@
+# @configure_input@
 ################################################################
 # Libraries, converted from raw sources out of the fptools tree
+# (this should be a POSIX 1003.2-1992 Makefile)
 ################################################################
 
 # These variables determine where various parts of the Hugs system are
@@ -13,6 +15,7 @@ datadir		= @datadir@
 mandir          = @mandir@
 hugsdir		= @hugsdir@
 
+RM		= @RM@
 CP		= @CP@
 
 # We use the autoconf-supplied install-sh to create directories
@@ -65,6 +68,7 @@ clean:
 distclean: clean
 	$(RM) -r $(BUILD_DIR)
 	$(RM) Makefile
+	$(RM) tools/config tools/hugs-package
 
 veryclean: distclean
 

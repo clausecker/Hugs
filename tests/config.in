@@ -1,3 +1,6 @@
+# @configure_input@
+# Shell variable definitions for testScript
+
 CONTEXT_DIFF='@CONTEXT_DIFF@'
 export CONTEXT_DIFF
 
