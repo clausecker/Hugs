@@ -16,7 +16,7 @@
 #
 #   ./convert_libraries  <directory where libraries lives> <build dir>
 
-cpp_flags='-D__HUGS__'
+cpp_flags='-D__HUGS__ -I. -I..'
 
 : ${cpp='gcc -P -E -traditional -xc'}
 
@@ -272,7 +272,7 @@ mkdir -p $compat
 # hslibs posix PosixErr.lhs
   hslibs posix PosixFiles.lhs
   hslibs posix PosixIO.lhs
-# hslibs posix PosixProcEnv.lhs
+  hslibs posix PosixProcEnv.lhs
 # hslibs posix PosixProcPrim.lhs
   hslibs posix PosixTTY.lhs
 # hslibs posix PosixUtil.lhs
