@@ -419,12 +419,12 @@ hugslibs Addr
   hslibs lang Bits.hs
 # hslibs lang ByteArray.lhs		# deprecated
 # hslibs lang CCall.lhs			# GHC-specific (and obsolete)
-# hslibs lang CError.hs			# -> Foreign.C.Error
-# hslibs lang CForeign.hs		# -> Foreign.C
+  hslibs lang CError.hs
+  hslibs lang CForeign.hs
 # hslibs lang CString.hs		# deprecated
-#  stub CString		Foreign.C.String
-#  hslibs lang CTypes.hs
-#  hslibs lang CTypesISO.hs
+  stub CString		Foreign.C.String	# rest is deprecated
+  hslibs lang CTypes.hs
+  hslibs lang CTypesISO.hs
 # hslibs lang DiffArray.hs		# -> Data.Array.Diff
 # hslibs lang DirectoryExts.hs
   hslibs lang Dynamic.hs
