@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.110 $
- * $Date: 2002/10/19 00:03:04 $
+ * $Revision: 1.111 $
+ * $Date: 2002/10/23 15:03:03 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -4864,7 +4864,7 @@ Cell tup; {
  *   readField    :: Read a => String -> ReadS a
  *   readField m s0 = [ r | (t,  s1) <- lex s0, t == m,
  *   			    ("=",s2) <- lex s1,
- *   			    r        <- readsPrec APP_PREC s2 ]
+ *   			    r        <- reads s2 ]
  */
 static Cell local mkReadRecord(con, fs) /* readsPrec for record constructor */
 Cell con; 
