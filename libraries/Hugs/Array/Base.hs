@@ -39,6 +39,9 @@ indices :: (HasBounds a, Ix i) => a i e -> [i]
 indices = range . bounds
 
 -- Immutable arrays
+-- (The GHC version of this class is opaque, and contains functions that
+-- use Int indices without bounds checking.  This would be a good idea
+-- for Hugs too, when the primitives become available.)
 
 class HasBounds a => IArray a e where
 	array	   :: Ix i => (i,i) -> [(i, e)] -> a i e
@@ -48,7 +51,7 @@ class HasBounds a => IArray a e where
 	accumArray :: Ix i => (e -> e' -> e) -> e -> (i,i) -> [(i, e')] -> a i e
 
 -- Array instances
--- (has to be here, so that Data.Array is Haskell 98)
+-- (have to be here, so that Data.Array is Haskell 98)
 
 instance HasBounds Array where
 	bounds = Array.bounds
@@ -80,34 +83,39 @@ amap :: (IArray a e', IArray a e, Ix i) => (e' -> e) -> a i e' -> a i e
 amap f arr = array (bounds arr) [(i, f (arr!i)) | i <- indices arr]
 
 -- Mutable arrays
+-- (Again the GHC version has more primitive read/write operations.)
 
 class (HasBounds a, Monad m) => MArray a e m where
 	newArray :: Ix i => (i,i) -> e -> m (a i e)
+	newArray bnds init = do
+		marr <- newArray_ bnds
+		sequence_ [writeArray marr i init | i <- range bnds]
+		return marr
 
 	newArray_ :: Ix i => (i,i) -> m (a i e)
-	newArray_ (l,u) = newArray (l,u) arrEleBottom
+	newArray_ bnds = newArray bnds arrEleBottom
 
 	readArray :: Ix i => a i e -> i -> m e
 	writeArray :: Ix i => a i e -> i -> e -> m ()
 
 -- IOArray instances
--- (has to be here, so that the IOExts compatability stub is Haskell 98)
+-- (have to be here, so that the IOExts compatability stub is Haskell 98)
 
 instance HasBounds IOArray where
-  bounds = boundsIOArray
+	bounds = boundsIOArray
 
 instance MArray IOArray e IO where
-  newArray = newIOArray
-  readArray = readIOArray
-  writeArray = writeIOArray
+	newArray = newIOArray
+	readArray = readIOArray
+	writeArray = writeIOArray
 
 -- Miscellaneous functions
 
 newListArray :: (MArray a e m, Ix i) => (i,i) -> [e] -> m (a i e)
 newListArray bnds vs = do
-    marr <- newArray_ bnds
-    sequence_ [writeArray marr i v | (i,v) <- zip (range bnds) vs]
-    return marr
+	marr <- newArray_ bnds
+	sequence_ [writeArray marr i v | (i,v) <- zip (range bnds) vs]
+	return marr
 
 -- Converting between mutable and immutable arrays (freezing and thawing)
 -- Hugs has built-in implementations of freeze from IO or ST to Array,
@@ -116,8 +124,8 @@ newListArray bnds vs = do
 
 freeze :: (Ix i, MArray a e m, IArray b e) => a i e -> m (b i e)
 freeze marr = do
-    ies <- getAssocs marr
-    return (array (bounds marr) ies)
+	ies <- getAssocs marr
+	return (array (bounds marr) ies)
 
 unsafeFreeze :: (Ix i, MArray a e m, IArray b e) => a i e -> m (b i e)
 unsafeFreeze = freeze
@@ -136,34 +144,36 @@ arrEleBottom = error "MArray: undefined array element"
 
 -- | Return a list of all the elements of a mutable array
 getElems :: (MArray a e m, Ix i) => a i e -> m [e]
-getElems marr =
-    sequence [readArray marr i | i <- indices marr]
+getElems marr = sequence [readArray marr i | i <- indices marr]
 
 -- | Return a list of all the associations of a mutable array, in
 -- index order.
 getAssocs :: (MArray a e m, Ix i) => a i e -> m [(i, e)]
 getAssocs marr =
-    sequence [do {e <- readArray marr i; return (i,e)} | i <- indices marr]
+	sequence [do
+			e <- readArray marr i
+			return (i,e)
+		| i <- indices marr]
 
 -- | Constructs a new array derived from the original array by applying a
 -- function to each of the elements.
 mapArray :: (MArray a e' m, MArray a e m, Ix i) => (e' -> e) -> a i e' -> m (a i e)
 mapArray f marr = do
-    let (l,u) = bounds marr
-    marr' <- newArray_ (l,u)
-    sequence_ [do
-        e <- readArray marr i
-        writeArray marr' i (f e)
-        | i <- range (l,u)]
-    return marr'
+	let bnds = bounds marr
+	marr' <- newArray_ bnds
+	sequence_ [do
+			e <- readArray marr i
+			writeArray marr' i (f e)
+		| i <- range bnds]
+	return marr'
 
 -- | Constructs a new array derived from the original array by applying a
 -- function to each of the indices.
 mapIndices :: (MArray a e m, Ix i, Ix j) => (i,i) -> (i -> j) -> a j e -> m (a i e)
-mapIndices (l,u) f marr = do
-    marr' <- newArray_ (l,u)
-    sequence_ [do
-        e <- readArray marr (f i)
-        writeArray marr' i e
-        | i <- range (l,u)]
-    return marr'
+mapIndices bnds f marr = do
+	marr' <- newArray_ bnds
+	sequence_ [do
+			e <- readArray marr (f i)
+			writeArray marr' i e
+		| i <- range bnds]
+	return marr'
