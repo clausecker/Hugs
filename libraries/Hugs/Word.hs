@@ -26,6 +26,7 @@ import Data.Int
 import Data.Ix ( Ix(..) )
 import Data.Ratio ( (%) )
 import Hugs.Prelude ( readDec, showInt )
+import Hugs.Prelude ( Num(fromInt), Integral(toInt) )
 
 -----------------------------------------------------------------------------
 -- The "official" coercion functions
@@ -297,17 +298,62 @@ instance Bits Word32 where
 -- Word64
 -----------------------------------------------------------------------------
 
--- data Word64 = W64 {lo,hi::Word32} deriving (Eq, Ord, Bounded)
--- 
--- w64ToInteger W64{lo=lo,hi=hi} = toInteger lo + 0x100000000 * toInteger hi 
--- integerToW64 x = case x `quotRem` 0x100000000 of 
---                  (h,l) -> W64{lo=fromInteger l, hi=fromInteger h}
--- 
--- instance Show Word64 where
---   showsPrec p = showInt . w64ToInteger
--- 
--- instance Read Word64 where
---   readsPrec p s = [ (integerToW64 x,r) | (x,r) <- readDec s ]
+primitive word64ToWord32 "primWord64ToWord32" :: Word64 -> (Word32,Word32)
+primitive word32ToWord64 "primWord32ToWord64" :: Word32 -> Word32 -> Word64
+
+integerToW64 :: Integer -> Word64
+integerToW64 x = case x `quotRem` 0x100000000 of
+	(hi,lo) -> word32ToWord64 (fromInteger lo) (fromInteger hi)
+
+w64ToInteger :: Word64 -> Integer
+w64ToInteger x = case word64ToWord32 x of
+	(hi,lo) -> toInteger hi * 0x100000000 + toInteger lo
+
+instance Eq Word64 where
+    x == y = toInteger x == toInteger y
+
+instance Ord Word64 where
+    compare x y = compare (toInteger x) (toInteger y)
+
+instance Bounded Word64 where
+    minBound = word32ToWord64 minBound minBound
+    maxBound = word32ToWord64 maxBound maxBound
+
+instance Show Word64 where
+    showsPrec p = showInt . toInteger
+
+instance Read Word64 where
+    readsPrec p s = [ (fromInteger x,r) | (x,r) <- readDec s ]
+
+instance Num Word64 where
+    x + y         = fromInteger (toInteger x + toInteger y)
+    x - y         = fromInteger (toInteger x - toInteger y)
+    x * y         = fromInteger (toInteger x * toInteger y)
+    abs           = absReal
+    signum        = signumReal
+    fromInteger   = integerToW64
+    fromInt       = fromIntegral
+
+instance Real Word64 where
+    toRational x = toInteger x % 1
+
+instance Enum Word64 where
+    toEnum           = fromInt
+    fromEnum         = toInt
+
+    succ             = fromInteger . (+1) . toInteger
+    pred             = fromInteger . (subtract 1) . toInteger
+    enumFrom x       = map fromInteger [toInteger x ..]
+    enumFromTo x y   = map fromInteger [toInteger x .. toInteger y]
+    enumFromThen x y = map fromInteger [toInteger x, toInteger y ..]
+    enumFromThenTo x y z =
+                       map fromInteger [toInteger x, toInteger y .. toInteger z]
+
+instance Integral Word64 where
+    x `quotRem` y = (fromInteger q, fromInteger r)
+	where (q,r) = toInteger x `quotRem` toInteger y
+    toInteger     = w64ToInteger
+    toInt = fromIntegral
 
 -----------------------------------------------------------------------------
 -- End of exported definitions

@@ -278,7 +278,63 @@ instance Bits Int32 where
 -----------------------------------------------------------------------------
 
 primitive int64ToInt32 "primInt64ToInt32" :: Int64 -> (Int32,Int32)
-primitive int32ToInt64 "primInt32ToInt64" :: (Int32,Int32) -> Int64
+primitive int32ToInt64 "primInt32ToInt64" :: Int32 -> Int32 -> Int64
+
+integerToI64 :: Integer -> Int64
+integerToI64 x = case x `divMod` 0x100000000 of
+	(hi,lo) -> int32ToInt64 (fromInteger hi)
+		(fromInteger (lo + toInteger (minBound::Int32)))
+
+i64ToInteger :: Int64 -> Integer
+i64ToInteger x = case int64ToInt32 x of
+	(hi,lo) -> toInteger hi * 0x100000000 +
+		toInteger lo - toInteger (minBound::Int32)
+
+instance Eq Int64 where
+    x == y = toInteger x == toInteger y
+
+instance Ord Int64 where
+    compare x y = compare (toInteger x) (toInteger y)
+
+instance Bounded Int64 where
+    minBound = int32ToInt64 minBound minBound
+    maxBound = int32ToInt64 maxBound maxBound
+
+instance Show Int64 where
+    showsPrec p = showsPrec p . toInteger
+
+instance Read Int64 where
+    readsPrec p s = [ (fromInteger x,r) | (x,r) <- readDec s ]
+
+instance Num Int64 where
+    x + y         = fromInteger (toInteger x + toInteger y)
+    x - y         = fromInteger (toInteger x - toInteger y)
+    x * y         = fromInteger (toInteger x * toInteger y)
+    abs           = absReal
+    signum        = signumReal
+    fromInteger   = integerToI64
+    fromInt       = fromIntegral
+
+instance Real Int64 where
+    toRational x = toInteger x % 1
+
+instance Enum Int64 where
+    toEnum           = fromInt
+    fromEnum         = toInt
+
+    succ             = fromInteger . (+1) . toInteger
+    pred             = fromInteger . (subtract 1) . toInteger
+    enumFrom x       = map fromInteger [toInteger x ..]
+    enumFromTo x y   = map fromInteger [toInteger x .. toInteger y]
+    enumFromThen x y = map fromInteger [toInteger x, toInteger y ..]
+    enumFromThenTo x y z =
+                       map fromInteger [toInteger x, toInteger y .. toInteger z]
+
+instance Integral Int64 where
+    x `quotRem` y = (fromInteger q, fromInteger r)
+	where (q,r) = toInteger x `quotRem` toInteger y
+    toInteger     = i64ToInteger
+    toInt = fromIntegral
 
 -----------------------------------------------------------------------------
 -- End of exported definitions

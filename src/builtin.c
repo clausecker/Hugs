@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: builtin.c,v $
- * $Revision: 1.31 $
- * $Date: 2002/08/27 17:25:46 $
+ * $Revision: 1.32 $
+ * $Date: 2002/09/12 11:59:35 $
  * ------------------------------------------------------------------------*/
 
 /* We include math.h before prelude.h because SunOS 4's cpp incorrectly
@@ -1343,8 +1343,8 @@ Word2Word(primW16toW32, x);
 primFun(primI64toI32) {
     Int x, y;
     eval(primArg(1)); 
-    x = intOf(fst(snd(whnfHead)));
-    y = intOf(snd(snd(whnfHead)));
+    x = fst(snd(whnfHead));
+    y = snd(snd(whnfHead));
     IntIntResult(x,y);
 }
 
@@ -1358,8 +1358,8 @@ primFun(primI32toI64) {
 primFun(primW64toW32) {
     Unsigned x, y;
     eval(primArg(1)); 
-    x = intOf(fst(snd(whnfHead)));
-    y = intOf(snd(snd(whnfHead)));
+    x = fst(snd(whnfHead));
+    y = snd(snd(whnfHead));
     WordWordResult(x,y);
 }
 
