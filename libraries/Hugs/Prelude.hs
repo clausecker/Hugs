@@ -70,7 +70,7 @@ module Hugs.Prelude (
     basicIORun, blockIO, IOFinished(..),
     threadToIOResult,
     catchException, throw,
-    Dynamic(..), TypeRep(..), TyCon(..), Obj,
+    Dynamic(..), TypeRep(..), Key(..), TyCon(..), Obj,
 
     Bool(False, True),
     Maybe(Nothing, Just),
@@ -1829,15 +1829,17 @@ primitive unsafeCoerce "primUnsafeCoerce" :: a -> b
 
 data Dynamic = Dynamic TypeRep Obj
 
-data TypeRep
- = App TyCon   [TypeRep]
- | Fun TypeRep TypeRep
-   deriving ( Eq )
+data TypeRep = TypeRep !Key TyCon [TypeRep]
 
-data TyCon = TyCon Int String
+instance Eq TypeRep where
+  (TypeRep k1 _ _) == (TypeRep k2 _ _) = k1 == k2
+
+data TyCon = TyCon !Key String
 
 instance Eq TyCon where
   (TyCon t1 _) == (TyCon t2 _) = t1 == t2
+
+newtype Key = Key Int deriving( Eq )
 
 data Obj = Obj
 
