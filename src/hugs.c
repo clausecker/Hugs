@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.50 $
- * $Date: 2001/11/07 06:19:21 $
+ * $Revision: 1.51 $
+ * $Date: 2001/11/14 17:58:02 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -2039,23 +2039,46 @@ static Void local listNames() {         /* list names matching optional pat*/
  * print a prompt and read a line of input:
  * ------------------------------------------------------------------------*/
 
+/* Size of (expanded) prompt buffer, should be more than enough.... */
+#define MAX_PROMPT_SIZE 1000
+
 static Void local promptForInput(moduleName)
 String moduleName; {
-    char promptBuffer[1000];
-#if 1
-    /* This is portable but could overflow buffer */
-    sprintf(promptBuffer,prompt,moduleName);
-#else
-    /* Works on ANSI C - but pre-ANSI compilers return a pointer to
-     * promptBuffer instead.
-     */
-    if (sprintf(promptBuffer,prompt,moduleName) >= 1000) {
-	/* Reset prompt to a safe default to avoid an infinite loop */
-	free(prompt);
-	prompt = strCopy("? ");
-	internal("Combined prompt and evaluation module name too long");
+    char promptBuffer[MAX_PROMPT_SIZE];
+    char* fromPtr;
+    char* toPtr;
+    int modLen = strlen(moduleName);
+    int roomLeft = MAX_PROMPT_SIZE - 1;
+    
+    toPtr = promptBuffer;
+    fromPtr = prompt;
+    
+    /* Carefully substituting occurrences of %s in the
+       prompt string with the module name.
+    */
+    while (*fromPtr != '\0' && roomLeft > 0) {
+      if (*fromPtr == '%' && *(fromPtr+1) == 's') {
+	/* Substitute module name */
+        if (modLen > roomLeft) {
+	  /* Running out of room; copy what we can */
+	  fromPtr = moduleName;
+	  while (roomLeft-- > 0) {
+	    *toPtr++ = *fromPtr++;
+	  }
+	  break;
+	} else {
+	  strcpy(toPtr,moduleName);
+	  toPtr += modLen;
+	  roomLeft -= modLen;
+	  fromPtr +=2;
+	}
+      } else {
+	*toPtr++ = *fromPtr++;
+	roomLeft--;
+      }
     }
-#endif
+    *toPtr = '\0';
+
     consoleInput(promptBuffer);
 }
 
