@@ -28,8 +28,11 @@ import Numeric ( showInt, showSigned, readDec )
 -- The RandomGen class: ------------------------------------------------------
 
 class RandomGen g where
-   next  :: g -> (Int, g)
-   split :: g -> (g, g)
+   genRange :: g -> (Int, Int)
+   next     :: g -> (Int, g)
+   split    :: g -> (g, g)
+   
+   genRange _ = (minBound,maxBound)
 
 
 -- An efficient and portable combined random number generator: ---------------
