@@ -11,8 +11,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.94 $
- * $Date: 2003/07/16 11:06:29 $
+ * $Revision: 1.95 $
+ * $Date: 2003/07/24 09:27:36 $
  * ------------------------------------------------------------------------*/
 #include "prelude.h"
 #include "storage.h"
@@ -38,6 +38,9 @@
 #if HAVE_SYS_PARAM_H
 # include <sys/param.h>
 #endif
+#if HAVE_LIMITS_H
+# include <limits.h>
+#endif
 #ifdef HAVE_SYS_STAT_H
 # include <sys/stat.h>
 #else
@@ -47,6 +50,19 @@
 #endif
 #ifdef HAVE_DIRENT_H
 #  include <dirent.h>
+#endif
+
+/* Hack for systems with unlimited path length (e.g. the Hurd), which
+ * will not define PATH_MAX or MAXPATHLEN.  The Right Thing would be
+ * to dynamically allocate these buffers, and use functions like
+ * get_current_dir_name() and canonicalize_file_name().
+ */
+#if HAVE_REALPATH && !defined(MAXPATHLEN)
+#ifdef PATH_MAX
+#define MAXPATHLEN PATH_MAX
+#else
+#define MAXPATHLEN 4096
+#endif
 #endif
 
 /* Windows/DOS include files */

@@ -8,8 +8,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: prelude.h,v $
- * $Revision: 1.48 $
- * $Date: 2003/07/21 10:46:48 $
+ * $Revision: 1.49 $
+ * $Date: 2003/07/24 09:27:35 $
  * ------------------------------------------------------------------------*/
 #ifndef __PRELUDE_H__
 #define __PRELUDE_H__
@@ -638,12 +638,16 @@ extern void     exit       Args((int));
 #endif
 
 #ifndef FILENAME_MAX	   /* should already be defined in an ANSI compiler*/
-#define FILENAME_MAX 256
-#else
-#if     FILENAME_MAX < 256
-#undef  FILENAME_MAX
-#define FILENAME_MAX 256
-#endif
+# define FILENAME_MAX 256
+#elif   FILENAME_MAX < 256
+# undef  FILENAME_MAX
+# define FILENAME_MAX 256
+#elif   FILENAME_MAX > 8192
+	/* Systems with no limit on path length (e.g. the Hurd), will have */
+	/* FILENAME_MAX impossibly large.  Ideally we should dynamically   */
+	/* allocate/grow these buffers and not use FILENAME_MAX at all.    */
+# undef  FILENAME_MAX
+# define FILENAME_MAX 8192
 #endif
 
 /* Hack, hack: if you have dos.h, you probably have a DOS filesystem */
