@@ -153,30 +153,25 @@ BEGIN
 END
 
 OPTIONSDLGBOX DIALOG FIXED IMPURE  14, 24, 313, 241
-STYLE DS_MODALFRAME | DS_3DLOOK | DS_FIXEDSYS | WS_POPUP | WS_CAPTION |
+STYLE DS_MODALFRAME | DS_3DLOOK | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | 
     WS_SYSMENU
 CAPTION "Options"
 FONT 8, "Ms Sans Serif"
 BEGIN
     GROUPBOX        " Fl&ags: ",-1,5,5,302,110
-    CONTROL         "&s Print no. reductions/cells after
-eval",ID_OP,"Button",
+    CONTROL         "&s Print no. reductions/cells after eval",ID_OP,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,12,19,142,10
     CONTROL         "&t Print type after evaluation",ID_OP+1,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,12,29,142,10
-    CONTROL         "&f Terminate evaluation on first
-error",ID_OP+2,"Button",
+    CONTROL         "&f Terminate evaluation on first error",ID_OP+2,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,12,39,142,10
-    CONTROL         "&g Print no. cells recovered after
-gc",ID_OP+3,"Button",
+    CONTROL         "&g Print no. cells recovered after gc",ID_OP+3,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,12,49,142,10
-    CONTROL         "&G Generate FFI code for foreign
-import",ID_OP+4,"Button",
+    CONTROL         "&G Generate FFI code for foreign import",ID_OP+4,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,12,59,142,10
     CONTROL         "&l Literate scripts as default",ID_OP+5,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,12,69,142,10
-    CONTROL         "&e Warn about errors in literate
-scripts",ID_OP+6,"Button",
+    CONTROL         "&e Warn about errors in literate scripts",ID_OP+6,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,12,79,142,10
     CONTROL         "&. Print dots to show progress",ID_OP+7,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,12,89,135,10
@@ -192,8 +187,7 @@ scripts",ID_OP+6,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,160,49,147,10
     CONTROL         "&u Use ""show"" to display results",ID_OP+13,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,160,59,147,10
-    CONTROL         "&i Chase imports while loading
-files",ID_OP+14,"Button",
+    CONTROL         "&i Chase imports while loading files",ID_OP+14,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,160,69,147,10
     CONTROL         "&A Auto load files",ID_OP+15,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,160,79,147,10
