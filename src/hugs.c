@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.94 $
- * $Date: 2002/10/01 03:48:57 $
+ * $Revision: 1.95 $
+ * $Date: 2002/10/03 14:20:32 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -581,6 +581,12 @@ struct options {                        /* command line option toggles     */
 };
 extern struct options toggle[];
 
+#if HASKELL_98_ONLY
+#define Option(c,h98,description,flag) { c, description, flag }
+#else
+#define Option(c,h98,description,flag) { c, h98, description, flag }
+#endif
+
 static Void local toggleSet(c,state)    /* Set command line toggle         */
 Char c;
 Bool state; {
@@ -1101,162 +1107,51 @@ static Void local forHelp() {
  * ------------------------------------------------------------------------*/
 
 struct options toggle[] = {             /* List of command line toggles    */
-    {'s',
-#if !HASKELL_98_ONLY
-             1,
-#endif
-             "Print no. reductions/cells after eval", &showStats},
-    {'t',
-#if !HASKELL_98_ONLY
-             1,
-#endif
-             "Print type after evaluation",           &addType},
-    {'f',
-#if !HASKELL_98_ONLY
-             1,
-#endif
-             "Terminate evaluation on first error",   &failOnError},
-    {'g',
-#if !HASKELL_98_ONLY
-             1,
-#endif
-             "Print no. cells recovered after gc",    &gcMessages},
-    {'G', 
-#if !HASKELL_98_ONLY
-             0, 
-#endif
-             "Generate FFI code for foreign import",  &generate},
-    {'l',
-#if !HASKELL_98_ONLY
-             1, 
-#endif
-             "Literate modules as default",           &literateScripts},
-    {'e',
-#if !HASKELL_98_ONLY
-             1,
-#endif
-             "Warn about errors in literate modules", &literateErrors},
-    {'.',
-#if !HASKELL_98_ONLY
-             1,
-#endif
-             "Print dots to show progress",           &useDots},
-    {'q',
-#if !HASKELL_98_ONLY
-             1,
-#endif
-             "Print nothing to show progress",        &quiet},
-    {'Q',
-#if !HASKELL_98_ONLY
-             1,
-#endif
-	     "Qualify names when printing",           &useQualifiedNames},
-    {'w',
-#if !HASKELL_98_ONLY
-             1,
-#endif
-             "Always show which modules are loaded",  &listScripts},
-    {'k',
-#if !HASKELL_98_ONLY
-             1,
-#endif
-             "Show kind errors in full",              &kindExpert},
-    {'o',
-#if !HASKELL_98_ONLY
-             0,
-#endif
-             "Allow overlapping instances",           &allowOverlap},
-    {'O',
-#if !HASKELL_98_ONLY
-             0,
-#endif
-             "Allow unsafe overlapping instances",    &allowUnsafeOverlap},
-    {'u',
-#if !HASKELL_98_ONLY
-             1,
-#endif
-             "Use \"show\" to display results",       &useShow},
-    {'I',
-#if !HASKELL_98_ONLY
-             1,
-#endif
-             "Display results of IO programs",        &displayIO},
-    {'i',
-#if !HASKELL_98_ONLY
-             1,
-#endif
-             "Chase imports while loading modules",   &chaseImports},
+    Option('s', 1, "Print no. reductions/cells after eval", &showStats),
+    Option('t', 1, "Print type after evaluation",           &addType),
+    Option('f', 1, "Terminate evaluation on first error",   &failOnError),
+    Option('g', 1, "Print no. cells recovered after gc",    &gcMessages),
+    Option('G', 0, "Generate FFI code for foreign import",  &generate),
+    Option('l', 1, "Literate modules as default",           &literateScripts),
+    Option('e', 1, "Warn about errors in literate modules", &literateErrors),
+    Option('.', 1, "Print dots to show progress",           &useDots),
+    Option('q', 1, "Print nothing to show progress",        &quiet),
+    Option('Q', 1, "Qualify names when printing",           &useQualifiedNames),
+    Option('w', 1, "Always show which modules are loaded",  &listScripts),
+    Option('k', 1, "Show kind errors in full",              &kindExpert),
+    Option('o', 0, "Allow overlapping instances",           &allowOverlap),
+    Option('O', 0, "Allow unsafe overlapping instances",    &allowUnsafeOverlap),
+    Option('u', 1, "Use \"show\" to display results",       &useShow),
+    Option('I', 1, "Display results of IO programs",        &displayIO),
+    Option('i', 1, "Chase imports while loading modules",   &chaseImports),
 #if HUGS_FOR_WINDOWS
-    {'A', 
-#if !HASKELL_98_ONLY
-             1, 
-#endif
-             "Auto load files",		   	      &autoLoadFiles},
+    Option('A', 1, "Auto load files",		   	    &autoLoadFiles),
 #endif
 #if EXPLAIN_INSTANCE_RESOLUTION
-    {'x',   
-#if !HASKELL_98_ONLY
-             1,
-#endif
-             "Explain instance resolution",           &showInstRes},
+    Option('x', 1, "Explain instance resolution",           &showInstRes),
 #endif
 #if MULTI_INST
-    {'m', 0, "Use multi instance resolution",         &multiInstRes},
+    Option('m', 0, "Use multi instance resolution",         &multiInstRes),
 #endif
 #if DEBUG_CODE
-    {'D',
-#if !HASKELL_98_ONLY
-          1,
-#endif
-          "Debug: show generated G code",          &debugCode},
+    Option('D', 1, "Debug: show generated G code",          &debugCode),
 #endif
 #if DEBUG_SHOWSC
-    {'C',
-#if !HASKELL_98_ONLY
-          1,
-#endif
-          "Debug: show generated SC code",         &debugSC},
+    Option('C', 1, "Debug: show generated SC code",         &debugSC),
 #endif
 #if OBSERVATIONS
-    {'R',
-#if !HASKELL_98_ONLY
-          1,
-#endif
-          "Enable root optimisation",         &rootOpt},
+    Option('R', 1, "Enable root optimisation",              &rootOpt),
 #endif
 #if HERE_DOC
-    {'H',
-# if !HASKELL_98_ONLY
-             0,
-# endif
-	     "Enable `here documents'",       &hereDocs},
+    Option('H', 0, "Enable `here documents'",               &hereDocs),
 #endif
-    {'T', 
-#if !HASKELL_98_ONLY
-             1,
-#endif
-            "Apply 'defaulting' when printing types",  &printTypeUseDefaults},
+    Option('T', 1, "Apply 'defaulting' when printing types", &printTypeUseDefaults),
 #if IPARAM
-    {'W',
-# if !HASKELL_98_ONLY
-             0,
-# endif
-	     "Enable 'with' and 'dlet' implicit param binding forms", &oldIParamSyntax},
+    Option('W', 0, "Enable 'with' and 'dlet' implicit param binding forms", &oldIParamSyntax),
 #endif
-
-    {'X',
-     1,
-     "Implicitly add path of importing module to search path", &optImplicitImportRoot},
-
-    {'N',
-     0,
-     "Use hierarchical libraries", &wantNewLibraries},
-
-    {0,   
-#if !HASKELL_98_ONLY
-          0,
-#endif
-          0}
+    Option('X', 1, "Implicitly add path of importing module to search path", &optImplicitImportRoot),
+    Option('N', 0, "Use hierarchical libraries",            &wantNewLibraries),
+    Option(0, 0, 0, 0)
 };
 
 #if !defined(HUGS_SERVER)
