@@ -170,8 +170,6 @@ test_static() {
   perl runstdtest $HUGS $STDOPTS "-Ostatic/mod130.hs" "-o1static/mod130.output"
   perl runstdtest $HUGS $STDOPTS "-Ostatic/mod131.hs" "-o1static/mod131.output"
   perl runstdtest $HUGS $STDOPTS "-Ostatic/mod132.hs" "-o1static/mod132.output"
-  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod133.hs" "-o1static/mod133.output" "-istatic/mod133.input"
-  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod134.hs" "-o1static/Loaded.output"
   perl runstdtest $HUGS $STDOPTS "-Ostatic/mod135.hs" "-o1static/mod135.output"
   perl runstdtest $HUGS $STDOPTS "-Ostatic/mod136.hs" "-o1static/mod136.output"
   perl runstdtest $HUGS $STDOPTS "-Ostatic/mod137.hs" "-o1static/Loaded.output"
@@ -198,7 +196,7 @@ test_static() {
   perl runstdtest $HUGS $STDOPTS "-Ostatic/mod158.hs" "-o1static/mod158.output"
   perl runstdtest $HUGS $STDOPTS "-Ostatic/mod159.hs" "-o1static/Loaded.output"
   perl runstdtest $HUGS $STDOPTS "-Ostatic/mod160.hs" "-o1static/mod160.output"
-  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod161.hs" "-o1static/mod161.output" "-istatic/mod161.input"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod161.hs"  "-o1static/mod161.output"
   perl runstdtest $HUGS $STDOPTS "-Ostatic/mod162.hs" "-o1static/Loaded.output"
   perl runstdtest $HUGS $STDOPTS "-Ostatic/mod163.hs" "-o1static/Loaded.output"
    # testing lazy name conflicting reporting for data constructors.
@@ -207,13 +205,15 @@ test_static() {
   perl runstdtest $HUGS $STDOPTS "-Ostatic/mod166.hs" "-o1static/Loaded.output"
   perl runstdtest $HUGS $STDOPTS "-Ostatic/mod167.hs" "-o1static/Loaded.output"
   perl runstdtest $HUGS $STDOPTS "-Ostatic/mod168.hs" "-o1static/Loaded.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod169.hs" "-o1static/mod169.output" "-istatic/mod169.input"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod170.hs" "-o1static/Loaded.output"
 
   # Check opaque import/export of tycons
   perl runstdtest $HUGS $STDOPTS "-Ostatic/T2.hs"  "-o1static/T2.output"
   # Check transparent import of type synonyms
   perl runstdtest $HUGS $STDOPTS "-Ostatic/T3.hs"  "-o1static/T3.output"
 
-  perl runstdtest $HUGS $STDOPTS "-Ostatic/export1.hs"  "-o1static/export1.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/pat1.hs" "-o1static/pat1.output" "-istatic/pat1.input"
 
   # Check opaque import/export of member functions
   perl runstdtest $HUGS $STDOPTS -Pstatic: "-Ostatic/T7.hs"  "-o1static/Loaded.output"

@@ -2,6 +2,6 @@
 -- (contributed/reported by Ross Paterson.)
 module M where
 
-import Mod134_A(field)
+import Mod170_A(field)
 
 x = field

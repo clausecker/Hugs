@@ -1,3 +1,2 @@
-Type :? for help
-Hugs:2
+ERROR "static/mod161.hs" - Unknown entity "bar" exported from module "Bar"
 Hugs:[Leaving Hugs]
