@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.93 $
- * $Date: 2002/09/12 13:50:40 $
+ * $Revision: 1.94 $
+ * $Date: 2002/09/12 21:23:26 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -453,9 +453,17 @@ List   imports; /* Accumulated list of things to import */
 Module exporter;
 Bool   isHidden;
 Cell   entity; { /* Entry from import/hiding list */
-    Bool impFound = FALSE;
-    Text t  = isIdent(entity) ? textOf(entity) : textOf(fst(entity));
-    List es = module(exporter).exports; 
+    Bool impFound    = FALSE;
+    Bool isId        = isIdent(entity);
+    Cell subEntities = !isId ? snd(entity) : NIL;
+    Text t           = isId ? textOf(entity) : textOf(fst(entity));
+    List es          = module(exporter).exports;
+    /* If the imported thing is possibly a data con, we have to grovel
+       around inside each tycon looking for it.
+    */
+    Bool isDataCon   = 
+      subEntities == NIL && isCon(isId ? entity : fst(entity));
+    
     for(; nonNull(es); es=tl(es)) {
 	Cell e = hd(es); /* :: Entity | (Entity, NIL|DOTDOT|[Entity]) */
 	if (isPair(e)) {
@@ -463,11 +471,11 @@ Cell   entity; { /* Entry from import/hiding list */
 	    if (isTycon(f)) {
 		if (tycon(f).text == t) {
 		    impFound = TRUE;
-		    if (!isIdent(entity)) {
+		    if (!isId) {
 			switch (tycon(f).what) {
 			case NEWTYPE:
 			case DATATYPE:
-			    if (DOTDOT == snd(entity)) {
+			    if (DOTDOT == subEntities) {
 				/* Want all dcons that are _exported_ by
 				   the importing module.
 				*/
@@ -479,11 +487,11 @@ Cell   entity; { /* Entry from import/hiding list */
 				}
 				imports=addEntity(f,dcons,imports);
 				imports=dupOnto(dcons,imports);
-			    } else if ( NIL == snd(entity)) {
+			    } else if ( NIL == subEntities) {
 				imports=addEntity(f,NIL,imports);
 			    } else {
 				List xs = NIL;
-				xs = checkSubentities(xs, snd(entity), tycon(f).defn,"constructor of type",t);
+				xs = checkSubentities(xs, subEntities, tycon(f).defn,"constructor of type",t);
 				imports=addEntity(f,xs,imports);
 				imports=dupOnto(xs,imports);
 			    }
@@ -497,12 +505,32 @@ Cell   entity; { /* Entry from import/hiding list */
 		    } else {
 			imports = addEntity(f,NIL,imports);
 		    }
+		    break;
+		} else if (isDataCon && tycon(f).what != SYNONYM) {
+		    /* Want all dcons that are _exported_ by
+		       the importing module.
+		    */
+		    Cell dcons;
+		    if (snd(e) == DOTDOT) {
+			dcons = tycon(f).defn;
+		    } else {
+			dcons = snd(e);
+		    }
+		    while(nonNull(dcons)) {
+			if (isName(hd(dcons)) && name(hd(dcons)).text == t) {
+			    impFound = TRUE;
+			    imports=addEntity(hd(dcons),NIL,imports);
+			    break;
+			}
+			dcons=tl(dcons);
+		    }
+		    if (impFound) break;
 		}
 	    } else if (isClass(f)) {
 		if (cclass(f).text == t) {
 		    impFound = TRUE;
-		    if (!isIdent(entity)) {
-			if (DOTDOT == snd(entity)) {
+		    if (!isId) {
+			if (DOTDOT == subEntities) {
  			    /* Want all members that are _exported_ by
 			       the importing module.
 			    */
@@ -514,21 +542,22 @@ Cell   entity; { /* Entry from import/hiding list */
 			    }
 			    imports=addEntity(f,sigs,imports);
 			    return dupOnto(sigs,imports);
-			} else if ( NIL == snd(entity)) {
+			} else if ( NIL == subEntities) {
 			    imports=addEntity(f,NIL,imports);
 			} else {
 			    List xs = NIL;
-			    xs = checkSubentities(xs, snd(entity), cclass(f).members,"member of class",t);
+			    xs = checkSubentities(xs, subEntities, cclass(f).members,"member of class",t);
 			    imports=addEntity(f,xs,imports);
 			    imports=dupOnto(xs,imports);
 			}
 		    }
+		    break;
 		}
 	    } else {
 		internal("checkImportEntity2");
 	    }
 	} else if (isName(e)) {
-	    if (isIdent(entity) && name(e).text == t) {
+	    if (isId && name(e).text == t) {
 		impFound = TRUE;
 		/* If the name is a method or field name, record it
 		   as being imported via its parent. */
@@ -542,11 +571,13 @@ Cell   entity; { /* Entry from import/hiding list */
 		} else {
 		    imports = cons(e,imports);
 		}
+		break;
 	    }
 	} else if (isTycon(e)) {
-	    if (isIdent(entity) && tycon(e).text == t) {
+	    if (isId && tycon(e).text == t) {
 		impFound = TRUE;
 		imports = addEntity(e,NIL,imports);
+		break;
 	    }
 	} else {
 	    internal("checkImportEntity3");
@@ -907,14 +938,20 @@ Cell e; {
 	     * or data con (i.e., a field name), named P. If so, process
 	     * the export as P(N).
 	     */
-	    /* Note: data constructors can't appear in export lists,
-	     * so no need to test whether the name is such a thing. 
-	     * Should Haskell change in this regard, you need to be
-	     * a bit careful with testing for this here, i.e., just
-	     * checking whether the parent is a tycon isn't precise enough,
-	     * as type synonyms also have tycons as parents (their aliased
-	     * type.)
+	    /* Data constructors cannot appear in export lists,
+	     * so flag an error if they do.
+	     *
+	     * Notice that we have to be a bit careful when testing
+	     * for this, as both data constructors and type synonyms
+	     * have a tycon as parent. (In the case of type synonyms,
+	     * the parent is the type on the RHS.)
+	     *
 	     */
+	    if (isTycon(name(export).parent) && !findTycon(name(export).text))  {
+		ERRMSG(0) "Illegal export of a lone data constructor \"%s\"",
+		          textToStr(name(export).text)
+	        EEND;
+	    }
 	    if (isClass(name(export).parent)) {
 		return checkExport(exports,mt,pair(mkCon(cclass(name(export).parent).text),
 						   singleton(mkVar(name(export).text))));
