@@ -27,8 +27,8 @@
 default		:: hugs.exe runhugs.exe hugsscript.dll
 
 CC		= cl /nologo
-CFLAGS		= -clr -DDOTNET -DMONTH_YEAR="\"Nov 2002\""
-#CFLAGS		= -ML -Zi -DMONTH_YEAR="\"Nov 2002\""
+CFLAGS		= -clr -DDOTNET -DMONTH_YEAR="\"Nov 2003\""
+#CFLAGS		= -ML -Zi -DMONTH_YEAR="\"Nov 2003""
 OPTFLAGS	= -O2
 
 LD		= $(CC) -clr
