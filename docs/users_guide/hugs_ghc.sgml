@@ -282,12 +282,9 @@ first parameter and second parameters, but different third parameters.
 J Lewis, MB Shields, E Meijer, J Launchbury,
 <citetitle pubwork=book>27th ACM Symposium on Principles of Programming Languages (POPL'00)</citetitle>,
 Boston, Jan 2000.
-Note however that the binding syntax using in that paper,
-using keywords <literal>dlet</literal> and <literal>with</literal>
-is now deprecated in favour of the form presented below.
-(The old syntax is still available if you use the
-<link linkend="option-with-dlet"><option>+W</option></link> option,
-but this will disappear in time.)
+Note however that the binding syntax in that paper,
+using keywords <literal>dlet</literal> and <literal>with</literal>,
+has been replaced by the form presented below.
 </para>
 
 <para>(Most of the following, still rather incomplete,

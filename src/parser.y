@@ -10,8 +10,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: parser.y,v $
- * $Revision: 1.40 $
- * $Date: 2003/03/18 15:19:26 $
+ * $Revision: 1.41 $
+ * $Date: 2003/09/18 18:02:24 $
  * ------------------------------------------------------------------------*/
 
 %{
@@ -98,9 +98,6 @@ static Void   local noMDo	 Args((String));
 %token DEFAULT    DERIVING   DO         TCLASS     TINSTANCE
 /*#if MUDO*/
 %token MDO
-/*#endif*/
-/*#if IPARAM*/
-%token WITH DLET
 /*#endif*/
 %token REPEAT	  ALL        NUMLIT     CHARLIT	   STRINGLIT
 %token VAROP      VARID	     CONOP      CONID
@@ -755,13 +752,6 @@ exp	  : exp_err			{$$ = $1;}
 	  | error			{syntaxError("expression");}
 	  ;
 exp_err	  : exp0a COCO sigType		{$$ = gc3(ap(ESIGN,pair($1,$3)));}
-	  | exp0a WITH dbinds		{
-#if IPARAM
-					 $$ = gc3(ap(WITHEXP,pair($1,$3)));
-#else
-					 noIP("an expression");
-#endif
-					}
 	  | exp0			{$$ = $1;}
 	  ;
 exp0	  : exp0a			{$$ = $1;}
@@ -803,13 +793,6 @@ exp10b	  : '\\' pats ARROW exp		{$$ = gc4(ap(LAMBDA,
 							  pair($3,$4))));}
 	  | LET ldecls IN exp		{$$ = gc4(letrec($2,$4));}
 	  | IF exp THEN exp ELSE exp	{$$ = gc6(ap(COND,triple($2,$4,$6)));}
-	  | DLET dbinds IN exp		{
-#if IPARAM
-					 $$ = gc4(ap(WITHEXP,pair($4,$2)));
-#else
-					 noIP("an expression");
-#endif
-					}
 	  ;
 pats      : pats apat			{$$ = gc2(cons($2,$1));}
 	  | apat			{$$ = gc1(cons($1,NIL));}
@@ -904,18 +887,6 @@ fbinds1	  : fbinds1 ',' fbind		{$$ = gc3(cons($3,$1));}
 	  ;
 fbind	  : var				{$$ = $1;}
 	  | qvar '=' exp		{$$ = gc3(pair($1,$3));}
-	  ;
-dbinds	  : '{' dbs0 end		{$$ = gc3($2);}
-	  | '{' dbs1 end		{$$ = gc3($2);}
-	  ;
-dbs0	  : /* empty */			{$$ = gc0(NIL);}
-	  | dbs0 ';'			{$$ = gc2($1);}
-	  | dbs1 ';'			{$$ = gc2($1);}
-	  ;
-dbs1	  : dbs0 dbind			{$$ = gc2(cons($2,$1));}
-	  ;
-dbind	  : IPVARID '=' exp		{$$ = gc3(pair($1,$3));}
-	  | IPVARID error		{syntaxError("with binding");}
 	  ;
 
 /*- List Expressions: -------------------------------------------------------*/
@@ -1112,18 +1083,6 @@ static String local unexpected() {     /* find name for unexpected token   */
 	case IMPORT    : keyword("import");
 	case TMODULE   : keyword("module");
 	case ALL       : keyword("forall");
-#if IPARAM
-	case DLET      : 
-	case WITH      : 
-	  if (oldIParamSyntax) {
-	      sprintf(buffer,
-		      "keyword \"%s\"; possible cause: +W option used.)",
-		      (yychar == DLET ? "dlet" : "with"));
-	      return buffer;
-	  } else {
-	      keyword ((yychar == DLET) ? "dlet" : "with");
-	  }
-#endif
 #undef keyword
 
 	case ARROW     : return "`->'";

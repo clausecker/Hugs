@@ -42,10 +42,6 @@ Bool showInstRes = FALSE;
 Bool multiInstRes = FALSE;
 #endif
 
-#if IPARAM
-Bool oldIParamSyntax = FALSE;
-#endif
-
 Bool printTypeUseDefaults = FALSE;
 
 
@@ -153,9 +149,6 @@ struct options toggle[] = {     /* List of command line toggles    */
 #endif
 #if HERE_DOC
     Option('H', 0, "Enable `here documents'",               &hereDocs),
-#endif
-#if IPARAM
-    Option('W', 0, "Enable 'with' and 'dlet' implicit param binding forms", &oldIParamSyntax),
 #endif
     Option(0, 0, 0, 0)
 };

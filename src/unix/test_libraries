@@ -28,7 +28,7 @@ fi
 tmpfile=/tmp/libs.$$
 trap 'rm -f $tmpfile+ $tmpfile-; exit 0' 0 1 2 3 15
 
-HUGSFLAGS='-W'
+HUGSFLAGS=
 export HUGSFLAGS
 
 test_module() {

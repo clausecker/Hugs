@@ -132,26 +132,6 @@ This extension is turned off by default.
 </listitem>
 </varlistentry>
 
-<varlistentry id="option-with-dlet">
-<term><option>+W</option></term>
-<listitem>
-<para>
-Use old implicit parameter syntax
-(a Hugs extension; default: off)
-</para>
-<para>
-With the <option>-98</option> option, Hugs supports implicit parameters
-(see <xref linkend="implicit-parameters">).
-If the <option>+W</option> option is also given,
-Hugs accepts the obsolete syntax for bindings using additional keywords
-<literal>dlet</literal> and <literal>with</literal>.
-Note that this will cause some libraries to fail,
-e.g. <literal>Foreign</literal>.
-This option will disappear in time.
-</para>
-</listitem>
-</varlistentry>
-
 </variablelist>
 </sect2>
 

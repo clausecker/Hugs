@@ -83,9 +83,6 @@ extern Bool   rootOpt;                  /* TRUE => enable root optimisation*/
 #if HERE_DOC
 extern Bool  hereDocs;                  /* TRUE => enable `here documents' */
 #endif
-#if IPARAM
-extern Bool  oldIParamSyntax;           /* TRUE => support 'dlet' and 'with' binding forms */
-#endif
 
 #if HUGS_FOR_WINDOWS
 extern Bool  autoLoadFiles;             /* TRUE => automatically reloaded modified files */

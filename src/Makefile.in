@@ -132,14 +132,14 @@ FFI_LIBRARIES	= $(BUILD_DIR)/libraries/Hugs/Storable@DLL@
 
 ffi_libraries	: $(FFI_LIBRARIES)
 
-BUILD_FFI = env HUGSDIR='$(BUILD_DIR)' HUGSFLAGS='-W' ./ffihugs +G
+BUILD_FFI = env HUGSDIR='$(BUILD_DIR)' HUGSFLAGS='' ./ffihugs +G
 
 # The script unix/BuildFFI is created by unix/convert_libraries,
 # and runs ffihugs on library modules that need it.
 
 $(FFI_LIBRARIES) : $(LIBRARIES) ffihugs$(EXE) $(INCLUDE)
 		  $(BUILD_FFI) +L'$(BUILD_DIR)/libraries/Hugs/Storable_aux.c' Hugs.Storable
-		  env HUGSDIR='$(BUILD_DIR)' HUGSFLAGS='-W' unix/BuildFFI
+		  env HUGSDIR='$(BUILD_DIR)' HUGSFLAGS='' unix/BuildFFI
 
 ################################################################
 # Clean, distclean, veryclean, TAGS

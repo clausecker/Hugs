@@ -75,11 +75,6 @@ Allow unsafe overlapping instances (a Hugs extension; default: off)
 .TP
 .B +H
 Allow `here documents' (a Hugs extension; default: off)
-.TP
-.B +W
-Enable obsolete "\fBwith\fP" and "\fBdlet\fP" implicit param binding forms, if
-.B \-98
-is given (a Hugs extension; default: off)
 .SS "Module loading"
 .TP
 .B +l

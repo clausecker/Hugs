@@ -508,8 +508,6 @@ on most architectures.
 <listitem><para>
 Hugs now relies on the same hierarchical libraries as GHC and Nhc98,
 though compatibility stubs for old libraries are still provided.
-The <option>-N</option> and <option>-i</option> options
-and the <command>:project</command> command have been removed.
 </para></listitem>
 
 <listitem><para>
@@ -517,7 +515,6 @@ Full support for imprecise exceptions (but not asynchronous ones).
 Most runtime errors are now reported by applying <literal>print</literal>
 to an <literal>Exception</literal>
 (formerly the built-in printer was applied to the faulty redex).
-The <option>-f</option> option has been removed.
 </para></listitem>
 
 <listitem><para>
@@ -525,7 +522,9 @@ Integrated .NET support.
 </para></listitem>
 
 <listitem><para>
-The <option>-X</option> option has been removed.
+The <option>-N</option>, <option>-i</option>, <option>-f</option>,
+<option>-W</option> and <option>-X</option> options
+and the <command>:project</command> command have been removed.
 </para></listitem>
 
 <listitem><para>

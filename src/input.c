@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: input.c,v $
- * $Revision: 1.66 $
- * $Date: 2003/03/16 17:59:13 $
+ * $Revision: 1.67 $
+ * $Date: 2003/09/18 18:02:23 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1797,10 +1797,6 @@ loop:	    skip();                     /* Skip qualifying dot             */
 	if (it==textWildcard)	       return '_';
 #if !HASKELL_98_ONLY
 	if (it==textAll && !haskell98) return ALL;
-#if IPARAM
-	if (it==textWith && !haskell98 && oldIParamSyntax) lookAhead(WITH);
-	if (it==textDlet && !haskell98 && oldIParamSyntax) lookAhead(DLET);
-#endif
 
 #if MUDO
 	if (it==textMDo && !haskell98) lookAhead(MDO);

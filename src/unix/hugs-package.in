@@ -23,7 +23,7 @@ cc=${CC-@CC@}
 : ${ffihugs=@BINDIR@/ffihugs}
 : ${runhugs=@BINDIR@/runhugs}
 : ${HUGSDIR=@HUGSDIR@}
-HUGSFLAGS='-W'
+HUGSFLAGS=
 
 export HUGSDIR HUGSFLAGS
 
