@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.96 $
- * $Date: 2002/09/13 05:07:15 $
+ * $Revision: 1.97 $
+ * $Date: 2002/09/13 05:30:50 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -922,9 +922,9 @@ Text  mt;
 Cell  spec; 
 Tycon tc; {
     if (DOTDOT == spec || SYNONYM == tycon(tc).what) {
-	return cons(pair(tc,DOTDOT), exports);
+	return addEntity(tc,DOTDOT,exports);
     } else {
-	return cons(pair(tc,NIL), exports);
+	return addEntity(tc,NIL,exports);
     }
 }
 
@@ -934,9 +934,9 @@ Text  mt;
 Class cl;
 Cell  spec; {
     if (DOTDOT == spec) {
-	return cons(pair(cl,DOTDOT), exports);
+	return addEntity(cl,DOTDOT,exports);
     } else {
-	return cons(pair(cl,NIL), exports);
+	return addEntity(cl,NIL,exports);
     }
 }
 
@@ -949,7 +949,8 @@ Cell e; {
 
     if (isIdent(e)) {
 	Cell export = NIL;
-	List origExports = exports;
+	Bool expFound = FALSE;
+
 	if (nonNull(export=findQualName(e))) {
 	    /* Check to see whether the exported name N belongs to a class
 	     * or a data con (i.e., a field name), named P. If so, add the
@@ -986,16 +987,19 @@ Cell e; {
 					 mkVar(name(export).text)),
 				    delayedExports);
 	    }
+	    expFound = TRUE;
 	    exports=cons(export,exports);
 	} 
 	if (isQCon(e) && nonNull(export=findQualTycon(e))) {
+	    expFound = TRUE;
 	    exports = checkExportTycon(exports,mt,NIL,export);
 	} 
 	if (isQCon(e) && nonNull(export=findQualClass(e))) {
 	    /* opaque class export */
+	    expFound = TRUE;
 	    exports = checkExportClass(exports,mt,NIL,export);
 	}
-	if (exports == origExports) {
+	if (!expFound) {
 	    ERRMSG(0) "Unknown entity \"%s\" exported from module \"%s\"",
 		      identToStr(e),
 		      textToStr(mt)
