@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: GreenCard.h,v $
- * $Revision: 1.1 $
- * $Date: 2001/06/28 22:43:56 $
+ * $Revision: 1.2 $
+ * $Date: 2001/06/28 23:58:41 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -25,9 +25,8 @@
  *
  * ------------------------------------------------------------------------*/
 
-/* Configuration details */
-#include "config.h"
-#include "options.h"
+/* Configuration details -- set to 0 if your C compiler doesn't support function protos */
+#define HAVE_PROTOTYPES 1
 
 #if HAVE_PROTOTYPES       /* To enable use of prototypes whenever possible */
 #define Args(x) x
