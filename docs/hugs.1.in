@@ -1,5 +1,5 @@
 .\" @configure_input@
-.TH HUGS 1 "January 2001" "" ""
+.TH HUGS 1 "September 2002" "" ""
 .ds LB @HUGSDIR@
 .ds BN @BINDIR@
 .ds HP @HUGSPATH@
@@ -48,11 +48,13 @@ After processing options, it loads the standard module \fBPrelude\fP
 and any other modules listed on the command line.
 .PP
 Each Haskell module is stored in a separate file.
-When loading a module \fIname\fP, \fIHugs\fP looks in each of the directories
+When loading a module \fIname\fP, \fIHugs\fP replaces each `\fB.\fP'
+in \fIname\fP with a `\fB/\fP' and looks in each of the directories
 on its search path (see \fB\-P\fP under \fBOPTIONS\fP)
-for the files \fIname\fP, \fIname\fP\fB.hs\fP and \fIname\fP\fB.lhs\fP.
+for the files \fIname\fP\fB.hs\fP and \fIname\fP\fB.lhs\fP.
 (The recognized suffixes may be changed using the \fB\-S\fP option,
 described under \fBOPTIONS\fP.)
+It also tries \fIname\fP as a literal filename.
 Files ending in "\fB.lhs\fP" are treated as literate scripts.
 .SH OPTIONS
 One group of options are toggled with \fB+\fP or \fB\-\fP to turn them on or
@@ -231,7 +233,7 @@ exit from \fIHugs\fP by typing the end-of-file character (^D).
 Note that the interrupt key (^C on most systems) can  be  used  at  any
 time whilst using \fIHugs\fP to abandon the process of reading in a file  of
 function definitions or the evaluation  of  an  expression.  When the
-interrupt key is detected, \fIHugs\fP prints the string "\fB{Interrupted!}\fP"
+interrupt is detected, \fIHugs\fP prints the string "\fB{Interrupted!}\fP"
 and prints the prompt so that further commands can be entered.
 .SH "STANDALONE PROGRAMS"
 The
@@ -296,7 +298,7 @@ The Hugs library directory (default:
 The default editor, if \fB\-E\fP is not given.
 .TP
 .B SHELL
-Used to specify shell that is invoked by the \fB:!\fP command.
+Used to specify the shell that is invoked by the \fB:!\fP command.
 .SH FILES
 .TP
 .I \*(BN/hugs
