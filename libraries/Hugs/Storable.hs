@@ -1,4 +1,4 @@
-module Hugs.Storable( module Hugs.Storable ) where
+module Hugs.Storable where
 
 import Hugs.Prelude
 
