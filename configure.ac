@@ -45,6 +45,13 @@ target_os=[`echo $TargetPlatform | sed 's/^\([^-]*\)-\([^-]*\)-\([^-]*\).*/\3/'`
 build_cpu=`echo $BuildPlatform | sed 's/-.*//'`
 build_os=[`echo $BuildPlatform | sed 's/^\([^-]*\)-\([^-]*\)-\([^-]*\).*/\3/'`]
 
+# canonicalize the target cpu (approximately as fptools does)
+case $target_cpu in
+i[[3456]]86*) target_cpu=i386 ;;
+esac
+host_cpu="$target_cpu"	# hack: we can't cross-compile
+build_cpu="$target_cpu"	# hack: we can't cross-compile
+
 # canonicalize the target OS (approximately as fptools does)
 case $target_os in
 aix*) target_os=aix ;;
@@ -68,9 +75,8 @@ esac
 host_os="$target_os"	# hack: we can't cross-compile
 build_os="$target_os"	# hack: we can't cross-compile
 
-# ToDo: We should probably use AS_TR_CPP here, but this changes case, too, and
-# I'm a bit reluctant to do this without closer inspection of the Hugs code.
-fp_tr_cpp="sed s%[[^_abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789]]%_%g"
+# We don't use AS_TR_CPP here, because it changes case too.
+fp_tr_cpp="sed s/[[^_a-zA-Z0-9]]/_/g"
 
 AC_SUBST([HostPlatform_CPP],   [`echo $HostPlatform   | $fp_tr_cpp`])
 AC_SUBST([TargetPlatform_CPP], [`echo $TargetPlatform | $fp_tr_cpp`])
