@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: preds.c,v $
- * $Revision: 1.16 $
- * $Date: 1999/11/15 22:57:01 $
+ * $Revision: 1.17 $
+ * $Date: 1999/11/16 22:59:55 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -20,7 +20,6 @@ static Cell   local assumeEvid        Args((Cell,Int));
 #if IPARAM
 static Cell   local findIPEvid	      Args((Text));
 static Void   local removeIPEvid      Args((Text));
-static Void   local matchupIPs	      Args((List,List));
 #endif
 static List   local makePredAss	      Args((List,Int));
 static List   local copyPreds	      Args((List));
@@ -305,37 +304,6 @@ Int  d; {
     return NIL;
 }
 
-#if IPARAM
-static Cell local ipEntail(ps,ip,o)	/* Find evidence for (ip,o) from ps*/
-List ps;
-Cell ip;
-Int  o; {
-    Class h  = getHead(ip);
-    int i;
-    for (; nonNull(ps); ps=tl(ps)) {
-	Cell pr1 = hd(ps);
-	Cell pi1 = fst3(pr1);
-	Int o1 = intOf(snd3(pr1));
-	Class h1 = getHead(pi1);
-	if (isIP(h1)) {
-	    if (textOf(h1) == textOf(h)) {
-		if (unify(arg(pi1),o1,arg(ip),o)) {
-		    return thd3(pr1);
-		} else {
-		    ERRMSG(0) "Mismatching uses of implicit parameter\n" ETHEN
-		    ERRPRED(copyPred(pi1,o1));
-		    ERRTEXT      "\n" ETHEN
-		    ERRPRED(copyPred(ip,o));
-		    ERRTEXT      "\n"
-		    EEND;
-		}
-	    }
-	}
-    }
-    return NIL;
-}
-#endif
-
 /* --------------------------------------------------------------------------
  * Now we reach the main entailment routine:
  *
@@ -580,7 +548,6 @@ Int  d; {
 	    Int  beta = fst(hd(ins));
 	    Cell e    = inst(in).builder;
 	    Cell es   = inst(in).specifics;
-	    Cell es_  = es;
 
 #if EXPLAIN_INSTANCE_RESOLUTION
 	    if (showInstRes) {

@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.16 $
- * $Date: 1999/11/06 01:29:11 $
+ * $Revision: 1.17 $
+ * $Date: 1999/11/16 22:59:54 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1233,7 +1233,6 @@ static Void local browse() {            /* browse modules                  */
 
 #if EXPLAIN_INSTANCE_RESOLUTION
 static Void local xplain() {         /* print type of expression (if any)*/
-    Cell type;
     Cell d;
     Bool sir = showInstRes;
 

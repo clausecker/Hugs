@@ -9,8 +9,8 @@
  * included in the distribution.
  *
  * $RCSfile: subst.c,v $
- * $Revision: 1.12 $
- * $Date: 1999/11/16 09:11:56 $
+ * $Revision: 1.13 $
+ * $Date: 1999/11/16 22:59:57 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -55,6 +55,7 @@ static Pair local copyNoMark		Args((Cell,Int));
 static Type local dropRank1Body		Args((Type,Int,Int));
 static Type local liftRank1Body		Args((Type,Int));
 
+static Bool local matchTypeAbove	Args((Type,Int,Type,Int,Int));
 static Bool local varToVarBind		Args((Tyvar *,Tyvar *));
 static Bool local varToTypeBind		Args((Tyvar *,Type,Int));
 #if TREX
@@ -1417,7 +1418,7 @@ Int   o; {				/* match is found, then tyvars from*/
 }
 
 #if MULTI_INST
-Cell findInstsFor(pi,o)			/* Find matching instance for pred */
+List findInstsFor(pi,o)			/* Find matching instance for pred */
 Cell  pi;				/* (pi,o), or otherwise NIL.  If a */
 Int   o; {				/* match is found, then tyvars from*/
     Class c = getHead(pi);		/* typeOff have been initialized to*/
@@ -1573,7 +1574,7 @@ Int above; {
 	for (; nonNull(hs); hs=tl(hs)) {
 	    Cell h  = hd(hs);
 	    Class d = getHead(h);
-	    alpha = newKindedVars(cclass(c).kinds);
+	    alpha = newKindedVars(cclass(d).kinds);
 	    if (matchPred(pi2,o2,h,alpha))
 		break;
 	    numTyvars = alpha;
@@ -1735,11 +1736,11 @@ Int  o; {				/* and that no vars have been	   */
     return result;
 }
 
-Bool matchTypeAbove(t1,o1,t,o,a)	/* match, allowing only vars	   */
-Type t1;				/* allocated since `a' to be bound */
-Int  o1;				/* this is deeply hacky, since it  */
-Type t;					/* relies on careful use of the	   */
-Int  o;					/* substitution stack		   */
+static Bool local matchTypeAbove(t1,o1,t,o,a)	/* match, allowing only vars */
+Type t1;				/* allocated since `a' to be bound   */
+Int  o1;				/* this is deeply hacky, since it    */
+Type t;					/* relies on careful use of the	     */
+Int  o;					/* substitution stack		     */
 Int  a; {
     Bool result;
     bindOnlyAbove(a);

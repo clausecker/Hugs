@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: input.c,v $
- * $Revision: 1.7 $
- * $Date: 1999/09/13 15:06:12 $
+ * $Revision: 1.8 $
+ * $Date: 1999/11/16 22:59:54 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1569,9 +1569,12 @@ Void parseExp() {                      /* Read an expression to evaluate   */
     parseInput(EXPR);
     setLastExpr(inputExpr);
 }
+
+#if EXPLAIN_INSTANCE_RESOLUTION
 Void parseContext() {                  /* Read a context to prove   */
     parseInput(CONTEXT);
 }
+#endif
 
 /* --------------------------------------------------------------------------
  * Input control:

@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: type.c,v $
- * $Revision: 1.14 $
- * $Date: 1999/11/15 22:57:05 $
+ * $Revision: 1.15 $
+ * $Date: 1999/11/16 22:59:57 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -130,7 +130,6 @@ static Cell   local typeExpr          Args((Int,Cell));
 
 static Cell   local typeAp	      Args((Int,Cell));
 static Type   local typeExpected      Args((Int,String,Cell,Type,Int,Int,Bool));
-static Type   local typeExpected2     Args((Int,String,Cell,Type,Int,Int));
 static Void   local typeAlt	      Args((String,Cell,Cell,Type,Int,Int));
 static Int    local funcType          Args((Int));
 static Void   local typeCase          Args((Int,Int,Cell));
@@ -1400,9 +1399,7 @@ Cell e; {				/* bizarre manner for the benefit  */
 static Cell local typeWith(line,e)	/* Type check a with		   */
 Int  line;
 Cell e; {
-    static String update = "with";
     List fs    = snd(snd(e));		/* List of field specifications	   */
-    List ts    = NIL;			/* List of types for fields	   */
     Int  n     = length(fs);
     Int  alpha = newTyvars(2+n);
     Int  i;
@@ -1823,7 +1820,6 @@ Class c; {				/* defaults for class c		   */
     List defs   = cclass(c).defaults;
     List dsels  = cclass(c).dsels;
     Cell pat    = cclass(c).dcon;
-    Cell args   = NIL;
     Int  width  = cclass(c).numSupers + cclass(c).numMembers;
     char buf[FILENAME_MAX+1];
     Int  i      = 0;

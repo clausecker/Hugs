@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.15 $
- * $Date: 1999/11/15 22:57:01 $
+ * $Revision: 1.16 $
+ * $Date: 1999/11/16 22:59:55 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -2301,7 +2301,6 @@ static List local otvarsZonk(pi,os,o)	/* same as above, but zonks	   */
 Cell pi;
 List os; {
     List us = NIL;
-    List vs = NIL;
     for (; nonNull(os); os=tl(os)) {
         Type t = zonkType(nthArg(offsetOf(hd(os)),pi),o);
 	us = zonkTyvarsIn(t,us);
@@ -5942,6 +5941,7 @@ Void checkExp() {			/* Top level static check on Expr  */
     staticAnalysis(RESET);
 }
 
+#if EXPLAIN_INSTANCE_RESOLUTION
 Void checkContext() {			/* Top level static check on Expr  */
     List vs, qs;
 
@@ -5956,6 +5956,7 @@ Void checkContext() {			/* Top level static check on Expr  */
     leaveScope();
     staticAnalysis(RESET);
 }
+#endif
 
 Void checkDefns() {			/* Top level static analysis	   */
 #if !IGNORE_MODULES
