@@ -3,6 +3,8 @@ module Hugs.Storable where
 import Hugs.Prelude
 import Hugs.Ptr (castPtr)
 
+{-# CFILES Hugs/Storable_aux.c #-}
+
 foreign import ccall unsafe "Storable_aux.h" readIntOffPtr       :: Ptr Int           -> Int -> IO Int
 foreign import ccall unsafe "Storable_aux.h" readCharOffPtr      :: Ptr Char          -> Int -> IO Char
 foreign import ccall unsafe "Storable_aux.h" readPtrOffPtr       :: Ptr (Ptr a)       -> Int -> IO (Ptr a)
