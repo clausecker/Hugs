@@ -8,8 +8,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: storage.h,v $
- * $Revision: 1.45 $
- * $Date: 2002/10/03 16:34:20 $
+ * $Revision: 1.46 $
+ * $Date: 2002/11/03 03:56:05 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -240,6 +240,7 @@ extern	Cell	     whatIs    Args((Cell));
 #define mkVarop(t)	ap(VAROPCELL,t)
 #define mkCon(t)	ap(CONIDCELL,t)
 #define mkConop(t)	ap(CONOPCELL,t)
+#define mkQId(m,c)      ap(QUALIDENT,pair(mkCon(m),c))
 #define mkQVar(m,t)	ap(QUALIDENT,pair(mkCon(m),mkVar(t)))
 #define mkQCon(m,t)	ap(QUALIDENT,pair(mkCon(m),mkCon(t)))
 #define mkQVarOp(m,t)	ap(QUALIDENT,pair(mkCon(m),mkVarop(t)))
