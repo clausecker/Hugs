@@ -27,11 +27,10 @@ module Directory
 	, getPermissions	     -- :: FilePath -> IO Permissions
 	, setPermissions	     -- :: FilePath -> Permissions -> IO ()
 
-{-
 	, getModificationTime 	     -- :: FilePath -> IO ClockTime
--}
 	) where
 
+import Time ( ClockTime(..) )
 
 data Permissions
  = Permissions 
@@ -85,4 +84,9 @@ getDirectoryContents fpath = do
 
 primitive getDirContents :: FilePath -> IO [FilePath]
 
+getModificationTime :: FilePath -> IO ClockTime
+getModificationTime fPath = do
+  x <- getModTime fPath
+  return (ClockTime (fromIntegral x) 0)
 
+primitive getModTime :: FilePath -> IO Int
