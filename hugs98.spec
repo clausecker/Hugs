@@ -7,6 +7,7 @@ Group:        Development/Languages/Haskell
 Packager:     jlewis@cse.ogi.edu
 URL:          http://www.haskell.org/hugs
 Source:       http://www.cse.ogi.edu/PacSoft/projects/Hugs/downloads/hugs98-Feb2000.tar.gz
+Requires:     readline
 BuildRoot:    /tmp/hugs98
 Summary:      A Haskell Interpreter
 %description
