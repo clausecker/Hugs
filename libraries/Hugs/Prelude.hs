@@ -111,10 +111,12 @@ module Hugs.Prelude (
     asTypeOf, error, undefined,
     seq, ($!),
 
-    numericEnumFrom,
-    numericEnumFromTo,
-    numericEnumFromThen,
-    numericEnumFromThenTo
+    boundedSucc,
+    boundedPred,
+    boundedEnumFrom,
+    boundedEnumFromTo,
+    boundedEnumFromThen,
+    boundedEnumFromThenTo
   ) where
 
 -- Standard value bindings {Prelude} ----------------------------------------
@@ -466,7 +468,6 @@ instance Enum () where
     toEnum 0           = ()
     fromEnum ()        = 0
     enumFrom ()        = [()]
-    enumFromThen () () = [()]
 
 instance Read () where
     readsPrec p = readParen False (\r -> [((),t) | ("(",s) <- lex r,
@@ -515,8 +516,7 @@ instance Enum Char where
     toEnum           = primIntToChar
     fromEnum         = primCharToInt
     enumFrom c       = map toEnum [fromEnum c .. fromEnum (maxBound::Char)]
-    enumFromThen c d = map toEnum [fromEnum c, fromEnum d .. fromEnum (lastChar::Char)]
-		       where lastChar = if d < c then minBound else maxBound
+    enumFromThen     = boundedEnumFromThen
 
 instance Ix Char where
     range (c,c')      = [c..c']
@@ -739,12 +739,42 @@ instance Ix Integer where
     inRange (m,n) i      = m <= i && i <= n
 
 instance Enum Int where
-    toEnum               = id
-    fromEnum             = id
-    enumFrom       = numericEnumFrom
-    enumFromTo     = numericEnumFromTo
-    enumFromThen   = numericEnumFromThen
-    enumFromThenTo = numericEnumFromThenTo
+    succ           = boundedSucc
+    pred           = boundedPred
+    toEnum         = id
+    fromEnum       = id
+    enumFrom       = boundedEnumFrom
+    enumFromTo     = boundedEnumFromTo
+    enumFromThen   = boundedEnumFromThen
+    enumFromThenTo = boundedEnumFromThenTo
+
+boundedSucc, boundedPred :: (Num a, Bounded a, Enum a) => a -> a
+boundedSucc x
+  | x == maxBound = error "succ: applied to maxBound"
+  | otherwise     = x+1
+boundedPred x
+  | x == minBound = error "pred: applied to minBound"
+  | otherwise     = x-1
+
+boundedEnumFrom       :: (Ord a, Bounded a, Enum a) => a -> [a]
+boundedEnumFromTo     :: (Ord a, Bounded a, Enum a) => a -> a -> [a]
+boundedEnumFromThenTo :: (Ord a, Num a, Bounded a, Enum a) => a -> a -> a -> [a]
+boundedEnumFromThen   :: (Ord a, Bounded a, Enum a) => a -> a -> [a]
+
+boundedEnumFrom n     = takeWhile1 (/= maxBound) (iterate succ n)
+boundedEnumFromTo n m = takeWhile (<= m) (boundedEnumFrom n)
+boundedEnumFromThen n m =
+    enumFromThenTo n m (if n <= m then maxBound else minBound)
+boundedEnumFromThenTo n n' m
+  | n' >= n   = if n <= m then takeWhile1 (<= m - delta) ns else []
+  | otherwise = if n >= m then takeWhile1 (>= m - delta) ns else []
+ where
+  delta = n'-n
+  ns = iterate (+delta) n
+
+-- takeWhile and one more
+takeWhile1 :: (a -> Bool) -> [a] -> [a]
+takeWhile1 p (x:xs) = x : if p x then takeWhile1 p xs else []
 
 instance Enum Integer where
     succ x         = x + 1
@@ -754,20 +784,24 @@ instance Enum Integer where
     fromEnum       = primIntegerToInt
     enumFrom       = numericEnumFrom
     enumFromThen   = numericEnumFromThen
-    enumFromTo     = numericEnumFromTo
-    enumFromThenTo = numericEnumFromThenTo
+    enumFromTo n m = takeWhile (<= m) (numericEnumFrom n)
+    enumFromThenTo n n' m = takeWhile p (numericEnumFromThen n n')
+                                where p | n' >= n   = (<= m)
+                                        | otherwise = (>= m)
 
-
-numericEnumFrom        :: Real a => a -> [a]
-numericEnumFromThen    :: Real a => a -> a -> [a]
-numericEnumFromTo      :: Real a => a -> a -> [a]
-numericEnumFromThenTo  :: Real a => a -> a -> a -> [a]
-numericEnumFrom n            = n : (numericEnumFrom $! (n+1))
-numericEnumFromThen n m      = iterate ((m-n)+) n
-numericEnumFromTo n m        = takeWhile (<= m) (numericEnumFrom n)
+numericEnumFrom        :: Num a => a -> [a]
+numericEnumFromThen    :: Num a => a -> a -> [a]
+numericEnumFromTo      :: (Ord a, Fractional a) => a -> a -> [a]
+numericEnumFromThenTo  :: (Ord a, Fractional a) => a -> a -> a -> [a]
+numericEnumFrom n            = iterate' (+1) n
+numericEnumFromThen n m      = iterate' (+(m-n)) n
+numericEnumFromTo n m        = takeWhile (<= m+1/2) (numericEnumFrom n)
 numericEnumFromThenTo n n' m = takeWhile p (numericEnumFromThen n n')
-                               where p | n' >= n   = (<= m)
-				       | otherwise = (>= m)
+                               where p | n' >= n   = (<= m + (n'-n)/2)
+                                       | otherwise = (>= m + (n'-n)/2)
+
+iterate' :: (a -> a) -> a -> [a]	-- strict version of iterate
+iterate' f x = x : (iterate' f $! f x)
 
 primitive primShowsInt :: Int -> Int -> ShowS
 

@@ -12,7 +12,10 @@ module Hugs.Int
 	--  Show and Bits instances for each of Int8, Int16 and Int32
 	) where
 
-import Hugs.Prelude ( Int8, Int16, Int32, Int64 )
+import Hugs.Prelude ( Int8, Int16, Int32, Int64,
+		      boundedSucc, boundedPred,
+                      boundedEnumFrom, boundedEnumFromTo,
+                      boundedEnumFromThen, boundedEnumFromThenTo )
 import Hugs.Prelude ( Ix(..) )
 import Hugs.Prelude ( (%) )
 import Hugs.Prelude ( readDec )
@@ -79,11 +82,12 @@ instance Ix Int8 where
     inRange (m,n) i      = m <= i && i <= n
 
 instance Enum Int8 where
+    succ             = boundedSucc
+    pred             = boundedPred
     toEnum           = fromInt
     fromEnum         = toInt
-    enumFrom c       = map toEnum [fromEnum c .. fromEnum (maxBound::Int8)]
-    enumFromThen c d = map toEnum [fromEnum c, fromEnum d .. fromEnum (last::Int8)]
-			  where last = if d < c then minBound else maxBound
+    enumFrom         = boundedEnumFrom
+    enumFromThen     = boundedEnumFromThen
 
 instance Read Int8 where
     readsPrec p s = [ (to x,r) | (x,r) <- readsPrec p s ]
@@ -153,11 +157,12 @@ instance Ix Int16 where
     inRange (m,n) i      = m <= i && i <= n
 
 instance Enum Int16 where
+    succ             = boundedSucc
+    pred             = boundedPred
     toEnum           = fromInt 
     fromEnum         = toInt
-    enumFrom c       = map toEnum [fromEnum c .. fromEnum (maxBound::Int16)]
-    enumFromThen c d = map toEnum [fromEnum c, fromEnum d .. fromEnum (last::Int16)]
-			  where last = if d < c then minBound else maxBound
+    enumFrom         = boundedEnumFrom
+    enumFromThen     = boundedEnumFromThen
 
 instance Read Int16 where
     readsPrec p s = [ (to x,r) | (x,r) <- readsPrec p s ]
@@ -229,11 +234,12 @@ instance Ix Int32 where
     inRange (m,n) i      = m <= i && i <= n
 
 instance Enum Int32 where
+    succ             = boundedSucc
+    pred             = boundedPred
     toEnum           = fromInt
     fromEnum         = toInt
-    enumFrom c       = map toEnum [fromEnum c .. fromEnum (maxBound::Int32)]
-    enumFromThen c d = map toEnum [fromEnum c, fromEnum d .. fromEnum (last::Int32)]
-			  where last = if d < c then minBound else maxBound
+    enumFrom         = boundedEnumFrom
+    enumFromThen     = boundedEnumFromThen
 
 instance Read Int32 where
     readsPrec p s = [ (intToInt32 x,r) | (x,r) <- readsPrec p s ]
@@ -310,14 +316,14 @@ instance Ix Int64 where
     inRange (m,n) i      = m <= i && i <= n
 
 instance Enum Int64 where
+    succ             = boundedSucc
+    pred             = boundedPred
     toEnum           = fromInt
     fromEnum         = toInt
 
-    succ             = fromInteger . (+1) . toInteger
-    pred             = fromInteger . (subtract 1) . toInteger
-    enumFrom x       = map fromInteger [toInteger x ..]
+    enumFrom x       = enumFromTo x maxBound
     enumFromTo x y   = map fromInteger [toInteger x .. toInteger y]
-    enumFromThen x y = map fromInteger [toInteger x, toInteger y ..]
+    enumFromThen     = boundedEnumFromThen
     enumFromThenTo x y z =
                        map fromInteger [toInteger x, toInteger y .. toInteger z]
 

@@ -10,7 +10,10 @@ module Hugs.Word
 	, Word64
 	) where
 
-import Hugs.Prelude ( Word, Word8, Word16, Word32, Word64 )
+import Hugs.Prelude ( Word, Word8, Word16, Word32, Word64,
+                      boundedSucc, boundedPred,
+		      boundedEnumFrom, boundedEnumFromTo,
+		      boundedEnumFromThen, boundedEnumFromThenTo )
 import Data.Bits
 import Data.Int
 import Hugs.Prelude ( Ix(..) )
@@ -81,11 +84,12 @@ instance Ix Word8 where
     inRange (m,n) i      = m <= i && i <= n
 
 instance Enum Word8 where
+    succ           = boundedSucc
+    pred           = boundedPred
     toEnum         = to . intToWord32
     fromEnum       = word32ToInt . from
-    enumFrom c       = map toEnum [fromEnum c .. fromEnum (maxBound::Word8)]
-    enumFromThen c d = map toEnum [fromEnum c, fromEnum d .. fromEnum (last::Word8)]
-		       where last = if d < c then minBound else maxBound
+    enumFrom       = boundedEnumFrom
+    enumFromThen   = boundedEnumFromThen
 
 instance Read Word8 where
     readsPrec p = readDec
@@ -154,11 +158,12 @@ instance Ix Word16 where
   inRange (m,n) i      = m <= i && i <= n
 
 instance Enum Word16 where
+  succ           = boundedSucc
+  pred           = boundedPred
   toEnum         = to . intToWord32
   fromEnum       = word32ToInt . from
-  enumFrom c       = map toEnum [fromEnum c .. fromEnum (maxBound::Word16)]
-  enumFromThen c d = map toEnum [fromEnum c, fromEnum d .. fromEnum (last::Word16)]
-		       where last = if d < c then minBound else maxBound
+  enumFrom       = boundedEnumFrom
+  enumFromThen   = boundedEnumFromThen
 
 instance Read Word16 where
   readsPrec p = readDec
@@ -224,6 +229,8 @@ instance Ix Word32 where
     inRange (m,n) i      = m <= i && i <= n
 
 instance Enum Word32 where
+    succ           = boundedSucc
+    pred           = boundedPred
     toEnum        = intToWord32
     fromEnum      = word32ToInt
 
@@ -238,28 +245,6 @@ instance Enum Word32 where
     enumFromTo     = boundedEnumFromTo
     enumFromThen   = boundedEnumFromThen
     enumFromThenTo = boundedEnumFromThenTo
-
-boundedEnumFrom        :: (Ord a, Num a, Bounded a, Enum a) => a -> [a]
-boundedEnumFromThen    :: (Ord a, Num a, Bounded a, Enum a) => a -> a -> [a]
-boundedEnumFromTo      :: (Ord a, Num a, Bounded a, Enum a) => a -> a -> [a]
-boundedEnumFromThenTo  :: (Ord a, Num a, Bounded a, Enum a) => a -> a -> a -> [a]
-boundedEnumFrom n
-  | n == maxBound = [n]
-  | otherwise     = n : (boundedEnumFrom $! (n+1))
-boundedEnumFromThen n m
-  | n <= m    = enum (< maxBound - delta) delta n
-  | otherwise = enum (> minBound - delta) delta n
- where
-  delta = m - n
-boundedEnumFromTo n m = takeWhile (<= m) (boundedEnumFrom n)
-boundedEnumFromThenTo n n' m 
-  | n' >= n   = if n <= m then enum (<= m - delta) delta n else []
-  | otherwise = if n >= m then enum (>= m - delta) delta n else []
- where
-  delta = n'-n
-
-enum :: (Num a) => (a -> Bool) -> a -> a -> [a]
-enum p delta x = if p x then x : (enum p delta $! (x+delta)) else [x]
 
 instance Read Word32 where
     readsPrec p = readDec
@@ -332,14 +317,14 @@ instance Ix Word64 where
     inRange (m,n) i      = m <= i && i <= n
 
 instance Enum Word64 where
+    succ             = boundedSucc
+    pred             = boundedPred
     toEnum           = fromInt
     fromEnum         = toInt
 
-    succ             = fromInteger . (+1) . toInteger
-    pred             = fromInteger . (subtract 1) . toInteger
-    enumFrom x       = map fromInteger [toInteger x ..]
+    enumFrom x       = enumFromTo x maxBound
     enumFromTo x y   = map fromInteger [toInteger x .. toInteger y]
-    enumFromThen x y = map fromInteger [toInteger x, toInteger y ..]
+    enumFromThen     = boundedEnumFromThen
     enumFromThenTo x y z =
                        map fromInteger [toInteger x, toInteger y .. toInteger z]
 
