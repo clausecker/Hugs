@@ -89,4 +89,4 @@ src/stamp-h.in: configure.ac aclocal.m4
 fptools:
 	-mkdir fptools
 	cvs -d `cat CVS/Root` get -r${HSLIBSTAG} `for d in ${HSLIBSDIRS}; do echo fptools/hslibs/$$d; done`
-	cvs -d `cat CVS/Root` get -r${LIBRARIESTAG} `for d in ${LIBRARIESDIRS}; do echo fptools/hslibs/$$d; done`
+	cvs -d `cat CVS/Root` get -r${LIBRARIESTAG} `for d in ${LIBRARIESDIRS}; do echo fptools/libraries/$$d; done`
