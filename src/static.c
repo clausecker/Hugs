@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.137 $
- * $Date: 2003/02/04 05:07:50 $
+ * $Revision: 1.138 $
+ * $Date: 2003/02/08 15:46:43 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1057,7 +1057,11 @@ Type t; {				/* assuming that all relevant type */
 
 Bool hasIOResultType(ty) /* return TRUE if FFI/primitive type sig is an IO action. */
 Type ty; {
-  Type t = fullerExpand(ty);
+  Type t = ty;
+  if (isPolyType(t)) {
+        t = monotypeOf(t);
+    }
+  t = fullerExpand(t);
   while (getHead(t) == typeArrow && argCount == 2) {
     t = fullerExpand(arg(t));
   }
