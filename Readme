@@ -16,6 +16,8 @@ __   __ __  __  ____   ___      _________________________________________
    
    - More of the hierarchical libraries, including imprecise exceptions
      and unboxed arrays, giving greater compatibility with GHC.
+     For now, compatibility with the old libraries is provided by stub
+     modules, but users are encouraged to migrate to the new libraries.
    - The Double type is now double-precision on most architectures.
    - The -N, -i, -f, -W and -X options are gone, as is the :project command.
    - Integrated .NET support (on Windows).
