@@ -1,8 +1,8 @@
-# this Makefile is for building RPM distributions, and is, not surprisingly,
-# somewhat redhat specific (and rpm version 3 specific - i.e. RedHat 6.0
-# or greater).
+# This Makefile is for building RPM distributions.
 
-# need to conditionalize
+# Starting with Red Hat 8.0, the build functionality was removed from rpm, so
+# one has to use rpmbuild instead. SuSE didn't follow this change, so there is
+# no rpmbuild on SuSE and rpm still does the job. I like such changes...
 RPMBUILD = rpmbuild
 
 RPMTMP = /tmp/rpm
