@@ -1176,17 +1176,6 @@ LRESULT CALLBACK OptionsDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 	    j++;
 	  }
       }
-
-
-/*
-      for(i=0; toggle[i].c; i++)
-	if (!toggle[i].h98 && haskell98)
-	  EnableWindow(GetDlgItem(hDlg, ID_OP+i), FALSE);
-	else
-	  CheckDlgButton(hDlg, ID_OP+i, *toggle[i].flag);
-
-*/
-
       return TRUE;
     }
 
@@ -1220,55 +1209,75 @@ LRESULT CALLBACK OptionsDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 	  return FALSE;
 
 	case IDOK: {
+          StringBuilder* builder = newStringBuilder(0);
 	  CHAR Buffer[1024];
 
 	  GetDlgItemText(hDlg, ID_PROMPT, (LPSTR) Buffer, 1024);
-	  if (prompt) free(prompt);
-	  prompt = strCopy(Buffer);
+	  if (Buffer[0] != '\0') {
+	      appendStringFormat(builder," -p\"%s\"", Buffer);
+	  }
 
 	  GetDlgItemText(hDlg, ID_LASTEXPR, (LPSTR) Buffer, 1024);
-	  if (repeatStr) free(repeatStr);
-	  repeatStr = strCopy(Buffer);
+	  if (Buffer[0] != '\0') {
+	      appendStringFormat(builder, " -r\"%s\"", Buffer);
+	  }
 
 	  GetDlgItemText(hDlg, ID_PATH, (LPSTR) Buffer, 1024);
-	  if (hugsPath) free(hugsPath);
-	  hugsPath = strCopy(Buffer);
+	  if (Buffer[0] != '\0') {
+	      appendStringFormat(builder, " -P\"%s\"", Buffer);
+	  }
 
 	  GetDlgItemText(hDlg, ID_EDITOR, (LPSTR) Buffer, 1024);
-	  if (hugsEdit) free(hugsEdit);
-	  hugsEdit = strCopy(Buffer);
+	  if (Buffer[0] != '\0') {
+	      appendStringFormat(builder, " -E\"%s\"", Buffer);
+	  }
 
 #if SUPPORT_PREPROCESSOR
 	  GetDlgItemText(hDlg, ID_PREPROCESSOR, (LPSTR) Buffer, 1024);
-	  if ( (Buffer && strlen(Buffer) > 0) ) {
-	      if (preprocessor) free(preprocessor);
-	      preprocessor = strCopy(Buffer);
+	  if (Buffer[0] != '\0') {
+	      appendStringFormat(builder, " -F\"%s\"", Buffer);
 	  }
 #endif
 
 	  GetDlgItemText(hDlg, ID_CUTOFF, (LPSTR) Buffer, 1024);
-	  cutoff = argToInt(Buffer);
+	  if (Buffer[0] != '\0') {
+	      appendStringFormat(builder, " -c%s", Buffer);
+	  }
 
 	  GetDlgItemText(hDlg, ID_HEAPSIZE, (LPSTR) Buffer, 1024);
-	  setHeapSize(Buffer);
-
-
-      for(i=0; toggle[i].c; i++) {
-	  int j = 0;
-	  while (1) { /* look for DlgItem corresponding to flag */
-	    GetDlgItemText(hDlg, ID_OP+j, (LPSTR) Buffer, 1024);
-
-	    if (!(*Buffer))
-	      break;
-
-	    if ((Buffer[1] == toggle[i].c) && (toggle[i].h98 || !haskell98)) {
-	      *toggle[i].flag = (Bool) IsDlgButtonChecked(hDlg, ID_OP+j);
-	      break;
-	    }
-
-	    j++;
+	  if (Buffer[0] != '\0') {
+	      appendStringFormat(builder, " -h%s", Buffer);
 	  }
-      }
+
+	  for(i=0; toggle[i].c; i++) {
+	      int j = 0;
+	      char toggleStr[4];
+	      toggleStr[0] = ' ';
+	      toggleStr[3] = '\0';
+
+	      while (1) { /* look for DlgItem corresponding to flag */
+		  GetDlgItemText(hDlg, ID_OP+j, (LPSTR) Buffer, 1024);
+
+		  if (!(*Buffer))
+		      break;
+		  
+		  if ((Buffer[1] == toggle[i].c) && (toggle[i].h98 || !haskell98)) {
+		      toggleStr[2] = toggle[i].c;
+		      if (IsDlgButtonChecked(hDlg,ID_OP+j)) {
+			  toggleStr[1] = '+';
+		      } else {
+			  toggleStr[1] = '-';
+		      }
+		      appendString(builder, toggleStr);
+		      break;
+		  }
+		  
+		  j++;
+	      }
+	  }
+
+      readOptions(toString(builder), FALSE);
+      freeStringBuilder(builder);
       writeRegString("Options", optionsToStr());
 
       EndDialog(hDlg, TRUE);
