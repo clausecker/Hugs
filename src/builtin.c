@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: builtin.c,v $
- * $Revision: 1.75 $
- * $Date: 2004/04/12 16:46:56 $
+ * $Revision: 1.76 $
+ * $Date: 2004/05/08 14:15:43 $
  * ------------------------------------------------------------------------*/
 
 /* We include math.h before prelude.h because SunOS 4's cpp incorrectly
@@ -2018,15 +2018,17 @@ static void* mkThunk(void (*app)(void), HugsStablePtr s) {
 
     /* 5 bytes: pushl s */
     *pc++ = (char)0x68;
-    *((HugsStablePtr*)pc)++ = s;
+    /* avoid GCC's picky "use of cast expressions as lvalues is deprecated" warning,
+       the same as "*((HugsStablePtr*)pc)++ = s" */
+    { HugsStablePtr* tmpPtr = (HugsStablePtr*)pc;   *tmpPtr = s;   pc += sizeof(*tmpPtr); }
 
     /* 5 bytes: movl app, %eax */
     *pc++ = (char)0xb8;
-    *((void(**)(void))pc)++ = app;
+    { void(**tmpPtr)(void) = (void(**)(void))pc;   *tmpPtr = app;   pc += sizeof(*tmpPtr); }
 
     /* 5 bytes: pushl obscure_ccall_ret_code */
     *pc++ = (char)0x68;
-    *((char**)pc)++ = obscure_ccall_ret_code;
+    { char** tmpPtr = (char**)pc;   *tmpPtr = obscure_ccall_ret_code;   pc += sizeof(*tmpPtr); }
 
     /* 2 bytes: jmp *%eax */
     *pc++ = 0xff; *pc++ = 0xe0;

@@ -14,8 +14,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: iomonad.c,v $
- * $Revision: 1.77 $
- * $Date: 2004/03/17 10:38:54 $
+ * $Revision: 1.78 $
+ * $Date: 2004/05/08 14:15:44 $
  * ------------------------------------------------------------------------*/
  
 Name nameIORun;			        /* run IO code                     */
@@ -1630,10 +1630,11 @@ primFun(primHGetBuf) {			/* read binary data into a buffer   */
     }
 
     if (h == HSTDIN) {
+	char *p = (char*)buf;
 	while (size > 0) {
 	    Int c = readTerminalChar();
 	    if (c == EOF) break;
-	    *((char*)buf)++ = (char)c;
+	    *p++ = (char)c;
 	    size--;
 	}
     } else {
