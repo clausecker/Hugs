@@ -1,4 +1,4 @@
-module Quote where
+module Quote(Quote, quote, trim) where
 
 class Quote a where
     quote :: a -> String
@@ -29,3 +29,27 @@ instance Quote Double where
 
 instance Integral a => Quote (Ratio a) where
     quote = show
+
+-- trims off leading whitespace up to a common prefix,
+-- making it easy to layout here docs indented so that
+-- are not visually confusing (especially if you are doing
+-- something like using here docs to generate Haskell code)
+
+trim s = unlines ls'
+  where s'  = case s of { '\n':cs -> cs; _ -> s }
+	ls  = lines s'
+	ls' = map (trimoff 0 n) ls
+	n = case filter (/= 0) $ map (whitecount 0) ls of
+	      [] -> 0
+	      xs -> minimum xs
+
+whitecount n []        = n
+whitecount n (' ':cs)  = whitecount (n + 1) cs
+whitecount n ('\t':cs) = whitecount (8 * ((n + 8) `div` 8)) cs
+whitecount n _         = n
+
+trimoff n m [] = []
+trimoff n m cs | n >= m = cs
+trimoff n m (' ' :cs) = trimoff (n + 1) m cs
+trimoff n m ('\t':cs) = trimoff (8 * ((n + 8) `div` 8)) m cs
+trimoff n m cs        = cs
