@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: storage.c,v $
- * $Revision: 1.74 $
- * $Date: 2003/10/07 13:56:02 $
+ * $Revision: 1.75 $
+ * $Date: 2003/10/11 00:37:33 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1060,7 +1060,7 @@ Text t; {
 	EEND;
     }
 #else
-    if (dynTabClass->idx >= dynTabClass->maxIdx) {
+    if (classHw-CLASSMIN >= dynTabClass->maxIdx) {
       growDynTable(dynTabClass);
       tabClass = (struct strClass*)(dynTabClass->data);
     }
@@ -1087,9 +1087,6 @@ Text t; {
     cclass(classHw).mod       = currentModule;
     module(currentModule).classes=cons(classHw,module(currentModule).classes);
 
-#if !WANT_FIXED_SIZE_TABLES
-    dynTabClass->idx++;
-#endif
     return classHw++;
 }
 
@@ -1157,7 +1154,7 @@ Inst newInst() {                       /* Add new instance to table        */
 	EEND;
     }
 #else
-    if (dynTabInst->idx >= dynTabInst->maxIdx) {
+    if (instHw-INSTMIN >= dynTabInst->maxIdx) {
         growDynTable(dynTabInst);
 	tabInst = (struct strInst*)(dynTabInst->data);
     }
@@ -1168,9 +1165,6 @@ Inst newInst() {                       /* Add new instance to table        */
     inst(instHw).implements = NIL;
     inst(instHw).builder    = NIL;
 
-#if !WANT_FIXED_SIZE_TABLES
-    dynTabInst->idx++;
-#endif
     return instHw++;
 }
 
@@ -1629,7 +1623,7 @@ String f; {                             /* of status for later restoration  */
 	EEND;
     }
 #else
-    if (dynTabScripts->idx >= dynTabScripts->maxIdx) {
+    if (scriptHw >= dynTabScripts->maxIdx) {
       growDynTable(dynTabScripts);
       scripts = (script*)(dynTabScripts->data);
     }
@@ -1667,9 +1661,6 @@ String f; {                             /* of status for later restoration  */
 #endif
     scripts[scriptHw].prims        = NULL;
 
-#if !WANT_FIXED_SIZE_TABLES
-    dynTabScripts->idx++;
-#endif
     return scriptHw++;
 }
 
@@ -1813,9 +1804,6 @@ Script sno; {                           /* to reading script sno           */
 	    cclass(i).instances = rev(is);
 	}
 
-#if !WANT_FIXED_SIZE_TABLES
-	dynTabScripts->idx = sno;
-#endif
 	i = sno;
 	while (i < scriptHw) {
 	  if (scripts[i].prims) {
@@ -3412,7 +3400,6 @@ const char* tabName; {
    DynTable *tab = (DynTable*)malloc(sizeof(struct strDynTable));
    
    if ( tab != NULL ) {
-     tab->idx     = 0;
      tab->maxIdx  = maxIdx;
      tab->hWater  = hWater;
      tab->tabName = tabName;
@@ -3711,10 +3698,10 @@ Int what; {
 #if !WANT_FIXED_SIZE_TABLES
 		       dynTabScripts = allocDynTable(sizeof(script),10,0,"scripts");
 		       scripts = (script*)(dynTabScripts->data);
-		       dynTabClass = allocDynTable(sizeof(struct strClass),10,0,"class");
+		       dynTabClass = allocDynTable(sizeof(struct strClass),10,NUM_CLASSES,"class");
 		       tabClass = (struct strClass*)(dynTabClass->data);
 
-		       dynTabInst = allocDynTable(sizeof(struct strInst),50,0,"instance");
+		       dynTabInst = allocDynTable(sizeof(struct strInst),50,NUM_INSTS,"instance");
 		       tabInst = (struct strInst*)(dynTabInst->data);
 		       dynTabHandles = allocDynTable(sizeof(struct strHandle),NUM_HANDLES, 0, "handles");
 		       handles = (struct strHandle*)(dynTabHandles->data);

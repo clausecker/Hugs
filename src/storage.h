@@ -8,8 +8,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: storage.h,v $
- * $Revision: 1.57 $
- * $Date: 2003/07/24 13:39:41 $
+ * $Revision: 1.58 $
+ * $Date: 2003/10/11 00:37:34 $
  * ------------------------------------------------------------------------*/
 #ifndef __STORAGE_H__
 #define __STORAGE_H__
@@ -352,11 +352,10 @@ extern  Pointer         ptrOf           Args((Cell));
  * Resizeable table struct type.
  * ------------------------------------------------------------------------*/
 typedef struct strDynTable {
-  /* "data" holds "maxIdx*eltSize" bytes, "eltSize*max(0,idx-1)" of which are
-   * currently in use. "maxIdx" may not grow beyond "hWater". If
-   * "hWater" is 0, "maxIdx" does not have an upper bound.
+  /* "data" holds "maxIdx*eltSize" bytes.
+   * "maxIdx" may not grow beyond "hWater", unless "hWater" is 0,
+   * in which case "maxIdx" does not have an upper bound.
    */
-  unsigned long idx;
   unsigned long maxIdx;
   unsigned long hWater;
   unsigned long eltSize;
