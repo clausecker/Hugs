@@ -11,8 +11,8 @@ compile_only=false
 extra_opts='-k'
 haskell98=true
 use_cpp=false
+cpp='cpp -P -traditional -D__HUGS__'
 cpp_flags=
-extra_cpp_flags='-P -traditional -D__HUGS__'
 
 # flags that also occur in source files
 handle_flag() {
@@ -90,12 +90,12 @@ for f in $sources; do
 			cp $f.save $f
 		fi
 		if $use_cpp; then
-			ffihugs +G -F"cpp $extra_cpp_flags $cpp_flags" $extra_opts $ffi_args $f || exit 1
+			ffihugs +G -F"$cpp $cpp_flags" $extra_opts $ffi_args $f || exit 1
 		else
 			ffihugs +G $extra_opts $ffi_args $f || exit 1
 		fi
 	elif $use_cpp; then
-		if hugs -F"cpp $extra_cpp_flags $cpp_flags" $extra_opts $f </dev/null | tail +10 | fgrep -v 'Type :? for help' | fgrep -v '[Leaving Hugs]' | grep . >&2
+		if hugs -F"$cpp $cpp_flags" $extra_opts $f </dev/null | tail +10 | fgrep -v 'Type :? for help' | fgrep -v '[Leaving Hugs]' | grep . >&2
 		then	exit 1
 		fi
 	else
@@ -143,7 +143,7 @@ then
 		(
 			echo '#! /bin/sh'
 			if $use_cpp
-			then	echo runhugs "-F'cpp $cpp_flags 2>/dev/null'" $extra_opts $main_file '"$@"'
+			then	echo runhugs "-F'$cpp $cpp_flags 2>/dev/null'" $extra_opts $main_file '"$@"'
 			else	echo runhugs $extra_opts $main_file '"$@"'
 			fi
 		) >$out_file
