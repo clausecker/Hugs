@@ -1275,9 +1275,13 @@ static VOID local setClassBrowserSize() {
   cBrowse.width  = width  + 2*GetSystemMetrics(SM_CXFRAME);
   cBrowse.height = height + 2*GetSystemMetrics(SM_CYFRAME)
 			 + GetSystemMetrics(SM_CYCAPTION);
-  MoveWindow (hWndClasses, cBrowse.ClassesTopX, cBrowse.ClassesTopY,
-	      cBrowse.width  + GetSystemMetrics(SM_CXVSCROLL)+10,
-	      cBrowse.height + GetSystemMetrics(SM_CYHSCROLL)+10, TRUE);
+  SetWindowPos (hWndClasses, 
+		NULL,
+		0,
+		0,
+		cBrowse.width  + GetSystemMetrics(SM_CXVSCROLL)+10,
+		cBrowse.height + GetSystemMetrics(SM_CYHSCROLL)+10,
+		SWP_NOMOVE | SWP_NOACTIVATE);
 }
 
 static Void local doGetMinMaxInfo_Classes(MINMAXINFO FAR*lpmmi)
@@ -1601,6 +1605,7 @@ static VOID local DrawClassesHierarchy(VOID)
  if (hWndClasses) { /* If window exists keep its position */
    GetWindowRect(hWndClasses, &rWindow);
    DestroyWindow(hWndClasses);
+   
  } else {
    GetWindowRect(hActiveWindow, &rActive);
    rWindow.top  = rActive.top + 50;
@@ -1630,5 +1635,3 @@ static VOID local DrawClassesHierarchy(VOID)
 
  return;
 }
-
-
