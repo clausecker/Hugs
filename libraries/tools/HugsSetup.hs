@@ -85,8 +85,7 @@ main
 		no_extra_flags args
 		pkg_descr <- getBuildParams currentDir pkg_descr
 		localbuildinfo <- getPersistBuildConfig
-		let buildPref = buildDir localbuildinfo
-		build buildPref pkg_descr localbuildinfo knownSuffixHandlers
+		build pkg_descr localbuildinfo knownSuffixHandlers
 		return ()
 
 	    CleanCmd -> do
