@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.131 $
- * $Date: 2003/11/01 17:02:44 $
+ * $Revision: 1.132 $
+ * $Date: 2003/12/18 16:21:53 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -222,8 +222,8 @@ char *argv[]; {
 Void shutdownHugs() {
   /* Let go of dynamic storage */  
   if (hugsEdit)  { free(hugsEdit);  hugsEdit=0; }
-  if (prompt)    { free(prompt);    prompt=0; }
-  if (repeatStr) { free(repeatStr); repeatStr=0; }
+  /* empties lastEdit state (and frees it up.) */
+  setLastEdit((String)0,0);
   stopEvaluator();
 }
 
