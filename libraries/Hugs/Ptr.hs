@@ -23,7 +23,7 @@ module Hugs.Ptr
 	-- instance Show (FunPtr a)
 	) where
 
-import Hugs.Prelude
+import Hugs.Prelude ( Ptr, FunPtr )
 
 -- data Ptr a -- in Hugs.Prelude
 

@@ -12,7 +12,11 @@ module Hugs.Int
 	--  Show and Bits instances for each of Int8, Int16 and Int32
 	) where
 
-import Hugs.Prelude
+import Hugs.Prelude ( Int8, Int16, Int32, Int64 )
+import Hugs.Prelude ( Ix(..) )
+import Hugs.Prelude ( (%) )
+import Hugs.Prelude ( readDec, showInt )
+import Hugs.Prelude ( Num(fromInt), Integral(toInt) )
 import Data.Bits
 
 -----------------------------------------------------------------------------

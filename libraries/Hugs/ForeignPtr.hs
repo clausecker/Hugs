@@ -12,8 +12,8 @@ module Hugs.ForeignPtr
         ) 
 	where
 
-import Hugs.Prelude
-import Foreign.Ptr
+import Hugs.Prelude		( ForeignPtr )
+import Foreign.Ptr		( Ptr, FunPtr )
 import Foreign.Storable		( Storable )
 import Foreign.Marshal.Alloc	( malloc, mallocBytes, finalizerFree )
 

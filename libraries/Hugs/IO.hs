@@ -52,7 +52,8 @@ module Hugs.IO (
     hugsHIsEOF,             -- :: Handle  -> IO Bool
     ) where
 
-import Hugs.Prelude
+import Hugs.Prelude	( Handle )
+import Hugs.Prelude	( Ix(..) )
 import System.IO.Error
 
 -- data Handle
