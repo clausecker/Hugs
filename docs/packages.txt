@@ -46,14 +46,18 @@ suffixes are recognized:
 In addition to Haskell source modules, the package directory may
 optionally contain the following:
 
+config.mk
+	make-style definitions (often set by configure).  If this file
+	exists and defines a variable of the form *BUILD_PACKAGE, the
+	package will only be included if this variable has the value "yes".
 cbits/
 	a directory containing C source files to be linked with Haskell
 	files by ffihugs.
 examples/
 	a directory (or hierarchy) containing examples using the library.
 include/
-	a directory of C header files used by foreign declarations and
-	files in cbits.
+	a directory of C header files used by foreign declarations,
+	files in cbits and possibly package.conf.in.
 hugs/exclude
 	a list of names of modules to be skipped by the conversion script.
 	(Only the first word in each line is used, and blank lines and
