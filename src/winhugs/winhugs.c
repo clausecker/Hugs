@@ -706,7 +706,8 @@ static VOID local DoInitMenu (HWND hWnd, UINT message, WPARAM wParam, LPARAM lPa
  * Other functions for Windows GUI:
  * ------------------------------------------------------------------------*/
 
-__declspec(dllexport) UINT FAR APIENTRY 
+static
+UINT FAR APIENTRY 
   FileOpenHookProc(HWND hdlg, UINT msg, WPARAM wParam, LPARAM lParam)
 {
     switch (msg) {
@@ -789,7 +790,7 @@ static CHAR* local GetaFileName(HWND hWnd, UINT Mask)
   ofn.lpstrFileTitle = szFileTitle;
   ofn.nMaxFileTitle = sizeof(szFileTitle);
   ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY | OFN_ENABLEHOOK | OFN_EXPLORER;;
-  ofn.lpfnHook = (LPOFNHOOKPROC)MakeProcInstance((FARPROC) FileOpenHookProc, hThisInstance);
+  ofn.lpfnHook = FileOpenHookProc;
   GetCurrentDirectory(_MAX_PATH,currentDir);
   ofn.lpstrInitialDir = currentDir;
 
