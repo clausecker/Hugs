@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.26 $
- * $Date: 2000/12/13 09:36:05 $
+ * $Revision: 1.27 $
+ * $Date: 2001/01/08 21:43:06 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -222,6 +222,22 @@ static List   local depDwFlds		Args((Int,Cell,List));
 #endif
 #if TREX
 static Cell   local depRecord		Args((Int,Cell));
+#endif
+
+#if MUDO
+static List   local mdoGetPatVarsLet	Args((Int,List,List));
+static List   local mdoBVars		Args((Int,List));
+static List   local mdoUsedVars		Args((List,Cell,List));
+static Void   local depRecComp		Args((Int,Cell,List));
+static Void   local mdoExpandQualifiers Args((Int,Cell,List,List));
+static Bool   local mdoIsConnected	Args((Cell,List));
+static Int    local mdoSegment		Args((Cell,List));
+static Void   local mdoSCC		Args((List));
+static List   local mdoCleanSegment	Args((Triple));
+static List   local mdoNoLets		Args((Triple));
+static Void   local mdoComputeExports	Args((Triple,Cell));
+static Bool   local mdoUsedInAnySeg	Args((Text,List));
+/*#define DEBUG_MDO_SEGMENTS*/
 #endif
 
 static List   local tcscc		Args((List,List));
@@ -4887,6 +4903,11 @@ static List depends;		       /* list of lists of dependents	   */
 /* bindings :: [[([Var],?)]]  -- var equality used on Vars     */
 /* depends  :: [[Var]]        -- pointer equality used on Vars */
 
+#if MUDO
+static List mdepends;		       /* list of dependents for mdo	*/
+/* mdepends :: [Var]          -- var equality used on Vars */
+#endif
+
 #define saveBvars()	 hd(bounds)    /* list of bvars in current scope   */
 #define restoreBvars(bs) hd(bounds)=bs /* restore list of bound variables  */
 
@@ -5648,6 +5669,9 @@ static Void local clearScope() {       /* initialise dependency scoping    */
     bounds   = NIL;
     bindings = NIL;
     depends  = NIL;
+#if MUDO
+    mdepends = NIL;
+#endif
 }
 
 static Void local withinScope(bs)	/* Enter scope of bindings bs	   */
@@ -5879,6 +5903,11 @@ Cell e; {
 	case LAMBDA	: depAlt(snd(e));
 			  break;
 
+#if MUDO
+	case MDOCOMP	: depRecComp(line, snd(e), snd(snd(e)));
+			  break;
+#endif
+
 	case DOCOMP	: /* fall-thru */
 	case COMP	: depComp(line,snd(e),snd(snd(e)));
 			  break;
@@ -5979,6 +6008,438 @@ List qs; {
 	}
     }
 }
+
+#if MUDO
+
+/* mdoExpandQualifiers inflates qs into a list of triples
+   the first element is the original q
+   the second is the defined vars
+   the third is the used vars THAT are defined in that binding group
+*/
+static Void local mdoExpandQualifiers(l,e,qs,defs)	
+Int  l;		
+Cell e;
+List qs; 
+List defs; {
+    if (isNull(qs)) {
+	List currDeps = mdepends;
+	fst(e)	      = depExpr(l,fst(e));
+	fst(e)	      = pair(fst(e),mdoUsedVars(mdepends,currDeps,defs));
+    } else {
+	Cell q   = hd(qs);
+	List qs1 = tl(qs);
+	hd(qs)   = triple(q,NIL,NIL);
+	switch (whatIs(q)) {
+	    case FROMQUAL : {   List obvs   = saveBvars();
+				List currDeps = mdepends;
+				enterBtyvs();
+				fst(snd(q)) = bindPat(l,fst(snd(q)));
+				snd(snd(q)) = depExpr(l,snd(snd(q)));
+				snd3(hd(qs)) = getPatVars(l,fst(snd(q)),NIL); 
+				thd3(hd(qs)) = mdoUsedVars(mdepends,
+								currDeps,defs);
+				mdoExpandQualifiers(l,e,qs1,defs);
+				fst(snd(q)) = applyBtyvs(fst(snd(q)));
+				restoreBvars(obvs);
+			    }
+			    break;
+
+	    case QWHERE   : {	List currDeps = mdepends;
+				snd3(hd(qs)) = mdoGetPatVarsLet(l,snd(q),NIL);
+				snd(q)     = eqnsToBindings(snd(q),NIL,NIL,NIL);
+				withinScope(snd(q));
+				snd(q)      = dependencyAnal(snd(q));
+				hd(depends) = snd(q);
+				thd3(hd(qs)) = mdoUsedVars(mdepends,
+								currDeps,defs);
+				mdoExpandQualifiers(l,e,qs1,defs);
+				leaveScope();
+			    }
+			    break;
+
+	    case DOQUAL	  : /* fall-thru */
+	    case BOOLQUAL : {	List currDeps = mdepends;
+				snd(q) = depExpr(l,snd(q));
+				thd3(hd(qs)) = mdoUsedVars(mdepends,
+								currDeps,defs);
+				mdoExpandQualifiers(l,e,qs1,defs);
+				break;
+			    }
+	}
+    }
+}
+
+static List local mdoUsedVars(xs,c,ys)	/* copy elements of xs until the */
+List xs;                          	/* sublist pointed to by c,      */
+Cell c; 
+List ys; {				/* if they are in ys		 */
+    List zs = NIL;
+    List rs = NIL;
+    List final = NIL;
+    for(; nonNull(xs) && xs != c; xs = tl(xs)) {
+	if(varIsMember(textOf(hd(xs)),ys)) {
+	    zs = cons(hd(xs), zs);
+	}
+    }
+
+    /* eliminate duplicates: */
+    for(rs = zs; nonNull(rs); rs = tl(rs)) {
+	if(!varIsMember(textOf(hd(rs)), tl(rs))) {
+	    final = cons(hd(rs), final);
+	}
+    }
+
+    return final;
+}
+
+static List local mdoGetPatVarsLet(l, eqns, fvs)
+Int l;
+List eqns;
+List fvs; {
+    Cell tmp;
+    Cell e;
+
+    /* extract pattern variables from eqns.. */
+    for(tmp = eqns; nonNull(tmp); tmp = tl(tmp)) {
+	switch (fst(hd(tmp))) {
+	    case PATBIND :  /* now, fst(snd(hd(tmp))) is the pattern.. */  
+			    fvs = getPatVars(l, fst(snd(hd(tmp))), fvs);
+			    break;
+	    case FUNBIND :  /* now, we only need to get the function name! */
+			    e = getHead(fst(snd(hd(tmp))));
+			    if(!varIsMember(textOf(e),fvs)) {
+				fvs = cons(e, fvs);
+			    }
+			    break;
+	    default      :  /* ignore: fixity and type declarations.. */
+			    break;
+	}
+    }
+
+    return fvs;
+}
+
+static List local mdoBVars(l, qs)        /* return list of bound vars */
+Int l;                                   /* in an mdo                 */
+List qs; {      
+    List mdoBounds = NIL;
+    for(; nonNull(qs); qs = tl(qs)) {
+	Cell q = hd(qs);
+	switch(whatIs(q)) {
+	    case FROMQUAL : mdoBounds = getPatVars(l, fst(snd(q)), mdoBounds);
+			    break;
+            case QWHERE	  : { 	List letVs = NIL; 
+				letVs = mdoGetPatVarsLet(l, snd(q), NIL);
+				for(; nonNull(letVs); letVs = tl(letVs)) {
+				    mdoBounds = addPatVar(l, hd(letVs), 
+								mdoBounds);
+				}
+			    }
+			    break;
+	    case DOQUAL	  : 
+            case BOOLQUAL : break;
+	    default	  : internal("mdo: unknown statement");
+			    break;
+	}
+    }
+    return mdoBounds;
+}
+
+#define segRecs(seg)	fst(fst3(seg))
+#define segExps(seg)	snd(fst3(seg))
+#define segDefs(seg)	fst(snd3(seg))
+#define segUses(seg)	snd(snd3(seg))
+#define segQuals(seg)	thd3(seg)
+#define qualBody(q)	fst3(q)
+#define qualDefs(q)	snd3(q)
+#define qualUses(q)	thd3(q)
+
+static List local mdoCleanSegment(seg)	/* clean the segment by		   */
+Triple seg; {				/* storing rec and used vars first */
+    List tmp;
+    List accumRecs = NIL;
+
+    for(tmp = segQuals(seg); nonNull(tmp); tmp = tl(tmp)) {
+	segDefs(seg) = dupOnto(qualDefs(hd(tmp)),segDefs(seg));
+    }
+
+    for(tmp = segQuals(seg); nonNull(tmp); tmp = tl(tmp)) {
+	List vs;
+	segUses(seg) = dupOnto(qualUses(hd(tmp)), segUses(seg));
+	for(vs = qualUses(hd(tmp)); nonNull(vs); vs = tl(vs)) {
+	    /* Here're the rules for being added to segRecs:
+		1. it must be defined in this segment
+		2. it must not already be defined in this segment
+		3. it must not already be added
+		4. if this is a let expression, it must not be defined
+		   in that let expression (because let is already recursive)
+		The following if statement exactly captures these rules:
+	    */
+	    if(     varIsMember(textOf(hd(vs)), segDefs(seg)) 
+		&& !varIsMember(textOf(hd(vs)), accumRecs)
+		&& !varIsMember(textOf(hd(vs)), segRecs(seg))
+		&& (    whatIs(qualBody(hd(tmp))) != QWHERE
+		    || !varIsMember(textOf(hd(vs)), qualDefs(hd(tmp))))) {
+		segRecs(seg) = cons(hd(vs), segRecs(seg));
+	    }
+	}
+	accumRecs = dupOnto(qualDefs(hd(tmp)), accumRecs);
+    }
+
+    return seg;
+}
+
+/* mdoNoLets gets rid of let bindings within mdo in favor of fromquals.
+ * The translation is:
+ *
+ *    let bs     --->    d <- return (let bs in d)
+ *
+ * where d is the tuple of vars defined in let's.
+ *
+ * It might be argued that this translation happens to early, but this
+ * seems to be the right thing to do to avoid complications in type
+ * checking.
+ */
+static List   local mdoNoLets(seg)		/* get rid of let's */
+Triple seg; {
+    List qs;
+
+    for(qs = segQuals(seg); nonNull(qs); qs = tl(qs)) {
+	Cell q	  = qualBody(hd(qs));
+	Cell defs = qualDefs(hd(qs));
+	switch(whatIs(q)) {
+	    case FROMQUAL :
+	    case DOQUAL   :
+	    case BOOLQUAL : break;
+	    case QWHERE	  : 
+		{   Cell p;
+		    Cell rhs;
+		    if(length(defs)==1) {
+			p = hd(defs);
+		    } else {
+			List tmp;
+			p = pair(mkTuple(length(defs)),hd(defs));
+			for(tmp = tl(defs); nonNull(tmp); tmp=tl(tmp)) {
+			    p = pair(p,hd(tmp));
+			}
+		    }
+		    rhs = ap(mkVar(findText("return")),
+			      ap(LETREC,pair(snd(q),p)));
+		    qualBody(hd(qs)) = ap(QWHERE,pair(p,rhs));
+		}
+		break;
+	}
+    }
+   return seg;
+}
+
+static Bool   local mdoUsedInAnySeg(v,segs)	/* does v appear in any  */
+Text v;						/* used list of any seg? */
+List segs; {
+    for(; nonNull(segs); segs = tl(segs)) {
+	if(varIsMember(v,segUses(hd(segs)))) {
+	    return TRUE;
+	}
+    }
+
+    return FALSE;
+}
+
+static Void   local mdoComputeExports(segs,e)	/* compute export lists */
+List segs;					/* for each segment	*/
+Cell e; {
+    List eUses = snd(fst(e));
+
+    for(; nonNull(segs); segs = tl(segs)) {
+	List vs;
+	for(vs = segDefs(hd(segs)); nonNull(vs); vs = tl(vs)) {
+	    if(varIsMember(textOf(hd(vs)),eUses) 
+		|| mdoUsedInAnySeg(textOf(hd(vs)), tl(segs))) {
+		segExps(hd(segs)) = cons(hd(vs), segExps(hd(segs)));
+	    }
+	}
+    }
+}
+
+static Void local depRecComp(l,e,qs)	/* find dependents of a recursive */
+Int  l;					/* comprehension */
+Cell e;
+List qs; {
+    List mdoBounds = mdoBVars(l, qs);
+    List obvs = saveBvars();
+
+    hd(bounds) = revOnto(dupList(mdoBounds), hd(bounds));
+    mdoExpandQualifiers(l,e,qs,mdoBounds);
+    restoreBvars(obvs);
+
+    mdoSCC(qs);
+    mapOver(rev,qs);	/* qualifiers are reversed after SCC */
+
+    /* reserve space for rec and used vars: */
+    map2Over(triple,pair(NIL,NIL),pair(NIL,NIL),qs);
+
+    /* clean up each segmet to get recs, uses etc: */
+    mapOver(mdoCleanSegment,qs);
+
+    /* get rid of QWHERE's: 		  */
+    mapOver(mdoNoLets,qs);
+
+    /* determine the exports of segments: */
+    mdoComputeExports(qs,e);
+
+    /****************************************************************
+	Here's the structure we have at this point:
+	    qs is the list of segments
+	    each segment looks like:
+		((1,2), (3,4), [(5,6,7)])
+	    where
+		1: recursive vars of the segment
+		2: exported vars of the segment
+		3: defined vars of the segment
+		4: used vars of the segment
+		5: the qualifier
+		6: the vars that the qualifier defines
+		7: the vars that the qualifier uses
+	e looks like:
+		((1,2),3)
+	    where
+		1: the expression
+		2: used vars of the expression
+		3: The pointer to qs!
+
+      The following code prints it out nicely:
+    ****************************************************************/
+
+#ifdef DEBUG_MDO_SEGMENTS
+    printf("\nAfter SCC, The segments:\n");
+    {   List tmp;
+	Int i = 0;
+	for(tmp = snd(e); nonNull(tmp); i++, tmp = tl(tmp)) {
+	    List tmp2;
+	    printf("Segment %d:\n----------------------\n", i);
+	    for(tmp2 = segQuals(hd(tmp)); nonNull(tmp2); tmp2 = tl(tmp2)) {
+		printf("Defines: "); print(qualDefs(hd(tmp2)),50); printf("\n");
+		printf("Uses   : "); print(qualUses(hd(tmp2)),50); printf("\n");
+	    }
+	    printf("Segment recs: "); print(segRecs(hd(tmp)),50); printf("\n");
+	    printf("Segment uses: "); print(segUses(hd(tmp)),50); printf("\n");
+	    printf("Segment defs: "); print(segDefs(hd(tmp)),50); printf("\n");
+	    printf("Segment exps: "); print(segExps(hd(tmp)),50); printf("\n");
+	}
+	printf("Final Segment:\n----------------------\n");
+	printf("e      : "); printExp(stdout,fst(fst(e))); printf("\n");
+	printf("E uses : "); print(snd(fst(e)),50); printf("\n");
+    }
+#endif
+
+    /* 	Now do a real clean up: all we need is rec vars and exp vars
+	for each segment. We also keep def vars.
+	Everything else becomes garbage:  */
+    for(; nonNull(qs); qs = tl(qs)) {
+	/* get rid of qual defines and uses of each qual: */
+	mapOver(fst3,segQuals(hd(qs)));
+	/* get rid of seg uses: */
+	hd(qs) = pair(triple(segRecs(hd(qs)), segExps(hd(qs)), segDefs(hd(qs))),
+		      segQuals(hd(qs)));
+	/* if recs is NIL, the exps is irrelevant: */
+	if(isNull(fst3(fst(hd(qs))))) {
+	    snd3(fst(hd(qs))) = NIL;
+	}
+    }
+   
+    fst(e) = fst(fst(e));	/* clean up e, completes depRecComp */
+
+
+    /**************************************************************
+	At this point the structure we have is:
+	    qs is the list of segments
+	    each segment looks like:
+		((1,2,3), 4)
+	    where
+		1: recursive vars of the segment
+		2: exported vars of the segment
+		3: defined vars of the segment
+		4: the list of qualifiers
+	    e looks like:
+		(1,2)
+	    where
+		1: the expression
+		2: The pointer to qs!
+
+     **************************************************************/
+}
+
+#undef	segRecs   
+#undef	segExps
+#undef	segDefs
+#undef	segUses   
+#undef	segQuals  
+#undef	qualBody
+#undef	qualDefs
+#undef	qualUses
+
+static Bool local mdoIsConnected(q, usedVars)	/* Does q1 define a variable */
+Cell q;						/* that is in usedVars?	     */
+List usedVars; {
+    Cell defs;
+
+    for(defs = snd3(q); nonNull(defs); defs = tl(defs)) {
+	if(varIsMember(textOf(hd(defs)), usedVars)) {
+	    return TRUE;
+	}
+    }
+
+    return FALSE;
+}
+
+static Int local mdoSegment(q, eqs)	/* return the index of the last qual */
+Cell q;					/* in eqs that q is connected to     */
+List eqs; {
+    Int i, j;
+    List usesAccum = dupList(thd3(q));
+    Cell qUses	   = usesAccum;
+      
+    for(i = 1, j = 0; nonNull(eqs); i++, eqs = tl(eqs)) {
+	usesAccum = dupOnto(thd3(hd(eqs)), usesAccum);   
+	if(mdoIsConnected(hd(eqs), qUses)) {
+	    qUses = usesAccum;                          
+	    j = i;
+	}
+    }
+
+    return j;
+}
+
+static Void local mdoSCC(eqs)		/* SCC for mdo */
+List eqs; {
+    /*  The input eqs is the extended qualifier list. I.e. each qualifier
+	is a triple where the first element is the qualifier itself, second 
+	element is the defined variables and third is the used ones.
+	After SCC, eqs becomes a list of list of qualifiers, where each 
+	inner list is a strongly connected component, i.e. a segment.
+    */
+ 
+    Int covers;
+    List eqs1;
+
+    if(isNull(eqs)) return;
+
+    hd(eqs) = cons(hd(eqs), NIL);	/* Turn into a list */
+    eqs1 = tl(eqs);
+
+    covers = mdoSegment(hd(hd(eqs)), eqs1);
+    if(covers > 0) {			/* Multiple statements */
+	while(covers--) {
+	    hd(eqs) = cons(hd(eqs1),hd(eqs));
+	    eqs1 = tl(eqs1);
+	}
+    }
+
+    tl(eqs) = eqs1;
+
+    mdoSCC(tl(eqs));			/* recurse for the remainder */
+}
+#endif
 
 #if ZIP_COMP
 /* ZZ this will all fall over if there are nested zip comps */
@@ -6111,6 +6572,9 @@ Cell e; {
     while (nonNull(bindings1)) {
 	n = varIsMember(t,hd(bounds1));   /* look for t in bound variables */
 	if (nonNull(n)) {
+#if MUDO
+	    mdepends = cons(n,mdepends);
+#endif
 	    return n;
 	}
 
@@ -6119,7 +6583,10 @@ Cell e; {
 	    if (!cellIsMember(n,hd(depends1))) {
 		hd(depends1) = cons(n,hd(depends1));
 	    }
-	   return (isVar(fst(n)) ? fst(n) : e);
+#if MUDO
+	    mdepends = cons(isVar(fst(n)) ? fst(n) : e,mdepends);
+#endif
+	    return (isVar(fst(n)) ? fst(n) : e);
 	}
 
 	bounds1   = tl(bounds1);
@@ -6727,6 +7194,9 @@ Int what; {
 		       bounds	    = NIL;
 		       bindings	    = NIL;
 		       depends      = NIL;
+#if MUDO
+		       mdepends	    = NIL;
+#endif
 		       tcDeps	    = NIL;
 		       derivedInsts = NIL;
 		       diVars	    = NIL;
@@ -6739,6 +7209,9 @@ Int what; {
 		       mark(bounds);
 		       mark(bindings);
 		       mark(depends);
+#if MUDO
+		       mark(mdepends);
+#endif
 		       mark(tcDeps);
 		       mark(derivedInsts);
 		       mark(diVars);

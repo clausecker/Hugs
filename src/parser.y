@@ -11,8 +11,8 @@
  * included in the distribution.
  *
  * $RCSfile: parser.y,v $
- * $Revision: 1.12 $
- * $Date: 2001/01/02 22:17:13 $
+ * $Revision: 1.13 $
+ * $Date: 2001/01/08 21:43:06 $
  * ------------------------------------------------------------------------*/
 
 %{
@@ -47,11 +47,19 @@ static List   local checkCtxt	 Args((List));
 static Cell   local checkPred	 Args((Cell));
 static Pair   local checkDo	 Args((List));
 static Cell   local checkTyLhs	 Args((Cell));
+
+#if MUDO
+static Pair   local checkMDo	 Args((List));
+#endif
+
 #if !TREX
 static Void   local noTREX	 Args((String));
 #endif
 #if !IPARAM
 static Void   local noIP	 Args((String));
+#endif
+#if !MUDO
+static Void   local noMDo	 Args((String));
 #endif
 
 /* For the purposes of reasonably portable garbage collection, it is
@@ -85,6 +93,9 @@ static Void   local noIP	 Args((String));
 %token THEN       ELSE       WHERE      LET        IN
 %token INFIXN     INFIXL     INFIXR     PRIMITIVE  TNEWTYPE
 %token DEFAULT    DERIVING   DO         TCLASS     TINSTANCE
+/*#if MUDO*/
+%token MDO
+/*#endif*/
 /*#if IPARAM*/
 %token WITH DLET
 /*#endif*/
@@ -767,6 +778,13 @@ infixExpb : infixExpa qop '-' exp10b	{$$ = gc4(ap(NEG,ap(ap($2,$1),$4)));}
 	  ;
 exp10a	  : CASEXP exp OF '{' alts end	{$$ = gc6(ap(CASE,pair($2,rev($5))));}
 	  | DO '{' stmts end		{$$ = gc4(ap(DOCOMP,checkDo($3)));}
+          | MDO '{' stmts end		{
+#if MUDO
+					 $$ = gc4(ap(MDOCOMP, checkMDo($3)));
+#else
+					 noMDo("an expression");
+#endif
+					}
 	  | appExp			{$$ = $1;}
 	  ;
 exp10b	  : '\\' pats ARROW exp		{$$ = gc4(ap(LAMBDA,      
@@ -1205,6 +1223,19 @@ List dqs; {				/* to an (expr,quals) pair         */
     return dqs;
 }
 
+#if MUDO
+static Pair local checkMDo(dqs)		/* convert reversed list of dquals */
+List dqs; {				/* to an (expr,quals) pair         */
+    if (isNull(dqs) || whatIs(hd(dqs))!=DOQUAL) {
+	ERRMSG(row) "Last generator in mdo {...} must be an expression"
+	EEND;
+    }
+    fst(dqs) = snd(fst(dqs));		/* put expression in fst of pair   */
+    snd(dqs) = rev(snd(dqs));		/* & reversed list of quals in snd */
+    return dqs;
+}
+#endif
+
 static Cell local checkTyLhs(c)		/* check that lhs is of the form   */
 Cell c; {				/* T a1 ... a			   */
     Cell tlhs = c;
@@ -1231,6 +1262,24 @@ static Void local noIP(where)
 String where; {
     ERRMSG(row) "Attempt to use Implicit Parameters while parsing %s.\n", where ETHEN
     ERRTEXT     "(Implicit Parameters are disabled in this build of Hugs)"
+    EEND;
+}
+#endif
+
+#if !MUDO
+/***
+   Due to the way we implement this stuff, this function will actually
+   never be called. When MUDO is not defined, the lexer thinks that mdo
+   is just another identifier, and hence the MDO token is never returned
+   to the parser: consequently the mdo production is never reduced, making 
+   this code unreachable. The alternative is to let the lexer to 
+   recognize "mdo" all the time, but that's not Haskell compliant. In any 
+   case we keep this function here, even if just for documentation purposes.
+***/
+static Void local noMDo(where)
+String where; {
+    ERRMSG(row) "Attempt to use MDO while parsing %s.\n", where ETHEN
+    ERRTEXT     "(Recursive monadic bindings are disabled in this build of Hugs)"
     EEND;
 }
 #endif

@@ -9,8 +9,8 @@
  * included in the distribution.
  *
  * $RCSfile: output.c,v $
- * $Revision: 1.12 $
- * $Date: 2001/01/02 18:21:40 $
+ * $Revision: 1.13 $
+ * $Date: 2001/01/08 21:43:06 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -217,6 +217,11 @@ Cell e; {
 	case LAZYPAT    : putChr('~');
 			  put(ALWAYS,snd(e));
 			  break;
+
+#if MUDO
+	case MDOCOMP    : putStr("mdo {...}");
+			  break;
+#endif
 
 	case DOCOMP     : putStr("do {...}");
 			  break;

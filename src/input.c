@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: input.c,v $
- * $Revision: 1.18 $
- * $Date: 2001/01/02 22:17:13 $
+ * $Revision: 1.19 $
+ * $Date: 2001/01/08 21:43:06 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -117,6 +117,10 @@ static Text textInfix,   textInfixl,   textInfixr, textPrim,   textNewtype;
 static Text textDefault, textDeriving, textDo,     textClass,  textInstance;
 #if IPARAM
 static Text textWith,  textDlet;
+#endif
+
+#if MUDO
+static Text textMDo;
 #endif
 
 static Text textCoco,    textEq,       textUpto,   textAs,     textLambda;
@@ -1565,6 +1569,10 @@ static Int local yylex() {             /* Read next input token ...        */
 	if (it==textWith && !haskell98) lookAhead(WITH);
 	if (it==textDlet && !haskell98) lookAhead(DLET);
 #endif
+
+#if MUDO
+	if (it==textMDo && !haskell98) lookAhead(MDO);
+#endif
 #endif
 	if (it==textRepeat && reading==KEYBOARD)
 	    return repeatLast();
@@ -1732,6 +1740,9 @@ Int what; {
 		       textDefault    = findText("default");
 		       textDeriving   = findText("deriving");
 		       textDo         = findText("do");
+#if MUDO
+		       textMDo        = findText("mdo");
+#endif
 		       textClass      = findText("class");
 		       textInstance   = findText("instance");
 #if IPARAM

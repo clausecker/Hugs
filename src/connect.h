@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: connect.h,v $
- * $Revision: 1.15 $
- * $Date: 2001/01/02 18:21:40 $
+ * $Revision: 1.16 $
+ * $Date: 2001/01/08 21:43:06 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -74,6 +74,11 @@ extern Class classMonad;		/* Monads			   */
 extern Name  nameReturn,  nameBind;	/* for translating monad comps	   */
 extern Name  nameMFail;
 extern Name  nameListMonad;		/* builder function for List Monad */
+
+#if MUDO
+extern Class classMonadRec;		/* Recursive monads		   */
+extern Name  nameMFix;			/* for translating mdo-notation	   */
+#endif
 
 #if EVAL_INSTANCES
 extern Name  nameStrict,  nameSeq;	/* Members of class Eval	   */

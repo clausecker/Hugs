@@ -9,8 +9,8 @@
  * included in the distribution.
  *
  * $RCSfile: storage.h,v $
- * $Revision: 1.14 $
- * $Date: 2001/01/02 18:21:41 $
+ * $Revision: 1.15 $
+ * $Date: 2001/01/08 21:43:06 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -288,6 +288,11 @@ extern  Pointer         ptrOf           Args((Cell));
 #define LAMBDA	     32 	  /* LAMBDA	snd :: Alt		   */
 #define FINLIST      33 	  /* FINLIST	snd :: [Exp]		   */
 #define DOCOMP       34 	  /* DOCOMP	snd :: (Exp,[Qual])	   */
+
+#if MUDO
+#define MDOCOMP	     44		  /* MDOCOMP	snd :: (Exp,[Qual])	   */
+#endif 
+
 #define BANG	     35		  /* BANG	snd :: Type		   */
 #define COMP         36 	  /* COMP	snd :: (Exp,[Qual])	   */
 #define ASPAT	     37 	  /* ASPAT	snd :: (Var,Exp)	   */

@@ -10,8 +10,8 @@
  * included in the distribution.
  *
  * $RCSfile: compiler.c,v $
- * $Revision: 1.3 $
- * $Date: 1999/09/13 11:01:00 $
+ * $Revision: 1.4 $
+ * $Date: 2001/01/08 21:43:06 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -39,6 +39,11 @@ static Cell local transComp             Args((Cell,List,Cell));
 static Cell local transDo               Args((Cell,Cell,List));
 static Cell local transConFlds          Args((Cell,List));
 static Cell local transUpdFlds          Args((Cell,List,List));
+
+#if MUDO
+static Cell local transMDo		Args((Cell,Cell,List));
+static Cell local mdoBuildTuple		Args((List));
+#endif
 
 static Cell local refutePat             Args((Cell));
 static Cell local refutePatAp           Args((Cell));
@@ -177,6 +182,15 @@ Cell e; {
 #endif
 			      }
 			  }
+#if MUDO
+	case MDOCOMP	: {   Cell m	= translate(fst(fst(snd(e))));
+			      Cell ms	= translate(snd(fst(snd(e))));
+			      Cell r	= translate(fst(snd(snd(e))));
+			      Cell segs = snd(snd(snd(e)));
+			      map2Over(transMDo,m,ms,segs);
+			      return transDo(ms,r,segs);
+			  }
+#endif
 
 	case CONFLDS    : return transConFlds(fst(snd(e)),snd(snd(e)));
 
@@ -437,6 +451,120 @@ List qs; {
     }
     return e;
 }
+
+#if MUDO
+/* Copied verbatim from parser.y: */
+static Cell local mdoBuildTuple(tup)	/* build tuple (x1,...,xn) from	   */
+List tup; {				/* list [xn,...,x1]		   */
+    Int  n = 0;
+    Cell t = tup;
+    Cell x;
+
+    do {				/*    .                    .	   */
+	x      = fst(t);		/*   / \                  / \	   */
+	fst(t) = snd(t);		/*  xn  .                .   xn	   */
+	snd(t) = x;			/*       .    ===>      .	   */
+	x      = t;			/*        .            .	   */
+	t      = fun(x);		/*         .          .		   */
+	n++;				/*        / \        / \	   */
+    } while (nonNull(t));		/*       x1  NIL   (n)  x1	   */
+    fst(x) = mkTuple(n);
+    return tup;
+}
+
+static Cell local transMDo(m,ms,seg)	/* translate each segment in an mdo */
+Cell m;					/* dictionary for recursive monad   */
+Cell ms;				/* dictionary for monad		    */
+List seg; {
+    /* seg looks like: ((1,2,3),4)
+	where:
+	    1: rec vars of the segment
+	    2: exp vars of the segment
+	    3: def vars of the segment  (not used here)
+	    4: list of qualifiers in the segment
+    */
+
+    List qs	  = snd(seg);
+    List recs	  = fst3(fst(seg));
+    List exps	  = snd3(fst(seg));
+    Int  noOfRecs = length(recs);
+    Int  noOfExps = length(exps);
+
+    /* Case 1: Not a recursive segment. It must be the case that |qs| = 1 */
+    if(isNull(recs)) {		
+	if(length(qs)!=1) {		
+	    internal("MDO: Non-recursive, non-singleton segment, Impossible!");
+	}
+	return hd(qs);
+    } 
+
+#define mkLambda(arg,body)	ap(LAMBDA,pair(singleton(arg),pair(0,body)))
+#define mkDoComp(qs,exp)	ap(DOCOMP,pair(ms,pair(exp,qs)))
+#define BIND(e1,e2)		ap3(nameBind,ms,e1,e2)
+#define RET(e)			ap2(nameReturn,ms,e)
+#define MFIX(arg,body)		ap2(nameMFix,m,mkLambda(arg,body))
+#define fromQual(p,e)		pair(FROMQUAL,pair(p,e))
+#define doQual(e)		pair(DOQUAL,e)
+
+    /* Case 2: Segment is recursive, but there are no exported variables: */
+    if(noOfExps == 0) {
+	Cell RT  = noOfRecs==1 ? hd(recs) : mdoBuildTuple(recs);
+	Cell pat = noOfRecs==1 ? RT : ap(LAZYPAT,RT);
+
+	return doQual(MFIX(pat,mkDoComp(qs,RET(RT))));
+    }
+
+    /* Case 3: There is one exported variable, one rec variable, 
+	       and they're the same */
+    if(noOfRecs == 1 && noOfExps == 1 && varIsMember(textOf(hd(exps)),recs)) {
+	Cell RT = hd(recs);
+
+	return fromQual(RT,MFIX(RT,mkDoComp(qs,RET(RT))));
+    }
+
+    /* Case 4: There is one exported variable, >= 1 recursive vars, 
+	       but exported variable is one of the recursives: */
+    if(noOfExps == 1 && varIsMember(textOf(hd(exps)),recs)) {
+	Cell RT	 = noOfRecs==1 ? hd(recs) : mdoBuildTuple(recs);
+	Cell ET	 = hd(exps);
+	Cell pat = noOfRecs==1 ? RT : ap(LAZYPAT,RT);
+
+	return fromQual(ET,BIND(MFIX(pat,mkDoComp(qs,RET(RT))),
+				mkLambda(RT,RET(ET))));
+    }
+
+    /* Case 5: There is only one exported variable, which is not recursive  */
+    if(noOfExps == 1) {	
+	Cell ET	 = hd(exps);
+	Cell RT	 = mdoBuildTuple(cons(ET,recs));
+	Cell pat = ap(LAZYPAT,RT);
+
+	return fromQual(ET,BIND(MFIX(pat,mkDoComp(qs,RET(RT))),
+				mkLambda(RT,RET(ET))));
+    }
+
+    /* Case 6: > 1 exports, no (apparent) optimization applicable: 
+       Notice that this is also the "catch-all" phase */
+    {	Cell nv	     = inventVar();
+	Cell RT	     = mdoBuildTuple(cons(nv,recs));
+	Cell ET	     = mdoBuildTuple(exps);
+	Cell finQ    = fromQual(nv,RET(ET));
+	Cell innerDo = mkDoComp(appendOnto(qs,singleton(finQ)),RET(RT));
+	Cell pat     = ap(LAZYPAT,RT);
+
+	return fromQual(ET,BIND(MFIX(pat,innerDo),mkLambda(RT,RET(nv))));
+    }
+
+#undef mkLambda
+#undef mkDoComp
+#undef BIND
+#undef RET
+#undef MFIX
+#undef fromQual
+#undef doQual
+}
+
+#endif
 
 /* --------------------------------------------------------------------------
  * Translation of named field construction and update:

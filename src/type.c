@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: type.c,v $
- * $Revision: 1.27 $
- * $Date: 2000/12/13 08:44:30 $
+ * $Revision: 1.28 $
+ * $Date: 2001/01/08 21:43:06 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -85,6 +85,14 @@ Class classMonad;			/* Monads			   */
 Name nameReturn,  nameBind;		/* for translating monad comps	   */
 Name nameMFail;
 Name nameGt;				/* for readsPrec		   */
+
+#if MUDO
+Class classMonadRec;			/* Recursive monads		   */
+Name nameMFix;
+static Cell monadRecHandle = NIL;	/* Used to keep track whether 	   */
+static Cell mfixNameHandle = NIL;	/* MonadRec.hs is loaded/unloaded  */
+#endif
+
 #if EVAL_INSTANCES
 Name nameStrict,  nameSeq;		/* Members of class Eval	   */
 #endif
@@ -151,6 +159,11 @@ static Void   local typeCompy	      Args((Int,Type,List));
 static Cell   local typeMonadZComp    Args((Int,Cell));
 #endif
 static Void   local typeDo	      Args((Int,Cell));
+#if MUDO
+static Void   local typeRecComp	      Args((Int,Type,Cell,List));
+static Void   local typeMDo	      Args((Int,Cell));
+static Void   local typeRecursiveDo   Args((Int,Cell));
+#endif
 static Void   local typeConFlds	      Args((Int,Cell));
 static Void   local typeUpdFlds	      Args((Int,Cell));
 #if IPARAM
@@ -205,6 +218,9 @@ static Cell  predFractional;		/* Fractional (mkOffset(0))	   */
 static Cell  predIntegral;		/* Integral (mkOffset(0))	   */
 static Kind  starToStar;		/* Type -> Type			   */
 static Cell  predMonad;			/* Monad (mkOffset(0))		   */
+#if MUDO
+static Cell  predMonadRec;		/* MonadRec (mkOffset(0))	   */
+#endif
 
 /* --------------------------------------------------------------------------
  * Assumptions:
@@ -782,6 +798,10 @@ Cell e; {
 	case DOCOMP	: typeDo(l,e);
 			  break;
 
+#if MUDO
+	case MDOCOMP	: typeMDo(l,e);
+			  break;
+#endif  
 	case COMP	: return typeMonadComp(l,e);
 
 #if ZIP_COMP
@@ -1485,6 +1505,151 @@ Cell e; {
     shouldBe(l,fst(snd(e)),NIL,finGen,mon,alpha);
     snd(e) = pair(m,snd(e));
 }
+
+#if MUDO
+
+#define segRecs(seg)	fst3(fst(seg))
+#define segExps(seg)	snd3(fst(seg))
+#define segDefs(seg)	thd3(fst(seg))
+#define segQuals(seg)	snd(seg)
+
+static Void local typeRecComp(l,m,e,qs)		/* type check rec-comp	     */
+Int  l;
+Type m;						/* monad (mkOffset(0))	     */
+Cell e;
+List qs; {
+    static String boolQual = "boolean qualifier";
+    static String genQual  = "generator";
+    static String letQual  = "mdo-transformed let generator";
+    String mesg	   = genQual;
+#if IPARAM
+    List svPreds;
+#endif
+
+    STACK_CHECK
+    if (isNull(qs)) {			/* no qualifiers left		   */
+	spTypeExpr(l,fst(e));
+    } else {
+	Cell q   = hd(qs);
+	List qs1 = tl(qs);
+	switch (whatIs(q)) {
+	    case BOOLQUAL : spCheck(l,snd(q),NIL,boolQual,typeBool,0);
+			    typeRecComp(l,m,e,qs1);
+			    break;
+
+	    case QWHERE	  : fst(q) = FROMQUAL;
+			    mesg = letQual; 
+			    /* intentional fall-thru */
+
+	    case FROMQUAL : {   Int beta = newTyvars(1);
+				saveVarsAss();
+				spCheck(l,snd(snd(q)),NIL,mesg,m,beta);
+				enterSkolVars();
+
+				tcMode = OLD_PATTERN;
+				fst(snd(q))
+				    = typeExpr(l,patBtyvs(fst(snd(q))));
+				tcMode = EXPRESSION;
+
+				shouldBe(l,fst(snd(q)),NIL,mesg,aVar,beta);
+				typeRecComp(l,m,e,qs1);
+				restoreVarsAss();
+				doneBtyvs(l);
+				leaveSkolVars(l,typeIs,typeOff,0);
+			    }
+			    break;
+
+	    case DOQUAL   : spCheck(l,snd(q),NIL,genQual,m,newTyvars(1));
+			    typeRecComp(l,m,e,qs1);
+			    break;
+	}
+    }
+}
+
+static Void local typeMDo(l,e)		/* type check recursive-do	   */
+Int l;
+Cell e; {
+    /*  We need to make sure that the MonadRec library is in scope whenever
+     *	someone uses an mdo expression. This is achieved by the global
+     *	variables monadRecHandle and mfixNameHandle. This is necessary since
+     *	MonadRec class and the mfix function are not part of the standard 
+     *	prelude. (Similar problem occurs with Trex show classes, and this
+     *	solution is adapted from the solution devised by Mark P Jones for that
+     *	problem.) This will greatly simplify if MonadRec becomes part of the
+     *	standard prelude.
+     */
+
+    if(!(classMonadRec = findQualClass(monadRecHandle))) {
+	ERRMSG(0) "MonadRec class not defined" ETHEN
+	ERRTEXT   "\n*** Possible cause: \"MonadRec\" library not loaded"
+	EEND;
+    }
+
+    predMonadRec = ap(classMonadRec,aVar);                                      
+
+    if(!(nameMFix = findQualName(mfixNameHandle))) {
+	ERRMSG(0) "MonadRec class does not define the mfix method"
+	EEND;
+    }
+    /* Now we're safe: do the actual type-checking now: */
+    typeRecursiveDo(l,e);
+}
+
+static Void local typeRecursiveDo(l,e)	/* type check recursive-do exp.   */
+Int l;
+Cell e; {
+    /* The structure at this point:
+	e = (TAG, (1, [((2, 3, 4), 5)]))
+	where
+	    1 = expression
+	    2 = rec vars of the segment
+	    3 = exported vars of the segment
+	    4 = defined vars of the segment, but not let-bound's
+	    5 = qualifiers
+    */
+    static String finGen = "final generator";
+    Int alpha		 = newTyvars(1);
+    Int beta		 = newTyvars(1);
+    Cell mon		 = ap(mkInt(beta),aVar);
+    Cell monDict         = assumeEvid(predMonad,beta); 
+    Cell m		 = assumeEvid(predMonadRec,beta);
+    List tmp;
+    List whole		 = NIL;
+#if IPARAM
+    List svPreds;
+#endif
+    tyvar(beta)->kind	 = starToStar;
+    
+    enterBindings();
+
+    /* introduce defined variables into the typing environment: */
+    for(tmp = snd(snd(e)); nonNull(tmp); tmp = tl(tmp)) {
+	List rtmp = segDefs(hd(tmp));
+	for(; nonNull(rtmp); rtmp = tl(rtmp)) {
+	    newVarsBind(hd(rtmp)); 
+	}
+    }
+
+    /* collect all qualifiers from all segments: */
+    for(tmp = snd(snd(e)); nonNull(tmp); tmp = tl(tmp)) {
+	List tmp2;
+	for(tmp2 = segQuals(hd(tmp)); nonNull(tmp2); tmp2 = tl(tmp2)) {
+	    whole=cons(hd(tmp2),whole);
+	}
+    }
+	
+    typeRecComp(l,mon,snd(e),rev(whole));
+    shouldBe(l,fst(snd(e)),NIL,finGen,mon,alpha);
+    leaveBindings();
+
+    snd(e) = pair(pair(m,monDict),snd(e));
+}
+
+#undef segRecs
+#undef segExps
+#undef segDefs
+#undef segQuals
+#endif
 
 static Void local typeConFlds(l,e)	/* Type check a construction	   */
 Int  l;
@@ -2849,6 +3014,12 @@ Int what; {
 		       mark(predIntegral);
 		       mark(starToStar);
 		       mark(predMonad);
+#if MUDO
+		       mark(predMonadRec);
+		       mark(monadRecHandle);
+		       mark(mfixNameHandle);
+#endif
+
 #if IO_MONAD
 		       mark(typeProgIO);
 #endif
@@ -2920,6 +3091,19 @@ Int what; {
 		       nameWriteErr = addPrimCfun(inventText(),1,5,NIL);
 		       nameEOFErr   = addPrimCfun(inventText(),1,6,NIL);
 #endif
+#endif
+
+#if MUDO
+		       {   /* This isn't quite right. t must be the text
+			    * for the known name of MonadRec, i.e. if it
+			    * is imported qualified with some other name,
+			    * this will fail. The implementation of TREX
+			    * suffers from the same problem too.
+			    */
+			   Text t = findText("MonadRec");
+			   monadRecHandle = mkQCon(t,findText("MonadRec"));
+			   mfixNameHandle = mkQCon(t,findText("mfix"));
+		       }
 #endif
 		       break;
     }

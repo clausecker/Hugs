@@ -9,8 +9,8 @@
  * included in the distribution.
  *
  * $RCSfile: prelude.h,v $
- * $Revision: 1.10 $
- * $Date: 2001/01/02 18:21:40 $
+ * $Revision: 1.11 $
+ * $Date: 2001/01/08 21:43:06 $
  * ------------------------------------------------------------------------*/
 
 #include "config.h"
@@ -74,6 +74,7 @@
  *   OBSERVATIONS   to include support for `observe' and friends
  *   TREX	    to include support for Typed Rows and EXtensions.
  *   IPARAM	    to include support for Implicit Parameters.
+ *   MUDO	    to include support for Recursive-do notation
  *   MULTI_INST	    to include support for Multi-Instance Resolution.
  *   HASKELL_ARRAYS to include support for Haskell array primitives.
  *   IO_MONAD	    to include the IO monad primitives and support.
@@ -113,6 +114,7 @@
 #if !HASKELL_98_ONLY
 #define TREX		1
 #define IPARAM		1
+#define MUDO		1
 #define ZIP_COMP	1
 #define HERE_DOC	1
 #define MULTI_INST	1
