@@ -41,10 +41,7 @@ gzip -f -9 $RPM_BUILD_ROOT%{prefix}/man/man1/hugs.1
 %doc Readme
 %doc Credits
 %doc docs/server.html
-%doc docs/observe-notes.txt
-%doc docs/mdo-notes.txt
 %doc docs/ffi-notes.txt
-%doc docs/zipcomp-notes.txt
 %doc docs/winhugs-notes.txt
 %doc docs/machugs-notes.txt
 %{prefix}/man/man1/hugs.1.gz
