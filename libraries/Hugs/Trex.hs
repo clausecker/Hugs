@@ -34,7 +34,7 @@ instance ShowRecRow r => Show (Rec r) where
     showFields [] = showString "emptyRec"
     showFields xs = showChar '(' . foldr1 comma (map fld xs) . showChar ')'
      where comma a b = a . showString ", " . b
-           fld (s,v) = showString s . showChar '=' . v
+           fld (s,v) = showString s . showString " = " . v
 
 class ShowRecRow r where
   showRecRow :: Rec r -> [(String, ShowS)]
