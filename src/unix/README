@@ -81,7 +81,7 @@ need to extend the configure script.  The steps are:
 4) Run hugs/src/unix/mkconfig.
    This uses autoconf to generate hugs/src/unix/configure and 
    it uses autoheader to generate hugs/src/config.h.in
-5) Send patches to hugs-bugs@cs.yale.edu (please).
+5) Send patches to hugs-bugs@haskell.org (please).
 
 
 

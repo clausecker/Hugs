@@ -11,8 +11,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.53 $
- * $Date: 2002/06/21 23:22:00 $
+ * $Revision: 1.54 $
+ * $Date: 2002/06/22 19:47:38 $
  * ------------------------------------------------------------------------*/
 #include <math.h>
 
@@ -1014,7 +1014,7 @@ Void gcCStack() {                       /* Garbage collect elements off    */
  *    sgtty.h is in /usr/include/bsd which is not on my standard include
  *    path.  Adding it does no harm but you might as well use termios.
  *    --
- *    reid-alastair@cs.yale.edu
+ *    alastair@reid-consulting-uk.ltd.uk
  */
 #if HAVE_TERMIOS_H
 
