@@ -435,7 +435,6 @@ test_libs() {
 
   echo "-- !!! Performing static tests on other extension libraries"
   perl runstdtest $HUGS $STDOPTS -98 Memo   "-o1libs/Loaded.output"
-  perl runstdtest $HUGS $STDOPTS -98 MonadRec "-o1libs/Loaded.output"
   perl runstdtest $HUGS $STDOPTS Observe    "-o1libs/Loaded.output"
 
   echo "-- !!! Performing static tests on Hugs libraries"

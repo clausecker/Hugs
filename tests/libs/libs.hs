@@ -58,7 +58,6 @@ import MonadIdentity
 import MonadList
 import MonadRWS
 import MonadReader
-import MonadRec
 import MonadState
 import MonadTrans
 import MonadWriter
