@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: storage.c,v $
- * $Revision: 1.70 $
- * $Date: 2003/03/14 13:31:43 $
+ * $Revision: 1.71 $
+ * $Date: 2003/06/12 12:53:21 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -3257,9 +3257,8 @@ int mallocPtr_hw;
  * unstable pointers.  
  * (It happens that we never use it with unstable pointers.)
  */
-Cell mkMallocPtr(ptr,cleanup)            /* create a new malloc pointer    */
-Pointer ptr;
-CFinalizer cleanup; {
+Cell newMallocPtr(ptr) 			/* create a new malloc pointer     */
+Pointer ptr; {
     Int i;
     for (i=0; i<NUM_MALLOCPTRS && mallocPtrs[i].refCount!=0; ++i)
 	;					/* Search for unused entry */
@@ -3280,8 +3279,18 @@ CFinalizer cleanup; {
     if (i >= mallocPtr_hw) {
 	mallocPtr_hw = i + 1;
     }
-    mallocPtrs[i].finalizers = cons(mkPtr((Pointer)cleanup), mallocPtrs[i].finalizers);
     return (mallocPtrs[i].mpcell = ap(MPCELL,i));
+}
+
+Cell mkMallocPtr(ptr,cleanup)            /* create a new malloc pointer    */
+Pointer ptr;
+CFinalizer cleanup; {
+    Cell mp;
+    Int i;
+    mp = newMallocPtr(ptr);
+    i = mpOf(mp);
+    mallocPtrs[i].finalizers = cons(mkPtr((Pointer)cleanup), mallocPtrs[i].finalizers);
+    return mp;
 }
 
 Void incMallocPtrRefCnt(n,i)             /* change ref count of MallocPtr */

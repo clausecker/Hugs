@@ -14,8 +14,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: iomonad.c,v $
- * $Revision: 1.49 $
- * $Date: 2003/05/12 08:48:14 $
+ * $Revision: 1.50 $
+ * $Date: 2003/06/12 12:53:20 $
  * ------------------------------------------------------------------------*/
  
 Name nameIORun;			        /* run IO code                     */
@@ -274,15 +274,14 @@ static struct primitive iomonadPrimTable[] = {
   {"castStablePtrToPtr",1, primCastSPToP},
   {"castPtrToStablePtr",1, primCastPToSP},
 
-  {"makeForeignObj",	2+IOArity, primNewFP},
   {"writeForeignObj",	2+IOArity, primWriteFP},
   {"eqForeignObj",	2, primEqFP},
 
-  {"newForeignPtr",	2+IOArity, primNewFP},
+  {"newForeignPtr_",	1+IOArity, primNewFP},
   {"addForeignPtrFinalizer", 2+IOArity, primAddFPF},
   {"eqForeignPtr",	2, primEqFP},
   {"touchForeignPtr",	1+IOArity, primTouchFP},
-  {"foreignPtrToPtr",	1, primFPToP},
+  {"unsafeForeignPtrToPtr", 1, primFPToP},
 
 #if GC_WEAKPTRS
   {"makeWeakPtr",       1+IOArity, primMakeWeakPtr},
@@ -1705,14 +1704,11 @@ primFun(primCastPToSP) {		/* Ptr () -> StablePtr a   	   */
 #define checkForeign() /* do nothing */
 #endif
 
-primFun(primNewFP) { /* Ptr a -> FunPtr (Ptr a -> IO ()) -> IO (ForeignPtr a) */
+primFun(primNewFP) { /* Ptr a -> IO (ForeignPtr a) */
     Pointer addr = 0;
-    CFinalizer cleanup;
-    eval(IOArg(2));
-    addr = ptrOf(whnfHead);
     eval(IOArg(1));
-    cleanup = (CFinalizer)ptrOf(whnfHead);
-    IOReturn(mkMallocPtr(addr,cleanup));
+    addr = ptrOf(whnfHead);
+    IOReturn(newMallocPtr(addr));
 }
 
 primFun(primAddFPF) { /* ForeignPtr a -> FunPtr (Ptr a -> IO ()) -> IO () */
