@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.159 $
- * $Date: 2003/11/05 18:23:42 $
+ * $Revision: 1.160 $
+ * $Date: 2003/12/04 18:06:01 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -3999,7 +3999,7 @@ Cell type; {
     }
     cconv = checkCallConv(line,textOf(callconv));
     if ( cconv == FFI_CCONV_UNKNOWN ) {
-      ERRMSG(line) "Foreign export calling convention \"%s\" not supported",
+      ERRMSG(line) "Foreign import calling convention \"%s\" not supported",
   	           textToStr(textOf(callconv))
       EEND;
     }
