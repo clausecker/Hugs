@@ -11,8 +11,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.49 $
- * $Date: 2002/06/05 14:52:27 $
+ * $Revision: 1.50 $
+ * $Date: 2002/06/12 18:55:24 $
  * ------------------------------------------------------------------------*/
 #include <math.h>
 
@@ -1841,7 +1841,7 @@ static void* dlopen( char* path, int mode /* mode is ignored */ ) {
   if( dyld_result != NSObjectFileImageSuccess )
     dlerror_index = dyld_result;
   else {
-    handle = NSLinkModule( ofile, path, TRUE );
+    handle = NSLinkModule( ofile, path, NSLINKMODULE_OPTION_PRIVATE );
   }
 
   return handle;
@@ -1850,11 +1850,12 @@ static void* dlopen( char* path, int mode /* mode is ignored */ ) {
 void* dlsym( void* handle, char* symbol ) {
   void* addr;
 
-  if( NSIsSymbolNameDefined( symbol ) )
-    addr = NSAddressOfSymbol( NSLookupAndBindSymbol( symbol ) );
-  else
+  NSSymbol s = NSLookupSymbolInModule( (NSModule)handle, symbol );
+  if( s ) {
+    addr = NSAddressOfSymbol(s);
+  } else {
     addr = NULL;
-  
+  }
   return addr;
 }
 
