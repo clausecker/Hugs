@@ -8,8 +8,8 @@
  * in the distribution for details.
  *
  * $RCSfile: storage.h,v $
- * $Revision: 1.5 $
- * $Date: 1999/09/09 22:57:17 $
+ * $Revision: 1.6 $
+ * $Date: 1999/09/13 10:44:29 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -61,6 +61,7 @@ extern	Text         inventText		Args((Void));
 extern  Text	     inventDictText	Args((Void));
 extern  Bool	     inventedText	Args((Text));
 extern	String	     identToStr		Args((Cell));
+extern	Text	     fixLitText	 	Args((Text));
 
 /* --------------------------------------------------------------------------
  * Specification of syntax (i.e. default written form of application)
