@@ -85,11 +85,6 @@ continueIO cc = IO (\ s -> Hugs_ForkThread (s ()) cc)
 forkIO m = continueIO (threadToIOResult (m `catchException` forkExnHandler))
 
 forkExnHandler :: Exception -> IO a
-forkExnHandler (IOException e) = do
-    putStr "\nThread raised error:\n"
-    putStr (show e)
-    putStr "\n"           
-    kill
 forkExnHandler e = do
     putStr "\nThread raised exception: "
     putStr (show e)

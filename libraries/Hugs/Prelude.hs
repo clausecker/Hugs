@@ -1892,10 +1892,6 @@ hugsIORun m =
   exceptionHandler :: Exception -> IO a
   exceptionHandler (ExitException ExitSuccess) = primExitWith 0
   exceptionHandler (ExitException (ExitFailure n)) = primExitWith n
-  exceptionHandler (IOException err) = runAndShowError $ do
-	putChar '\n'
-	putStr (show err)
-	primExitWith 1
   exceptionHandler err = runAndShowError $ do
 	putChar '\n'
 	putStr "Program error: "

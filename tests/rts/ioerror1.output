@@ -7,5 +7,6 @@ Hugs:Caught error
 Continuing
 
 Hugs:
-user error (foo)
+Program error: user error (foo)
+
 Hugs:[Leaving Hugs]
