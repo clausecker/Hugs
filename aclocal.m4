@@ -782,11 +782,14 @@ AC_SUBST([GLUT_LIBS])
 ])# FP_CHECK_GLUT
 
 dnl AC_C_INLINE_ONLY
+dnl ----------------
+dnl Define the preprocessor symbol INLINE_ONLY to the specifier(s)
+dnl that ensure that functions are inlined but not externally defined,
+dnl so that a file using them can be linked with another containing their
+dnl external definitions.  (This is `inline' for C99 and `inline extern'
+dnl for gcc, with `static inline' as a fallback that should be OK even if
+dnl `inline' is defined to be empty by AC_C_INLINE.)
 dnl
-dnl Define the preprocessor symbol INLINE_ONLY to the specifier(s) that
-dnl ensure that functions are inlines but not separately defined.
-dnl (This is `inline' for C99 and `inline extern' for gcc.)
-
 AC_DEFUN([AC_C_INLINE_ONLY],
 [AC_REQUIRE([AC_PROG_CC])
  AC_REQUIRE([AC_C_INLINE])
@@ -808,9 +811,10 @@ int main() { return foo(2); }
 EOF
 
   ac_cv_c_inline_only=''
-  for inline_only in $ac_cv_c_inline "extern $ac_cv_c_inline"; do
+  for inline_only in "$ac_cv_c_inline" "extern $ac_cv_c_inline" "static $ac_cv_c_inline"; do
     if $CC $CFLAGS -DINLINE_ONLY="$inline_only" conftest.c conftest_fn.c >&5 2>&5; then
       ac_cv_c_inline_only="$inline_only"
+      break
     fi
   done
 ])

@@ -30720,9 +30720,10 @@ int main() { return foo(2); }
 EOF
 
   ac_cv_c_inline_only=''
-  for inline_only in $ac_cv_c_inline "extern $ac_cv_c_inline"; do
+  for inline_only in "$ac_cv_c_inline" "extern $ac_cv_c_inline" "static $ac_cv_c_inline"; do
     if $CC $CFLAGS -DINLINE_ONLY="$inline_only" conftest.c conftest_fn.c >&5 2>&5; then
       ac_cv_c_inline_only="$inline_only"
+      break
     fi
   done
 
