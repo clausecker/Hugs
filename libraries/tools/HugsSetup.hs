@@ -102,7 +102,7 @@ main
 		no_extra_flags args
 		pkg_descr <- getBuildParams currentDir pkg_descr
 		localbuildinfo <- getPersistBuildConfig
-		install pkg_descr localbuildinfo mprefix False
+		install pkg_descr localbuildinfo False
 
 	    InstallCmd uInst -> do
 		(uInst, _, args) <- parseInstallArgs uInst args []
@@ -159,8 +159,7 @@ build pkg lbi = when (buildPackage pkg) $
 	mapM_ (compileFFI pkg lbi) ffiFiles
   where buildPref = buildDir lbi
 
-install :: PackageDescription -> LocalBuildInfo ->
-	Bool -> IO ()
+install :: PackageDescription -> LocalBuildInfo -> Bool -> IO ()
 install pkg lbi uInst =
 	when (buildPackage pkg) $
 	withLib pkg $ \ libInfo -> do
