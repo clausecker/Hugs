@@ -187,7 +187,6 @@ do
 			fi
 		done
 	else
-		echo $?
 		echo "Skipping $package package"
 	fi
 	cd "$top_dir"
