@@ -243,7 +243,7 @@ do
 			for h in $c_includes
 			do	echo "\"$h\""
 			done
-			sed -n 's/^>* *{-# OPTIONS.*-#include  *\([^ ]*\).*/\1/p' $filename
+			sed -n 's/^>* *{-# \(OPTIONS.*-#include\|INCLUDE\)  *\([^ ]*\).*/\2/p' $filename
 		) | $SORT -u >$header_list
 		for h in `cat $header_list`
 		do	cmd="$cmd +i$h"
