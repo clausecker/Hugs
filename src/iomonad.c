@@ -14,8 +14,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: iomonad.c,v $
- * $Revision: 1.66 $
- * $Date: 2003/12/02 12:15:51 $
+ * $Revision: 1.67 $
+ * $Date: 2003/12/02 12:24:02 $
  * ------------------------------------------------------------------------*/
  
 Name nameIORun;			        /* run IO code                     */
@@ -456,6 +456,10 @@ String loc; {
     if (hmode&HREADWRITE) {
 	handles[i].hHaveRead = FALSE;
     }
+#if CHAR_ENCODING
+    handles[i].hBinaryMode = binary;
+    handles[i].hLookAhead = -1;
+#endif
     return (handles[i].hcell = ap(HANDCELL,i));
 }
 
@@ -490,8 +494,18 @@ String loc; {
 
 static Char local hGetChar(Int h) {
     Int c;
+#if CHAR_ENCODING
+    if (handles[h].hLookAhead>=0) {
+	c = handles[h].hLookAhead;
+	handles[h].hLookAhead = -1;
+    } else if (h==HSTDIN) {
+	c = readTerminalChar();
+    } else if (handles[h].hBinaryMode)
+	c = getc(handles[h].hfp);
+#else /* !CHAR_ENCODING */
     if (h==HSTDIN)
 	c = readTerminalChar();
+#endif
     else {
 	c = FGetChar(handles[h].hfp);
     }
@@ -823,7 +837,16 @@ primFun(primHPutChar) {			/* print character on handle	   */
 	handles[h].hHaveRead = FALSE;
     }
     if (handles[h].hmode&(HWRITE|HAPPEND|HREADWRITE)) {
-	if ( FPutChar(c, handles[h].hfp) == EOF ) {
+	Int retval;
+#if CHAR_ENCODING
+	if (handles[h].hBinaryMode)
+	    retval = fputc(c, handles[h].hfp);
+	else
+	    retval = FPutChar(c, handles[h].hfp);
+#else
+	retval = FPutChar(c, handles[h].hfp);
+#endif
+	if ( retval == EOF ) {
 	  IOFail(mkIOError(handles[h].hcell,
 			   toIOError(errno),
 			   "IO.hPutChar",
@@ -1073,6 +1096,10 @@ primFun(primHIsEOF) {	/* Test for end of file on handle  */
 		      peeking at the next char isn't likely
 		      to produce a different outcome! */
 	IOBoolResult(isEOF);
+#if CHAR_ENCODING
+      } else if (handles[h].hLookAhead>=0) {
+	IOReturn(nameTrue);
+#endif
       } else {
 	Int c = fgetc(fp);
 	isEOF = feof(fp);
@@ -1219,7 +1246,11 @@ primFun(primHLookAhead) { /* Peek at the next char */
   if (handles[h].hmode&(HREAD|HREADWRITE)) {
     if (!feof(handles[h].hfp)) {
       if ((c = hGetChar(h)) != EOF) {
+#if CHAR_ENCODING
+	handles[h].hLookAhead = c;
+#else
 	ungetc(c, handles[h].hfp);
+#endif
 	IOReturn(mkChar(c));
       } else {
 	IOFail(mkIOError(handles[h].hcell,

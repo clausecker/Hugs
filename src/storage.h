@@ -8,8 +8,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: storage.h,v $
- * $Revision: 1.62 $
- * $Date: 2003/11/14 01:55:17 $
+ * $Revision: 1.63 $
+ * $Date: 2003/12/02 12:24:03 $
  * ------------------------------------------------------------------------*/
 #ifndef __STORAGE_H__
 #define __STORAGE_H__
@@ -1171,6 +1171,10 @@ struct strHandle {		/* Handle description and status flags	   */
 				    a fflush() is required before writing).
 				   FALSE=> for R/W handles, a read needs to
 				   fflush() first.                         */
+#if CHAR_ENCODING
+    Bool  hBinaryMode;		/* TRUE => Handle opened in binary mode    */
+    Char  hLookAhead;		/* Char read by hLookAhead (or <0 if none) */
+#endif
 };
 
 #define HCLOSED		0000	/* no I/O permitted			   */
