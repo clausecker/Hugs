@@ -11386,7 +11386,7 @@ if test "x$target" = "xwindows"; then
     DLL=".dll"          
     DLL_ENDING="-dll"   
     DEV_NULL="nul"
-    HUGSPATH="{Hugs}\\\\libraries;{Hugs}\\\\oldlib;{Hugs}\\\\lib\\\\win32"
+    HUGSPATH=".;{Hugs}\\\\libraries;{Hugs}\\\\oldlib;{Hugs}\\\\lib\\\\win32"
     HUGSSUFFIXES=".hs;.lhs"
     MkInstall="../MkNull.in"
 elif test "x$target" = "xdos"; then
@@ -11397,12 +11397,12 @@ elif test "x$target" = "xdos"; then
     DLL_ENDING="-dll"   
     DEV_NULL="nul"
     hugsdir_deflt='${libdir}\\hugs'
-    HUGSPATH="{Hugs}\\\\libraries;{Hugs}\\\\oldlib"
+    HUGSPATH=".;{Hugs}\\\\libraries;{Hugs}\\\\oldlib"
     HUGSSUFFIXES=".hs;.lhs"
     MkInstall="../MkNull.in"
 else
     hugsdir_deflt='${libdir}/hugs'
-    HUGSPATH="{Hugs}/libraries:{Hugs}/oldlib"
+    HUGSPATH=".:{Hugs}/libraries:{Hugs}/oldlib"
     HUGSSUFFIXES=".hs:.lhs"
     MkInstall="../MkInstal.in"
 fi

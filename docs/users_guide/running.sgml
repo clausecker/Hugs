@@ -232,11 +232,11 @@ Any occurrences of <literal>{Hugs}</literal> in this string will be replaced
 by the Hugs library directory.
 Similarly, <literal>{Home}</literal> is expanded to your home directory.
 An entry of the form
-<quote><replaceable>direectory</replaceable><literal>/*</literal></quote>
-means all the immediate subdirectories of <replaceable>direectory</replaceable>.
+<quote><replaceable>directory</replaceable><literal>/*</literal></quote>
+means all the immediate subdirectories of <replaceable>directory</replaceable>.
 The default value is
 <programlisting>
-{Hugs}/libraries:{Hugs}/oldlib
+.:{Hugs}/libraries:{Hugs}/oldlib
 </programlisting>
 </para>
 <para>

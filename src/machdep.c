@@ -11,8 +11,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.93 $
- * $Date: 2003/07/15 22:49:09 $
+ * $Revision: 1.94 $
+ * $Date: 2003/07/16 11:06:29 $
  * ------------------------------------------------------------------------*/
 #include "prelude.h"
 #include "storage.h"
@@ -714,7 +714,7 @@ String filename; {              /* Return ***input name*** if no file was found 
 
     find maybe_dir nm = [ d ++ map dot2slash nm ++ e | d <- dirs, e <- exts ]
       where 
-        dirs          = maybeToList maybe_dir ++ "" : hugsPath
+        dirs          = maybeToList maybe_dir ++ hugsPath
         exts          = hugsSuffixes		-- default: [".hs",".lhs"]
 
 	-- the dir is added if the importing module was found there, or
@@ -749,11 +749,7 @@ static Bool find1(name)		/* Search each directory of the path */
 String name; {
     String pathpt = hugsPath;
 
-    searchReset(0);		/* First, search current directory */
-    if (find2(name))
-        return TRUE;
-
-    searchReset(0);		/* Otherwise, we look along the HUGSPATH */
+    searchReset(0);		/* look along the HUGSPATH */
     if (pathpt) {
 	while (*pathpt) {
 	    searchReset(0);
@@ -805,11 +801,11 @@ String s; {
 }
 
 String dirname(filename)	/* Return the directory part of the filename */
-String filename; {		/* or NULL if no directory.                  */
+String filename; {		/* or "." if no directory.                   */
     String slash = strrchr(filename,SLASH);
 
     if (!slash)
-	return NULL;
+	return strCopy(".");
     return strnCopy(filename, slash - filename);
 }
 
