@@ -14,8 +14,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: iomonad.c,v $
- * $Revision: 1.94 $
- * $Date: 2005/02/01 10:17:19 $
+ * $Revision: 1.95 $
+ * $Date: 2005/03/17 12:12:09 $
  * ------------------------------------------------------------------------*/
  
 Name nameIORun;			        /* run IO code                     */
@@ -38,6 +38,7 @@ static String local modeString     Args((Int,Bool));
 static Cell   local openHandle     Args((StackPtr,Cell *,Int,Bool,String));
 static Cell   local openFdHandle   Args((StackPtr,Int,Int,Bool,String));
 static Char   local hGetChar       Args((Int,String));
+static Void   local hPutChar       Args((Char,Int,String));
 static Void   local setRWState     Args((Int,Int));
 static Void   local checkOpen      Args((Int,String));
 static Void   local checkReadable  Args((Int,String));
@@ -544,6 +545,18 @@ static Char local hGetChar(Int h, String fname) {
     return c;
 }
 
+static Void local hPutChar(Char c, Int h, String fname) {
+    Int retval;
+#if CHAR_ENCODING
+    retval = handles[h].hBinaryMode ? fputc(c, handles[h].hfp) :
+				      FPutChar(c, handles[h].hfp);
+#else
+    retval = FPutChar(c, handles[h].hfp);
+#endif
+    if (retval == EOF)
+	throwErrno(fname, TRUE, h, NULL);
+}
+
 /* If the stream is read-write, set the state, otherwise do nothing */
 static Void local setRWState(Int h, Int newState) {
     if (handles[h].hmode&HREADWRITE) {
@@ -820,22 +833,13 @@ primFun(primSetArgs) {                  /* primSetArgs :: [String] -> IO () */
  * ------------------------------------------------------------------------*/
 
 primFun(primGetChar) {			/* Get character from stdin        */
-    Int c;
     checkOpen(HSTDIN, "getChar");
-    c = FGetChar(stdin);
-    if (c==EOF) {
-	IOFail(mkIOError(&handles[HSTDIN].hcell,
-			 nameEOFErr,
-			 "Prelude.getChar",
-			 "end of file",
-			 NULL));
-    }
-    IOReturn(mkChar(c));
+    IOReturn(mkChar(hGetChar(HSTDIN, "Prelude.getChar")));
 }
 
 primFun(primPutChar) {			/* print character on stdout	   */
     eval(pop());
-    FPutChar(charOf(whnfHead), stdout);
+    hPutChar(charOf(whnfHead), HSTDOUT, "Prelude.putChar");
     fflush(stdout);
     IOReturn(nameUnit);
 }
@@ -846,7 +850,7 @@ primFun(primPutStr) {			/* print string on stdout	   */
     while (whnfHead==nameCons) {
 	eval(top());
 	checkChar();
-	FPutChar(charOf(whnfHead), stdout);
+	hPutChar(charOf(whnfHead), HSTDOUT, "Prelude.putStr");
 #if FLUSHEVERY
 	fflush(stdout);
 #endif
@@ -894,23 +898,12 @@ primFun(primHGetChar) {			/* Read character from handle	   */
 primFun(primHPutChar) {			/* print character on handle	   */
     Char c = 0;
     Int  h;
-    Int retval;
     HandleArg(h,2+IOArity);
     CharArg(c,1+IOArity);
 
     checkWritable(h, "IO.hPutChar");
     setRWState(h, RW_WRITING);
-#if CHAR_ENCODING
-    if (handles[h].hBinaryMode)
-	retval = fputc(c, handles[h].hfp);
-    else
-	retval = FPutChar(c, handles[h].hfp);
-#else
-	retval = FPutChar(c, handles[h].hfp);
-#endif
-
-    if ( retval == EOF )
-	throwErrno("IO.hPutChar", TRUE, h, NULL);
+    hPutChar(c, h, "IO.hPutChar");
     IOReturn(nameUnit);
 }
 
@@ -926,7 +919,7 @@ primFun(primHPutStr) {			/* print string on handle	   */
     eval(pop());
     while (whnfHead==nameCons) {
 	eval(pop());
-	FPutChar(charOf(whnfHead),handles[h].hfp);
+	hPutChar(charOf(whnfHead),h,"IO.hPutStr");
 #if FLUSHEVERY
 	if ( h <= 2 ) {  /* Only flush the standard handles */
 	    fflush(handles[h].hfp);
@@ -1013,7 +1006,7 @@ primFun(primOpenFile) {			/* open handle to a text file	   */
 }
 
 primFun(primOpenBinaryFile) {		/* open handle to a binary file	   */
-    fopenPrim(root,TRUE,"IOExtensions.openBinaryFile");
+    fopenPrim(root,TRUE,"System.IO.openBinaryFile");
 }
 
 primFun(primStdin) {			/* Standard input handle	   */
@@ -1447,7 +1440,7 @@ primFun(primReadFile) {			/* read file as lazy string	   */
 }
 
 primFun(primReadBinaryFile) {		/* read file as lazy string	   */
-    Cell hnd = openHandle(root,&IOArg(1),HREAD,TRUE,"IOExtensions.readBinaryFile");
+    Cell hnd = openHandle(root,&IOArg(1),HREAD,TRUE,"System.IO.readBinaryFile");
     handles[intValOf(hnd)].hmode = HSEMICLOSED;
     IOReturn(ap(nameHreader,hnd));
 }
@@ -1565,6 +1558,8 @@ String   loc; {
     String s    = evalName(IOArg(2));		/* Eval and check filename */
     FILE* wfp;
     String stmode;
+    Char c;
+    Int retval;
 
     if (!s) {
         IOFail(mkIOError(NULL,
@@ -1589,7 +1584,14 @@ String   loc; {
     while (whnfHead==nameCons) {
 	eval(top());
 	checkChar();
-	FPutChar(charOf(whnfHead),wfp);
+	c = charOf(whnfHead);
+#if CHAR_ENCODING
+	retval = binary ? fputc(c, wfp) : FPutChar(c, wfp);
+#else
+	retval = FPutChar(c, wfp);
+#endif
+	if (retval == EOF)
+	    throwErrno(loc, TRUE, NO_HANDLE, NULL);
 	drop();
 	eval(pop());
     }
