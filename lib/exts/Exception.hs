@@ -53,6 +53,7 @@ module Exception(
   ) where
 
 import Prelude hiding (catch)
+import qualified Prelude ( catch )
 
 ----------------------------------------------------------------
 -- Exception datatype and operations
