@@ -18,8 +18,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: iomonad.c,v $
- * $Revision: 1.36 $
- * $Date: 2002/12/10 11:07:25 $
+ * $Revision: 1.37 $
+ * $Date: 2002/12/20 17:56:23 $
  * ------------------------------------------------------------------------*/
  
 Name nameIORun;			        /* run IO code                     */
@@ -34,7 +34,7 @@ static Name nameHreader;	        /* auxiliary function		   */
 #if IO_HANDLES
 static String local toIOErrorDescr Args((int,Bool));
 static Name   local toIOError      Args((int));
-static Cell   local mkIOError      Args((Name,String,String,Cell));
+static Cell   local mkIOError      Args((Cell,Name,String,String,Cell));
 static Cell   local openHandle     Args((StackPtr,Cell,Int,Bool,String));
 #endif
 
@@ -128,6 +128,7 @@ PROTO_PRIM(primHIsSeekable);
 PROTO_PRIM(primHFileSize);
 PROTO_PRIM(primHWaitForInput);
 PROTO_PRIM(primEqHandle);
+PROTO_PRIM(primGetHandleNumber);
 PROTO_PRIM(primReadFile);
 PROTO_PRIM(primWriteFile);
 PROTO_PRIM(primAppendFile);
@@ -135,8 +136,6 @@ PROTO_PRIM(primAppendFile);
 PROTO_PRIM(primReadBinaryFile);
 PROTO_PRIM(primWriteBinaryFile);
 PROTO_PRIM(primAppendBinaryFile);
-
-PROTO_PRIM(primGetHandle);
 #endif
 
 #if IO_REFS
@@ -232,13 +231,13 @@ static struct primitive iomonadPrimTable[] = {
   {"hFileSize",         3, primHFileSize},
   {"hWaitForInput",     4, primHWaitForInput},
   {"primEqHandle",	2, primEqHandle},
+  {"primGetHandleNumber", 1, primGetHandleNumber},
   {"readFile",		3, primReadFile},
   {"writeFile",		4, primWriteFile},
   {"appendFile",	4, primAppendFile},
   {"readBinaryFile",	3, primReadBinaryFile},
   {"writeBinaryFile",	4, primWriteBinaryFile},
   {"appendBinaryFile",	4, primAppendBinaryFile},
-  {"ioeGetHandle",	   1, primGetHandle},
 #endif
 
 #if IO_REFS
@@ -362,10 +361,11 @@ String loc; {
 
     if (!s) {				/* check for valid name		   */
       return(pair(NIL,
-		  mkIOError(nameIllegal,
+		  mkIOError(NIL,
+			    nameIllegal,
 			    loc,
 			    "illegal file name",
-			    nameNothing)));
+			    NIL)));
     }
 
     for (i=0; i<(Int)MAX_HANDLES && nonNull(handles[i].hcell); ++i)
@@ -391,7 +391,8 @@ String loc; {
 
     if (i>=(Int)MAX_HANDLES) {                 /* ... before we give up   */
       return(pair(NIL,
-		  mkIOError(nameIllegal,
+		  mkIOError(NIL,
+			    nameIllegal,
 			    loc,
 			    "too many handles open",
 			    sCell)));
@@ -418,7 +419,8 @@ String loc; {
 	    return (pair(nameNothing,handles[i].hcell = ap(HANDCELL,i)));
 	}
 	return (pair(NIL,
-		     mkIOError(toIOError(errno),
+		     mkIOError(NIL,
+			       toIOError(errno),
 			       loc,
 			       toIOErrorDescr(errno,TRUE),
 			       sCell)));
@@ -445,23 +447,21 @@ String s; {
   
 static
 Cell local
-mkIOError(kind, loc, desc, mbF)
-Name   kind;
+mkIOError(mbH, kind, loc, desc, mbF)
+Cell   mbH;	/* a Handle or NIL */
+Name   kind;	/* an IOErrorType */
 String loc;
 String desc;
-Cell   mbF;
+Cell   mbF;	/* a FilePath or NIL */
 {
-   Cell locStr;
-   pushString(loc);
-   locStr = pop();
-
-   pushString(desc);
-
-   return (ap(ap(ap(ap(nameIOError,
-   			  kind),
-		       locStr),
-		    pop()),
-       	     ((mbF == nameNothing) ? mbF : ap(nameJust,mbF))));
+   Cell str;
+   push(nameIOError);
+   toparg(isNull(mbH) ? nameNothing : ap(nameJust,mbH));
+   toparg(kind);
+   pushString(loc); str = pop(); toparg(str);
+   pushString(desc); str = pop(); toparg(str);
+   toparg(isNull(mbF) ? nameNothing : ap(nameJust,mbF));
+   return pop();
 }
 
 
@@ -557,7 +557,8 @@ primFun(primGetEnv) {                 /* primGetEnv :: String -> IO String */
     String s = evalName(IOArg(1));    /* Eval name	                   */
     String r;
     if (!s) {			      /* check for valid name		   */
-	IOFail(mkIOError(nameIllegal,
+	IOFail(mkIOError(NIL,
+			 nameIllegal,
 		         "System.getEnv",
 			 "illegal environment variable name",
 			 IOArg(1)));
@@ -565,7 +566,8 @@ primFun(primGetEnv) {                 /* primGetEnv :: String -> IO String */
 	pushString(r);
 	IOReturn(pop());
     } else {
-	IOFail(mkIOError(nameDoesNotExist,
+	IOFail(mkIOError(NIL,
+			 nameDoesNotExist,
 		         "System.getEnv",
 			 "environment variable not found",
 			 IOArg(1)));
@@ -589,7 +591,8 @@ primFun(primSystem) {                   /* primSystem :: String -> IO Int  */
 	r = shellEsc(s, TRUE/*synchronous*/, TRUE/*use shell*/);
 	IOReturn(mkInt(WEXITSTATUS(r)));
     } else {
-	IOFail(mkIOError(nameIllegal,
+	IOFail(mkIOError(NIL,
+			 nameIllegal,
 		         "System.system",
 			 "illegal system command string",
 			 IOArg(1)));
@@ -621,10 +624,11 @@ primFun(primArgv) {                     /* primArgv :: Int -> IO String    */
 	pushString(hugsArgv[i]);
 	IOReturn(pop());
     } else {
-	IOFail(mkIOError(nameIllegal,
+	IOFail(mkIOError(NIL,
+			 nameIllegal,
 		         "System.getArgs",
 			 "illegal argument",
-			 nameNothing));
+			 NIL));
     }
 }
     
@@ -637,10 +641,11 @@ primFun(primGetCh) {			/* Get character from stdin wo/echo*/
     if (c!=EOF) {
       IOReturn(mkChar(c));
     } else {
-      IOFail(mkIOError(nameEOFErr,
+      IOFail(mkIOError(handles[HSTDIN].hcell,
+		       nameEOFErr,
 		       "IOExtensions.getCh",
 		       "end of file",
-		       nameNothing));
+		       NIL));
     }
 }
 
@@ -650,10 +655,11 @@ primFun(primGetChar) {			 /* Metrowerks console has no NO_ECHO mode. */
     if (c!=EOF) {
       IOReturn(mkChar(c));
     } else {
-      IOFail(mkIOError(nameEOFErr,
+      IOFail(mkIOError(handles[HSTDIN].hcell,
+		       nameEOFErr,
 		       "Prelude.getChar",
 		       "end of file",
-		       nameNothing));
+		       NIL));
     }
 }
 #else
@@ -666,10 +672,11 @@ primFun(primGetChar) {			/* Get character from stdin w/ echo*/
     if (c!=EOF) {
       IOReturn(mkChar(c));
     } else {
-      IOFail(mkIOError(nameEOFErr,
+      IOFail(mkIOError(handles[HSTDIN].hcell,
+		       nameEOFErr,
 		       "Prelude.getChar",
 		       "end of file",
-		       nameNothing));
+		       NIL));
     }
 }
 #endif
@@ -728,16 +735,18 @@ primFun(primHGetChar) {			/* Read character from handle	   */
 	if (c!=EOF) {
 	    IOReturn(mkChar(c));
 	} else if ( feof(handles[h].hfp) ) {
-	  IOFail(mkIOError(nameEOFErr,
+	  IOFail(mkIOError(handles[h].hcell,
+			   nameEOFErr,
 			   "IO.hGetChar",
 			   "end of file",
-			   nameNothing));
+			   NIL));
 	}
     }
-    IOFail(mkIOError(toIOError(errno),
+    IOFail(mkIOError(handles[h].hcell,
+		     toIOError(errno),
 		     "IO.hGetChar",
 		     toIOErrorDescr(errno,TRUE),
-		     nameNothing));
+		     NIL));
 }
 
 primFun(primHPutChar) {			/* print character on handle	   */
@@ -753,17 +762,19 @@ primFun(primHPutChar) {			/* print character on handle	   */
     }
     if (handles[h].hmode&(HWRITE|HAPPEND|HREADWRITE)) {
 	if ( putc(c,handles[h].hfp) == EOF ) {
-	  IOFail(mkIOError(toIOError(errno),
+	  IOFail(mkIOError(handles[h].hcell,
+			   toIOError(errno),
 			   "IO.hPutChar",
 			   toIOErrorDescr(errno,TRUE),
-			   nameNothing));
+			   NIL));
 	}
 	IOReturn(nameUnit);
     }
-    IOFail(mkIOError(nameIllegal,
+    IOFail(mkIOError(handles[h].hcell,
+		     nameIllegal,
 		     "IO.hPutChar",
 		     "handle is not writable",
-		     nameNothing));
+		     NIL));
 }
 
 primFun(primHPutStr) {			/* print string on handle	   */
@@ -797,10 +808,11 @@ primFun(primHPutStr) {			/* print string on handle	   */
 #endif
 	IOReturn(nameUnit);
     }
-    IOFail(mkIOError(nameIllegal,
+    IOFail(mkIOError(handles[h].hcell,
+		     nameIllegal,
 		     "IO.hPutStr",
 		     "handle is not writable",
-		     nameNothing));
+		     NIL));
 }
 
 primFun(primHreader) {			/* read String from a handle 	   */
@@ -821,10 +833,11 @@ primFun(primHContents) {		/* hGetContents :: Handle -> IO Str*/
     Int h;
     HandleArg(h,3);
     if ((handles[h].hmode&(HREAD|HREADWRITE))==0) { /* must have readable handle	   */
-        IOFail(mkIOError(nameIllegal,
+        IOFail(mkIOError(handles[h].hcell,
+			 nameIllegal,
 		         "IO.hGetContents",
 		         "handle is not readable",
-		         nameNothing));
+		         NIL));
     } else {				/* semi-close handle		   */
 	handles[h].hmode = HSEMICLOSED;
 	if (handles[h].hmode&HREADWRITE && !handles[h].hHaveRead) {
@@ -837,10 +850,11 @@ primFun(primHContents) {		/* hGetContents :: Handle -> IO Str*/
 
 primFun(primContents) {			/* Get contents of stdin	   */
     if ((handles[HSTDIN].hmode&HREAD)==0) {
-        IOFail(mkIOError(nameIllegal,
+        IOFail(mkIOError(handles[HSTDIN].hcell,
+			 nameIllegal,
 		         "Prelude.getContents",
 		         "handle is not readable",
-		         nameNothing));
+		         NIL));
     } else {
 	handles[HSTDIN].hmode = HSEMICLOSED;
 	IOReturn(ap(nameHreader,handles[HSTDIN].hcell));
@@ -875,7 +889,8 @@ String   loc; {
 	}
     }
     
-   IOFail(mkIOError(nameIllegal,
+   IOFail(mkIOError(NIL,
+		    nameIllegal,
 		    loc,
 		    "unknown handle mode",
 		    IOArg(2)));
@@ -908,10 +923,11 @@ primFun(primHugsHIsEOF) {		/* Test for end of file on handle  */
     if (handles[h].hmode!=HCLOSED) {
         IOBoolResult(feof(handles[h].hfp));
     } else {
-        IOFail(mkIOError(nameIllegal,
+        IOFail(mkIOError(NIL,
+			 nameIllegal,
 		         "IO.hugsIsEOF",
 		         "handle is closed",
-			 nameNothing));
+			 NIL));
     }
 }
 
@@ -939,10 +955,11 @@ primFun(primHIsEOF) {	/* Test for end of file on handle  */
 	IOBoolResult(isEOF);
 	}
     } else {
-        IOFail(mkIOError(nameIllegal,
+        IOFail(mkIOError(NIL,
+			 nameIllegal,
 		         "IO.hIsEOF",
 		         "handle is closed",
-			 nameNothing));
+			 NIL));
     }
 }
 
@@ -958,10 +975,11 @@ primFun(primHFlush) {			/* Flush handle			   */
 	IOReturn(nameUnit);
     }
     else
-        IOFail(mkIOError(nameIllegal,
+        IOFail(mkIOError(handles[h].hcell,
+			 nameIllegal,
 		         "IO.hFlush",
 		         "handle is not writable",
-			 nameNothing));
+			 NIL));
 }
 
 primFun(primHClose) {			/* Close handle                   */
@@ -991,10 +1009,11 @@ primFun(primHGetPosn) {			/* Get file position               */
 	/* deliberate fall through to IOFail */
 #endif
     }
-    IOFail(mkIOError(nameIllegal,
+    IOFail(mkIOError(NIL,
+		     nameIllegal,
 		     "IO.hGetPosn",
 		     "handle is closed",
-		     nameNothing));
+		     NIL));
 }
 
 primFun(primHSetPosn) {			/* Set file position               */
@@ -1014,10 +1033,11 @@ primFun(primHSetPosn) {			/* Set file position               */
 	/* deliberate fall through to IOFail */
 #endif
     }
-    IOFail(mkIOError(nameIllegal,
+    IOFail(mkIOError(NIL,
+		     nameIllegal,
 		     "IO.hSetPosn",
 		     "handle is closed",
-		     nameNothing));
+		     NIL));
 }
 
 primFun(primHSeek) {	/* Seek to new file posn */
@@ -1039,10 +1059,11 @@ primFun(primHSeek) {	/* Seek to new file posn */
 
   if (handles[h].hmode&(HWRITE|HREAD|HAPPEND|HREADWRITE)) {
     if (fseek(handles[h].hfp,off,sMode) != 0) {
-      IOFail(mkIOError(toIOError(errno),
+      IOFail(mkIOError(handles[h].hcell,
+		       toIOError(errno),
 		       "IO.hSeek",
 		       toIOErrorDescr(errno,TRUE),
-		       nameNothing));
+		       NIL));
     }
 
     if (handles[h].hmode&HREADWRITE) {
@@ -1051,10 +1072,11 @@ primFun(primHSeek) {	/* Seek to new file posn */
       
     IOReturn(nameUnit);
   }
-  IOFail(mkIOError(nameIllegal,
+  IOFail(mkIOError(handles[h].hcell,
+		   nameIllegal,
 		   "IO.hSeek",
 		   "handle is not seekable",
-		   nameNothing));
+		   NIL));
 }
 
 
@@ -1071,27 +1093,31 @@ primFun(primHLookAhead) { /* Peek at the next char */
 	ungetc(c, handles[h].hfp);
 	IOReturn(mkChar(c));
       } else {
-	IOFail(mkIOError(toIOError(errno),
+	IOFail(mkIOError(handles[h].hcell,
+			 toIOError(errno),
 			 "IO.hLookAhead",
 			 toIOErrorDescr(errno,TRUE),
-			 nameNothing));
+			 NIL));
       }
     } else {
-      IOFail(mkIOError(nameEOFErr,
+      IOFail(mkIOError(handles[h].hcell,
+		       nameEOFErr,
 		       "IO.hLookAhead",
 		       "end of file",
-		       nameNothing));
+		       NIL));
     }
   } else if (handles[h].hmode&HWRITE) {
-    IOFail(mkIOError(nameIllegal,
+    IOFail(mkIOError(handles[h].hcell,
+		     nameIllegal,
 		     "IO.hLookAhead",
 		     "handle is not readable",
-		     nameNothing));
+		     NIL));
   } else {
-    IOFail(mkIOError(nameIllegal,
+    IOFail(mkIOError(NIL,
+		     nameIllegal,
 		     "IO.hLookAhead",
 		     "handle is closed",
-		     nameNothing));
+		     NIL));
   
   }
 }
@@ -1130,27 +1156,30 @@ primFun(primHSetBuffering) {	/* Change a Handle's buffering */
 	  handles[h].hbufSize = sz;
 	  break;
         default:
-	  IOFail(mkIOError(nameIllegal,
+	  IOFail(mkIOError(handles[h].hcell,
+			   nameIllegal,
 		           "IO.hSetBuffering",
 		           "illegal buffer mode",
-		           nameNothing));
+		           NIL));
         }
 
 	/* Change the buffering mode; setvbuf() flushes the old buffer. */
 	/* Let setvbuf() allocate the buffer for us. */
 	rc = setvbuf(handles[h].hfp, NULL, ty, sz);
 	if (rc != 0) {
-	  IOFail(mkIOError(toIOError(errno),
+	  IOFail(mkIOError(handles[h].hcell,
+			   toIOError(errno),
 		           "IO.hSetBuffering",
 		           "unable to change buffering",
-		           nameNothing));
+		           NIL));
 	}
 	IOReturn(nameUnit);
     } else
-        IOFail(mkIOError(nameIllegal,
+        IOFail(mkIOError(NIL,
+			 nameIllegal,
 		         "IO.hSetBuffering",
 		         "handle is closed",
-		         nameNothing));
+		         NIL));
 }
 
 primFun(primHGetBuffering) {	/* Return buffering info of a handle. */
@@ -1178,10 +1207,11 @@ primFun(primHGetBuffering) {	/* Return buffering info of a handle. */
     IOReturn(ap(ap(mkTuple(2),mkInt((Int)handles[h].hbufMode)),
 		mkInt((Int)handles[h].hbufSize)));
   } else {
-        IOFail(mkIOError(nameIllegal,
+        IOFail(mkIOError(NIL,
+			 nameIllegal,
 		         "IO.hGetBuffering",
 		         "handle is closed",
-		         nameNothing));
+		         NIL));
   }
 }
 
@@ -1231,10 +1261,11 @@ primFun(primHIsSeekable) {		/* Test if handle is writable   */
   }
   IOBoolResult(okHandle);
 #else
-  IOFail(mkIOError(nameIllegal,
+  IOFail(mkIOError(handles[h].hcell,
+		   nameIllegal,
 		   "IO.hIsSeekable",
 		   "unsupported operation",
-		   nameNothing));
+		   NIL));
 #endif
 }
 
@@ -1255,15 +1286,17 @@ primFun(primHFileSize) {  /* If handle points to a regular file,
       S_ISREG(sb.st_mode)) {
     IOReturn(bigWord(sb.st_size));
   }
-  IOFail(mkIOError(nameIllegal,
+  IOFail(mkIOError(handles[h].hcell,
+		   nameIllegal,
 		   "IO.hFileSize",
 		   (okHandle ? "not a regular file" : "handle is (semi-)closed."),
-		   nameNothing));
+		   NIL));
 #else
-  IOFail(mkIOError(nameIllegal,
+  IOFail(mkIOError(handles[h].hcell,
+		   nameIllegal,
 		   "IO.hFileSize",
 		   "unsupported operation",
-		   nameNothing));
+		   NIL));
 #endif
 }
 
@@ -1272,6 +1305,12 @@ primFun(primEqHandle) {			/* Test for handle equality        */
     HandleArg(h1,1);
     HandleArg(h2,2);
     BoolResult(h1==h2);
+}
+
+primFun(primGetHandleNumber) {
+    Int h;
+    HandleArg(h,1);
+    IntResult(h);
 }
 
 primFun(primReadFile) {			/* read file as lazy string	   */
@@ -1318,7 +1357,8 @@ String   loc; {
     FILE* wfp;
 
     if (!s) {
-        IOFail(mkIOError(nameIllegal,
+        IOFail(mkIOError(NIL,
+			 nameIllegal,
 			 loc,
 		         "illegal file name",
 			 IOArg(2)));
@@ -1336,7 +1376,8 @@ String   loc; {
 	  stmode = append ? "a+" : "w+";
 	}
 	if  ( (wfp = fopen(s,stmode)) == NULL ) {
-	  IOFail (mkIOError(toIOError(errno),
+	  IOFail (mkIOError(NIL,
+			    toIOError(errno),
 			    loc,
 			    toIOErrorDescr(errno,TRUE),
 			    IOArg(2)));
@@ -1355,12 +1396,6 @@ String   loc; {
 	fclose(wfp);
 	IOReturn(nameUnit);
     }
-}
-
-primFun(primGetHandle) {		/* :: IOError -> Maybe Handle	   */
-    eval(primArg(1));
-    /* insert tests here */
-    updateRoot(nameNothing);
 }
 
 primFun(primHWaitForInput) { /* Check whether a character can be read
@@ -1390,27 +1425,30 @@ primFun(primHWaitForInput) { /* Check whether a character can be read
     
     while ( (ready = select(maxfd, &rfd, NULL, NULL, &tv)) < 0 ) {
       if (errno != EINTR) {
-	IOFail(mkIOError(nameIllegal,
+	IOFail(mkIOError(handles[h].hcell,
+			 nameIllegal,
 			 "IO.hWaitForInput",
 			 "input waiting terminated by signal",
-			 nameNothing));
+			 NIL));
       }
     }
     IOBoolResult(ready > 0);
   } else {
-    IOFail(mkIOError(nameIllegal,
+    IOFail(mkIOError(handles[h].hcell,
+		     nameIllegal,
 		     "IO.hWaitForInput",
 		     "handle is not readable",
-		     nameNothing));
+		     NIL));
   }
 #else
   /* For now, punt on implementing async IO under Win32 */
   /* For other platforms that don't support select() on file
      file descs, please insert code that'll work. */
-  IOFail(mkIOError(nameIllegal,
+  IOFail(mkIOError(handles[h].hcell,
+		   nameIllegal,
 		   "IO.hWaitForInput",
 		   "unsupported operation",
-		   nameNothing));
+		   NIL));
 #endif
 }
 
@@ -1481,10 +1519,11 @@ primFun(primMakeSP) {			/* a -> IO (StablePtr a)	   */
     if (sp != 0) {
 	IOReturn(mkInt(sp));
     } else {
-        IOFail(mkIOError(nameIllegal,
+        IOFail(mkIOError(NIL,
+			 nameIllegal,
 			 "Foreign.makeStablePtr",
 		         "illegal operation",
-			 nameNothing));
+			 NIL));
     }
 }
 

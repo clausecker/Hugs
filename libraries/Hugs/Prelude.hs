@@ -58,11 +58,12 @@ module Hugs.Prelude (
     Ratio((:%)), (%), numerator, denominator,
 --  Non-standard exports
     IO(..), IOResult(..), primExitWith, 
-    IOError(..), IOErrorKind(..),
+    IOException(..), IOErrorType(..),
     FunPtr, Ptr, Addr,
     Word, StablePtr, ForeignObj, ForeignPtr,
     Int8, Int16, Int32, Int64,
     Word8, Word16, Word32, Word64,
+    Handle,
     basicIORun, blockIO, IOFinished(..),
     threadToIOResult,
     HugsException, catchHugsException, primThrowException,
@@ -1555,46 +1556,51 @@ readFloat r    = [(fromRational ((n%1)*10^^(k-d)),t) | (n,d,s) <- readFix r,
 --data IO a             -- builtin datatype of IO actions
 
 -- data type describing IOErrors / exceptions.
-data IOError
+type IOError = IOException
+
+data IOException
   = IOError
-      { ioe_kind        :: IOErrorKind    -- what kind of (std) error
-      , ioe_loc         :: String         -- location of the error
+      { ioe_handle      :: Maybe Handle   -- the handle used by the action
+					  -- flagging the error
+      , ioe_type        :: IOErrorType    -- what kind of (std) error
+      , ioe_location    :: String         -- location of the error
       , ioe_description :: String         -- error-specific string
-      , ioe_fileName    :: (Maybe String) -- the resource involved.
+      , ioe_filename    :: Maybe FilePath -- the resource involved.
       } 
       deriving (Eq)
 
-data IOErrorKind
-  = IOError_UserError
-  | IOError_IllegalError
-  | IOError_PermDenied
-  | IOError_AlreadyExists
-  | IOError_AlreadyInUse
-  | IOError_DoesNotExist
-  | IOError_FullError
-  | IOError_EOF
-  | IOError_WriteError
+data IOErrorType
+  = AlreadyExists
+  | NoSuchThing
+  | ResourceBusy
+  | ResourceExhausted
+  | EOF
+  | IllegalOperation
+  | PermissionDenied
+  | UserError
     deriving (Eq)
 
-instance Show IOErrorKind where
+instance Show IOErrorType where
   show x = 
     case x of
-     IOError_UserError      -> "User error"
-     IOError_IllegalError   -> "Illegal operation"
-     IOError_PermDenied     -> "Permission denied"
-     IOError_AlreadyExists  -> "Already exists"
-     IOError_AlreadyInUse   -> "Resource busy"
-     IOError_DoesNotExist   -> "Does not exist"
-     IOError_FullError      -> "Resource exhausted"
-     IOError_EOF            -> "End of file"
-     IOError_WriteError	    -> "Write error"
+      AlreadyExists     -> "already exists"
+      NoSuchThing       -> "does not exist"
+      ResourceBusy      -> "resource busy"
+      ResourceExhausted -> "resource exhausted"
+      EOF               -> "end of file"
+      IllegalOperation  -> "illegal operation"
+      PermissionDenied  -> "permission denied"
+      UserError         -> "user error"
 
-instance Show IOError where
-  showsPrec p (IOError kind loc descr mbFile) = 
+instance Show IOException where
+  showsPrec p (IOError mbHandle kind loc descr mbFile) = 
     showString "IO Error: " . showsPrec p kind . 
     (case loc of
        "" -> id
        _  -> showString "\nAction: " . showString loc) .
+      (case mbHandle of
+	 Nothing -> id
+	 Just h -> showString "\nHandle: " . showsPrec p h) .
       (case descr of
 	 "" -> id
 	 _  -> showString "\nReason: " . showString descr) .
@@ -1613,11 +1619,7 @@ primitive putStr		 :: String -> IO ()
 primitive getChar   		 :: IO Char
 
 userError :: String -> IOError
-userError str 
- = IOError IOError_UserError 
-           ""
-	   str
-	   Nothing
+userError str = IOError Nothing UserError "" str Nothing
 
 print     :: Show a => a -> IO ()
 print      = putStrLn . show
@@ -1637,7 +1639,7 @@ getLine  = do
   where
    getRest = do
      c <- catch getChar
-                (\ ex -> if ioe_kind ex == IOError_EOF then 
+                (\ ex -> if ioe_type ex == EOF then 
 			    return '\n'
 			 else
 			    ioError ex)
@@ -1695,6 +1697,19 @@ data Word64
 data ForeignObj  -- builtin datatype of C pointers with finalizers (deprecated)
 data ForeignPtr a -- builtin datatype of C pointers with finalizers
 data StablePtr a
+data Handle
+
+instance Eq Handle where (==) = primEqHandle
+primitive primEqHandle :: Handle -> Handle -> Bool
+
+instance Show Handle where
+    showsPrec _ h = case primGetHandleNumber h of
+	0 -> showString "stdin"
+	1 -> showString "stdout"
+	2 -> showString "stderr"
+	_ -> showString "<handle>"
+
+primitive primGetHandleNumber :: Handle -> Int
 
 primitive unsafeCoerce "primUnsafeCoerce" :: a -> b
 

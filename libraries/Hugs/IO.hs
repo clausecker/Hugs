@@ -47,32 +47,15 @@ module Hugs.IO (
     hIsWritable,            -- :: Handle -> IO Bool
     hIsSeekable,            -- :: Handle -> IO Bool
 
-    isAlreadyExistsError,   -- :: IOError -> Bool
-    isDoesNotExistError,    -- :: IOError -> Bool
-    isAlreadyInUseError,    -- :: IOError -> Bool
-    isFullError,            -- :: IOError -> Bool
-    isEOFError,             -- :: IOError -> Bool
-    isIllegalOperation,     -- :: IOError -> Bool
-    isPermissionError,      -- :: IOError -> Bool
-    isUserError,            -- :: IOError -> Bool
-
-    ioeGetErrorString,      -- :: IOError -> String
-    ioeGetHandle,           -- :: IOError -> Maybe Handle
-    ioeGetFileName,         -- :: IOError -> Maybe FilePath
-
     -- Non-standard extensions 
     hugsIsEOF,              -- :: IO Bool
     hugsHIsEOF,             -- :: Handle  -> IO Bool
-    hugsIsSearchErr,        -- :: IOError -> Bool
-    hugsIsNameErr,          -- :: IOError -> Bool
-    hugsIsWriteErr,         -- :: IOError -> Bool
     ) where
 
 import Hugs.Prelude
+import System.IO.Error
 
-data Handle
-instance Eq Handle where (==) = primEqHandle
-primitive primEqHandle :: Handle -> Handle -> Bool
+-- data Handle
 
 data IOMode      =  ReadMode | WriteMode | AppendMode | ReadWriteMode
                     deriving (Eq, Ord, Ix, Bounded, Enum, Read, Show)
@@ -120,6 +103,10 @@ primitive hGetBuff :: Handle -> IO (Int,Int)
 primitive hFlush   :: Handle -> IO ()
 
 data HandlePosn = HandlePosn Handle Int deriving Eq
+
+instance Show HandlePosn where
+   showsPrec p (HandlePosn h pos) = 
+        showsPrec p h . showString " at position " . shows pos
 
 hGetPosn :: Handle -> IO HandlePosn
 hGetPosn h = do
@@ -185,34 +172,6 @@ primitive hIsOpen,
    	  hIsWritable,
 	  hIsSeekable :: Handle -> IO Bool
 
-isIllegalOperation, 
-	  isAlreadyExistsError, 
-	  isDoesNotExistError, 
-          isAlreadyInUseError,   
-	  isFullError,     
-          isEOFError, 
-	  isPermissionError,
-          isUserError        :: IOError -> Bool
-
-isIllegalOperation   ioe = ioe_kind ioe == IOError_IllegalError
-isAlreadyExistsError ioe = ioe_kind ioe == IOError_AlreadyExists
-isDoesNotExistError  ioe = ioe_kind ioe == IOError_DoesNotExist
-isAlreadyInUseError  ioe = ioe_kind ioe == IOError_AlreadyInUse
-isFullError          ioe = ioe_kind ioe == IOError_FullError
-isEOFError           ioe = ioe_kind ioe == IOError_EOF
-isPermissionError    ioe = ioe_kind ioe == IOError_PermDenied
-isUserError          ioe = ioe_kind ioe == IOError_UserError
-
-ioeGetErrorString :: IOError -> String
-ioeGetErrorString ioe
- | isUserError ioe = ioe_description ioe
- | otherwise       = show (ioe_kind ioe)
-
-primitive ioeGetHandle      :: IOError -> Maybe Handle
-
-ioeGetFileName    :: IOError -> Maybe FilePath
-ioeGetFileName ioe = ioe_fileName ioe
-
 -----------------------------------------------------------------------------
 -- Non-standard extensions 
 -- (likely to disappear when IO library is more complete)
@@ -223,11 +182,5 @@ ioeGetFileName ioe = ioe_fileName ioe
 primitive hugsHIsEOF "hugsHIsEOF" :: Handle -> IO Bool
 hugsIsEOF             :: IO Bool
 hugsIsEOF              = hugsHIsEOF stdin
-
-hugsIsNameErr  = isIllegalOperation
-hugsIsWriteErr = isAlreadyExistsError
-
-hugsIsSearchErr :: IOError -> Bool
-hugsIsSearchErr = isDoesNotExistError
 
 -----------------------------------------------------------------------------

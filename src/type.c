@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: type.c,v $
- * $Revision: 1.60 $
- * $Date: 2002/12/10 11:07:25 $
+ * $Revision: 1.61 $
+ * $Date: 2002/12/20 17:56:23 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -116,7 +116,7 @@ Name   nameAlreadyExists, nameAlreadyInUse, nameDoesNotExist, nameIsFull;
 Name   nameIllegal;
 #endif
 #if    IO_HANDLES
-Name   nameWriteErr, nameEOFErr;
+Name   nameEOFErr;
 #endif
 
 #if TREX
@@ -3309,25 +3309,17 @@ Void linkPreludeCM() {			/* Hook to cfuns and mfuns in	   */
 
 #if IO_MONAD
         /* The constructor names better match up with the defn
-	   of IOErrorKind in Prelude. 
-	   
-	   Why do it this way? Because reaching out and linking
-	   to names in the Prelude here allows us to keep the
-	   IOError type abstract, as mandated by Haskell98's
-	   Prelude definition. (An alternative is to make the
-	   IOError type builtin.)
+	   of IOErrorType in Prelude. 
 	*/
 	nameIOError        = linkName("IOError");
-        nameUserErr        = linkName("IOError_UserError");
-	nameIllegal        = linkName("IOError_IllegalError");
-	namePermDenied     = linkName("IOError_PermDenied");
-	nameAlreadyExists  = linkName("IOError_AlreadyExists");
-	nameAlreadyInUse   = linkName("IOError_AlreadyInUse");
-	nameDoesNotExist   = linkName("IOError_DoesNotExist");
-	nameIsFull         = linkName("IOError_FullError");
-	nameEOFErr         = linkName("IOError_EOF");
-	nameWriteErr       = linkName("IOError_WriteError");
-
+	nameAlreadyExists  = linkName("AlreadyExists");
+	nameDoesNotExist   = linkName("NoSuchThing");
+	nameAlreadyInUse   = linkName("ResourceBusy");
+	nameIsFull         = linkName("ResourceExhausted");
+	nameEOFErr         = linkName("EOF");
+	nameIllegal        = linkName("IllegalOperation");
+	namePermDenied     = linkName("PermissionDenied");
+	nameUserErr        = linkName("UserError");
 #endif
     }
 }

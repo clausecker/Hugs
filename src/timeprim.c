@@ -52,10 +52,11 @@ primFun(primGetClockTime) { /* :: IO (Int,Int) */
   rc = gettimeofday(&tv,NULL);
   
   if (rc == -1) {
-        IOFail(mkIOError(toIOError(errno),
+        IOFail(mkIOError(NIL,
+			 toIOError(errno),
 			 "Time.getClockTime",
 			 toIOErrorDescr(errno,TRUE),
-			 nameNothing));
+			 NIL));
   }
   IOReturn(ap(ap(mkTuple(2), mkInt(tv.tv_sec)),mkInt(tv.tv_usec)));
 #elif HAVE_FTIME
@@ -69,10 +70,11 @@ primFun(primGetClockTime) { /* :: IO (Int,Int) */
 # endif
   
   if (rc == -1) {
-        IOFail(mkIOError(toIOError(errno),
+        IOFail(mkIOError(NIL,
+			 toIOError(errno),
 			 "Time.getClockTime",
 			 toIOErrorDescr(errno,TRUE),
-			 nameNothing));
+			 NIL));
   }
   
   IOReturn(ap(ap(mkTuple(2),mkInt(tb.time)),mkInt(tb.millitm * 1000)));
@@ -80,17 +82,19 @@ primFun(primGetClockTime) { /* :: IO (Int,Int) */
   time_t t = time(NULL);
   
   if (t == (time_t)-1) {
-        IOFail(mkIOError(toIOError(errno),
+        IOFail(mkIOError(NIL,
+			 toIOError(errno),
 			 "Time.getClockTime",
 			 toIOErrorDescr(errno,TRUE),
-			 nameNothing));
+			 NIL));
   }
   IOReturn(ap(ap(mkTuple(2),mkInt(t)),mkInt(0)));
 #else
-  IOFail(mkIOError(nameIllegal,
+  IOFail(mkIOError(NIL,
+		   nameIllegal,
 		   "Time.getClockTime",
 		   "operation not supported",
-		   nameNothing));
+		   NIL));
 #endif
 }
 
@@ -165,10 +169,11 @@ primFun(primGetCalTime) { /* Int   -> Int -> IO (.....) */
 
   IntArg(isUTC,4);
 
-  IOFail(mkIOError(nameIllegal,
+  IOFail(mkIOError(NIL,
+		   nameIllegal,
 		   (isUTC ? "Time.toUTCTime" : "Time.toCalendarTime"),
 		   "operation not supported",
-		   nameNothing));
+		   NIL));
 #endif
 
 }
@@ -206,10 +211,11 @@ primFun(primMkTime) { /* Int{-year-}  -> Int{-month-} -> Int{-day-} ->
   t = mktime(&tm);
   
   if (t ==(time_t)-1) {
-        IOFail(mkIOError(toIOError(errno),
+        IOFail(mkIOError(NIL,
+			 toIOError(errno),
 			 "Time.toClockTime",
 			 toIOErrorDescr(errno,TRUE),
-			 nameNothing));
+			 NIL));
   }
   /* mktime() assumes that the given time was local, but we might have
      been passed an UTC cal. time, so we now have to add the UTC
@@ -232,10 +238,11 @@ primFun(primMkTime) { /* Int{-year-}  -> Int{-month-} -> Int{-day-} ->
   
   IOReturn(mkInt(t+tz));
 #else
-  IOFail(mkIOError(nameIllegal,
+  IOFail(mkIOError(NIL,
+		   nameIllegal,
 		   "Time.toClockTime",
 		   "operation not supported",
-		   nameNothing));
+		   NIL));
 #endif
 }
 
@@ -285,10 +292,11 @@ primFun(primGetCPUUsage) { /* IO (Int,Int,Int,Int) */
     sysNSec  = (t.tms_stime - sysSec * ticks) * (1000000000 / ticks);
 
 # else
-    IOFail(mkIOError(nameIllegal,
+    IOFail(mkIOError(NIL,
+		     nameIllegal,
 		     "CPUTime.getCPUTime",
 		     "illegal operation",
-		     nameNothing));
+		     NIL));
 # endif
 #endif
 #else

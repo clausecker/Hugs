@@ -49,8 +49,8 @@ module Hugs.ConcBase(
 import Hugs.Prelude(
 	IO(..), IOResult(..), threadToIOResult,
 	HugsException, catchHugsException, blockIO)
-import Hugs.IO(IOMode, Handle, ioeGetErrorString) -- for binary file ops
 import Hugs.IORef
+import System.IO.Error(ioeGetErrorString)
 
 ----------------------------------------------------------------
 -- The interface

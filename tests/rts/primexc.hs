@@ -1,6 +1,6 @@
 -- !!! Testing primitive exception support
 
-import Exception( HugsException )
+import Hugs.Prelude( HugsException, IO(..) )
 
 -- data HugsException
 

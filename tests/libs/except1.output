@@ -5,7 +5,7 @@ Hugs:"Foo"
 "Bar"
 
 Hugs:
-IO Error: User error
+IO Error: user error
 Reason: x
 Hugs:
 Program error: x
@@ -69,7 +69,7 @@ y
 Thread raised exception: x
 
 Thread raised error:
-IO Error: User error
+IO Error: user error
 Reason: x
 
 Hugs:a worked
@@ -84,7 +84,7 @@ Thread raised exception: x
 a worked
 
 Thread raised error:
-IO Error: User error
+IO Error: user error
 Reason: x
 
 Hugs:Hugs:[Leaving Hugs]

@@ -24,7 +24,7 @@ module Hugs.IOExts
 	) where
 
 import Hugs.Prelude
-import Hugs.IO( ioeGetErrorString, IOMode(..), Handle, openFile )
+import Hugs.IO( IOMode(..), Handle, openFile )
 
 -----------------------------------------------------------------------------
 

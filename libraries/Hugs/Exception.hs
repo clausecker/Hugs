@@ -41,7 +41,7 @@ module Hugs.Exception(
   ) where
 
 import Hugs.Prelude
-import Hugs.IO
+import System.IO.Error
 
 ----------------------------------------------------------------
 -- Exception datatype and operations
