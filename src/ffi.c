@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: ffi.c,v $
- * $Revision: 1.18 $
- * $Date: 2002/08/03 15:02:58 $
+ * $Revision: 1.19 $
+ * $Date: 2002/08/10 11:23:48 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -62,85 +62,6 @@ String s; {
     }
     ffiFlags = s;
 }
-
-
-#define BUFSIZE 1000
-static char buffer[BUFSIZE];
-static Int used = 0;
-
-static Void local insert(s)
-String s; {
-    Int l = strlen(s);
-    if (used + l + 1 >= BUFSIZE) {
-        ERRMSG(0) "Unable to build compilation command"
-        EEND;
-    }
-    strcpy(buffer+used,s);
-    used += l;
-}
-
-#ifdef _MSC_VER
-#define INSERT_QUOTE()   insert("\"")
-#else
-#define INSERT_QUOTE()
-#endif
-
-static Void local compileAndLink(fn)
-String fn; {
-    List xs = NIL;
-    char* i = 0;
-    used    = 0;
-
-    /* All relative filenames are to be interpreted relative to the 
-     * directory containing the .hs file.
-     */
-    // insert("cd '");
-    // insert(dirname(scriptFile));
-    // insert("'; ");
-    i = strrchr(scriptFile,'/');
-    if (i != 0 && *i == '/') {
-        insert("cd '");
-        *i = '\0';
-        insert(scriptFile);
-        *i = '/';
-        ++i;
-        insert("'; ");
-    } else {
-        i = scriptFile;
-    }
-
-    /* The basic command */
-    insert(MKDLL_CMD);
-
-    /* the path to HsFFI.h */
-    insert(" \"-I");
-    insert(hugsdir());
-    insert("/include\"");
-
-    /* the file to compile */
-    insert(" \"");
-    insert(mkFFIFilename(i));
-    insert("\"");
-
-    /* the output file */
-    insert(" -o \"");
-    insert(mkFFIFilename2(i));
-    insert("\"");
-
-    /* compiler and linker flags specified on Hugs command line */
-    if (ffiFlags) {
-        insert(" ");
-        insert(ffiFlags);
-    }
-
-    /* printf("Executing '%s'\n",buffer); */
-    if (system(buffer) != 0) {
-        ERRMSG(0) "Error while running compilation command '%s'", buffer
-        EEND;
-    }
-    used = 0;
-}
-#undef BUFSIZE
 
 Void foreignHeader() {
     String fnm = mkFFIFilename(scriptFile);
@@ -233,7 +154,7 @@ List es; {
     fclose(out);
     out = NIL;
 
-    compileAndLink(scriptFile);
+    compileAndLink(scriptFile,ffiFlags);
 }
 
 static Void local foreignType(l,t)

@@ -11,8 +11,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.61 $
- * $Date: 2002/08/04 19:34:28 $
+ * $Revision: 1.62 $
+ * $Date: 2002/08/10 11:23:49 $
  * ------------------------------------------------------------------------*/
 #include <math.h>
 
@@ -2136,6 +2136,94 @@ Int version; {
     }
     ERRMSG(0) "Unable to load GreenCard primitives\n"
     EEND;
+}
+
+
+/* --------------------------------------------------------------------------
+ * Compile and link an ffi file which can be dynamically loaded using
+ * the above mechanisms.
+ * ------------------------------------------------------------------------*/
+
+#define BUFSIZE 1000
+static char buffer[BUFSIZE];
+static Int used = 0;
+
+static Void local insert(s)
+String s; {
+    Int l = strlen(s);
+    if (used + l + 1 >= BUFSIZE) {
+        ERRMSG(0) "Unable to build compilation command"
+        EEND;
+    }
+    strcpy(buffer+used,s);
+    used += l;
+}
+
+static Void local insertChar(c)
+Char c; {
+    char s[2];
+    s[0] = c;
+    s[1] = '\0';
+    insert(s);
+}
+#undef BUFSIZE
+
+Void compileAndLink(fn,flags)
+String fn; 
+String flags; {
+    List xs = NIL;
+    char* i = 0;
+    used    = 0;
+
+    /* All relative filenames are to be interpreted relative to the 
+     * directory containing the .hs file.
+     */
+    // insert("cd '");
+    // insert(dirname(scriptFile));
+    // insert("'; ");
+    i = strrchr(scriptFile,SLASH);
+    if (i != 0 && *i == SLASH) {
+        insert("cd '");
+        *i = '\0';
+        insert(scriptFile);
+        *i = SLASH;
+        ++i;
+        insert("'; ");
+    } else {
+        i = scriptFile;
+    }
+
+    /* The basic command */
+    insert(MKDLL_CMD);
+
+    /* the path to HsFFI.h */
+    insert(" \"-I");
+    insert(hugsdir());
+    insertChar(SLASH);
+    insert("include\"");
+
+    /* the file to compile */
+    insert(" \"");
+    insert(mkFFIFilename(i));
+    insert("\"");
+
+    /* the output file */
+    insert(" -o \"");
+    insert(mkFFIFilename2(i));
+    insert("\"");
+
+    /* compiler and linker flags specified on Hugs command line */
+    if (flags) {
+        insert(" ");
+        insert(flags);
+    }
+
+    /* printf("Executing '%s'\n",buffer); */
+    if (system(buffer) != 0) {
+        ERRMSG(0) "Error while running compilation command '%s'", buffer
+        EEND;
+    }
+    used = 0;
 }
 
 /* --------------------------------------------------------------------------

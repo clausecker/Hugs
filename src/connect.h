@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: connect.h,v $
- * $Revision: 1.42 $
- * $Date: 2002/08/04 23:58:37 $
+ * $Revision: 1.43 $
+ * $Date: 2002/08/10 11:23:48 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -432,6 +432,7 @@ extern  String mkDLLFilename    Args((String));
 extern  String mkFFIFilename    Args((String));
 extern  String mkFFIFilename2   Args((String));
 extern  Void   freeDLL          Args((void*));
+extern  Void   compileAndLink   Args((String,String));
 
 extern  Int    shellEsc		Args((String,Bool,Bool));
 extern  Int    getTerminalWidth Args((Void));
