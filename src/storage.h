@@ -8,8 +8,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: storage.h,v $
- * $Revision: 1.66 $
- * $Date: 2004/11/11 20:52:05 $
+ * $Revision: 1.67 $
+ * $Date: 2004/11/11 21:11:09 $
  * ------------------------------------------------------------------------*/
 #ifndef __STORAGE_H__
 #define __STORAGE_H__
@@ -1161,18 +1161,11 @@ struct strHandle {		/* Handle description and status flags	   */
     Int   hmode;		/* Current mode: see below		   */
     Int   hbufMode;             /* Buffering mode.                         */
     Int   hbufSize;             /* < 0 => not yet known.                   */
-    Bool  hHaveRead;            /* TRUE => chars have been read from handle
-				   (used for R/W handles to determine whether
-				    a fflush() is required before writing).
-				   FALSE=> for R/W handles, a read needs to
-				   fflush() first.                         */
+    Int   hRWState;		/* State of a READWRITE handle (see below) */
 #if CHAR_ENCODING
     Bool  hBinaryMode;		/* TRUE => Handle opened in binary mode    */
     Char  hLookAhead;		/* Char read by hLookAhead (or <0 if none) */
     				/* This is only used in text mode.         */
-#endif
-#if IO_HANDLES
-    Int   hRWState;		/* Current state of r/w stream: see below   */
 #endif
 };
 
@@ -1190,9 +1183,9 @@ struct strHandle {		/* Handle description and status flags	   */
 #define HANDLE_LINEBUFFERED   2
 #define HANDLE_BLOCKBUFFERED  3
 
-#define RW_READING            0 /* last operation on r/w stream was reading */
-#define RW_WRITING            1 /* last operation on r/w stream was writing */
-#define RW_NEUTRAL            2 /* r/w stream was just opened/at EOF/seeked */
+#define RW_NEUTRAL            0 /* r/w stream was just opened/at EOF/seeked */
+#define RW_READING            1 /* last operation on r/w stream was reading */
+#define RW_WRITING            2 /* last operation on r/w stream was writing */
 
 #if !WANT_FIXED_SIZE_TABLES
 extern unsigned long     num_handles;
