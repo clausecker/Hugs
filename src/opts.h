@@ -47,9 +47,9 @@ extern Bool  useShow;                  /* TRUE => use Text/show printer     */
 extern Bool  displayIO;                /* TRUE => use printer for IO result */
 extern Bool  chaseImports;             /* TRUE => chase imports on load     */
 extern Bool  printTypeUseDefaults;     /* TRUE => use 'default'ing when printing types */
-extern Bool  optImplicitImportRoot;    /* TRUE => directory of importing module added 
-				       /* to search path while resolving imports for
-				       /* that module. */
+extern Bool  optImplicitImportRoot;    /* TRUE => directory of importing    */
+				       /* module added to search path while */
+				       /* resolving imports for that module.*/
 
 extern Int   cutoff;		       /* Constraint Cutoff depth	  */
 extern String prompt;                  /* Prompt string                   */
