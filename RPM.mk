@@ -79,7 +79,7 @@ ${PACKAGE}.tar.gz:
 	  $(FIND) ${TARTMP}/hugs98/fptools/libraries -name "*.hsc" | \
 	    xargs -l $(HSC2HS) --no-compile; \
 	  $(FIND) ${TARTMP}/hugs98/fptools/libraries -name "*_hsc_make.c" | \
-	    xargs src/unix/hsc_kludge; \
+	    xargs libraries/tools/hsc_kludge; \
 	fi
 	cp ${TARTMP}/hugs98/src/version.c ${TARTMP}
 	cd ${TARTMP}/hugs98/src; sed ${VERSION_SUBSTS} < ${TARTMP}/version.c > ${TARTMP}/hugs98/src/version.c

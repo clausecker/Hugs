@@ -50,9 +50,11 @@ Long version:
         src/Makefile          -- used to control compilation
         src/config.h          -- #included into every C file in Hugs
         src/options.h         -- #included into every C file in Hugs
-        src/unix/hugs-package -- script to convert library packages for Hugs
+        libraries/Makefile    -- controls conversion of libraries
+        libraries/tools/hugs-package
+                              -- script to convert library packages for Hugs
 
-    plus some others related to documentation and testing.
+    plus some others related to documentation, testing and examples.
 
     Read config.txt to find out about general configuration options.
     Hugs-specific options are listed at the end of this file.
@@ -60,7 +62,7 @@ Long version:
  2) Build Hugs and the libraries
 
     This step builds the executables, calls the shell script
-    src/unix/convert_libraries to convert the Haskell library
+    libraries/tools/convert_libraries to convert the Haskell library
     packages under fptools into libraries under hugsdir for use by
     Hugs, and then runs ffihugs to compile modules that use the ffi.
     (libraries/Hugs contains Hugs-specific modules that are also

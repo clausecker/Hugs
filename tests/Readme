@@ -20,9 +20,7 @@ To run the tests:
 
 1) Build Hugs in the usual way
 
-     cd hugs98/src/unix
-     ./configure
-     cd ..
+     cd hugs98
      make
 
 2) Run the test script in the tests directory.

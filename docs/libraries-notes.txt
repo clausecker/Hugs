@@ -63,8 +63,8 @@ o As noted above, the Prelude is now Haskell 98-compliant.  Most of the
   Char, Ix, Numeric and Ratio.  The Hugs-specific names may be accessed
   by importing the prelude implementation module Hugs.Prelude.
 
-o Everything under hugslib is created by the src/unix/convert_libraries
-  script (so don't edit them).
+o Everything under hugslib is created by the
+  libraries/tools/convert_libraries script (so don't edit them).
 
 o To check the status of each hierarchical module, run
 
@@ -79,6 +79,6 @@ o Some libraries are present, but Hugs does not implement all operations,
 o Old versions of the Int and Word modules had lots of specific conversion
   functions, which are now gone.  Use fromIntegral instead.
 
-o to see what's handled and what's not, have a look at the conversion script
-  src/unix/convert_libraries.  It's quite a kludge, but it mostly works,
-  though there's still plenty to do.
+o to see what's handled and what's not, have a look at the conversion
+  script libraries/tools/convert_libraries.  It's quite a kludge, but
+  it mostly works, though there's still plenty to do.
