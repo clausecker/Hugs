@@ -2,7 +2,7 @@ module ForeignPtr
         ( 
 	  ForeignPtr             -- abstract, instance of: Eq
         , newForeignPtr          -- :: Ptr a -> FunPtr (Ptr a -> IO ()) -> IO (ForeignPtr a)
---        , addForeignPtrFinalizer -- :: ForeignPtr a -> FunPtr (Ptr a -> IO ()) -> IO ()
+        , addForeignPtrFinalizer -- :: ForeignPtr a -> FunPtr (Ptr a -> IO ()) -> IO ()
         , mallocForeignPtr       -- :: Storable a => IO (ForeignPtr a) 
         , mallocForeignPtrBytes  -- :: Int        -> IO (ForeignPtr a)
 	, withForeignPtr         -- :: ForeignPtr a -> (Ptr a -> IO b) -> IO b
@@ -31,8 +31,7 @@ instance Eq (ForeignPtr a) where
 
 primitive newForeignPtr :: Ptr a -> FunPtr (Ptr a -> IO ()) -> IO (ForeignPtr a)
 
--- not implemented
--- addForeignPtrFinalizer :: ForeignPtr a -> FunPtr (Ptr a -> IO ()) -> IO ()
+primitive addForeignPtrFinalizer :: ForeignPtr a -> FunPtr (Ptr a -> IO ()) -> IO ()
 
 primitive touchForeignPtr :: ForeignPtr a -> IO ()
 

@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: storage.c,v $
- * $Revision: 1.50 $
- * $Date: 2002/09/08 14:06:55 $
+ * $Revision: 1.51 $
+ * $Date: 2002/09/25 13:49:46 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -2101,7 +2101,7 @@ Void garbageCollect()     {             /* Run garbage collector ...       */
 	}
 #endif
 #if GC_MALLOCPTRS
-    for (i=mallocPtr_hw; i >= 0; i--) { /* release any unused mallocptrs   */
+    for (i=mallocPtr_hw-1; i >= 0; i--) { /* release any unused mallocptrs   */
 	if (isPair(mallocPtrs[i].mpcell)) {
 	    register int place = placeInSet(mallocPtrs[i].mpcell);
 	    register int mask  = maskInSet(mallocPtrs[i].mpcell);
@@ -3095,7 +3095,7 @@ int mallocPtr_hw;
  */
 Cell mkMallocPtr(ptr,cleanup)            /* create a new malloc pointer    */
 Pointer ptr;
-Void (*cleanup) Args((Pointer)); {
+CFinalizer cleanup; {
     Int i;
     for (i=0; i<NUM_MALLOCPTRS && mallocPtrs[i].refCount!=0; ++i)
 	;					/* Search for unused entry */
@@ -3109,13 +3109,14 @@ Void (*cleanup) Args((Pointer)); {
 	EEND;
     }
     mallocPtrs[i].ptr      = ptr;
-    mallocPtrs[i].cleanup  = cleanup;
+    mallocPtrs[i].finalizers = NIL;
     mallocPtrs[i].refCount = 1;
 
     /* adjust the high-water mark for the table. */
     if (i >= mallocPtr_hw) {
 	mallocPtr_hw = i + 1;
     }
+    mallocPtrs[i].finalizers = cons(mkPtr(cleanup), mallocPtrs[i].finalizers);
     return (mallocPtrs[i].mpcell = ap(MPCELL,i));
 }
 
@@ -3126,18 +3127,20 @@ Int i; {
 	internal("freeMallocPtr");
     mallocPtrs[n].refCount += i;
     if (mallocPtrs[n].refCount <= 0) {
-	if (mallocPtrs[n].cleanup) {
-	    mallocPtrs[n].cleanup(mallocPtrs[n].ptr);
-	}
+	Cell p;
+	for (p=mallocPtrs[n].finalizers; nonNull(p); p=tl(p))
+	    ((CFinalizer)ptrOf(hd(p)))(mallocPtrs[n].ptr);
 
 	mallocPtrs[n].ptr      = 0;
-	mallocPtrs[n].cleanup  = 0;
+	mallocPtrs[n].finalizers = NIL;
 	mallocPtrs[n].refCount = 0;
 	mallocPtrs[n].mpcell   = NIL;
 	
 	/* Freed the slot next to the high-water mark; adjust the marker. */
 	if ((n+1) == mallocPtr_hw) {
-	    mallocPtr_hw = n;
+	    do {
+		--mallocPtr_hw;
+	    } while (mallocPtr_hw>0 && isNull(mallocPtrs[mallocPtr_hw-1].mpcell));
 	}
     }
 }
@@ -3554,6 +3557,12 @@ Int what; {
 
 #if GC_WEAKPTRS
 		       mark(finalizers);
+#endif
+
+#if GC_MALLOCPTRS
+		       for (i=0; i<mallocPtr_hw; ++i)
+			   if (isPair(mallocPtrs[i].mpcell))
+			       mark(mallocPtrs[i].finalizers);
 #endif
 
 		       if (consGC) {

@@ -18,8 +18,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: iomonad.c,v $
- * $Revision: 1.33 $
- * $Date: 2002/09/21 00:15:18 $
+ * $Revision: 1.34 $
+ * $Date: 2002/09/25 13:49:46 $
  * ------------------------------------------------------------------------*/
  
 Name nameIORun;			        /* run IO code                     */
@@ -164,6 +164,7 @@ PROTO_PRIM(primCastSPToP);
 PROTO_PRIM(primCastPToSP);
 
 PROTO_PRIM(primNewFP);
+PROTO_PRIM(primAddFPF);
 PROTO_PRIM(primWriteFP);
 PROTO_PRIM(primEqFP);
 PROTO_PRIM(primTouchFP);
@@ -280,6 +281,7 @@ static struct primitive iomonadPrimTable[] = {
   {"eqForeignObj",	2, primEqFP},
 
   {"newForeignPtr",	4, primNewFP},
+  {"addForeignPtrFinalizer", 4, primAddFPF},
   {"eqForeignPtr",	2, primEqFP},
   {"touchForeignPtr",	3, primTouchFP},
   {"foreignPtrToPtr",	1, primFPToP},
@@ -1612,12 +1614,21 @@ primFun(primCastPToSP) {		/* Ptr () -> StablePtr a   	   */
 
 primFun(primNewFP) { /* Ptr a -> FunPtr (Ptr a -> IO ()) -> IO (ForeignPtr a) */
     Pointer addr = 0;
-    Void (*free)(Pointer) = 0;
+    CFinalizer cleanup;
     eval(IOArg(2));
     addr = ptrOf(whnfHead);
     eval(IOArg(1));
-    free = (Void (*)(Pointer))ptrOf(whnfHead);
-    IOReturn(mkMallocPtr(addr,free));
+    cleanup = (CFinalizer)ptrOf(whnfHead);
+    IOReturn(mkMallocPtr(addr,cleanup));
+}
+
+primFun(primAddFPF) { /* ForeignPtr a -> FunPtr (Ptr a -> IO ()) -> IO () */
+    int mp;
+    eval(IOArg(2));
+    mp = mpOf(whnfHead);
+    eval(IOArg(1));
+    mallocPtrs[mp].finalizers = cons(whnfHead, mallocPtrs[mp].finalizers);
+    IOReturn(nameUnit);
 }
 
 primFun(primWriteFP) {		/* ForeignPtr a -> Ptr a -> IO ()	   */
