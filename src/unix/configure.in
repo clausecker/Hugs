@@ -123,7 +123,7 @@ dnl--------------------------------------------------------------------
 AC_HEADER_STDC
 AC_HEADER_SYS_WAIT
 AC_CHECK_HEADERS(
-  stdarg.h stdlib.h unistd.h assert.h ctype.h string.h \
+  stdarg.h stdlib.h unistd.h assert.h ctype.h string.h limits.h \
   fcntl.h sgtty.h termio.h termios.h signal.h \
   sys/stat.h sys/types.h sys/ioctl.h sys/resource.h sys/param.h \
   console.h pascal.h Files.h errno.h stat.h nlist.h ftw.h direct.h dirent.h
