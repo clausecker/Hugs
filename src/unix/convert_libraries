@@ -277,7 +277,6 @@ nocvt base Foreign/Ptr.hs		exts/Ptr.hs	# not quite right
   cvt base Foreign/Storable.hs		
   cvt base Numeric.hs
 nocvt base Prelude.hs			Prelude.hs	# Hugs special
-nocvt base HugsStorable.hs              exts/HugsStorable.hs
 nocvt base System/CPUTime.hsc		CPUTime.hs	# Hugs primitives
   cvt base System/Cmd.hs
   cvt base System/Console/GetOpt.hs
@@ -342,7 +341,7 @@ nocvt base System/Time.hsc		Time.hs		# Hugs primitives
   cvt haskell-src Language/Haskell/THSyntax.hs
 
   echo Copying FFI support files
-  cp ../../lib/exts/Storable_aux.[ch]   $dst
+  cp ../../lib/exts/Storable_aux.[ch]   $dst/Hugs
   cp ../config.h                        $dst/Foreign/C
   cp $src/base/cbits/errno.c            $dst/Foreign/C
   cp $src/base/include/*.h              $dst/Foreign/C
@@ -357,6 +356,7 @@ mkdir -p $compat
 hugslibs MonadRec	# new libs have Fix, but Rec is used by mdo
 hugslibs Memo		# hslibs module is different
 hugslibs Observe	# hslibs module is different
+    stub HugsStorable	Hugs.Storable
 
 # Stuff from hslibs (many of these are stubs)
 
