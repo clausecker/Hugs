@@ -78,7 +78,7 @@ install: all
 	(cd $(BUILD_DIR); find libraries -type f -print) | while read file;\
 		do	dir=`dirname $$file`;\
 			case $$file in \
-			*.hs|*.lhs|*.so) \
+			*.hs|*.lhs|*.so|*.dll) \
 				$(INSTALL) -d $(DESTDIR)$(hugsdir)/$$dir;\
 				$(INSTALL) -c $(BUILD_DIR)/$$file $(DESTDIR)$(hugsdir)/$$file ;;\
 			esac \
