@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.37 $
- * $Date: 2001/06/22 23:00:36 $
+ * $Revision: 1.38 $
+ * $Date: 2001/07/07 00:28:21 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -5134,7 +5134,7 @@ List ds; {				/* given list of equations	   */
 		fst(snd(d))   = pat = p;
 		fst(rhs)      = RSIGN;
 	    }
-	    if (isVar(pat)) {		/* Convert simple pattern bind to */
+	    if (isQVar(pat)) {		/* Convert simple pattern bind to */
 		notDefined(line,bs,pat);/* a function binding		  */
 		bs = cons(pair(pat,pair(NIL,singleton(pair(NIL,rhs)))),bs);
 	    } else {
