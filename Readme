@@ -1,12 +1,21 @@
 ------------------------------------------------------------------------------
-__   __ __  __  ____   ___     _______________________________________________
-||   || ||  || ||  || ||__     Hugs 98: The Nottingham and Yale Haskell system
+__   __ __  __  ____   ___     _________________________________________
+||   || ||  || ||  || ||__     Hugs 98: Based on the Haskell 98 standard
 ||___|| ||__|| ||__||  __||    Copyright (c) 1994-1999
 ||---||         ___||          World Wide Web: http://haskell.org/hugs
 ||   ||                        Report bugs to: hugs-bugs@haskell.org
-||   || Version: May 1999      _______________________________________________
+||   || Version: Sep 1999      _________________________________________
 
 ------------------------------------------------------------------------------
+
+   ***************************************************************
+   This is a candidate (beta) release of Sep 1999 Hugs98.
+   It contains numerous bug fixes over the May 1999 release,
+   a new license, and an implementation of functional dependencies.
+
+   This candidate release is distributed in src format only.
+   Please send feedback about any problem to hugs-bugs@haskell.org
+   ***************************************************************
 
    We are pleased to announce a new release of Hugs, a Haskell
    interpreter and programming environment for developing cool
