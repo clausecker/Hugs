@@ -22,7 +22,7 @@ There are three important points in using the recursive-do notation:
 
   1. The recursive version of the do-notation uses the keyword mdo (rather
      than do).
-  2. The scripts using mdo should "import Control.Monad.Fix" (*)
+  2. The scripts using mdo should "import Control.Monad.Fix" 
   3. Hugs must be started with -98 flag
 
 The Control.Monad.Fix library introduces the MonadFix class. 
@@ -44,16 +44,10 @@ of the existing documents) used the name "MonadRec" for the class and
 the corresponding library. This name is no longer supported.
 
 ------------------------------------------------------------------------------
-
 [EL00] Levent Erkök and John Launchbury. Recursive Monadic Bindings. In the
 Proceedings of the International Conference on Functional Programming,
 ICFP'00, pp. 174-185, 2000.
 
 [EL02] Levent Erkök and John Launchbury. A recursive do for Haskell. In
 the Proceedings of the Haskell Workshop'02, pp. 29-37, 2002.
-
 ------------------------------------------------------------------------------
-
-(*) For purely technical reasons, the library "Control.Monad.Fix" must 
-    be imported unqualified. Otherwise, you will get an error saying
-    that the "MonadFix" class is not found. 
