@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.103 $
- * $Date: 2002/10/03 11:03:50 $
+ * $Revision: 1.104 $
+ * $Date: 2002/10/03 17:28:04 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -243,6 +243,9 @@ static Cell   local depRecord		Args((Int,Cell));
 #endif
 
 #if MUDO
+static Void   local mdoStart            Args((Void));
+static Void   local mdoLoad             Args((Void));
+static Void   local mdoUsed             Args((Void));
 static List   local mdoGetPatVarsLet	Args((Int,List,List));
 static List   local mdoBVars		Args((Int,List));
 static List   local mdoUsedVars		Args((List,Cell,List,List));
@@ -6749,7 +6752,8 @@ Cell e; {
 			  break;
 
 #if MUDO
-	case MDOCOMP	: depRecComp(line, snd(e), snd(snd(e)));
+	case MDOCOMP	: mdoUsed();
+	                  depRecComp(line, snd(e), snd(snd(e)));
 			  break;
 #endif
 
@@ -6867,6 +6871,59 @@ List qs; {
 }
 
 #if MUDO
+
+/*
+ * When typechecking mdo expressions, we need to have
+ * access to mfix et al., so we keep track of whether
+ * a module uses MDOCOMP, and if it does, look up
+ * the necessary class + method in mdoLoad().
+ *
+ * Do this here rather than in the typechecker itself
+ * (where the innards of mdoLoad() used to be), as name
+ * resolution / checking is really the domain of static
+ * analysis. It also simplifies the handling of a module's
+ * import lists.
+ *
+ */
+static Bool mdoLibsNeeded = FALSE;
+
+static Void local mdoStart() {
+    mdoLibsNeeded = FALSE;
+}
+
+static Void local mdoUsed() {
+    mdoLibsNeeded = TRUE;
+}
+
+static Void local mdoLoad() {
+    if (mdoLibsNeeded) {
+	String fixLib     = (newLibraries ? "Control.Monad.Fix" : "MonadRec");
+	String fixClass   = (newLibraries ? "MonadFix" : "MonadRec");
+    
+	/* Locate the module containing the MonadRec/MonadFix class */
+	Module m          = findModule(findText(fixLib));
+	Text t            = module(m).text;
+	Text alias        = findModAlias(t);
+	Cell monadRecName = mkQCon(t,findText(fixClass));
+	/* The method name is qualified by its local alias, not
+	 * the (real) module name
+	 */
+	Cell mfixName     = mkQCon(alias,findText("mfix"));
+
+	if( !(classMonadRec = findQualClass(monadRecName)) &&
+	    !(classMonadRec = findClass(findText(fixClass))) ) {
+	    ERRMSG(0) "%s class not defined", fixClass ETHEN
+		ERRTEXT   "\n*** Possible cause: \"%s\" library not loaded", fixLib
+		EEND;
+	}
+	
+	if(!(nameMFix = findQualName(mfixName))) {
+	    ERRMSG(0) "%s class does not define the mfix method", fixClass
+		EEND;
+	}
+    }
+    mdoLibsNeeded = FALSE;
+}
 
 /* mdoExpandQualifiers inflates qs into a list of triples
    the first element is the original q
@@ -7859,6 +7916,10 @@ Void checkDefns() {			/* Top level static analysis	   */
 
     setCurrModule(thisModule);
 
+#if MUDO
+    mdoStart();
+#endif
+
     /* Resolve module references */
     mapProc(checkQualImport,  module(thisModule).modAliases);
     mapProc(checkUnqualImport,unqualImports);
@@ -7963,6 +8024,10 @@ Void checkDefns() {			/* Top level static analysis	   */
 
     /* ToDo: evalDefaults should match current evaluation module */
     evalDefaults = defaultDefns;	/* Set defaults for evaluator	   */
+
+#if MUDO
+    mdoLoad();
+#endif
 
     /* A module's 'modImports' list is only used to construct a precise export
      * list in the presence of module re-exportation. We've now finished

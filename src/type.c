@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: type.c,v $
- * $Revision: 1.55 $
- * $Date: 2002/10/03 11:03:50 $
+ * $Revision: 1.56 $
+ * $Date: 2002/10/03 17:28:05 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -98,10 +98,8 @@ Name nameMFail;
 Name nameGt;				/* for readsPrec		   */
 
 #if MUDO
-Class classMonadFix;			/* Recursive monads		   */
+Class classMonadRec;			/* Recursive monads		   */
 Name nameMFix;
-static Cell monadFixHandle = NIL;	/* Used to keep track whether 	   */
-static Cell mfixNameHandle = NIL;	/* Monad.Fix is loaded/unloaded  */
 #endif
 
 #if EVAL_INSTANCES
@@ -237,7 +235,7 @@ static Cell  predIntegral;		/* Integral (mkOffset(0))	   */
 static Kind  starToStar;		/* Type -> Type			   */
 static Cell  predMonad;			/* Monad (mkOffset(0))		   */
 #if MUDO
-static Cell  predMonadFix;		/* MonadFix (mkOffset(0))	   */
+static Cell  predMonadRec;		/* MonadRec/MonadFix (mkOffset(0)) */
 #endif
 
 /* --------------------------------------------------------------------------
@@ -1606,27 +1604,17 @@ List qs; {
 static Void local typeMDo(l,e)		/* type check recursive-do	   */
 Int l;
 Cell e; {
-    /*  We need to make sure that the MonadFix library is in scope whenever
-     *	someone uses an mdo expression. This is achieved by the global
-     *	variables monadFixHandle and mfixNameHandle. This is necessary since
-     *	MonadFix class and the mfix function are not part of the standard 
-     *	prelude. (Similar problem occurs with Trex show classes, and this
-     *	solution is adapted from the solution devised by Mark P Jones for that
-     *	problem.) 
-     */
+    String fixLib     = (newLibraries ? "Control.Monad.Fix" : "MonadRec");
+    String fixClass   = (newLibraries ? "MonadFix" : "MonadRec");
 
-    if(!(classMonadFix = findQualClass(monadFixHandle))) {
-	ERRMSG(0) "MonadFix class not defined" ETHEN
-	ERRTEXT   "\n*** Possible cause: \"Control.Monad.Fix\" library not loaded"
+    if( !classMonadRec ) {
+	ERRMSG(0) "%s class not defined", fixClass ETHEN
+        ERRTEXT   "\n*** Possible cause: \"%s\" library not loaded", fixLib
 	EEND;
     }
 
-    predMonadFix = ap(classMonadFix,aVar);                                      
+    predMonadRec = ap(classMonadRec,aVar);
 
-    if(!(nameMFix = findQualName(mfixNameHandle))) {
-	ERRMSG(0) "MonadFix class does not define the mfix method"
-	EEND;
-    }
     /* Now we're safe: do the actual type-checking now: */
     typeRecursiveDo(l,e);
 }
@@ -1648,7 +1636,7 @@ Cell e; {
     Int beta		 = newTyvars(1);
     Cell mon		 = ap(mkInt(beta),aVar);
     Cell monDict         = assumeEvid(predMonad,beta); 
-    Cell m		 = assumeEvid(predMonadFix,beta);
+    Cell m		 = assumeEvid(predMonadRec,beta);
     List tmp;
     List whole		 = NIL;
 
@@ -3084,9 +3072,7 @@ Int what; {
 		       mark(starToStar);
 		       mark(predMonad);
 #if MUDO
-		       mark(predMonadFix);
-		       mark(monadFixHandle);
-		       mark(mfixNameHandle);
+		       mark(predMonadRec);
 #endif
 
 #if IO_MONAD
@@ -3151,16 +3137,6 @@ Int what; {
 		       addPrimCfun(findText("EmptyRec"), 0,0,typeUnit);
 #endif
 
-#if MUDO
-		       {   /* This isn't quite right. If Control.Monad.Fix 
-			    * is imported qualified with some other name, 
-			    * this will fail. The implementation of TREX
-			    * suffers from the same problem too.
-			    */
-			   monadFixHandle = mkCon(findText("MonadFix"));
-			   mfixNameHandle = mkCon(findText("mfix"));
-		       }
-#endif
 		       break;
     }
 }

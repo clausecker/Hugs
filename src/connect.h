@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: connect.h,v $
- * $Revision: 1.48 $
- * $Date: 2002/10/02 00:32:41 $
+ * $Revision: 1.49 $
+ * $Date: 2002/10/03 17:28:05 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -78,7 +78,7 @@ extern Name  nameMFail;
 extern Name  nameListMonad;		/* builder function for List Monad */
 
 #if MUDO
-extern Class classMonadFix;		/* Recursive monads		   */
+extern Class classMonadRec;		/* Recursive monads		   */
 extern Name  nameMFix;			/* for translating mdo-notation	   */
 #endif
 
