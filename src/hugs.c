@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.59 $
- * $Date: 2002/01/17 04:49:17 $
+ * $Revision: 1.60 $
+ * $Date: 2002/01/24 05:08:31 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -434,8 +434,7 @@ Bool state; {
 	    *toggle[i].flag = state;
 	    return;
 	}
-    ERRMSG(0) "Unknown toggle `%c'", c
-    EEND;
+    Printf("Warning: unknown toggle `%c'; ignoring.\n", c);
 }
 
 static Void local togglesIn(state)      /* Print current list of toggles in*/
