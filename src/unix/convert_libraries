@@ -53,9 +53,7 @@ function cvt {
 	dstdir=`dirname $dst/$2`
 	mkdir -p $dstdir
 
-	$cpp -I. -I.. -I$src/$1/include $src/$1/$2 | 
-	sed -e "s/import Prelude/import Hugs.Prelude/" |
-	cat -s >$dst/$2
+	$cpp -I. -I.. -I$src/$1/include $src/$1/$2 | cat -s >$dst/$2
 }
 
 function cvt_happy {
@@ -281,7 +279,7 @@ nocvt base Foreign/Ptr.hs		exts/Ptr.hs	# not quite right
   cvt base Foreign/StablePtr.hs
   cvt base Foreign/Storable.hs		
   cvt base Numeric.hs
-nocvt base Hugs/Prelude.hs		Prelude.hs	# Hugs special
+# cvt base Prelude.hs
 nocvt base System/CPUTime.hsc		CPUTime.hs	# Hugs primitives
   cvt base System/Cmd.hs
   cvt base System/Console/GetOpt.hs

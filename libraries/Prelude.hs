@@ -85,7 +85,7 @@ module Prelude (
 
 import Hugs.Prelude hiding 
    (Ix(..), 
-    Ratio,(%),numerator,denominator,approxRational,
+    Ratio,(%),numerator,denominator,
     showSigned,showInt,readSigned,readInt,
     readDec,readOct,readHex,readSigned,
     readFloat,lexDigits,
