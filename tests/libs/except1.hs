@@ -6,7 +6,7 @@
 
 import Exception
 import Concurrent
-import IOExts
+import System.IO (fixIO)
 import Prelude hiding (catch)
 
 -- This is a test to check for a suspected type error.

@@ -1,9 +1,10 @@
---!!! Testing IOExts.fixIO
+--!!! Testing System.IO.fixIO
 
 > module FixIOTest where
-> import Monad
-> import Maybe
-> import IOExts( fixIO )
+
+> import Control.Monad
+> import Data.Maybe
+> import System.IO( fixIO )
 
 First a recursively-defined environment in the normal way:
 
