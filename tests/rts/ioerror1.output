@@ -1,5 +1,6 @@
 Hugs:IO Error: User error
 Reason: foo
+
 Hugs:True
 Hugs:Caught error
 
@@ -9,4 +10,5 @@ Continuing
 Hugs:
 IO Error: User error
 Reason: foo
+
 Hugs:[Leaving Hugs]
