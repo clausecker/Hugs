@@ -144,7 +144,12 @@ dnl Windows include files
 AC_CHECK_HEADERS(windows.h winsock.h)
 
 dnl dynamic loading include files
-AC_CHECK_HEADERS(dlfcn.h dl.h mach-o/dyld.h) 
+if test "$target" = windows; then
+  dynamic_loading=yes
+else
+  dynamic_loading=no
+fi
+AC_CHECK_HEADERS(dlfcn.h dl.h mach-o/dyld.h, [dynamic_loading=yes])
 
 dnl Checks for:
 dnl   farcalloc (in bcc), 
@@ -411,7 +416,8 @@ AC_ARG_ENABLE(lint,             [  --enable-lint             enable "lint" flags
 AC_ARG_ENABLE(only98,		[  --enable-only98           make Hugs Haskell 98 only], AC_DEFINE(HASKELL_98_ONLY))
 AC_ARG_WITH(pthreads,           [  --with-pthreads           build Hugs using pthreads C library], AC_DEFINE(DONT_PANIC) MTCFLAGS="-D_REENTRANT"; LIBS="$LIBS -lpthread")
 AC_ARG_WITH(fptools,		[  --with-fptools=<dir>      location of fptools directory to get libraries from], [FPTOOLS="$withval"])
-AC_ARG_ENABLE(ffi,		[  --enable-ffi              include modules that use the FFI], [INSTALL_FFI=install_ffi], [INSTALL_FFI=""])
+AC_ARG_ENABLE(ffi,		[  --enable-ffi              include modules that use the FFI], , [enable_ffi="$dynamic_loading"])
+
 AC_SUBST(FPTOOLS)
 AC_SUBST(INSTALL_FFI)
 
@@ -428,6 +434,12 @@ hslibs and libraries from the Haskell CVS repository.])
 elif test -d "$DEFAULT_FPTOOLS/hslibs" && test -d "$DEFAULT_FPTOOLS/libraries"
 then
   FPTOOLS=$DEFAULT_FPTOOLS
+fi
+
+if test "$enable_ffi" = yes; then
+  INSTALL_FFI=install_ffi
+else
+  INSTALL_FFI=""
 fi
 
 dnl Disabled for now because the plugin-code can't handle the change.

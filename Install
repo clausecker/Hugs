@@ -148,11 +148,11 @@ Long version:
 
 Hugs specific configuration options:
 
- --enable-ffi
+ --enable-ffi / --disable-ffi
 
-   Provide libraries that use the Foreign Function Interface.  This is
-   recommended, provided the FFI works on your system, which it does
-   for the common architectures.
+   Provide (or not) libraries that use the Foreign Function Interface.
+   By default, this is enabled for systems for which the FFI has been
+   implemented, which includes most common architectures.
 
  --enable-timer
 
