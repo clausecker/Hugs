@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: runhugs.c,v $
- * $Revision: 1.6 $
- * $Date: 2001/12/09 23:55:09 $
+ * $Revision: 1.7 $
+ * $Date: 2002/01/24 07:37:54 $
  * ------------------------------------------------------------------------*/
 
 #include <stdio.h>
@@ -17,7 +17,8 @@
 #include "config.h"
 #include "options.h"
 #include "server.h"
-#ifdef _MSC_VER
+
+#if defined(_MSC_VER) && !defined(_MANAGED)
 #include <windows.h>
 #endif
 
@@ -100,7 +101,7 @@ char* argv[]; {
 	exit(1);
     }
 
-#if defined(_MSC_VER)
+#if defined(_MSC_VER) && !defined(_MANAGED)
     __try {
 #endif
 
@@ -115,7 +116,7 @@ char* argv[]; {
     exitCode = hugs->doIO();
     check();
     
-#if defined(_MSC_VER)
+#if defined(_MSC_VER) && !defined(_MANAGED)
     } __except ( ((GetExceptionCode() == EXCEPTION_STACK_OVERFLOW) ? EXCEPTION_EXECUTE_HANDLER : EXCEPTION_CONTINUE_SEARCH) ) {
       fatal("C stack overflow");
     }
