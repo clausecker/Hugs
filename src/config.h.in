@@ -354,6 +354,9 @@
 /* Define if you have the <Files.h> header file.  */
 #undef HAVE_FILES_H
 
+/* Define if you have the <arpa/inet.h> header file.  */
+#undef HAVE_ARPA_INET_H
+
 /* Define if you have the <assert.h> header file.  */
 #undef HAVE_ASSERT_H
 
@@ -402,6 +405,15 @@
 /* Define if you have the <mach-o/dyld.h> header file.  */
 #undef HAVE_MACH_O_DYLD_H
 
+/* Define if you have the <netdb.h> header file.  */
+#undef HAVE_NETDB_H
+
+/* Define if you have the <netinet/in.h> header file.  */
+#undef HAVE_NETINET_IN_H
+
+/* Define if you have the <netinet/tcp.h> header file.  */
+#undef HAVE_NETINET_TCP_H
+
 /* Define if you have the <nlist.h> header file.  */
 #undef HAVE_NLIST_H
 
@@ -438,6 +450,9 @@
 /* Define if you have the <sys/resource.h> header file.  */
 #undef HAVE_SYS_RESOURCE_H
 
+/* Define if you have the <sys/socket.h> header file.  */
+#undef HAVE_SYS_SOCKET_H
+
 /* Define if you have the <sys/stat.h> header file.  */
 #undef HAVE_SYS_STAT_H
 
@@ -455,6 +470,12 @@
 
 /* Define if you have the <sys/types.h> header file.  */
 #undef HAVE_SYS_TYPES_H
+
+/* Define if you have the <sys/uio.h> header file.  */
+#undef HAVE_SYS_UIO_H
+
+/* Define if you have the <sys/un.h> header file.  */
+#undef HAVE_SYS_UN_H
 
 /* Define if you have the <sys/utsname.h> header file.  */
 #undef HAVE_SYS_UTSNAME_H
@@ -486,6 +507,9 @@
 /* Define if you have the <winsock.h> header file.  */
 #undef HAVE_WINSOCK_H
 
+/* Define if netinet/in.h defines the in_addr type.  */
+#undef HAVE_IN_ADDR_T
+
 /* Define if you have the dl library (-ldl).  */
 #undef HAVE_LIBDL
 
@@ -497,6 +521,12 @@
 
 /* Define if you have the editline library (-leditline).  */
 #undef HAVE_LIBREADLINE
+
+/* Define if struct msghdr contains msg_accrights field */
+#undef HAVE_MSGHDR_MSG_ACCRIGHTS
+ 
+/* Define if struct msghdr contains msg_control field */
+#undef HAVE_MSGHDR_MSG_CONTROL
 
 /* Define to Haskell type for cc_t */
 #undef HTYPE_CC_T
