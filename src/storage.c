@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: storage.c,v $
- * $Revision: 1.54 $
- * $Date: 2002/10/10 14:48:00 $
+ * $Revision: 1.55 $
+ * $Date: 2002/10/24 22:17:11 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -2110,9 +2110,9 @@ Void garbageCollect()     {             /* Run garbage collector ...       */
 
 #if IO_HANDLES
 #if WANT_FIXED_SIZE_TABLES
-    for (i=0; i<NUM_HANDLES; ++i)       /* release any unused handles      */
+    for (i=0; i<(Int)NUM_HANDLES; ++i)  /* release any unused handles      */
 #else
-    for (i=0; i<num_handles; ++i)       /* release any unused handles      */
+    for (i=0; i<(Int)num_handles; ++i)  /* release any unused handles      */
 #endif
 	if (nonNull(handles[i].hcell)) {
 	    register int place = placeInSet(handles[i].hcell);
@@ -3086,9 +3086,9 @@ unsigned long     num_handles = 0;
 static Void local freeHandle(n)         /* release handle storage when no  */
 Int n; {                                /* heap references to it remain    */
 #if WANT_FIXED_SIZE_TABLES
-    if (0<=n && n<NUM_HANDLES && nonNull(handles[n].hcell)) {
+    if (0<=n && n<(Int)NUM_HANDLES && nonNull(handles[n].hcell)) {
 #else
-    if (0<=n && n< num_handles && nonNull(handles[n].hcell)) {
+    if (0<=n && n<(Int)num_handles && nonNull(handles[n].hcell)) {
 #endif
 	if (n>HSTDERR && handles[n].hmode!=HCLOSED && handles[n].hfp) {
 	    fclose(handles[n].hfp);
@@ -3657,9 +3657,9 @@ Int what; {
 #if IO_HANDLES
 		       TABALLOC(handles,   struct strHandle, NUM_HANDLES)
 #if WANT_FIXED_SIZE_TABLES
-		       for (i=0; i<NUM_HANDLES; i++)
+		       for (i=0; i<(Int)NUM_HANDLES; i++)
 #else
-		       for (i=0; i<num_handles; i++)
+		       for (i=0; i<(Int)num_handles; i++)
 #endif
 			   handles[i].hcell = NIL;
 
