@@ -45,7 +45,7 @@ PS: Boiled down bug-provoking program enclosed, tbug.gs:
 -}
 module TestDicts where
 
-import IOExts (performGC)
+import System.Mem (performGC)
 
 class T a where			-- Line 1
 	t :: Int ->  a

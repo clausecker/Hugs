@@ -1,10 +1,10 @@
 -- !!! Testing system calls
 
 import Foreign
-import Exception
+import Control.Exception
 import Prelude hiding (read)
-import CTypes
-import CString
+import Foreign.C.Types
+import Foreign.C.String
 
 tests = do
   putStrLn "\nTesting open, read and close"

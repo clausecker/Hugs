@@ -1,7 +1,7 @@
+#include "HsFFI.h"
 
 extern HsInt       iInt       (HsInt       x);
 extern HsChar      iChar      (HsChar      x);
-extern HsAddr      iAddr      (HsAddr      x);
 extern HsPtr       iPtr       (HsPtr       x);
 extern HsFunPtr    iFunPtr    (HsFunPtr    x);
 extern HsFloat     iFloat     (HsFloat     x);

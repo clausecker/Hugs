@@ -1,9 +1,9 @@
 -- !!! Testing Int and Word
 module T where
-import Int
-import Word
-import Bits
-import Ix(Ix)
+import Data.Int
+import Data.Word
+import Data.Bits
+import Data.Ix(Ix)
 
 -- grrr, changing the monad translation introduced a spaceleak
 test _ = do

@@ -1,9 +1,7 @@
-#include "HsFFI.h"
 #include "types_aux.h"
 
 extern HsInt       iInt       (HsInt       x) { return x; }
 extern HsChar      iChar      (HsChar      x) { return x; }
-extern HsAddr      iAddr      (HsAddr      x) { return x; }
 extern HsPtr       iPtr       (HsPtr       x) { return x; }
 extern HsFunPtr    iFunPtr    (HsFunPtr    x) { return x; }
 extern HsFloat     iFloat     (HsFloat     x) { return x; }

@@ -1,14 +1,12 @@
 -- !!! Testing marshalling of all the basic types
 
-import Addr
-import Int
-import Word
-import Ptr( Ptr, FunPtr )
-import StablePtr( StablePtr )
+import Data.Int
+import Data.Word
+import Foreign.Ptr( Ptr, FunPtr )
+import Foreign.StablePtr( StablePtr )
 
 foreign import ccall "types_aux.h" iInt       :: Int         -> IO Int       
 foreign import ccall "types_aux.h" iChar      :: Char        -> IO Char      
-foreign import ccall "types_aux.h" iAddr      :: Addr        -> IO Addr      
 foreign import ccall "types_aux.h" iPtr       :: Ptr a       -> IO (Ptr a)  
 foreign import ccall "types_aux.h" iFunPtr    :: FunPtr a    -> IO (FunPtr a)
 foreign import ccall "types_aux.h" iFloat     :: Float       -> IO Float     

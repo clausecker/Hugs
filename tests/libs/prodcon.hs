@@ -18,7 +18,7 @@
 -- o Fran (Conal Elliott)
 -- o FRP (John Peterson)
 
-import Concurrent
+import Control.Concurrent
 
 par_ m1 m2 = do
   v1 <- newEmptyMVar 

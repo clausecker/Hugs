@@ -4,8 +4,8 @@
 -- get scheduled but what it's really testing is that the right errors
 -- get caught.
 
-import Exception
-import Concurrent
+import Control.Exception
+import Control.Concurrent
 import System.IO (fixIO)
 import Prelude hiding (catch)
 

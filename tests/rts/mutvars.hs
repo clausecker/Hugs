@@ -1,6 +1,7 @@
 -- !!! Testing Mutvars
 
-import ST
+import Control.Monad.ST
+import Data.STRef.Strict
 
 -- Note: equivalent code of the form: show (runST (newSTRef 'a' ...))
 -- won't typecheck under Hugs 1.01.
