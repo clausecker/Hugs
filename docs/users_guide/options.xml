@@ -278,6 +278,8 @@ The default value is
 <para>
 The interpreter won't let you change the search path if that would
 prevent it from reading the <literal>Prelude</literal>.
+If an entry occurs more than once in the search path, the extra copies
+will be removed, as searching them would be a waste of time.
 </para>
 </listitem>
 </varlistentry>

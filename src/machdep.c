@@ -11,8 +11,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.123 $
- * $Date: 2004/10/21 09:11:38 $
+ * $Revision: 1.124 $
+ * $Date: 2005/03/08 12:40:37 $
  * ------------------------------------------------------------------------*/
 #include "prelude.h"
 #include "storage.h"
@@ -268,6 +268,11 @@ static Void   local searchStr     Args((String));
 static Bool   local tryEndings    Args((String));
 static Bool   local find1	  Args((String));
 static Bool   local find2	  Args((String));
+static String local expandVariable Args((String));
+static String local skipVariable  Args((String));
+static String local uniqPath      Args((String));
+static String local nextPath      Args((String));
+static Bool   local samePath      Args((String,String));
 #if DOS_FILENAMES
 static Bool   local isPathSep     Args((String));
 #endif
@@ -769,26 +774,15 @@ String name; {                      /* Return NULL if no file was found       */
 static Bool find1(name)		/* Search each directory of the path */
 String name; {
     String pathpt = hugsPath;
+    String value;
 
     searchReset(0);		/* look along the HUGSPATH */
     if (pathpt) {
 	while (*pathpt) {
 	    searchReset(0);
-	    /* allow initial MPW-style "shell-variables" */
-	    if (*pathpt=='{') { /* of the form {varname} */
-		int i, len;
-		String value;
-
-		for (i = 0; shell_var[i].var_name!=NULL; i++) {
-		    len = strlen(shell_var[i].var_name);
-		    if (strncmp(pathpt+1,shell_var[i].var_name,len)==0
-			&& pathpt[len+1]=='}'
-			&& (value = (*shell_var[i].var_value)())!=NULL) {
-			searchStr(value);
-			pathpt += len+2;
-			break;
-		    }
-		}
+	    if ((value=expandVariable(pathpt)) != NULL) {
+		searchStr(value);
+		pathpt = skipVariable(pathpt);
 	    }
 	    while (*pathpt && !isPATHSEP(pathpt))
 		searchChr(*pathpt++);
@@ -808,6 +802,29 @@ String name; {
 	}
     } 
     return FALSE;    
+}
+
+/* Expansion of initial MPW-style "shell-variables" of the form {varname} */
+static String local expandVariable(pathpt)
+String pathpt; {
+    if (*pathpt=='{') {
+	int i, len;
+
+	for (i = 0; shell_var[i].var_name!=NULL; i++) {
+	    len = strlen(shell_var[i].var_name);
+	    if (strncmp(pathpt+1,shell_var[i].var_name,len)==0
+		&& pathpt[len+1]=='}') {
+		return (*shell_var[i].var_value)();
+	    }
+	}
+    }
+    return NULL;
+}
+
+/* Assuming expandVariable(pathpt) succeeded, skip past the variable */
+static String local skipVariable(pathpt)
+String pathpt; {
+    return strchr(pathpt+1,'}')+1;
 }
 
 static Bool local find2(s)	/* Turn module name into a filename */
@@ -879,7 +896,72 @@ String sub; {
 	    start = next+1;
 	}
     } while ((*t++ = *next++) != '\0');
-    return r;
+    return uniqPath(r);
+}
+
+/* Remove duplicates from the path */
+static String local uniqPath(path)
+String path; {
+    char *pp;
+    for (pp = path; *pp; ) {
+	char *prev;
+	char *next = nextPath(pp);
+	for (prev = path; prev != pp; prev = nextPath(prev))
+	    if (samePath(prev,pp))
+		break;
+	if (prev == pp)		/* not found: keep entry */
+	    pp = next;
+	else if (*next)		/* found in middle: delete entry */
+	    strcpy(pp, next);
+	else {			/* found at end: delete last entry */
+	    if (pp != path)
+		pp--;
+	    *pp = '\0';
+	}
+    }
+    return realloc(path, strlen(path)+1);
+}
+
+/* Advance to the start of the next entry in the path list */
+static String local nextPath(pp)
+String pp; {
+    while (*pp && !isPATHSEP(pp))
+	pp++;
+    if (*pp)
+	pp++;
+    return pp;
+}
+
+static Bool local samePath(pp1, pp2)
+String pp1, pp2; {
+    char *ppsave1, *ppsave2;
+    char *value;
+
+    /* initial substitution variable? */
+    if ((value=expandVariable(pp1)) != NULL) {
+	ppsave1 = skipVariable(pp1);
+	pp1 = value;
+    } else
+	ppsave1 = 0;
+    if ((value=expandVariable(pp2)) != NULL) {
+	ppsave2 = skipVariable(pp2);
+	pp2 = value;
+    } else
+	ppsave2 = 0;
+
+    while (*pp1 && !isPATHSEP(pp1) && *pp2 && !isPATHSEP(pp2)) {
+	if (*pp1 != *pp2)
+	    return FALSE;
+	if (*++pp1 == '\0' && ppsave1 != 0) {	/* end of substitution */
+	    pp1 = ppsave1;
+	    ppsave1 = 0;
+	}
+	if (*++pp2 == '\0' && ppsave2 != 0) {	/* end of substitution */
+	    pp2 = ppsave2;
+	    ppsave2 = 0;
+	}
+    }
+    return (*pp1=='\0' || isPATHSEP(pp1)) && (*pp2=='\0' || isPATHSEP(pp2));
 }
 
 /* --------------------------------------------------------------------------
