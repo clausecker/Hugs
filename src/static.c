@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.124 $
- * $Date: 2002/11/06 16:00:46 $
+ * $Revision: 1.125 $
+ * $Date: 2002/11/08 16:05:51 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1087,12 +1087,6 @@ Class c; {
     }
     if (nonNull(findTycon(cclass(c).text))) {
         cclass(clash).clashes = cons(c,cclass(clash).clashes);
-	/*      
-	ERRMSG(0) "Import of class \"%s\" clashes with type constructor in module \"%s\"",
-		  textToStr(cclass(c).text),
-		  textToStr(module(source).text)	
-	EEND;
-	*/
     }
 }
 
