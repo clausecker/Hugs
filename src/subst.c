@@ -9,8 +9,8 @@
  * included in the distribution.
  *
  * $RCSfile: subst.c,v $
- * $Revision: 1.15 $
- * $Date: 1999/12/21 21:45:24 $
+ * $Revision: 1.16 $
+ * $Date: 2000/03/06 22:40:37 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1335,9 +1335,15 @@ Cell pi1;				/* Assumes preds are kind correct  */
 Int  o1;				/* with the same class.		   */
 Cell pi;
 Int  o; {
-    for (; isAp(pi1); pi1=fun(pi1), pi=fun(pi))
-	if (!unify(arg(pi1),o1,arg(pi),o))
+  for (; isAp(pi1); pi1=fun(pi1), pi=fun(pi)) {
+	if (!isAp(pi) || !unify(arg(pi1),o1,arg(pi),o))
 	    return FALSE;
+  }
+  /* pi1 has exhausted its argument chain, we also need to check that
+     pi has no remaining arguments.  However, under this condition,
+     the pi1 == pi will always return FALSE, giving the desired
+     result. */
+
 #if IPARAM
     if (isIP(pi1) && isIP(pi))
 	return textOf(pi1)==textOf(pi);
