@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.121 $
- * $Date: 2002/11/04 01:35:07 $
+ * $Revision: 1.122 $
+ * $Date: 2002/11/04 02:25:12 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -930,10 +930,21 @@ Pair importSpec; {
 		/* The parent tycon/class is hidden, but perhaps
 		   not all of its subentities. */
 		List hiddenSubs = snd(hd(ms));
+		Module impMod;
+		
+		/* Figure out what module the entity was imported from */
+		if ( isClass(fst(hd(ms))) ) {
+		  impMod = cclass(fst(hd(ms))).mod;
+		} else if ( isTycon(fst(hd(ms))) ) {
+		  impMod = tycon(fst(hd(ms))).mod;
+		} else {
+		  internal("checkImportList");
+		}
+		
 		for(;nonNull(subs);subs=tl(subs)) {
 		  if (!entityIsMember(hd(subs),hiddenSubs)) {
 		      /* Register the sub-entity as imported */
-		      importName(currentModule, hd(subs));
+		      importName(impMod, hd(subs));
 		      modImps = cons(hd(subs), modImps);
 		  }
 		}
@@ -1038,6 +1049,8 @@ Name n; {
 	 */
      && name(n).mod != name(clash).mod ) {
       name(clash).clashes = cons(n,name(clash).clashes);
+    } else {
+      name(n).mod = source;
     }
 }
 
@@ -1050,6 +1063,8 @@ Tycon tc; {
       /* See importName() comment. */
      && tycon(tc).mod != tycon(clash).mod ) {
       tycon(clash).clashes = cons(tc,tycon(clash).clashes);
+    } else {
+      tycon(tc).mod = source;
     }
     if ( nonNull(cc = findClass(tycon(tc).text)) ) {
       cclass(cc).clashes = cons(tc,cclass(cc).clashes);
@@ -1067,6 +1082,8 @@ Class c; {
 	   on both the class values here..*/
         cclass(c).clashes = cons(clash,cclass(c).clashes);
         cclass(clash).clashes = cons(c,cclass(clash).clashes);
+    } else {
+        cclass(c).mod = source;
     }
     if (nonNull(findTycon(cclass(c).text))) {
         cclass(clash).clashes = cons(c,cclass(clash).clashes);
