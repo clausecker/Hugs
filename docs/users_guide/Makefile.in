@@ -30,7 +30,7 @@ DSL_FILE	= hugs-ug.dsl
 HTML		= $(ROOT)/license.html
 
 %.sgml: %.xml
-	sed -f xml2sgml.sed $*.xml >$@
+	LC_ALL=C sed -f xml2sgml.sed $*.xml >$@
 
 all: $(SGMLDocWays)
 

@@ -5,6 +5,10 @@
 
 packages='haskell98 Cabal base haskell-src mtl network parsec QuickCheck unix OpenGL GLUT X11 HGL HUnit'
 
+# ensure that letter ranges work
+LC_ALL=C
+export LC_ALL
+
 # This script contains paths relative to its own location, but should
 # be independent of the current directory.
 
