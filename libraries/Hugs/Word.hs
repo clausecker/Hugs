@@ -330,7 +330,6 @@ instance Num Word64 where
     abs           = absReal
     signum        = signumReal
     fromInteger   = integerToW64
-    fromInt       = fromIntegral
 
 instance Real Word64 where
     toRational x = toInteger x % 1
@@ -351,7 +350,6 @@ instance Integral Word64 where
     x `quotRem` y = (fromInteger q, fromInteger r)
 	where (q,r) = toInteger x `quotRem` toInteger y
     toInteger     = w64ToInteger
-    toInt = fromIntegral
 
 -----------------------------------------------------------------------------
 -- End of exported definitions

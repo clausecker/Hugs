@@ -311,7 +311,6 @@ instance Num Int64 where
     abs           = absReal
     signum        = signumReal
     fromInteger   = integerToI64
-    fromInt       = fromIntegral
 
 instance Real Int64 where
     toRational x = toInteger x % 1
@@ -332,7 +331,6 @@ instance Integral Int64 where
     x `quotRem` y = (fromInteger q, fromInteger r)
 	where (q,r) = toInteger x `quotRem` toInteger y
     toInteger     = i64ToInteger
-    toInt = fromIntegral
 
 -----------------------------------------------------------------------------
 -- End of exported definitions
