@@ -44,11 +44,11 @@ module Dotnet
 	                -- -> [InArg]
                         -- -> IO ()
 
-	, getField2 -- :: (NetType a) => FieldName -> Object b -> IO a
-	, setField2 -- :: (NetType a) => FieldName -> Object b -> a -> IO ()
+	, fieldGet -- :: (NetType a) => FieldName -> Object b -> IO a
+	, fieldSet -- :: (NetType a) => FieldName -> Object b -> a -> IO ()
 	
-	, getStaticField2 -- :: (NetType a) => ClassName -> FieldName -> IO a
-	, setStaticField2 -- :: (NetType a) => ClassName -> FieldName -> a -> IO ()
+	, staticFieldGet -- :: (NetType a) => ClassName -> FieldName -> IO a
+	, staticFieldSet -- :: (NetType a) => ClassName -> FieldName -> a -> IO ()
 	
 	   -- automatic marshalling, provided you 'uncurry' the arguments, i.e.,
 	   --     foo # invoke "MyMethod" (arg1,arg2,arg3)
@@ -315,23 +315,23 @@ staticMethod_ clsName methName args = do
   res   <- invokeStaticMethod (mkStaticMethod clsName methName) args
   return ()
 
-getField2 :: (NetType a) => FieldName -> Object b -> IO a
-getField2 fName obj = do
+fieldGet :: (NetType a) => FieldName -> Object b -> IO a
+fieldGet fName obj = do
   res <- getField obj fName
   result (castObjTy res)
 
-getStaticField2 :: (NetType a) => ClassName -> FieldName -> IO a
-getStaticField2 cName fName = do
+staticFieldGet :: (NetType a) => ClassName -> FieldName -> IO a
+staticFieldGet cName fName = do
   res <- getStaticField cName fName
   result (castObjTy res)
 
-setField2 :: (NetType a) => FieldName -> a -> Object b -> IO ()
-setField2 fName val obj = do
+fieldSet :: (NetType a) => FieldName -> a -> Object b -> IO ()
+fieldSet fName val obj = do
   p     <- arg val
   setField obj fName p
 
-setStaticField2 :: (NetType a) => ClassName -> FieldName -> a -> IO ()
-setStaticField2 cName fName val = do
+staticFieldSet :: (NetType a) => ClassName -> FieldName -> a -> IO ()
+staticFieldSet cName fName val = do
   p     <- arg val
   setStaticField cName fName p
 
@@ -348,7 +348,7 @@ newDelegator fun = do
   sp   <- newStablePtr (delegatorWrapper fun)
   tyNm <- defineDelegator "Delegate" sp
   obj  <- new tyNm
-  obj # getField2 "Delegate_handler"
+  obj # fieldGet "Delegate_handler"
  where
    delegatorWrapper :: (Object a -> Object b -> IO ())
    		    -> Object a -> Object b -> IO ()
