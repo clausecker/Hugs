@@ -12,8 +12,8 @@
  * included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.18 $
- * $Date: 2001/06/22 04:16:30 $
+ * $Revision: 1.19 $
+ * $Date: 2001/06/22 15:31:11 $
  * ------------------------------------------------------------------------*/
 
 #ifdef HAVE_SIGNAL_H
@@ -1082,8 +1082,7 @@ Int readTerminalChar() {                /* read character from terminal    */
         Int c;
  	DWORD mo;
  	HANDLE hIn;
-	static int initEmacs = 0;
-	static int isEmacs = 0;
+	static int isEmacs = -1;
  
  	/* Cannot claim to fully understand, but if the FILE*s underling
 	   file derscriptor is in text mode, we seem to lose the first
@@ -1105,9 +1104,8 @@ Int readTerminalChar() {                /* read character from terminal    */
 	 * back to the simple, non-\n stripping input mode if we are. sigh.
 	 * 
 	 */
-	if (!initEmacs) {
+	if (isEmacs < 0) {
 	  isEmacs = (getenv("EMACS") != NULL);
-	  initEmacs = 1;
 	}
 
 	if (isEmacs) {
@@ -1115,7 +1113,6 @@ Int readTerminalChar() {                /* read character from terminal    */
 	} else {
 	  do {
 	    c = getc(stdin);
-	    fprintf(stderr,"getc: 0x%x\n", c);fflush(stderr);
 	  } while (c == '\n');
 	}
 
