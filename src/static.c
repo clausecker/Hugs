@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.98 $
- * $Date: 2002/09/15 16:44:37 $
+ * $Revision: 1.99 $
+ * $Date: 2002/09/16 15:04:41 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -41,6 +41,7 @@ static List   local addEntityPair       Args((Cell,List));
 static List   local mergeImportLists    Args((List,List));
 static List   local getIEOrphans        Args((List));
 static List   local fixupIEList         Args((List));
+static Bool   local isDCon              Args((Name));
 
 static Cell   local importEntity	Args((Module,Cell));
 static Void   local importName		Args((Module,Name));
@@ -417,6 +418,20 @@ Pair i; {
     fst(i)=m;
 }
 
+static Bool local
+isDCon(n)         /* TRUE if conid name refers to a dcon  */
+Name n; {
+    Tycon tc;
+    
+    /* It's a dcon when:
+     * - it's parent is a tycon
+     * - it itself isn't a type syn.
+     */
+    return (isTycon(name(n).parent) &&
+	    (!(tc = findTycon(name(n).text)) ||
+	     tycon(tc).what != SYNONYM));
+}
+
 static Name local lookupName(t,nms)    /* find text t in list of Names     */
 Text t;
 List nms; { /* :: [Name] */
@@ -502,7 +517,7 @@ List ieList; {
       if (isClass(name(e).parent)) {
 	/* a lone member */
 	orphans = cons(pair(name(e).parent, singleton(e)), orphans);
-      } else if (isTycon(name(e).parent) && !findTycon(name(e).text)) {
+      } else if (isDCon(e)) {
 	/* a lone data constructor (can only appear in a hiding list.) */
 	orphans = cons(pair(name(e).parent, singleton(e)), orphans);
       } else if (name(e).number == SELNAME) {
