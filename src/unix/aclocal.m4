@@ -352,6 +352,10 @@ AC_CACHE_VAL(AC_CV_NAME,
 # include <GL/gl.h>
 #endif
 
+#ifdef HAVE_SYS_RESOURCE_H
+# include <sys/resource.h>
+#endif
+
 typedef $1 testing;
 
 main() {
