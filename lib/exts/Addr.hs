@@ -6,6 +6,7 @@ module Addr
 	( Addr
 	, nullAddr -- :: Addr
  	, plusAddr -- :: Addr -> Int -> Addr
+	, addrToInt -- :: Addr -> Int
 	-- instance Eq   Addr
 	-- instance Show Addr
 	) where
@@ -19,5 +20,7 @@ primitive nullAddr      :: Addr
 primitive plusAddr      :: Addr -> Int -> Addr
 primitive primShowsAddr :: Int -> Addr -> ShowS
 primitive primEqAddr    :: Addr -> Addr -> Bool
+primitive addrToInt     :: Addr -> Int
+
 
 -----------------------------------------------------------------------------

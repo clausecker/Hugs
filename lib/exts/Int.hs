@@ -7,13 +7,15 @@ module Int
 	( Int8
 	, Int16
 	, Int32
-	--, Int64
+	, Int64
 	, int8ToInt  -- :: Int8  -> Int
 	, intToInt8  -- :: Int   -> Int8
 	, int16ToInt -- :: Int16 -> Int
 	, intToInt16 -- :: Int   -> Int16
 	, int32ToInt -- :: Int32 -> Int
 	, intToInt32 -- :: Int   -> Int32
+	, toInt
+	, fromInt
 	-- plus Eq, Ord, Num, Bounded, Real, Integral, Ix, Enum, Read,
 	--  Show and Bits instances for each of Int8, Int16 and Int32
 	) where
@@ -275,6 +277,16 @@ instance Bits Int32 where
   testBit       = primTestInt
   bitSize  _    = 32
   isSigned _    = True
+
+-----------------------------------------------------------------------------
+-- Int64
+--
+-- This is not ideal, but does have the advantage that you can 
+-- now typecheck generated code that include Int64 statements.
+--
+-----------------------------------------------------------------------------
+
+type Int64 = Integer
 
 -----------------------------------------------------------------------------
 -- End of exported definitions
