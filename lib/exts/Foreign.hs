@@ -1,23 +1,26 @@
-module Foreign 
-	( StablePtr, ForeignObj
-	, makeStablePtr, deRefStablePtr, freeStablePtr
-	, makeForeignObj, writeForeignObj
+module Foreign (
+        module Bits,
+        module Int,
+        module Word,
+        module Ptr,
+        module ForeignObj,
+        module StablePtr,
+        module Storable,
+        module MarshalAlloc,
+        module MarshalArray,
+        module MarshalError,
+        module MarshalUtils,
 	) where
 
-import Addr( Addr )
+import Bits
+import Int
+import Word
+import Ptr
+import ForeignObj
+import StablePtr
+import Storable
+import MarshalAlloc
+import MarshalArray
+import MarshalError
+import MarshalUtils
 
--- data StablePtr a -- in Prelude
-
-primitive makeStablePtr      :: a -> IO (StablePtr a)
-primitive deRefStablePtr     :: StablePtr a -> IO a
-primitive freeStablePtr      :: StablePtr a -> IO ()
-primitive castStablePtrToPtr :: StablePtr a -> Ptr ()
-primitive castPtrToStablePtr :: Ptr () -> StablePtr a
-
--- data ForeignObj -- in Prelude
-
-primitive makeForeignObj  :: Addr{-x-} -> Addr{-free-} -> IO ForeignObj
-primitive writeForeignObj :: ForeignObj -> Addr -> IO ()
-primitive eqForeignObj    :: ForeignObj -> ForeignObj -> Bool
-
-instance Eq ForeignObj where (==) = eqForeignObj
