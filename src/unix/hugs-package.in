@@ -17,7 +17,7 @@ usage="$0 [-o script] source-dir [target-dir]"
 cpp_flags='-D__HUGS__'
 
 cc=${CC-@CC@}
-: ${cpp='gcc -P -E -traditional -xc'}
+: ${cpp='@CPP_TRADITIONAL@'}
 : ${happy=happy}
 : ${hsc2hs=hsc2hs}
 : ${greencard=greencard}
@@ -98,9 +98,13 @@ Win32)	# stay away from -m (older versions of 'cygpath' doesn't support it.)
 esac
 
 includes="-I$HUGSDIR/include -I$source_dir/include"
-tmpdir=$tmpdir_root/cvt.$$
 
+# create all scratch files in $tmpdir
+
+tmpdir=$tmpdir_root/cvt.$$
 [ -d $tmpdir ] && rm -r $tmpdir
+trap "rm -rf $tmpdir; exit 0" 0 1 2 3 15
+mkdir $tmpdir
 
 # Convert a module using the FFI from conventional to standard form:
 # - change the calling convention CALLCONV to ccall on Unix, stdcall on Win32
@@ -187,12 +191,23 @@ extract_make_variable() {
 	fi
 }
 
+# Preprocess the argument file with the C preprocessor
+# usage: through_cpp filename cpp-args
+
+# for portability, we run the preprocessor on a .c file.
+tmp_cfile=$tmpdir/cppinput.c
+
+through_cpp() {
+	cp $1 $tmp_cfile
+	shift
+	# gcc-3.3 on MacOS X 10.3 is reported to add #pragma
+	$cpp $cpp_flags $includes "$@" $tmp_cfile | grep -v '^#' | cat -s
+}
+
 # Determine the list of modules to be converted
 
-module_list=$tmpdir_root/cvs.$$.1
-tmp=$tmpdir_root/cvs.$$.2
-
-trap "rm -f $module_list $tmp; exit 0" 0 1 2 3 15
+module_list=$tmpdir/list.1
+all_modules=$tmpdir/list.2
 
 (
 	cd $source_dir
@@ -201,16 +216,16 @@ trap "rm -f $module_list $tmp; exit 0" 0 1 2 3 15
 			-o -name \*.y -o -name \*.ly -o -name \*.gc \) -print |
 		sed '	s:^\./::
 			s/\..*//' |
-		$SORT -u >$tmp
+		$SORT -u >$all_modules
 
 	if [ -f hugs/exclude ]; then
 		sed '	/^[	]*#/ d
 			/^[ 	]*$/ d
 			s/[ 	].*//
 			s:\.:/:g' hugs/exclude |
-		$SORT -u | comm -13 - $tmp >$module_list
+		$SORT -u | comm -13 - $all_modules >$module_list
 	else
-		mv $tmp $module_list
+		mv $all_modules $module_list
 	fi
 )
 
@@ -247,32 +262,23 @@ do	echo "Converting $modname"
 			$greencard -t ffi -i $abs_src_dir $modname.gc
 		)
 	elif [ -f $stem.hs ]; then
-		# gcc-3.3 on MacOS X 10.3 is reported to add #pragma
-		$cpp $cpp_flags $includes $stem.hs | grep -v '^#' |
-			cat -s >$target_stem.hs
+		through_cpp $stem.hs >$target_stem.hs
 	elif [ -f $stem.lhs ]; then
-		$cpp $cpp_flags $includes $stem.lhs | grep -v '^#' |
-			cat -s >$target_stem.lhs
+		through_cpp $stem.lhs >$target_stem.lhs
 	elif [ -f $stem.y ]; then
-		mkdir $tmpdir
 		cp $stem.y $tmpdir
 		(
 			cd $tmpdir
 			$happy $basename.y
 		)
-		$cpp $cpp_flags $tmpdir/$basename.hs | grep -v '^#' |
-			cat -s >$target_stem.hs
-		rm -r $tmpdir
+		through_cpp $tmpdir/$basename.hs >$target_stem.hs
 	elif [ -f $stem.ly ]; then
-		mkdir $tmpdir
 		cp $stem.ly $tmpdir
 		(
 			cd $tmpdir
 			$happy $basename.ly
 		)
-		$cpp $cpp_flags $tmpdir/$basename.hs | grep -v '^#' |
-			cat -s >$target_stem.hs
-		rm -r $tmpdir
+		through_cpp $tmpdir/$basename.hs >$target_stem.hs
 	else
 		echo "$0: don't know how to handle $stem" >&2
 	fi
@@ -285,18 +291,19 @@ PACKAGE=`extract_make_variable PACKAGE`
 PACKAGE_DEPS=`extract_make_variable PACKAGE_DEPS`
 
 conf_in=$source_dir/package.conf.in
-conf=`echo $source_dir/*.conf`
 
 if [ -f "$conf_in" ]
-then	$cpp $cpp_flags $includes \
+then	conf=$tmpdir/package.conf
+	through_cpp $conf_in \
 		-DPACKAGE="$PACKAGE" -DPACKAGE_DEPS="$PACKAGE_DEPS" \
 		-DLIBDIR= -DLIBRARY= \
 		-DX_CFLAGS="\"$X_CFLAGS\"" -DX_PRE_LIBS="\"$X_PRE_LIBS\"" \
 		-DX_LIBS="\"$X_LIBS\"" -DX_EXTRA_LIBS="\"$X_EXTRA_LIBS\"" \
 		-DGLU_CFLAGS=",\"$GLU_CFLAGS\"" -DGLU_LIBS=",\"$GLU_LIBS\"" \
 		-DGLUT_CFLAGS=",\"$GLUT_CFLAGS\"" -DGLUT_LIBS=",\"$GLUT_LIBS\"" \
-		$conf_in | grep -v '^#' >$tmp
-	conf=$tmp
+		>$conf
+else
+	conf=`echo $source_dir/*.conf`
 fi
 
 # Get values from the package description file
