@@ -1,4 +1,4 @@
-module XmlNodeTy where
+module System.Xml.XmlNodeTy where
 
 import qualified System.Object
 

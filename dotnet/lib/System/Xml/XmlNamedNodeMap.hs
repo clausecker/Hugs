@@ -2,28 +2,42 @@ module System.Xml.XmlNamedNodeMap where
 
 import DotNet
 import qualified System.Object
+import System.Collections.IEnumerator
+import System.Xml.XmlNodeTy
 
 data XmlNamedNodeMap_ a
-
 type XmlNamedNodeMap a = System.Object.Object (XmlNamedNodeMap_ a)
 
+foreign import dotnet
+  "method System.Xml.XmlNamedNodeMap.GetEnumerator"
+  getEnumerator :: XmlNamedNodeMap obj -> IO (System.Collections.IEnumerator.IEnumerator a0)
 
-count :: XmlNamedNodeMap a -> IO Int
-count = invoke "get_Count" ()
+foreign import dotnet
+  "method System.Xml.XmlNamedNodeMap.RemoveNamedItem"
+  removeNamedItem :: String -> String -> XmlNamedNodeMap obj -> IO (System.Xml.XmlNodeTy.XmlNode a2)
 
-getNamedItem :: String -> XmlNamedNodeMap a -> IO (System.Xml.XmlNodeTy.XmlNode b)
-getNamedItem nm = invoke "GetNamedItem" nm
+foreign import dotnet
+  "method System.Xml.XmlNamedNodeMap.GetNamedItem"
+  getNamedItem :: String -> String -> XmlNamedNodeMap obj -> IO (System.Xml.XmlNodeTy.XmlNode a2)
 
-getNamedItemURI :: String -> String -> XmlNamedNodeMap a -> IO (System.Xml.XmlNodeTy.XmlNode b)
-getNamedItemURI nm uri = invoke "GetNamedItem" (nm,uri)
+foreign import dotnet
+  "method System.Xml.XmlNamedNodeMap.Item"
+  item :: Int -> XmlNamedNodeMap obj -> IO (System.Xml.XmlNodeTy.XmlNode a1)
 
-item :: Int -> XmlNamedNodeMap a -> IO (System.Xml.XmlNodeTy.XmlNode b)
-item idx = invoke "Item" idx
+foreign import dotnet
+  "method System.Xml.XmlNamedNodeMap.get_Count"
+  get_Count :: XmlNamedNodeMap obj -> IO (Int)
 
-removeNamedItem :: String -> XmlNamedNodeMap a -> IO (System.Xml.XmlNodeTy.XmlNode b)
-removeNamedItem nm = invoke "RemoveNamedItem" nm
+foreign import dotnet
+  "method System.Xml.XmlNamedNodeMap.RemoveNamedItem"
+  removeNamedItem_1 :: String -> XmlNamedNodeMap obj -> IO (System.Xml.XmlNodeTy.XmlNode a1)
 
-removeNamedItemURI :: String -> String -> XmlNamedNodeMap a -> IO (System.Xml.XmlNodeTy.XmlNode b)
-removeNamedItemURI nm uri = invoke "RemoveNamedItem" (nm,uri)
+foreign import dotnet
+  "method System.Xml.XmlNamedNodeMap.SetNamedItem"
+  setNamedItem :: System.Xml.XmlNodeTy.XmlNode a0 -> XmlNamedNodeMap obj -> IO (System.Xml.XmlNodeTy.XmlNode a1)
 
-setNamedItem :: System.Xml.XmlNodeTy.XmlNode a -> XmlNamedNodeMap b -> IO (System.Xml.XmlNodeTy.XmlNode c)
+foreign import dotnet
+  "method System.Xml.XmlNamedNodeMap.GetNamedItem"
+  getNamedItem_1 :: String -> XmlNamedNodeMap obj -> IO (System.Xml.XmlNodeTy.XmlNode a1)
+
+
