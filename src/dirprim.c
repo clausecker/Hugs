@@ -554,13 +554,17 @@ primFun(primGetDirContents) { /* FilePath -> IO [FilePath] */
      succeed just because the impl of readdir()
      'forgot' to reset 'errno', do it ourselves. */
   errno = 0;
-
+  
   while ( (pDir = readdir(dir)) ) {
     pushString(pDir->d_name);
     ls = ap2(nameCons, pop(), ls);
   }
-
-  if (errno != 0) {
+  
+  if (errno != 0
+#if defined(__MINGW32__)
+      && errno != ENOENT
+#endif
+      ) {
     int rc = errno;
     closedir(dir);
     IOFail(mkIOError(toIOError(rc),
