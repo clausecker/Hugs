@@ -16,10 +16,20 @@ hugs, runhugs, ffihugs \- Hugs 98, functional programming system
 .I modules
 ]
 .br
-.B #!\*(BN/runhugs
+.B runhugs
+[
+.I options
+]
+.I module
+[
+.I args
+]
 .br
 .B ffihugs
 .B +G
+[
+.I options
+]
 [
 .BI +L arg
 ] ...
@@ -44,6 +54,106 @@ for the files \fIname\fP, \fIname\fP\fB.hs\fP and \fIname\fP\fB.lhs\fP.
 (The recognized suffixes may be changed using the \fB\-S\fP option,
 described under \fBOPTIONS\fP.)
 Files ending in "\fB.lhs\fP" are treated as literate scripts.
+.SH OPTIONS
+One group of options are toggled with \fB+\fP or \fB\-\fP to turn them on or
+off, respectively:
+.TP
+.B +98
+Accept only Haskell 98
+(cannot be changed within \fIHugs\fP; default: on).
+Turning this off enables several special Hugs extensions,
+which are described in the \fIHugs 98 User Manual\fP.
+.TP
+.B +s
+Print number of reductions/cells after each evaluation (default: off)
+.TP
+.B +t
+Print type after each evaluation (default: off)
+.TP
+.B +T
+Apply the Haskell defaulting rules before printing types (default: off)
+.TP
+.B +f
+Terminate evaluation on first error (default: on)
+.TP
+.B +g
+Print number of cells recovered after gc (default: off)
+.TP
+.B +l
+Literate scripts as default (default: off)
+.TP
+.B +e
+Warn about errors in literate scripts (default: on)
+.TP
+.B +\&.
+Print dots to show progress while loading modules (default: off)
+.TP
+.B +q
+Print nothing to show progress while loading modules (default: off)
+.TP
+.B +Q
+Qualify names when printing (default: off)
+.TP
+.B +w
+Always show which files loaded (default: on)
+.TP
+.B +k
+Show kind errors in full (default: off)
+.TP
+.B +u
+Use "\fBshow\fP" to display results (default: on)
+.TP
+.B +i
+Chase imports while loading files (default: on)
+.TP
+.B +o
+Allow overlapping instances (a Hugs extension; default: off)
+.TP
+.B +O
+Allow unsafe overlapping instances (a Hugs extension; default: off)
+.LP
+Other options (in which \fB\-\fP could be replaced by \fB+\fP,
+the choice making no difference) are:
+.TP
+.BI \-h num
+Set heap size (cannot be changed within \fIHugs\fP; default: 250K)
+.TP
+.BI \-p str
+Set prompt string to \fIstr\fP (default: `\fB%s> \fP').
+Any \fB%s\fP in the prompt will be replaced by the current module name.
+.TP
+.BI \-r str
+Set repeat last expression string to \fIstr\fP (default: \fB$$\fP).
+.TP
+.BI \-P str
+Set search path for source files to \fIstr\fP,
+which should be a colon-separated list of directories.
+A null entry in this list will be replaced by the previous search path.
+Any occurrence of \fB{Hugs}\fP in this string is expanded to
+the Hugs library directory, namely \fB\*(LB\fP.
+The default value is
+.IP
+\fB\*(HP\fP
+.TP
+.BI \-S str
+Set the colon-separated list of source file suffixes to \fIstr\fP
+(default: \fB\*(HS\fP).
+A null entry in this list will be replaced by the previous suffix list.
+.TP
+.BI \-E str
+Use editor setting given by \fIstr\fP (unset by default).
+Any occurrences of \fB%d\fP and \fB%s\fP in the editor option are replaced
+by the start line number and the name of the file to be edited, respectively.
+A common setting is "\fI\*(VI +%d %s\fP".
+.TP
+.BI \-c num
+Set constraint cutoff limit in the type checker to \fInum\fP (default: 40).
+.TP
+.BI \-F cmd
+Set preprocessor filter for source files to \fIcmd\fP (unset by default).
+Instead of reading a source file directly,
+\fIHugs\fP will read the standard output of
+\fIcmd\fP run with the source file name as argument.
 .SH COMMANDS
 Once the interpreter has been loaded, the following commands are available:
 .TP 18
@@ -123,138 +233,55 @@ time whilst using \fIHugs\fP to abandon the process of reading in a file  of
 function definitions or the evaluation  of  an  expression.  When the
 interrupt key is detected, \fIHugs\fP prints the string "\fB{Interrupted!}\fP"
 and prints the prompt so that further commands can be entered.
-
-.SH OPTIONS
-One group of options are toggled with \fB+\fP or \fB\-\fP to turn them on or
-off, respectively:
-.TP
-.B +98
-Accept only Haskell 98
-(cannot be changed within \fIHugs\fP; default: on).
-Turning this off enables several special Hugs extensions,
-which are described in the \fIHugs 98 User Manual\fP.
-.TP
-.B +s
-Print number of reductions/cells after each evaluation (default: off)
-.TP
-.B +t
-Print type after each evaluation (default: off)
-.TP
-.B +T
-Apply the Haskell defaulting rules before printing types (default: off)
-.TP
-.B +f
-Terminate evaluation on first error (default: on)
-.TP
-.B +g
-Print number of cells recovered after gc (default: off)
-.TP
-.B +l
-Literate scripts as default (default: off)
-.TP
-.B +e
-Warn about errors in literate scripts (default: on)
-.TP
-.B +\&.
-Print dots to show progress while loading modules (default: off)
-.TP
-.B +q
-Print nothing to show progress while loading modules (default: off)
-.TP
-.B +Q
-Qualify names when printing (default: off)
-.TP
-.B +w
-Always show which files loaded (default: on)
-.TP
-.B +k
-Show kind errors in full (default: off)
-.TP
-.B +u
-Use "\FBshow\fP" to display results (default: on)
-.TP
-.B +i
-Chase imports while loading files (default: on)
-.TP
-.B +o
-Allow overlapping instances (a Hugs extension; default: off)
-.TP
-.B +O
-Allow unsafe overlapping instances (a Hugs extension; default: off)
-.LP
-Other options (in which \fB\-\fP could be replaced by \fB+\fP,
-the choice making no difference) are:
-.TP
-.BI \-h num
-Set heap size (cannot be changed within \fIHugs\fP; default: 250K)
-.TP
-.BI \-p str
-Set prompt string to \fIstr\fP (default: `\fB%s> \fP').
-Any \fB%s\fP in the prompt will be replaced by the current module name.
-.TP
-.BI \-r str
-Set repeat last expression string to \fIstr\fP (default: \fB$$\fP).
-.TP
-.BI \-P str
-Set search path for source files to \fIstr\fP,
-which should be a colon-separated list of directories.
-A null entry in this list will be replaced by the previous search path.
-Any occurrence of \fB{Hugs}\fP in this string is expanded to
-the Hugs library directory, namely \fB\*(LB\fP.
-The default value is
-.IP
-\fB\*(HP\fP
-.TP
-.BI \-S str
-Set the colon-separated list of source file suffixes to \fIstr\fP
-(default: \fB\*(HS\fP).
-A null entry in this list will be replaced by the previous suffix list.
-.TP
-.BI \-E str
-Use editor setting given by \fIstr\fP (unset by default).
-Any occurrences of \fB%d\fP and \fB%s\fP in the editor option are replaced
-by the start line number and the name of the file to be edited, respectively.
-A common setting is "\fI\*(VI +%d %s\fP".
-.TP
-.BI \-c num
-Set constraint cutoff limit in the type checker to \fInum\fP (default: 40).
-.TP
-.BI \-F cmd
-Set preprocessor filter for source files to \fIcmd\fP (unset by default).
-Instead of reading a source file directly,
-\fIHugs\fP will read the standard output of
-\fIcmd\fP run with the source file name as argument.
-.SH "OTHER INVOCATIONS"
+.SH "STANDALONE PROGRAMS"
 The
-.B runhugs
+.I runhugs
 command is an interpreter for an executable Hugs script,
-which must be a literate script (ending in \fB.lhs\fP)
-containing a Haskell \fBMain\fP module.
-For example, the executable file \fBhello.lhs\fP might contain the lines
+which must be a literate script containing a Haskell \fBMain\fP module.
+For example, the executable file \fBhello\fP might contain the lines
+.LP
 .nf
 .RS
 \fB#!\*(BN/runhugs
+.sp
 > module Main where
 > main = putStr "Hello, World\\n"\fP
 .RE
 .fi
-.PP
-The
-.B ffihugs
-command generates and compiles glue code for a module that uses the
-foreign function interface.
+.LP
+When this file is executed,
+.I runhugs
+will invoke the
+.B main
+function.
+Any arguments given on the command line will be available through
+.RB getArgs .
+.SH "C INTERFACE"
+On the x86, PowerPC and Sparc architectures,
+.I Hugs
+implements the part of the
+.I "Haskell 98 Foreign Function Interface"
+(FFI) that allows Haskell functions to call C routines.
+Modules containing such
+.B foreign
+declarations must be compiled using the
+.I ffihugs
+command with the
+.B +G
+option.
 Additional arguments for the C compiler may be supplied with 
 .B +L
 options.
-Suppose you have some C functions in \fBtest.c\fP and some ffi declarations
+For example,
+suppose you have some C functions in \fBtest.c\fP and some FFI declarations
 for those functions in \fBTest.hs\fP and the code in \fBtest.c\fP needs to be
 compiled with \fB\-lm\fP.
 Then you would compile the module with the command
-.RS
+.IP
 \fBffihugs +G +L"test.c" +L"\-lm" Test.hs\fP
-.RE
+.LP
 which generates an object file \fBTest.so\fP.
-Then when \fBhugs\fP loads \fBTest.hs\fP, it will also load \fBTest.so\fP.
+Then when \fIhugs\fP loads \fBTest.hs\fP, it will also load \fBTest.so\fP.
 .SH ENVIRONMENT
 .TP
 .B HUGSFLAGS
@@ -297,6 +324,11 @@ February 1999.
 .PP
 Paul Hudak & Joseph H. Fasel.  A gentle introduction to Haskell.
 \fIACM SIGPLAN Notices\fP, 27(5), May 1992.
+.PP
+Manuel Chakravarty et al.
+.IR "Haskell 98 Foreign Function Interface 1.0",
+.IR "Addendum to the Haskell Report" ,
+2002.
 .SH AUTHOR
 Hugs 98: Mark Jones and others, June 1999.
 .PP
