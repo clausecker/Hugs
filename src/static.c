@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.115 $
- * $Date: 2002/10/26 17:55:42 $
+ * $Revision: 1.116 $
+ * $Date: 2002/10/29 15:33:02 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -587,6 +587,7 @@ Cell   entity; { /* Entry from import/hiding list */
     Cell subEntities = !isId ? snd(entity) : NIL;
     Text t           = isId ? textOf(entity) : textOf(fst(entity));
     List es          = module(exporter).exports;
+    Bool lookForVar  = isVar(entity);
 
     /* In H98, a data con may be named in a 'hiding' list, so we
      * have to grovel around inside each tycon looking for it.
@@ -637,10 +638,9 @@ Cell   entity; { /* Entry from import/hiding list */
 		    }
 		    if (!lookForDataCon) break;
 		}
-		if (lookForDataCon && tycon(f).what != SYNONYM) {
-		    /* Want all dcons that are _exported_ by
-		       the importing module.
-		    */
+		/* check the data constructors or field labels for match */
+		if (tycon(f).what != SYNONYM && (lookForVar || lookForDataCon)) {
+		    /* The type's exported dcons/fields */
 		    Cell dcons;
 		    if (snd(e) == DOTDOT) {
 			dcons = tycon(f).defn;
@@ -655,7 +655,6 @@ Cell   entity; { /* Entry from import/hiding list */
 			}
 			dcons=tl(dcons);
 		    }
-		    if (!lookForDataCon) break;
 		}
 	    } else if (isClass(f)) {
 		List sigs = NIL;
