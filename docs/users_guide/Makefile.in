@@ -19,6 +19,13 @@ HTML         = $(ROOT)/license.html
 
 all: html dvi ps pdf
 
+clean:
+	$(RM) $(PARTS) $(ROOT).dvi $(ROOT).ps $(ROOT).pdf
+	$(RM) -r $(ROOT)
+
+distclean: clean
+	$(RM) Makefile
+
 html: $(HTML)
 
 dvi: $(ROOT).dvi
