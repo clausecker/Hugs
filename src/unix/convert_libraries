@@ -18,7 +18,8 @@
 
 cpp_flags='-D__HUGS__'
 cpp="gcc -P -E -traditional -xc $cpp_flags"
-cc="gcc -xc $cpp_flags"
+cc="gcc"
+hsc2hs="hsc2hs"
 
 hugs_src=../../lib
 
@@ -73,16 +74,19 @@ cvt() {
 		if [ -f "$c_file" ]
 		then
 			hsc_make="$dstdir/${stem}_hsc_make"
-			$cc $includes -o "$hsc_make" "$c_file"
+			$cc $cpp_flags $includes -o "$hsc_make" "$c_file"
 			$hsc_make | sed '/^foreign.*"[^ ]*"/ s/"/"'"$header /" >$target
 			rm "$hsc_make"
 		else
 			copy="$dstdir/`basename $2`"
 			sed '/^foreign.*"[^ ]*"/ s/"/"'"$header /" "$src/$1/$2" >$copy
-			hsc2hs --cc=cc $cpp_flags $includes "$copy"
+			$hsc2hs --cc="$cc" $cpp_flags $includes "$copy"
 			rm "$copy"
 		fi
 		sed -n 's/^{-# OPTIONS -\(#include .*\) #-}/\1/p' $target >"$dstdir/$header"
+		# dreadful hack to perform CALLCONV substitution of Network/Socket.hs
+		sed -e 's/CALLCONV/stdcall/g' < $target > "$dstdir/$target.ok"
+		mv "$dstdir/$target.ok" $target
 		;;
 	*.y|*.ly)
 		inname=`basename $2`
@@ -347,10 +351,11 @@ hslibs() {
   cvt haskell-src Language/Haskell/Syntax.hs
   cvt haskell-src Language/Haskell/THSyntax.hs
 
-# cvt network Network.hs
-# cvt network Network/BSD.hsc
-# cvt network Network/CGI.hs
-# cvt network Network/Socket.hsc
+# for this one to be useful, really need Network.Socket.socketToHandle.
+#  cvt network Network.hs
+  cvt network Network/BSD.hsc
+  cvt network Network/CGI.hs
+  cvt network Network/Socket.hsc
   cvt network Network/URI.hs
 
 # cvt readline System/Console/Readline.hsc
@@ -366,6 +371,10 @@ hslibs() {
   cp ../config.h                        $dst/Foreign/C
   cp $src/base/cbits/errno.c            $dst/Foreign/C
   cp $src/base/include/*.h              $dst/Foreign/C
+  cp ../config.h                        $dst/Network
+  cp $src/network/include/HsNet.h       $dst/Network
+  cp $src/network/cbits/initWinSock.c   $dst/Network
+  cp $src/network/cbits/HsNet.c         $dst/Network
 
 # Compatibility with lib/exts:
 
