@@ -29,11 +29,15 @@
  * stored in fixed-size stacks. (Moving to growable tables will also 
  * require making the module table expandable.)
  */
-static String scriptName[NUM_SCRIPTS];  /* Script file names               */
-static String scriptReal[NUM_SCRIPTS];  /* Full path to canonical name     */
-static Time   lastChange[NUM_SCRIPTS];  /* Time of last change to script   */
-static Bool   postponed[NUM_SCRIPTS];   /* Indicates postponed load        */
-static Bool   chased[NUM_SCRIPTS];      /* Added by import chasing?        */
+struct strScript {
+    String fileName;			/* Script file name                */
+    String realName;			/* Full path to canonical name     */
+    Time lastChange;			/* Time of last change to script   */
+    Bool postponed;			/* Indicates postponed load        */
+    Bool chased;			/* Added by import chasing?        */
+};
+
+static struct strScript scriptTable[NUM_SCRIPTS];
 
 static Int    numScripts;               /* Number of scripts loaded        */
 static Int    namesUpto;                /* Number of script names set      */
@@ -49,6 +53,7 @@ static Bool   needsImports;             /* set to TRUE if imports required */
  * Local function prototypes:
  * ------------------------------------------------------------------------*/
 static Bool local addScript     Args((String,Long));
+static Void local freeScript    Args((Int));
 
 /* --------------------------------------------------------------------------
  * Initialising / freeing script stacks:
@@ -62,10 +67,16 @@ Void initScripts() {
 Void stopScripts() {
   int i;
 
-  for (i=0; i < numScripts ; i++) {
-    if (scriptName[i]) free(scriptName[i]);
-    if (scriptReal[i]) free(scriptReal[i]);
-  }
+  for (i=0; i < numScripts ; i++)
+    freeScript(i);
+}
+
+static Void local freeScript(i)
+Int i; {
+  if (scriptTable[i].fileName)
+    free(scriptTable[i].fileName);
+  if (scriptTable[i].realName)
+    free(scriptTable[i].realName);
 }
 
 /* We record the number of scripts that loading the Prelude
@@ -80,7 +91,7 @@ Void setScriptStableMark() {
 String getScriptName(s)  /* access the script name at index 's' */
 Script s; {
   if ( s >=0 && s <= numScripts ) {
-    return scriptName[s];
+    return scriptTable[s].fileName;
   } else {
     ERRMSG(0) "getScriptName: Illegal script index %d (max: %d)", s, numScripts
     EEND;
@@ -91,7 +102,7 @@ Script s; {
 String getScriptRealName(s)  /* access the path of script at index 's' */
 Script s; {
   if ( s >=0 && s <= numScripts ) {
-    return scriptReal[s];
+    return scriptTable[s].realName;
   } else {
     ERRMSG(0) "getScriptRealName: Illegal script index %d (max: %d)", s, numScripts
     EEND;
@@ -122,13 +133,13 @@ Script s; {
 Void setScriptName(s,scr)
 Script s;
 String scr; {
-  scriptName[s] = scr;
+  scriptTable[s].fileName = scr;
 }
 
 Void setScriptRealName(s,scr)
 Script s;
 String scr; {
-  scriptReal[s] = scr;
+  scriptTable[s].realName = scr;
 }
 #endif
 
@@ -145,9 +156,9 @@ Bool   sch; {              /* TRUE => requires pathname search*/
 	EEND;
 	return;
     }
-    scriptName[namesUpto] = strCopy(sch ? findPathname(NULL,s) : s);
-    scriptReal[namesUpto] = strCopy(RealPath(scriptName[namesUpto]));
-    chased[namesUpto]     = !sch;
+    scriptTable[namesUpto].fileName = strCopy(sch ? findPathname(NULL,s) : s);
+    scriptTable[namesUpto].realName = strCopy(RealPath(scriptTable[namesUpto].fileName));
+    scriptTable[namesUpto].chased   = !sch;
     namesUpto++;
 }
 
@@ -185,52 +196,35 @@ Long   len; {                           /* length of script file   */
 Bool chase(imps)                 /* Process list of import requests */
 List imps; {
     Int    origPos  = numScripts;   /* keep track of original position */
-    String origName = scriptName[origPos];
+    String origName = scriptTable[origPos].fileName;
     for (; nonNull(imps); imps=tl(imps)) {
 	String iname = findPathname(origName,textToStr(textOf(hd(imps))));
 	String rname = RealPath(iname);
 	Int    i     = 0;
 	for (; i<namesUpto; i++)
-	    if (filenamecmp(scriptReal[i],rname)==0)
+	    if (filenamecmp(scriptTable[i].realName,rname)==0)
 		break;
 	if (i>=origPos) {           /* Neither loaded or queued        */
-	    String theName;
-	    String theReal;
-	    Time   theTime;
-	    Bool   thePost;
-	    Bool   theChase;
+	    struct strScript tmpScript;
 
-	    postponed[origPos] = TRUE;
-	    needsImports       = TRUE;
+	    scriptTable[origPos].postponed = TRUE;
+	    needsImports           = TRUE;
 
 	    if (i>=namesUpto)       /* Name not found (i==namesUpto)   */
 		addScriptName(iname,FALSE);
-	    else if (postponed[i]) {/* Check for recursive dependency  */
+	    else if (scriptTable[i].postponed) {/* Check for recursive dependency */
 		ERRMSG(0)
 		  "Recursive import dependency between \"%s\" and \"%s\"",
-		  scriptName[origPos], iname
+		  scriptTable[origPos].fileName, iname
 		EEND;
 	    }
 	    /* Right rotate section of tables between numScripts and i so
 	     * that i ends up with other imports in front of orig. script
 	     */
-	    theName = scriptName[i];
-	    theReal = scriptReal[i];
-	    thePost = postponed[i];
-	    theChase = chased[i];
-	    timeSet(theTime,lastChange[i]);
-	    for (; i>numScripts; i--) {
-		scriptName[i] = scriptName[i-1];
-		scriptReal[i] = scriptReal[i-1];
-		postponed[i]  = postponed[i-1];
-		chased[i]     = chased[i-1];
-		timeSet(lastChange[i],lastChange[i-1]);
-	    }
-	    scriptName[numScripts] = theName;
-	    scriptReal[numScripts] = theReal;
-	    postponed[numScripts]  = thePost;
-	    chased[numScripts]     = theChase;
-	    timeSet(lastChange[numScripts],theTime);
+	    tmpScript = scriptTable[i];
+	    for (; i>numScripts; i--)
+		scriptTable[i] = scriptTable[i-1];
+	    scriptTable[numScripts] = tmpScript;
 	    origPos++;
 	}
     }
@@ -274,12 +268,8 @@ String argv[]; {
 Void forgetScriptsFrom(scno) /* remove scripts from system     */
 Script scno; {
     Script i;
-    for (i=scno; i<namesUpto; ++i) {
-	if (scriptName[i])
-	    free(scriptName[i]);
-	if (scriptReal[i])
-	    free(scriptReal[i]);
-    }
+    for (i=scno; i<namesUpto; ++i)
+	freeScript(i);
     dropScriptsFrom(scno-1); /* don't count prelude as script  */
     namesUpto = scno;
     if (numScripts>namesUpto)
@@ -300,18 +290,10 @@ Script scno; {
     if (scno > namesUpto)
 	return;
 
-    if (scriptName[scno])
-	free(scriptName[scno]);
-    if (scriptReal[scno])
-	free(scriptReal[scno]);
+    freeScript(scno);
 
-    for (i=scno+1; i < namesUpto; i++) {
-	scriptName[i-1] = scriptName[i];
-	scriptReal[i-1] = scriptReal[i];
-	lastChange[i-1] = lastChange[i];
-        postponed[i-1]  = postponed[i];
-        chased[i-1]     = chased[i];
-    }
+    for (i=scno+1; i < namesUpto; i++)
+	scriptTable[i-1] = scriptTable[i];
     dropAScript(scno);
     namesUpto--;
 }
@@ -326,24 +308,24 @@ Int n; {                   /* loading everything after and    */
 #endif
 
     for (; n<numScripts; n++) {         /* Scan previously loaded scripts  */
-	getFileInfo(scriptName[n], &timeStamp, &fileSize);
-	if (timeChanged(timeStamp,lastChange[n])) {
+	getFileInfo(scriptTable[n].fileName, &timeStamp, &fileSize);
+	if (timeChanged(timeStamp,scriptTable[n].lastChange)) {
 	    dropScriptsFrom(n-1);
 	    numScripts = n;
 	    break;
 	}
     }
     for (; n<NUM_SCRIPTS; n++)          /* No scripts have been postponed  */
-	postponed[n] = FALSE;           /* at this stage                   */
+	scriptTable[n].postponed = FALSE;       /* at this stage                   */
 
 
     while (numScripts<namesUpto) {      /* Process any remaining scripts   */
-	getFileInfo(scriptName[numScripts], &timeStamp, &fileSize);
-	timeSet(lastChange[numScripts],timeStamp);
+	getFileInfo(scriptTable[numScripts].fileName, &timeStamp, &fileSize);
+	timeSet(scriptTable[numScripts].lastChange,timeStamp);
 	if (numScripts>0)               /* no new script for prelude       */
-	    startNewScript(scriptName[numScripts]);
-        generate_ffi = generateFFI && !chased[numScripts];
-	if (addScript(scriptName[numScripts],fileSize))
+	    startNewScript(scriptTable[numScripts].fileName);
+        generate_ffi = generateFFI && !scriptTable[numScripts].chased;
+	if (addScript(scriptTable[numScripts].fileName,fileSize))
 	    numScripts++;
 	else
 	    dropScriptsFrom(numScripts-1);
@@ -362,7 +344,7 @@ Void whatScripts() {       /* list scripts in current session */
 #endif
     Printf("\nHugs session for:");
     for (i=0; i<numScripts; ++i)
-	Printf("\n%s",scriptName[i]);
+	Printf("\n%s",scriptTable[i].fileName);
     Putchar('\n');
 #if HUGS_FOR_WINDOWS
     }
