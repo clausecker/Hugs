@@ -36,11 +36,6 @@ X_PRE_LIBS='@X_PRE_LIBS@'
 X_LIBS='@X_LIBS@'
 X_EXTRA_LIBS='@X_EXTRA_LIBS@'
 
-GLU_CFLAGS='@GLU_CFLAGS@'
-GLU_LIBS='@GLU_LIBS@'
-GLUT_CFLAGS='@GLUT_CFLAGS@'
-GLUT_LIBS='@GLUT_LIBS@'
-
 EXEEXT=@EXEEXT@
 
 case `uname -a` in
@@ -97,6 +92,13 @@ Win32)	# stay away from -m (older versions of 'cygpath' doesn't support it.)
 	[ -n "${target}" ] &&
 		target=`cygpath -w $target | sed -e 's@\\\\@/@g'`
 esac
+
+if test -f $source_dir/config.mk; then
+	GLU_CFLAGS="`sed -n 's/^GLU_CFLAGS=//p' $source_dir/config.mk`"
+	GLU_LIBS="`sed -n 's/^GLU_LIBS=//p' $source_dir/config.mk`"
+	GLUT_CFLAGS="`sed -n 's/^GLUT_CFLAGS=//p' $source_dir/config.mk`"
+	GLUT_LIBS="`sed -n 's/^GLUT_LIBS=//p' $source_dir/config.mk`"
+fi
 
 includes="-I$HUGSDIR/include -I$source_dir/include"
 

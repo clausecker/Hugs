@@ -73,35 +73,7 @@ AC_CHECK_HEADERS(windows.h winsock.h)
 AC_HEADER_TIME
 AC_CHECK_HEADERS(time.h sys/time.h sys/timeb.h sys/times.h)
 
-dnl ** check for OpenGL/GLUT include paths and libraries
-FP_CHECK_GLUT
-
-dnl ** check for OpenGL include files
-if test x"$enable_opengl" != x"no"; then
-  fp_save_cppflags="$CPPFLAGS"
-  CPPFLAGS="$CPPFLAGS $X_CFLAGS"
-  if test x"$use_quartz_opengl" = xyes ; then
-    AC_CHECK_HEADERS(OpenGL/gl.h)
-  else
-    AC_CHECK_HEADERS(GL/gl.h)
-  fi
-  CPPFLAGS="$fp_save_cppflags"
-fi
-
-LibsWithOpenGL=NO
-LibsWithGLUT=NO
-if test "$enable_opengl" != "no"; then
-  if test "$no_GLU" != yes; then
-    LibsWithOpenGL=YES
-    if test "$no_GLUT" != yes; then
-      LibsWithGLUT=YES
-    fi
-  fi
-fi
-AC_SUBST([LibsWithOpenGL])
-AC_SUBST([LibsWithGLUT])
-
-dnl The OpenGL test calls FP_PATH_XTRA, which checks for X11
+AC_PATH_XTRA
 if test "$no_x" = yes; then
   LibsWithX11=NO
 else
@@ -158,24 +130,6 @@ FP_CHECK_ALIGNMENT(unsigned long long)
 fi
 FP_CHECK_ALIGNMENT(unsigned short)
 FP_CHECK_ALIGNMENT(void *)
-
-dnl ** Map OpenGL data types to Haskell types
-if test x"$enable_opengl" != x"no"; then
-FPTOOLS_CHECK_HTYPE(GLboolean)
-FPTOOLS_CHECK_HTYPE(GLbyte)
-FPTOOLS_CHECK_HTYPE(GLubyte)
-FPTOOLS_CHECK_HTYPE(GLshort)
-FPTOOLS_CHECK_HTYPE(GLushort)
-FPTOOLS_CHECK_HTYPE(GLint)
-FPTOOLS_CHECK_HTYPE(GLuint)
-FPTOOLS_CHECK_HTYPE(GLsizei)
-FPTOOLS_CHECK_HTYPE(GLenum)
-FPTOOLS_CHECK_HTYPE(GLbitfield)
-FPTOOLS_CHECK_HTYPE(GLfloat)
-FPTOOLS_CHECK_HTYPE(GLclampf)
-FPTOOLS_CHECK_HTYPE(GLdouble)
-FPTOOLS_CHECK_HTYPE(GLclampd)
-fi
 
 dnl ** check for more functions
 AC_CHECK_FUNCS(getclock)

@@ -177,12 +177,12 @@ then	extra_packages="$extra_packages HGL"
 fi
 
 # check whether HOpenGL was enabled in configure
-if test "$LibsWithOpenGL" = YES
-then	extra_packages="$extra_packages OpenGL"
-fi
-if test "$LibsWithGLUT" = YES
-then	extra_packages="$extra_packages GLUT"
-fi
+for package in OpenGL GLUT OpenAL
+do
+	if grep 'BUILD_PACKAGE=yes' $src/$package/config.mk >/dev/null
+	then	extra_packages="$extra_packages $package"
+	fi
+done
 
 for package in $core_packages
 do
