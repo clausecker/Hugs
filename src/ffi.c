@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: ffi.c,v $
- * $Revision: 1.14 $
- * $Date: 2002/06/21 23:21:57 $
+ * $Revision: 1.15 $
+ * $Date: 2002/06/24 17:00:56 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -119,7 +119,11 @@ String fn; {
     insert(mkFFIFilename2(i));
     insert("\" ");
 #else
+#if HAVE_MACH_O_DYLD_H         /* MacOS X */
+    insert("cc -bundle -I'");
+#else
     insert("cc -shared -I'");
+#endif
     insert(hugsdir());
     insert("/include' '");
     //    insert(notdir(mkFFIFilename(scriptFile)));

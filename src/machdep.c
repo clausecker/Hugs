@@ -11,8 +11,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.54 $
- * $Date: 2002/06/22 19:47:38 $
+ * $Revision: 1.55 $
+ * $Date: 2002/06/24 17:00:56 $
  * ------------------------------------------------------------------------*/
 #include <math.h>
 
@@ -1908,7 +1908,7 @@ String symbol; {
   if (sym = dlsym(instance,symbol))
     return sym;
   
-  ERRMSG(0) "Error loading sym:\n%s\n", dlerror()
+  ERRMSG(0) "Error loading sym: %s\n", symbol
     EEND;
 }
 
