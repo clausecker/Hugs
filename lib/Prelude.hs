@@ -47,9 +47,8 @@ module Prelude (
 --  module Ix,
     Ix(range, index, inRange, rangeSize),
 --  module Char,
-    isAscii, isControl, isPrint, isSpace, isUpper, isLower,
+    isSpace, isUpper, isLower,
     isAlpha, isDigit, isOctDigit, isHexDigit, isAlphaNum,
-    digitToInt, intToDigit,
     toUpper, toLower,
     ord, chr,
     readLitChar, showLitChar, lexLitChar,
@@ -146,8 +145,8 @@ class (Eq a) => Ord a where
     x >= y                  = compare x y /= LT
     x >  y                  = compare x y == GT
 
-    max x y   | x >= y      = x
-	      | otherwise   = y
+    max x y   | x <= y      = y
+	      | otherwise   = x
     min x y   | x <= y      = x
 	      | otherwise   = y
 
@@ -518,33 +517,28 @@ instance Bounded Char where
     minBound = '\0'
     maxBound = '\255'
 
-isAscii, isControl, isPrint, isSpace            :: Char -> Bool
+isSpace            :: Char -> Bool
 isUpper, isLower, isAlpha, isDigit, isAlphaNum  :: Char -> Bool
 
-isAscii c              =  fromEnum c < 128
-isControl c            =  c < ' ' ||  c == '\DEL'
-isPrint c              =  c >= ' ' &&  c <= '~'
-isSpace c              =  c == ' ' || c == '\t' || c == '\n' ||
-			  c == '\r' || c == '\f' || c == '\v'
-isUpper c              =  c >= 'A'   &&  c <= 'Z'
-isLower c              =  c >= 'a'   &&  c <= 'z'
+isSpace c              =  c == ' '  ||
+			  c == '\t' ||
+			  c == '\n' ||
+			  c == '\r' ||
+			  c == '\f' ||
+			  c == '\v' ||
+			  c == '\xa0'
+
+isUpper c              =  c >= 'A'    && c <= 'Z'    ||
+                          c >= '\xc0' && c <= '\xd6' ||
+                          c >= '\xd8' && c <= '\xde'
+
+isLower c              =  c >= 'a'   &&  c <= 'z'    ||
+                          c >= '\xdf' && c <= '\xf6' ||
+                          c >= '\xf8' && c <= '\xff'
+
 isAlpha c              =  isUpper c  ||  isLower c
 isDigit c              =  c >= '0'   &&  c <= '9'
 isAlphaNum c           =  isAlpha c  ||  isDigit c
-
--- Digit conversion operations
-digitToInt :: Char -> Int
-digitToInt c
-  | isDigit c            =  fromEnum c - fromEnum '0'
-  | c >= 'a' && c <= 'f' =  fromEnum c - fromEnum 'a' + 10
-  | c >= 'A' && c <= 'F' =  fromEnum c - fromEnum 'A' + 10
-  | otherwise            =  error "Char.digitToInt: not a digit"
-
-intToDigit :: Int -> Char
-intToDigit i
-  | i >= 0  && i <=  9   =  toEnum (fromEnum '0' + i)
-  | i >= 10 && i <= 15   =  toEnum (fromEnum 'a' + i - 10)
-  | otherwise            =  error "Char.intToDigit: not a digit"
 
 toUpper, toLower      :: Char -> Char
 toUpper c | isLower c  = toEnum (fromEnum c - fromEnum 'a' + fromEnum 'A')
@@ -1162,7 +1156,7 @@ concat            = foldr (++) []
 length           :: [a] -> Int
 length            = foldl' (\n _ -> n + 1) 0
 
-(!!)             :: [b] -> Int -> b
+(!!)             :: [a] -> Int -> a
 (x:_)  !! 0       = x
 (_:xs) !! n | n>0 = xs !! (n-1)
 (_:_)  !! _       = error "Prelude.!!: negative index"
@@ -1185,6 +1179,7 @@ scanl f q xs      = q : (case xs of
 			 x:xs -> scanl f (f q x) xs)
 
 scanl1           :: (a -> a -> a) -> [a] -> [a]
+scanl1 _ []       = []
 scanl1 f (x:xs)   = scanl f x xs
 
 foldr            :: (a -> b -> b) -> b -> [a] -> b
@@ -1201,6 +1196,7 @@ scanr f q0 (x:xs) = f x q : qs
 		    where qs@(q:_) = scanr f q0 xs
 
 scanr1           :: (a -> a -> a) -> [a] -> [a]
+scanr1 f []       = []
 scanr1 f [x]      = [x]
 scanr1 f (x:xs)   = f x q : qs
 		    where qs@(q:_) = scanr1 f xs
@@ -1219,22 +1215,19 @@ cycle []          = error "Prelude.cycle: empty list"
 cycle xs          = xs' where xs'=xs++xs'
 
 take                :: Int -> [a] -> [a]
-take 0 _             = []
-take _ []            = []
-take n (x:xs) | n>0  = x : take (n-1) xs
-take _ _             = error "Prelude.take: negative argument"
+take n _  | n <= 0  = []
+take _ []           = []
+take n (x:xs)       = x : take (n-1) xs
 
 drop                :: Int -> [a] -> [a]
-drop 0 xs            = xs
-drop _ []            = []
-drop n (_:xs) | n>0  = drop (n-1) xs
-drop _ _             = error "Prelude.drop: negative argument"
+drop n xs | n <= 0  = xs
+drop _ []           = []
+drop n (_:xs)       = drop (n-1) xs
 
 splitAt               :: Int -> [a] -> ([a], [a])
-splitAt 0 xs           = ([],xs)
-splitAt _ []           = ([],[])
-splitAt n (x:xs) | n>0 = (x:xs',xs'') where (xs',xs'') = splitAt (n-1) xs
-splitAt _ _            = error "Prelude.splitAt: negative argument"
+splitAt n xs | n <= 0 = ([],xs)
+splitAt _ []          = ([],[])
+splitAt n (x:xs)      = (x:xs',xs'') where (xs',xs'') = splitAt (n-1) xs
 
 takeWhile           :: (a -> Bool) -> [a] -> [a]
 takeWhile p []       = []
@@ -1269,11 +1262,13 @@ words s    = case dropWhile isSpace s of
 			where (w,s'') = break isSpace s'
 
 unlines   :: [String] -> String
-unlines    = concatMap (\l -> l ++ "\n")
+unlines []      = []
+unlines (l:ls)  = l ++ '\n' : unlines ls
 
 unwords   :: [String] -> String
-unwords [] = []
-unwords ws = foldr1 (\w s -> w ++ ' ':s) ws
+unwords []	=  ""
+unwords [w]	= w
+unwords (w:ws)	= w ++ ' ' : unwords ws
 
 reverse   :: [a] -> [a]
 reverse    = foldl (flip (:)) []
@@ -1663,7 +1658,8 @@ instance Functor IO where
 instance Monad IO where
     (>>=)  = primbindIO
     return = primretIO
-
+    
+    fail s = ioError (userError s)
 
 -- Hooks for primitives: -----------------------------------------------------
 -- Do not mess with these!
