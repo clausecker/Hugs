@@ -4,7 +4,7 @@ dnl (hard-core autoconf hackers only)
 dnl ################################################################
 
 dnl Like AC_SUBST but with a default value in case var is undefined
-dnl typically usage from cshell:  env EXE=".exe" ./configure
+dnl typically usage from cshell:  env DEV_NULL="/dev/null" ./configure
 
 dnl AC_SUBST_DEF(varname,defaultvalue)
 

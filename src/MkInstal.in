@@ -24,11 +24,11 @@ install_rpm	:: install_demos
 install_rpm	:: install_man
 # in particular, don't install notes, this is handled by the spec file
 
-install_bin	:: hugs$(EXE) runhugs$(EXE) ffihugs$(EXE) libraries
+install_bin	:: hugs$(EXEEXT) runhugs$(EXEEXT) ffihugs$(EXEEXT) libraries
 		$(INSTALL) -d $(DESTDIR)$(bindir)
-		$(INSTALL) -c hugs$(EXE) $(DESTDIR)$(bindir)
-		$(INSTALL) -c runhugs$(EXE) $(DESTDIR)$(bindir)
-		$(INSTALL) -c ffihugs$(EXE) $(DESTDIR)$(bindir)
+		$(INSTALL) -c hugs$(EXEEXT) $(DESTDIR)$(bindir)
+		$(INSTALL) -c runhugs$(EXEEXT) $(DESTDIR)$(bindir)
+		$(INSTALL) -c ffihugs$(EXEEXT) $(DESTDIR)$(bindir)
 		$(INSTALL) -c -m 0755 unix/hugs-package $(DESTDIR)$(bindir)
 
 install_demos	::

@@ -10,12 +10,12 @@
 
 # Targets:
 #
-# <default>:   	  make hugs@EXE@ and runhugs@EXE@
+# <default>:   	  make hugs@EXEEXT@ and runhugs@EXEEXT@
 # libraries:	  generate libraries from fptools raw sources
 #		  (located in $(FPTOOLS))
 # install:	  make and install programs/libraries
-# hugs@EXE@:	  make minimal working system
-# runhugs@EXE@:	  make batch-mode version of Hugs
+# hugs@EXEEXT@:	  make minimal working system
+# runhugs@EXEEXT@: make batch-mode version of Hugs
 # clean:       	  delete files not required in running system
 # distclean:      delete files that can be regenerated using C compiler
 # veryclean:      delete all machine generated files 
@@ -26,7 +26,7 @@
 # TAGS:           build emacs TAGS table
 
 # This rule goes first to make it the default choice
-default		:: hugs@EXE@ runhugs@EXE@ libraries
+default		:: hugs@EXEEXT@ runhugs@EXEEXT@ libraries
 
 CC		= @CC@
 CFLAGS		= @CFLAGS@ @DEBUGFLAGS@
@@ -39,8 +39,8 @@ LIBS		= @LIBS@
 YACC		= @YACC@
 RM		= @RM@
 CP		= @CP@
-EXE		= @EXE@
-OBJ		= @OBJ@
+EXEEXT		= @EXEEXT@
+OBJEXT		= @OBJEXT@
 
 FPTOOLS		= @FPTOOLS@
 
@@ -64,7 +64,7 @@ mandir          = @mandir@
 hugsdir		= @hugsdir@
 
 .SUFFIXES	:
-.SUFFIXES	: .c .h @OBJ@
+.SUFFIXES	: .c .h .@OBJEXT@
 HFILES		= HsFFI.h builtin.h char.h command.h config.h connect.h \
 		  errors.h evaluator.h goal.h machdep.h module.h observe.h \
 		  options.h opts.h output.h prelude.h script.h server.h \
@@ -79,12 +79,12 @@ INCFILES	= array.c bignums.c dirprim.c interns.c iomonad.c \
 		  preds.c printer.c scc.c timeprim.c timer.c
 YFILES		= parser.y
 SOURCES		= $(HFILES) $(CFILES) $(INCFILES) $(YFILES) 
-OBJECTS		= builtin@OBJ@ char@OBJ@ compiler@OBJ@ errors@OBJ@ \
-		  evaluator@OBJ@ ffi@OBJ@ goal@OBJ@ input@OBJ@ machdep@OBJ@ \
-		  machine@OBJ@ module@OBJ@ opts@OBJ@ output@OBJ@ plugin@OBJ@ \
-		  script@OBJ@ static@OBJ@ storage@OBJ@ strutil@OBJ@ \
-		  subst@OBJ@ type@OBJ@ version@OBJ@
-IOBJECTS	= hugs@OBJ@ edit@OBJ@ observe@OBJ@ $(OBJECTS)
+OBJECTS		= builtin.@OBJEXT@ char.@OBJEXT@ compiler.@OBJEXT@ errors.@OBJEXT@ \
+		  evaluator.@OBJEXT@ ffi.@OBJEXT@ goal.@OBJEXT@ input.@OBJEXT@ machdep.@OBJEXT@ \
+		  machine.@OBJEXT@ module.@OBJEXT@ opts.@OBJEXT@ output.@OBJEXT@ plugin.@OBJEXT@ \
+		  script.@OBJEXT@ static.@OBJEXT@ storage.@OBJEXT@ strutil.@OBJEXT@ \
+		  subst.@OBJEXT@ type.@OBJEXT@ version.@OBJEXT@
+IOBJECTS	= hugs.@OBJEXT@ edit.@OBJEXT@ observe.@OBJEXT@ $(OBJECTS)
 PRELUDE		= config.h options.h prelude.h script.h
 
 HEADERS		= HsFFI.h config.h platform.h unix/MachDeps.h unix/template-hsc.h
@@ -97,25 +97,25 @@ TOOLS		= $(TOOLSDIR)/Package.hs $(TOOLSDIR)/ParsePkgConf.hs \
 # Hugs interpreter and standalone evaluator
 ################################################################
 
-hugs@EXE@	: $(IOBJECTS) @WOBJECTS@ @RC_FILES@
-		  $(CC) $(LDFLAGS) $(IOBJECTS) @WOBJECTS@ $(LIBS) -o hugs@EXE@ 
+hugs@EXEEXT@	: $(IOBJECTS) @WOBJECTS@ @RC_FILES@
+		  $(CC) $(LDFLAGS) $(IOBJECTS) @WOBJECTS@ $(LIBS) -o hugs@EXEEXT@ 
 		  @STRIP@
 
-version@OBJ@	: version.c $(SOURCES)
+version.@OBJEXT@ : version.c $(SOURCES)
 		  @$(CC) \
 		      -DMONTH_YEAR='"'"`date +'%B %Y' 2> /dev/null`"'"' \
 		      -DYYYYMMDD='"'"`date +'%Y%m%d' 2> /dev/null`"'"' \
 		      -c $(CFLAGS) $(OPTFLAGS) $<
 
-SERVER_OBJECTS	= server@OBJ@ $(OBJECTS) 
-runhugs@EXE@	: runhugs@OBJ@ $(SERVER_OBJECTS)
-		  $(CC) $(LDFLAGS) runhugs@OBJ@ $(SERVER_OBJECTS) $(LIBS) -o runhugs@EXE@
+SERVER_OBJECTS	= server.@OBJEXT@ $(OBJECTS) 
+runhugs@EXEEXT@	: runhugs.@OBJEXT@ $(SERVER_OBJECTS)
+		  $(CC) $(LDFLAGS) runhugs.@OBJEXT@ $(SERVER_OBJECTS) $(LIBS) -o runhugs@EXEEXT@
 
-ffihugs@EXE@	: ffihugs@OBJ@ $(SERVER_OBJECTS)
-		  $(CC) $(LDFLAGS) ffihugs@OBJ@ $(SERVER_OBJECTS) $(LIBS) -o ffihugs@EXE@
+ffihugs@EXEEXT@	: ffihugs.@OBJEXT@ $(SERVER_OBJECTS)
+		  $(CC) $(LDFLAGS) ffihugs.@OBJEXT@ $(SERVER_OBJECTS) $(LIBS) -o ffihugs@EXEEXT@
 
-ffihugs@OBJ@	: runhugs@OBJ@
-		  $(CC) -c $(CFLAGS) $(OPTFLAGS) -DFFI_COMPILER runhugs.c -o ffihugs@OBJ@
+ffihugs.@OBJEXT@ : runhugs.@OBJEXT@
+		  $(CC) -c $(CFLAGS) $(OPTFLAGS) -DFFI_COMPILER runhugs.c -o ffihugs.@OBJEXT@
 
 ################################################################
 # Libraries, converted from raw sources out of the fptools tree
@@ -125,7 +125,7 @@ CONVERTERS	= unix/convert_libraries unix/hugs-package
 
 libraries	:: $(LIBRARIES) @FFI_LIBRARIES@
 
-$(LIBRARIES)	: runhugs@EXE@ ffihugs@EXE@ ../libraries/Hugs/*.* $(CONVERTERS) $(TOOLS) $(INCLUDES)
+$(LIBRARIES)	: runhugs@EXEEXT@ ffihugs@EXEEXT@ ../libraries/Hugs/*.* $(CONVERTERS) $(TOOLS) $(INCLUDES)
 		  mkdir -p $(BUILD_DIR)/tools
 		  $(CP) $(TOOLS) $(BUILD_DIR)/tools
 		  mkdir -p $(BUILD_DIR)/libraries/Hugs
@@ -149,7 +149,7 @@ BUILD_FFI = env HUGSDIR='$(BUILD_DIR)' HUGSFLAGS='' ./ffihugs +G
 # The script unix/BuildFFI is created by unix/convert_libraries,
 # and runs ffihugs on library modules that need it.
 
-$(FFI_LIBRARIES) : $(LIBRARIES) ffihugs$(EXE) $(INCLUDES)
+$(FFI_LIBRARIES) : $(LIBRARIES) ffihugs$(EXEEXT) $(INCLUDES)
 		  $(BUILD_FFI) +L'$(BUILD_DIR)/libraries/Hugs/Storable_aux.c' Hugs.Storable
 		  env HUGSDIR='$(BUILD_DIR)' HUGSFLAGS='' unix/BuildFFI
 
@@ -158,9 +158,9 @@ $(FFI_LIBRARIES) : $(LIBRARIES) ffihugs$(EXE) $(INCLUDES)
 ################################################################
 
 clean		::
-		  $(RM) hugs@EXE@
-		  $(RM) runhugs@EXE@
-		  $(RM) ffihugs@EXE@
+		  $(RM) hugs@EXEEXT@
+		  $(RM) runhugs@EXEEXT@
+		  $(RM) ffihugs@EXEEXT@
 		  $(RM) *.o
 		  $(RM) *.O
 		  $(RM) *.obj
@@ -182,9 +182,9 @@ clean		::
 		  $(RM) LibStatus
 distclean	:: clean
 distclean	::
-		  $(RM) hugs@EXE@
-		  $(RM) runhugs@EXE@
-		  $(RM) ffihugs@EXE@
+		  $(RM) hugs@EXEEXT@
+		  $(RM) runhugs@EXEEXT@
+		  $(RM) ffihugs@EXEEXT@
 		  $(RM) *.pdf
 		  $(RM) TAGS
 		  $(RM) *~
@@ -204,7 +204,7 @@ TAGS		::
 # C and Yacc rules
 ################################################################
 
-.c@OBJ@	:
+.c.@OBJEXT@	:
 		  $(CC) -c $(CFLAGS) $(OPTFLAGS) $<
 
 # Modules to be compiled without optimization.
@@ -218,15 +218,15 @@ TAGS		::
 # conservative garbage collector's simplistic scan of the C stack.
 # Modules associated with evaluation are safe because they don't assume
 # conservative GC (see IMPORTANT NOTICE in builtin.c).
-compiler@OBJ@	: compiler.c
+compiler.@OBJEXT@ : compiler.c
 		  $(CC) -c $(CFLAGS) compiler.c
-module@OBJ@	: module.c
+module.@OBJEXT@	: module.c
 		  $(CC) -c $(CFLAGS) module.c
-subst@OBJ@	: subst.c
+subst.@OBJEXT@	: subst.c
 		  $(CC) -c $(CFLAGS) subst.c
-static@OBJ@	: static.c
+static.@OBJEXT@	: static.c
 		  $(CC) -c $(CFLAGS) static.c
-type@OBJ@	: type.c
+type.@OBJEXT@	: type.c
 		  $(CC) -c $(CFLAGS) type.c
 
 parser.c	: parser.y
@@ -245,7 +245,7 @@ HUGS_MAKEFILES = Makefile dotnet/Makefile msc/Makefile winhugs/Makefile
 EXTRA_DEFINES = -DINTERNAL_PRIMS -DUNICODE_CHARS -DWANT_TIMER
 
 depend: $(SOURCES) parser.c
-	gcc -MM $(EXTRA_DEFINES) $(CFILES) | sed 's/\.o:/$$(OBJ):/' >TMP
+	gcc -MM $(EXTRA_DEFINES) $(CFILES) | sed 's/\.o:/$$(OBJEXT):/' >TMP
 	if cmp -s TMP MkDepend.in; then : ; else \
 		$(CP) TMP MkDepend.in; \
 		for mfile in $(HUGS_MAKEFILES);\
@@ -281,13 +281,13 @@ depend: $(SOURCES) parser.c
 #
 ################################################################
 
-check		: hugs@EXE@ libraries
+check		: hugs@EXEEXT@ libraries
 		  cd ../tests; sh testScript | egrep -v '^--( |-----)'
 
-verbosecheck	: hugs@EXE@ libraries
+verbosecheck	: hugs@EXEEXT@ libraries
 		  cd ../tests; sh testScript
 
-LibStatus	: hugs@EXE@ libraries
+LibStatus	: hugs@EXEEXT@ libraries
 		  (cd unix; ./test_libraries $(FPTOOLS)) >$@
 
 @MkInstall@

@@ -39,7 +39,7 @@ GLU_LIBS='@GLU_LIBS@'
 GLUT_CFLAGS='@GLUT_CFLAGS@'
 GLUT_LIBS='@GLUT_LIBS@'
 
-EXE=@EXE@
+EXEEXT=@EXEEXT@
 
 case `uname -a` in
 *CYGWIN*) platform=Win32 ;;
@@ -234,7 +234,7 @@ do	echo "Converting $modname"
 		hsc_make="${target_stem}_hsc_make"
 		$cc $cpp_flags $includes -o "$hsc_make" "${stem}_hsc_make.c"
 		$hsc_make >$target_stem.hs
-		rm "$hsc_make${EXE}"
+		rm "$hsc_make${EXEEXT}"
 	elif [ -f $stem.hsc ]; then
 		cp "$stem.hsc" "$target_stem.hsc"
 		$hsc2hs --cc="$cc" $cpp_flags $includes "$target_stem.hsc"

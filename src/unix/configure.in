@@ -285,13 +285,6 @@ case $HostPlatform in
 	AC_MSG_RESULT([no])
      fi
      ;;
-  *-*-cygwin*)
-     EXE='.exe'
-     ;;
-  *-*-mingw*)
-     EXE='.exe'
-     ;;
-  *) ;;
 esac
 
 if test "x$CP" != "xcopy"; then
@@ -951,8 +944,6 @@ dnl--------------------------------------------------------------------
 dnl When building a Windows script, $target will be set to "windows".
 
 if test "x$target" = "xwindows"; then
-    EXE=".exe"          
-    OBJ=".obj"          
     DLL=".dll"          
     DLL_ENDING="-dll"   
     DEV_NULL="nul"
@@ -961,8 +952,6 @@ if test "x$target" = "xwindows"; then
     MkInstall="../MkNull.in"
 elif test "x$target" = "xdos"; then
     # Just the same as for Windows but excludes win32 from Path
-    EXE=".exe"          
-    OBJ=".obj"          
     DLL=".dll"          
     DLL_ENDING="-dll"   
     DEV_NULL="nul"
@@ -1010,8 +999,6 @@ AC_SUBST(HUGSDIR)
 BINDIR=`sh -c "prefix=$prefix; exec_prefix=$exec_prefix; echo $bindir"`
 AC_SUBST(BINDIR)
 
-AC_SUBST_DEF(EXE,"")
-AC_SUBST_DEF(OBJ,".o")
 AC_SUBST_DEF(DLL,".so")
 AC_SUBST_DEF(DLL_ENDING,"-so")
 AC_SUBST_DEF(DEV_NULL,"/dev/null")

@@ -44,8 +44,8 @@ LIBS		=  kernel32.lib advapi32.lib
 YACC		= bison
 RM		= -del
 CP		= xcopy /Y
-EXE		= .exe
-OBJ		= .obj
+EXEEXT		= .exe
+OBJEXT		= obj
 
 FPTOOLS		= ../../fptools
 
@@ -229,67 +229,67 @@ runhugs.res	: msc\runhugs.rc ..\icons\hsxicon.ico
 # Generated object dependencies (Don't change or delete this line)
 ################################################################
 
-hugs$(OBJ): hugs.c prelude.h config.h platform.h options.h storage.h HsFFI.h \
+hugs.$(OBJEXT): hugs.c prelude.h config.h platform.h options.h storage.h HsFFI.h \
   command.h connect.h errors.h script.h opts.h strutil.h evaluator.h \
   machdep.h output.h module.h timer.c
-runhugs$(OBJ): runhugs.c prelude.h config.h platform.h options.h storage.h \
+runhugs.$(OBJEXT): runhugs.c prelude.h config.h platform.h options.h storage.h \
   HsFFI.h connect.h machdep.h observe.h builtin.h evaluator.h errors.h \
   server.h HugsAPI.h
-server$(OBJ): server.c prelude.h config.h platform.h options.h storage.h \
+server.$(OBJEXT): server.c prelude.h config.h platform.h options.h storage.h \
   HsFFI.h connect.h script.h machdep.h evaluator.h opts.h strutil.h \
   errors.h server.h HugsAPI.h
-edit$(OBJ): edit.c prelude.h config.h platform.h options.h storage.h HsFFI.h \
+edit.$(OBJEXT): edit.c prelude.h config.h platform.h options.h storage.h HsFFI.h \
   connect.h errors.h opts.h strutil.h machdep.h
-observe$(OBJ): observe.c prelude.h config.h platform.h options.h storage.h \
+observe.$(OBJEXT): observe.c prelude.h config.h platform.h options.h storage.h \
   HsFFI.h connect.h command.h errors.h machdep.h builtin.h output.h \
   observe.h
-builtin$(OBJ): builtin.c prelude.h config.h platform.h options.h storage.h \
+builtin.$(OBJEXT): builtin.c prelude.h config.h platform.h options.h storage.h \
   HsFFI.h connect.h errors.h machdep.h char.h builtin.h bignums.c \
   printer.c iomonad.c timeprim.c dirprim.c interns.c array.c
-char$(OBJ): char.c prelude.h config.h platform.h options.h storage.h HsFFI.h \
+char.$(OBJEXT): char.c prelude.h config.h platform.h options.h storage.h HsFFI.h \
   connect.h errors.h char.h unitable.c
-compiler$(OBJ): compiler.c prelude.h config.h platform.h options.h storage.h \
+compiler.$(OBJEXT): compiler.c prelude.h config.h platform.h options.h storage.h \
   HsFFI.h connect.h errors.h goal.h char.h output.h opts.h
-errors$(OBJ): errors.c prelude.h config.h platform.h options.h storage.h \
+errors.$(OBJEXT): errors.c prelude.h config.h platform.h options.h storage.h \
   HsFFI.h connect.h errors.h output.h opts.h goal.h char.h evaluator.h
-evaluator$(OBJ): evaluator.c prelude.h config.h platform.h options.h \
+evaluator.$(OBJEXT): evaluator.c prelude.h config.h platform.h options.h \
   storage.h HsFFI.h connect.h errors.h script.h output.h strutil.h opts.h \
   machdep.h evaluator.h
-ffi$(OBJ): ffi.c prelude.h config.h platform.h options.h storage.h HsFFI.h \
+ffi.$(OBJEXT): ffi.c prelude.h config.h platform.h options.h storage.h HsFFI.h \
   connect.h errors.h output.h strutil.h
-goal$(OBJ): goal.c prelude.h config.h platform.h options.h storage.h HsFFI.h \
+goal.$(OBJEXT): goal.c prelude.h config.h platform.h options.h storage.h HsFFI.h \
   connect.h errors.h machdep.h opts.h goal.h
-input$(OBJ): input.c prelude.h config.h platform.h options.h storage.h \
+input.$(OBJEXT): input.c prelude.h config.h platform.h options.h storage.h \
   HsFFI.h connect.h command.h errors.h module.h script.h opts.h goal.h \
   machdep.h char.h parser.c
-machdep$(OBJ): machdep.c prelude.h config.h platform.h options.h storage.h \
+machdep.$(OBJEXT): machdep.c prelude.h config.h platform.h options.h storage.h \
   HsFFI.h connect.h errors.h opts.h strutil.h machdep.h char.h \
   evaluator.h
-machine$(OBJ): machine.c prelude.h config.h platform.h options.h storage.h \
+machine.$(OBJEXT): machine.c prelude.h config.h platform.h options.h storage.h \
   HsFFI.h connect.h errors.h char.h opts.h
-module$(OBJ): module.c prelude.h config.h platform.h options.h storage.h \
+module.$(OBJEXT): module.c prelude.h config.h platform.h options.h storage.h \
   HsFFI.h connect.h errors.h module.h output.h
-opts$(OBJ): opts.c prelude.h config.h platform.h options.h storage.h HsFFI.h \
+opts.$(OBJEXT): opts.c prelude.h config.h platform.h options.h storage.h HsFFI.h \
   connect.h errors.h machdep.h strutil.h opts.h char.h
-output$(OBJ): output.c prelude.h config.h platform.h options.h storage.h \
+output.$(OBJEXT): output.c prelude.h config.h platform.h options.h storage.h \
   HsFFI.h connect.h errors.h output.h char.h
-plugin$(OBJ): plugin.c prelude.h config.h platform.h options.h storage.h \
+plugin.$(OBJEXT): plugin.c prelude.h config.h platform.h options.h storage.h \
   HsFFI.h connect.h
-script$(OBJ): script.c prelude.h config.h platform.h options.h storage.h \
+script.$(OBJEXT): script.c prelude.h config.h platform.h options.h storage.h \
   HsFFI.h connect.h errors.h machdep.h opts.h strutil.h script.h
-static$(OBJ): static.c prelude.h config.h platform.h options.h storage.h \
+static.$(OBJEXT): static.c prelude.h config.h platform.h options.h storage.h \
   HsFFI.h connect.h machdep.h errors.h output.h subst.h module.h opts.h \
   goal.h scc.c
-storage$(OBJ): storage.c prelude.h config.h platform.h options.h storage.h \
+storage.$(OBJEXT): storage.c prelude.h config.h platform.h options.h storage.h \
   HsFFI.h connect.h opts.h errors.h machdep.h evaluator.h strutil.h \
   output.h
-strutil$(OBJ): strutil.c prelude.h config.h platform.h options.h storage.h \
+strutil.$(OBJEXT): strutil.c prelude.h config.h platform.h options.h storage.h \
   HsFFI.h connect.h errors.h strutil.h
-subst$(OBJ): subst.c prelude.h config.h platform.h options.h storage.h \
+subst.$(OBJEXT): subst.c prelude.h config.h platform.h options.h storage.h \
   HsFFI.h connect.h errors.h output.h opts.h subst.h
-type$(OBJ): type.c prelude.h config.h platform.h options.h storage.h HsFFI.h \
+type.$(OBJEXT): type.c prelude.h config.h platform.h options.h storage.h HsFFI.h \
   connect.h errors.h output.h subst.h goal.h opts.h preds.c scc.c
-version$(OBJ): version.c prelude.h config.h platform.h options.h
+version.$(OBJEXT): version.c prelude.h config.h platform.h options.h
 
 ################################################################
 # End of generated object dependencies (Don't change or delete this line)
