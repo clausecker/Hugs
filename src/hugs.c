@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.41 $
- * $Date: 2001/07/11 20:03:42 $
+ * $Revision: 1.42 $
+ * $Date: 2001/07/18 16:23:29 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1752,12 +1752,12 @@ static Void local info() {              /* describe objects                */
 	   Module homeMod = findModule(findText(mod));
 	   if (nonNull(homeMod)) {
 	     setCurrModule(homeMod);
-	     describe(findText(nm));
-	     
 	   } else {
 	     Printf("Unknown module `%s'\n",mod);
 	   }
 	 }
+	 describe(findText(nm));
+
 	 if (!mod) { free(mod); mod = NULL; }
 	 if (!nm)  { free(nm);  nm  = NULL; }
     }
