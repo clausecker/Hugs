@@ -289,7 +289,7 @@ primitive word64ToWord32 "primWord64ToWord32" :: Word64 -> (Word32,Word32)
 primitive word32ToWord64 "primWord32ToWord64" :: Word32 -> Word32 -> Word64
 
 integerToW64 :: Integer -> Word64
-integerToW64 x = case x `quotRem` 0x100000000 of
+integerToW64 x = case x `divMod` 0x100000000 of
 	(hi,lo) -> word32ToWord64 (fromInteger hi) (fromInteger lo)
 
 w64ToInteger :: Word64 -> Integer
