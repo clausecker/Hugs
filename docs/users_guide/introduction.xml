@@ -42,7 +42,7 @@ though some are specific to Hugs.
 <para>
 Hugs comes with a large collection of libraries,
 also shared with other Haskell implementations,
-and described in <ulink url="http://www.haskell.org/ghc/docs/latest/html/libraries.html">separate documentation</ulink>.
+and described in <ulink url="http://www.haskell.org/ghc/docs/latest/html/libraries/">separate documentation</ulink>.
 </para>
 </listitem>
 
@@ -94,7 +94,7 @@ published by Cambridge University Press, and also available
 </varlistentry>
 
 <varlistentry id="libraries">
-<term><ulink url="http://www.haskell.org/ghc/docs/latest/html/libraries.html">Haskell Core Libraries</ulink></term>
+<term><ulink url="http://www.haskell.org/ghc/docs/latest/html/libraries/">Haskell Hierarchical Libraries</ulink></term>
 <listitem>
 <para>
 A collection of libraries shared by Haskell implementations, including Hugs.
