@@ -60,6 +60,7 @@ module Hugs.Prelude (
 --  module Ratio,
     Ratio, Rational, (%), numerator, denominator,
 --  Non-standard exports
+    Ratio((:%)),
     IO(..), IOResult(..), primExitWith, 
     FunPtr, Ptr, Addr,
     Word, StablePtr, ForeignObj, ForeignPtr,
