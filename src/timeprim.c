@@ -92,13 +92,18 @@ primFun(primGetClockTime) { /* :: IO (Int,Int) */
 #endif
 }
 
+#if defined(_WIN32) || defined(__MINGW__) || defined(__CYGWIN__)
+# define timezone _timezone
+#endif
+
+
 primFun(primGetCalTime) { /* Int   -> Int -> IO (.....) */
                           /* isUTC    secs */
                           /* isUTC => convert time to UTC, o/wise local time */
 
-#if defined(HAVE_LOCALTIME) && defined(HAVE_GMTIME)
   Int isUTC;
-  Int secs;
+#if defined(HAVE_LOCALTIME) && defined(HAVE_GMTIME)
+  time_t secs;
   struct tm* tm;
   char* zoneNm = NULL;
   Int utcOff;
@@ -115,9 +120,9 @@ primFun(primGetCalTime) { /* Int   -> Int -> IO (.....) */
   
   /* Warning - ugliness. */
 # ifdef HAVE_TM_ZONE
-  zoneNm = tm->tm_zone;
+  zoneNm = (char*)tm->tm_zone;
 # elif HAVE_TZNAME
-  zoneNm = (tm->tm_isdst ? tzname[1] : tzname[0]);
+  zoneNm = (char*)(tm->tm_isdst ? tzname[1] : tzname[0]);
 # else
   /* Don't know how to get at the timezone name, complain louder? */
   zoneNm = NULL;
@@ -127,10 +132,10 @@ primFun(primGetCalTime) { /* Int   -> Int -> IO (.....) */
   utcOff = tm->tm_gmtoff;
 # elif HAVE_TIMEZONE
 #  ifdef HAVE_ALTZONE
-  utcOff = (tm->tm_isdst ? _altzone : _timezone);
+  utcOff = (tm->tm_isdst ? altzone : timezone);
 #  else
   /* Assume DST adjustment is 1 hour */
-  utcOff = (tm->tm_isdst ? (_timezone - 3600) : _timezone);
+  utcOff = (tm->tm_isdst ? (timezone - 3600) : timezone);
 #  endif
 # else
   /* Again, complain louder? */
@@ -152,8 +157,11 @@ primFun(primGetCalTime) { /* Int   -> Int -> IO (.....) */
 		 zoneStr),
 	      mkInt(utcOff)));
 #else
+
+  IntArg(isUTC,4);
+
   IOFail(mkIOError(nameIllegal,
-		   (isUTC ? "Time.toUTCTime", "Time.toCalendarTime"),
+		   (isUTC ? "Time.toUTCTime" : "Time.toCalendarTime"),
 		   "operation not supported",
 		   nameNothing));
 #endif
@@ -207,10 +215,10 @@ primFun(primMkTime) { /* Int{-year-}  -> Int{-month-} -> Int{-day-} ->
   tz -= tm.tm_gmtoff;
 # elif HAVE_TIMEZONE
 #  ifdef HAVE_ALTZONE
-  tz -= (tm.tm_isdst ? _altzone : _timezone);
+  tz -= (tm.tm_isdst ? altzone : timezone);
 #  else
   /* Assume DST adjustment is 1 hour */
-  tz -= (tm.tm_isdst ? (_timezone - 3600) : _timezone);
+  tz -= (tm.tm_isdst ? (timezone - 3600) : timezone);
 #  endif
 # else
   /* Unknown, assume nothing */

@@ -210,7 +210,7 @@ fi
 dnl *** Is altzone available? ***
 dnl 
 dnl (copied from the fptools/ configure script)
-AC_DEFUN(FPTOOLS_ALTZONE,
+AC_DEFUN(FPTOOLS_HAVE_ALTZONE,
 [AC_CACHE_CHECK([altzone], fptools_cv_altzone,
 [AC_TRY_LINK([#if TIME_WITH_SYS_TIME
 # include <sys/time.h>

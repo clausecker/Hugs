@@ -2,8 +2,8 @@ dnl ################################################################
 dnl Process this file with autoconf to produce a configure script.
 dnl
 dnl $RCSfile: configure.in,v $
-dnl $Revision: 1.12 $
-dnl $Date: 2001/06/23 21:41:53 $
+dnl $Revision: 1.13 $
+dnl $Date: 2001/06/23 22:16:42 $
 dnl ################################################################
 
 AC_INIT(../hugs.c)
@@ -136,12 +136,14 @@ AC_CHECK_FUNCS(select)
 AC_CHECK_FUNCS(gettimeofday)
 AC_CHECK_FUNCS(ftime)
 AC_CHECK_FUNCS(time)
+AC_CHECK_FUNCS(localtime)
+AC_CHECK_FUNCS(gmtime)
 AC_CHECK_FUNCS(mktime)
 
 dnl Timezonery
 AC_STRUCT_TIMEZONE
-FPTOOLS_TIMEZONE
-FPTOOLS_ALTZONE
+FPTOOLS_HAVE_TIMEZONE
+FPTOOLS_HAVE_ALTZONE
 
 dnl This always fails unless you also #include <windows.h>
 dnl AC_CHECK_FUNCS(GetModuleFileName GetModuleFileNameA)      dnl Windows
