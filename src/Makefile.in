@@ -140,7 +140,7 @@ distclean	::
 		  $(RM) options.h
 		  $(RM) platform.h
 		  $(RM) *.pdf
-		  $(RM) TAGS
+		  $(RM) TAGS tags
 		  $(RM) *~
 veryclean	:: distclean
 veryclean	::

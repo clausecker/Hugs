@@ -72,8 +72,17 @@ veryclean: clean_root
 
 clean_root:
 	$(RM) *.tar.gz *.rpm Defs.mk
+	$(RM) *~
 	$(RM) -r config.status config.log config.cache autom4te.cache
 	$(RM) MkDefs tests/config
+	$(RM) fptools/libraries/*/config.log
+	$(RM) fptools/libraries/*/config.status
+	$(RM) -r fptools/libraries/*/autom4te.cache
+	$(RM) fptools/libraries/*/.setup-config
+	$(RM) fptools/libraries/*/.installed-pkg-config
+	$(RM) -r fptools/libraries/HaXml/obj
+	find fptools/libraries -name \*.in | sed 's/\.in$$//' | xargs $(RM)
+	find fptools/libraries -name \*.hsc | sed 's/c$$//' | xargs $(RM)
 
 ################################################################
 # Regression tests (Unix only)
