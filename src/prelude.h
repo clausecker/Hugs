@@ -8,8 +8,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: prelude.h,v $
- * $Revision: 1.45 $
- * $Date: 2003/05/12 08:48:14 $
+ * $Revision: 1.46 $
+ * $Date: 2003/06/20 16:15:11 $
  * ------------------------------------------------------------------------*/
 #ifndef __PRELUDE_H__
 #define __PRELUDE_H__
@@ -791,6 +791,7 @@ typedef void*    Pointer;
 #define NUM_DOTNETPTRS	   Pick(10,     100,        10000)
 #endif
 #define NUM_DTUPLES	   Pick(3,      5,          5)
+/* Representation of Integer: requires BIGBASE == 10^BIGEXP */
 #define BIGBASE		   Pick(100,    10000,      10000)
 #define BIGEXP		   Pick(2,      4,          4)
 
