@@ -48,12 +48,12 @@ make -C src DESTDIR=${RPM_BUILD_ROOT} install_rpm
 %doc docs/users_guide/users_guide
 %{_mandir}/man1/hugs.1.gz
 %{_mandir}/man1/hugs-package.1.gz
-%{prefix}/bin/ffihugs
-%{prefix}/bin/hugs
-%{prefix}/bin/hugs-package
-%{prefix}/bin/runhugs
-%{prefix}/lib/hugs/demos
-%{prefix}/lib/hugs/include
-%{prefix}/lib/hugs/libraries
-%{prefix}/lib/hugs/oldlib
-%{prefix}/lib/hugs/tools
+%{_prefix}/bin/ffihugs
+%{_prefix}/bin/hugs
+%{_prefix}/bin/hugs-package
+%{_prefix}/bin/runhugs
+%{_prefix}/lib/hugs/demos
+%{_prefix}/lib/hugs/include
+%{_prefix}/lib/hugs/libraries
+%{_prefix}/lib/hugs/oldlib
+%{_prefix}/lib/hugs/tools
