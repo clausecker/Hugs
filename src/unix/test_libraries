@@ -3,7 +3,7 @@
 # Test the status within Hugs of each module in the hierarchical libraries.
 # This tests your installation, so you need to install first.
 
-packages='haskell98 base haskell-src'
+packages='haskell98 base haskell-src network'
 
 case $# in
 1)	;;
@@ -27,12 +27,30 @@ test_module() {
 	module=$1
 	hugs +98 $module </dev/null >$tmpfile+
 	hugs -98 $module </dev/null >$tmpfile-
-	if grep "ERROR \"$module\" - Unable to open file \"$module\"" $tmpfile- >/dev/null
+	if grep "^ERROR \"$module\" - Unable to open file \"$module\"" $tmpfile- >/dev/null
 	then	echo "missing  $module"
-	elif grep ERROR $tmpfile- >/dev/null
+	elif grep ^ERROR $tmpfile- >/dev/null
 	then	echo "*ERROR*  $module"
-	elif grep ERROR $tmpfile+ >/dev/null
-	then	echo "hugs -98 $module"
+	elif grep ^ERROR $tmpfile+ >/dev/null
+	then
+		module2="`grep '^ERROR ' $tmpfile+ | sed -e 's:.*"[^"]*/[a-z][^"/]*/\([^".]*\)\.[a-z]*".*:\1:' -e 's:/:.:g'`"
+		if [ "$module" != "$module2" ]
+		then	reason="imports $module2"
+		else
+			case "`sed -n '/^ERROR / s/.* - //p' $tmpfile+`" in
+			"Syntax error in data type definition (unexpected \`.')")
+				reason='rank-2 datatypes' ;;
+			"Syntax error in type expression (unexpected \`.')")
+				reason='rank-2 types' ;;
+			"Haskell 98 does not support dependent parameters")
+				reason='functional dependencies' ;;
+			"Haskell 98 does not support multiple parameter classes")
+				reason='multi-parameter type classes' ;;
+			*)
+				reason=unknown ;;
+			esac
+		fi
+		echo "hugs -98 $module ($reason)"
 	else	echo "hugs +98 $module"
 	fi
 }
