@@ -4,3 +4,7 @@ module System.Type
 	) where
 
 import System.TypeTy
+
+foreign import dotnet
+  "static System.Type.GetType"
+  getType :: String -> IO (Type ())
