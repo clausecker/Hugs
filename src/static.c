@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.99 $
- * $Date: 2002/09/16 15:04:41 $
+ * $Revision: 1.100 $
+ * $Date: 2002/09/17 03:40:33 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -7985,14 +7985,10 @@ Void checkDefns() {			/* Top level static analysis	   */
 
     /* A module's 'modImports' list is only used to construct a precise export
      * list in the presence of module re-exportation. We've now finished
-     * computing the export list, so 'modImports' can then be stubbed out.
+     * computing the export list, so 'modImports' can now be stubbed out.
      *
-     * 4/02: No longer true, 'modImports' is also used to lookup qual names
-     *       when evaluating expressions from the read-eval-loop, so we can't
-     *       stub out this list.
-     *
-     * module(thisModule).modImports = NIL;
      */
+    module(thisModule).modImports = NIL;
     staticAnalysis(RESET);
 }
 
