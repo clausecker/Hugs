@@ -313,6 +313,10 @@ test_ffi() {
   perl runstdtest $HUGS $STDOPTS +G -s14 "-Offi/Types.hs" "-o1ffi/Loaded.output"
   perl runstdtest $HUGS $STDOPTS +G -s14 "-Offi/Forms.hs" "-o1ffi/Loaded.output"
 
+  # This is a pair of tests: first build, then test runtime
+  perl runstdtest $HUGS $STDOPTS +G -s22 "-Offi/Sin.hs" "-o1ffi/Loaded.output"
+  perl runstdtest $HUGS $STDOPTS    -s24 "-Offi/Sin.hs" "-iffi/Sin.input" "-o1ffi/Sin.output"
+
 } # End of test ffi
 
 test_libs() {
