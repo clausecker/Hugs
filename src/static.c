@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.90 $
- * $Date: 2002/09/11 14:46:57 $
+ * $Revision: 1.91 $
+ * $Date: 2002/09/11 20:50:27 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -455,7 +455,7 @@ List   imports; /* Accumulated list of things to import */
 Module exporter;
 Bool   isHidden;
 Cell   entity; { /* Entry from import/hiding list */
-    List oldImports = imports;
+    Bool impFound = FALSE;
     Text t  = isIdent(entity) ? textOf(entity) : textOf(fst(entity));
     List es = module(exporter).exports; 
     for(; nonNull(es); es=tl(es)) {
@@ -464,6 +464,7 @@ Cell   entity; { /* Entry from import/hiding list */
 	    Cell f = fst(e);
 	    if (isTycon(f)) {
 		if (tycon(f).text == t) {
+		    impFound = TRUE;
 		    if (!isIdent(entity)) {
 			switch (tycon(f).what) {
 			case NEWTYPE:
@@ -492,6 +493,7 @@ Cell   entity; { /* Entry from import/hiding list */
 		}
 	    } else if (isClass(f)) {
 		if (cclass(f).text == t) {
+		    impFound = TRUE;
 		    if (!isIdent(entity)) {
 			if (DOTDOT == snd(entity)) {
 			    List sigs = cclass(f).members;
@@ -512,6 +514,7 @@ Cell   entity; { /* Entry from import/hiding list */
 	    }
 	} else if (isName(e)) {
 	    if (isIdent(entity) && name(e).text == t) {
+		impFound = TRUE;
 		/* If the name is a method or field name, record it
 		   as being imported via its parent. */
 		if (isClass(name(e).parent)) {
@@ -527,13 +530,14 @@ Cell   entity; { /* Entry from import/hiding list */
 	    }
 	} else if (isTycon(e)) {
 	    if (isIdent(entity) && tycon(e).text == t) {
+		impFound = TRUE;
 		imports = addEntity(e,NIL,imports);
 	    }
 	} else {
 	    internal("checkImportEntity3");
 	}
     }
-    if (imports == oldImports) {
+    if (!impFound) {
 	ERRMSG(0) "Unknown entity \"%s\" %s from module \"%s\"",
                   textToStr(t), ((!isHidden) ? "imported" : "hidden"),
 		  textToStr(module(exporter ).text)
@@ -652,10 +656,10 @@ Cell ls;
 List is; {
 
     Cell ms = entityIsMember(e,is);
-
+    
     if (!ms) {
 	if (isName(e) && ls == NIL) {
-	   return (e,is);
+	   return cons(e,is);
 	} else {
 	    return cons(pair(e,ls),is);
 	}
@@ -663,7 +667,7 @@ List is; {
 	/* concat the two lists, i.e., no removal of duplicates. */
 	if (!isPair(hd(ms)) && ls != NIL) {
 	    hd(ms) = pair(e,ls);
-	} else if (snd(hd(ms)) == DOTDOT || ls == NIL) {
+	} else if (ls == NIL || snd(hd(ms)) == DOTDOT) {
 	    ;
 	} else if (ls == DOTDOT || snd(hd(ms)) == NIL) {
 	    snd(hd(ms)) = ls;
