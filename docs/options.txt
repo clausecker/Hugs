@@ -1,0 +1,54 @@
+Documentation on options not covered by the user's manual.
+==========================================================
+
+Generate FFI code: {+,-}G
+-------------------------
+
+Qualify names when printing, {+,-}Q
+-----------------------------------
+
+Allow overlapping instances: {+,-}o
+-----------------------------------
+
+Allow unsafe overlapping instances: {+,-}O
+------------------------------------------
+
+Display results of IO programs : {+,-}I
+---------------------------------------
+
+Support 'here documents': {+,-}H
+--------------------------------
+
+Defaulting types before printing: {+,-}T
+----------------------------------------
+
+Use old implicit parameter syntax: {+,-}W
+-----------------------------------------
+
+Add loading module's path to search path: {+,-}X
+------------------------------------------------
+
+Use hierarchial libraries: {+,-}N
+---------------------------------
+
+Hugs98 offers you a choice of what kind of standard library setup to
+use at startup: the Haskell 98-based library setup used by all
+previous Hugs releases, or the new, hierarchical Haskell libraries (as
+already provided by NHC and GHC.)
+
+The latter is what all Haskell systems are moving towards; it offering
+more flexibility and functionality over the flat module structure
+provided by Haskell 98. However, to avoid needlessly introducing
+compatibility problems for Hugs users, the interpreter offers you the
+choice of staying with the old, and well-proven, libraries.
+
+By using +N, the default module search path will include libraries
+containing the hierarchical libraries. -N enables the use of the
+'standard' default library search path instead. Notice that if you
+replace the default module search path rather than add to it (see the
+documentation for the -P option), setting the N toggle won't have an
+effect. The interpreter will warn you if this is the case.
+
+The default is -N, but you're encouraged to move towards using +N and
+the new libraries. This will in most cases not imply any source code
+changes.
