@@ -19,8 +19,8 @@
  * included in the distribution.
  *
  * $RCSfile: iomonad.c,v $
- * $Revision: 1.17 $
- * $Date: 2001/12/11 00:54:51 $
+ * $Revision: 1.18 $
+ * $Date: 2001/12/20 10:07:32 $
  * ------------------------------------------------------------------------*/
  
 Name nameIORun;			        /* run IO code                     */
@@ -61,7 +61,7 @@ Int what; {
 #define predef(nm,str) nm=newName(findText(str),NIL); name(nm).defn=PREDEFINED
 		       predef(nameIORun,    "hugsIORun");
 		       predef(nameIOBind,   "primbindIO");
-		       predef(namePutStr,   "hugsPutStr");
+		       predef(namePutStr,   "putStr");
 #undef predef
 		       break;
 
