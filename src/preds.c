@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: preds.c,v $
- * $Revision: 1.13 $
- * $Date: 1999/10/13 15:29:15 $
+ * $Revision: 1.14 $
+ * $Date: 1999/10/22 21:44:10 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -29,7 +29,7 @@ static Void   local qualifyBinding    Args((List,Cell));
 static Cell   local qualifyExpr	      Args((Int,List,Cell));
 static Void   local overEvid	      Args((Cell,Cell));
 
-static Void   local cutoffExceeded    Args((Cell,Int,Cell,Int,List));
+static Void   local cutoffExceeded    Args((Cell,Int,List));
 static Cell   local scFind	      Args((Cell,Cell,Int,Cell,Int,Int));
 static Cell   local scEntail	      Args((List,Cell,Int,Int));
 static Cell   local entail	      Args((List,Cell,Int,Int));
@@ -211,16 +211,16 @@ Cell ev; {
 
 Int cutoff = 40;			/* Used to limit depth of recursion*/
 
-static Void local cutoffExceeded(pi,o,pi1,o1,ps)
-Cell pi, pi1;				/* Display error msg when cutoff   */
-Int  o,  o1;
+static Void local cutoffExceeded(pi,o,ps)
+Cell pi;				/* Display error msg when cutoff   */
+Int  o;
 List ps; {
     clearMarks();
     ERRMSG(0)
 	"\n*** The type checker has reached the cutoff limit while trying to\n"
     ETHEN ERRTEXT
 	"*** determine whether:\n***     "     ETHEN ERRPRED(copyPred(pi,o));
-    ps = (isNull(pi1)) ? copyPreds(ps) : singleton(copyPred(pi1,o1));
+    ps = copyPreds(ps);
     ERRTEXT
 	"\n*** can be deduced from:\n***     " ETHEN ERRCONTEXT(ps);
     ERRTEXT
@@ -242,6 +242,7 @@ Int  o;
 Int  d; {
     Class h1 = getHead(pi1);
     Class h  = getHead(pi);
+    Cell ev = NIL;
 
     /* the h==h1 test is just an optimization, and I'm not
        sure it will work with IPs, so I'm being conservative
@@ -249,24 +250,41 @@ Int  d; {
     if (/* h==h1 && */ samePred(pi1,o1,pi,o))
 	return e;
 
-    /* the cclass.level test is also an optimization */
     if (isClass(h1) && (!isClass(h) || cclass(h).level<cclass(h1).level)) {
 	Int  beta  = newKindedVars(cclass(h1).kinds);
 	List scs   = cclass(h1).supers;
 	List dsels = cclass(h1).dsels;
+	List ps = NIL;
 	if (!matchPred(pi1,o1,cclass(h1).head,beta))
 	    internal("scFind");
 
-	if (d++ >= cutoff)
-	    cutoffExceeded(pi,o,pi1,o1,NIL);
+	for (; nonNull(scs); scs=tl(scs), dsels=tl(dsels))
+	    ps = cons(triple(hd(scs),mkInt(beta),ap(hd(dsels),e)),ps);
+	ps = rev(ps);
 
-	for (; nonNull(scs); scs=tl(scs), dsels=tl(dsels)) {
-	    Cell ev = scFind(ap(hd(dsels),e),hd(scs),beta,pi,o,d);
-	    if (nonNull(ev))
-		return ev;
+#if EXPLAIN_INSTANCE_RESOLUTION
+	if (showInstRes) {
+	    int i;
+	    for (i = 0; i < d; i++)
+	      fputc(' ', stdout);
+	    fputs("scEntail(scFind): ", stdout);
+	    printContext(stdout,copyPreds(ps));
+	    fputs(" ||- ", stdout);
+	    printPred(stdout, copyPred(pi, o));
+	    fputc('\n', stdout);
 	}
+#endif
+	ev = scEntail(ps,pi,o,d);
+#if EXPLAIN_INSTANCE_RESOLUTION
+	if (showInstRes && nonNull(ev)) {
+	    int i;
+	    for (i = 0; i < d; i++)
+	      fputc(' ', stdout);
+	    fputs("scSat.\n", stdout);
+	}
+#endif
+	return ev;
     }
-
     return NIL;
 }
 
@@ -275,7 +293,12 @@ List ps;				/* Using superclasses and equality.*/
 Cell pi;
 Int  o;
 Int  d; {
-    int i;
+    if (d++ >= cutoff)
+	cutoffExceeded(pi,o,ps);
+
+    /* users of scEntail has better expect that unification
+       might happen... */
+    improve1(0,ps,pi,o);
     for (; nonNull(ps); ps=tl(ps)) {
 	Cell pi1 = hd(ps);
 	Cell ev  = scFind(thd3(pi1),fst3(pi1),intOf(snd3(pi1)),pi,o,d);
@@ -369,14 +392,49 @@ List ps;				/* Uses superclasses, equality,    */
 Cell pi;				/* tautology, and construction	   */
 Int  o;
 Int  d; {
-    Cell ev = scEntail(ps,pi,o,d);
-    return nonNull(ev) ? ev :
-#if MULTI_INST
-                              multiInstRes ? inEntails(ps,pi,o,d) :
-                                             inEntail(ps,pi,o,d);
-#else
-                              inEntail(ps,pi,o,d);
+    Cell ev = NIL;
+
+#if EXPLAIN_INSTANCE_RESOLUTION
+    if (showInstRes) {
+	int i;
+	for (i = 0; i < d; i++)
+	  fputc(' ', stdout);
+	fputs("entail: ", stdout);
+	printContext(stdout,copyPreds(ps));
+	fputs(" ||- ", stdout);
+	printPred(stdout, copyPred(pi, o));
+	fputc('\n', stdout);
+    }
 #endif
+
+    ev = scEntail(ps,pi,o,d);
+    if (nonNull(ev)) {
+#if EXPLAIN_INSTANCE_RESOLUTION
+	if (showInstRes) {
+	    int i;
+	    for (i = 0; i < d; i++)
+	      fputc(' ', stdout);
+	    fputs("scSat.\n", stdout);
+	}
+#endif
+    } else {
+	ev =
+#if MULTI_INST
+             multiInstRes ? inEntails(ps,pi,o,d) :
+			    inEntail(ps,pi,o,d);
+#else
+             inEntail(ps,pi,o,d);
+#endif
+#if EXPLAIN_INSTANCE_RESOLUTION
+	if (nonNull(ev) && showInstRes) {
+	    int i;
+	    for (i = 0; i < d; i++)
+	      fputc(' ', stdout);
+	    fputs("inSat.\n", stdout);
+	}
+#endif
+    }
+    return ev;
 }
 
 static Cell local inEntail(ps,pi,o,d)	/* Calc evidence for (pi,o) from ps*/
@@ -384,6 +442,12 @@ List ps;				/* using a top-level instance	   */
 Cell pi;				/* entailment			   */
 Int  o;
 Int  d; {
+    int i;
+    Inst in;
+
+    if (d++ >= cutoff)
+	cutoffExceeded(pi,o,ps);
+
 #if TREX
     if (isAp(pi) && isExt(fun(pi))) {	/* Lacks predicates		   */
 	Cell e  = fun(pi);
@@ -410,14 +474,23 @@ Int  d; {
     }
     else {
 #endif
-    Inst in = findInstFor(pi,o);	/* Class predicates		   */
 
+    in = findInstFor(pi,o);	/* Class predicates		   */
     if (nonNull(in)) {
 	Int  beta = typeOff;
 	Cell e    = inst(in).builder;
 	Cell es   = inst(in).specifics;
-	if (d++ >= cutoff)
-	    cutoffExceeded(pi,o,NIL,0,ps);
+#if EXPLAIN_INSTANCE_RESOLUTION
+	if (showInstRes) {
+	    for (i = 0; i < d; i++)
+	      fputc(' ', stdout);
+	    fputs("try ", stdout);
+	    printContext(stdout, es);
+	    fputs(" => ", stdout);
+	    printPred(stdout, inst(in).head);
+	    fputc('\n', stdout);
+	}
+#endif
 	for (; nonNull(es); es=tl(es)) {
 	    Cell ev = entail(ps,hd(es),beta,d);
 	    if (nonNull(ev))
@@ -443,8 +516,10 @@ Int  d; {
     int k = 0;
     Cell ins;				/* Class predicates		   */
     Inst in, in_;
-    Cell pi_;
     Cell e_;
+
+    if (d++ >= cutoff)
+	cutoffExceeded(pi,o,ps);
 
 #if TREX
     if (isAp(pi) && isExt(fun(pi))) {	/* Lacks predicates		   */
@@ -472,16 +547,15 @@ Int  d; {
     }
     else {
 #endif
-    if (d++ >= cutoff)
-	cutoffExceeded(pi,o,NIL,0,ps);
 
 #if EXPLAIN_INSTANCE_RESOLUTION
     if (showInstRes) {
-	pi_ = copyPred(pi, o);
 	for (i = 0; i < d; i++)
 	  fputc(' ', stdout);
 	fputs("inEntails: ", stdout);
-	printPred(stdout, pi_);
+	printContext(stdout,copyPreds(ps));
+	fputs(" ||- ", stdout);
+	printPred(stdout, copyPred(pi, o));
 	fputc('\n', stdout);
     }
 #endif
@@ -644,8 +718,22 @@ List qs; {				/* returning equiv minimal subset  */
 
     while (0<n--) {
 	Cell pi = hd(qs);
-	Cell ev = scEntail(tl(qs),fst3(pi),intOf(snd3(pi)),0);
+	Cell ev = NIL;
+#if EXPLAIN_INSTANCE_RESOLUTION
+	if (showInstRes) {
+	    fputs("scSimplify: ", stdout);
+	    printContext(stdout,copyPreds(tl(qs)));
+	    fputs(" ||- ", stdout);
+	    printPred(stdout, copyPred(fst3(pi),intOf(snd3(pi))));
+	    fputc('\n', stdout);
+	}
+#endif
+	ev = scEntail(tl(qs),fst3(pi),intOf(snd3(pi)),0);
 	if (nonNull(ev)) {
+#if EXPLAIN_INSTANCE_RESOLUTION
+	    if (showInstRes)
+	        fputs("Simplified!\n", stdout);
+#endif
 	    overEvid(thd3(pi),ev);	/* Overwrite dict var with evidence*/
 	    qs      = tl(qs);		/* ... and discard predicate	   */
 	}
@@ -749,6 +837,11 @@ static List local elimPredsUsing(ps,sps)/* Try to discharge or defer preds,*/
 List ps;				/* splitting if necessary to match */
 List sps; {				/* context ps.  sps = savePreds.   */
     List rems = NIL;
+    /*
+    Printf("elimPredsUsing: ");
+    printContext(stdout,copyPreds(preds));
+    Printf("\n");
+    */
     while (nonNull(preds)) {		/* Pick a predicate from preds	   */
 	Cell p  = preds;
 	Cell pi = fst3(hd(p));
@@ -791,10 +884,10 @@ static Void local reducePreds() {	/* Context reduce predicates: uggh!*/
 	List ins = NIL;
 	if (multiInstRes) {
 	    ins = findInstsFor(pi,o);
-	    in = nonNull(ins) && isNull(tl(ins)) ? hd(ins) : NIL;
+	    in = nonNull(ins) && isNull(tl(ins)) ? snd(hd(ins)) : NIL;
 	} else
 #endif
-	in = findInstFor(pi,o);
+	    in = findInstFor(pi,o);
 	preds   = tl(preds);
 	if (nonNull(in)) {
 	    List qs = inst(in).specifics;

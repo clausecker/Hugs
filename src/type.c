@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: type.c,v $
- * $Revision: 1.12 $
- * $Date: 1999/10/11 21:02:17 $
+ * $Revision: 1.13 $
+ * $Date: 1999/10/22 21:44:11 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1733,7 +1733,21 @@ List bs; {
 	enterPendingBtyvs();
 	for (; nonNull(alts); alts=tl(alts))
 	    typeAlt(extbind,fst(b),hd(alts),t,o,m);
+#if 0
+    Printf("before improve: ");
+    printContext(stdout,copyPreds(ps));
+    Printf(" ||- ");
+    printContext(stdout,copyPreds(preds));
+    Printf("\n");
+#endif
 	improve(line,ps,preds);
+#if 0
+    Printf("after improve: ");
+    printContext(stdout,copyPreds(ps));
+    Printf(" ||- ");
+    printContext(stdout,copyPreds(preds));
+    Printf("\n");
+#endif
 	leavePendingBtyvs();
 
 	if (nonNull(ps))		/* Add dict params, if necessary   */
@@ -1959,9 +1973,29 @@ Inst in; {				/* member functions for instance in*/
 
     for (ps=supers; nonNull(ps); ps=tl(ps)) {	/* Superclass dictionaries */
 	Cell pi = hd(ps);
-	Cell ev = scEntail(params,fst3(pi),intOf(snd3(pi)),0);
-	if (isNull(ev))
+	Cell ev = NIL;
+#if EXPLAIN_INSTANCE_RESOLUTION
+	if (showInstRes) {
+	    fputs("scEntail: ", stdout);
+	    printContext(stdout,copyPreds(params));
+	    fputs(" ||- ", stdout);
+	    printPred(stdout, copyPred(fst3(pi),intOf(snd3(pi))));
+	    fputc('\n', stdout);
+	}
+#endif
+	ev = scEntail(params,fst3(pi),intOf(snd3(pi)),0);
+	if (isNull(ev)) {
+#if EXPLAIN_INSTANCE_RESOLUTION
+	    if (showInstRes) {
+		fputs("inEntail: ", stdout);
+		printContext(stdout,copyPreds(evids));
+		fputs(" ||- ", stdout);
+		printPred(stdout, copyPred(fst3(pi),intOf(snd3(pi))));
+		fputc('\n', stdout);
+	    }
+#endif
 	    ev = inEntail(evids,fst3(pi),intOf(snd3(pi)),0);
+	}
 	if (isNull(ev)) {
 	    clearMarks();
 	    ERRMSG(inst(in).line) "Cannot build superclass instance" ETHEN

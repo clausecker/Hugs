@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.13 $
- * $Date: 1999/10/11 23:53:03 $
+ * $Revision: 1.14 $
+ * $Date: 1999/10/22 21:44:09 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1692,7 +1692,11 @@ static Int    charCount;
 Void setGoal(what, t)                  /* Set goal for what to be t        */
 String what;
 Target t; {
-    if (quiet) return;
+    if (quiet
+#if EXPLAIN_INSTANCE_RESOLUTION
+	      || showInstRes
+#endif
+			    ) return;
     currTarget = (t?t:1);
     aiming     = TRUE;
     if (useDots) {
@@ -1708,7 +1712,11 @@ Target t; {
 
 Void soFar(t)                          /* Indicate progress towards goal   */
 Target t; {                            /* has now reached t                */
-    if (quiet) return;
+    if (quiet
+#if EXPLAIN_INSTANCE_RESOLUTION
+	      || showInstRes
+#endif
+			    ) return;
     if (useDots) {
 	Int newPos = (Int)((maxPos * ((long)t))/currTarget);
 
@@ -1726,7 +1734,11 @@ Target t; {                            /* has now reached t                */
 }
 
 Void done() {                          /* Goal has now been achieved       */
-    if (quiet) return;
+    if (quiet
+#if EXPLAIN_INSTANCE_RESOLUTION
+	      || showInstRes
+#endif
+			    ) return;
     if (useDots) {
 	while (maxPos>currPos++)
 	    Putchar('.');

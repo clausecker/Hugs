@@ -9,8 +9,8 @@
  * included in the distribution.
  *
  * $RCSfile: subst.c,v $
- * $Revision: 1.9 $
- * $Date: 1999/09/22 08:38:13 $
+ * $Revision: 1.10 $
+ * $Date: 1999/10/22 21:44:10 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1467,6 +1467,23 @@ List ps; {
 		    improved |= instImprove(line,pi,o);
 		improved |= improveAgainst(line,tl(ps1),pi,o);
 	    }
+	}
+    } while (improved);
+}
+
+Void improve1(line,sps,pi,o)		/* Improve a single predicate	   */
+Int  line;
+List sps;
+Cell pi;
+Int o; {
+    Bool improved;
+    Cell c  = getHead(pi);
+    do {
+	improved = FALSE;
+	if ((isClass(c) && nonNull(cclass(c).fds)) || isIP(c)) {
+	    improved |= improveAgainst(line,sps,pi,o);
+	    if (!isIP(c))
+		improved |= instImprove(line,pi,o);
 	}
     } while (improved);
 }

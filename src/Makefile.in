@@ -100,9 +100,14 @@ distclean	::
 		  $(RM) *~
 veryclean	:: distclean
 veryclean	::
-		  $(RM) options.h
+		  $(RM) Makefile
 		  $(RM) config.h
-		  $(RM) config.cache
+		  $(RM) options.h
+		  $(RM) unix/config.cache
+		  $(RM) unix/config.log
+		  $(RM) unix/config.status
+		  $(RM) unix/configure
+		  $(RM) ../Hugs98-Sep1999.tar.gz
 TAGS		::
 		  etags *.[ych]
 
