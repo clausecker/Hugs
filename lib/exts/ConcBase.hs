@@ -91,11 +91,11 @@ kill = IO (\f s -> Hugs_DeadThread)
 
 yield = IO (\ f s -> Hugs_YieldThread (s ()))
 
--- kill current thread passing its continuation to m
-blockIO :: ((a -> IOResult) -> IO b) -> IO a
-blockIO m = IO (\ f s -> 
-  case m s of { IO ms -> ms f (const Hugs_DeadThread) }
-  )
+-- reify current thread, execute 'm <thread>' and switch to next thread
+blockIO :: ((a -> IOResult) -> IO ()) -> IO a
+blockIO m = IO (\ f s -> Hugs_BlockThread (s . fromObj) m')
+ where
+  m' k = threadToIOResult (m (k . toObj))
 
 -- add the continuation to the runnable list, and continue
 continueIO :: IOResult -> IO ()
@@ -107,14 +107,14 @@ forkIO m = continueIO (threadToIOResult ((m `catchHugsException` forkExnHandler)
 
 forkErrHandler :: IOError -> IO a
 forkErrHandler e = do
-    putStr "Uncaught error in forked process: \n  "
+    putStr "\nThread raised error: "
     putStr (show e)
     putStr "\n"           
     kill
 
 forkExnHandler :: HugsException -> IO a
 forkExnHandler e = do
-    putStr "Uncaught exception in forked process: \n  "
+    putStr "\nThread raised exception: "
     putStr (show e)
     putStr "\n"           
     kill
@@ -132,7 +132,7 @@ takeMVar (MkMVar v) =
     writeIORef v (Right []) >>
     return a
   Right cs ->
-     blockIO (\cc -> writeIORef v (Right (cs ++ [cc])))
+    blockIO (\cc -> writeIORef v (Right (cs ++ [cc])))
 
 putMVar (MkMVar v) a =
   readIORef v >>= \ state ->
@@ -144,8 +144,8 @@ putMVar (MkMVar v) a =
     return ()
   Right (c:cs) ->
     writeIORef v (Right cs) >>
-    continueIO (c a)   -- schedule the blocked process
-                       -- and continue with this process
+    continueIO (c a)   -- schedule the blocked thread
+                       -- and continue with this thread
 
 primEqMVar   :: MVar a -> MVar a -> Bool
 MkMVar v1 `primEqMVar` MkMVar v2 = v1 == v2

@@ -1632,6 +1632,7 @@ data IOResult
   | Hugs_DeadThread
   | Hugs_YieldThread IOResult
   | Hugs_Return      Obj
+  | Hugs_BlockThread (Obj -> IOResult) ((Obj -> IOResult) -> IOResult) 
 
 data IOFinished a
   = Finished_ExitWith Int
@@ -1677,7 +1678,9 @@ threadToIOResult :: IO a -> IOResult
 threadToIOResult (IO m) = m Hugs_Error (const Hugs_DeadThread)
 
 -- This is the queue of *runnable* threads.
--- There may be blocked processes inside
+-- There may be blocked threads attached to MVars
+-- An important invariant is that at most one thread will result in
+-- Hugs_Return - and its Obj value has type \alpha
 loop :: [IOResult] -> IOFinished a
 loop []                      = error "no more threads (deadlock?)"
 loop [Hugs_Return   a]       = Finished_Return (fromObj a)
@@ -1686,8 +1689,9 @@ loop (Hugs_Catch m f1 f2 s:r)= loop (hugs_catch m f1 f2 s : r)
 loop (Hugs_Error    e:_)     = Finished_Error  e
 loop (Hugs_ExitWith i:_)     = Finished_ExitWith i
 loop (Hugs_DeadThread:r)     = loop r
-loop (Hugs_ForkThread a b:r) = loop (a:b:r)
+loop (Hugs_ForkThread a b:r) = loop (b:a:r)
 loop (Hugs_YieldThread a:r)  = loop (r ++ [a])
+loop (Hugs_BlockThread a b:r)= loop (b a : r)
 loop _                       = undefined
 
 hugs_catch :: IOResult -> (HugsException -> IOResult) -> (IOError -> IOResult) -> (Obj -> IOResult) -> IOResult
@@ -1697,10 +1701,11 @@ hugs_catch m f1 f2 s = case primCatchException (catch' m) of
   Right (Hugs_Error e)        -> f2 e
   Right (Hugs_ForkThread a b) -> Hugs_ForkThread (Hugs_Catch a f1 f2 s) b
   Right (Hugs_YieldThread a)  -> Hugs_YieldThread (Hugs_Catch a f1 f2 s)
+  Right (Hugs_BlockThread a b)-> Hugs_BlockThread (\x -> Hugs_Catch (a x) f1 f2 s) b
   Right r                     -> r
  where
   catch' :: IOResult -> IOResult
-  catch' (Hugs_Catch m' f1' f2' s') = hugs_catch m' f1' f2' s'
+  catch' (Hugs_Catch m' f1' f2' s') = catch' (hugs_catch m' f1' f2' s')
   catch' x                          = x
 
 primExitWith     :: Int -> IO a
