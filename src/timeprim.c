@@ -58,7 +58,7 @@ primFun(primGetClockTime) { /* :: IO (Int,Int) */
   struct timeb tb;
   int rc = 0;
   
-# ifdef __MINGW32__
+# ifdef mingw32_HOST_OS
   ftime(&tb);
 # else
   rc = ftime(&tb);

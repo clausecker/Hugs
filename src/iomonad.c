@@ -14,8 +14,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: iomonad.c,v $
- * $Revision: 1.95 $
- * $Date: 2005/03/17 12:12:09 $
+ * $Revision: 1.96 $
+ * $Date: 2005/03/28 00:13:23 $
  * ------------------------------------------------------------------------*/
  
 Name nameIORun;			        /* run IO code                     */
@@ -1040,7 +1040,7 @@ primFun(primOpenFd) {			/* open handle to file descriptor. */
 		         NULL));
     }
 
-#if defined(_WIN32) && !defined(__CYGWIN__)
+#if defined(_WIN32) && !cygwin32_HOST_OS
     if (isSock) {
 	/* fd is a SOCKET, convert it to an FD.
 	 * Note: _open_osfhandle() will fail under

@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: builtin.c,v $
- * $Revision: 1.84 $
- * $Date: 2005/03/27 15:20:26 $
+ * $Revision: 1.85 $
+ * $Date: 2005/03/28 00:13:23 $
  * ------------------------------------------------------------------------*/
 
 /* We include math.h before prelude.h because SunOS 4's cpp incorrectly
@@ -46,7 +46,7 @@
 # include <unistd.h>
 #endif
 
-#if HAVE_SYS_TIMES_H && !defined(__MINGW32__)
+#if HAVE_SYS_TIMES_H && !mingw32_HOST_OS
 # include <sys/times.h>
 #endif
 
@@ -54,7 +54,7 @@
 # include <sys/time.h>
 #endif
 
-#if HAVE_SYS_RESOURCE_H && !defined(__MINGW32__)
+#if HAVE_SYS_RESOURCE_H && !mingw32_HOST_OS
 # include <sys/resource.h>
 #endif
 
@@ -1939,11 +1939,11 @@ struct thunk_data {
     struct thunk_data* next;
     struct thunk_data* prev;
     HugsStablePtr      stable;
-#if defined(__i386__) || defined(_X86_)
+#if i386_HOST_ARCH
     char               code[17];
-#elif defined(__ppc__)
+#elif powerpc_HOST_ARCH
      char               code[13*4];
-#elif defined(__sparc__) && defined(__GNUC__)
+#elif sparc_HOST_ARCH && defined(__GNUC__)
     char               code[44];
 #else
     /* This is a placeholder intended to avoid compile-time warnings.
@@ -1961,7 +1961,7 @@ static void initAdjustor  Args((void));
 
 static struct thunk_data* foreignThunks = 0;
 
-#if defined(__i386__) || defined(_X86_)
+#if i386_HOST_ARCH
 /* Comment from GHC's Adjustor.c:
 
    Now here's something obscure for you:
@@ -2009,11 +2009,11 @@ static void* local mallocBytesRWX(int len) {
     return addr;
 }
 
-#endif /* i386 || X86 */
+#endif /* i386_HOST_ARCH */
 
 /* Perform initialisation of adjustor thunk layer (if needed). */
 static void local initAdjustor() {
-#if defined(__i386__) || defined(_X86_)
+#if i386_HOST_ARCH
     obscure_ccall_ret_code = (unsigned char *)mallocBytesRWX(4);
     obscure_ccall_ret_code[0x00] = (unsigned char)0x83;  /* addl $0x4, %esp */
     obscure_ccall_ret_code[0x01] = (unsigned char)0xc4;
@@ -2039,7 +2039,7 @@ static void* mkThunk(void (*app)(void), HugsStablePtr s) {
     foreignThunks = thunk;
     thunk->stable = s;
     pc = &thunk->code[0];
-#if defined(__i386__) || defined(_X86_)
+#if i386_HOST_ARCH
     /* Mostly cut-n-pasted from GHC's Adjustor.c. */
 
     /* 5 bytes: pushl s */
@@ -2059,7 +2059,7 @@ static void* mkThunk(void (*app)(void), HugsStablePtr s) {
     /* 2 bytes: jmp *%eax */
     *pc++ = (char)0xff; *pc++ = (char)0xe0;
 
-#elif defined(__ppc__) && defined(__GNUC__)
+#elif powerpc_HOST_ARCH && defined(__GNUC__)
      /* This is only for MacOS X.
       * It does not work on MacOS 9 because of the very strange
       * handling of function pointers in OS 9.
@@ -2110,7 +2110,7 @@ static void* mkThunk(void (*app)(void), HugsStablePtr s) {
              __asm__ volatile ("sync\n\tisync");
          }
      }
-#elif defined(__sparc__) && defined(__GNUC__)
+#elif sparc_HOST_ARCH && defined(__GNUC__)
      /* Mostly cut-n-pasted from GHC's Adjustor.c:
 
 	<00>: 9C23A008   sub   %sp, 8, %sp     ! make room for %o4/%o5 in caller's frame

@@ -11,8 +11,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.125 $
- * $Date: 2005/03/08 14:21:44 $
+ * $Revision: 1.126 $
+ * $Date: 2005/03/28 00:13:23 $
  * ------------------------------------------------------------------------*/
 #include "prelude.h"
 #include "storage.h"
@@ -303,7 +303,7 @@ FileName macHugsDir; /* Directory where Hugs was found. */
 # define DLL_ENDING              ".so"
 #endif
 
-#if HAVE_GETMODULEFILENAME && !DOS && !__CYGWIN32__
+#if HAVE_GETMODULEFILENAME && !DOS && !cygwin32_HOST_OS
 static HMODULE hugsModule = (HMODULE)0;
 static String  hugsRoot   = 0;
 
@@ -350,7 +350,7 @@ String hugsdir() {		/* directory containing libraries/Prelude.hs */
     static FileName dir = "\0"; /* Directory containing lib: Prelude.hs */
     strcpy(dir,macHugsDir);
     return dir;
-#elif HAVE_GETMODULEFILENAME && !DOS && !__CYGWIN32__
+#elif HAVE_GETMODULEFILENAME && !DOS && !cygwin32_HOST_OS
     /* On Windows, we can find the binary we're running and it's
      * conventional to put the libraries in the same place.
      */

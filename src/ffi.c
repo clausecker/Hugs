@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: ffi.c,v $
- * $Revision: 1.38 $
- * $Date: 2004/11/30 15:56:28 $
+ * $Revision: 1.39 $
+ * $Date: 2005/03/28 00:13:23 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -465,7 +465,7 @@ List resultTy; {
     }
     fprintf(out,"(");
     if (extraArg) {
-#if defined(__sparc__) || defined(__i386__) || defined(_X86_)
+#if sparc_TARGET_ARCH || i386_TARGET_ARCH
         /* On SPARC we need an additional dummy argument due to stack alignment
            restrictions, see the comment in mkThunk in builtin.c. On x86
            platforms we need it, too, but for a different reason: The "real"
