@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: runhugs.c,v $
- * $Revision: 1.12 $
- * $Date: 2002/08/08 23:35:47 $
+ * $Revision: 1.13 $
+ * $Date: 2002/10/31 01:38:34 $
  * ------------------------------------------------------------------------*/
 
 #include <stdio.h>
@@ -65,7 +65,7 @@ char* argv[]; {
 int main(argc,argv)
 int    argc;
 char* argv[]; {
-    int    exitCode;
+    int    exitCode = 0;
     char** hugs_argv;
     int    hugs_argc;
 
@@ -109,11 +109,9 @@ char* argv[]; {
     hugs->loadFile(argv[0]);
     check();
 
-#ifdef FFI_COMPILER
-    exitCode = 0;
-#else
+    /* For 'ffihugs', we're done once the module has been loaded.  */
+#if !defined(FFI_COMPILER)
     hugs->setHugsArgs(argc,argv);
-    
     hugs->pushHVal(hugs->compileExpr("Main","main >> return ()"));
     exitCode = hugs->doIO();
     check();
