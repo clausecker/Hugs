@@ -192,7 +192,7 @@ List ieList; {                   /* own in an import/export list.           */
 static List fixupIEList(ieList)
 List ieList; {
   List orphans = NIL;
-  List xs = ieList;
+  List xs;
 
   orphans = getIEOrphans(ieList);
   
@@ -239,8 +239,11 @@ Cell   entity; { /* Entry from import/hiding list */
      */
     Bool lookForDataCon = 
       isHidden &&
-      subEntities == NIL && 
+      subEntities == NONE && 
       isCon(isId ? entity : fst(entity));
+      
+    /* The use of NONE heralds a dcon */
+    subEntities = ( (subEntities == NONE) ? NIL : subEntities);
     
     for(; nonNull(es); es=tl(es)) {
 	Cell e = hd(es); /* :: Entity | (Entity, NIL|DOTDOT|[Entity]) */
@@ -328,6 +331,7 @@ Cell   entity; { /* Entry from import/hiding list */
 			    imports=addEntity(f,xs,imports);
 			}
 		    }
+		    break;
 		    if (!lookForDataCon) break;
 		}
 		if (!impFound && isId) {
@@ -461,7 +465,7 @@ List is; {
       if (!addNew) {
         return is;
       } else {
-        if (isName(e) && ls == NIL) {
+        if (isName(e) && (ls == NIL || ls == NONE)) {
            return cons(e,is);
         } else {
             return cons(pair(e,ls),is);
@@ -471,9 +475,9 @@ List is; {
         /* concat the two lists, i.e., no removal of duplicates. */
         if (!isPair(hd(ms)) && ls != NIL) {
             hd(ms) = pair(e,ls);
-        } else if (ls == NIL || snd(hd(ms)) == DOTDOT) {
+        } else if (ls == NIL || ls == NONE || snd(hd(ms)) == DOTDOT) {
             ;
-        } else if (ls == DOTDOT || snd(hd(ms)) == NIL) {
+        } else if (ls == DOTDOT || snd(hd(ms)) == NIL || snd(hd(ms)) == NONE) {
             snd(hd(ms)) = ls;
         } else {
             snd(hd(ms)) = dupOnto(ls,snd(hd(ms)));
@@ -576,14 +580,15 @@ Pair importSpec; {
 	    } else if isPair(hd(ms)) {
 		/* The parent tycon/class is hidden, but perhaps
 		   not all of its subentities. */
+	        Cell ent = fst(hd(ms));
 		List hiddenSubs = snd(hd(ms));
 		Module impMod;
 		
 		/* Figure out what module the entity was imported from */
-		if ( isClass(fst(hd(ms))) ) {
-		  impMod = cclass(fst(hd(ms))).mod;
-		} else if ( isTycon(fst(hd(ms))) ) {
-		  impMod = tycon(fst(hd(ms))).mod;
+		if ( isClass(ent) ) {
+		  impMod = cclass(ent).mod;
+		} else if ( isTycon(ent) ) {
+		  impMod = tycon(ent).mod;
 		} else {
 		  internal("checkImportList");
 		}

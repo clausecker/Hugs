@@ -10,8 +10,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: parser.y,v $
- * $Revision: 1.35 $
- * $Date: 2002/10/21 02:18:57 $
+ * $Revision: 1.36 $
+ * $Date: 2003/02/14 02:01:01 $
  * ------------------------------------------------------------------------*/
 
 %{
@@ -245,7 +245,7 @@ imports1  : imports1 ',' import		{$$ = gc3(cons($3,$1));}
 	  | import			{$$ = gc1(singleton($1));}
 	  ;
 import	  : var				{$$ = $1;}
-	  | CONID			{$$ = gc1(pair($1,NIL));}
+	  | CONID			{$$ = gc1(pair($1,NONE));}
 	  | CONID '(' UPTO ')'		{$$ = gc4(pair($1,DOTDOT));}
 	  | CONID '(' names ')'		{$$ = gc4(pair($1,$3));}
 	  ;
