@@ -21,6 +21,8 @@
 # veryclean:      delete all machine generated files 
 #                   (you need perl, bison/yacc, etc to rebuild these files)
 # check:	  run regression tests
+# depend:	  recompute object file dependencies (requires gcc, but
+#		  also updates {dotmet,msc,winhugs}/Makefile)
 # TAGS:           build emacs TAGS table
 
 # This rule goes first to make it the default choice
@@ -239,12 +241,12 @@ parser.c	: parser.y
 
 HUGS_MAKEFILES = Makefile dotnet/Makefile msc/Makefile winhugs/Makefile
 
-depend: $(SOURCES)
+depend: $(SOURCES) parser.c
 	gcc -MM $(CFILES) | sed 's/\.o:/$$(OBJ):/' >TMP
 	if cmp -s TMP MkDepend.in; then : ; else \
 		$(CP) TMP MkDepend.in; \
 		for mfile in $(HUGS_MAKEFILES);\
-		do	(echo '/^# Object dependencies/+++,/^# End of object dependencies/---d';\
+		do	(echo '/^# Generated object dependencies/+++,/^# End of generated object dependencies/---d';\
 			 echo '-r MkDepend.in';\
 			 echo w) | ed - $$mfile; \
 		done;\
@@ -252,13 +254,13 @@ depend: $(SOURCES)
 	rm TMP
 
 ################################################################
-# Object dependencies (Don't change or delete this line)
+# Generated object dependencies (Don't change or delete this line)
 ################################################################
 
 @MkDepend@
 
 ################################################################
-# End of object dependencies (Don't change or delete this line)
+# End of generated object dependencies (Don't change or delete this line)
 ################################################################
 
 ################################################################

@@ -201,7 +201,7 @@ runhugs.res	: msc\runhugs.rc ..\icons\hsxicon.ico
 		rc /imsc /I..\icons /r /fo runhugs.res msc\runhugs.rc 
 
 ################################################################
-# Object dependencies (Don't change or delete this line)
+# Generated object dependencies (Don't change or delete this line)
 ################################################################
 
 hugs$(OBJ): hugs.c prelude.h config.h platform.h options.h storage.h HsFFI.h \
@@ -222,7 +222,7 @@ builtin$(OBJ): builtin.c prelude.h config.h platform.h options.h storage.h \
   HsFFI.h connect.h errors.h machdep.h char.h builtin.h bignums.c \
   printer.c iomonad.c timeprim.c dirprim.c array.c
 char$(OBJ): char.c prelude.h config.h platform.h options.h storage.h HsFFI.h \
-  connect.h char.h
+  connect.h errors.h char.h
 compiler$(OBJ): compiler.c prelude.h config.h platform.h options.h storage.h \
   HsFFI.h connect.h errors.h goal.h output.h opts.h
 errors$(OBJ): errors.c prelude.h config.h platform.h options.h storage.h \
@@ -266,7 +266,7 @@ type$(OBJ): type.c prelude.h config.h platform.h options.h storage.h HsFFI.h \
 version$(OBJ): version.c prelude.h config.h platform.h options.h
 
 ################################################################
-# End of object dependencies (Don't change or delete this line)
+# End of generated object dependencies (Don't change or delete this line)
 ################################################################
 
 ################################################################

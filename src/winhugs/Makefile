@@ -159,81 +159,95 @@ static.obj	: static.c
 # veryclean	::
 # 		  $(RM) parser.c
 
-#dependencies for these files are incomplete
-
-wintext.obj	: $(HFILES) "winhugs\wintext.c"
-		  $(CC) -c $(CFLAGS) $(OPTFLAGS)  "winhugs\wintext.c" 
-
-winframe.obj    : $(HFILES) "winhugs\winframe.c"
-	          $(CC) -c $(CFLAGS) $(OPTFLAGS) "winhugs\winframe.c" 
-
-winhint.obj	: $(HFILES) "winhugs\winhint.c"
-		  $(CC) -c $(CFLAGS) $(OPTFLAGS) "winhugs\winhint.c" 
-
-winstln.obj	: $(HFILES) "winhugs\winstln.c"
-	          $(CC) -c $(CFLAGS) $(OPTFLAGS) "winhugs\winstln.c" 
-
-wintoolb.obj    : $(HFILES) "winhugs\wintoolb.c"
-	          $(CC) -c $(CFLAGS) $(OPTFLAGS) "winhugs\wintoolb.c" 
-
-winutils.obj    : $(HFILES) "winhugs\winutils.c"
-	          $(CC) -c $(CFLAGS) $(OPTFLAGS) "winhugs\winutils.c" 
-
-winhugs.obj    : $(HFILES) "winhugs\winhugs.c"
-	          $(CC) -c $(CFLAGS) $(OPTFLAGS) "winhugs\winhugs.c" 
-
 winhugs.res     : "winhugs\winhugs.rc"
                   $(RC) -fowinhugs.res "winhugs\winhugs.rc"
 
 ################################################################
-# Object dependencies (Don't change or delete this line)
+# Generated object dependencies (Don't change or delete this line)
 ################################################################
 
+hugs$(OBJ): hugs.c prelude.h config.h platform.h options.h storage.h HsFFI.h \
+  command.h connect.h errors.h script.h opts.h strutil.h evaluator.h \
+  machdep.h output.h module.h
+runhugs$(OBJ): runhugs.c prelude.h config.h platform.h options.h storage.h \
+  HsFFI.h connect.h machdep.h observe.h builtin.h evaluator.h errors.h \
+  server.h HugsAPI.h
+server$(OBJ): server.c prelude.h config.h platform.h options.h storage.h \
+  HsFFI.h connect.h script.h machdep.h evaluator.h opts.h strutil.h \
+  errors.h server.h HugsAPI.h
+edit$(OBJ): edit.c prelude.h config.h platform.h options.h storage.h HsFFI.h \
+  connect.h errors.h opts.h strutil.h machdep.h
+observe$(OBJ): observe.c prelude.h config.h platform.h options.h storage.h \
+  HsFFI.h connect.h command.h errors.h machdep.h builtin.h output.h \
+  observe.h
+builtin$(OBJ): builtin.c prelude.h config.h platform.h options.h storage.h \
+  HsFFI.h connect.h errors.h machdep.h char.h builtin.h bignums.c \
+  printer.c iomonad.c timeprim.c dirprim.c array.c
+char$(OBJ): char.c prelude.h config.h platform.h options.h storage.h HsFFI.h \
+  connect.h errors.h char.h
+compiler$(OBJ): compiler.c prelude.h config.h platform.h options.h storage.h \
+  HsFFI.h connect.h errors.h goal.h output.h opts.h
+errors$(OBJ): errors.c prelude.h config.h platform.h options.h storage.h \
+  HsFFI.h connect.h errors.h output.h opts.h goal.h evaluator.h
+evaluator$(OBJ): evaluator.c prelude.h config.h platform.h options.h \
+  storage.h HsFFI.h connect.h errors.h script.h output.h strutil.h opts.h \
+  machdep.h evaluator.h
+ffi$(OBJ): ffi.c prelude.h config.h platform.h options.h storage.h HsFFI.h \
+  connect.h errors.h output.h strutil.h
+goal$(OBJ): goal.c prelude.h config.h platform.h options.h storage.h HsFFI.h \
+  connect.h errors.h machdep.h opts.h goal.h
+input$(OBJ): input.c prelude.h config.h platform.h options.h storage.h \
+  HsFFI.h connect.h command.h errors.h module.h script.h opts.h goal.h \
+  machdep.h char.h parser.c
+machdep$(OBJ): machdep.c prelude.h config.h platform.h options.h storage.h \
+  HsFFI.h connect.h errors.h opts.h strutil.h machdep.h evaluator.h
+machine$(OBJ): machine.c prelude.h config.h platform.h options.h storage.h \
+  HsFFI.h connect.h errors.h opts.h
+module$(OBJ): module.c prelude.h config.h platform.h options.h storage.h \
+  HsFFI.h connect.h errors.h module.h output.h
+opts$(OBJ): opts.c prelude.h config.h platform.h options.h storage.h HsFFI.h \
+  connect.h errors.h machdep.h strutil.h opts.h
+output$(OBJ): output.c prelude.h config.h platform.h options.h storage.h \
+  HsFFI.h connect.h errors.h output.h
+plugin$(OBJ): plugin.c prelude.h config.h platform.h options.h storage.h \
+  HsFFI.h connect.h
+script$(OBJ): script.c prelude.h config.h platform.h options.h storage.h \
+  HsFFI.h connect.h errors.h machdep.h opts.h strutil.h script.h
+static$(OBJ): static.c prelude.h config.h platform.h options.h storage.h \
+  HsFFI.h connect.h machdep.h errors.h output.h subst.h module.h opts.h \
+  goal.h scc.c
+storage$(OBJ): storage.c prelude.h config.h platform.h options.h storage.h \
+  HsFFI.h connect.h opts.h errors.h machdep.h evaluator.h strutil.h \
+  output.h
+strutil$(OBJ): strutil.c prelude.h config.h platform.h options.h storage.h \
+  HsFFI.h connect.h errors.h strutil.h
+subst$(OBJ): subst.c prelude.h config.h platform.h options.h storage.h \
+  HsFFI.h connect.h errors.h output.h opts.h subst.h
+type$(OBJ): type.c prelude.h config.h platform.h options.h storage.h HsFFI.h \
+  connect.h errors.h output.h subst.h goal.h opts.h preds.c scc.c
+version$(OBJ): version.c prelude.h config.h platform.h options.h
+
+################################################################
+# End of generated object dependencies (Don't change or delete this line)
+################################################################
+
+# WinHugs modules
+#
 # The dependencies could be made tighter by not using HFILES throughout,
 # but individually naming the header files needed by each file. Elect
 # not to do this due to the overhead of having to keep it up-to-date.
-
-hugs$(OBJ): hugs.c $(HFILES)
-runhugs$(OBJ): runhugs.c $(HFILES) HugsAPI.h
-server$(OBJ): server.c $(HFILES) HugsAPI.h
-edit$(OBJ): edit.c $(HFILES)
-observe$(OBJ): observe.c $(HFILES)
-builtin$(OBJ): builtin.c $(HFILES) bignums.c printer.c iomonad.c timeprim.c dirprim.c array.c
-char$(OBJ): char.c $(HFILES)
-compiler$(OBJ): compiler.c $(HFILES)
-errors$(OBJ): errors.c $(HFILES)
-evaluator$(OBJ): evaluator.c $(HFILES)
-ffi$(OBJ): ffi.c $(HFILES)
-goal$(OBJ): goal.c $(HFILES)
-input$(OBJ): input.c $(HFILES) parser.c
-machdep$(OBJ): machdep.c $(HFILES)
-machine$(OBJ): machine.c $(HFILES)
-module$(OBJ): module.c $(HFILES)
-opts$(OBJ): opts.c $(HFILES)
-output$(OBJ): output.c $(HFILES)
-plugin$(OBJ): plugin.c $(HFILES)
-script$(OBJ): script.c $(HFILES)
-static$(OBJ): static.c $(HFILES) scc.c
-storage$(OBJ): storage.c $(HFILES)
-strutil$(OBJ): strutil.c $(HFILES)
-subst$(OBJ): subst.c $(HFILES)
-type$(OBJ): type.c $(HFILES) preds.c scc.c
-version$(OBJ): version.c $(PRELUDE)
-
-# WinHugs modules
-Winhugs$(OBJ): $(HFILES) winhugs/winhugs.c winhugs/menusbm.c winhugs/WinBrows.c winhugs/WinFrame.h winhugs/WinToolB.h winhugs/WinSTLN.h winhugs/WinUtils.h winhugs/WinHugs.h
-
-winframe$(OBJ): $(HFILES) winhugs/winframe.c winhugs/WinFrame.h winhugs/WinSTLN.h winhugs/WinToolB.h winhugs/WinUtils.h
-
-winhint$(OBJ): $(HFILES) winhugs/winhint.c  winhugs/WinHint.h winhugs/WinUtils.h
-winstln$(OBJ): $(HFILES) winhugs/winstln.c  winhugs/WinSTLN.h winhugs/WinUtils.h
-wintoolb$(OBJ): $(HFILES) winhugs/wintoolb.c winhugs/WinToolB.h winhugs/WinHint.h winhugs/WinUtils.h
+Winhugs$(OBJ): $(HFILES) \
+  winhugs/winhugs.c winhugs/menusbm.c winhugs/WinBrows.c winhugs/WinHugs.h \
+  winhugs/WinFrame.h winhugs/WinToolB.h winhugs/WinSTLN.h winhugs/WinUtils.h
+winframe$(OBJ): $(HFILES) winhugs/winframe.c \
+  winhugs/WinFrame.h winhugs/WinSTLN.h winhugs/WinToolB.h winhugs/WinUtils.h
+winhint$(OBJ): $(HFILES) winhugs/winhint.c \
+  winhugs/WinHint.h winhugs/WinUtils.h
+winstln$(OBJ): $(HFILES) winhugs/winstln.c \
+  winhugs/WinSTLN.h winhugs/WinUtils.h
+wintoolb$(OBJ): $(HFILES) winhugs/wintoolb.c \
+  winhugs/WinToolB.h winhugs/WinHint.h winhugs/WinUtils.h
 winutils$(OBJ): $(HFILES) winhugs/winutils.c winhugs/WinUtils.h
-
-
-################################################################
-# End of object dependencies (Don't change or delete this line)
-################################################################
 
 ################################################################
 # Regression tests (Unix only).  Run "make install" first
