@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: builtin.c,v $
- * $Revision: 1.5 $
- * $Date: 2000/06/20 16:21:09 $
+ * $Revision: 1.6 $
+ * $Date: 2000/07/12 22:25:31 $
  * ------------------------------------------------------------------------*/
 
 /* We include math.h before prelude.h because SunOS 4's cpp incorrectly
@@ -671,7 +671,7 @@ static struct primitive builtinPrimTable[] = {
   {"primXorWord",       2, primXorWord},
   {"primComplementWord",1, primComplementWord},
   {"primShiftWord",     2, primShiftWord},
-  {"primRotateWord",    2, primRotateWord},
+  {"primRotateWord",    3, primRotateWord},
   {"primBitWord",       1, primBitWord},
   {"primTestWord",      2, primTestWord},
 #endif
@@ -1151,21 +1151,24 @@ primFun(primShiftWord) {
     WordArg(x,2);
     IntArg(y,1);
     if (y >= 0) {
-	WordResult(x << y);
+	/* << isn't defined for y larger than word size */
+	WordResult(y >= sizeof(x) * 8  ? 0 : x << y);
     } else {
-	WordResult(x >> (-y));
+	WordResult(y <= sizeof(x) * -8 ? 0 : x >> (-y));
     }
 }
 
 primFun(primRotateWord) {
     Unsigned x;         
-    Int      y;
+    Int      y, z;
     WordArg(x,2);
     IntArg(y,1);
+    IntArg(z,3);
+    y = y % z;
     if (y >= 0) {
-	WordResult((x << y) | (x >> (32 - y)));
+	WordResult((x << y) | (x >> (z - y)));
     } else {
-	WordResult((x >> (-y)) | (x << (32 + y)));
+	WordResult((x >> (-y)) | (x << (z + y)));
     }
 }
 #endif /* WORD_OPS */
