@@ -80,7 +80,7 @@ install_libexts_ffi :: install_libexts install_include ffihugs$(EXE)
 
 install_libraries :: $(LIBRARIES)
 		$(INSTALL) -d $(hugsdir)
-		$(INSTALL_DATA) -LR ../libraries $(hugsdir)
+		$(INSTALL_DATA) -R ../libraries $(hugsdir)
 
 install_oldlib :: $(LIBRARIES)
 		$(INSTALL) -d $(hugsdir)/oldlib
