@@ -85,7 +85,7 @@ cvt() {
 		fi
 		sed -n 's/^{-# OPTIONS -\(#include .*\) #-}/\1/p' $target >"$dstdir/$header"
 		# dreadful hack to perform CALLCONV substitution of Network/Socket.hs
-		sed -e 's/CALLCONV/stdcall/g' < $target > "$target.ok"
+		sed -e 's/CALLCONV/ccall/g' < $target > "$target.ok"
 		mv "$target.ok" $target
 		;;
 	*.y|*.ly)
