@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.49 $
- * $Date: 2001/12/13 03:19:28 $
+ * $Revision: 1.50 $
+ * $Date: 2001/12/13 16:35:58 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1717,6 +1717,8 @@ Int o; {
     List scs = cclass(c).supers;
     List xfds = NIL;
     Cell this = NIL;
+    /* alloc additional vars for any vars in supers not in the head */
+    newKindvars(length(cclass(c).tyvars) - cclass(c).arity);
     /* better not fail ;-) */
     if (!matchPred(pi,o,cclass(c).head,alpha))
 	internal("inheritFundeps - predicate failed to match it's own head!");
@@ -2829,7 +2831,7 @@ Cell c; {				/* is well-kinded		   */
     else {				/* scan type exprs in class defn to*/
 	List ms   = fst(cclass(c).members);
 	Int  m    = cclass(c).arity;	/* determine the class signature   */
-	Int  beta = newKindvars(m);
+	Int  beta = newKindvars(length(cclass(c).tyvars));
 	kindPred(cclass(c).line,beta,m,cclass(c).head);
 	map3Proc(kindPred,cclass(c).line,beta,m,cclass(c).supers);
 	for (; nonNull(ms); ms=tl(ms)) {
