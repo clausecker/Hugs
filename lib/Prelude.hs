@@ -1645,8 +1645,7 @@ instance Show IOError where
 	 _  -> showString "\nReason: " . showString descr) .
       (case mbFile of
 	 Nothing -> id
-	 Just name -> showString "\nResource: " . showString name) .
-    showString "\n"
+	 Just name -> showString "\nResource: " . showString name)
 
 type FilePath = String  -- file pathnames are represented by strings
 
