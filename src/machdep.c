@@ -11,8 +11,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.113 $
- * $Date: 2004/01/14 14:19:10 $
+ * $Revision: 1.114 $
+ * $Date: 2004/01/29 09:31:49 $
  * ------------------------------------------------------------------------*/
 #include "prelude.h"
 #include "storage.h"
@@ -1352,8 +1352,9 @@ Int readTerminalChar() {                /* read character from terminal    */
  * Interrupt handling:
  * ------------------------------------------------------------------------*/
 
-Bool    broken         = FALSE;
-static  Bool breakReqd = FALSE;
+Bool    broken         = FALSE;		/* pending break to be handled     */
+static  Bool breakReqd = FALSE;		/* currently trapping breaks       */
+static  Bool trapBreak = FALSE;		/* ever asked to trap breaks       */
 static  sigProto(ignoreBreak);
 static  Void local installHandlers Args((Void));
 
@@ -1363,6 +1364,7 @@ Bool reqd; {                            /* or off otherwise, returning old */
 
     breakReqd = reqd;
     if (reqd) {
+	trapBreak = TRUE;
 	if (broken) {                   /* repond to break signal received */
 	    broken = FALSE;             /* whilst break trap disabled      */
 	    sigRaise(breakHandler);
@@ -1373,8 +1375,8 @@ Bool reqd; {                            /* or off otherwise, returning old */
 #else
 	ctrlbrk(breakHandler);
 #endif
-    } else {
-	ctrlbrk(ignoreBreak);
+    } else if (trapBreak) {		/* If we have been trapping breaks, */
+	ctrlbrk(ignoreBreak);		/* switch to deferring them.        */
     }
     return old;
 }
