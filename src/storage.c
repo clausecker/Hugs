@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: storage.c,v $
- * $Revision: 1.59 $
- * $Date: 2003/01/22 19:15:23 $
+ * $Revision: 1.60 $
+ * $Date: 2003/01/31 15:39:45 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -784,7 +784,8 @@ struct primInfoDef* setPrimInfoDll(dll)
 void* dll; {
   /* After a module has registered its primitives, we set
      its primInfoDef (==lastPrimInfo) to point to the DLL
-     the prims are located in, so that we can 
+     the prims are located in, so that we can later on release
+     the DLL upon module unload.
   */
   lastPrimInfo->prim_dll = dll;
   return lastPrimInfo;
