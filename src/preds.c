@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: preds.c,v $
- * $Revision: 1.11 $
- * $Date: 1999/10/11 23:53:04 $
+ * $Revision: 1.12 $
+ * $Date: 1999/10/12 23:23:49 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -786,7 +786,12 @@ static Void local reducePreds() {	/* Context reduce predicates: uggh!*/
 	Cell p  = preds;
 	Cell pi = fst3(hd(p));
 	Int  o  = intOf(snd3(hd(p)));
+#if MULTI_INST
+	List ins = findInstsFor(pi,o);
+	Inst in = nonNull(ins) && isNull(tl(ins)) ? hd(ins) : NIL;
+#else
 	Inst in = findInstFor(pi,o);
+#endif
 	preds   = tl(preds);
 	if (nonNull(in)) {
 	    List qs = inst(in).specifics;
