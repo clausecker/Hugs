@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.139 $
- * $Date: 2003/02/10 14:52:01 $
+ * $Revision: 1.140 $
+ * $Date: 2003/02/11 04:15:00 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1038,6 +1038,7 @@ Type t; {				/* assuming that all relevant type */
 	    }
 	    fun(p) = instantiateSyn(tycon(h).defn,fun(p));
 	}
+        t = fullerExpand(t); /* chase synonym chains. */
     } else if (isNewtype(h) && n==tycon(h).arity && h != typeIO) {
         if (n != 0) {
             /* Not supported because I don't understand the typechecker
@@ -4148,10 +4149,15 @@ Cell type; {
         ERRMSG(line) "Redeclaration of foreign \"%s\"", textToStr(t)
         EEND;
     }
+#if 0
+    /* As long as we're not emitting externs for the imports we're calling in
+     * the generated C code, ignore the calling convention.
+     */
     if (textOf(callconv) != textCCall) {
         ERRMSG(line) "Foreign import calling convention \"%s\" not supported", textToStr(textOf(callconv))
         EEND;
     }
+#endif
     if (isNull(safety) || textOf(safety) == textSafe) {
         sfty = FFI_SAFE;
     } else if (textOf(safety) == textUnsafe) {
