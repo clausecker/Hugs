@@ -53,6 +53,8 @@ static struct primitive dirPrimTable[] = {
 
 static struct primInfo dirPrims = { dirControl, dirPrimTable, 0 };
 
+static	Bool	local	isDirectory	Args((String));
+
 #define ToBool(v) ( (v) ? nameTrue : nameFalse)
 
 #ifdef _MSC_VER
@@ -180,12 +182,19 @@ primFun(primRenameDirectory) { /* rename a directory	   */
   String from;
 
   tmpStr = evalName(IOArg(1));
+  if (!tmpStr) {
+    IOFail(mkIOError(NIL,
+		     nameIllegal,
+		     "Directory.renameDirectory",
+		     "illegal directory name",
+		     IOArg(1)));
+  }
   to = ALLOC_STRING(strlen(tmpStr));
   strcpy(to, tmpStr);
 
   from = evalName(IOArg(2));
-
   if (!from) {
+    FREE_STRING(to);
     IOFail(mkIOError(NIL,
 		     nameIllegal,
 		     "Directory.renameDirectory",
@@ -193,14 +202,6 @@ primFun(primRenameDirectory) { /* rename a directory	   */
 		     IOArg(2)));
   }
 
-  if (!to) {
-    IOFail(mkIOError(NIL,
-		     nameIllegal,
-		     "Directory.renameDirectory",
-		     "illegal directory name",
-		     IOArg(1)));
-  }
-  
   rc = rename(from,to);
 
   FREE_STRING(to);
@@ -222,27 +223,44 @@ primFun(primRenameFile) { /* rename a file	   */
   String from;
 
   tmpStr = evalName(IOArg(1));
+  if (!tmpStr) {
+    IOFail(mkIOError(NIL,
+		     nameIllegal,
+		     "Directory.renameFile",
+		     "illegal file name",
+		     IOArg(1)));
+  }
   to = ALLOC_STRING(strlen(tmpStr));
   strcpy(to, tmpStr);
 
   from = evalName(IOArg(2));
-  
   if (!from) {
+    FREE_STRING(to);
     IOFail(mkIOError(NIL,
 		     nameIllegal,
 		     "Directory.renameFile",
-		     "illegal directory name",
-		     IOArg(1)));
-  }
-  
-  if (!to) {
-    IOFail(mkIOError(NIL,
-		     nameIllegal,
-		     "Directory.renameFile",
-		     "illegal directory name",
+		     "illegal file name",
 		     IOArg(2)));
   }
-  
+
+  if (isDirectory(from)) {
+    FREE_STRING(to);
+    IOFail(mkIOError(NIL,
+		     namePermDenied,
+		     "Directory.renameFile",
+		     "is a directory",
+		     IOArg(2)));
+  }
+
+  if (isDirectory(to)) {
+    FREE_STRING(to);
+    IOFail(mkIOError(NIL,
+		     namePermDenied,
+		     "Directory.renameFile",
+		     "is a directory",
+		     IOArg(1)));
+  }
+
   rc = rename(from,to);
   
   FREE_STRING(to);
@@ -319,12 +337,7 @@ primFun(primFileExist) { /* FilePath -> IO Bool - check to see if file exists. *
 }
 
 primFun(primDirExist) { /* FilePath -> IO Bool - check to see if directory exists. */
-  int rc;
   String s = evalName(IOArg(1));
-#ifdef _WIN32
-  int len;
-#endif
-  struct stat st;
 
   if (!s) {
     IOFail(mkIOError(NIL,
@@ -333,13 +346,19 @@ primFun(primDirExist) { /* FilePath -> IO Bool - check to see if directory exist
 		     "illegal directory name",
 		     IOArg(1)));
   }
-  
+  IOBoolResult(isDirectory(s));
+}
+
+static Bool local isDirectory(s)
+String s; {
+  int rc;
+  struct stat st;
 #ifdef _WIN32
   /* For whatever reason, stat()ing a directory name
    * like "foo/" returns an error, while both "foo" and "foo/."
    * is fine. We want them all to be treated equal.
    */
-  len = strlen(s);
+  int len = strlen(s);
   while (len > 0 && 
 	 (s[len-1] == '/' || s[len-1] == '\\')) {
       s[len-1] = '\0';
@@ -347,12 +366,7 @@ primFun(primDirExist) { /* FilePath -> IO Bool - check to see if directory exist
   }
 #endif
   rc = stat(s, &st);
-  
-  if (rc < 0) {
-    IOReturn(nameFalse);
-  } else {
-    IOBoolResult( S_ISDIR(st.st_mode) );
-  }
+  return (rc==0 && S_ISDIR(st.st_mode));
 }
 
 primFun(primGetPermissions) { /* FilePath -> IO (Bool,Bool,Bool,Bool) */
