@@ -9977,6 +9977,7 @@ if test "x$target" = "xwindows"; then
     DLL_ENDING="-dll"   
     DEV_NULL="nul"
     HUGSPATH="{Hugs}\\\\lib;{Hugs}\\\\lib\\\\hugs;{Hugs}\\\\lib\\\\exts;{Hugs}\\\\lib\\\\win32"
+    HUGSSUFFIXES=".hs;.lhs"
     MkInstall="../MkNull.in"
 elif test "x$target" = "xdos"; then
     # Just the same as for Windows but excludes win32 from Path
@@ -9987,12 +9988,19 @@ elif test "x$target" = "xdos"; then
     DEV_NULL="nul"
     hugsdir_deflt='${libdir}\\hugs'
     HUGSPATH="{Hugs}\\\\lib;{Hugs}\\\\lib\\\\hugs;{Hugs}\\\\lib\\\\exts"
+    HUGSSUFFIXES=".hs;.lhs"
     MkInstall="../MkNull.in"
 else
     hugsdir_deflt='${libdir}/hugs'
     HUGSPATH="{Hugs}/lib:{Hugs}/lib/hugs:{Hugs}/lib/exts"
+    HUGSSUFFIXES=".hs:.lhs"
     MkInstall="../MkInstal.in"
 fi
+
+
+cat >> confdefs.h <<EOF
+#define HUGSSUFFIXES "$HUGSSUFFIXES"
+EOF
 
 
 if test "x$prefix" = xNONE; then
@@ -10277,6 +10285,7 @@ s%@DEBUGFLAGS@%$DEBUGFLAGS%g
 s%@LDDEBUGFLAGS@%$LDDEBUGFLAGS%g
 s%@MTCFLAGS@%$MTCFLAGS%g
 s%@HUGSPATH@%$HUGSPATH%g
+s%@HUGSSUFFIXES@%$HUGSSUFFIXES%g
 s%@hugsdir@%$hugsdir%g
 s%@HUGSDIR@%$HUGSDIR%g
 s%@BINDIR@%$BINDIR%g
