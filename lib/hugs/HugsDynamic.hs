@@ -5,13 +5,16 @@ module HugsDynamic
    ( Typeable(typeOf)
    , Dynamic, toDynamic, fromDynamic, dynApply  -- the primitives
    , fromDyn, dynApp                            -- raise errors instead of Maybes
+
    , intToDyn, fromDynInt, strToDyn, fromDynStr -- specialised versions
+   , addrToDyn, fromDynAddr
    , Tycon(..), Type(..)			       -- added by sof
    ) where
 
 -- Added nicer printers for better error messages  -- jcp
 
 import IOExts(unsafePerformIO)
+import Addr
 
 data Tycon = Tycon String     deriving Eq
 
@@ -48,6 +51,7 @@ instance Show Type where
 
 unitTC    = Tycon "()"
 intTC     = Tycon "Int"
+addrTC    = Tycon "Addr"
 integerTC = Tycon "Integer"
 floatTC   = Tycon "Float"
 doubleTC  = Tycon "Double"
@@ -71,6 +75,7 @@ class Typeable a where
 
 instance Typeable ()      where typeOf x = App unitTC    []
 instance Typeable Int     where typeOf x = App intTC     []
+instance Typeable Addr    where typeOf x = App addrTC    []
 instance Typeable Integer where typeOf x = App integerTC []
 instance Typeable Float   where typeOf x = App floatTC   []
 instance Typeable Double  where typeOf x = App doubleTC  []
@@ -133,11 +138,17 @@ fromDyn d = res
 intToDyn :: Int -> Dynamic
 intToDyn = toDynamic
 
+addrToDyn :: Addr -> Dynamic
+addrToDyn = toDynamic
+
 strToDyn :: String -> Dynamic
 strToDyn = toDynamic
 
 fromDynInt :: Dynamic -> Int
 fromDynInt = fromDyn
+
+fromDynAddr :: Dynamic -> Addr
+fromDynAddr = fromDyn
 
 fromDynStr :: Dynamic -> String
 fromDynStr = fromDyn
@@ -154,7 +165,7 @@ dynApp f x = case dynApply f x of
 
 
 ----------------------------------------------------------------
-
+{-
 test1 = toDynamic (1::Int)
 test2 = toDynamic ((+) :: Int -> Int -> Int)
 test3 = dynApp test2 test1
@@ -164,6 +175,7 @@ test5 = fromDyn test4
 test5,test6,test7 :: Int
 test6 = fromDyn test1
 test7 = fromDyn test2
+-}
 
 ----------------------------------------------------------------
 
