@@ -11,13 +11,13 @@
  * included in the distribution.
  *
  * $RCSfile: parser.y,v $
- * $Revision: 1.18 $
- * $Date: 2001/06/14 21:28:52 $
+ * $Revision: 1.19 $
+ * $Date: 2001/06/22 23:05:29 $
  * ------------------------------------------------------------------------*/
 
 %{
 extern String scriptFile;
-					  
+
 #ifndef lint
 #define lint
 #endif
@@ -37,6 +37,10 @@ extern String scriptFile;
 #endif
 #define yyerror(s)		 /* errors handled elsewhere */
 #define YYSTYPE			 Cell
+
+#if !defined(__GNUC__) || __GNUC__ <= 1
+static void __yy_memcpy Args((char*,char*, unsigned int));
+#endif
 
 static Cell   local gcShadow	 Args((Int,Cell));
 static Void   local syntaxError	 Args((String));
