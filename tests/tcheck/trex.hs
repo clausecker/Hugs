@@ -1,7 +1,7 @@
 -- !!! Testing Trex
 module TrexTest where
 
-import Trex
+import Hugs.Trex
 
 eg1 = (a = True, b = "Hello", c = 12::Int)
 eg2 = (c = 12::Int, a = True, b = "Hello")
