@@ -147,25 +147,25 @@ parser.c	: parser.y
 # veryclean	::
 # 		  $(RM) parser.c
 
-server.obj	: $(PRELUDE) storage.h connect.h errors.h version.h \
+server.obj	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h version.h \
 		  command.h machdep.c timer.c hugs.c server.c server.h
-hugs.obj	: $(PRELUDE) storage.h connect.h errors.h version.h \
+hugs.obj	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h version.h \
 		  command.h machdep.c timer.c
-ffi.obj		: $(PRELUDE) storage.h connect.h errors.h
-storage.obj	: $(PRELUDE) storage.h connect.h errors.h
-input.obj	: $(PRELUDE) storage.h connect.h errors.h \
-		  parser.c command.h
-subst.obj	: $(PRELUDE) storage.h connect.h errors.h subst.h
-static.obj	: $(PRELUDE) storage.h connect.h errors.h subst.h \
-           scc.c
-type.obj	: $(PRELUDE) storage.h connect.h errors.h subst.h \
-		  scc.c preds.c
-output.obj	: $(PRELUDE) storage.h connect.h errors.h
-compiler.obj	: $(PRELUDE) storage.h connect.h errors.h 
-machine.obj	: $(PRELUDE) storage.h connect.h errors.h
-plugin.obj	: $(PRELUDE) storage.h connect.h errors.h
-builtin.obj	: $(PRELUDE) storage.h connect.h errors.h \
+storage.obj	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h
+input.obj	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h \
+		  parser.c command.h   
+subst.obj	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h subst.h
+static.obj	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h subst.h \
+		  scc.c		       
+type.obj	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h subst.h \
+		  preds.c scc.c	       
+output.obj	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h
+compiler.obj	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h 
+machine.obj	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h
+plugin.obj	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h
+builtin.obj	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h \
 		  bignums.c printer.c iomonad.c interns.c stmonad.c array.c dirprim.c timeprim.c
+ffi.obj		: $(PRELUDE) storage.h HsFFI.h connect.h errors.h
 
 hugs.res	: msc\hugs.rc ..\icons\hugsicon.ico
 		rc /imsc /i..\icons /r /fo hugs.res msc\hugs.rc 
