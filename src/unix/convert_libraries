@@ -303,6 +303,8 @@ nocvt base System/Directory.hs		Directory.hs	# Hugs primitives
   cvt base System/Mem/StableName.hs
   cvt base System/Mem/Weak.hs
   cvt base System/Random.hs
+# cvt base System/Posix/Signals.hsc
+  cvt base System/Posix/Types.hs
 nocvt base System/Time.hsc		Time.hs		# Hugs primitives
   cvt base Text/Html.hs
   cvt base Text/Html/BlockTable.hs
