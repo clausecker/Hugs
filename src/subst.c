@@ -8,8 +8,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: subst.c,v $
- * $Revision: 1.29 $
- * $Date: 2003/11/01 17:02:50 $
+ * $Revision: 1.30 $
+ * $Date: 2004/11/01 13:37:44 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -19,8 +19,6 @@
 #include "output.h"
 #include "opts.h"
 #include "subst.h"
-
-/*#define DEBUG_TYPES*/
 
 static Int numTyvars;			/* no. type vars currently in use  */
 static Int maxTyvars = 0;

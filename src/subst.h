@@ -7,11 +7,19 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: subst.h,v $
- * $Revision: 1.9 $
- * $Date: 2003/11/01 17:02:50 $
+ * $Revision: 1.10 $
+ * $Date: 2004/11/01 13:37:45 $
  * ------------------------------------------------------------------------*/
 #ifndef __SUBST_H__
 #define __SUBST_H__
+
+/* #define DEBUG_TYPES    1 */
+/* #define DEBUG_KINDS    1 */
+/* #define DEBUG_DEFAULTS 1 */
+/* #define DEBUG_SELS     1 */
+/* #define DEBUG_DEPENDS  1 */
+/* #define DEBUG_DERIVING 1 */
+/* #define DEBUG_CODE     1 */
 
 typedef struct {			/* Each type variable contains:	   */
     Type bound;				/* A type skeleton (unbound==NIL)  */

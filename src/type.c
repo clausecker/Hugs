@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: type.c,v $
- * $Revision: 1.77 $
- * $Date: 2004/11/01 11:43:24 $
+ * $Revision: 1.78 $
+ * $Date: 2004/11/01 13:37:45 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -19,14 +19,6 @@
 #include "subst.h"
 #include "goal.h"
 #include "opts.h"	/* needed for EXPLAIN_INSTANCE_RESOLUTION|MULTI_INST */
-
-/* #define DEBUG_TYPES    1 */
-/* #define DEBUG_KINDS    1 */
-/* #define DEBUG_DEFAULTS 1 */
-/* #define DEBUG_SELS     1 */
-/* #define DEBUG_DEPENDS  1 */
-/* #define DEBUG_DERIVING 1 */
-/* #define DEBUG_CODE     1 */
 
 Bool catchAmbigs       = FALSE;		/* TRUE => functions with ambig.   */
 					/* 	   types produce error	   */
