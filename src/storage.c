@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: storage.c,v $
- * $Revision: 1.22 $
- * $Date: 2001/12/14 19:48:25 $
+ * $Revision: 1.23 $
+ * $Date: 2001/12/19 10:32:47 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -388,7 +388,12 @@ Cell id; {
 	    Module m  = findQualifier(qmodOf(id));
 	    List   es = NIL;
 	    if (isNull(m)) return NIL;
-	    for(es=module(m).exports; nonNull(es); es=tl(es)) {
+	    if (m == currentModule) {
+	      es = module(m).names;
+	    } else {
+	      es = module(m).exports;
+	    }
+	    for(; nonNull(es); es=tl(es)) {
 		Cell e = hd(es);
 		if (isPair(e) && isTycon(fst(e)) && tycon(fst(e)).text==t) 
 		    return fst(e);
@@ -545,7 +550,12 @@ Cell id; {				/* in name table		   */
 	    Module m  = findQualifier(qmodOf(id));
 	    List   es = NIL;
 	    if (isNull(m)) return NIL;
-	    for(es=module(m).exports; nonNull(es); es=tl(es)) {
+	    if (m == currentModule) {
+	      es = module(m).names;
+	    } else {
+	      es = module(m).exports;
+	    }
+	    for(; nonNull(es); es=tl(es)) {
 		Cell e = hd(es);
 		if (isName(e) && name(e).text==t) 
 		    return e;
@@ -914,7 +924,12 @@ Cell c; {				/* class in class list		   */
 	List   es = NIL;
 	if (isNull(m))
 	    return NIL;
-	for (es=module(m).exports; nonNull(es); es=tl(es)) {
+	if (m == currentModule) {
+	   es = module(m).names;
+	} else {
+	   es = module(m).exports;
+	}
+	for (; nonNull(es); es=tl(es)) {
 	    Cell e = hd(es);
 	    if (isPair(e) && isClass(fst(e)) && cclass(fst(e)).text==t) 
 		return fst(e);
