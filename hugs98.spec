@@ -31,22 +31,27 @@ make
 
 %install
 cd src
-make prefix=$RPM_BUILD_ROOT%{prefix} HUGSDIR=$RPM_BUILD_ROOT%{prefix}/lib/hugs install
+make DESTDIR=$RPM_BUILD_ROOT install
 
 %files
 %defattr(-,root,root)
+%doc Credits
 %doc License
 %doc Readme
-%doc Credits
-%doc docs/server.html
 %doc docs/ffi-notes.txt
-%doc docs/winhugs-notes.txt
+%doc docs/libraries-notes.txt
 %doc docs/machugs-notes.txt
+%doc docs/packages.txt
+%doc docs/server.html
+%doc docs/server.tex
+%doc docs/winhugs-notes.txt
 %{_mandir}/man1/hugs.1.gz
-%{prefix}/bin/hugs
-%{prefix}/bin/runhugs
 %{prefix}/bin/ffihugs
+%{prefix}/bin/hugs
+%{prefix}/bin/hugs-package
+%{prefix}/bin/runhugs
 %{prefix}/lib/hugs/demos
 %{prefix}/lib/hugs/include
 %{prefix}/lib/hugs/libraries
 %{prefix}/lib/hugs/oldlib
+%{prefix}/lib/hugs/tools
