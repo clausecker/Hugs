@@ -15,14 +15,12 @@
 #include "errors.h"
 #include "char.h"
 
-#if UNICODE_CHARS
-
 /* --------------------------------------------------------------------------
  * Unicode character properties (cf http://www.unicode.org/ucd/)
  * ------------------------------------------------------------------------*/
 
 /* Unicode general categories, listed in the same order as in the Unicode
- * standard -- this must be the same order as in Hugs.Unicode.
+ * standard -- this must be the same order as in Data.Char.
  */
 enum {
     GENCAT_Lu,	/* Letter, Uppercase */
@@ -56,6 +54,8 @@ enum {
     GENCAT_Co,	/* Other, Private Use */
     GENCAT_Cn	/* Other, Not Assigned */
 };
+
+#if UNICODE_CHARS
 
 /* properties of a Unicode character */
 struct CharProperties {
@@ -226,6 +226,8 @@ static const struct CharProperties * local get_properties(Char c) {
 
 #else
 
+/* Latin-1 only */
+
 Char toUpper(Char c) {
     /* two lowercase letters have no Latin-1 uppercase counterpart */
     if (isLower(c) && c!=0xdf && c!=0xff)
@@ -237,6 +239,146 @@ Char toLower(Char c) {
     if (isUpper(c))
 	return c - 'A' + 'a';
     return c;
+}
+
+Char toTitle(Char c) {
+    return toUpper(c);
+}
+
+/* Unicode general categories for the Latin-1 subset */
+static const char char_category[] = {
+	/* '\NUL' */	/* '\SOH' */	/* '\STX' */	/* '\ETX' */
+	GENCAT_Cc,	GENCAT_Cc,	GENCAT_Cc,	GENCAT_Cc,
+	/* '\EOT' */	/* '\ENQ' */	/* '\ACK' */	/* '\a' */
+	GENCAT_Cc,	GENCAT_Cc,	GENCAT_Cc,	GENCAT_Cc,
+	/* '\b' */	/* '\t' */	/* '\n' */	/* '\v' */
+	GENCAT_Cc,	GENCAT_Cc,	GENCAT_Cc,	GENCAT_Cc,
+	/* '\f' */	/* '\r' */	/* '\SO' */	/* '\SI' */
+	GENCAT_Cc,	GENCAT_Cc,	GENCAT_Cc,	GENCAT_Cc,
+	/* '\DLE' */	/* '\DC1' */	/* '\DC2' */	/* '\DC3' */
+	GENCAT_Cc,	GENCAT_Cc,	GENCAT_Cc,	GENCAT_Cc,
+	/* '\DC4' */	/* '\NAK' */	/* '\SYN' */	/* '\ETB' */
+	GENCAT_Cc,	GENCAT_Cc,	GENCAT_Cc,	GENCAT_Cc,
+	/* '\CAN' */	/* '\EM' */	/* '\SUB' */	/* '\ESC' */
+	GENCAT_Cc,	GENCAT_Cc,	GENCAT_Cc,	GENCAT_Cc,
+	/* '\FS' */	/* '\GS' */	/* '\RS' */	/* '\US' */
+	GENCAT_Cc,	GENCAT_Cc,	GENCAT_Cc,	GENCAT_Cc,
+	/* ' ' */	/* '!' */	/* '"' */	/* '#' */
+	GENCAT_Zs,	GENCAT_Po,	GENCAT_Po,	GENCAT_Po,
+	/* '$' */	/* '%' */	/* '&' */	/* '\'' */
+	GENCAT_Sc,	GENCAT_Po,	GENCAT_Po,	GENCAT_Po,
+	/* '(' */	/* ')' */	/* '*' */	/* '+' */
+	GENCAT_Ps,	GENCAT_Pe,	GENCAT_Po,	GENCAT_Sm,
+	/* ',' */	/* '-' */	/* '.' */	/* '/' */
+	GENCAT_Po,	GENCAT_Pd,	GENCAT_Po,	GENCAT_Po,
+	/* '0' */	/* '1' */	/* '2' */	/* '3' */
+	GENCAT_Nd,	GENCAT_Nd,	GENCAT_Nd,	GENCAT_Nd,
+	/* '4' */	/* '5' */	/* '6' */	/* '7' */
+	GENCAT_Nd,	GENCAT_Nd,	GENCAT_Nd,	GENCAT_Nd,
+	/* '8' */	/* '9' */	/* ':' */	/* ';' */
+	GENCAT_Nd,	GENCAT_Nd,	GENCAT_Po,	GENCAT_Po,
+	/* '<' */	/* '=' */	/* '>' */	/* '?' */
+	GENCAT_Sm,	GENCAT_Sm,	GENCAT_Sm,	GENCAT_Po,
+	/* '@' */	/* 'A' */	/* 'B' */	/* 'C' */
+	GENCAT_Po,	GENCAT_Lu,	GENCAT_Lu,	GENCAT_Lu,
+	/* 'D' */	/* 'E' */	/* 'F' */	/* 'G' */
+	GENCAT_Lu,	GENCAT_Lu,	GENCAT_Lu,	GENCAT_Lu,
+	/* 'H' */	/* 'I' */	/* 'J' */	/* 'K' */
+	GENCAT_Lu,	GENCAT_Lu,	GENCAT_Lu,	GENCAT_Lu,
+	/* 'L' */	/* 'M' */	/* 'N' */	/* 'O' */
+	GENCAT_Lu,	GENCAT_Lu,	GENCAT_Lu,	GENCAT_Lu,
+	/* 'P' */	/* 'Q' */	/* 'R' */	/* 'S' */
+	GENCAT_Lu,	GENCAT_Lu,	GENCAT_Lu,	GENCAT_Lu,
+	/* 'T' */	/* 'U' */	/* 'V' */	/* 'W' */
+	GENCAT_Lu,	GENCAT_Lu,	GENCAT_Lu,	GENCAT_Lu,
+	/* 'X' */	/* 'Y' */	/* 'Z' */	/* '[' */
+	GENCAT_Lu,	GENCAT_Lu,	GENCAT_Lu,	GENCAT_Ps,
+	/* '\\' */	/* ']' */	/* '^' */	/* '_' */
+	GENCAT_Po,	GENCAT_Pe,	GENCAT_Sk,	GENCAT_Pc,
+	/* '`' */	/* 'a' */	/* 'b' */	/* 'c' */
+	GENCAT_Sk,	GENCAT_Ll,	GENCAT_Ll,	GENCAT_Ll,
+	/* 'd' */	/* 'e' */	/* 'f' */	/* 'g' */
+	GENCAT_Ll,	GENCAT_Ll,	GENCAT_Ll,	GENCAT_Ll,
+	/* 'h' */	/* 'i' */	/* 'j' */	/* 'k' */
+	GENCAT_Ll,	GENCAT_Ll,	GENCAT_Ll,	GENCAT_Ll,
+	/* 'l' */	/* 'm' */	/* 'n' */	/* 'o' */
+	GENCAT_Ll,	GENCAT_Ll,	GENCAT_Ll,	GENCAT_Ll,
+	/* 'p' */	/* 'q' */	/* 'r' */	/* 's' */
+	GENCAT_Ll,	GENCAT_Ll,	GENCAT_Ll,	GENCAT_Ll,
+	/* 't' */	/* 'u' */	/* 'v' */	/* 'w' */
+	GENCAT_Ll,	GENCAT_Ll,	GENCAT_Ll,	GENCAT_Ll,
+	/* 'x' */	/* 'y' */	/* 'z' */	/* '{' */
+	GENCAT_Ll,	GENCAT_Ll,	GENCAT_Ll,	GENCAT_Ps,
+	/* '|' */	/* '}' */	/* '~' */	/* '\DEL' */
+	GENCAT_Sm,	GENCAT_Pe,	GENCAT_Sm,	GENCAT_Cc,
+	/* '\128' */	/* '\129' */	/* '\130' */	/* '\131' */
+	GENCAT_Cc,	GENCAT_Cc,	GENCAT_Cc,	GENCAT_Cc,
+	/* '\132' */	/* '\133' */	/* '\134' */	/* '\135' */
+	GENCAT_Cc,	GENCAT_Cc,	GENCAT_Cc,	GENCAT_Cc,
+	/* '\136' */	/* '\137' */	/* '\138' */	/* '\139' */
+	GENCAT_Cc,	GENCAT_Cc,	GENCAT_Cc,	GENCAT_Cc,
+	/* '\140' */	/* '\141' */	/* '\142' */	/* '\143' */
+	GENCAT_Cc,	GENCAT_Cc,	GENCAT_Cc,	GENCAT_Cc,
+	/* '\144' */	/* '\145' */	/* '\146' */	/* '\147' */
+	GENCAT_Cc,	GENCAT_Cc,	GENCAT_Cc,	GENCAT_Cc,
+	/* '\148' */	/* '\149' */	/* '\150' */	/* '\151' */
+	GENCAT_Cc,	GENCAT_Cc,	GENCAT_Cc,	GENCAT_Cc,
+	/* '\152' */	/* '\153' */	/* '\154' */	/* '\155' */
+	GENCAT_Cc,	GENCAT_Cc,	GENCAT_Cc,	GENCAT_Cc,
+	/* '\156' */	/* '\157' */	/* '\158' */	/* '\159' */
+	GENCAT_Cc,	GENCAT_Cc,	GENCAT_Cc,	GENCAT_Cc,
+	/* '\160' */	/* '\161' */	/* '\162' */	/* '\163' */
+	GENCAT_Zs,	GENCAT_Po,	GENCAT_Sc,	GENCAT_Sc,
+	/* '\164' */	/* '\165' */	/* '\166' */	/* '\167' */
+	GENCAT_Sc,	GENCAT_Sc,	GENCAT_So,	GENCAT_So,
+	/* '\168' */	/* '\169' */	/* '\170' */	/* '\171' */
+	GENCAT_Sk,	GENCAT_So,	GENCAT_Ll,	GENCAT_Pi,
+	/* '\172' */	/* '\173' */	/* '\174' */	/* '\175' */
+	GENCAT_Sm,	GENCAT_Cf,	GENCAT_So,	GENCAT_Sk,
+	/* '\176' */	/* '\177' */	/* '\178' */	/* '\179' */
+	GENCAT_So,	GENCAT_Sm,	GENCAT_No,	GENCAT_No,
+	/* '\180' */	/* '\181' */	/* '\182' */	/* '\183' */
+	GENCAT_Sk,	GENCAT_Ll,	GENCAT_So,	GENCAT_Po,
+	/* '\184' */	/* '\185' */	/* '\186' */	/* '\187' */
+	GENCAT_Sk,	GENCAT_No,	GENCAT_Ll,	GENCAT_Pf,
+	/* '\188' */	/* '\189' */	/* '\190' */	/* '\191' */
+	GENCAT_No,	GENCAT_No,	GENCAT_No,	GENCAT_Po,
+	/* '\192' */	/* '\193' */	/* '\194' */	/* '\195' */
+	GENCAT_Lu,	GENCAT_Lu,	GENCAT_Lu,	GENCAT_Lu,
+	/* '\196' */	/* '\197' */	/* '\198' */	/* '\199' */
+	GENCAT_Lu,	GENCAT_Lu,	GENCAT_Lu,	GENCAT_Lu,
+	/* '\200' */	/* '\201' */	/* '\202' */	/* '\203' */
+	GENCAT_Lu,	GENCAT_Lu,	GENCAT_Lu,	GENCAT_Lu,
+	/* '\204' */	/* '\205' */	/* '\206' */	/* '\207' */
+	GENCAT_Lu,	GENCAT_Lu,	GENCAT_Lu,	GENCAT_Lu,
+	/* '\208' */	/* '\209' */	/* '\210' */	/* '\211' */
+	GENCAT_Lu,	GENCAT_Lu,	GENCAT_Lu,	GENCAT_Lu,
+	/* '\212' */	/* '\213' */	/* '\214' */	/* '\215' */
+	GENCAT_Lu,	GENCAT_Lu,	GENCAT_Lu,	GENCAT_Sm,
+	/* '\216' */	/* '\217' */	/* '\218' */	/* '\219' */
+	GENCAT_Lu,	GENCAT_Lu,	GENCAT_Lu,	GENCAT_Lu,
+	/* '\220' */	/* '\221' */	/* '\222' */	/* '\223' */
+	GENCAT_Lu,	GENCAT_Lu,	GENCAT_Lu,	GENCAT_Ll,
+	/* '\224' */	/* '\225' */	/* '\226' */	/* '\227' */
+	GENCAT_Ll,	GENCAT_Ll,	GENCAT_Ll,	GENCAT_Ll,
+	/* '\228' */	/* '\229' */	/* '\230' */	/* '\231' */
+	GENCAT_Ll,	GENCAT_Ll,	GENCAT_Ll,	GENCAT_Ll,
+	/* '\232' */	/* '\233' */	/* '\234' */	/* '\235' */
+	GENCAT_Ll,	GENCAT_Ll,	GENCAT_Ll,	GENCAT_Ll,
+	/* '\236' */	/* '\237' */	/* '\238' */	/* '\239' */
+	GENCAT_Ll,	GENCAT_Ll,	GENCAT_Ll,	GENCAT_Ll,
+	/* '\240' */	/* '\241' */	/* '\242' */	/* '\243' */
+	GENCAT_Ll,	GENCAT_Ll,	GENCAT_Ll,	GENCAT_Ll,
+	/* '\244' */	/* '\245' */	/* '\246' */	/* '\247' */
+	GENCAT_Ll,	GENCAT_Ll,	GENCAT_Ll,	GENCAT_Sm,
+	/* '\248' */	/* '\249' */	/* '\250' */	/* '\251' */
+	GENCAT_Ll,	GENCAT_Ll,	GENCAT_Ll,	GENCAT_Ll,
+	/* '\252' */	/* '\253' */	/* '\254' */	/* '\255' */
+	GENCAT_Ll,	GENCAT_Ll,	GENCAT_Ll,	GENCAT_Ll
+};
+
+Int uni_gencat(Char c) {
+    return char_category[c];
 }
 
 #endif
@@ -446,7 +588,7 @@ static Int local utfcodelen(Char c) {
  * a tabulation of (:) c for each character c.
  * ------------------------------------------------------------------------*/
 
-#ifdef UNICODE_CHARS
+#if UNICODE_CHARS
 
 /* --------------------------------------------------------------------------
  * To save space, we maintain a sparse array of character conses,

@@ -75,10 +75,8 @@ extern	Bool	isPrint 	Args((Char));
 extern	Void	initCharTab	Args((void));
 extern	Char	toUpper		Args((Char));
 extern	Char	toLower		Args((Char));
-#if UNICODE_CHARS
 extern	Char	toTitle		Args((Char));
 extern	Int	uni_gencat	Args((Char));
-#endif
 
 /* --------------------------------------------------------------------------
  * Encoding of Chars as sequences of bytes.
