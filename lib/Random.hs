@@ -20,8 +20,10 @@ module Random(
 	getStdRandom, getStdGen, setStdGen, newStdGen
   ) where
 
-import IOExts
-
+import IOExts  ( IORef, newIORef, writeIORef, readIORef,
+		 unsafePerformIO
+	       )
+import Numeric ( showInt, showSigned, readDec )
 
 -- The RandomGen class: ------------------------------------------------------
 
