@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.89 $
- * $Date: 2002/09/11 04:35:48 $
+ * $Revision: 1.90 $
+ * $Date: 2002/09/11 14:46:57 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -498,7 +498,7 @@ Cell   entity; { /* Entry from import/hiding list */
 			    imports=addEntity(f,sigs,imports);
 			    return dupOnto(sigs,imports);
 			} else if ( NIL == snd(entity)) {
-			    imports=cons(f,imports);
+			    imports=addEntity(f,NIL,imports);
 			} else {
 			    List xs = NIL;
 			    xs = checkSubentities(xs, snd(entity), cclass(f).members,"member of class",t);
@@ -556,16 +556,17 @@ Bool   isHidden; {
 	    } else {
 		Cell c = fst(e);
 		List subentities = NIL;
-		if (isTycon(c)
-		    && (tycon(c).what == DATATYPE 
-			|| tycon(c).what == NEWTYPE)) {
+		if ( isClass(c) || 
+		     (isTycon(c)
+		       && (tycon(c).what == DATATYPE ||
+			   tycon(c).what == NEWTYPE)) ) {
 		    if (snd(e) != DOTDOT) {
 			List ys = snd(e);
-			Name con;
+			Name sub;
 			while (nonNull(ys)) {
 			    if (isPair(hd(ys))) {
-				if (nonNull(con = findQualName(hd(ys)))) {
-				  subentities = cons (con,subentities);
+				if (nonNull(sub = findQualName(hd(ys)))) {
+				  subentities = cons (sub,subentities);
 				}
 			    } else {
 				subentities = cons(hd(ys),subentities);
@@ -573,31 +574,14 @@ Bool   isHidden; {
 			    ys=tl(ys);
 			}
 		    } else {
-			subentities = tycon(c).defn;
-		    }
-		} else if (isClass(c)) {
-		    if (snd(e) != DOTDOT) {
-		        Name mem;
-			List ys = snd(e);
-			while (nonNull(ys)) {
-			    if (isPair(hd(ys))) {
-				if (nonNull(mem = findQualName(hd(ys)))) {
-				  subentities = cons(mem,subentities);
-				}
-			    } else {
-				subentities = cons(hd(ys),subentities);
-			    }
-			    ys=tl(ys);
+			if (isClass(c)) {
+			    subentities = cclass(c).members;
+			} else {
+			    subentities = tycon(c).defn;
 			}
-		    } else {
-		      subentities = cclass(c).members;
 		    }
 		}
-		if (subentities != NIL && subentities != DOTDOT) {
-		    imports = addEntity(c,subentities,imports);
-		} else {
-		    imports = cons(c,imports);
-		}
+		imports = addEntity(c,subentities,imports);
 		if (DOTDOT == snd(e)) {
 		    imports = dupOnto(subentities,imports);
 		}
@@ -670,13 +654,15 @@ List is; {
     Cell ms = entityIsMember(e,is);
 
     if (!ms) {
-	return cons(pair(e,ls),is);
+	if (isName(e) && ls == NIL) {
+	   return (e,is);
+	} else {
+	    return cons(pair(e,ls),is);
+	}
     } else {
 	/* concat the two lists, i.e., no removal of duplicates. */
-	if (isIdent(hd(ms)) || !isPair(hd(ms))) {
-	  if (ls != NIL) {
+	if (!isPair(hd(ms)) && ls != NIL) {
 	    hd(ms) = pair(e,ls);
-	  }
 	} else if (snd(hd(ms)) == DOTDOT || ls == NIL) {
 	    ;
 	} else if (ls == DOTDOT || snd(hd(ms)) == NIL) {
