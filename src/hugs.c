@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.22 $
- * $Date: 2000/05/21 16:02:15 $
+ * $Revision: 1.23 $
+ * $Date: 2000/07/26 20:33:04 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -179,7 +179,7 @@ char *argv[]; {
 
     Printf("__   __ __  __  ____   ___      _________________________________________\n");
     Printf("||   || ||  || ||  || ||__      Hugs 98: Based on the Haskell 98 standard\n");
-    Printf("||___|| ||__|| ||__||  __||     Copyright (c) 1994-1999\n");
+    Printf("||___|| ||__|| ||__||  __||     Copyright (c) 1994-2000\n");
     Printf("||---||         ___||           World Wide Web: http://haskell.org/hugs\n");
     Printf("||   ||                         Report bugs to: hugs-bugs@haskell.org\n");
     Printf("||   || Version: %s _________________________________________\n\n",HUGS_VERSION);
@@ -1202,7 +1202,9 @@ static Void local evaluator() {        /* evaluate expr and print value    */
 	}
 	printer = ap(ap(nameFlip,ap(printer,mkInt(MIN_PREC))),nameNil);
 	printer = ap(ap(nameComp,namePutStr),printer);
-	inputExpr = ap(ap(nameIOBind,inputExpr),printer);
+	if (t != typeUnit) {
+	  inputExpr = ap(ap(nameIOBind,inputExpr),printer);
+	}
     }
     else
 #endif
@@ -1909,12 +1911,12 @@ Int l; {
     FPrintf(errorStream,"ERROR");
 
     if (scriptFile) {
-	FPrintf(errorStream," \"%s\"", scriptFile);
+ 	FPrintf(errorStream," %s",scriptFile);
 	setLastEdit(scriptFile,l);
-	if (l) FPrintf(errorStream," (line %d)",l);
+ 	if (l) FPrintf(errorStream,":%d",l);
 	scriptFile = 0;
     }
-    FPrintf(errorStream,": ");
+    FPrintf(errorStream," - ");
     FFlush(errorStream);
 }
 
