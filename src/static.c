@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.108 $
- * $Date: 2002/10/11 00:10:06 $
+ * $Revision: 1.109 $
+ * $Date: 2002/10/18 14:10:30 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -4520,8 +4520,9 @@ Int  a; {
     return pair(pats,pair(mkInt(line),showsPrecRhs(d,pat,a)));
 }
 
-#define shows0   ap(nameShowsPrec,mkInt(0))
-#define shows10  ap(nameShowsPrec,mkInt(10))
+#define APP_PREC  10 /* precedence of function application */
+#define shows0    ap(nameShowsPrec,mkInt(0))
+#define showsN(x) ap(nameShowsPrec,mkInt(x))
 #define showsOP  ap(nameComp,consChar('('))
 #define showsOB  ap(nameComp,consChar('{'))
 #define showsCM  ap(nameComp,consChar(','))
@@ -4616,27 +4617,27 @@ Int  a; {
 	    rhs = ap2(nameComp,
 		      ap2(nameShowsPrec,mkInt(lp),arg(fun(pat))),
 		      ap(showsSP,rhs));
-	    rhs = ap2(nameShowParen,ap2(nameLe,mkInt(p+1),d),rhs);
+	    rhs = ap2(nameShowParen,ap2(nameGt,d,mkInt(p)),rhs);
 	    return rhs;
 	}
 	else {
 	    /* To display a non-nullary constructor with applicative syntax:
-	     *    showsPrec d (Foo x y) = showParen (d>=10)
+	     *    showsPrec d (Foo x y) = showParen (d>APP_PREC)
 	     *				   (showString "Foo" .
-	     *				    showChar ' ' . showsPrec 10 x .
-	     *				    showChar ' ' . showsPrec 10 y)
+	     *				    showChar ' ' . showsPrec (APP_PREC+1) x .
+	     *				    showChar ' ' . showsPrec (APP_PREC+1) y)
 	     */
-	    Cell rhs = ap(showsSP,ap(shows10,arg(pat)));
+	    Cell rhs = ap(showsSP,ap(showsN(APP_PREC+1),arg(pat)));
 	    for (pat=fun(pat); isAp(pat); pat=fun(pat)) {
-		rhs = ap(showsSP,ap2(nameComp,ap(shows10,arg(pat)),rhs));
+		rhs = ap(showsSP,ap2(nameComp,ap(showsN(APP_PREC+1),arg(pat)),rhs));
 	    }
 	    rhs = ap2(nameComp,ap(nameApp,mkStr(name(h).text)),rhs);
-	    rhs = ap2(nameShowParen,ap2(nameLe,mkInt(10),d),rhs);
+	    rhs = ap2(nameShowParen,ap2(nameGt,d,mkInt(APP_PREC)),rhs);
 	    return rhs;
 	}
     }
 }
-#undef  shows10
+#undef  showsN
 #undef  shows0
 #undef  showsOP
 #undef  showsOB
@@ -4712,6 +4713,7 @@ Cell r; {
     Int  p   = 0;
     Syntax s = syntaxOf(con);
     List cfs = cfunSfuns;
+    
     for (; nonNull(cfs) && con!=fst(hd(cfs)); cfs=tl(cfs)) {
     }
     if (nonNull(cfs)) {
@@ -4724,7 +4726,7 @@ Cell r; {
 	p   = precOf(s);
     } else {
 	exp = mkReadPrefix(con);
-	p   = 9;
+	p   = APP_PREC;
     }
     return ReadParen(userArity(con)==0 ? nameFalse : GT(d,mkInt(p)), exp, r);
 }
@@ -4737,10 +4739,10 @@ Cell r; {
  * derives 
  *
  *   \ r -> [ (Constr t1 t2 ... tn, sn) | ("Constr",s0) <- lex r,
- *                                        (t1,s1) <- readsPrec 10 s0,
- *                                        (t2,s2) <- readsPrec 10 s1,
+ *                                        (t1,s1) <- readsPrec (APP_PREC+1) s0,
+ *                                        (t2,s2) <- readsPrec (APP_PREC+1) s1,
  *                                        ...,
- *                                        (tn,sn) <- readsPrec 10 sn-1 ]
+ *                                        (tn,sn) <- readsPrec (APP_PREC+1) sn-1 ]
  *
  */
 static Cell local mkReadPrefix(con)    /* readsPrec for prefix constructor */
@@ -4758,7 +4760,7 @@ Cell con; {
     for(i=0; i<arity; i++) { 
 	Cell t = inventVar();
 	Cell s = inventVar();
-	quals  = cons(ZFexp(Tuple2(t,s),ReadsPrec(mkInt(10),prev_s)), quals);
+	quals  = cons(ZFexp(Tuple2(t,s),ReadsPrec(mkInt(APP_PREC+1),prev_s)), quals);
 	exp    = ap(exp,t);
 	prev_s = s;
     }
@@ -4862,7 +4864,7 @@ Cell tup; {
  *   readField    :: Read a => String -> ReadS a
  *   readField m s0 = [ r | (t,  s1) <- lex s0, t == m,
  *   			    ("=",s2) <- lex s1,
- *   			    r        <- readsPrec 10 s2 ]
+ *   			    r        <- readsPrec APP_PREC s2 ]
  */
 static Cell local mkReadRecord(con, fs) /* readsPrec for record constructor */
 Cell con; 
