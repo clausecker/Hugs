@@ -14,8 +14,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: iomonad.c,v $
- * $Revision: 1.87 $
- * $Date: 2004/11/11 00:17:16 $
+ * $Revision: 1.88 $
+ * $Date: 2004/11/12 18:12:56 $
  * ------------------------------------------------------------------------*/
  
 Name nameIORun;			        /* run IO code                     */
@@ -772,7 +772,15 @@ primFun(primSetArgs) {                  /* primSetArgs :: [String] -> IO () */
  * ------------------------------------------------------------------------*/
 
 primFun(primGetChar) {			/* Get character from stdin        */
-    Int c = FGetChar(stdin);
+    Int c;
+    if (!(handles[HSTDIN].hmode&(HREAD|HREADWRITE))) {
+	IOFail(mkIOError(&handles[HSTDIN].hcell,
+			 nameIllegal,
+			 "getChar",
+			 "handle is (semi-)closed",
+			 NULL));
+    }
+    c = FGetChar(stdin);
     if (c==EOF) {
 	IOFail(mkIOError(&handles[HSTDIN].hcell,
 			 nameEOFErr,
