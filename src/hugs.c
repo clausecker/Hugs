@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.35 $
- * $Date: 2001/02/14 12:15:05 $
+ * $Revision: 1.36 $
+ * $Date: 2001/03/19 17:45:58 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -671,6 +671,7 @@ String s; {                             /* return FALSE if none found.     */
 			   if (heapBuilt() && ((state && !haskell98) ||
 					       (!state && haskell98))) {
 			       FPrintf(stderr,"Haskell 98 compatibility cannot be changed while the interpreter is running\n");
+			       FFlush(stderr);
 			   } else {
 			       haskell98 = state;
 			   }
@@ -695,14 +696,17 @@ String s; {
 	else if (MAXIMUMHEAP && hpSize > MAXIMUMHEAP)
 	    hpSize = MAXIMUMHEAP;
 	if (heapBuilt() && hpSize != heapSize) {
+#define HEAP_RESIZE_MSG "Change to heap size will not take effect until you rerun Hugs"
 #if HUGS_FOR_WINDOWS
-            MessageBox(hWndMain, "Change to heap size will not take effect until you rerun Hugs", appName, MB_ICONHAND | MB_OK);	    
+            MessageBox(hWndMain, HEAP_RESIZE_MSG, appName, MB_ICONHAND | MB_OK);
 #endif            
 #if USE_REGISTRY
-	    FPrintf(stderr,"Change to heap size will not take effect until you rerun Hugs\n");
+	    FPrintf(stderr,HEAP_RESIZE_MSG "\n");
 #else
 	    FPrintf(stderr,"Cannot change heap size\n");
 #endif
+#undef HEAP_RESIZE_MSG
+            FFlush(stderr);
 	} else {
 	    heapSize = hpSize;
 	}
@@ -983,10 +987,42 @@ static Void local set() {               /* change command line options from*/
  * Change directory command:
  * ------------------------------------------------------------------------*/
 
+/*
+ * Poor man's path expansion: expand out ~/ 
+ */
+static Void local expandPath(origPath,expandedPath,maxLen)
+String origPath;
+String expandedPath;
+unsigned int maxLen;
+{
+
+  if (!origPath) {
+    return;
+  }
+
+  /* If the original path starts with "~/", expand it. */
+  if (*origPath == '~' && *(origPath+1) == '/') {
+    unsigned int origLen;
+    String home          = getenv("HOME");
+    origLen = (origPath ? strlen(origPath) : 0);
+    /* The expansion of $HOME will fit in iff
+     *    (maxLength - length(unexpanded) - length("~")) >= length("$HOME")
+     */
+    if ( (maxLen - origLen - 1) >= strlen(home) ) {
+      strcpy(expandedPath, home);
+      strcat(expandedPath, origPath+1);
+      return;
+    }
+  }
+  strcpy(expandedPath, origPath);
+}
+
 static Void local changeDir() {         /* change directory                */
-    String s = readFilename();
-    if (s && chdir(s)) {
-	ERRMSG(0) "Unable to change to directory \"%s\"", s
+    String path = readFilename();
+    char expandedPath[FILENAME_MAX+1];
+    expandPath(path, expandedPath,FILENAME_MAX);
+    if (path && chdir(expandedPath)) {
+	ERRMSG(0) "Unable to change to directory \"%s\"", path
 	EEND;
     }
 }
