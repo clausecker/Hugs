@@ -12,8 +12,8 @@
  * included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.7 $
- * $Date: 1999/11/16 22:22:38 $
+ * $Revision: 1.8 $
+ * $Date: 2000/03/08 14:31:10 $
  * ------------------------------------------------------------------------*/
 
 #ifdef HAVE_SIGNAL_H
@@ -214,7 +214,9 @@ String f; {
 #elif defined HAVE_SYS_STAT_H || defined HAVE_STAT_H
     struct stat scbuf;
     return (  !stat(f,&scbuf) 
+#ifndef __SYMBIAN32__
 	   && (scbuf.st_mode & S_IREAD) /* readable     */
+#endif
 	   && (scbuf.st_mode & S_IFREG) /* regular file */
 	   );
 #elif defined HAVE_OS_SWI /* RISCOS specific */

@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: preds.c,v $
- * $Revision: 1.23 $
- * $Date: 2000/03/08 07:20:59 $
+ * $Revision: 1.24 $
+ * $Date: 2000/03/08 14:31:10 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -740,8 +740,11 @@ Int  o; {				/* superclass hierarchy		   */
  * ------------------------------------------------------------------------*/
 
 static Void local elimTauts() {		/* Remove tautological constraints */
+#ifndef HASKELL_98_ONLY
     if (haskell98) {			/* from preds			   */
+#endif
 	reducePreds();			/* (or context reduce for Hask98)  */
+#ifndef HASKELL_98_ONLY
     } else {
 	List ps = preds;
 	preds   = NIL;
@@ -760,6 +763,7 @@ static Void local elimTauts() {		/* Remove tautological constraints */
 	    }
 	}
     }
+#endif
 }
 
 static Int numFixedVars = 0;		/* Number of fixed vars found	   */

@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: options.h.in,v $
- * $Revision: 1.5 $
- * $Date: 1999/09/15 20:06:41 $
+ * $Revision: 1.6 $
+ * $Date: 2000/03/08 14:31:10 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -103,6 +103,9 @@
 /* --------------------------------------------------------------------------
  * Fancy features
  * ------------------------------------------------------------------------*/
+
+/* Define to omit Hugs extensions                                          */
+#define HASKELL_98_ONLY 0
 
 /* Define if :xplain should be enabled					   */
 #define EXPLAIN_INSTANCE_RESOLUTION 0

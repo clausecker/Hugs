@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.18 $
- * $Date: 2000/02/22 22:09:08 $
+ * $Revision: 1.19 $
+ * $Date: 2000/03/08 14:31:10 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -2769,7 +2769,9 @@ Inst in; {
     List tvps = NIL, tvts = NIL;
     List fds = NIL;
 
+#ifndef HASKELL_98_ONLY
     if (haskell98) {			/* Check for `simple' type	   */
+#endif
 	List tvs = NIL;
 	Cell t   = arg(inst(in).head);
 	for (; isAp(t); t=fun(t)) {
@@ -2784,7 +2786,9 @@ Inst in; {
 		EEND;
 	    }
 	    tvs = cons(arg(t),tvs);
+#ifndef HASKELL_98_ONLY
 	}
+#endif
 	if (isVar(t)) {
 	    ERRMSG(line)
 		"syntax error in instance head (constructor expected)"
@@ -2797,8 +2801,11 @@ Inst in; {
     tyvars = typeVarsIn(inst(in).specifics,NIL,NIL,tyvars);
     inst(in).head = depPredExp(line,tyvars,inst(in).head);
 
-    if (haskell98) {
-	Type h = getHead(arg(inst(in).head));
+#ifndef HASKELL_98_ONLY
+    if (haskell98)
+#endif
+    {
+    Type h = getHead(arg(inst(in).head));
 	if (isSynonym(h)) {
 	    ERRMSG(line) "Cannot use type synonym in instance head"
 	    EEND;
@@ -2934,6 +2941,7 @@ Inst in; {
 	Int beta  = newKindedVars(inst(hd(ins)).kinds);
 	if (unifyPred(inst(in).head,alpha,inst(hd(ins)).head,beta)) {
 	    Cell pi  = copyPred(inst(in).head,alpha);
+#ifndef HASKELL_98_ONLY
 	    if (allowOverlap && !haskell98) {
 		Bool bef = instCompare(in,hd(ins));
 		Bool aft = instCompare(hd(ins),in);
@@ -2946,6 +2954,7 @@ Inst in; {
 		    continue;
 		}
 	    }
+#endif
 #if MULTI_INST
 	    if (multiInstRes && nonNull(inst(in).specifics)) {
 		break;
@@ -6149,7 +6158,9 @@ String wh;
 Bool   allowArgs;
 List   ps;
 Inst   in; {
+#ifndef HASKELL_98_ONLY
     if (haskell98) {
+#endif
 	Cell pi = h98Context(allowArgs,ps);
 	if (nonNull(pi)) {
 	    ERRMSG(line) "Illegal Haskell 98 class constraint in %s",wh ETHEN
@@ -6163,7 +6174,9 @@ Inst   in; {
 	    ERRTEXT	 "\n"
 	    EEND;
 	}
+#ifndef HASKELL_98_ONLY
     }
+#endif
 }
 
 Void h98CheckType(line,wh,e,t)		/* Check for Haskell 98 type	   */
@@ -6171,7 +6184,9 @@ Int    line;
 String wh;
 Cell   e;
 Type   t; {
+#ifndef HASKELL_98_ONLY
     if (haskell98) {
+#endif
 	Type ty = t;
 	if (isPolyType(t))
 	    t = monotypeOf(t);
@@ -6186,16 +6201,22 @@ Type   t; {
 		EEND;
 	    }
 	}
+#ifndef HASKELL_98_ONLY
     }
+#endif
 }
 
 Void h98DoesntSupport(line,wh)		/* Report feature missing in H98   */
 Int    line;
 String wh; {
+#ifndef HASKELL_98_ONLY
     if (haskell98) {
+#endif
 	ERRMSG(line) "Haskell 98 does not support %s", wh
 	EEND;
+#ifndef HASKELL_98_ONLY
     }
+#endif
 }
 
 /* --------------------------------------------------------------------------

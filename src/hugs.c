@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.18 $
- * $Date: 2000/03/08 07:20:59 $
+ * $Revision: 1.19 $
+ * $Date: 2000/03/08 14:31:10 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -23,7 +23,9 @@
 
 #include <stdio.h>
 
+#ifndef HASKELL_98_ONLY
 Bool haskell98 = TRUE;			/* TRUE => Haskell 98 compatibility*/
+#endif
 
 #if EXPLAIN_INSTANCE_RESOLUTION
 Bool showInstRes = FALSE;
@@ -249,12 +251,14 @@ String argv[]; {
 	fatal("Unable to load prelude");
     }
 
+#ifndef HASKELL_98_ONLY
     if (haskell98) {
 	Printf("Haskell 98 mode: Restart with command line option -98 to enable extensions\n\n");
     } else {
 	Printf("Hugs mode: Restart with command line option +98 for Haskell 98 mode\n\n");
     }
- 
+#endif
+
     everybody(INSTALL);
     evalModule = findText("");      /* evaluate wrt last module by default */
     if (proj) {
@@ -273,7 +277,9 @@ String argv[]; {
 
 struct options {                        /* command line option toggles     */
     char   c;                           /* table defined in main app.      */
+#ifndef HASKELL_98_ONLY
     int    h98;
+#endif
     String description;
     Bool   *flag;
 };
@@ -297,7 +303,11 @@ Bool state; {                           /* given state                     */
     Int count = 0;
     Int i;
     for (i=0; toggle[i].c; ++i)
+#ifdef HASKELL_98_ONLY
+	if (*toggle[i].flag == state) {
+#else
 	if (*toggle[i].flag == state && (!haskell98 || toggle[i].h98)) {
+#endif        
 	    if (count==0)
 		Putchar((char)(state ? '+' : '-'));
 	    Putchar(toggle[i].c);
@@ -314,9 +324,13 @@ static Void local optionInfo() {        /* Print information about command */
 
     Printf("TOGGLES: groups begin with +/- to turn options on/off resp.\n");
     for (i=0; toggle[i].c; ++i) {
+#ifndef HASKELL_98_ONLY
 	if (!haskell98 || toggle[i].h98) {
+#endif
 	    Printf(fmtc,toggle[i].c,toggle[i].description);
+#ifndef HASKELL_98_ONLY
 	}
+#endif
     }
 
     Printf("\nOTHER OPTIONS: (leading + or - makes no difference)\n");
@@ -356,8 +370,12 @@ static Void local optionInfo() {        /* Print information about command */
 #if PROFILING
     Printf("\nProfile interval: -d%d", profiling ? profInterval : 0);
 #endif
+#ifdef HASKELL_98_ONLY
+    Printf("\nCompatibility   : Haskell 98");
+#else
     Printf("\nCompatibility   : %s", haskell98 ? "Haskell 98 (+98)"
 					       : "Hugs Extensions (-98)");
+#endif
     Putchar('\n');
 }
 
@@ -405,7 +423,9 @@ static String local optionsToStr() {          /* convert options to string */
 	PUTC(toggle[i].c);
 	PUTC(' ');
     }
+#ifndef HASKELL_98_ONLY
     PUTS(haskell98 ? "+98 " : "-98 ");
+#endif
     PUTInt('h',hpSize);  PUTC(' ');
     PUTStr('p',prompt);
     PUTStr('r',repeatStr);
@@ -511,8 +531,9 @@ String s; {                             /* return FALSE if none found.     */
 			       cutoff = cutcand;
 		       }
 		       return TRUE;
-
-	    default  : if (strcmp("98",s)==0) {
+        default  :
+#ifndef HASKELL_98_ONLY
+	           if (strcmp("98",s)==0) {
 			   if (heapBuilt() && ((state && !haskell98) ||
 					       (!state && haskell98))) {
 			       FPrintf(stderr,"Haskell 98 compatibility cannot be changed while the interpreter is running\n");
@@ -521,8 +542,11 @@ String s; {                             /* return FALSE if none found.     */
 			   }
 			   return TRUE;
 		       } else {
+#endif
 			   toggleSet(*s,state);
-		       }
+#ifndef HASKELL_98_ONLY
+               }
+#endif
 		       break;
 	}
     return TRUE;
@@ -625,6 +649,9 @@ static struct cmd cmds[] = {
  {":xplain", XPLAIN},
 #endif
  {":version", PNTVER},
+#ifdef __SYMBIAN32__
+ {":Pwd",PRNDIR},
+#endif
  {"",      EVAL},
  {0,0}
 };
@@ -657,6 +684,9 @@ static Void local menu() {
     Printf(":!command           shell escape\n");
     Printf(":cd dir             change directory\n");
     Printf(":gc                 force garbage collection\n");
+#ifdef __SYMBIAN32__
+    Printf(":Pwd                print working directory\n");
+#endif
     Printf(":version            print Hugs version\n");
     Printf(":quit               exit Hugs interpreter\n");
 }
@@ -675,32 +705,100 @@ static Void local forHelp() {
  * ------------------------------------------------------------------------*/
 
 struct options toggle[] = {             /* List of command line toggles    */
-    {'s', 1, "Print no. reductions/cells after eval", &showStats},
-    {'t', 1, "Print type after evaluation",           &addType},
-    {'f', 1, "Terminate evaluation on first error",   &failOnError},
-    {'g', 1, "Print no. cells recovered after gc",    &gcMessages},
-    {'l', 1, "Literate modules as default",           &literateScripts},
-    {'e', 1, "Warn about errors in literate modules", &literateErrors},
-    {'.', 1, "Print dots to show progress",           &useDots},
-    {'q', 1, "Print nothing to show progress",        &quiet},
-    {'w', 1, "Always show which modules are loaded",  &listScripts},
-    {'k', 1, "Show kind errors in full",              &kindExpert},
-    {'o', 0, "Allow overlapping instances",           &allowOverlap},
-    {'u', 1, "Use \"show\" to display results",       &useShow},
-    {'i', 1, "Chase imports while loading modules",   &chaseImports},
+    {'s',
+#ifndef HASKELL_98_ONLY
+             1,
+#endif
+             "Print no. reductions/cells after eval", &showStats},
+    {'t',
+#ifndef HASKELL_98_ONLY
+             1,
+#endif
+             "Print type after evaluation",           &addType},
+    {'f',
+#ifndef HASKELL_98_ONLY
+             1,
+#endif
+             "Terminate evaluation on first error",   &failOnError},
+    {'g',
+#ifndef HASKELL_98_ONLY
+             1,
+#endif
+             "Print no. cells recovered after gc",    &gcMessages},
+    {'l',
+#ifndef HASKELL_98_ONLY
+             1, 
+#endif
+             "Literate modules as default",           &literateScripts},
+    {'e',
+#ifndef HASKELL_98_ONLY
+             1,
+#endif
+             "Warn about errors in literate modules", &literateErrors},
+    {'.',
+#ifndef HASKELL_98_ONLY
+             1,
+#endif
+             "Print dots to show progress",           &useDots},
+    {'q',
+#ifndef HASKELL_98_ONLY
+             1,
+#endif
+             "Print nothing to show progress",        &quiet},
+    {'w',
+#ifndef HASKELL_98_ONLY
+             1,
+#endif
+             "Always show which modules are loaded",  &listScripts},
+    {'k',
+#ifndef HASKELL_98_ONLY
+             1,
+#endif
+             "Show kind errors in full",              &kindExpert},
+    {'o',
+#ifndef HASKELL_98_ONLY
+             0,
+#endif
+             "Allow overlapping instances",           &allowOverlap},
+    {'u',
+#ifndef HASKELL_98_ONLY
+             1,
+#endif
+             "Use \"show\" to display results",       &useShow},
+    {'i',
+#ifndef HASKELL_98_ONLY
+             1,
+#endif
+             "Chase imports while loading modules",   &chaseImports},
 #if EXPLAIN_INSTANCE_RESOLUTION
-    {'x', 1, "Explain instance resolution",           &showInstRes},
+    {'x',   
+#ifndef HASKELL_98_ONLY
+             1,
+#endif
+             "Explain instance resolution",           &showInstRes},
 #endif
 #if MULTI_INST
     {'m', 0, "Use multi instance resolution",         &multiInstRes},
 #endif
 #if DEBUG_CODE
-    {'D', 1, "Debug: show generated G code",          &debugCode},
+    {'D',
+#ifndef HASKELL_98_ONLY
+          1,
+#endif
+          "Debug: show generated G code",          &debugCode},
 #endif
 #if DEBUG_SHOWSC
-    {'S', 1, "Debug: show generated SC code",         &debugSC},
+    {'S',
+#ifndef HASKELL_98_ONLY
+          1,
 #endif
-    {0,   0,                                       0}
+          "Debug: show generated SC code",         &debugSC},
+#endif
+    {0,   
+#ifndef HASKELL_98_ONLY
+          0,
+#endif
+          0}
 };
 
 static Void local set() {               /* change command line options from*/
@@ -732,6 +830,17 @@ static Void local changeDir() {         /* change directory                */
 	EEND;
     }
 }
+
+#ifdef __SYMBIAN32__
+/* --------------------------------------------------------------------------
+ * Print working directory command:
+ * ------------------------------------------------------------------------*/
+
+static Void local printDir() {         /* print directory                */
+    char s[256];
+    printf("%s\n",getcwd(s,255));
+}
+#endif
 
 /* --------------------------------------------------------------------------
  * Loading project and script files:
@@ -1678,6 +1787,10 @@ String argv[]; {
 				 cellsRecovered);
 			  break;
 	    case NOCMD  : break;
+#ifdef __SYMBIAN32__
+        case PRNDIR : printDir();
+              break;
+#endif
 	}
 #ifdef WANT_TIMER
 	updateTimers();

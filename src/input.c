@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: input.c,v $
- * $Revision: 1.8 $
- * $Date: 1999/11/16 22:59:54 $
+ * $Revision: 1.9 $
+ * $Date: 2000/03/08 14:31:10 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1354,7 +1354,7 @@ static Int local yylex() {             /* Read next input token ...        */
 		    return STRINGLIT;
     }
 
-#if IPARAM
+#if IPARAM && !defined(HASKELL_98_ONLY)
     if (c0=='?' && isIn(c1,SMALL) && !haskell98) {
 	Text it;			/* Look for implicit param name    */
 	skip();
@@ -1363,7 +1363,7 @@ static Int local yylex() {             /* Read next input token ...        */
 	return identType=IPVARID;
     }
 #endif
-#if TREX
+#if TREX && !defined(HASKELL_98_ONLY)
     if (c0=='#' && isIn(c1,SMALL) && !haskell98) {
 	Text it;			/* Look for record selector name   */
 	skip();
@@ -1431,10 +1431,12 @@ static Int local yylex() {             /* Read next input token ...        */
 	if (it==textNeedPrims)         return NEEDPRIMS;
 	if (it==textAsMod)             return ASMOD;
 	if (it==textWildcard)	       return '_';
+#ifndef HASKELL_98_ONLY
 	if (it==textAll && !haskell98) return ALL;
 #if IPARAM
 	if (it==textWith && !haskell98) lookAhead(WITH);
 	if (it==textDlet && !haskell98) lookAhead(DLET);
+#endif
 #endif
 	if (it==textRepeat && reading==KEYBOARD)
 	    return repeatLast();

@@ -9,8 +9,8 @@
  * included in the distribution.
  *
  * $RCSfile: output.c,v $
- * $Revision: 1.7 $
- * $Date: 1999/10/11 21:02:14 $
+ * $Revision: 1.8 $
+ * $Date: 2000/03/08 14:31:10 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -328,7 +328,11 @@ List fs; {
 		     isVar(e)  ? textOf(e)    : inventText();
 
 	    put(NEVER,f);
+#ifdef HASKELL_98_ONLY
+        if (s!=t) {
+#else
 	    if (haskell98 || s!=t) {
+#endif
 		putStr(" = ");
 		put(NEVER,e);
 	    }

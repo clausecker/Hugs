@@ -9,8 +9,8 @@
  * included in the distribution.
  *
  * $RCSfile: prelude.h,v $
- * $Revision: 1.5 $
- * $Date: 1999/09/13 11:01:05 $
+ * $Revision: 1.6 $
+ * $Date: 2000/03/08 14:31:10 $
  * ------------------------------------------------------------------------*/
 
 #include "config.h"
@@ -51,10 +51,14 @@
 # define DOS 0
 #endif
 
+#ifdef __SYMBIAN32__
+#define IS_WIN32 0
+#else
 #if defined _WIN32 | defined __WIN32__
 # define IS_WIN32 1
 #else
 # define IS_WIN32 0
+#endif
 #endif
 
 
@@ -105,9 +109,15 @@
  *                    rationalToDouble (fromDouble {dict} x) -> x
  *-------------------------------------------------------------------------*/
 
+#ifndef HASKELL_98_ONLY
 #define TREX		1
 #define IPARAM		1
 #define MULTI_INST	1
+#else
+#define TREX        0
+#define IPARAM      0
+#define MULTI_INST  0
+#endif
 #define HASKELL_ARRAYS	1
 #define IO_MONAD	1
 #define IO_HANDLES      1
@@ -461,6 +471,14 @@ extern int allow_break_count;
 
 #endif
 
+#ifdef __SYMBIAN32__
+/* Guesswork, really */
+#define HUGS_RADIX          2
+#define HUGS_MANT_DIG      53
+#define HUGS_MIN_EXP    -1021
+#define HUGS_MAX_EXP     1024
+#endif
+
 #else /* !HAVE_LIBM */
 
 #define FloatImpType	   int     /*dummy*/
@@ -478,7 +496,9 @@ extern int allow_break_count;
 # define farCalloc(n,s)	farcalloc((unsigned long)n,(unsigned long)s)
 #elif HAVE_VALLOC
 # include <stdlib.h>
+#ifndef __SYMBIAN32__
 # include <malloc.h>
+#endif
 # define farCalloc(n,s)	(Void *)valloc(((unsigned)n)*((unsigned)s))
 #else
 # define farCalloc(n,s)	(Void *)calloc(((unsigned)n),((unsigned)s))
@@ -486,7 +506,9 @@ extern int allow_break_count;
 
 /* bison-generated parsers like to have alloca - so try to define it */
 #if HAVE__ALLOCA
+#ifndef __SYMBIAN32__
 #include <malloc.h>
+#endif
 #ifndef alloca
 #define alloca _alloca
 #endif
@@ -540,7 +562,12 @@ extern void     exit       Args((int));
 #endif
 
 /* Hack, hack: if you have dos.h, you probably have a DOS filesystem */
+#ifndef __SYMBIAN32__
+/* No dos.h but a DOS filesystem */
 #define DOS_FILENAMES              HAVE_DOS_H
+#else
+#define DOS_FILENAMES 1
+#endif
 /* ToDo: can we replace this with a feature test? */
 #define MAC_FILENAMES              SYMANTEC_C
 
