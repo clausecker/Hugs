@@ -48,6 +48,9 @@
 /* Define if your <sys/time.h> declares struct tm.  */
 /* #undef TM_IN_SYS_TIME */
 
+/* Define if the X Window System is missing or not being used.  */
+#define X_DISPLAY_MISSING 1
+
 /* The following symbols are defined in options.h:
  * 
  *   BYTECODE_PRIMS
@@ -68,7 +71,6 @@
  *   REGULAR_HUGS
  *   SMALL_BANNER
  *   SMALL_HUGS
- *   USE_DOUBLE_PRECISION
  *   USE_PREPROCESSOR
  *   USE_READLINE
  *   WANT_TIMER
@@ -180,6 +182,9 @@
 /* Define if time.h or sys/time.h define the altzone variable.  */
 /* #undef HAVE_ALTZONE */
 
+/* Define if we want to use Apple's OpenGL for the Quartz Display System on Mac OS X (instead of X11) */   
+/* #undef USE_QUARTZ_OPENGL */
+
 /* Define if time.h or sys/time.h define the timezone variable.  */
 #define HAVE_TIMEZONE 1
 
@@ -225,9 +230,6 @@
 /* The number of bytes in a void *.  */
 #define SIZEOF_VOID_P 4
 
-/* Define if you have the PBHSetVolSync function.  */
-/* #undef HAVE_PBHSETVOLSYNC */
-
 /* Define if you have the _fullpath function.  */
 #define HAVE__FULLPATH 1
 
@@ -245,6 +247,9 @@
 
 /* Define if you have the _vsnprintf function.  */
 #define HAVE__VSNPRINTF 1
+
+/* Define if you have the canonicalize_file_name function.  */
+/* #undef HAVE_CANONICALIZE_FILE_NAME */
 
 /* Define if you have the farcalloc function.  */
 /* #undef HAVE_FARCALLOC */
@@ -294,6 +299,9 @@
 /* Define if you have the mktime function.  */
 #define HAVE_MKTIME 1
 
+/* Define if you have the PBHSetVolSync function.  */
+/* #undef HAVE_PBHSETVOLSYNC */
+
 /* Define if you have the pclose function.  */
 /* #undef HAVE_PCLOSE */
 
@@ -314,6 +322,9 @@
 
 /* Define if you have the select function.  */
 /* #undef HAVE_SELECT */
+
+/* Define if you have the setenv function.  */
+/* #undef HAVE_SETENV */
 
 /* Define if you have the sigprocmask function.  */
 /* #undef HAVE_SIGPROCMASK */
@@ -345,14 +356,17 @@
 /* Define if you have the times function.  */
 /* #undef HAVE_TIMES */
 
+/* Define if you have the unsetenv function.  */
+/* #undef HAVE_UNSETENV */
+
 /* Define if you have the valloc function.  */
 /* #undef HAVE_VALLOC */
 
 /* Define if you have the vsnprintf function.  */
 /* #undef HAVE_VSNPRINTF */
 
-/* Define if you have the <Files.h> header file.  */
-/* #undef HAVE_FILES_H */
+/* Define if you have the <arpa/inet.h> header file.  */
+/* #undef HAVE_ARPA_INET_H */
 
 /* Define if you have the <assert.h> header file.  */
 #define HAVE_ASSERT_H 1
@@ -387,11 +401,20 @@
 /* Define if you have the <fcntl.h> header file.  */
 #define HAVE_FCNTL_H 1
 
+/* Define if you have the <Files.h> header file.  */
+/* #undef HAVE_FILES_H */
+
 /* Define if you have the <float.h> header file.  */
 #define HAVE_FLOAT_H 1
 
 /* Define if you have the <ftw.h> header file.  */
 /* #undef HAVE_FTW_H */
+
+/* Define if you have the <GL/gl.h> header file.  */
+/* #undef HAVE_GL_GL_H */
+
+/* Define if you have the <grp.h> header file.  */
+/* #undef HAVE_GRP_H */
 
 /* Define if you have the <io.h> header file.  */
 #define HAVE_IO_H 1
@@ -402,11 +425,26 @@
 /* Define if you have the <mach-o/dyld.h> header file.  */
 /* #undef HAVE_MACH_O_DYLD_H */
 
+/* Define if you have the <netdb.h> header file.  */
+/* #undef HAVE_NETDB_H */
+
+/* Define if you have the <netinet/in.h> header file.  */
+/* #undef HAVE_NETINET_IN_H */
+
+/* Define if you have the <netinet/tcp.h> header file.  */
+/* #undef HAVE_NETINET_TCP_H */
+
 /* Define if you have the <nlist.h> header file.  */
 /* #undef HAVE_NLIST_H */
 
+/* Define if you have the <OpenGL/gl.h> header file.  */
+/* #undef HAVE_OPENGL_GL_H */
+
 /* Define if you have the <pascal.h> header file.  */
 /* #undef HAVE_PASCAL_H */
+
+/* Define if you have the <pwd.h> header file.  */
+/* #undef HAVE_PWD_H */
 
 /* Define if you have the <sgtty.h> header file.  */
 /* #undef HAVE_SGTTY_H */
@@ -438,6 +476,9 @@
 /* Define if you have the <sys/resource.h> header file.  */
 /* #undef HAVE_SYS_RESOURCE_H */
 
+/* Define if you have the <sys/socket.h> header file.  */
+/* #undef HAVE_SYS_SOCKET_H */
+
 /* Define if you have the <sys/stat.h> header file.  */
 #define HAVE_SYS_STAT_H 1
 
@@ -455,6 +496,12 @@
 
 /* Define if you have the <sys/types.h> header file.  */
 #define HAVE_SYS_TYPES_H 1
+
+/* Define if you have the <sys/uio.h> header file.  */
+/* #undef HAVE_SYS_UIO_H */
+
+/* Define if you have the <sys/un.h> header file.  */
+/* #undef HAVE_SYS_UN_H */
 
 /* Define if you have the <sys/utsname.h> header file.  */
 /* #undef HAVE_SYS_UTSNAME_H */
@@ -486,6 +533,17 @@
 /* Define if you have the <winsock.h> header file.  */
 #define HAVE_WINSOCK_H 1
 
+/* Define to the necessary symbol if this constant
+                           uses a non-standard name on your system. */
+/* #undef PTHREAD_CREATE_JOINABLE */
+
+/* Define if you have POSIX threads libraries and header files. */
+/* #undef HAVE_PTHREAD */
+
+
+/* Define if netinet/in.h defines the in_addr type.  */
+/* #undef HAVE_IN_ADDR_T */
+
 /* Define if you have the dl library (-ldl).  */
 /* #undef HAVE_LIBDL */
 
@@ -497,6 +555,18 @@
 
 /* Define if you have the editline library (-leditline).  */
 /* #undef HAVE_LIBREADLINE */
+
+/* Define if struct msghdr contains msg_accrights field */
+/* #undef HAVE_STRUCT_MSGHDR_MSG_ACCRIGHTS */
+ 
+/* Define if struct msghdr contains msg_control field */
+/* #undef HAVE_STRUCT_MSGHDR_MSG_CONTROL */
+
+/* Host cpu architecture */
+#define HOST_ARCH "i686"
+
+/* Host operating system */
+#define HOST_OS "msvc"
 
 /* Define to Haskell type for cc_t */
 #define HTYPE_CC_T NotReallyAType
@@ -588,6 +658,9 @@
 /* Define to Haskell type for ptrdiff_t */
 #define HTYPE_PTRDIFF_T Int32
 
+/* Define to Haskell type for rlim_t */
+#define HTYPE_RLIM_T NotReallyAType
+
 /* Define to Haskell type for short */
 #define HTYPE_SHORT Int16
 
@@ -634,296 +707,298 @@
 #define HTYPE_WCHAR_T Word16
 
 /* The value of E2BIG.  */
-#define CCONST_E2BIG 7
+#define CONST_E2BIG 7
 
 /* The value of EACCES.  */
-#define CCONST_EACCES 13
+#define CONST_EACCES 13
 
 /* The value of EADDRINUSE.  */
-#define CCONST_EADDRINUSE -1
+#define CONST_EADDRINUSE -1
 
 /* The value of EADDRNOTAVAIL.  */
-#define CCONST_EADDRNOTAVAIL -1
+#define CONST_EADDRNOTAVAIL -1
 
 /* The value of EADV.  */
-#define CCONST_EADV -1
+#define CONST_EADV -1
 
 /* The value of EAFNOSUPPORT.  */
-#define CCONST_EAFNOSUPPORT -1
+#define CONST_EAFNOSUPPORT -1
 
 /* The value of EAGAIN.  */
-#define CCONST_EAGAIN 11
+#define CONST_EAGAIN 11
 
 /* The value of EALREADY.  */
-#define CCONST_EALREADY -1
+#define CONST_EALREADY -1
 
 /* The value of EBADF.  */
-#define CCONST_EBADF 9
+#define CONST_EBADF 9
 
 /* The value of EBADMSG.  */
-#define CCONST_EBADMSG -1
+#define CONST_EBADMSG -1
 
 /* The value of EBADRPC.  */
-#define CCONST_EBADRPC -1
+#define CONST_EBADRPC -1
 
 /* The value of EBUSY.  */
-#define CCONST_EBUSY 16
+#define CONST_EBUSY 16
 
 /* The value of ECHILD.  */
-#define CCONST_ECHILD 10
+#define CONST_ECHILD 10
 
 /* The value of ECOMM.  */
-#define CCONST_ECOMM -1
+#define CONST_ECOMM -1
 
 /* The value of ECONNABORTED.  */
-#define CCONST_ECONNABORTED -1
+#define CONST_ECONNABORTED -1
 
 /* The value of ECONNREFUSED.  */
-#define CCONST_ECONNREFUSED -1
+#define CONST_ECONNREFUSED -1
 
 /* The value of ECONNRESET.  */
-#define CCONST_ECONNRESET -1
+#define CONST_ECONNRESET -1
 
 /* The value of EDEADLK.  */
-#define CCONST_EDEADLK 36
+#define CONST_EDEADLK 36
 
 /* The value of EDESTADDRREQ.  */
-#define CCONST_EDESTADDRREQ -1
+#define CONST_EDESTADDRREQ -1
 
 /* The value of EDIRTY.  */
-#define CCONST_EDIRTY -1
+#define CONST_EDIRTY -1
 
 /* The value of EDOM.  */
-#define CCONST_EDOM 33
+#define CONST_EDOM 33
 
 /* The value of EDQUOT.  */
-#define CCONST_EDQUOT -1
+#define CONST_EDQUOT -1
 
 /* The value of EEXIST.  */
-#define CCONST_EEXIST 17
+#define CONST_EEXIST 17
 
 /* The value of EFAULT.  */
-#define CCONST_EFAULT 14
+#define CONST_EFAULT 14
 
 /* The value of EFBIG.  */
-#define CCONST_EFBIG 27
+#define CONST_EFBIG 27
 
 /* The value of EFTYPE.  */
-#define CCONST_EFTYPE -1
+#define CONST_EFTYPE -1
 
 /* The value of EHOSTDOWN.  */
-#define CCONST_EHOSTDOWN -1
+#define CONST_EHOSTDOWN -1
 
 /* The value of EHOSTUNREACH.  */
-#define CCONST_EHOSTUNREACH -1
+#define CONST_EHOSTUNREACH -1
 
 /* The value of EIDRM.  */
-#define CCONST_EIDRM -1
+#define CONST_EIDRM -1
 
 /* The value of EILSEQ.  */
-#define CCONST_EILSEQ 42
+#define CONST_EILSEQ 42
 
 /* The value of EINPROGRESS.  */
-#define CCONST_EINPROGRESS -1
+#define CONST_EINPROGRESS -1
 
 /* The value of EINTR.  */
-#define CCONST_EINTR 4
+#define CONST_EINTR 4
 
 /* The value of EINVAL.  */
-#define CCONST_EINVAL 22
+#define CONST_EINVAL 22
 
 /* The value of EIO.  */
-#define CCONST_EIO 5
+#define CONST_EIO 5
 
 /* The value of EISCONN.  */
-#define CCONST_EISCONN -1
+#define CONST_EISCONN -1
 
 /* The value of EISDIR.  */
-#define CCONST_EISDIR 21
+#define CONST_EISDIR 21
 
 /* The value of ELOOP.  */
-#define CCONST_ELOOP -1
+#define CONST_ELOOP -1
 
 /* The value of EMFILE.  */
-#define CCONST_EMFILE 24
+#define CONST_EMFILE 24
 
 /* The value of EMLINK.  */
-#define CCONST_EMLINK 31
+#define CONST_EMLINK 31
 
 /* The value of EMSGSIZE.  */
-#define CCONST_EMSGSIZE -1
+#define CONST_EMSGSIZE -1
 
 /* The value of EMULTIHOP.  */
-#define CCONST_EMULTIHOP -1
+#define CONST_EMULTIHOP -1
 
 /* The value of ENAMETOOLONG.  */
-#define CCONST_ENAMETOOLONG 38
+#define CONST_ENAMETOOLONG 38
 
 /* The value of ENETDOWN.  */
-#define CCONST_ENETDOWN -1
+#define CONST_ENETDOWN -1
 
 /* The value of ENETRESET.  */
-#define CCONST_ENETRESET -1
+#define CONST_ENETRESET -1
 
 /* The value of ENETUNREACH.  */
-#define CCONST_ENETUNREACH -1
+#define CONST_ENETUNREACH -1
 
 /* The value of ENFILE.  */
-#define CCONST_ENFILE 23
+#define CONST_ENFILE 23
 
 /* The value of ENOBUFS.  */
-#define CCONST_ENOBUFS -1
+#define CONST_ENOBUFS -1
 
 /* The value of ENODATA.  */
-#define CCONST_ENODATA -1
+#define CONST_ENODATA -1
 
 /* The value of ENODEV.  */
-#define CCONST_ENODEV 19
+#define CONST_ENODEV 19
 
 /* The value of ENOENT.  */
-#define CCONST_ENOENT 2
+#define CONST_ENOENT 2
 
 /* The value of ENOEXEC.  */
-#define CCONST_ENOEXEC 8
+#define CONST_ENOEXEC 8
 
 /* The value of ENOLCK.  */
-#define CCONST_ENOLCK 39
+#define CONST_ENOLCK 39
 
 /* The value of ENOLINK.  */
-#define CCONST_ENOLINK -1
+#define CONST_ENOLINK -1
 
 /* The value of ENOMEM.  */
-#define CCONST_ENOMEM 12
+#define CONST_ENOMEM 12
 
 /* The value of ENOMSG.  */
-#define CCONST_ENOMSG -1
+#define CONST_ENOMSG -1
 
 /* The value of ENONET.  */
-#define CCONST_ENONET -1
+#define CONST_ENONET -1
 
 /* The value of ENOPROTOOPT.  */
-#define CCONST_ENOPROTOOPT -1
+#define CONST_ENOPROTOOPT -1
 
 /* The value of ENOSPC.  */
-#define CCONST_ENOSPC 28
+#define CONST_ENOSPC 28
 
 /* The value of ENOSR.  */
-#define CCONST_ENOSR -1
+#define CONST_ENOSR -1
 
 /* The value of ENOSTR.  */
-#define CCONST_ENOSTR -1
+#define CONST_ENOSTR -1
 
 /* The value of ENOSYS.  */
-#define CCONST_ENOSYS 40
+#define CONST_ENOSYS 40
 
 /* The value of ENOTBLK.  */
-#define CCONST_ENOTBLK -1
+#define CONST_ENOTBLK -1
 
 /* The value of ENOTCONN.  */
-#define CCONST_ENOTCONN -1
+#define CONST_ENOTCONN -1
 
 /* The value of ENOTDIR.  */
-#define CCONST_ENOTDIR 20
+#define CONST_ENOTDIR 20
 
 /* The value of ENOTEMPTY.  */
-#define CCONST_ENOTEMPTY 41
+#define CONST_ENOTEMPTY 41
 
 /* The value of ENOTSOCK.  */
-#define CCONST_ENOTSOCK -1
+#define CONST_ENOTSOCK -1
 
 /* The value of ENOTTY.  */
-#define CCONST_ENOTTY 25
+#define CONST_ENOTTY 25
 
 /* The value of ENXIO.  */
-#define CCONST_ENXIO 6
+#define CONST_ENXIO 6
 
 /* The value of EOPNOTSUPP.  */
-#define CCONST_EOPNOTSUPP -1
+#define CONST_EOPNOTSUPP -1
 
 /* The value of EPERM.  */
-#define CCONST_EPERM 1
+#define CONST_EPERM 1
 
 /* The value of EPFNOSUPPORT.  */
-#define CCONST_EPFNOSUPPORT -1
+#define CONST_EPFNOSUPPORT -1
 
 /* The value of EPIPE.  */
-#define CCONST_EPIPE 32
+#define CONST_EPIPE 32
 
 /* The value of EPROCLIM.  */
-#define CCONST_EPROCLIM -1
+#define CONST_EPROCLIM -1
 
 /* The value of EPROCUNAVAIL.  */
-#define CCONST_EPROCUNAVAIL -1
+#define CONST_EPROCUNAVAIL -1
 
 /* The value of EPROGMISMATCH.  */
-#define CCONST_EPROGMISMATCH -1
+#define CONST_EPROGMISMATCH -1
 
 /* The value of EPROGUNAVAIL.  */
-#define CCONST_EPROGUNAVAIL -1
+#define CONST_EPROGUNAVAIL -1
 
 /* The value of EPROTO.  */
-#define CCONST_EPROTO -1
+#define CONST_EPROTO -1
 
 /* The value of EPROTONOSUPPORT.  */
-#define CCONST_EPROTONOSUPPORT -1
+#define CONST_EPROTONOSUPPORT -1
 
 /* The value of EPROTOTYPE.  */
-#define CCONST_EPROTOTYPE -1
+#define CONST_EPROTOTYPE -1
 
 /* The value of ERANGE.  */
-#define CCONST_ERANGE 34
+#define CONST_ERANGE 34
 
 /* The value of EREMCHG.  */
-#define CCONST_EREMCHG -1
+#define CONST_EREMCHG -1
 
 /* The value of EREMOTE.  */
-#define CCONST_EREMOTE -1
+#define CONST_EREMOTE -1
 
 /* The value of EROFS.  */
-#define CCONST_EROFS 30
+#define CONST_EROFS 30
 
 /* The value of ERPCMISMATCH.  */
-#define CCONST_ERPCMISMATCH -1
+#define CONST_ERPCMISMATCH -1
 
 /* The value of ERREMOTE.  */
-#define CCONST_ERREMOTE -1
+#define CONST_ERREMOTE -1
 
 /* The value of ESHUTDOWN.  */
-#define CCONST_ESHUTDOWN -1
+#define CONST_ESHUTDOWN -1
 
 /* The value of ESOCKTNOSUPPORT.  */
-#define CCONST_ESOCKTNOSUPPORT -1
+#define CONST_ESOCKTNOSUPPORT -1
 
 /* The value of ESPIPE.  */
-#define CCONST_ESPIPE 29
+#define CONST_ESPIPE 29
 
 /* The value of ESRCH.  */
-#define CCONST_ESRCH 3
+#define CONST_ESRCH 3
 
 /* The value of ESRMNT.  */
-#define CCONST_ESRMNT -1
+#define CONST_ESRMNT -1
 
 /* The value of ESTALE.  */
-#define CCONST_ESTALE -1
+#define CONST_ESTALE -1
 
 /* The value of ETIME.  */
-#define CCONST_ETIME -1
+#define CONST_ETIME -1
 
 /* The value of ETIMEDOUT.  */
-#define CCONST_ETIMEDOUT -1
+#define CONST_ETIMEDOUT -1
 
 /* The value of ETOOMANYREFS.  */
-#define CCONST_ETOOMANYREFS -1
+#define CONST_ETOOMANYREFS -1
 
 /* The value of ETXTBSY.  */
-#define CCONST_ETXTBSY -1
+#define CONST_ETXTBSY -1
 
 /* The value of EUSERS.  */
-#define CCONST_EUSERS -1
+#define CONST_EUSERS -1
 
 /* The value of EWOULDBLOCK.  */
-#define CCONST_EWOULDBLOCK -1
+#define CONST_EWOULDBLOCK -1
 
 /* The value of EXDEV.  */
-#define CCONST_EXDEV 18
+#define CONST_EXDEV 18
 
+/* The value of O_BINARY.  */
+#define CONST_O_BINARY 32768
