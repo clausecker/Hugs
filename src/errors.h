@@ -8,16 +8,20 @@
  * included in the distribution.
  *
  * $RCSfile: errors.h,v $
- * $Revision: 1.4 $
- * $Date: 2001/01/02 18:21:40 $
+ * $Revision: 1.5 $
+ * $Date: 2001/01/31 02:52:13 $
  * ------------------------------------------------------------------------*/
 
 extern Void internal	 Args((String)) HUGS_noreturn;
 extern Void fatal	 Args((String)) HUGS_noreturn;
 
 #if HUGS_FOR_WINDOWS
-#define Hilite()	 WinTextcolor(hWndText,RED);
-#define Lolite()	 WinTextcolor(hWndText,BLACK);
+/* output to stderr uses RED color already */
+#undef  Hilite
+#undef  Lolite
+#define Hilite()         doNothing()
+#define Lolite()         doNothing()
+#define SetForeColor(c)  WinTextcolor(hWndText,c);
 #define errorStream	 stderr
 #else
 #define Hilite()         doNothing()

@@ -47,15 +47,16 @@ HFILES		= prelude.h config.h options.h storage.h connect.h \
 		  errors.h command.h server.h
 CFILES		= hugs.c storage.c input.c static.c type.c subst.c \
 		  output.c compiler.c machine.c interp.c builtin.c \
-		  server.c
-INCFILES	= parser.c preds.c bignums.c machdep.c timer.c \
+		  server.c ffi.c
+INCFILES	= parser.c preds.c bignums.c scc.c machdep.c timer.c \
 		  printer.c iomonad.c interns.c stmonad.c array.c
 YFILES		= parser.y
 SOURCES		= $(HFILES) $(CFILES) $(INCFILES) $(YFILES) 
 OBJECTS		= storage.obj input.obj static.obj type.obj compiler.obj \
-		  subst.obj plugin.obj builtin.obj machine.obj output.obj
+		  subst.obj plugin.obj builtin.obj machine.obj output.obj \
+		  ffi.obj
 IOBJECTS	= hugs.obj $(OBJECTS)
-PRELUDE		= config.h options.h prelude.h win-text.h
+PRELUDE		= config.h options.h prelude.h
 
 ################################################################
 # Hugs interpreter and standalone evaluator
@@ -132,7 +133,8 @@ static.obj	: static.c
 server.obj	: $(PRELUDE) storage.h connect.h errors.h version.h \
 		  command.h machdep.c timer.c hugs.c server.c server.h
 hugs.obj	: $(PRELUDE) storage.h connect.h errors.h version.h \
-		  command.h machdep.c timer.c winhugs.c 
+		  command.h machdep.c timer.c
+ffi.obj		: $(PRELUDE) storage.h connect.h errors.h
 storage.obj	: $(PRELUDE) storage.h connect.h errors.h
 input.obj	: $(PRELUDE) storage.h connect.h errors.h \
 		  parser.c command.h
@@ -147,7 +149,6 @@ machine.obj	: $(PRELUDE) storage.h connect.h errors.h
 plugin.obj	: $(PRELUDE) storage.h connect.h errors.h
 builtin.obj	: $(PRELUDE) storage.h connect.h errors.h \
 		  bignums.c printer.c iomonad.c interns.c stmonad.c array.c
-win-text.obj	: $(PRELUDE) win-text.h
 
 ################################################################
 # Regression tests (none supplied)

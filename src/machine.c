@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: machine.c,v $
- * $Revision: 1.4 $
- * $Date: 2001/01/02 18:21:40 $
+ * $Revision: 1.5 $
+ * $Date: 2001/01/31 02:52:13 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1537,13 +1537,10 @@ unw:switch (whatIs(n)) {                /* unwind spine of application     */
 	                        || (ar=name(n).arity) > args
 				|| ar == 0; 
 
-	case INTCELL   : return TRUE; 
-
-	case FLOATCELL : return TRUE;
-
 	case STRCELL   : evalString(n);
 			 goto unw;
     }
+    return TRUE;
 }
 
 Cell getCaf(n)

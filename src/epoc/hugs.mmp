@@ -12,7 +12,7 @@ SUBPROJECT              hugs98\src
 
 SOURCE hugs.c storage.c input.c static.c type.c subst.c 
 SOURCE output.c compiler.c machine.c builtin.c plugin.c
-SOURCE epoc.c epoc_input.c
+SOURCE epoc\epoc.c epoc\epoc_input.c
 
 SYSTEMINCLUDE   \epoc32\include\libc \epoc32\include
 USERINCLUDE     \epoc_code\hugs98\src

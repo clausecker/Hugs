@@ -9,8 +9,8 @@
  * included in the distribution.
  *
  * $RCSfile: prelude.h,v $
- * $Revision: 1.12 $
- * $Date: 2001/01/17 23:30:36 $
+ * $Revision: 1.13 $
+ * $Date: 2001/01/31 02:52:13 $
  * ------------------------------------------------------------------------*/
 
 #include "config.h"
@@ -180,11 +180,15 @@
 # define CMDhwnd(w,l)  ((HWND)(l))
 #endif
 
-#include "win-menu.h"
+#if HUGS_FOR_WINDOWS
+#include "winhugs\winmenu.h"
+#endif
 extern char *appName;
 extern HWND		hWndText;	/* text output window handle	   */
 extern HWND		hWndMain;	/* main window handle		   */
-#include "win-text.h"
+#if HUGS_FOR_WINDOWS
+#include "winhugs\wintext.h"
+#endif
 #endif
 
 
@@ -298,7 +302,11 @@ extern char	*strcpy	   Args((char *, const char*));
 extern char     *strcat	   Args((char *, const char*));
 #endif
 #if HAVE_STRCMP
+#if HUGS_FOR_WINDOWS
+#define strCompare stricmp
+#else
 #define strCompare strcmp
+#endif
 #else /* probably only used for DOS - ADR */
 extern  int     stricmp	   Args((const char *, const char*));
 #define strCompare stricmp
@@ -384,8 +392,13 @@ extern  int  kbhit	Args((void));
 #elif HANDLERS_CANT_LONGJMP /* eg Win32 */
 
 # if HUGS_FOR_WINDOWS
-#  define ctrlbrk(bh) 
-#  define allowBreak()	kbhit()
+#  if USE_THREADS
+#   define ctrlbrk(bh)	do { signal(SIGINT,bh); signal(SIGBREAK,bh); } while (0)
+#   define allowBreak()	if (broken) { broken = FALSE; sigRaise(breakHandler); }
+#  else
+#   define ctrlbrk(bh)  do { signal(SIGINT,bh); signal(SIGBREAK,bh); } while (0)
+#   define allowBreak()	kbhit(); if (broken) { broken = FALSE; sigRaise(breakHandler); }
+#  endif /* USE_THREADS */
 # else /* !HUGS_FOR_WINDOWS */
 #  define ctrlbrk(bh)	do { signal(SIGINT,bh); signal(SIGBREAK,bh); } while (0)
 #  define allowBreak()	if (broken) { broken = FALSE; sigRaise(breakHandler); }

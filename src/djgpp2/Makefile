@@ -37,18 +37,18 @@ CP		= COPY
 .SUFFIXES	:
 .SUFFIXES	: .c .h .o
 HFILES		= prelude.h config.h options.h storage.h connect.h \
-		  subst.h errors.h command.h server.h
+		  errors.h command.h server.h
 CFILES		= hugs.c storage.c input.c static.c type.c subst.c \
-		  output.c compiler.c machine.c builtin.c \
-		  server.c
-INCFILES	= parser.c preds.c bignums.c subst.c machdep.c timer.c \
+		  output.c compiler.c machine.c interp.c builtin.c \
+		  server.c ffi.c
+INCFILES	= parser.c preds.c bignums.c scc.c machdep.c timer.c \
 		  printer.c iomonad.c interns.c stmonad.c array.c
 YFILES		= parser.y
 SOURCES		= $(HFILES) $(CFILES) $(INCFILES) $(YFILES) 
 OBJECTS		= storage.o input.o static.o type.o subst.o compiler.o \
-		  plugin.o builtin.o machine.o output.o
+		  plugin.o builtin.o machine.o output.o ffi.o
 IOBJECTS	= hugs.o $(OBJECTS)
-PRELUDE		= config.h options.h prelude.h win-text.h
+PRELUDE		= config.h options.h prelude.h
 
 ################################################################
 # Hugs interpreter and standalone evaluator
@@ -119,10 +119,11 @@ static.o	: static.c
 # veryclean	::
 # 		  $(RM) parser.c
 
-server.o	: $(PRELUDE) storage.h connect.h errors.h \
+server.o	: $(PRELUDE) storage.h connect.h errors.h version.h \
 		  command.h machdep.c timer.c server.c server.h
-hugs.o		: $(PRELUDE) storage.h connect.h errors.h \
-		  command.h machdep.c timer.c winhugs.c 
+hugs.o		: $(PRELUDE) storage.h connect.h errors.h version.h \
+		  command.h machdep.c timer.c
+ffi.o		: $(PRELUDE) storage.h connect.h errors.h
 storage.o	: $(PRELUDE) storage.h connect.h errors.h
 input.o		: $(PRELUDE) storage.h connect.h errors.h \
 		  parser.c command.h
@@ -130,7 +131,7 @@ subst.o		: $(PRELUDE) storage.h connect.h errors.h subst.h
 static.o	: $(PRELUDE) storage.h connect.h errors.h subst.h \
 		  scc.c
 type.o		: $(PRELUDE) storage.h connect.h errors.h subst.h \
-		  preds.c scc.c
+		  scc.c preds.c
 output.o	: $(PRELUDE) storage.h connect.h errors.h
 compiler.o	: $(PRELUDE) storage.h connect.h errors.h \
 		  compiler.c

@@ -101,7 +101,7 @@
 #define HAVE_PROTOTYPES 1
 
 /* Define if you have the WinExec function.  */
-#define HAVE_WINEXEC 0
+#define HAVE_WINEXEC 1
 
 /* Define if jmpbufs can be treated like arrays.
  * That is, if the following code compiles ok:

@@ -12,8 +12,8 @@
  * included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.9 $
- * $Date: 2000/12/13 09:01:54 $
+ * $Revision: 1.10 $
+ * $Date: 2001/01/31 02:52:13 $
  * ------------------------------------------------------------------------*/
 
 #ifdef HAVE_SIGNAL_H
@@ -58,9 +58,6 @@
 #endif
 
 #if HUGS_FOR_WINDOWS
-#include <dir.h>
-#include <mem.h>
-
 extern HCURSOR HandCursor;            /* Forward references to cursors   */
 extern HCURSOR GarbageCursor;
 extern HCURSOR SaveCursor;
@@ -114,7 +111,9 @@ int allow_break_count = 0;
 #define HScriptRoot ("SOFTWARE\\Haskell\\HaskellScript\\")
 #endif
 
-#define HugsRoot ("SOFTWARE\\Haskell\\Hugs\\" HUGS_VERSION "\\")
+#if HUGS_FOR_WINDOWS
+#define HugsRoot ("SOFTWARE\\Haskell\\Hugs\\Winhugs" HUGS_VERSION "\\")
+#endif
 #define ProjectRoot ("SOFTWARE\\Haskell\\Projects\\")
 
 static Bool   local createKey      Args((HKEY, String, PHKEY, REGSAM));
@@ -313,7 +312,6 @@ static String local hscriptDir() {  /* Directory containing hscript.dll	   */
     return dir;
 }
 #endif
-
 
 static String local RealPath(s)         /* Find absolute pathname of file  */
 String s; {
@@ -1087,11 +1085,32 @@ String nm; {                            /* or just line may be zero        */
 	String he = hugsEdit;
 	String ec = editorCmd;
 	String rd = NULL;               /* Set to nonnull to redo ...      */
-
+#if HUGS_FOR_WINDOWS || 1
+	/* In order to support long file names in windows, we use the '\"' */
+	/* character to delimit the path			           */	
+	if (*he=='\"') {		/* if editor starts with '\"'      */
+	  *ec++ = *he++;		/* copy initial '\"'		   */	
+	  n--;		
+	  for (; n>0 && *he && *he!='\"' && *he!='%'; n--)
+	    *ec++ = *he++;              /* Copy editor name to buffer      */
+					/* assuming filename ends at '\"'  */
+	  *ec++ = *he++;		
+	  n--;				/* copy final '\"'		   */	
+	}
+	else
+	  /* we assume a short file name without spaces                    */	
+	  for (; n>0 && *he && *he!=' ' && *he!='%'; n--)
+	    *ec++ = *he++;              /* Copy editor name to buffer      */
+					/* assuming filename ends at space */
+        if (line==0) line=1;		/* if line is 0 the following code */
+        				/* does not take into account the  */
+        				/* editor configuration (it just   */					
+        				/* copies the file name!)          */
+#else
 	for (; n>0 && *he && *he!=' ' && *he!='%'; n--)
 	    *ec++ = *he++;              /* Copy editor name to buffer      */
 					/* assuming filename ends at space */
-
+#endif
 	if (nm && line && n>1 && *he){  /* Name, line, and enough space    */
 	    rd = ec;                    /* save, in case we don't find name*/
 	    while (n>0 && *he) {
@@ -1440,7 +1459,13 @@ String file; {
 
 String mkFFIFilename(file)                      /* get DLL path for module */
 String file; {
+#if HAVE__FULLPATH
+    static char path[FILENAME_MAX+1];
+#elif HAVE_REALPATH
     static char path[MAXPATHLEN+1];
+#else
+    static char path[FILENAME_MAX+1];
+#endif
     String dot;
     String slash;
     slash = strrchr(file,SLASH);        /* drop path to file                */
@@ -1568,7 +1593,11 @@ HKEY   key;
 String regPath;
 String var; 
 String def; {
+#if HUGS_FOR_WINDOWS
+    static char  buf[2048]; /* 300 chars get too short with long file names */
+#else
     static char  buf[300];
+#endif
     DWORD type;
     if (queryValue(key, regPath,var, &type, buf, sizeof(buf))
 	&& type == REG_SZ) {

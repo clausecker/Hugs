@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.29 $
- * $Date: 2001/01/17 23:30:36 $
+ * $Revision: 1.30 $
+ * $Date: 2001/01/31 02:52:13 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -22,6 +22,11 @@
 #include <ctype.h>
 
 #include <stdio.h>
+
+#if HUGS_FOR_WINDOWS
+#include "winhugs\WinHugs.h"
+#include "winhugs\WinUtils.h"
+#endif
 
 #if !HASKELL_98_ONLY
 Bool haskell98 = TRUE;			/* TRUE => Haskell 98 compatibility*/
@@ -69,6 +74,9 @@ static Void   local printSyntax       Args((Name));
 static Void   local showInst          Args((Inst));
 static Void   local describe          Args((Text));
 static Void   local listNames         Args((Void));
+#if HUGS_FOR_WINDOWS
+static Void   local autoReloadFiles   Args((Void));
+#endif
 
 static Void   local toggleSet         Args((Char,Bool));
 static Void   local togglesIn         Args((Bool));
@@ -113,6 +121,10 @@ static Bool   useShow      = TRUE;      /* TRUE => use Text/show printer   */
 static Bool   chaseImports = TRUE;      /* TRUE => chase imports on load   */
 static Bool   useDots      = RISCOS;    /* TRUE => use dots in progress    */
 static Bool   quiet        = FALSE;     /* TRUE => don't show progress     */
+#if HUGS_FOR_WINDOWS
+static Bool autoLoadFiles  = TRUE;	/* TRUE => reload files before eval*/
+static Bool InAutoReloadFiles = FALSE;	/* TRUE =>loading files before eval*/
+#endif
 
 static String scriptName[NUM_SCRIPTS];  /* Script file names               */
 static Time   lastChange[NUM_SCRIPTS];  /* Time of last change to script   */
@@ -177,21 +189,51 @@ char *argv[]; {
 
     CStackBase = &argc;                 /* Save stack base for use in gc   */
 
+#if HUGS_FOR_WINDOWS
+    { 
+    INT svColor;
+    svColor = SetForeColor(BLUE);    Printf( "__   __ __  __  ____   ___");
+                                     Printf("      _______________________________________________\n");
+    SetForeColor(svColor);
+    svColor = SetForeColor(RED);     Printf("||   || ||  || ||  || ||__ ");
+    SetForeColor(svColor);           Printf("     Hugs 98: Based on the Haskell 98 standard\n");
+    svColor = SetForeColor(BLUE);    Printf("||___|| ||__|| ||__||  __||");
+    SetForeColor(svColor);           Printf("     Copyright (c) 1994-2001\n");
+    svColor = SetForeColor(RED);     Printf("||---||         ___||      ");
+    SetForeColor(svColor);           Printf("     World Wide Web: http://haskell.org/hugs\n");
+    svColor = SetForeColor(BLUE);    Printf("||   ||                    ");
+    SetForeColor(svColor);           Printf("     Report bugs to: hugs-bugs@haskell.org\n");
+    svColor = SetForeColor(RED);     Printf("||   || ");
+    SetForeColor(svColor);           Printf("Version: %s",HUGS_VERSION);
+    svColor = SetForeColor(BLUE);    Printf(" _______________________________________________\n\n");
+    SetForeColor(svColor);
+    }
+#else
     Printf("__   __ __  __  ____   ___      _________________________________________\n");
     Printf("||   || ||  || ||  || ||__      Hugs 98: Based on the Haskell 98 standard\n");
-    Printf("||___|| ||__|| ||__||  __||     Copyright (c) 1994-2000\n");
+    Printf("||___|| ||__|| ||__||  __||     Copyright (c) 1994-2001\n");
     Printf("||---||         ___||           World Wide Web: http://haskell.org/hugs\n");
     Printf("||   ||                         Report bugs to: hugs-bugs@haskell.org\n");
     Printf("||   || Version: %-14s _________________________________________\n\n",HUGS_VERSION);
+#endif
 
 #if SYMANTEC_C
     Printf("   Ported to Macintosh by Hans Aberg, compiled " __DATE__ ".\n\n");
+#endif
+#if HUGS_FOR_WINDOWS
+    Printf("   Windows interface by José E. Gallardo, 2001\n\n");
 #endif
 
     FlushStdout();
     interpreter(argc,argv);
     Printf("[Leaving Hugs]\n");
+#if HUGS_FOR_WINDOWS
+    SaveGUIOptions();
+#endif
     everybody(EXIT);
+#if HUGS_FOR_WINDOWS
+    return 0; /* return to Winmain */
+#endif
     exit(0);
     MainDone();
 }
@@ -229,6 +271,9 @@ String argv[]; {
     readOptions(readRegString(HKEY_LOCAL_MACHINE,HugsRoot,"Options",""));
     readOptions(readRegString(HKEY_CURRENT_USER, HugsRoot,"Options",""));
 #endif /* USE_REGISTRY */
+#if HUGS_FOR_WINDOWS
+    ReadGUIOptions();
+#endif
     readOptions(fromEnv("HUGSFLAGS",""));
 
     for (i=1; i<argc; ++i) {            /* process command line arguments  */
@@ -241,7 +286,11 @@ String argv[]; {
 	    }
 	} else if (argv[i] && argv[i][0]/* workaround for /bin/sh silliness*/
 		 && !processOption(argv[i])) {
+#if HUGS_FOR_WINDOWS
+	    {addScriptName(argv[i],TRUE); SetWorkingDir(argv[i]); }
+#else
 	    addScriptName(argv[i],TRUE);
+#endif
 	}
     }
     scriptName[0] = strCopy(findMPathname(NULL,STD_PRELUDE,hugsPath));
@@ -561,7 +610,9 @@ String s; {
 	else if (MAXIMUMHEAP && hpSize > MAXIMUMHEAP)
 	    hpSize = MAXIMUMHEAP;
 	if (heapBuilt() && hpSize != heapSize) {
-	    /* ToDo: should this use a message box in winhugs? */
+#if HUGS_FOR_WINDOWS
+            MessageBox(hWndMain, "Change to heap size will not take effect until you rerun Hugs", appName, MB_ICONHAND | MB_OK);	    
+#endif            
 #if USE_REGISTRY
 	    FPrintf(stderr,"Change to heap size will not take effect until you rerun Hugs\n");
 #else
@@ -780,6 +831,13 @@ struct options toggle[] = {             /* List of command line toggles    */
              1,
 #endif
              "Chase imports while loading modules",   &chaseImports},
+#if HUGS_FOR_WINDOWS
+    {'A', 
+#if !HASKELL_98_ONLY
+             1, 
+#endif
+             "Auto load files",		   	      &autoLoadFiles},
+#endif
 #if EXPLAIN_INSTANCE_RESOLUTION
     {'x',   
 #if !HASKELL_98_ONLY
@@ -903,6 +961,7 @@ Long   len; {                           /* length of script file           */
 #if HUGS_FOR_WINDOWS		       /* Set clock cursor while loading   */
     allowBreak();
     SetCursor(LoadCursor(NULL, IDC_WAIT));
+    AddFileToFileNamesMenu(&FilesMenu, fname);
 #endif
 
     Printf("Reading file \"%s\":\n",fname);
@@ -1053,12 +1112,18 @@ Int n; {                                /* loading everything after and    */
 
 static Void local whatScripts() {       /* list scripts in current session */
     int i;
+#if HUGS_FOR_WINDOWS
+    if (!InAutoReloadFiles) {
+#endif
     Printf("\nHugs session for:");
     if (projectLoaded)
 	Printf(" (project: %s)",currProject);
     for (i=0; i<numScripts; ++i)
 	Printf("\n%s",scriptName[i]);
     Putchar('\n');
+#if HUGS_FOR_WINDOWS
+    }
+#endif
 }
 
 /* --------------------------------------------------------------------------
@@ -1120,7 +1185,9 @@ Int    line; {
     lastEdit = strCopy(fname);
     lastLine = line;
 #if HUGS_FOR_WINDOWS
-    DrawStatusLine(hWndMain);		/* Redo status line		   */
+    /* Add file to Edit menu */
+    if (lastEdit)
+      AddFileToFileNamesMenu(&EditMenu, lastEdit);
 #endif
 }
 
@@ -1265,8 +1332,14 @@ static Void local evaluator() {        /* evaluate expr and print value    */
 	    abandon("Program execution",temp);
 	}
 	drop();
+#if HUGS_FOR_WINDOWS
+	{ INT svColor = SetForeColor(BLUE);
+#endif
 	Printf(" :: ");
 	printType(stdout,pop());
+#if HUGS_FOR_WINDOWS
+	SetForeColor(svColor); }
+#endif
     }
     else {
 	if (nonNull(temp = evalWithNoError(pop()))) {
@@ -1282,11 +1355,17 @@ static Void local stopAnyPrinting() {  /* terminate printing of expression,*/
 	Putchar('\n');
 	if (showStats) {
 #define plural(v)   v, (v==1?"":"s")
+#if HUGS_FOR_WINDOWS
+	    { INT svColor = SetForeColor(BLUE);
+#endif
 	    Printf("(%lu reduction%s, ",plural(numReductions));
 	    Printf("%lu cell%s",plural(numCells));
 	    if (numGcs>0)
 		Printf(", %u garbage collection%s",plural(numGcs));
 	    Printf(")\n");
+#if HUGS_FOR_WINDOWS
+	    SetForeColor(svColor); }
+#endif
 #undef plural
 	}
 #if OBSERVATIONS
@@ -1323,8 +1402,14 @@ static Void local showtype() {         /* print type of expression (if any)*/
     defaultDefns = evalDefaults;
     type = typeCheckExp(FALSE);
     printExp(stdout,inputExpr);
+#if HUGS_FOR_WINDOWS
+    { INT svColor = SetForeColor(BLUE);
+#endif
     Printf(" :: ");
     printType(stdout,type);
+#if HUGS_FOR_WINDOWS
+    SetForeColor(svColor); }
+#endif
     Putchar('\n');
 }
 
@@ -1737,6 +1822,54 @@ String moduleName; {
     consoleInput(promptBuffer);
 }
 
+#if HUGS_FOR_WINDOWS
+static Void local autoReloadFiles() {
+    if (autoLoadFiles) {
+      InAutoReloadFiles = TRUE;
+      saveInputState();
+      readScripts(1);
+      restoreInputState();
+      InAutoReloadFiles = FALSE;
+    }
+}
+#endif
+
+#if USE_THREADS
+static Void  local loopInBackground 	Args((Void));
+static Void  local stopEvaluatorThread	Args((Void));
+static DWORD local evaluatorThreadBody 	Args((LPDWORD));
+static Void  local startEvaluatorThread	Args((Void));
+
+static HANDLE evaluatorThread;
+static DWORD  evaluatorThreadId;
+static Bool   evaluatorThreadRunning = FALSE;
+
+static Void local stopEvaluatorThread(Void) {
+    evaluatorThreadRunning = FALSE;        
+    TerminateThread(evaluatorThread, 1000); 
+}
+
+static DWORD local evaluatorThreadBody(LPDWORD notUsed) {
+    evaluator();
+    stopEvaluatorThread();
+    return 0;
+}
+
+static Void local startEvaluatorThread(Void) {
+
+    evaluatorThread = CreateThread(NULL,
+                                   0,
+                                   (LPTHREAD_START_ROUTINE) evaluatorThreadBody, 
+                                   NULL, 
+                                   CREATE_SUSPENDED, 
+                                   &evaluatorThreadId);
+    //SetThreadPriority(evaluatorThread, THREAD_PRIORITY_HIGHEST); 
+    evaluatorThreadRunning = TRUE;                        
+    ResumeThread(evaluatorThread);
+} 
+
+#endif /* USE_THREADS */
+
 /* --------------------------------------------------------------------------
  * main read-eval-print loop, with error trapping:
  * ------------------------------------------------------------------------*/
@@ -1767,6 +1900,9 @@ String argv[]; {
 #else
 	promptForInput(textToStr(module(findEvalModule()).text));
 #endif
+#if HUGS_FOR_WINDOWS
+        InAutoReloadFiles = FALSE;
+#endif
 
 	cmd = readCommand(cmds, (Char)':', (Char)'!');
 #ifdef WANT_TIMER
@@ -1775,7 +1911,11 @@ String argv[]; {
 	switch (cmd) {
 	    case EDIT   : editor();
 			  break;
-	    case FIND   : find();
+	    case FIND   : 
+#if HUGS_FOR_WINDOWS
+			  autoReloadFiles();
+#endif
+                          find();
 			  break;
 	    case LOAD   : clearProject();
 			  forgetScriptsFrom(1);
@@ -1794,9 +1934,22 @@ String argv[]; {
 			  setModule();
 			  break;
 #endif
-	    case EVAL   : evaluator();
+	    case EVAL   : 
+#if HUGS_FOR_WINDOWS
+			  autoReloadFiles();
+#endif
+#if USE_THREADS
+                          startEvaluatorThread();
+			  loopInBackground();
+#else
+                          evaluator();
+#endif
 			  break;
-	    case TYPEOF : showtype();
+	    case TYPEOF : 
+#if HUGS_FOR_WINDOWS
+			  autoReloadFiles();
+#endif
+                          showtype();
 			  break;
 	    case BROWSE : browse();
 			  break;
@@ -1804,7 +1957,11 @@ String argv[]; {
 	    case XPLAIN : xplain();
 			  break;
 #endif
-	    case NAMES  : listNames();
+	    case NAMES  : 
+#if HUGS_FOR_WINDOWS
+			  autoReloadFiles();
+#endif
+                          listNames();
 			  break;
 	    case HELP   : menu();
 			  break;
@@ -1817,7 +1974,11 @@ String argv[]; {
 			  break;
 	    case CHGDIR : changeDir();
 			  break;
-	    case INFO   : info();
+	    case INFO   : 
+#if HUGS_FOR_WINDOWS
+			  autoReloadFiles();
+#endif
+                          info();
 			  break;
 	    case PNTVER: Printf("-- Hugs Version %s\n",
 				 HUGS_VERSION);
@@ -1951,6 +2112,9 @@ Int l; {
 Void errFail() {                        /* terminate error message and     */
     Putc('\n',errorStream);             /* produce exception to return to  */
     FFlush(errorStream);                /* main command loop               */
+#if USE_THREADS
+    stopEvaluatorThread();
+#endif /* USE_THREADS */
     longjmp(catch_error,1);
 }
 
@@ -1971,6 +2135,9 @@ String msg; {
     stopAnyPrinting();
     Printf("INTERNAL ERROR: %s\n",msg);
     FlushStdout();
+#if USE_THREADS
+    stopEvaluatorThread();
+#endif /* USE_THREADS */
     longjmp(catch_error,1);
 }
 
@@ -1989,11 +2156,19 @@ String msg; {
 
 sigHandler(breakHandler) {              /* respond to break interrupt      */
 #if HUGS_FOR_WINDOWS
+#if USE_THREADS
+    MessageBox(hWndMain, "Interrupted!", appName, MB_ICONSTOP | MB_OK);
+#else
     MessageBox(GetFocus(), "Interrupted!", appName, MB_ICONSTOP | MB_OK);
 #endif
+#endif
+#if HUGS_FOR_WINDOWS
+    FPrintf(errorStream,"{Interrupted!}\n");
+#else
     Hilite();
     Printf("{Interrupted!}\n");
     Lolite();
+#endif
     breakOn(TRUE);  /* reinstall signal handler - redundant on BSD systems */
 		    /* but essential on POSIX (and other?) systems         */
     everybody(BREAK);
@@ -2001,6 +2176,9 @@ sigHandler(breakHandler) {              /* respond to break interrupt      */
     stopAnyPrinting();
     FlushStdout();
     clearerr(stdin);
+#if USE_THREADS
+    stopEvaluatorThread();
+#endif /* USE_THREADS */
     longjmp(catch_error,1);
     sigResume;/*NOTREACHED*/
 }
@@ -2275,7 +2453,20 @@ Int what; {                     /* system to respond as appropriate ...    */
  * ------------------------------------------------------------------------*/
 
 #if HUGS_FOR_WINDOWS
-#include "winhugs.c"
+#include "winhugs\winhugs.c"
+#if USE_THREADS
+static Void local loopInBackground (Void) { 
+    MSG msg;
+
+   //WaitForSingleObject(evaluatorThread, INFINITE);
+    while ( evaluatorThreadRunning && GetMessage(&msg, NULL, 0, 0) ) {
+      if (!TranslateAccelerator(hWndMain, hAccelTable, &msg)) {
+         TranslateMessage(&msg);
+         DispatchMessage(&msg);
+      }
+    }
+}
+#endif /* USE_THREADS */
 #endif
 
 /*-------------------------------------------------------------------------*/

@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: input.c,v $
- * $Revision: 1.20 $
- * $Date: 2001/01/17 23:30:36 $
+ * $Revision: 1.21 $
+ * $Date: 2001/01/31 02:52:13 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -336,10 +336,45 @@ String prompt; {                       /* standard in (i.e. console/kbd)   */
     else
 	c0 = c1 = EOF;
 #else
+#if HUGS_FOR_WINDOWS
+    {
+    INT svColor = SetForeColor(GREEN);
+#endif
     Printf("%s",prompt);
     FlushStdout();
+#if HUGS_FOR_WINDOWS
+    SetForeColor(svColor);
+    }
+#endif
 #endif
 }
+
+#if HUGS_FOR_WINDOWS
+/* These variables and functions are used to save the current */
+/* state of the input, to implement auto load of files        */
+static Int    	saveReading;
+static int    	savec0, savec1;
+static Char   	saveInputBuffer[256];
+static LRESULT  saveBufferPos;
+
+Void saveInputState(Void)
+{
+    saveReading = reading;
+    savec0 = c0;
+    savec1 = c1;
+    SendMessage (hWndText, WM_GETINPUTBUFFER, 256, (LPARAM)saveInputBuffer);
+    saveBufferPos = SendMessage (hWndText, WM_GETBUFFERPOS, 0, 0L);
+}
+
+Void restoreInputState(Void)
+{
+    reading = saveReading;
+    c0 = savec0;
+    c1 = savec1;
+    SendMessage (hWndText, WM_SETINPUTBUFFER, 0, (LPARAM)saveInputBuffer);
+    SendMessage (hWndText, WM_SETBUFFERPOS, (WPARAM) 0, saveBufferPos);
+}
+#endif
 
 Void projInput(nm)                     /* prepare to input characters from */
 String nm; {                           /* from named project file          */

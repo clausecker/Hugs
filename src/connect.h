@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: connect.h,v $
- * $Revision: 1.16 $
- * $Date: 2001/01/08 21:43:06 $
+ * $Revision: 1.17 $
+ * $Date: 2001/01/31 02:52:13 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -419,6 +419,11 @@ extern  List   calcFunDepsPreds Args((List));
 extern  Inst   findInstFor      Args((Cell,Int));
 #if MULTI_INST
 extern  List   findInstsFor     Args((Cell,Int));
+#endif
+
+#if HUGS_FOR_WINDOWS
+extern  Void saveInputState	Args((Void));
+extern  Void restoreInputState	Args((Void));
 #endif
 
 #if OBSERVATIONS

@@ -55,7 +55,7 @@ OBJECTS		= storage@OBJ@ input@OBJ@    static@OBJ@ type@OBJ@    \
 		  subst@OBJ@   compiler@OBJ@ plugin@OBJ@ builtin@OBJ@ \
 		  machine@OBJ@ output@OBJ@ ffi@OBJ@
 IOBJECTS	= hugs@OBJ@ $(OBJECTS)
-PRELUDE		= config.h options.h prelude.h win-text.h
+PRELUDE		= config.h options.h prelude.h
 
 ################################################################
 # Hugs interpreter and standalone evaluator
@@ -136,7 +136,7 @@ parser.c	: parser.y
 server@OBJ@	: $(PRELUDE) storage.h connect.h errors.h version.h \
 		  command.h machdep.c timer.c hugs.c server.c server.h
 hugs@OBJ@	: $(PRELUDE) storage.h connect.h errors.h version.h \
-		  command.h machdep.c timer.c winhugs.c 
+		  command.h machdep.c timer.c
 storage@OBJ@	: $(PRELUDE) storage.h connect.h errors.h
 input@OBJ@	: $(PRELUDE) storage.h connect.h errors.h \
 		  parser.c command.h
@@ -151,7 +151,6 @@ machine@OBJ@	: $(PRELUDE) storage.h connect.h errors.h
 plugin@OBJ@	: $(PRELUDE) storage.h connect.h errors.h
 builtin@OBJ@	: $(PRELUDE) storage.h connect.h errors.h \
 		  bignums.c printer.c iomonad.c interns.c stmonad.c array.c
-win-text@OBJ@	: $(PRELUDE) win-text.h
 
 ################################################################
 # Regression tests (none supplied)

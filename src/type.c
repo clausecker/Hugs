@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: type.c,v $
- * $Revision: 1.29 $
- * $Date: 2001/01/30 15:05:12 $
+ * $Revision: 1.30 $
+ * $Date: 2001/01/31 02:52:13 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -3115,25 +3115,31 @@ Int what; {
 static Name local linkName(s)
 String s; {
     Name n = findName(findText(s));
-    if (nonNull(n)) return n;
-    ERRMSG(0) "Prelude does not define standard name \"%s\"", s
-    EEND;
+    if (isNull(n)) {
+        ERRMSG(0) "Prelude does not define standard name \"%s\"", s
+        EEND;
+    }
+    return n;
 }
 
 static Tycon local linkTycon(s)
 String s; {
     Tycon tc = findTycon(findText(s));
-    if (nonNull(tc)) return tc;
-    ERRMSG(0) "Prelude does not define standard type \"%s\"", s
-    EEND;
+    if (isNull(tc)) {
+        ERRMSG(0) "Prelude does not define standard type \"%s\"", s
+        EEND;
+    }
+    return tc;
 }
 
 static Class local linkClass(s)
 String s; {
     Class cc = findClass(findText(s));
-    if (nonNull(cc)) return cc;
-    ERRMSG(0) "Prelude does not define standard class \"%s\"", s
-    EEND;
+    if (isNull(cc)) {
+        ERRMSG(0) "Prelude does not define standard class \"%s\"", s
+        EEND;
+    }
+    return cc;
 }
 
 Void linkPreludeTC() {			/* Hook to tycons and classes in   */

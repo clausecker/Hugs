@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: builtin.c,v $
- * $Revision: 1.9 $
- * $Date: 2001/01/16 18:48:40 $
+ * $Revision: 1.10 $
+ * $Date: 2001/01/31 02:52:13 $
  * ------------------------------------------------------------------------*/
 
 /* We include math.h before prelude.h because SunOS 4's cpp incorrectly
@@ -1761,6 +1761,7 @@ static HugsStablePtr  getStablePtr() {
     return c;
 }
 
+static HugsStablePtr  lookupName Args((String, String));
 static HugsStablePtr  lookupName(q,n)
 String q;
 String n; { 
