@@ -28,7 +28,7 @@ There are three important points in using the recursive-do notation:
 The Control.Monad.Fix library introduces the MonadFix class. 
 It's definition is:
 
-        class Monad m => MonadRec m where
+        class Monad m => MonadFix m where
              mfix :: (a -> m a) -> m a
 
 If recursive bindings are required for a monad, then that monad must be 
@@ -50,4 +50,6 @@ the Proceedings of the Haskell Workshop'02, pp. 29-37, 2002.
 
 ------------------------------------------------------------------------------
 
-(*) For technical reasons "Control.Monad.Fix" must be imported unqualified. 
+(*) For purely technical reasons, the library "Control.Monad.Fix" must 
+    be imported unqualified. Otherwise, you will get an error saying
+    that the "MonadFix" class is not found. 
