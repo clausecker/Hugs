@@ -450,16 +450,6 @@ else
   FFI_LIBRARIES=
 fi
 
-dnl Disabled for now because the plugin-code can't handle the change.
-dnl (No-one can remember what the above comment refers to.)
-AC_ARG_ENABLE(double-precision, [  --enable-double-precision use double precision arithmetic],
-  [# Hack: double is stored in two int's (cf machdep.c)
-  if test "$ac_cv_sizeof_double" -le "`expr 2 '*' $ac_cv_sizeof_int`"
-  then AC_DEFINE(USE_DOUBLE_PRECISION)
-  else AC_MSG_RESULT([double is too large: ignoring --enable-double-precision])
-  fi])
-
-
 dnl--------------------------------------------------------------------
 dnl 
 dnl Readline - based on the feature testing that the GHC fptools/ configure

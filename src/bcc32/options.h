@@ -8,8 +8,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: options.h,v $
- * $Revision: 1.9 $
- * $Date: 2002/12/10 16:14:57 $
+ * $Revision: 1.10 $
+ * $Date: 2003/02/17 11:20:57 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -108,9 +108,6 @@
 
 /* Define if heap profiling should be used                                 */
 #define PROFILING 0
-
-/* Define if you want to use double precision floating point arithmetic    */
-#define USE_DOUBLE_PRECISION 0
 
 /* Define if you want to run Haskell code through a preprocessor
  * 

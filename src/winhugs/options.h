@@ -9,8 +9,8 @@
  * which is included in the distribution.
  *
  * $RCSfile: options.h,v $
- * $Revision: 1.7 $
- * $Date: 2003/02/15 00:00:15 $
+ * $Revision: 1.8 $
+ * $Date: 2003/02/17 11:20:58 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -120,9 +120,6 @@
 
 /* Define if heap profiling should be used                                 */
 #define PROFILING 0
-
-/* Define if you want to use double precision floating point arithmetic    */
-#define USE_DOUBLE_PRECISION 0
 
 /* Define if you want to run Haskell code through a preprocessor
  * 
