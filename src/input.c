@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: input.c,v $
- * $Revision: 1.80 $
- * $Date: 2003/12/04 13:53:51 $
+ * $Revision: 1.81 $
+ * $Date: 2003/12/04 16:38:56 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -894,6 +894,23 @@ static Void local hereQuote() {
 
 static Void local saveStrChr(c)        /* save character in string         */
 Char c; {
+#if UNICODE_CHARS && !CHAR_ENCODING_UTF8
+    if (!charIsRepresentable(c)) {
+	/* Kludge piled on kludge (using the external encoding for strings):
+	 * Such Chars are coded as \\ followed by a sequence of 7-bit
+	 * chunks, least significant first, with all but the last having
+	 * their top bit set.
+	 */
+	if (tokPtr<tokenStr+MAX_TOKEN-6) {
+	    *tokPtr++ = '\\';
+	    while (c > 0x7f) {
+		*tokPtr++ = 0x80 | (c&0x7f);
+		c >>= 7;
+	    }
+	    *tokPtr++ = c;
+	}
+    } else
+#endif
     if (c!='\0' && c!='\\') {          /* save non null char as single char*/
 	saveTokenChar(c);
     }
@@ -912,8 +929,23 @@ Char c; {
 Char getStrChr(String *sp) {
     Char c = ExtractChar(*sp);
     if (c=='\\') {
-	c = ExtractChar(*sp);
-	if (c!='\\')
+#if UNICODE_CHARS && !CHAR_ENCODING_UTF8
+	Int b;
+	b = *(*sp)++;
+	if ((b&0x80)==0)
+       	    c = b;
+	else {
+	    Int shift = 0;
+	    c = b&0x7f;
+	    while ((b&0x80)!=0) {
+		c |= (b&0x7f)<<shift;
+		b = *(*sp)++;
+		shift += 7;
+	    }
+	    c |= b<<shift;
+	}
+#endif
+	if (c=='0')
 	    c = '\0';
     }
     return c;
@@ -924,14 +956,7 @@ Bool isStrLit; {                       /* TRUE => enable \& and gaps       */
     Cell c = mkChar(c0);
 
     if (c0=='\\') {                    /* escape character?                */
-	c = readEscapeChar(isStrLit,TRUE);
-#if UNICODE_CHARS && !CHAR_ENCODING_UTF8
-	if (isStrLit && !isNull(c) && !charIsRepresentable(charOf(c))) {
-	    ERRMSG(row) "Unrepresentable character `\\%d' in string literal", ((int)charOf(c))
-	    EEND;
-	}
-#endif
-	return c;
+	return readEscapeChar(isStrLit,TRUE);
     }
 #if !UNICODE_CHARS
     if (!isLatin1(c0)) {
