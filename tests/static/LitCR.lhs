@@ -1,0 +1,1 @@
+--!!! Literate source using CR as newline> module LitCR where> import ListThe following definition occurs on line 9:>> x = yShould result in an error.  Notice the line number.

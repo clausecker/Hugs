@@ -1,0 +1,1 @@
+--!!! Plain source using CR as newlinemodule PlainCR where{- The following line is line 6: -}x = y

@@ -117,7 +117,9 @@ foreach $a ( @PgmArgs ) {
 	     exit 1;
 	 }
 	 while (<ARG>) {
-	     print if /^--!!!/;
+            if (/^(--!!![^\r\n]*)/) {
+                print $1,"\n";
+            }
 	 }
 	 close(ARG);
 	 $grep_done = 1;

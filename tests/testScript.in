@@ -150,6 +150,14 @@ utput"
 
   # Check opaque import/export of member functions
   perl runstdtest $HUGS +q -pHugs: -s19 "-Ostatic/T7.hs"  "-o1static/Loaded.output"
+  
+  # Check handling of multi-platform newlines
+  perl runstdtest $HUGS +q -pHugs: -s12 "-Ostatic/PlainLF.hs"   "-o1static/PlainLF.output"
+  perl runstdtest $HUGS +q -pHugs: -s12 "-Ostatic/PlainCRLF.hs" "-o1static/PlainCRLF.output"
+  perl runstdtest $HUGS +q -pHugs: -s12 "-Ostatic/PlainCR.hs"   "-o1static/PlainCR.output"
+  perl runstdtest $HUGS +q -pHugs: -s16 "-Ostatic/LitLF.lhs"    "-o1static/LitLF.output"
+  perl runstdtest $HUGS +q -pHugs: -s16 "-Ostatic/LitCRLF.lhs"  "-o1static/LitCRLF.output"
+  perl runstdtest $HUGS +q -pHugs: -s16 "-Ostatic/LitCR.lhs"    "-o1static/LitCR.output"
 
 } # End of static tests
 
