@@ -1,0 +1,19 @@
+Hugs:
+Testing open, read and close
+#! /bin/sh
+
+source config
+
+# HUGSFLAGS=-P../lib:../lib/hugs:../lib/exts
+# export HUGSFLAGS
+HUGS=../src/hugs
+
+STDOPTS='+q +w -pHugs: -P../lib:../lib/hugs:../lib/exts'
+
+test_static() {
+  echo "\
+-------
+
+Testing open, write and close
+
+Hugs:[Leaving Hugs]
