@@ -548,10 +548,10 @@
 #undef HAVE_LIBREADLINE
 
 /* Define if struct msghdr contains msg_accrights field */
-#undef HAVE_MSGHDR_MSG_ACCRIGHTS
+#undef HAVE_STRUCT_MSGHDR_MSG_ACCRIGHTS
  
 /* Define if struct msghdr contains msg_control field */
-#undef HAVE_MSGHDR_MSG_CONTROL
+#undef HAVE_STRUCT_MSGHDR_MSG_CONTROL
 
 /* Host cpu architecture */
 #undef HOST_ARCH

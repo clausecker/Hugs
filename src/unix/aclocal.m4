@@ -424,6 +424,7 @@ AC_MSG_CHECKING(value of $1)
 AC_CACHE_VAL($cv_name,
 [AC_TRY_RUN([#include <stdio.h>
 #include <errno.h>
+#include <fcntl.h>
 main()
 {
   FILE *f=fopen("conftestval", "w");
@@ -621,9 +622,9 @@ AC_DEFUN(FPTOOLS_MSGHDR_MSG_CONTROL,
 #include <sys/socket.h>], [struct msghdr m; m.msg_control;],
 fptools_cv_struct_msghdr_msg_control=yes, fptools_cv_struct_msghdr_msg_control=no)])
 if test $fptools_cv_struct_msghdr_msg_control = yes; then
-  AC_DEFINE(HAVE_MSGHDR_MSG_CONTROL)
+  AC_DEFINE(HAVE_STRUCT_MSGHDR_MSG_CONTROL)
 fi
-AC_SUBST(HAVE_MSGHDR_MSG_CONTROL)dnl
+AC_SUBST(HAVE_STRUCT_MSGHDR_MSG_CONTROL)dnl
 ])
 
 dnl
@@ -636,9 +637,9 @@ AC_DEFUN(FPTOOLS_MSGHDR_MSG_ACCRIGHTS,
 #include <sys/socket.h>], [struct msghdr m; m.msg_accrights;],
 fptools_cv_struct_msghdr_msg_accrights=yes, fptools_cv_struct_msghdr_msg_accrights=no)])
 if test $fptools_cv_struct_msghdr_msg_accrights = yes; then
-  AC_DEFINE(HAVE_MSGHDR_MSG_ACCRIGHTS)
+  AC_DEFINE(HAVE_STRUCT_MSGHDR_MSG_ACCRIGHTS)
 fi
-AC_SUBST(HAVE_MSGHDR_MSG_ACCRIGHTS)dnl
+AC_SUBST(HAVE_STRUCT_MSGHDR_MSG_ACCRIGHTS)dnl
 ])
 
 dnl ######################################################################

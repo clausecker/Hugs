@@ -308,7 +308,7 @@ ac_includes_default="\
 # include <unistd.h>
 #endif"
 
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS build build_cpu build_vendor build_os host host_cpu host_vendor host_os target target_cpu target_vendor target_os FPTOOLS YACC CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT CPP EGREP LD PERL SET_MAKE have_hp2ps DOCBOOK2HTML DOCBOOK2DVI DOCBOOK2PDF DOCBOOK2PS DIFF CONTEXT_DIFF X_CFLAGS X_PRE_LIBS X_LIBS X_EXTRA_LIBS GL_CFLAGS GL_LIBS GLUT_LIBS FFI_LIBRARIES HAVE_MSGHDR_MSG_ACCRIGHTS HAVE_MSGHDR_MSG_CONTROL ALLOCA OPTFLAGS DEBUGFLAGS LDDEBUGFLAGS MTCFLAGS HUGSPATH HUGSSUFFIXES hugsdir HUGSDIR BINDIR SET_INSTALLDIRS EXE OBJ DLL DLL_ENDING DEV_NULL RM CP WOBJECTS RC_FILES STRIP LIBOBJS LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS build build_cpu build_vendor build_os host host_cpu host_vendor host_os target target_cpu target_vendor target_os FPTOOLS YACC CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT CPP EGREP LD PERL SET_MAKE have_hp2ps DOCBOOK2HTML DOCBOOK2DVI DOCBOOK2PDF DOCBOOK2PS DIFF CONTEXT_DIFF X_CFLAGS X_PRE_LIBS X_LIBS X_EXTRA_LIBS GL_CFLAGS GL_LIBS GLUT_LIBS FFI_LIBRARIES HAVE_STRUCT_MSGHDR_MSG_ACCRIGHTS HAVE_STRUCT_MSGHDR_MSG_CONTROL ALLOCA OPTFLAGS DEBUGFLAGS LDDEBUGFLAGS MTCFLAGS HUGSPATH HUGSSUFFIXES hugsdir HUGSDIR BINDIR SET_INSTALLDIRS EXE OBJ DLL DLL_ENDING DEV_NULL RM CP WOBJECTS RC_FILES STRIP LIBOBJS LTLIBOBJS'
 ac_subst_files='MkInstall MkDepend'
 
 # Initialize some variables set by options.
@@ -7734,7 +7734,7 @@ echo "$as_me:$LINENO: result: $fptools_cv_struct_msghdr_msg_accrights" >&5
 echo "${ECHO_T}$fptools_cv_struct_msghdr_msg_accrights" >&6
 if test $fptools_cv_struct_msghdr_msg_accrights = yes; then
   cat >>confdefs.h <<\_ACEOF
-#define HAVE_MSGHDR_MSG_ACCRIGHTS 1
+#define HAVE_STRUCT_MSGHDR_MSG_ACCRIGHTS 1
 _ACEOF
 
 fi
@@ -7787,7 +7787,7 @@ echo "$as_me:$LINENO: result: $fptools_cv_struct_msghdr_msg_control" >&5
 echo "${ECHO_T}$fptools_cv_struct_msghdr_msg_control" >&6
 if test $fptools_cv_struct_msghdr_msg_control = yes; then
   cat >>confdefs.h <<\_ACEOF
-#define HAVE_MSGHDR_MSG_CONTROL 1
+#define HAVE_STRUCT_MSGHDR_MSG_CONTROL 1
 _ACEOF
 
 fi
@@ -18600,6 +18600,7 @@ cat >>conftest.$ac_ext <<_ACEOF
 /* end confdefs.h.  */
 #include <stdio.h>
 #include <errno.h>
+#include <fcntl.h>
 main()
 {
   FILE *f=fopen("conftestval", "w");
@@ -18662,6 +18663,7 @@ cat >>conftest.$ac_ext <<_ACEOF
 /* end confdefs.h.  */
 #include <stdio.h>
 #include <errno.h>
+#include <fcntl.h>
 main()
 {
   FILE *f=fopen("conftestval", "w");
@@ -18710,7 +18712,7 @@ unset fptools_check_cconst_result
 ac_save_LIBS="$LIBS"
 LIBS=;
 cat > conftest.$ac_ext <<EOF
-#line 18713 "configure"
+#line 18715 "configure"
 #include "confdefs.h"
 
 #if HAVE_WINDOWS_H
@@ -18751,7 +18753,7 @@ fi
 ac_save_LIBS="$LIBS"
 LIBS=;
 cat > conftest.$ac_ext <<EOF
-#line 18754 "configure"
+#line 18756 "configure"
 #include "confdefs.h"
 
 #if HAVE_WINDOWS_H
@@ -25852,8 +25854,8 @@ s,@GL_CFLAGS@,$GL_CFLAGS,;t t
 s,@GL_LIBS@,$GL_LIBS,;t t
 s,@GLUT_LIBS@,$GLUT_LIBS,;t t
 s,@FFI_LIBRARIES@,$FFI_LIBRARIES,;t t
-s,@HAVE_MSGHDR_MSG_ACCRIGHTS@,$HAVE_MSGHDR_MSG_ACCRIGHTS,;t t
-s,@HAVE_MSGHDR_MSG_CONTROL@,$HAVE_MSGHDR_MSG_CONTROL,;t t
+s,@HAVE_STRUCT_MSGHDR_MSG_ACCRIGHTS@,$HAVE_STRUCT_MSGHDR_MSG_ACCRIGHTS,;t t
+s,@HAVE_STRUCT_MSGHDR_MSG_CONTROL@,$HAVE_STRUCT_MSGHDR_MSG_CONTROL,;t t
 s,@ALLOCA@,$ALLOCA,;t t
 s,@OPTFLAGS@,$OPTFLAGS,;t t
 s,@DEBUGFLAGS@,$DEBUGFLAGS,;t t
