@@ -5,17 +5,15 @@ module Mail where
 
 import DotNet
 
-sendMail :: String
-	 -> String
-	 -> String
-	 -> String
-	 -> IO ()
-sendMail fromAddr toAddr subj body = do
-  ()    <- invokeStatic "System.Web.Mail.SmtpMail"
-  			"Send" 
-  		        ( fromAddr
-			, toAddr
-			, subj
-			, body -- "<html><body>Greetings from <em>Hugs98.NET</em></body></html>"
-			)
-  putStrLn "mail sent"
+foreign import dotnet
+  "static System.Web.Mail.SmtpMail.Send"
+  sendMail :: String  -- fromAddr
+  	   -> String  -- toAddr
+	   -> String  -- subject
+	   -> String  -- body
+	   -> IO ()
+
+test from toA = do
+ sendMail from toA 
+ 	  "Hugs98.net test"
+	  "<html><body>Greetings from <em>Hugs98.NET</em></body></html>"
