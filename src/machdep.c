@@ -12,8 +12,8 @@
  * included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.33 $
- * $Date: 2001/12/14 02:13:19 $
+ * $Revision: 1.34 $
+ * $Date: 2001/12/14 06:47:30 $
  * ------------------------------------------------------------------------*/
 
 #ifdef HAVE_SIGNAL_H
@@ -1371,88 +1371,98 @@ String nm; {                            /* or just line may be zero        */
 	EEND;
     }
 
-#if HAVE_WINDOWS_H
-    { 
-      STARTUPINFO si;
-      PROCESS_INFORMATION pi;
-      BOOL bStatus;
-
-      ZeroMemory(&si, sizeof(si));
-      si.cb = sizeof(si);
-      si.dwFlags = STARTF_USESHOWWINDOW;
-      si.wShowWindow = SW_SHOW;
-      
-      bStatus = 
-       CreateProcess(NULL, 
-		     editorCmd, 
-		     NULL,
-		     NULL,
-		     FALSE, /* don't inherit */
-		     CREATE_NEW_CONSOLE,
-		     NULL,
-		     NULL,
-		     &si,
-		     &pi);
-		    
-      if (!bStatus) {
+    if (shellEsc(editorCmd,TRUE/*sync*/,TRUE/*sep console*/)) {
 	Printf("Warning: Editor terminated abnormally\n");
 	return FALSE;
-      } else {
-	DWORD dwResult;
-	CloseHandle(pi.hThread);
-/* Wait for the editor process to complete. Disabling this bit
-   causes the interpreter not to block, and will require the
-   user to explicitly :reload after having saved any changes. */
-# if 1
-#  if !HUGS_FOR_WINDOWS
-	dwResult = WaitForSingleObject(pi.hProcess, INFINITE);
-	  
-	return (dwResult == WAIT_OBJECT_0 ? TRUE : FALSE);
-#  else
-	while (1) {
-	  dwResult = MsgWaitForMultipleObjects(1, 
-					       &pi.hProcess,
-					       FALSE, /* fWaitAll */
-					       INFINITE,
-					       QS_ALLINPUT);
-	  if (dwResult == WAIT_OBJECT_0) {
-	    return TRUE;
-	  } else if (dwResult == (WAIT_OBJECT_0 + 1)) {
-	    // Dispatch waiting messages.
-	    MSG msg;
-	    while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) {
-	      TranslateMessage(&msg);
-	      DispatchMessage(&msg);
-	    }
-	  } else {
-	    Printf("Warning: Editor terminated abnormally\n");
-	    return FALSE;
-	  }
-	}
-#  endif
-# else
-	return FALSE;
-# endif
-      }
     }
-#else 
-    if (shellEsc(editorCmd))
-	Printf("Warning: Editor terminated abnormally\n");
     return TRUE;
-#endif
 }
 
-Int shellEsc(s)                         /* run a shell command (or shell)  */
-String s; {
-#if HAVE_MACSYSTEM
+Int
+shellEsc(cmd, sync, sepConsole)         /* run a shell command (or shell)  */
+String cmd;
+Bool   sync;
+Bool   sepConsole; {
+#ifndef HAVE_WINDOWS_H
+
+  /* currently ignore the 'sepConsole' and 'sync' flags */
+# if HAVE_MACSYSTEM
     return macsystem(s);
-#else
-#if HAVE_BIN_SH
+# else
+#  if HAVE_BIN_SH
     if (s[0]=='\0') {
 	s = fromEnv("SHELL","/bin/sh");
     }
-#endif
+# endif
     return system(s);
+# endif
+#else
+  STARTUPINFO si;
+  PROCESS_INFORMATION pi;
+  BOOL bStatus;
+  DWORD dwResult;
+
+  ZeroMemory(&si, sizeof(si));
+  si.cb = sizeof(si);
+  si.dwFlags = STARTF_USESHOWWINDOW;
+  si.wShowWindow = SW_SHOW;
+  
+  if (!sepConsole) {
+    return system(cmd);
+  }
+  bStatus = 
+    CreateProcess(NULL,  /* app name is the first component of the command line string */
+		  cmd, 
+		  NULL,  /* default process security attributes */
+		  NULL,  /* default prim. thread security attributes */
+		  FALSE, /* don't inherit */
+		  CREATE_NEW_CONSOLE,
+		  NULL,  /* environment; same block as parent */
+		  NULL,  /* current directory; same as parent */
+		  &si,
+		  &pi);
+		    
+  if (!bStatus) {
+    return 1;
+  } else {
+    CloseHandle(pi.hThread);
+    /*
+     * Wait for the editor process to complete, or not. If we
+     * don't wait for the editor process to complete, the user
+     * will have to manually :(re)load the sources after having
+     * save them within the editor. The default is to wait.
+     */
+    if (!sync) {
+      CloseHandle(pi.hProcess);
+      return 0;
+    } else {
+# if !HUGS_FOR_WINDOWS
+      dwResult = WaitForSingleObject(pi.hProcess, INFINITE);
+      return (dwResult == WAIT_OBJECT_0 ? 0 : 1);
+# else
+      MSG msg;
+
+      while (1) {
+	dwResult = MsgWaitForMultipleObjects(1, 
+					     &pi.hProcess,
+					     FALSE, /* fWaitAll */
+					     INFINITE,
+					     QS_PAINT);
+	if (dwResult == WAIT_OBJECT_0) {
+	  return 0;
+	} else if (dwResult == (WAIT_OBJECT_0 + 1)) {
+	  // Dispatch waiting messages.
+	  while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) {
+	    TranslateMessage(&msg);
+	    DispatchMessage(&msg);
+	  }
+	} else {
+	  return 1;
+	}
+      }
+# endif
+    }
+  }
 #endif
 }
 

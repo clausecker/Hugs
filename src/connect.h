@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: connect.h,v $
- * $Revision: 1.24 $
- * $Date: 2001/09/27 00:26:50 $
+ * $Revision: 1.25 $
+ * $Date: 2001/12/14 06:47:29 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -410,7 +410,7 @@ extern  String timeString	Args((Void));
 #endif
 extern  String mkFFIFilename    Args((String));
 
-extern  Int    shellEsc		Args((String));
+extern  Int    shellEsc		Args((String,Bool,Bool));
 extern  Int    getTerminalWidth Args((Void));
 extern  Void   normalTerminal	Args((Void));
 extern  Void   noechoTerminal	Args((Void));
