@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: input.c,v $
- * $Revision: 1.64 $
- * $Date: 2003/03/13 15:38:28 $
+ * $Revision: 1.65 $
+ * $Date: 2003/03/16 14:20:25 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -832,7 +832,13 @@ static Cell local readNumber() {        /* read numeric constant           */
 	skip();
     } while (isISO(c0) && isIn(c0,DIGIT));
 
-    if (c0!='.' || !isISO(c1) || !isIn(c1,DIGIT)) {
+    /* Check whether this is the start of a floating point literal.
+     * Doing this properly needs 2 characters of lookahead to avoid
+     * mis-scanning things like 9e+a, but we approximate.
+     */
+    if (!(c0=='.' && isISO(c1) && isIn(c1,DIGIT) ||
+          (c0=='e' || c0=='E') &&
+	  isISO(c1) && (isIn(c1,DIGIT) || c1=='-' || c1=='+'))) {
 	endToken();
 	if (!intTooLarge)
 	    return mkInt(n);
@@ -844,14 +850,21 @@ static Cell local readNumber() {        /* read numeric constant           */
 #endif
     }
 
-    saveTokenChar(c0);                  /* save decimal point              */
-    skip();
-    do {                                /* process fractional part ...     */
-	saveTokenChar(c0);
+    if (c0=='.') {
+	saveTokenChar(c0);                  /* save decimal point          */
 	skip();
-    } while (isISO(c0) && isIn(c0,DIGIT));
+	do {                                /* process fractional part ... */
+	    saveTokenChar(c0);
+	    skip();
+	} while (isISO(c0) && isIn(c0,DIGIT));
+    }
 
-    if (c0=='e' || c0=='E') {           /* look for exponent part...       */
+    /* Look for exponent part.  Again 2 characters of lookahead are
+     * required to avoid mis-scanning things like 9.0e+a, but we
+     * approximate.
+     */
+    if ((c0=='e' || c0=='E') &&
+	isISO(c1) && (isIn(c1,DIGIT) || c1=='-' || c1=='+')) {
 	saveTokenChar('e');
 	skip();
 	if (c0=='-') {
