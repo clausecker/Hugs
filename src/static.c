@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.113 $
- * $Date: 2002/10/24 03:33:44 $
+ * $Revision: 1.114 $
+ * $Date: 2002/10/25 06:34:05 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -6977,7 +6977,14 @@ List defs; {
 			    }
 			    break;
 
-	    case QWHERE   : {	List currDeps = mdepends;
+	    case QWHERE   : 
+#if IPARAM
+			    if ( checkIBindings(l,snd(q)) ) {
+				ERRMSG(l) "Currently illegal to bind implicit parameters in the recursive do-notation"
+				EEND;
+			    } else 
+#endif
+			    {	List currDeps = mdepends;
 				snd3(hd(qs)) = mdoGetPatVarsLet(l,snd(q),NIL);
 				snd(q)     = eqnsToBindings(snd(q),NIL,NIL,NIL);
 				withinScope(snd(q));
