@@ -11,8 +11,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.44 $
- * $Date: 2002/05/13 13:52:41 $
+ * $Revision: 1.45 $
+ * $Date: 2002/05/15 18:11:22 $
  * ------------------------------------------------------------------------*/
 #include <math.h>
 
@@ -1330,7 +1330,7 @@ String nm; {                            /* or just line may be zero        */
     fullNm = RealPath(nm);
     fullNmLen = strlen(fullNm);
     nmLen = strlen(nm);
-    lineLen = 1 + (line == 0 ? 0 : (int)log10(line));
+    lineLen = 1 + (line == 0 ? 0 : (unsigned int)log10((double)line));
     
     he = hugsEdit;
 
@@ -2230,9 +2230,7 @@ Int what; {                             /* initialisation etc..            */
 /* --------------------------------------------------------------------------
  * Platform initialisation 
  * ------------------------------------------------------------------------*/
-extern Bool initSystem  Args((Void));
-Bool local
-initSystem()
+Bool initSystem()
 {
   /* Called right away by main()  */
 #if __MWERKS__ && macintosh

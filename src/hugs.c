@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.78 $
- * $Date: 2002/05/14 16:13:00 $
+ * $Revision: 1.79 $
+ * $Date: 2002/05/15 18:11:22 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -102,6 +102,7 @@ static Void   local failed            Args((Void));
 static String local strCopy           Args((String));
 static Void   local browseit	      Args((Module,String,Bool));
 static Void   local browse	          Args((Void));
+static Void   local shutdown          Args((Void));
 
 static Bool   printMostGeneralType = TRUE;
 
@@ -243,6 +244,7 @@ char *argv[]; {
     SaveGUIOptions();
 #endif
     everybody(EXIT);
+    shutdown();
 #if HUGS_FOR_WINDOWS
     return 0; /* return to Winmain */
 #endif
@@ -386,6 +388,26 @@ String argv[]; {
 	loadProject(strCopy(proj));
     }
     readScripts(0);
+}
+
+
+/* --------------------------------------------------------------------------
+ * Shutdown interpreter.
+ * ------------------------------------------------------------------------*/
+static Void shutdown() {
+  int i;
+  /* Let go of dynamic storage */  
+  if (hugsPath)  free(hugsPath);
+  if (hugsEdit)  free(hugsEdit);
+  if (prompt)    free(prompt);
+  if (repeatStr) free(repeatStr);
+  if (lastEdit)  free(lastEdit);
+  
+  for (i=0; i < numScripts ; i++) {
+    if (scriptName[i]) free(scriptName[i]);
+    if (scriptReal[i]) free(scriptReal[i]);
+  }
+  
 }
 
 #if USE_PREFERENCES_FILE

@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: machine.c,v $
- * $Revision: 1.8 $
- * $Date: 2002/05/11 16:09:58 $
+ * $Revision: 1.9 $
+ * $Date: 2002/05/15 18:11:22 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1910,6 +1910,9 @@ Int what; {
 	case BREAK   : obsCount = 0;
 	               break;
 #endif
+
+        case EXIT    : free(memory);
+	               break;
     }
 }
 

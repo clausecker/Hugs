@@ -10,8 +10,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: server.c,v $
- * $Revision: 1.14 $
- * $Date: 2002/04/16 16:02:56 $
+ * $Revision: 1.15 $
+ * $Date: 2002/05/15 18:11:23 $
  * ------------------------------------------------------------------------*/
 
 #define HUGS_SERVER
@@ -196,7 +196,7 @@ String argv[]; {
     if (!is_initialized) {
       is_initialized = TRUE;
       setHugsAPI();
-
+      
       BEGIN_PROTECT			/* Too much text for protect()	   */
       Int i;
 
@@ -248,6 +248,7 @@ HugsServerAPI* hserv; {
   /* The 'hserv' argument isn't actually used */
   clearStack();
   stopAnyPrinting();
+  shutdown();
   return;
 }
 

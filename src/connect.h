@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: connect.h,v $
- * $Revision: 1.33 $
- * $Date: 2002/05/14 16:06:27 $
+ * $Revision: 1.34 $
+ * $Date: 2002/05/15 18:11:21 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -427,6 +427,8 @@ extern  Inst   findInstFor      Args((Cell,Int));
 #if MULTI_INST
 extern  List   findInstsFor     Args((Cell,Int));
 #endif
+
+extern Bool    initSystem        Args((Void));
 
 #if HUGS_FOR_WINDOWS
 extern  Void saveInputState	Args((Void));

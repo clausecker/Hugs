@@ -8,8 +8,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: subst.c,v $
- * $Revision: 1.22 $
- * $Date: 2002/04/11 23:20:22 $
+ * $Revision: 1.23 $
+ * $Date: 2002/05/15 18:11:23 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -116,7 +116,10 @@ static Bool local kvarToTypeBind	Args((Tyvar *,Type,Int));
 Void emptySubstitution() {		/* clear current substitution	   */
     numTyvars   = 0;
 #if !FIXED_SUBST
-    if (maxTyvars!=NUM_TYVARS) {
+    /* If the table has grown larger than NUM_TYVARS, free 'tyvars'.
+     * If not, keep it around as it's bound to get used again.
+     */
+    if (maxTyvars > NUM_TYVARS) {
 	maxTyvars = 0;
 	if (tyvars) {
 	    free(tyvars);
@@ -1972,6 +1975,12 @@ Int what; {
 					 findText("EqRecRow"));
 #endif
 		       break;
+
+       case EXIT     : 
+#if !FIXED_SUBST
+	               free(tyvars);
+#endif
+	               break;
     }
 }
 

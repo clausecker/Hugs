@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: runhugs.c,v $
- * $Revision: 1.10 $
- * $Date: 2002/04/11 23:20:21 $
+ * $Revision: 1.11 $
+ * $Date: 2002/05/15 18:11:23 $
  * ------------------------------------------------------------------------*/
 
 #include <stdio.h>
@@ -32,6 +32,9 @@ static void loadHugs  Args((int, char**));
 extern void           shutdownHugsServer Args((HugsServerAPI*));
 extern HugsServerAPI* initHugsServer Args((int,char**));
 static HugsServerAPI* hugs = 0;
+
+/* An optional nicety to call initSystem(); not required. */
+extern int            initSystem  Args((void));
 
 static void check() {
     char* err = hugs->clearError();
@@ -67,7 +70,7 @@ char* argv[]; {
     int    hugs_argc;
 
     if (!initSystem()) {
-      fprintf(stderr,"%0: failed to initialize, exiting\n", (argv ? argv[0] : ""));
+      fprintf(stderr,"%s: failed to initialize, exiting\n", (argv ? argv[0] : ""));
       fflush(stderr);
       exit(1);
     }

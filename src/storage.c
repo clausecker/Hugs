@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: storage.c,v $
- * $Revision: 1.38 $
- * $Date: 2002/05/14 16:12:59 $
+ * $Revision: 1.39 $
+ * $Date: 2002/05/15 18:11:23 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -811,6 +811,17 @@ Int what; {
 	if (info_def->p_info->controlFun) {
 	    (*(info_def->p_info->controlFun))(what);
 	}
+    }
+
+    if (EXIT == what) {
+      struct primInfoDef *ptr, *tmp;
+      ptr = firstPrimInfo;
+			 
+      while (ptr) {
+	tmp = ptr->nextPrimInfoDef;
+	free(ptr);
+	ptr = tmp;
+      }
     }
 }
 
@@ -3209,8 +3220,10 @@ Int n, s; {                             /* for non-null return             */
     return tab;
 }
 #define TABALLOC(v,t,n)                 v=(t far*)safeFarCalloc(n,sizeof(t));
+#define TABFREE(v) free(v)
 #else
 #define TABALLOC(v,t,n)
+#define TABFREE(v)
 #endif
 
 DynTable* allocDynTable(eltSize, maxIdx, hWater, tabName)
@@ -3573,6 +3586,40 @@ Int what; {
 #endif
 
 		       scriptHw = 0;
+
+		       break;
+	case EXIT    : 
+	               /* Let go of dynamic storage */
+	               if (heapFst) free(heapFst);
+	               if (heapSnd) free(heapSnd);
+#if PROFILING
+		       if (heapThd) free(heapThd);
+#endif
+#if !WANT_FIXED_SIZE_TABLES
+		       if (dynTabScripts) freeDynTable(dynTabScripts);
+		       if (dynTabClass)   freeDynTable(dynTabClass);
+		       if (dynTabInst)    freeDynTable(dynTabInst);
+		       if (dynTabHandles) freeDynTable(dynTabHandles);
+#else
+#endif
+		       TABFREE(text);
+		       TABFREE(tyconHash);
+		       TABFREE(tabTycon);
+		       TABFREE(nameHash);
+		       TABFREE(tabName);
+		       TABFREE(tabClass);
+		       TABFREE(cellStack);
+		       TABFREE(tabModule);
+#if TREX
+		       TABFREE(tabExt);
+#endif
+#if OBSERVATIONS
+                       TABFREE(tabObserve);
+                       TABFREE(tabBreakpt);
+#endif
+		       if (marks) free(marks);
+		       
+		       /* Note: primInfoDef memory is freed in controlFuns() above */
 
 		       break;
     }
