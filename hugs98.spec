@@ -1,12 +1,12 @@
-Vendor:       PacSoft, Portland, Oregon.
+Vendor:       Galois Connections, Portland, Oregon.
 Name:         hugs98
-Version:      Feb2001
+Version:      Nov2001
 License:      BSDish
 Release:      1
 Group:        Development/Languages/Haskell
-Packager:     jlewis@cse.ogi.edu
+Packager:     jeff@galois.com
 URL:          http://www.haskell.org/hugs
-Source:       http://www.cse.ogi.edu/PacSoft/projects/Hugs/downloads/hugs98-Feb2001.tar.gz
+Source:       http://www.cse.ogi.edu/PacSoft/projects/Hugs/downloads/hugs98-Nov2001.tar.gz
 Requires:     readline
 BuildRoot:    /tmp/hugs98
 Summary:      A Haskell Interpreter
