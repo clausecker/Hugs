@@ -11,8 +11,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.63 $
- * $Date: 2002/08/12 16:47:34 $
+ * $Revision: 1.64 $
+ * $Date: 2002/08/25 16:56:27 $
  * ------------------------------------------------------------------------*/
 #include <math.h>
 
@@ -2172,28 +2172,11 @@ Void compileAndLink(fn,flags)
 String fn; 
 String flags; {
     List xs = NIL;
-    char* i = 0;
+    char* i = scriptFile;
+ 
     used    = 0;
 
-    /* All relative filenames are to be interpreted relative to the 
-     * directory containing the .hs file.
-     */
-    // insert("cd '");
-    // insert(dirname(scriptFile));
-    // insert("'; ");
-    i = strrchr(scriptFile,SLASH);
-    if (i != 0 && *i == SLASH) {
-        insert("cd '");
-        *i = '\0';
-        insert(scriptFile);
-        *i = SLASH;
-        ++i;
-        insert("'; ");
-    } else {
-        i = scriptFile;
-    }
-
-    /* The basic command */
+    /* The compile and link command */
     insert(MKDLL_CMD);
 
     /* the path to HsFFI.h */
@@ -2218,7 +2201,9 @@ String flags; {
         insert(flags);
     }
 
-    /* printf("Executing '%s'\n",buffer); */
+#if 0
+    printf("Executing '%s'\n",buffer);
+#endif
     if (shellEsc(buffer,TRUE,TRUE) != 0) {
         ERRMSG(0) "Error while running compilation command '%s'", buffer
         EEND;
