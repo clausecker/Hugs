@@ -29,6 +29,36 @@ Display results of IO programs : {+,-}I
 Support 'here documents': {+,-}H
 --------------------------------
 
+A 'here document' (named after similar things in Unix shells) is
+another way of writing string literals, often useful for large strings.
+Everything from `` to '' (including newlines and backslashes, but
+not $ characters) is treated as literal text, and layout is ignored.
+The exception is the $ character, so that you can embed the value of
+the variable var in the string by writing $(var).  To get a literal $
+character, write $$ -- single $ characters are not allowed.
+
+This extension is turned off by default.  When +H is given, the following
+
+	letter name = ``Dear $(name),
+Here are some characters: \ ' ` ".
+To learn more, send $$10 to the address below.''
+
+is equivalent the Haskell 98 declaration
+
+	letter name = "Dear " ++ quote name ++ ",\n\
+		      \Here are some characters: \\ ' ` \".\n\
+		      \To learn more, send $10 to the address below."
+
+The function
+
+	class Quote where
+		quote :: a -> String
+
+(basically no change for String and Char, and show for everything else)
+comes from the Quote module, which also defines several common instances,
+and should be imported if you use the $(var) form.  (This module also
+requires the -98 option.)
+
 Defaulting types before printing: {+,-}T
 ----------------------------------------
 

@@ -115,6 +115,9 @@ Allow overlapping instances (a Hugs extension; default: off)
 .B +O
 Allow unsafe overlapping instances (a Hugs extension; default: off)
 .TP
+.B +H
+Allow `here documents' (a Hugs extension; default: off)
+.TP
 .B +N
 Use the hierarchical libraries (default: off)
 .LP
