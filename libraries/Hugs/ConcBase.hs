@@ -72,13 +72,13 @@ isEmptyMVar :: MVar a -> IO Bool
 ----------------------------------------------------------------
 
 kill :: IO a
-kill = IO (\f s -> Hugs_DeadThread)
+kill = IO (\ s -> Hugs_DeadThread)
 
-yield = IO (\ f s -> Hugs_YieldThread (s ()))
+yield = IO (\ s -> Hugs_YieldThread (s ()))
 
 -- add the continuation to the runnable list, and continue
 continueIO :: IOResult -> IO ()
-continueIO cc = IO (\ f s -> Hugs_ForkThread (s ()) cc)
+continueIO cc = IO (\ s -> Hugs_ForkThread (s ()) cc)
 
 -- The thread is scheduled immediately and runs with its own success/error
 -- continuations.

@@ -8,26 +8,21 @@
  * primitives, particularly for dealing with IOError and Handle values
  * that are not included in the prelude, but are used by standard libraries.
  *
- * Note: the first argument of IO computations (a failure continuation)
- * is no longer used, now that all exceptions are handled via the
- * Exception interface, but is retained for binary compatibility with
- * old extension DLLs.
- *
  * The Hugs 98 system is Copyright (c) Mark P Jones, Alastair Reid, the
  * Yale Haskell Group, and the OGI School of Science & Engineering at OHSU,
  * 1994-2002, All rights reserved.  It is distributed as free software under
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: iomonad.c,v $
- * $Revision: 1.43 $
- * $Date: 2003/01/31 11:51:06 $
+ * $Revision: 1.44 $
+ * $Date: 2003/01/31 17:08:48 $
  * ------------------------------------------------------------------------*/
  
 Name nameIORun;			        /* run IO code                     */
 Name nameIOBind;		        /* bind IO code                    */
 Name namePutStr;		        /* Prelude.putStr                  */
 
-static Name namePass;			/* auxiliary:: \f b c a -> f a b c */
+static Name namePass;			/* auxiliary:: \f b a -> f a b     */
 #if IO_HANDLES
 static Name nameHreader;	        /* auxiliary function		   */
 #endif
@@ -311,15 +306,13 @@ primFun(primReturnIO) {			/* IO monad unit		   */
 }
 
 primFun(primBindIO) {			/* IO monad bind		   */
-    push(ap(namePass,primArg(3)));	/* rbind 4 3 2 1 = 4 2 (pass 3 2 1)*/
-    toparg(primArg(2));
+    push(ap(namePass,primArg(2)));	/* bind 3 2 1 = 3 (pass 2 1)       */
     toparg(primArg(1));
-    updapRoot(ap(primArg(4),primArg(2)),top());
+    updapRoot(primArg(3),top());
 }
 
 primFun(primPass) {			/* Auxiliary function		   */
-    push(ap(primArg(4),primArg(1)));	/* pass 4 3 2 1 = 4 1 3 2	   */
-    toparg(primArg(3));
+    push(ap(primArg(3),primArg(1)));	/* pass 3 2 1 = 3 1 2		   */
     updapRoot(top(),primArg(2));
 }
 
