@@ -18,6 +18,7 @@ install		:: install_libs                       # lotsa libraries
 install		:: install_demos		      # goodies
 install		:: install_man                        # manual page
 install		:: install_include                    # FFI headers
+install		:: install_notes                      # Readme, etc
 
 install_libs    :: install_libhugs 		      # Hugs libraries
 install_libs    :: install_libexts  		      # ghc compatability
@@ -54,4 +55,12 @@ install_man	::
 install_include	::
 		$(INSTALL) -d $(hugsdir)/include
 		$(INSTALL_DATA) ../include/GreenCard.h  $(hugsdir)/include
+
+install_notes	::
+		$(INSTALL) -d $(hugsdir)/docs
+		$(INSTALL_DATA) ../docs/*.txt  $(hugsdir)/docs
+		$(INSTALL_DATA) ../docs/server.*  $(hugsdir)/docs
+		$(INSTALL_DATA) ../Readme  $(hugsdir)
+		$(INSTALL_DATA) ../License $(hugsdir)
+		$(INSTALL_DATA) ../Credits $(hugsdir)
 
