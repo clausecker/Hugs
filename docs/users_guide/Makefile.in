@@ -1,3 +1,8 @@
+DOCBOOK2HTML = @DOCBOOK2HTML@
+DOCBOOK2DVI = @DOCBOOK2DVI@
+DOCBOOK2PDF = @DOCBOOK2PDF@
+DOCBOOK2PS = @DOCBOOK2PS@
+
 ROOT	= users_guide
 PARTS	= $(ROOT).sgml commands.sgml haskell98.sgml hugs_ghc.sgml \
 	  hugs_only.sgml introduction.sgml license.sgml running.sgml
@@ -17,13 +22,13 @@ pdf: $(ROOT).pdf
 
 $(HTML): $(PARTS)
 	rm -rf $(ROOT)
-	docbook2html -o $(ROOT) $(HTML_OPTS) $(ROOT).sgml
+	test -z '$(DOCBOOK2HTML)' || $(DOCBOOK2HTML) -o $(ROOT) $(HTML_OPTS) $(ROOT).sgml
 
 $(ROOT).dvi: $(PARTS)
-	docbook2dvi $(ROOT).sgml
+	test -z '$(DOCBOOK2DVI)' || $(DOCBOOK2DVI) $(ROOT).sgml
 
 $(ROOT).ps: $(PARTS)
-	docbook2ps $(ROOT).sgml
+	test -z '$(DOCBOOK2PS)' || $(DOCBOOK2PS) $(ROOT).sgml
 
 $(ROOT).pdf: $(PARTS)
-	docbook2pdf $(ROOT).sgml
+	test -z '$(DOCBOOK2PDF)' || $(DOCBOOK2PDF) $(ROOT).sgml

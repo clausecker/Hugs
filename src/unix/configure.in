@@ -103,6 +103,10 @@ AC_CHECK_PROG(have_hp2ps,hp2ps,1,0)
 if test "$have_hp2ps" = "1"; then
 AC_DEFINE(HAVE_HP2PS,1)
 fi
+AC_CHECK_PROGS(DOCBOOK2HTML,[docbook2html db2html],[])
+AC_CHECK_PROGS(DOCBOOK2DVI,[docbook2dvi db2dvi],[])
+AC_CHECK_PROGS(DOCBOOK2PDF,[docbook2pdf db2pdf],[])
+AC_CHECK_PROGS(DOCBOOK2PS,[docbook2ps db2ps],[])
 
 dnl AC_PROG_INSTALL
 
@@ -888,7 +892,8 @@ if test -f ../../tests/config.in ; then
  TESTSCRIPT=../../tests/config
 fi
 
-AC_OUTPUT(../Makefile ../../docs/Makefile \
+AC_OUTPUT(../Makefile \
+	../../docs/Makefile ../../docs/users_guide/Makefile \
 	../../docs/hugs.1 $TESTSCRIPT hugs-package)
 
 echo ''
