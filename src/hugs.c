@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.102 $
- * $Date: 2002/10/21 13:30:42 $
+ * $Revision: 1.103 $
+ * $Date: 2002/10/21 17:04:31 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -918,7 +918,10 @@ String s; {                             /* return FALSE if none found.     */
 
 	    case 'S' : {
 			   String saveSuffixes = hugsSuffixes;
-			   hugsSuffixes = substPath(s+1,hugsSuffixes);
+			   if (*(s+1) == '\0')
+			       hugsSuffixes = strCopy(HUGSSUFFIXES);
+			   else
+			       hugsSuffixes = substPath(s+1,hugsSuffixes);
 			   if ( !findMPathname(NULL,STD_PRELUDE,(hugsPath ? hugsPath : hugsPath_1)) ) {
 			       Printf("ERROR: unable to locate Prelude with new suffix list: \"%s\" - ignoring it.\n", hugsSuffixes);
 			       free(hugsSuffixes);
