@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.69 $
- * $Date: 2002/03/05 22:34:49 $
+ * $Revision: 1.70 $
+ * $Date: 2002/03/06 01:56:39 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -536,16 +536,19 @@ static Void local optionInfo() {        /* Print information about command */
     if (charsLeft > 1) {                \
       *next++=(c);charsLeft--;          \
     } else {                            \
-      *next='\0';return buffer;         \
+      *next='\0';                       \
     }
 
 #define PUTS(s)                         \
-    if ( charsLeft > strlen(s) ) {      \
-      strcpy(next,s);                   \
-      next+=strlen(next);               \
-    } else {                            \
-      *next = '\0';                     \
-    }
+    do { Int len = strlen(s);           \
+         if ( charsLeft > len ) {       \
+            strcpy(next,s);             \
+            next+=len;                  \
+            charsLeft -= len;           \
+         } else {                       \
+            *next = '\0';               \
+	 }                              \
+    } while(0)
 
 #define PUTInt(optc,i)                  \
     if ( charsLeft > 20 /*conservative*/ ) { \
@@ -556,31 +559,38 @@ static Void local optionInfo() {        /* Print information about command */
     }
 
 #define PUTStr(c,s)                     \
-    next=PUTStr_aux(next,charsLeft,c,s)
+    next=PUTStr_aux(next,&charsLeft,c,s)
 
-static String local PUTStr_aux Args((String,Int,Char, String));
+static String local PUTStr_aux Args((String,Int*,Char, String));
 
-static String local PUTStr_aux(next,charsLeft,c,s)
+static String local PUTStr_aux(next,chLeft,c,s)
 String next;
+Int*   chLeft;
 Char   c;
 String s; {
-    if ( strlen(s) > charsLeft ) {
-      *next = '\0';
-      /* optionsToStr() will not to break off immediately,
-       * but soon enough. 
-       */
-      return next;
-    }
+    Int charsLeft = *chLeft;
     if (s) { 
 	String t = 0;
-	sprintf(next,"-%c\"",c); 
-	next+=strlen(next);      
+
+	if ( strlen(s) + 10 > charsLeft ) {
+	    *next = '\0';
+	    /* optionsToStr() will not to break off immediately,
+	     * but soon enough. 
+	     */
+	    return next;
+	}
+
+	*next++ = '-';
+	*next++=c;
+	*next++='"';
+	charsLeft -= 3;
 	for(t=s; *t; ++t) {
 	    PUTS(unlexChar(*t,'"'));
 	}
-	next+=strlen(next);      
+	next+=strlen(next);
 	PUTS("\" ");
     }
+    *chLeft = charsLeft;
     return next;
 }
 
@@ -1036,7 +1046,8 @@ struct options toggle[] = {             /* List of command line toggles    */
 #if !HASKELL_98_ONLY
              1,
 #endif
-            "print most general type",  &printMostGeneralType},
+            "Print most general type",  &printMostGeneralType},
+#if IPARAM
     {0,   
 #if !HASKELL_98_ONLY
           0,
