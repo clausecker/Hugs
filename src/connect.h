@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: connect.h,v $
- * $Revision: 1.87 $
- * $Date: 2004/09/13 10:36:09 $
+ * $Revision: 1.88 $
+ * $Date: 2004/11/30 15:56:27 $
  * ------------------------------------------------------------------------*/
 #ifndef __CONNECT_H__
 #define __CONNECT_H__
@@ -336,6 +336,7 @@ extern  Void   ffi              Args((Int));
 extern  Void   foreignHeader    Args((String));
 extern  Void   foreignFooter    Args((String,Text,List,List));
 extern  Void   ffiSetFlags      Args((String));
+extern  Void   ffiAddCppInclude Args((String));
 extern  Void   implementForeignImport Args((Int,Name,Int,Text,Text,Bool,Text,List,Bool,Type));
 extern  Void   implementForeignImportDynamic Args((Int,Int,Text,List,Bool,Type));
 extern  Void   implementForeignImportWrapper Args((Int,Int,Text,List,Bool,Type));

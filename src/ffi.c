@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: ffi.c,v $
- * $Revision: 1.37 $
- * $Date: 2004/11/20 20:26:00 $
+ * $Revision: 1.38 $
+ * $Date: 2004/11/30 15:56:28 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -75,6 +75,25 @@ String s; {
     }
 }
 
+static String cppDirectives = 0; /* extra C preprocessor directives */
+
+Void ffiAddCppInclude(String s) {
+    Int l;
+    Int needed = strlen(s)+11;
+    if (cppDirectives) {
+        l = strlen(cppDirectives);
+        cppDirectives = (char *)realloc(cppDirectives,l+needed);
+    } else {
+	l = 0;
+	cppDirectives = (char *)malloc(needed);
+    }
+    if (cppDirectives==0) {
+	ERRMSG(0) "String storage space exhausted"
+	EEND;
+    }
+    sprintf(cppDirectives+l, "#include %s\n", s);
+}
+
 Bool foreignNeedStubs(imps,exps)
 List imps;
 List exps; {
@@ -107,6 +126,9 @@ String fn; {
     out = f;
     fprintf(out,"/* Machine generated file, do not modify */\n");
     fprintf(out,"#include \"HsFFI.h\"\n");
+    if (cppDirectives)
+	fprintf(out,"%s",cppDirectives);
+    fprintf(out,"\n");
     fprintf(out,"static HugsAPI5 *hugs = 0;\n");
 }
 

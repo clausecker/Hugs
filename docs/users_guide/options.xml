@@ -1067,6 +1067,7 @@ Then the program will read and act on both the <option>+l</option> and
 <cmdsynopsis>
 <command>ffihugs</command> <arg><option>+G</option></arg>
 <arg rep="repeat" choice="opt"><replaceable>option</replaceable></arg>
+<arg rep="repeat" choice="opt"><option>+i</option><replaceable>include</replaceable></arg>
 <arg rep="repeat" choice="opt"><option>+L</option><replaceable>cc-option</replaceable></arg>
 <arg choice="plain"><replaceable>file</replaceable></arg>
 </cmdsynopsis>
@@ -1093,6 +1094,23 @@ Hugs will load <filename>Test.so</filename>.
 hugs Test.hs
 </screen>
 and then use the imported or exported functions.
+</para>
+
+<para>
+In the standard FFI, each <literal>foreign import</literal> declaration
+should name a C header file containing the prototype of the function.
+You can also specify these on the command line with a
+<option>+i</option> option, as in
+<screen>
+ffihugs +G '+i&lt;math.h&gt;' +L"test.c" +L"-lm" Test.hs
+</screen>
+The argument of the <option>+i</option> option is what would follow
+<quote><literal>#include</literal></quote> in a C file.
+You can also specify local includes, as in
+<screen>
+ffihugs +G '+i"mymath.h"' +L"test.c" +L"-lm" Test.hs
+</screen>
+Note the necessary quoting of the <option>+i</option> option here.
 </para>
 
 </sect1>

@@ -394,6 +394,12 @@ This is now needed for executable <command>runhugs</command> scripts
 (using the Unix <quote><literal>#!</literal></quote> feature)
 that require two or more options (see <xref linkend="runhugs"/>).
 </para></listitem>
+
+<listitem><para>
+The new <option>+i</option> option can be used to specify include files on
+the <command>ffihugs</command> command line (see <xref linkend="ffihugs"/>).
+</para></listitem>
+
 </itemizedlist>
 
 </sect2>
