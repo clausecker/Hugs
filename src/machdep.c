@@ -11,8 +11,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.51 $
- * $Date: 2002/06/14 14:41:10 $
+ * $Revision: 1.52 $
+ * $Date: 2002/06/15 00:29:08 $
  * ------------------------------------------------------------------------*/
 #include <math.h>
 
@@ -245,7 +245,6 @@ String f; {
  * Search for script files on the HUGS path:
  * ------------------------------------------------------------------------*/
 
-static String local hugsdir       Args((Void));
 #if HSCRIPT
 static String local hscriptDir    Args((Void));
 #endif
@@ -315,7 +314,7 @@ String s; {
 #endif
 
 
-static String local hugsdir() {     /* directory containing lib/Prelude.hs */
+String hugsdir() {                   /* directory containing lib/Prelude.hs */
 #if HSCRIPT
     /* In HaskellScript (Win32 only), we lookup InstallDir in the registry. */
     static char dir[FILENAME_MAX+1] = "";
@@ -1928,9 +1927,7 @@ String symbol; {
 
 #endif /* Dynamic loading not available */
 
-static String local mkDLLFilename Args((String));
-
-static String local mkDLLFilename(file)         /* get DLL path for module */
+String mkDLLFilename(file)                      /* get DLL path for module */
 String file; {
     String dot;
     String dllPath = RealPath(file);   /* find absolute pathname of module */
@@ -1940,6 +1937,23 @@ String file; {
     }
     strcpy(dot,DLL_ENDING);
     return dllPath;
+}
+
+String mkFFIFilename2(file)    
+String file; {
+#if HAVE__FULLPATH
+    static char path[FILENAME_MAX+1];
+#elif HAVE_REALPATH
+    static char path[MAXPATHLEN+1];
+#else
+    static char path[FILENAME_MAX+1];
+#endif
+    String dot = strrchr(file,'.');             /* patch file extension    */
+    if (isNull(dot))
+        dot = file + strlen(file);
+    strcpy(path, file);
+    strcpy(path + (dot - file),DLL_ENDING);
+    return path;
 }
 
 String mkFFIFilename(file)                      /* get DLL path for module */

@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.70 $
- * $Date: 2002/06/14 14:41:11 $
+ * $Revision: 1.71 $
+ * $Date: 2002/06/15 00:29:08 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -4813,6 +4813,15 @@ String s; {
     return s;
 }
 
+static String skipToChar(s,c)
+String s; 
+char   c; {
+    while (*s != '\0' && *s != c) {
+        ++s;
+    }
+    return s;
+}
+
 static String matchToken(t,s)
 String t;
 String s; {
@@ -4932,7 +4941,7 @@ Name p; {
          *
          */
         Text fn   = 0;
-        Text libn = 0;
+        Text libn = -1;
         Text cid  = 0;
         Bool isLabel = FALSE;
 
@@ -4952,12 +4961,10 @@ Name p; {
         
         if (e = matchToken("[",ext)) {
             e   = skipSpaces(e);
-            ext = skipToSpace(e);
-            if (ext == e) goto cantparse;
+            ext = skipToChar(e,']');
+            if (*ext != ']' || ext == e) goto cantparse;
             libn = subText(e,ext-e);
-            e = matchToken("]",ext);
-            if (e == 0) goto cantparse;
-            ext = skipSpaces(e);
+            ext = skipSpaces(ext+1);
         }
 
         if (*ext != '\0') {
@@ -4978,7 +4985,8 @@ Name p; {
             }
             if (generate_ffi) {
                 name(p).arity = 0;
-                implementForeignImportLabel(line,name(p).foreignId,fn,libn,cid,name(p).text,t);
+                name(p).lib = libn;
+                implementForeignImportLabel(line,name(p).foreignId,fn,cid,name(p).text,t);
                 name(p).extFun = cid;
             }
         } else {
@@ -4993,7 +5001,8 @@ Name p; {
                 name(p).arity 
                     = length(argTys) 
                     + (isIO ? 2 : 0);
-                implementForeignImport(line,name(p).foreignId,fn,libn,cid,argTys,isIO,t);
+                name(p).lib = libn;
+                implementForeignImport(line,name(p).foreignId,fn,cid,argTys,isIO,t);
                 name(p).extFun = cid;
             }
         }

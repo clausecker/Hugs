@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: storage.c,v $
- * $Revision: 1.41 $
- * $Date: 2002/06/14 14:41:13 $
+ * $Revision: 1.42 $
+ * $Date: 2002/06/15 00:29:09 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -522,6 +522,7 @@ Cell parent; {
     name(nameHw).extFun       = 0;
     name(nameHw).safety       = FFI_NOSAFETY;
     name(nameHw).foreignId    = -1; 
+    name(nameHw).lib          = -1;
     name(nameHw).primDef      = 0;
     name(nameHw).code         = 0;
     name(nameHw).mod          = currentModule;

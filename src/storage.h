@@ -8,8 +8,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: storage.h,v $
- * $Revision: 1.37 $
- * $Date: 2002/06/14 14:41:14 $
+ * $Revision: 1.38 $
+ * $Date: 2002/06/15 00:29:09 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -666,6 +666,7 @@ struct strName {
     Text extFun;                        /* for foreign import/export       */
     Int  safety;                        /* for foreign import/export       */
     Int  foreignId;                     /* per module identifier           */
+    Text lib;                           /* library from impent             */
     Prim primDef;
     Name nextNameHash;
 #if PROFILING

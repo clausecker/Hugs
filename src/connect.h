@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: connect.h,v $
- * $Revision: 1.36 $
- * $Date: 2002/06/14 14:41:10 $
+ * $Revision: 1.37 $
+ * $Date: 2002/06/15 00:29:06 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -342,10 +342,10 @@ extern  List   foreignExports;           /* foreign export declarations     */
 extern  Void   ffi              Args((Int));
 extern  Void   foreignHeader    Args((Void));
 extern  Void   foreignFooter    Args((List,List));
-extern  Void   implementForeignImport        Args((Int,Int,Text,Text,Text,List,Bool,Type));
+extern  Void   implementForeignImport        Args((Int,Int,Text,Text,List,Bool,Type));
 extern  Void   implementForeignImportDynamic Args((Int,Int,Text,List,Bool,Type));
 extern  Void   implementForeignImportWrapper Args((Int,Int,Text,List,Type));
-extern  Void   implementForeignImportLabel   Args((Int,Int,Text,Text,Text,Text,Type));
+extern  Void   implementForeignImportLabel   Args((Int,Int,Text,Text,Text,Type));
 extern  Void   implementForeignExport        Args((Int,Int,Text,List,Bool,Type));
 extern  Bool   generate_ffi;
 
@@ -424,7 +424,10 @@ extern  String findMPathname    Args((String,String,String));
 #if PROFILING
 extern  String timeString	Args((Void));
 #endif
+extern  String hugsdir          Args((Void));
+extern  String mkDLLFilename    Args((String));
 extern  String mkFFIFilename    Args((String));
+extern  String mkFFIFilename2   Args((String));
 
 extern  Int    shellEsc		Args((String,Bool,Bool));
 extern  Int    getTerminalWidth Args((Void));

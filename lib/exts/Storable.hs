@@ -50,8 +50,8 @@ instance Storable Char where {
     peekElemOff = readCharOffPtr;		
     pokeElemOff = writeCharOffPtr }
 
-foreign import ccall unsafe readCharOffPtr  :: Ptr Char -> Int        -> IO Char
-foreign import ccall unsafe writeCharOffPtr :: Ptr Char -> Int -> Char -> IO ()
+foreign import ccall unsafe "[Storable_aux.o]" readCharOffPtr  :: Ptr Char -> Int        -> IO Char
+foreign import ccall unsafe "[Storable_aux.o]" writeCharOffPtr :: Ptr Char -> Int -> Char -> IO ()
 
 -- readWideCharOffPtr  :: Ptr Char          -> Int -> IO Char
 -- readWordOffPtr      :: Ptr Word          -> Int -> IO Word

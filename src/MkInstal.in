@@ -55,6 +55,7 @@ install_man	::
 install_include	::
 		$(INSTALL) -d $(hugsdir)/include
 		$(INSTALL_DATA) ../include/GreenCard.h  $(hugsdir)/include
+		$(INSTALL_DATA) HsFFI.h  $(hugsdir)/include
 
 install_notes	::
 		$(INSTALL) -d $(hugsdir)/docs
