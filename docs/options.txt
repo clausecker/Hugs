@@ -35,11 +35,24 @@ Defaulting types before printing: {+,-}T
 Use old implicit parameter syntax: {+,-}W
 -----------------------------------------
 
+With the -98 option, Hugs supports implicit parameters, as described
+in "Implicit parameters: dynamic scoping with static types", J Lewis,
+MB Shields, E Meijer, J Launchbury, 27th ACM Symposium on Principles of
+Programming Languages (POPL'00), Boston, Jan 2000.  The syntax used in
+that paper, using new keywords 'dlet' and 'with', is now deprecated in
+favour of the form
+
+	let ?var = exp in exp
+
+The old syntax is still supported, unless the -W option is given.  (If +98
+is in effect, neither syntax is available.)  This frees 'dlet' and 'with'
+for use by programs, and is required by some libraries, e.g. Foreign.
+
 Add loading module's path to search path: {+,-}X
 ------------------------------------------------
 
-Use hierarchial libraries: {+,-}N
----------------------------------
+Use hierarchical libraries: {+,-}N
+----------------------------------
 
 Hugs98 offers you a choice of what kind of standard library setup to
 use at startup: the Haskell 98-based library setup used by all
