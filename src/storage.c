@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: storage.c,v $
- * $Revision: 1.75 $
- * $Date: 2003/10/11 00:37:33 $
+ * $Revision: 1.76 $
+ * $Date: 2003/10/13 17:19:46 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -3703,9 +3703,9 @@ Int what; {
 
 		       dynTabInst = allocDynTable(sizeof(struct strInst),50,NUM_INSTS,"instance");
 		       tabInst = (struct strInst*)(dynTabInst->data);
-		       dynTabHandles = allocDynTable(sizeof(struct strHandle),NUM_HANDLES, 0, "handles");
+		       dynTabHandles = allocDynTable(sizeof(struct strHandle),4, 0, "handles");
 		       handles = (struct strHandle*)(dynTabHandles->data);
-		       num_handles = NUM_HANDLES;
+		       num_handles = dynTabHandles->maxIdx;
 #endif
 		       TABALLOC(text,      char,             NUM_TEXT)
 		       TABALLOC(tyconHash, Tycon,            TYCONHSZ)
