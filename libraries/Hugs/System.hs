@@ -9,7 +9,7 @@
 -----------------------------------------------------------------------------
 
 module Hugs.System (
-	ExitCode(..), exitWith, exitFailure,
+	ExitCode(..), exitWith
 	getArgs, getProgName, getEnv, 
 	system
 	) where
@@ -35,9 +35,6 @@ system s                     = do r <- primSystem s
 
 exitWith                    :: ExitCode -> IO a
 exitWith c                   = primExitWith (fromExitCode c)
-
-exitFailure		    :: IO a
-exitFailure		     = exitWith (ExitFailure 1)
 
 primitive primSystem        :: String -> IO Int
 
