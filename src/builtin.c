@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: builtin.c,v $
- * $Revision: 1.22 $
- * $Date: 2002/05/18 16:22:11 $
+ * $Revision: 1.23 $
+ * $Date: 2002/06/11 17:52:56 $
  * ------------------------------------------------------------------------*/
 
 /* We include math.h before prelude.h because SunOS 4's cpp incorrectly
@@ -610,15 +610,18 @@ PROTO_PRIM(primRotateWord);
 PROTO_PRIM(primBitWord);
 PROTO_PRIM(primTestWord);
 
-PROTO_PRIM(primItoI8);
-PROTO_PRIM(primItoI16);
-PROTO_PRIM(primItoI32);
-PROTO_PRIM(primItoI64);
+PROTO_PRIM(primEqInt32);
+PROTO_PRIM(primCmpInt32);
 
-PROTO_PRIM(primI8toI);
-PROTO_PRIM(primI16toI);
 PROTO_PRIM(primI32toI);
-PROTO_PRIM(primI64toI);
+PROTO_PRIM(primI32toI8);
+PROTO_PRIM(primI32toI16);
+PROTO_PRIM(primI32toI64);
+
+PROTO_PRIM(primItoI32);
+PROTO_PRIM(primI8toI32);
+PROTO_PRIM(primI16toI32);
+PROTO_PRIM(primI64toI32);
 
 PROTO_PRIM(primW32toW8);
 PROTO_PRIM(primW32toW16);
@@ -762,15 +765,18 @@ static struct primitive builtinPrimTable[] = {
   {"primBitWord",       1, primBitWord},
   {"primTestWord",      2, primTestWord},
 
-  {"primIntToInt8",     1, primItoI8},
-  {"primIntToInt16",    1, primItoI16},
-  {"primIntToInt32",    1, primItoI32},
-  {"primIntToInt64",    2, primItoI64},
+  {"primEqInt32",       2, primEqInt32},
+  {"primCmpInt32",      2, primCmpInt32},
 
-  {"primInt8ToInt",     1, primI8toI},
-  {"primInt16ToInt",    1, primI16toI},
   {"primInt32ToInt",    1, primI32toI},
-  {"primInt64ToInt",    1, primI64toI},
+  {"primInt32ToInt8",   1, primI32toI8},
+  {"primInt32ToInt16",  1, primI32toI16},
+  {"primInt32ToInt64",  2, primI32toI64},
+
+  {"primIntToInt32",    1, primItoI32},
+  {"primInt8ToInt32",   1, primI8toI32},
+  {"primInt16ToInt32",  1, primI16toI32},
+  {"primInt64ToInt32",  1, primI64toI32},
 
   {"primWord32ToWord8", 1, primW32toW8},
   {"primWord32ToWord16",1, primW32toW16},
@@ -1315,13 +1321,13 @@ primFun(primRotateWord) {
     }
 }
 
-Int2Int(primItoI8,  x&0xff)
-Int2Int(primItoI16, x&0xffff)
-Int2Int(primItoI32, x&0xffffffff)
+Int2Int(primI32toI,   x&0xffffffff)
+Int2Int(primI32toI8,  x&0xff)
+Int2Int(primI32toI16, x&0xffff)
 
-Int2Int(primI8toI, x)
-Int2Int(primI16toI,x)
-Int2Int(primI32toI,x)
+Int2Int(primItoI32,  x)
+     Int2Int(primI8toI32, (Int8)x)   /* casts used to cause sign extension */
+Int2Int(primI16toI32,(Int16)x)       /* casts used to cause sign extension */
 
 Word2Word(primW32toW8 , x&0xff);
 Word2Word(primW32toW16, x&0xffff);
@@ -1329,7 +1335,7 @@ Word2Word(primW32toW16, x&0xffff);
 Word2Word(primW8toW32 , x);
 Word2Word(primW16toW32, x);
 
-primFun(primI64toI) {
+primFun(primI64toI32) {
     Int x, y;
     eval(primArg(1)); 
     x = intOf(fst(snd(whnfHead)));
@@ -1337,7 +1343,7 @@ primFun(primI64toI) {
     IntIntResult(x,y);
 }
 
-primFun(primItoI64) {
+primFun(primI32toI64) {
     Int x, y;
     IntArg(x,2);
     IntArg(y,1);
@@ -1527,10 +1533,20 @@ Ptr2Int(primAddrToInt,((Int)x))        /* geting the pointer               */
  * Comparison primitives:
  * ------------------------------------------------------------------------*/
 
+IntInt2Bool(primEqInt32,x==y)          /* Int32 equality primitive         */
 IntInt2Bool(primEqInt,x==y)            /* Integer equality primitive       */
 WordWord2Bool(primEqWord,x==y)         /* Natural equality primitive       */
 CharChar2Bool(primEqChar,x==y)         /* Character equality primitive     */
 FloatFloat2Bool(primEqFloat, x==y)     /* Float equality primitive         */
+
+primFun(primCmpInt32) {                /* Integer compare primitive        */
+    Int x, y;
+    IntArg(x,2);
+    IntArg(y,1);
+    updateRoot( x<y ? nameLT :
+	      ( x>y ? nameGT : 
+		      nameEQ ));
+}
 
 primFun(primCmpInt) {                  /* Integer compare primitive        */
     Int x, y;

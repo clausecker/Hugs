@@ -8,8 +8,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: prelude.h,v $
- * $Revision: 1.33 $
- * $Date: 2002/04/11 23:20:21 $
+ * $Revision: 1.34 $
+ * $Date: 2002/06/11 17:52:56 $
  * ------------------------------------------------------------------------*/
 
 #include "config.h"
@@ -704,6 +704,8 @@ typedef unsigned Bool;
 typedef char    *String;
 #endif
 typedef int      Int;
+typedef signed char Int8;
+typedef short    Int16;
 typedef long     Long;
 typedef int      Char;
 typedef unsigned Unsigned;
