@@ -46,14 +46,13 @@ Last updated: 11/03/2003
   'happy' is the Happy parser generator available via
   http://haskell.org/happy/
 
-- prepare the Hugs sources by running the configure script:
+- Compile up the Hugs sources:
 
     foo$ make EXTRA_CONFIGURE_OPTS=--build=i386-unknown-mingw32
 
-- assuming that went OK, compile up the sources:
+- assuming that went OK, compile up some FFI stub libraries:
 
     foo$ cd src
-    foo$ make
     foo$ make ffi_libraries
 
 - test the bits:
