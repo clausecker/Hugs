@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: input.c,v $
- * $Revision: 1.73 $
- * $Date: 2003/11/01 17:02:45 $
+ * $Revision: 1.74 $
+ * $Date: 2003/11/13 12:54:31 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -205,7 +205,7 @@ static Int hereState = START;
 static  Bool            charTabBuilt;
 static  unsigned char   ctable[NUM_CHARS];
 #define isIn(c,x)       (ctable[(unsigned char)(c)]&(x))
-#define isISO(c)        (0<=(c) && (c)<NUM_CHARS)
+#define isLatin1(c)     (0<=(c) && (c)<NUM_CHARS)
 
 #define DIGIT           0x01
 #define SMALL           0x02
@@ -228,12 +228,12 @@ static Void local initCharTab() {       /* Initialize char decode table    */
     setRange(DIGIT,     '0','9');	/* ASCII decimal digits		   */
 
     setRange(SMALL,     'a','z');	/* ASCII lower case letters	   */
-    setRange(SMALL,     223,246);	/* ISO lower case letters	   */
+    setRange(SMALL,     223,246);	/* Latin-1 lower case letters	   */
     setRange(SMALL,     248,255);	/* (omits division symbol, 247)	   */
     setChar (SMALL,     '_');
 
     setRange(LARGE,     'A','Z');	/* ASCII upper case letters	   */
-    setRange(LARGE,     192,214);	/* ISO upper case letters	   */
+    setRange(LARGE,     192,214);	/* Latin-1 upper case letters	   */
     setRange(LARGE,     216,222);	/* (omits multiplication, 215)	   */
 
     setRange(SYMBOL,    161,191);	/* Symbol characters + ':'	   */
@@ -245,7 +245,7 @@ static Void local initCharTab() {       /* Initialize char decode table    */
     setCopy (IDAFTER,   (DIGIT|SMALL|LARGE));
 
     setChar (SPACE,     ' ');		/* ASCII space character	   */
-    setChar (SPACE,     160);		/* ISO non breaking space	   */
+    setChar (SPACE,     160);		/* Latin-1 non breaking space	   */
     setRange(SPACE,     9,13);		/* special whitespace: \t\n\v\f\r  */
 
     setChars(PRINT,     "(),;[]_`{}");  /* Special characters		   */
@@ -750,7 +750,7 @@ static Text local readOperator() {     /* read operator symbol             */
     do {
 	saveTokenChar(c0);
 	skip();
-    } while (isISO(c0) && isIn(c0,SYMBOL));
+    } while (isLatin1(c0) && isIn(c0,SYMBOL));
     opType = (tokenStr[0]==':' ? CONOP : VAROP);
     endToken();
     return findText(tokenStr);
@@ -761,7 +761,7 @@ static Text local readIdent() {        /* read identifier                  */
     do {
 	saveTokenChar(c0);
 	skip();
-    } while (isISO(c0) && isIn(c0,IDAFTER));
+    } while (isLatin1(c0) && isIn(c0,IDAFTER));
     endToken();
     identType = isIn(tokenStr[0],LARGE) ? CONID : VARID;
     return findText(tokenStr);
@@ -824,23 +824,23 @@ static Cell local readNumber() {        /* read numeric constant           */
 	n  = 10*n  + (c0-'0');
 	saveTokenChar(c0);
 	skip();
-    } while (isISO(c0) && isIn(c0,DIGIT));
+    } while (isLatin1(c0) && isIn(c0,DIGIT));
 
-    if (c0=='.' && isISO(c1) && isIn(c1,DIGIT)) {	/* decimal part */
+    if (c0=='.' && isLatin1(c1) && isIn(c1,DIGIT)) {	/* decimal part */
 	floatingPt = TRUE;
 	saveTokenChar(c0);                  /* save decimal point          */
 	skip();
 	do {                                /* process fractional part ... */
 	    saveTokenChar(c0);
 	    skip();
-	} while (isISO(c0) && isIn(c0,DIGIT));
+	} while (isLatin1(c0) && isIn(c0,DIGIT));
     }
 
     /* Look for exponent part.  BUG: since we don't use 2 characters of
      * lookahead, we mis-scan things like 9e+a and 9.0e+a.
      */
     if ((c0=='e' || c0=='E') &&
-	isISO(c1) && (isIn(c1,DIGIT) || c1=='-' || c1=='+')) {
+	isLatin1(c1) && (isIn(c1,DIGIT) || c1=='-' || c1=='+')) {
 	floatingPt = TRUE;
 	saveTokenChar('e');
 	skip();
@@ -851,7 +851,7 @@ static Cell local readNumber() {        /* read numeric constant           */
 	else if (c0=='+')
 	    skip();
 
-	if (!isISO(c0) || !isIn(c0,DIGIT)) {
+	if (!isLatin1(c0) || !isIn(c0,DIGIT)) {
 	    ERRMSG(row) "Missing digits in exponent"
 	    EEND;
 	}
@@ -859,7 +859,7 @@ static Cell local readNumber() {        /* read numeric constant           */
 	    do {
 		saveTokenChar(c0);
 		skip();
-	    } while (isISO(c0) && isIn(c0,DIGIT));
+	    } while (isLatin1(c0) && isIn(c0,DIGIT));
 	}
     }
 
@@ -993,8 +993,8 @@ Bool isStrLit; {                       /* TRUE => enable \& and gaps       */
 
     if (c0=='\\')                      /* escape character?                */
 	return readEscapeChar(isStrLit,TRUE);
-    if (!isISO(c0)) {
-	ERRMSG(row) "Non ISO character `\\%d' in constant", ((int)c0)
+    if (!isLatin1(c0)) {
+	ERRMSG(row) "Non Latin-1 character `\\%d' in constant", ((int)c0)
 	EEND;
     }
     skip();                            /* normal character?                */
@@ -1064,7 +1064,7 @@ Bool skipEsc; {
 	case 'o'  : return readOctChar();
 	case 'x'  : return readHexChar();
 
-	default   : if (!isISO(c0)) {
+	default   : if (!isLatin1(c0)) {
 			ERRMSG(row) "Illegal escape sequence"
 			EEND;
 		    }
@@ -1099,7 +1099,7 @@ static Void local skipGap() {          /* skip over gap in string literal  */
 	    newlineSkip();
 	else
 	    skip();
-    while (isISO(c0) && isIn(c0,SPACE));
+    while (isLatin1(c0) && isIn(c0,SPACE));
     if (c0!='\\') {
 	ERRMSG(row) "Missing `\\' terminating string literal gap"
 	EEND;
@@ -1200,7 +1200,7 @@ Char quote; {                          /* protect quote character          */
     if (c<0)                           /* deal with sign extended chars..  */
 	c += NUM_CHARS;		       					   
 									   
-    if (isISO(c) && isIn(c,PRINT)) {   /* normal printable character       */
+    if (isLatin1(c) && isIn(c,PRINT)) {/* normal printable character       */
 	if (c==quote || c=='\\') {     /* look for quote of approp. kind   */
 	    buffer[0] = '\\';           
 	    buffer[1] = (char)c;
@@ -1228,7 +1228,7 @@ String s; {                            /* escapes if any parts need them   */
     if (s) {			       
 	String t = s;		       
 	Char   c;		       
-	while ((c = *t)!=0 && isISO(c)
+	while ((c = *t)!=0 && isLatin1(c)
 			   && isIn(c,PRINT) && c!='"' && !isIn(c,SPACE)) {
 	    t++;		       
 	}
