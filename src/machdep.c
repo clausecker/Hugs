@@ -11,8 +11,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.88 $
- * $Date: 2003/05/05 19:46:38 $
+ * $Revision: 1.89 $
+ * $Date: 2003/06/17 10:36:13 $
  * ------------------------------------------------------------------------*/
 #include "prelude.h"
 #include "storage.h"
@@ -663,6 +663,24 @@ String s;
 #endif /* HAVE_WINDOWS_H || HAVE_FTW_H || (__MWERKS__ && macintosh) */
 #endif /* SEARCH_DIR */
 
+/* Variables that may be substituted in the path */
+
+struct shellVariable {
+    String var_name;
+    String (*var_value) Args((Void));
+};
+
+static struct shellVariable shell_var[] = {
+    { "Hugs",		&hugsdir },
+#if __MWERKS__ && macintosh
+    { "Current",	&currentDir },
+#endif
+#if HSCRIPT
+    { "HScript",	&hscriptDir },
+#endif
+    { 0, 0 }
+};
+
 /*
     findPathname nm = [ nm ++ e | e <- "" : hugsSuffixes ]
 */
@@ -728,25 +746,20 @@ String name; {
 	    searchReset(0);
 	    if (*pathpt) {
 		if (!isPATHSEP(pathpt)) {
-		    /* Pre-define one MPW-style "shell-variable" */
-		    if (strncmp(pathpt,"{Hugs}",6)==0) {
-			searchStr(hugsdir());
-			pathpt += 6;
-		    }
-#if __MWERKS__ && macintosh
-                    else if (strncmp(pathpt,"{Current}",9)==0) {
-                        searchStr(currentDir());
-                        pathpt += 9;
-                    }
-#endif
+		    /* allow initial MPW-style "shell-variables" */
+		    if (*pathpt=='{') { /* of the form {varname} */
+			int i, len;
 
-#if HSCRIPT
-		    /* And another - we ought to generalise this stuff */
-		    else if (strncmp(pathpt,"{HScript}",9)==0) {
-			searchStr(hscriptDir());
-			pathpt += 9;
+			for (i = 0; shell_var[i].var_name!=NULL; i++) {
+			    len = strlen(shell_var[i].var_name);
+			    if (strncmp(pathpt+1,shell_var[i].var_name,len)==0
+				&& pathpt[len+1]=='}') {
+				searchStr((*shell_var[i].var_value)());
+				pathpt += len+2;
+				break;
+			    }
+			}
 		    }
-#endif
 		    do {
 			searchChr(*pathpt++);
 		    } while (*pathpt && !isPATHSEP(pathpt));
