@@ -32,7 +32,6 @@ extern Bool  addType;                  /* TRUE => print type with value   */
 extern Bool  gcMessages;	       /* TRUE => print GC messages	  */
 extern Bool  generateFFI;              /* TRUE => generate ffi code       */
 extern Bool  literateScripts;	       /* TRUE => default lit scripts     */
-extern Bool  literateErrors;	       /* TRUE => report errs in lit scrs */
 extern Bool  useDots;                  /* TRUE => use dots in progress    */
 extern Bool  quiet;                    /* TRUE => don't show progress     */
 extern Bool  useQualifiedNames;        /* TRUE => qualify names when printing types and terms */

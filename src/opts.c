@@ -117,7 +117,6 @@ struct options toggle[] = {     /* List of command line toggles    */
     Option('g', 1, "Print no. cells recovered after gc",    &gcMessages),
     Option('G', 0, "Generate FFI code for foreign import",  &generateFFI),
     Option('l', 1, "Literate modules as default",           &literateScripts),
-    Option('e', 1, "Warn about errors in literate modules", &literateErrors),
     Option('.', 1, "Print dots to show progress",           &useDots),
     Option('q', 1, "Print nothing to show progress",        &quiet),
     Option('Q', 1, "Qualify names when printing",           &useQualifiedNames),

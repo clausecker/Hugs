@@ -488,7 +488,7 @@ Numerous bug fixes since the previous major release in Dec 2001.
 </sect2>
 
 <sect2>
-<title>September 2003</title>
+<title>October 2003</title>
 
 <para>
 There has been substantial internal restructuring.
@@ -525,7 +525,7 @@ Integrated .NET support (on Windows platforms).
 
 <listitem><para>
 The <option>-N</option>, <option>-i</option>, <option>-f</option>,
-<option>-W</option> and <option>-X</option> options
+<option>-e</option>, <option>-W</option> and <option>-X</option> options
 and the <command>:project</command> command have been removed.
 </para></listitem>
 </itemizedlist>

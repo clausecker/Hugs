@@ -156,15 +156,6 @@ This option determines whether other files are literate scripts or not.
 </listitem>
 </varlistentry>
 
-<varlistentry id="option-literate-errors">
-<term><option>+e</option></term>
-<listitem>
-<para>
-Warn about errors in literate scripts (default: on)
-</para>
-</listitem>
-</varlistentry>
-
 <varlistentry id="option-dots">
 <term><option>+.</option></term>
 <listitem>

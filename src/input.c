@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: input.c,v $
- * $Revision: 1.69 $
- * $Date: 2003/10/04 04:01:31 $
+ * $Revision: 1.70 $
+ * $Date: 2003/10/12 13:12:19 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -52,7 +52,6 @@ List evalDefaults    = NIL;             /* defaults for evaluator          */
 Cell inputExpr       = NIL;             /* input expression                */
 Cell inputContext    = NIL;             /* input context                   */
 Bool literateScripts = FALSE;           /* TRUE => default to lit scripts  */
-Bool literateErrors  = TRUE;            /* TRUE => report errs in lit scrs */
 
 String repeatStr     = 0;               /* Repeat last expr                */
 
@@ -646,14 +645,12 @@ static Void local skip() {              /* move forward one char in input  */
 
 static Void local thisLineIs(kind)     /* register kind of current line    */
 Int kind; {                            /* & check for literate script errs */
-    if (literateErrors) {
-	if ((kind==DEFNLINE && lastLine==TEXTLINE) ||
-	    (kind==TEXTLINE && lastLine==DEFNLINE)) {
-	    ERRMSG(row) "Program line next to comment"
-	    EEND;
-	}
-	lastLine = kind;
+    if ((kind==DEFNLINE && lastLine==TEXTLINE) ||
+	(kind==TEXTLINE && lastLine==DEFNLINE)) {
+	ERRMSG(row) "Program line next to comment"
+	EEND;
     }
+    lastLine = kind;
 }
 
 static Void local newlineSkip() {      /* skip `\n' (supports lit scripts) */
@@ -683,7 +680,7 @@ static Void local newlineSkip() {      /* skip `\n' (supports lit scripts) */
 	    }                          /* by now, c0=='\n' or c0==EOF      */
 	} while (c0!=EOF);             /* if new line, start again         */
 
-	if (litLines==0 && literateErrors) {
+	if (litLines==0) {
 	    ERRMSG(row) "Empty script - perhaps you forgot the `%c's?",
 			DEFNCHAR
 	    EEND;

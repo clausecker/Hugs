@@ -81,9 +81,6 @@ Allow `here documents' (a Hugs extension; default: off)
 Treat files whose names end in neither `\fB.hs\fP' nor `\fB.lhs\fP'
 as literate scripts (default: off)
 .TP
-.B +e
-Warn about errors in literate scripts (default: on)
-.TP
 .B +\&.
 Print dots to show progress while loading modules (default: off)
 .TP
