@@ -9,8 +9,8 @@
  * included in the distribution.
  *
  * $RCSfile: subst.c,v $
- * $Revision: 1.18 $
- * $Date: 2000/10/10 15:32:20 $
+ * $Revision: 1.19 $
+ * $Date: 2001/04/18 17:01:52 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1261,6 +1261,7 @@ Type type; {				/* NULL cell			   */
 		  /* see below as well... */
     emptySubstitution();
     alpha  = newKindedVars(ks);
+    expandSynFully(&type,&alpha);
     beta   = newTyvars(1);
     bindOnlyAbove(beta);
     result = unify(type,alpha,typeProgIO,beta);
