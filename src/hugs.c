@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.27 $
- * $Date: 2001/01/02 18:21:40 $
+ * $Revision: 1.28 $
+ * $Date: 2001/01/08 22:51:57 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1296,6 +1296,7 @@ static Void local stopAnyPrinting() {  /* terminate printing of expression,*/
             Int n=countObserve();
             printf("%d observations recorded\n", n);
         }
+	obsCount = 0;
         clearObserve();
 #endif
 	FlushStdout();
