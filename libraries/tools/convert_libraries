@@ -142,11 +142,18 @@ build_package() {
 	runhugs=$top_dir/src/runhugs
 	ffihugs=$top_dir/src/ffihugs
 	HugsSetup="$runhugs -98 $top_dir/fptools/libraries/Cabal/examples/hapax.hs"
+
+	case "$happy" in
+	'')	happyflag= ;;
+	/*)	happyflag="--with-happy=$happy" ;;
+	*)	happyflag="--with-happy=$top_dir/$happy" ;;
+	esac
+
 	$HugsSetup configure --verbose --hugs \
 			--builddir="$top_dir/$target_dir" \
 			--with-hsc2hs="$top_dir/libraries/tools/hsc2hs" \
 			--with-cpphs="$top_dir/libraries/tools/cpphs" \
-			--with-compiler="$top_dir/src/ffihugs"
+			--with-compiler="$top_dir/src/ffihugs" $happyflag
 	if $HugsSetup build --verbose; then
 		for name in LICEN[CS]E* COPYING* COPYRIGHT* copyright; do
 			if test -f $name; then
