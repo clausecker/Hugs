@@ -8,13 +8,14 @@
 #ifndef __OBSERVE_H__
 #define __OBSERVE_H__
 
-#ifndef HUGS_SERVER
+#include "builtin.h"
+
 EXT_PROTO_PRIM(primObserve);
 EXT_PROTO_PRIM(primBkpt);
 EXT_PROTO_PRIM(primSetBkpt);
-#else
+
+#ifdef HUGS_SERVER
 /* Provide stubbed out primops in non-interactive modes. Tiresome. */
-#include "builtin.h"
 #include "evaluator.h"
 #include "errors.h"
 extPrimFun(primObserve) {
