@@ -1381,12 +1381,16 @@ lex ('"':s)             = [('"':str, t)      | (str,t) <- lexString s]
 			      = [("",t) | '\\':t <- [dropWhile isSpace s]]
 			  lexStrItem s            = lexLitChar s
 
-lex (c:s) | isSingle c  = [([c],s)]
-	  | isSym c     = [(c:sym,t)         | (sym,t) <- [span isSym s]]
-	  | isAlpha c   = [(c:nam,t)         | (nam,t) <- [span isIdChar s]]
-	  | isDigit c   = [(c:ds++fe,t)      | (ds,s)  <- [span isDigit s],
-					       (fe,t)  <- lexFracExp s     ]
-	  | otherwise   = []    -- bad character
+lex (c:s) | isSym c     = [(c:sym,t)         | (sym,t) <- [span isSym s]]
+          | isAlpha c   = [(c:nam,t)         | (nam,t) <- [span isIdChar s]]
+             -- '_' can be the start of a single char or a name/id.
+          | c == '_'    = case span isIdChar s of 
+                            ([],_) -> [([c],s)]
+                            (nm,t) -> [((c:nm),t)]
+          | isSingle c  = [([c],s)]
+          | isDigit c   = [(c:ds++fe,t)      | (ds,s)  <- [span isDigit s],
+                                               (fe,t)  <- lexFracExp s     ]
+          | otherwise   = []    -- bad character
 		where
 		isSingle c  =  c `elem` ",;()[]{}_`"
 		isSym c     =  c `elem` "!@#$%&*+./<=>?\\^|:-~"
