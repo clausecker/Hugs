@@ -1,13 +1,13 @@
-ROOT := ${subst /src/unix,,${shell pwd}}/hugsdir
-OPTS =  --enable-ffi \
-	--with-fptools=../../fptools
+OPTS =
 #	--disable-large-banner
 GNULIBS = 
 
-config: configure
+config: configure ../config.h.in
 	$(RM) -r config.cache autom4te.cache
-	LIBS=${GNULIBS} hugsdir=${ROOT} ./configure ${OPTS} --datadir=${ROOT}
+	LIBS=${GNULIBS} ./configure ${OPTS}
 
 configure: configure.in
 	-autoconf
+
+../config.h.in: configure.in
 	-autoheader

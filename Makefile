@@ -1,7 +1,5 @@
 include Defs.mk
 
-# does an in-place install (mainly because src/unix; make config does that)
-# FIXME
 all: fptools src/Makefile
 	cd src; make
 
