@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: input.c,v $
- * $Revision: 1.54 $
- * $Date: 2002/11/08 06:23:17 $
+ * $Revision: 1.55 $
+ * $Date: 2002/11/08 16:05:27 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1312,15 +1312,19 @@ String readFilename() {                /* Read filename from input (if any)*/
 		/* Permit and treat an escaped space as legal character
 		   in a filename. Some environments include these when
 		   pasting filenames (MacOS X one, according to reports).
+		   
+		   Also, we no longer support the full array of escape chars
+		   in filename / option strings; apart from '\ ', only '\"'
+		   is recognised. This is done to have lone backslashes
+		   (as is common in filenames on certain platforms) be interpreted
+		   as just that. As was, such backslashes would either cause
+		   the interpreter to fall over (and fail to start up) or
+		   be interpreted as some (unintended) escaped character.
 		*/
 		if (c0 == '\\') {
 		  skip();
-		  if (c0 == ' ') {
-		    saveTokenChar(' ');
-		    skip();
-		    continue;
-		  } else if (c0 == '"') {
-		    saveTokenChar('"');
+		  if (c0 == '"' || c0 == ' ') {
+		    saveTokenChar(c0);
 		    skip();
 		    continue;
 		  } else {
