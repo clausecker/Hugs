@@ -308,7 +308,7 @@ ac_includes_default="\
 # include <unistd.h>
 #endif"
 
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS build build_cpu build_vendor build_os host host_cpu host_vendor host_os target target_cpu target_vendor target_os FPTOOLS YACC CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT CPP EGREP PTHREAD_CC PTHREAD_LIBS PTHREAD_CFLAGS LD PERL SET_MAKE have_hp2ps DOCBOOK2HTML DOCBOOK2DVI DOCBOOK2PDF DOCBOOK2PS Find2Cmd FindCmd Sort2Cmd SortCmd DIFF CONTEXT_DIFF X_CFLAGS X_PRE_LIBS X_LIBS X_EXTRA_LIBS GL_CFLAGS GL_LIBS GLUT_LIBS FFI_LIBRARIES HAVE_STRUCT_MSGHDR_MSG_ACCRIGHTS HAVE_STRUCT_MSGHDR_MSG_CONTROL ALLOCA OPTFLAGS DEBUGFLAGS LDDEBUGFLAGS HUGSPATH HUGSSUFFIXES hugsdir HUGSDIR BINDIR SET_INSTALLDIRS EXE OBJ DLL DLL_ENDING DEV_NULL RM CP WOBJECTS RC_FILES STRIP LIBOBJS LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS build build_cpu build_vendor build_os host host_cpu host_vendor host_os target target_cpu target_vendor target_os FPTOOLS YACC CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT CPP EGREP PTHREAD_CC PTHREAD_LIBS PTHREAD_CFLAGS LD PERL SET_MAKE have_hp2ps DOCBOOK2HTML DOCBOOK2DVI DOCBOOK2PDF DOCBOOK2PS Find2Cmd FindCmd Sort2Cmd SortCmd DIFF CONTEXT_DIFF X_CFLAGS X_PRE_LIBS X_LIBS X_EXTRA_LIBS GL_CFLAGS GL_LIBS GLUT_LIBS FFI_LIBRARIES HAVE_STRUCT_MSGHDR_MSG_ACCRIGHTS HAVE_STRUCT_MSGHDR_MSG_CONTROL ALLOCA OPTFLAGS DEBUGFLAGS LDDEBUGFLAGS HUGSPATH HUGSSUFFIXES hugsdir HUGSDIR BINDIR EXE OBJ DLL DLL_ENDING DEV_NULL RM CP WOBJECTS RC_FILES STRIP LIBOBJS LTLIBOBJS'
 ac_subst_files='MkInstall MkDepend'
 
 # Initialize some variables set by options.
@@ -25731,26 +25731,6 @@ _ACEOF
 BINDIR=`sh -c "prefix=$prefix; exec_prefix=$exec_prefix; echo $bindir"`
 
 
-if test "x$target" = "xwindows"; then
-  SET_INSTALLDIRS=""
-elif test "x$target" = "xdos"; then
-  SET_INSTALLDIRS=""
-else
-  SET_INSTALLDIRS="\
-# These variables determine where various parts of the Hugs system are\\
-# installed.  (They are ignored in Windows or DOS.)\\
-# Binaries are installed in \$(bindir); libraries go in \$(hugsdir)/libraries\\
-prefix		= $prefix\\
-exec_prefix	= $exec_prefix\\
-bindir		= $bindir\\
-libdir		= $libdir\\
-datadir		= $datadir\\
-mandir          = $mandir\\
-hugsdir		= $hugsdir\\
-"
-fi
-
-
 
 EXE=${EXE=""}
 
@@ -26508,7 +26488,6 @@ s,@HUGSSUFFIXES@,$HUGSSUFFIXES,;t t
 s,@hugsdir@,$hugsdir,;t t
 s,@HUGSDIR@,$HUGSDIR,;t t
 s,@BINDIR@,$BINDIR,;t t
-s,@SET_INSTALLDIRS@,$SET_INSTALLDIRS,;t t
 s,@EXE@,$EXE,;t t
 s,@OBJ@,$OBJ,;t t
 s,@DLL@,$DLL,;t t

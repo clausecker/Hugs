@@ -844,26 +844,6 @@ AC_SUBST(HUGSDIR)
 BINDIR=`sh -c "prefix=$prefix; exec_prefix=$exec_prefix; echo $bindir"`
 AC_SUBST(BINDIR)
 
-if test "x$target" = "xwindows"; then
-  SET_INSTALLDIRS=""
-elif test "x$target" = "xdos"; then
-  SET_INSTALLDIRS=""
-else
-  SET_INSTALLDIRS="\
-# These variables determine where various parts of the Hugs system are\\
-# installed.  (They are ignored in Windows or DOS.)\\
-# Binaries are installed in \$(bindir); libraries go in \$(hugsdir)/libraries\\
-prefix		= $prefix\\
-exec_prefix	= $exec_prefix\\
-bindir		= $bindir\\
-libdir		= $libdir\\
-datadir		= $datadir\\
-mandir          = $mandir\\
-hugsdir		= $hugsdir\\
-"
-fi
-AC_SUBST(SET_INSTALLDIRS)
-
 AC_SUBST_DEF(EXE,"")
 AC_SUBST_DEF(OBJ,".o")
 AC_SUBST_DEF(DLL,".so")
