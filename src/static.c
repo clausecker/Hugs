@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.158 $
- * $Date: 2003/11/01 17:02:48 $
+ * $Revision: 1.159 $
+ * $Date: 2003/11/05 18:23:42 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1471,6 +1471,9 @@ Class parent; {
 	  m            = newName(textOf(v),parent);
 	  name(m).defn = PREDEFINED;
 	  name(m).clashes = cons(oldnm,name(m).clashes);
+    } else if ( name(m).parent == NIL ) {
+	/* (try) improving the parent info. */
+	name(m).parent = parent;
     }
     name(m).line   = l;
     name(m).arity  = 1;
