@@ -130,7 +130,7 @@ $(LIBRARIES)	: runhugs@EXEEXT@ ffihugs@EXEEXT@ ../libraries/Hugs/*.* $(CONVERTER
 		  $(CP) $(TOOLS) $(BUILD_DIR)/tools
 		  mkdir -p $(BUILD_DIR)/libraries/Hugs
 		  $(CP) ../libraries/Hugs/*.* $(BUILD_DIR)/libraries/Hugs
-		  cd unix; ./convert_libraries $(FPTOOLS) ../../hugsdir
+		  cd ..; src/unix/convert_libraries $(FPTOOLS) hugsdir
 
 $(INCLUDES)	: $(HEADERS)
 		  mkdir -p $(BUILD_DIR)/include
@@ -288,7 +288,7 @@ verbosecheck	: hugs@EXEEXT@ libraries
 		  cd ../tests; sh testScript
 
 LibStatus	: hugs@EXEEXT@ libraries
-		  (cd unix; ./test_libraries $(FPTOOLS)) >$@
+		  (cd ..; src/unix/test_libraries $(FPTOOLS)) >$@
 
 @MkInstall@
 

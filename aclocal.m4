@@ -794,7 +794,7 @@ AC_SUBST([GLUT_LIBS])
 
 dnl External macros
 
-builtin([include],acx_pthread.m4)
+builtin([include],ac_macros/acx_pthread.m4)
 
 dnl Simplistic implementation of autoconf 2.50 macros for earlier versions
 

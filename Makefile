@@ -6,8 +6,15 @@ include Defs.mk
 all: fptools pp-fptools src/Makefile
 	cd src; $(MAKE)
 
-src/Makefile:
-	cd src/unix; $(MAKE) config
+src/Makefile: configure src/config.h.in
+	$(RM) -r config.cache autom4te.cache
+	LIBS=$(GNULIBS) ./configure $(EXTRA_CONFIGURE_OPTS)
+
+configure: configure.ac
+	-autoconf
+
+src/config.h.in: configure.ac
+	-autoheader
 
 #
 # Utilities needed to check out and process fptools. To override

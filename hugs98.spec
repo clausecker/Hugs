@@ -23,8 +23,7 @@ Hugs 98 is an interpreter for Haskell, a lazy functional programming language.
 %setup -q
 
 %build
-( cd src/unix
-  ./configure --prefix=%{_prefix} --mandir=%{_mandir} ${EXTRA_CONFIGURE_OPTS} )
+./configure --prefix=%{_prefix} --mandir=%{_mandir} ${EXTRA_CONFIGURE_OPTS}
 make -C src
 make -C docs/users_guide html
 

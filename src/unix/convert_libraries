@@ -16,7 +16,7 @@
 #
 #   ./convert_libraries  <directory where libraries lives> <build dir>
 
-cpp_flags='-D__HUGS__ -I. -I..'
+cpp_flags='-D__HUGS__ -Isrc -Isrc/unix'
 
 : ${cpp='gcc -P -E -traditional -xc'}
 
@@ -74,7 +74,7 @@ libexts() {
 		exit 1 ;;
 	esac
 
-	name="`ls ../../lib/exts/$1.*hs`"
+	name="`ls lib/exts/$1.*hs`"
 	echo "Copy `basename $name`"
 	sed 's/import Prelude/import Hugs.Prelude/' $name >$compat/`basename $name`
 }
@@ -86,7 +86,7 @@ libhugs() {
 		exit 1 ;;
 	esac
 
-	name="`ls ../../lib/hugs/$1.*hs`"
+	name="`ls lib/hugs/$1.*hs`"
 	echo "Copy `basename $name`"
 	sed 's/import Prelude/import Hugs.Prelude/' $name >$compat/`basename $name`
 }
@@ -107,15 +107,17 @@ hslibs() {
 # Convert hierarchical modules
 
 HUGSDIR="$target"
-ffihugs=../ffihugs
-runhugs=../runhugs
+ffihugs=src/ffihugs
+runhugs=src/runhugs
 export HUGSDIR ffihugs runhugs
+
+BuildFFI=src/unix/BuildFFI
 
 echo "#! /bin/sh
 
 cd `pwd`
-" >BuildFFI
-chmod 755 BuildFFI
+" >$BuildFFI
+chmod 755 $BuildFFI
 
 packages='base haskell98 haskell-src network parsec QuickCheck fgl'
 
@@ -128,18 +130,18 @@ CYGWIN*|MINGW32*) ;;
 esac
 
 # crude check whether HOpenGL was enabled in configure
-if grep '^#define HTYPE_GLBOOLEAN ' ../config.h >/dev/null
+if grep '^#define HTYPE_GLBOOLEAN ' src/config.h >/dev/null
 then	packages="$packages OpenGL GLUT"
 fi
 
-# if grep '^#define X_DISPLAY_MISSING' ../config.h >/dev/null
+# if grep '^#define X_DISPLAY_MISSING' src/config.h >/dev/null
 # then	:
 # else	packages="$packages X11 HGL"
 # fi
 
 for package in $packages
 do
-	sh hugs-package -o BuildFFI $src/$package
+	sh hugs-package -o $BuildFFI $src/$package
 done
 
 # Compatibility with lib/exts:

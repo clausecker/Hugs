@@ -5,8 +5,11 @@ dnl produce a configure script.
 dnl
 dnl--------------------------------------------------------------------
 
-AC_INIT(../hugs.c)
-AC_CONFIG_HEADER(../config.h ../options.h)
+AC_INIT(src/hugs.c)
+
+AC_CONFIG_AUX_DIR(ac_aux)
+
+AC_CONFIG_HEADER(src/config.h src/options.h)
 
 dnl--------------------------------------------------------------------
 dnl Choose host(/target/build) platform
@@ -21,9 +24,9 @@ if test "x$host" = xNONE ; then
 fi
 
 dnl ** canonicalize platform names
-BuildPlatform=`/bin/sh $srcdir/config.sub $build` || exit 1
-HostPlatform=`/bin/sh $srcdir/config.sub $host` || exit 1
-TargetPlatform=`/bin/sh $srcdir/config.sub $target` || exit 1
+BuildPlatform=`/bin/sh $ac_aux_dir/config.sub $build` || exit 1
+HostPlatform=`/bin/sh $ac_aux_dir/config.sub $host` || exit 1
+TargetPlatform=`/bin/sh $ac_aux_dir/config.sub $target` || exit 1
 
 if test x"$TargetPlatform" != x"$HostPlatform" ; then
   AC_MSG_ERROR([Hugs98 does not yet support differing host/target (i.e., cross-compiling)])
@@ -192,7 +195,7 @@ AC_ARG_WITH(pthreads,
 AC_ARG_WITH(fptools,
   AC_HELP_STRING([--with-fptools=<dir>],
                  [location of fptools directory to get libraries from]),
-  [FPTOOLS="$withval"], [FPTOOLS=../../fptools])
+  [FPTOOLS="$withval"], [FPTOOLS=fptools])
 
 AC_ARG_ENABLE(ffi,
   AC_HELP_STRING([--enable-ffi],
@@ -924,7 +927,7 @@ if test "x$target" = "xwindows"; then
     DEV_NULL="nul"
     HUGSPATH=".;{Hugs}\\\\libraries;{Hugs}\\\\oldlib;{Hugs}\\\\lib\\\\win32"
     HUGSSUFFIXES=".hs;.lhs"
-    MkInstall="../MkNull.in"
+    MkInstall="src/MkNull.in"
 elif test "x$target" = "xdos"; then
     # Just the same as for Windows but excludes win32 from Path
     DLL=".dll"          
@@ -933,12 +936,12 @@ elif test "x$target" = "xdos"; then
     hugsdir_deflt='${libdir}\\hugs'
     HUGSPATH=".;{Hugs}\\\\libraries;{Hugs}\\\\oldlib"
     HUGSSUFFIXES=".hs;.lhs"
-    MkInstall="../MkNull.in"
+    MkInstall="src/MkNull.in"
 else
     hugsdir_deflt='${libdir}/hugs'
     HUGSPATH=".:{Hugs}/libraries:{Hugs}/oldlib"
     HUGSSUFFIXES=".hs:.lhs"
-    MkInstall="../MkInstal.in"
+    MkInstall="src/MkInstal.in"
 fi
 AC_SUBST(HUGSPATH)
 AC_SUBST(HUGSSUFFIXES)
@@ -981,7 +984,7 @@ AC_SUBST_DEF(RM,"/bin/rm -f")
 AC_SUBST_DEF(CP,"/bin/cp")
 
 AC_SUBST_FILE(MkInstall)
-MkDepend=../MkDepend.in
+MkDepend=src/MkDepend.in
 AC_SUBST_FILE(MkDepend)  
 
 AC_DEFINE_UNQUOTED([HUGSPATH], ["${HUGSPATH}"],
@@ -1035,17 +1038,17 @@ dnl
 dnl--------------------------------------------------------------------
 
 TESTSCRIPT=""
-if test -f ../../tests/config.in ; then
- TESTSCRIPT=../../tests/config
+if test -f tests/config.in ; then
+ TESTSCRIPT=tests/config
 fi
 
-AC_OUTPUT(../Makefile ../platform.h \
-	../../docs/Makefile ../../docs/users_guide/Makefile \
-	../../docs/hugs.1 $TESTSCRIPT hugs-package)
+AC_OUTPUT(src/Makefile src/platform.h \
+	docs/Makefile docs/users_guide/Makefile \
+	docs/hugs.1 $TESTSCRIPT src/unix/hugs-package)
 
 echo ''
 echo '************************************************'
-echo '*** NOW DO: cd .. ; make ; make install'
+echo '*** NOW DO: cd src ; make ; make install'
 echo '************************************************'
 exit 0
 

@@ -19,9 +19,8 @@ machine (including Linux, *BSD and MacOS X).  For other systems:
 
 Short version (for Unix-like environments):
 
-    cd src/unix
     ./configure --prefix=$HOME
-    cd ..
+    cd src
     make install
     make clean
     $HOME/bin/hugs $HOME/lib/hugs/demos/Say
@@ -42,7 +41,7 @@ Long version:
 
  1) Run the configure script:
 
-        cd hugs98/src/unix
+        cd hugs98
         ./configure --exec-prefix=/usr/local/solaris
 
     This runs many small tests on the compiler, preprocessor, linker,
@@ -68,7 +67,7 @@ Long version:
     (libraries/Hugs contains Hugs-specific modules that are also
     copied into hugsdir.)
 
-        cd ..
+        cd src
         make
 
     You should now have a working Hugs system, runnable in-place.
