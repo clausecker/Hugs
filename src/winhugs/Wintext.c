@@ -49,7 +49,7 @@ typedef struct TagTextWindowInfo {
   HACCEL   hAccelTable;			/* Accelerators to use in Window          */
   HGLOBAL  hBufferEd;			/* Edit buffer for edit capability        */
   HGLOBAL  hBufferEdPrev;           	/* Previous edit buffers   	          */
-  INT      IoInx;	                /* Points to last char readed with WinGetc*/
+  INT      IoInx;	                /* Points to last char read with WinGetc  */
   CHAR     AnsiStr[200];		/* Used to implement ANSI support	  */
   INT      AnsiPtr;
   BOOL     InAnsi;
@@ -161,7 +161,7 @@ static VOID             WinMoveTo               (HWND, UINT, UINT);
 #define FIRST_ROW		     1  /* rows are in [1..twi->Rows]	    */
 #define FIRST_COL		     1  /* cols are in [1..twi->Cols]	    */
 
-typedef CHAR (*BufferEdPrevType)[EDIT_BUFFER_MAX_LENGTH+1];
+typedef CHAR (*EditorHistory)[EDIT_BUFFER_MAX_LENGTH+1];
 
 /* --------------------------------------------------------------------------
  * The color palette:
@@ -1611,7 +1611,7 @@ static VOID DoPaste (HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     INT		SizeClip, dest;
     INT		i, j;
 
-	 BufferEd = twi->EdStr;
+    BufferEd = twi->EdStr;
 
     if (!(hClipData = GetClipboardData(CF_TEXT))) {
       CloseClipboard();
@@ -2683,13 +2683,13 @@ CHAR *WinGets(HWND hWnd, CHAR *s)
  INT 		 PreviousBuffer = -1, k;
  TCHAR 		 Key;
  TEXTWINDOWINFO *twi;
- CHAR 		(HUGE *BufferEdPrev)[EDIT_BUFFER_MAX_LENGTH+1];
+ EditorHistory   BufferEdPrev;
  ONE_BUFFER_KEY BufferKey;
 
 
  twi = (TEXTWINDOWINFO*) GetWindowLong(hWnd, 0);
 
- BufferEdPrev = (BufferEdPrevType) GlobalLock(twi->hBufferEdPrev);
+ BufferEdPrev = (EditorHistory)GlobalLock(twi->hBufferEdPrev);
  iscursor = WinSetcursor(hWnd, TRUE);
  twi->InEdit = TRUE;
  twi->EdStr = (FPOINTER)s;
@@ -2854,7 +2854,7 @@ INT WinGetc (HWND hWnd, FILE *fp)
   INT		   i, ret;
   TEXTWINDOWINFO  *twi;
   FPOINTER	   BufferEd;
-  CHAR 		  (HUGE *BufferEdPrev)[EDIT_BUFFER_MAX_LENGTH+1];
+  EditorHistory    BufferEdPrev;
 
 
   /* Check if stdin */
@@ -2864,16 +2864,19 @@ INT WinGetc (HWND hWnd, FILE *fp)
   twi = (TEXTWINDOWINFO*) GetWindowLong(hWnd, 0);
 
   BufferEd = (FPOINTER)GlobalLock(twi->hBufferEd);
-  BufferEdPrev = (BufferEdPrevType)GlobalLock(twi->hBufferEdPrev);
+  BufferEdPrev = (EditorHistory)GlobalLock(twi->hBufferEdPrev);
 
-  while (twi->IoInx < 0) { /* If BufferEd is empty fill it */
+  while (twi->IoInx < 0 ) { /* If BufferEd is empty fill it */
 
-    for (i=NUM_EDIT_BUFFERS-1; i > 0; i--)
-      strcpy ((CHAR *)&BufferEdPrev[i][0], (const CHAR *)&BufferEdPrev[i-1][0]);
+    /* If BufferEd is empty, don't add it to the history. */
+    if ( BufferEd[0] != '\0' ) { 
+	/* ToDo: use a circular buffer for the history. */
+	for (i=NUM_EDIT_BUFFERS-1; i > 0; i--)
+	    strcpy ((CHAR *)&BufferEdPrev[i][0], (const CHAR *)&BufferEdPrev[i-1][0]);
 
-    strcpy ((CHAR *)&BufferEdPrev[0][0], (const CHAR *)BufferEd);
-
-    strcpy ((CHAR *)BufferEd, "");
+	strcpy ((CHAR *)&BufferEdPrev[0][0], (const CHAR *)BufferEd);
+	strcpy ((CHAR *)BufferEd, "");
+    }
     WinGets (hWnd, (CHAR *)BufferEd);
     WinPutchar (hWnd, '\n');
   }
