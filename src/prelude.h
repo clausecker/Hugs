@@ -8,8 +8,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: prelude.h,v $
- * $Revision: 1.47 $
- * $Date: 2003/07/17 13:46:08 $
+ * $Revision: 1.48 $
+ * $Date: 2003/07/21 10:46:48 $
  * ------------------------------------------------------------------------*/
 #ifndef __PRELUDE_H__
 #define __PRELUDE_H__
@@ -240,7 +240,7 @@ extern HWND		hWndMain;	/* main window handle		   */
 #endif
 
 #ifdef __GNUC__     /* Avoid spurious warnings                             */
-#if __GNUC__ >= 2 && __GNUC_MINOR__ >= 7
+#if __GNUC__ > 2 || __GNUC__ == 2 && __GNUC_MINOR__ >= 7
 #define HUGS_noreturn  __attribute__ ((noreturn))
 #define HUGS_unused    __attribute__ ((unused))
 #else
