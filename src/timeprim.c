@@ -57,13 +57,16 @@ primFun(primGetClockTime) { /* :: IO (Int,Int) */
 			 toIOErrorDescr(errno,TRUE),
 			 nameNothing));
   }
-  IOReturn(ap(ap(mkTuple(2), mkInt(tv.tv_sec)),
-	      mkInt(tv.tv_usec)));
+  IOReturn(ap(ap(mkTuple(2), mkInt(tv.tv_sec)),mkInt(tv.tv_usec)));
 #elif HAVE_FTIME
   struct timeb tb;
-  int rc;
+  int rc = 0;
   
+# ifdef __MINGW32__
+  ftime(&tb);
+# else
   rc = ftime(&tb);
+# endif
   
   if (rc == -1) {
         IOFail(mkIOError(toIOError(errno),
@@ -72,8 +75,7 @@ primFun(primGetClockTime) { /* :: IO (Int,Int) */
 			 nameNothing));
   }
   
-  IOReturn(ap(ap(mkTuple(2),mkInt(tb.time)),
-	      mkInt(tb.millitm * 1000)));
+  IOReturn(ap(ap(mkTuple(2),mkInt(tb.time)),mkInt(tb.millitm * 1000)));
 #elif HAVE_TIME
   time_t t = time(NULL);
   
@@ -92,7 +94,7 @@ primFun(primGetClockTime) { /* :: IO (Int,Int) */
 #endif
 }
 
-#if defined(_WIN32) || defined(__MINGW__) || defined(__CYGWIN__)
+#if defined(_WIN32)
 # define timezone _timezone
 #endif
 
@@ -121,7 +123,10 @@ primFun(primGetCalTime) { /* Int   -> Int -> IO (.....) */
   /* Warning - ugliness. */
 # ifdef HAVE_TM_ZONE
   zoneNm = (char*)tm->tm_zone;
-# elif HAVE_TZNAME
+# elif HAVE_TZNAME || defined(_WIN32)
+  /* ToDo: fix autoconf macro AC_STRUCT_TIMEZONE so that it will recognise
+   *       mingw's _tzname global. For now, force it.
+   */
   zoneNm = (char*)(tm->tm_isdst ? tzname[1] : tzname[0]);
 # else
   /* Don't know how to get at the timezone name, complain louder? */
