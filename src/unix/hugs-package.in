@@ -43,8 +43,10 @@ esac
 
 # platform sensitive settings
 case $platform in
-Win32)	CALLCONV=stdcall ;;
-*)	CALLCONV=ccall ;;
+Win32)	CALLCONV=stdcall
+	cpp_flags="$cpp_flags -DPLATFORM=Win32" ;;	# hack for HGL
+*)	CALLCONV=ccall
+	cpp_flags="$cpp_flags -DPLATFORM=X11" ;;	# hack for HGL
 esac
 
 script=
@@ -96,6 +98,22 @@ hack_foreign() {
 			/"/ ! s/\([a-z][a-zA-Z0-9_]*\)[ 	]*::/"'"$1"' \1" &/
 			: end
 		}'
+}
+
+# Get the value of a variable from the package Makefile
+# usage: extract_make_variable varname
+
+extract_make_variable() {
+	if [ -f $source_dir/Makefile ]
+	then	sed -n 's/[ 	]*#.*//
+			/^'"$1"'[ 	]*=/ {
+				s/.*=[ 	]*//
+				s/[ 	][ 	]*/", "/g
+				s/..*/"&"/
+				p
+			}' $source_dir/Makefile
+	else	echo '""'
+	fi
 }
 
 # Determine the list of modules to be converted
@@ -210,13 +228,19 @@ done <$module_list
 
 # Pass 2: compile FFI modules (or save commands in a script)
 
+# for X11, HGL and similar packages
+PACKAGE=`extract_make_variable PACKAGE`
+PACKAGE_DEPS=`extract_make_variable PACKAGE_DEPS`
+
 conf_in=$source_dir/package.conf.in
 conf=`echo $source_dir/*.conf`
 
 if [ -f "$conf_in" ]
 then	$cpp $cpp_flags $includes \
-		-DX_CFLAGS=",\"$X_CFLAGS\"" -DX_PRE_LIBS=",\"$X_PRE_LIBS\"" \
-		-DX_LIBS=",\"$X_LIBS\"" -DX_EXTRA_LIBS=",\"$X_EXTRA_LIBS\"" \
+		-DPACKAGE="$PACKAGE" -DPACKAGE_DEPS="$PACKAGE_DEPS" \
+		-DLIBDIR= -DLIBRARY= \
+		-DX_CFLAGS="\"$X_CFLAGS\"" -DX_PRE_LIBS="\"$X_PRE_LIBS\"" \
+		-DX_LIBS="\"$X_LIBS\"" -DX_EXTRA_LIBS="\"$X_EXTRA_LIBS\"" \
 		-DGL_CFLAGS=",\"$GL_CFLAGS\"" -DGL_LIBS=",\"$GL_LIBS\"" \
 		-DGLUT_LIBS=",\"$GLUT_LIBS\"" \
 		$conf_in >$tmp
