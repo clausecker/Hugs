@@ -11,8 +11,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.107 $
- * $Date: 2003/12/02 12:15:52 $
+ * $Revision: 1.108 $
+ * $Date: 2003/12/02 18:50:56 $
  * ------------------------------------------------------------------------*/
 #include "prelude.h"
 #include "storage.h"
@@ -51,6 +51,9 @@
 #endif
 #if HAVE_DIRENT_H
 #  include <dirent.h>
+#endif
+#if HAVE_LOCALE_H
+#  include <locale.h>
 #endif
 
 /* Hack for systems with unlimited path length (e.g. the Hurd), which
@@ -2384,6 +2387,9 @@ initSystem()
     SIOUXSettings.enabledraganddrop = true;
     SIOUXSetTitle("\pHugs 98");
     
+#endif
+#if HAVE_LOCALE_H
+    setlocale(LC_ALL, "");
 #endif
     return TRUE;
 }

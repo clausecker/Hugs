@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: input.c,v $
- * $Revision: 1.78 $
- * $Date: 2003/12/02 12:15:51 $
+ * $Revision: 1.79 $
+ * $Date: 2003/12/02 18:50:56 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -914,7 +914,7 @@ Bool isStrLit; {                       /* TRUE => enable \& and gaps       */
 
     if (c0=='\\') {                    /* escape character?                */
 	c = readEscapeChar(isStrLit,TRUE);
-#if UNICODE_CHARS
+#if UNICODE_CHARS && !CHAR_ENCODING_UTF8
 	if (isStrLit && !isNull(c) && !charIsRepresentable(charOf(c))) {
 	    ERRMSG(row) "Unrepresentable character `\\%d' in string literal", ((int)charOf(c))
 	    EEND;

@@ -83,10 +83,27 @@ extern	Int	uni_gencat	Args((Char));
  * The byte encoding is assumed to be an extension of ASCII.  These macros
  * should be used unless you're sure you're dealing with ASCII.
  *
+ * We use one of the following encodings for input and output, selected
+ * at configuration time:
+ *
+ * CHAR_ENCODING_LOCALE: the encoding determined by the current setting
+ *	of LC_CTYPE.  The encodings in some locales cannot represent all
+ *	Unicode characters.
+ *
+ * CHAR_ENCODING_UTF8: the UTF-8 encoding, which covers all of Char.
+ *
+ * (default): Chars in the ISO 8859-1 (Latin-1) subset are encoded directly
+ *	as bytes; other Chars are unrepresentable.
+ *
  * In an ideal world, we would use Unicode characters uniformly inside
  * the program.  However, to minimize changes to the rest of the program,
  * and to save space, we also encode strings in the text table with the
  * same encoding as we use for I/O.
+ *
+ * An unfortunate consequence is that string literals cannot contain
+ * numeric character escapes that cannot be represented in the selected
+ * encoding.  (Char literals can, though.)  For example, in a C or POSIX
+ * locale, only ASCII characters are representable.
  *
  * The interface is:
  *
@@ -109,7 +126,34 @@ extern	Int	uni_gencat	Args((Char));
  *		the selected encoding.
  * ------------------------------------------------------------------------*/
 
-#define MAX_CHAR_ENCODING 1
+#if CHAR_ENCODING_LOCALE
+#  include <wchar.h>
+#  include <limits.h>
+#  define MAX_CHAR_ENCODING MB_LEN_MAX
+#elif CHAR_ENCODING_UTF8
+#  define MAX_CHAR_ENCODING 6
+#else
+#  define MAX_CHAR_ENCODING 1
+#endif
+
+#if CHAR_ENCODING
+extern	int	fputc_mb	Args((Char, FILE *));
+extern	int	fgetc_mb	Args((FILE *));
+extern	Void	addc_mb		Args((Char, String *));
+extern	Char	extc_mb		Args((String *));
+
+#define	FPutChar(c,f)	fputc_mb(c,f)
+#define	FGetChar(f)	fgetc_mb(f)
+#define	AddChar(c,s)	addc_mb(c,&s)
+#define	ExtractChar(s)	extc_mb(&s)
+
+#if CHAR_ENCODING_UTF8
+#define	charIsRepresentable(c)	TRUE
+#else
+extern	Bool	charIsRepresentable	Args((Char));
+#endif
+
+#else /* !CHAR_ENCODING */
 
 #define	FPutChar(c,f)	(fputc(c, f))
 #define	FGetChar(f)	(getc(f))
@@ -117,5 +161,7 @@ extern	Int	uni_gencat	Args((Char));
 #define	ExtractChar(s)	(*(unsigned char *)(s)++)
 
 #define	charIsRepresentable(c)	isLatin1(c)
+
+#endif /* !CHAR_ENCODING */
 
 #endif /* CHAR_H */

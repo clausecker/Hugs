@@ -94,6 +94,10 @@ static Void local markConsCharTable	Args((Void));
 static Void local freeConsCharTable	Args((Void));
 static const struct CharProperties * local get_properties Args((Char));
 #endif
+#if CHAR_ENCODING_UTF8
+static Int  local utfseqlen		Args((Int));
+static Int  local utfcodelen		Args((Char));
+#endif
 
 /* --------------------------------------------------------------------------
  * Character set handling:
@@ -233,6 +237,198 @@ Char toLower(Char c) {
 }
 
 #endif
+
+/* --------------------------------------------------------------------------
+ * Multibyte character incodings.
+ * ------------------------------------------------------------------------*/
+
+#if CHAR_ENCODING
+int fputc_mb(Char c, FILE *f) {
+    char buf[MAX_CHAR_ENCODING];
+    String s = buf;
+    addc_mb(c, &s);
+    return fwrite(buf, s-buf, 1, f)==1 ? c : EOF;
+}
+#endif /* CHAR_ENCODING */
+
+#if CHAR_ENCODING_LOCALE
+
+/* Using the encoding specified by the current locale (LC_CTYPE).
+ * Note that ISO C does not permit both byte-oriented and wchar I/O
+ * on the same stream, so we use byte-oriented I/O, and do the conversion
+ * ourselves using mbtowc/wctomb.
+ */
+
+Bool charIsRepresentable(Char c) {
+    char buf[MAX_CHAR_ENCODING];
+    int n = wctomb(buf, c);
+    wchar_t wc = '\0';				/* in case c is '\0' */
+    if (n>=0) {
+	if (mbtowc(&wc, buf, n) >= 0)
+	    return wc==c;
+	mbtowc(NULL, NULL, 0);			/* reset shift state */
+    } else
+	wctomb(NULL, 0);
+    return FALSE;
+}
+
+/* Read a Char encoded as a multi-byte sequence.
+ *
+ * We have no way to know how long the multi-byte sequence is, except
+ * by trying to convert all prefixes.  If that goes on for too long,
+ * it's an error we can't recover from, so return EOF.
+ */
+int fgetc_mb(FILE *f) {
+    char buf[MAX_CHAR_ENCODING];
+    Int n = 0;
+    wchar_t wc = 0;				/* in case \0 is read */
+    for (;;) {
+	int c = fgetc(f);
+	if (c == EOF)
+	    return EOF;
+	buf[n++] = c;
+	if (mbtowc(&wc, buf, n) >= 0)
+	    return wc;
+	mbtowc(NULL, NULL, 0);			/* reset shift state */
+	if (n == MAX_CHAR_ENCODING)
+	    return EOF;
+    }
+}
+
+/* Add a Char to a multi-byte encoded string, moving the pointer. */
+Void addc_mb(Char c, String *sp) {
+    Int size = wctomb(*sp, c);
+    if (size>0)
+	*sp += size;
+    else {
+	*(*sp)++ = '?';
+	wctomb(NULL, 0);
+    }
+}
+
+/* Get a Char from a multi-byte encoded string, moving the pointer. */
+Char extc_mb(String *sp) {
+    wchar_t c = '\0';
+    Int size = mbtowc(&c, *sp, MAX_CHAR_ENCODING);
+    if (size>0)
+	*sp += size;
+    else if (size==0)				/* string starts with \0 */
+	(*sp)++;
+    else
+	mbtowc(NULL, NULL, 0);			/* reset shift state */
+    return c;
+}
+
+#elif CHAR_ENCODING_UTF8
+
+/*
+ * The UTF-FSS (aka UTF-8) encoding of UCS, as described in the following
+ * quote from Ken Thompson's utf-fss.c:
+ *
+ * Bits  Hex Min  Hex Max  Byte Sequence in Binary
+ *   7  00000000 0000007f 0vvvvvvv
+ *  11  00000080 000007FF 110vvvvv 10vvvvvv
+ *  16  00000800 0000FFFF 1110vvvv 10vvvvvv 10vvvvvv
+ *  21  00010000 001FFFFF 11110vvv 10vvvvvv 10vvvvvv 10vvvvvv
+ *  26  00200000 03FFFFFF 111110vv 10vvvvvv 10vvvvvv 10vvvvvv 10vvvvvv
+ *  31  04000000 7FFFFFFF 1111110v 10vvvvvv 10vvvvvv 10vvvvvv 10vvvvvv 10vvvvvv
+ *
+ * The UCS value is just the concatenation of the v bits in the multibyte
+ * encoding.  When there are multiple ways to encode a value, for example
+ * UCS 0, only the shortest encoding is legal.
+ */
+
+#define UTFhead(b)	(((b)&0xC0)==0xC0) /* head of a multibyte sequence */
+#define UTFtail(b)	(((b)&0xC0)==0x80) /* tail of a multibyte sequence */
+#define UTFmask(n)	((0xFF00>>(n))&0xFF) /* length bits of a head byte */
+
+/* Note also that since ASCII, head and tail chars are disjoint in UTF-8,
+ * it is possible to resynchronize a stream after a coding error, but we
+ * don't do that.
+ */
+
+int fgetc_mb(FILE *f) {
+    unsigned char buf[MAX_CHAR_ENCODING];
+    Int b;
+    Char c;
+    Int size, i;
+    if ((b = fgetc(f))==EOF)
+	return EOF;
+    if (b<0x80)				/* ASCII character */
+	return b;
+    if (!UTFhead(b))
+	return EOF;
+    size = utfseqlen(b);
+    c = b&~UTFmask(size);
+    for (i=1 ; i<size; i++) {
+	if ((b = fgetc(f))==EOF)
+	    return EOF;
+	if (!UTFtail(b))
+	    return EOF;
+	c = (c<<6) | (b&0x3F);
+    }
+    if (utfcodelen(c)!=size)		/* non-shortest form encoding */
+	return EOF;
+    return c;
+}
+
+Void addc_mb(Char c, String *sp) {
+    if (c<0x80)
+	*(*sp)++ = c;
+    else {
+	int i;
+	int noct = utfcodelen(c);
+	int cn = c;
+	for (i=noct-1; i>=0; i--) {
+	    (*sp)[i] = (cn%64)|((i==0)?UTFmask(noct):0x80);
+	    cn /= 64;
+	}
+	*sp += noct;
+    }
+}
+
+Char extc_mb(String *sp) {
+    Char c = *(unsigned char *)*sp;
+    if (c<0x80)
+	(*sp)++;
+    else if (!UTFhead(c))
+	c = '\0';
+    else {
+        int i, size = utfseqlen(c);	/* how many octets to expect */
+	c &= ~UTFmask(size);
+	for (i=1; i<size; i++) {
+	    Int b = (*sp)[i];
+	    if (!UTFtail(b))
+		return '\0';
+	    c = (c<<6) | (b&0x3F);
+	}
+	*sp += size;
+	if (utfcodelen(c)!=size)	/* non-shortest form encoding */
+	    return '\0';
+    }
+    return c;
+}
+
+/* length of a UTF-8 sequence with first byte b */
+static Int local utfseqlen(Int b) {
+    Int n;
+    if (b<0x80)
+	return 1;
+    for (n=MAX_CHAR_ENCODING; (b&UTFmask(n))!=UTFmask(n); n--)
+	;
+    return n;
+}
+
+/* length of the shortest UTF-8 sequence encoding the Char c */
+static Int local utfcodelen(Char c) {
+    return c<0x80 ? 1 :
+	   c<0x800 ? 2 :
+	   c<0x10000 ? 3 :
+	   c<0x200000 ? 4 :
+	   c<0x4000000 ? 5 : 6;
+}
+
+#endif /* CHAR_ENCODING_UTF8 */
 
 /* --------------------------------------------------------------------------
  * Build array of character conses:
@@ -383,6 +579,12 @@ Int what; {
 	case INSTALL : initCharTab();
 		       initConsCharTable();
 		       break;
+
+#if CHAR_ENCODING_LOCALE
+	case RESET   : mbtowc(NULL, NULL, 0);
+		       wctomb(NULL, 0);
+		       break;
+#endif
 
 	case MARK    : markConsCharTable();
 		       break;
