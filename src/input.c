@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: input.c,v $
- * $Revision: 1.81 $
- * $Date: 2003/12/04 16:38:56 $
+ * $Revision: 1.82 $
+ * $Date: 2003/12/04 18:14:45 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -139,7 +139,7 @@ Text   textThreadsafe;                  /* threadsafe                      */
 Text   textExport;                      /* export                          */
 
 /* Platform-specific calling conventions */
-#ifdef _WIN32
+#if STDCALL_SUPPORTED
 Text   textStdcall;                     /* stdcall                         */
 #endif
 #ifdef DOTNET
@@ -1950,7 +1950,7 @@ Int what; {
 		       textSafe       = findText("safe");
 		       textUnsafe     = findText("unsafe");
 		       textThreadsafe = findText("threadsafe");
-#ifdef _WIN32		       
+#if STDCALL_SUPPORTED		       
 		       textStdcall    = findText("stdcall");
 #endif
 #ifdef DOTNET

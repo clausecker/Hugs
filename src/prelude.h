@@ -8,8 +8,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: prelude.h,v $
- * $Revision: 1.60 $
- * $Date: 2003/12/04 18:09:40 $
+ * $Revision: 1.61 $
+ * $Date: 2003/12/04 18:14:45 $
  * ------------------------------------------------------------------------*/
 #ifndef __PRELUDE_H__
 #define __PRELUDE_H__
@@ -81,6 +81,10 @@
 /* using a (possibly multi-byte) encoding of Chars in Strings and I/O? */
 #if CHAR_ENCODING_LOCALE || CHAR_ENCODING_UTF8
 # define CHAR_ENCODING 1
+#endif
+
+#if defined(_WIN32) || defined(__CYGWIN__)
+#define STDCALL_SUPPORTED
 #endif
 
 /*---------------------------------------------------------------------------

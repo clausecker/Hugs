@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: connect.h,v $
- * $Revision: 1.83 $
- * $Date: 2003/12/04 13:53:51 $
+ * $Revision: 1.84 $
+ * $Date: 2003/12/04 18:14:44 $
  * ------------------------------------------------------------------------*/
 #ifndef __CONNECT_H__
 #define __CONNECT_H__
@@ -130,7 +130,7 @@ extern Text  textSafe;
 extern Text  textUnsafe;
 extern Text  textThreadsafe;
 extern Text  textExport;
-#ifdef _WIN32
+#if STDCALL_SUPPORTED
 extern Text  textStdcall;
 #endif
 #ifdef DOTNET

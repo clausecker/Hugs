@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.160 $
- * $Date: 2003/12/04 18:06:01 $
+ * $Revision: 1.161 $
+ * $Date: 2003/12/04 18:14:45 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -3961,7 +3961,7 @@ static Int checkCallConv(line,t)
 Int line;
 Text t; {
   if (t == textCCall ) return FFI_CCONV_CCALL;
-#ifdef _WIN32
+#if STDCALL_SUPPORTED
   /* also support the stdcall calling convention */
   if (t == textStdcall) return FFI_CCONV_STDCALL;
 #endif
