@@ -433,6 +433,9 @@
 /* Define if you have the <nlist.h> header file.  */
 #undef HAVE_NLIST_H
 
+/* Define if you have the <OpenGL/gl.h> header file. */
+#undef HAVE_OPENGL_GL_H
+
 /* Define if you have the <pascal.h> header file.  */
 #undef HAVE_PASCAL_H
 
@@ -985,3 +988,5 @@
 /* The value of EXDEV.  */
 #undef CCONST_EXDEV
 
+/* Define if we want to use Apple's OpenGL for the Quartz Display System on Mac OS X (instead of X11) */   
+#undef USE_QUARTZ_OPENGL

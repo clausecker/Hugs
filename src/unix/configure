@@ -848,30 +848,33 @@ if test -n "$ac_init_help"; then
 Optional Features:
   --disable-FEATURE       do not include FEATURE (same as --enable-FEATURE=no)
   --enable-FEATURE[=ARG]  include FEATURE [ARG=yes]
-  --enable-mesa
-	Prefer Mesa over a vendor's native OpenGL library (default=no)
-
-  --enable-path-canonicalization enable filepath canonicalization
-  --enable-timer            enable evaluation timing
-  --enable-profiling        enable heap profiler
-  --enable-stack-dumps      enable stack dump on stack overflow
-  --disable-large-banner    disable multiline startup banner
-  --enable-internal-prims   experimental primitives to access Hugs' innards
-  --enable-debug            include C debugging information (for debugging use)
-  --enable-tag-checks       runtime tag checking (for debugging use)
-  --enable-lint             enable "lint" flags (for debugging use)
-  --enable-only98           make Hugs Haskell 98 only
-  --enable-ffi              include modules that use the FFI
+  --enable-mesa           prefer Mesa over a vendor's native OpenGL library
+                          (default=no)
+  --enable-path-canonicalization
+                          enable filepath canonicalization
+  --enable-timer          enable evaluation timing
+  --enable-profiling      enable heap profiler
+  --enable-stack-dumps    enable stack dump on stack overflow
+  --disable-large-banner  disable multiline startup banner
+  --enable-internal-prims experimental primitives to access Hugs' innards
+  --enable-debug          include C debugging information (for debugging use)
+  --enable-tag-checks     runtime tag checking (for debugging use)
+  --enable-lint           enable "lint" flags (for debugging use)
+  --enable-only98         make Hugs Haskell 98 only
+  --enable-ffi            include modules that use the FFI
+  --enable-hopengl        include HOpenGL, a Haskell binding for OpenGL/GLUT.
+                          On Mac OS X, use --enable-hopengl=x11 to use X11
+                          instead of the "native" libraries (default=yes)
 
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
   --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
   --with-x                use the X Window System
-  --with-preprocessor       use a preprocessor
-  --with-nmake              produce nmake compatible Makefile
-  --with-gui                build Hugs for Windows GUI
-  --with-pthreads           build Hugs using pthreads C library
-  --with-fptools=<dir>      location of fptools directory to get libraries from
+  --with-preprocessor     use a preprocessor
+  --with-nmake            produce nmake compatible Makefile
+  --with-gui              build Hugs for Windows GUI
+  --with-pthreads         build Hugs using pthreads C library
+  --with-fptools=<dir>    location of fptools directory to get libraries from
 
 Some influential environment variables:
   CC          C compiler command
@@ -2242,7 +2245,8 @@ if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
   echo "$as_me:$LINENO: \$? = $ac_status" >&5
   (exit $ac_status); }; }; then
   for ac_declaration in \
-   '' \
+   ''\
+   '#include <stdlib.h>' \
    'extern "C" void std::exit (int) throw (); using std::exit;' \
    'extern "C" void std::exit (int); using std::exit;' \
    'extern "C" void exit (int) throw ();' \
@@ -2256,8 +2260,8 @@ _ACEOF
 cat confdefs.h >>conftest.$ac_ext
 cat >>conftest.$ac_ext <<_ACEOF
 /* end confdefs.h.  */
-$ac_declaration
 #include <stdlib.h>
+$ac_declaration
 int
 main ()
 {
@@ -2649,7 +2653,10 @@ CFLAGS="-g"
 OPTFLAGS="-O2"
 
 case $HostPlatform in
-  *-*-darwin*)CFLAGS="$CFLAGS -no-cpp-precomp"; LDFLAGS="$LDFLAGS -flat_namespace" ;;
+  *-*-darwin*)
+     CFLAGS="$CFLAGS -no-cpp-precomp"
+     LDFLAGS="$LDFLAGS -flat_namespace"
+     ;;
   # As suggested by James B. White III (Trey) <whitejbiii@ornl.gov> (for
   # AIX 4.3.3 & XL C 5.0.2 at least, may need to tweak the pattern match
   # below some to avoid upsetting other AIX versions).
@@ -2713,7 +2720,7 @@ echo "${ECHO_T}yes" >&6
 	echo "$as_me:$LINENO: result: no" >&5
 echo "${ECHO_T}no" >&6
      fi
-      ;;
+     ;;
   *-*-cygwin*)
      EXE='.exe'
      ;;
@@ -2956,7 +2963,7 @@ else
 ac_save_LIBS="$LIBS"
 LIBS="";
 cat > conftest.$ac_ext <<EOF
-#line 2959 "configure"
+#line 2966 "configure"
 #include "confdefs.h"
 main() { extern char dlopen(); dlopen();; exit(0); }
 int t() { return 0; }
@@ -3004,7 +3011,7 @@ else
 ac_save_LIBS="$LIBS"
 LIBS="-ldl";
 cat > conftest.$ac_ext <<EOF
-#line 3007 "configure"
+#line 3014 "configure"
 #include "confdefs.h"
 main() { extern char dlopen(); dlopen();; exit(0); }
 int t() { return 0; }
@@ -3059,7 +3066,7 @@ else
 ac_save_LIBS="$LIBS"
 LIBS="";
 cat > conftest.$ac_ext <<EOF
-#line 3062 "configure"
+#line 3069 "configure"
 #include "confdefs.h"
 main() { extern char shl_load(); shl_load();; exit(0); }
 int t() { return 0; }
@@ -3107,7 +3114,7 @@ else
 ac_save_LIBS="$LIBS"
 LIBS="-ldld";
 cat > conftest.$ac_ext <<EOF
-#line 3110 "configure"
+#line 3117 "configure"
 #include "confdefs.h"
 main() { extern char shl_load(); shl_load();; exit(0); }
 int t() { return 0; }
@@ -3162,7 +3169,7 @@ else
 ac_save_LIBS="$LIBS"
 LIBS="";
 cat > conftest.$ac_ext <<EOF
-#line 3165 "configure"
+#line 3172 "configure"
 #include "confdefs.h"
 main() { extern char atan(); atan();; exit(0); }
 int t() { return 0; }
@@ -3210,7 +3217,7 @@ else
 ac_save_LIBS="$LIBS"
 LIBS="-lm";
 cat > conftest.$ac_ext <<EOF
-#line 3213 "configure"
+#line 3220 "configure"
 #include "confdefs.h"
 main() { extern char atan(); atan();; exit(0); }
 int t() { return 0; }
@@ -4452,7 +4459,23 @@ fi
 
 fi
 
-LIBM=
+
+UseQuartzOpenGL=NO
+case $HostPlatform in
+  *-*-darwin*)
+     if test x"$enable_hopengl" != x"x11"; then
+       cat >>confdefs.h <<\_ACEOF
+#define USE_QUARTZ_OPENGL 1
+_ACEOF
+
+       UseQuartzOpenGL=YES
+     fi
+     ;;
+  *) ;;
+esac
+
+if test x"$enable_hopengl" != x"no"; then
+  LIBM=
 case "$host" in
 *-*-beos*)
   # These system don't have libm
@@ -5099,6 +5122,7 @@ ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $
 ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 
+fi
 
 
 echo "$as_me:$LINENO: checking for ANSI C header files" >&5
@@ -6796,6 +6820,151 @@ fi
 
 
 
+if test x"$enable_hopengl" != x"no"; then
+  if test "$UseQuartzOpenGL" = YES ; then
+
+for ac_header in OpenGL/gl.h
+do
+as_ac_Header=`echo "ac_cv_header_$ac_header" | $as_tr_sh`
+if eval "test \"\${$as_ac_Header+set}\" = set"; then
+  echo "$as_me:$LINENO: checking for $ac_header" >&5
+echo $ECHO_N "checking for $ac_header... $ECHO_C" >&6
+if eval "test \"\${$as_ac_Header+set}\" = set"; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+fi
+echo "$as_me:$LINENO: result: `eval echo '${'$as_ac_Header'}'`" >&5
+echo "${ECHO_T}`eval echo '${'$as_ac_Header'}'`" >&6
+else
+  # Is the header compilable?
+echo "$as_me:$LINENO: checking $ac_header usability" >&5
+echo $ECHO_N "checking $ac_header usability... $ECHO_C" >&6
+cat >conftest.$ac_ext <<_ACEOF
+#line $LINENO "configure"
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+$ac_includes_default
+#include <$ac_header>
+_ACEOF
+rm -f conftest.$ac_objext
+if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
+  (eval $ac_compile) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+         { ac_try='test -s conftest.$ac_objext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  ac_header_compiler=yes
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+ac_header_compiler=no
+fi
+rm -f conftest.$ac_objext conftest.$ac_ext
+echo "$as_me:$LINENO: result: $ac_header_compiler" >&5
+echo "${ECHO_T}$ac_header_compiler" >&6
+
+# Is the header present?
+echo "$as_me:$LINENO: checking $ac_header presence" >&5
+echo $ECHO_N "checking $ac_header presence... $ECHO_C" >&6
+cat >conftest.$ac_ext <<_ACEOF
+#line $LINENO "configure"
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+#include <$ac_header>
+_ACEOF
+if { (eval echo "$as_me:$LINENO: \"$ac_cpp conftest.$ac_ext\"") >&5
+  (eval $ac_cpp conftest.$ac_ext) 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } >/dev/null; then
+  if test -s conftest.err; then
+    ac_cpp_err=$ac_c_preproc_warn_flag
+  else
+    ac_cpp_err=
+  fi
+else
+  ac_cpp_err=yes
+fi
+if test -z "$ac_cpp_err"; then
+  ac_header_preproc=yes
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+  ac_header_preproc=no
+fi
+rm -f conftest.err conftest.$ac_ext
+echo "$as_me:$LINENO: result: $ac_header_preproc" >&5
+echo "${ECHO_T}$ac_header_preproc" >&6
+
+# So?  What about this header?
+case $ac_header_compiler:$ac_header_preproc in
+  yes:no )
+    { echo "$as_me:$LINENO: WARNING: $ac_header: accepted by the compiler, rejected by the preprocessor!" >&5
+echo "$as_me: WARNING: $ac_header: accepted by the compiler, rejected by the preprocessor!" >&2;}
+    { echo "$as_me:$LINENO: WARNING: $ac_header: proceeding with the preprocessor's result" >&5
+echo "$as_me: WARNING: $ac_header: proceeding with the preprocessor's result" >&2;}
+    (
+      cat <<\_ASBOX
+## ------------------------------------ ##
+## Report this to bug-autoconf@gnu.org. ##
+## ------------------------------------ ##
+_ASBOX
+    ) |
+      sed "s/^/$as_me: WARNING:     /" >&2
+    ;;
+  no:yes )
+    { echo "$as_me:$LINENO: WARNING: $ac_header: present but cannot be compiled" >&5
+echo "$as_me: WARNING: $ac_header: present but cannot be compiled" >&2;}
+    { echo "$as_me:$LINENO: WARNING: $ac_header: check for missing prerequisite headers?" >&5
+echo "$as_me: WARNING: $ac_header: check for missing prerequisite headers?" >&2;}
+    { echo "$as_me:$LINENO: WARNING: $ac_header: proceeding with the preprocessor's result" >&5
+echo "$as_me: WARNING: $ac_header: proceeding with the preprocessor's result" >&2;}
+    (
+      cat <<\_ASBOX
+## ------------------------------------ ##
+## Report this to bug-autoconf@gnu.org. ##
+## ------------------------------------ ##
+_ASBOX
+    ) |
+      sed "s/^/$as_me: WARNING:     /" >&2
+    ;;
+esac
+echo "$as_me:$LINENO: checking for $ac_header" >&5
+echo $ECHO_N "checking for $ac_header... $ECHO_C" >&6
+if eval "test \"\${$as_ac_Header+set}\" = set"; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  eval "$as_ac_Header=$ac_header_preproc"
+fi
+echo "$as_me:$LINENO: result: `eval echo '${'$as_ac_Header'}'`" >&5
+echo "${ECHO_T}`eval echo '${'$as_ac_Header'}'`" >&6
+
+fi
+if test `eval echo '${'$as_ac_Header'}'` = yes; then
+  cat >>confdefs.h <<_ACEOF
+#define `echo "HAVE_$ac_header" | $as_tr_cpp` 1
+_ACEOF
+
+fi
+
+done
+
+  else
 
 for ac_header in GL/gl.h
 do
@@ -6938,6 +7107,8 @@ fi
 
 done
 
+  fi
+fi
 
 
 for ac_header in netinet/in.h
@@ -12878,6 +13049,10 @@ cat >>conftest.$ac_ext <<_ACEOF
 # include <GL/gl.h>
 #endif
 
+#ifdef HAVE_OPENGL_GL_H
+# include <OpenGL/gl.h>
+#endif
+
 #ifdef HAVE_SYS_RESOURCE_H
 # include <sys/resource.h>
 #endif
@@ -12986,6 +13161,10 @@ cat >>conftest.$ac_ext <<_ACEOF
 
 #ifdef HAVE_GL_GL_H
 # include <GL/gl.h>
+#endif
+
+#ifdef HAVE_OPENGL_GL_H
+# include <OpenGL/gl.h>
 #endif
 
 #ifdef HAVE_SYS_RESOURCE_H
@@ -13098,6 +13277,10 @@ cat >>conftest.$ac_ext <<_ACEOF
 # include <GL/gl.h>
 #endif
 
+#ifdef HAVE_OPENGL_GL_H
+# include <OpenGL/gl.h>
+#endif
+
 #ifdef HAVE_SYS_RESOURCE_H
 # include <sys/resource.h>
 #endif
@@ -13206,6 +13389,10 @@ cat >>conftest.$ac_ext <<_ACEOF
 
 #ifdef HAVE_GL_GL_H
 # include <GL/gl.h>
+#endif
+
+#ifdef HAVE_OPENGL_GL_H
+# include <OpenGL/gl.h>
 #endif
 
 #ifdef HAVE_SYS_RESOURCE_H
@@ -13318,6 +13505,10 @@ cat >>conftest.$ac_ext <<_ACEOF
 # include <GL/gl.h>
 #endif
 
+#ifdef HAVE_OPENGL_GL_H
+# include <OpenGL/gl.h>
+#endif
+
 #ifdef HAVE_SYS_RESOURCE_H
 # include <sys/resource.h>
 #endif
@@ -13426,6 +13617,10 @@ cat >>conftest.$ac_ext <<_ACEOF
 
 #ifdef HAVE_GL_GL_H
 # include <GL/gl.h>
+#endif
+
+#ifdef HAVE_OPENGL_GL_H
+# include <OpenGL/gl.h>
 #endif
 
 #ifdef HAVE_SYS_RESOURCE_H
@@ -13538,6 +13733,10 @@ cat >>conftest.$ac_ext <<_ACEOF
 # include <GL/gl.h>
 #endif
 
+#ifdef HAVE_OPENGL_GL_H
+# include <OpenGL/gl.h>
+#endif
+
 #ifdef HAVE_SYS_RESOURCE_H
 # include <sys/resource.h>
 #endif
@@ -13648,6 +13847,10 @@ cat >>conftest.$ac_ext <<_ACEOF
 # include <GL/gl.h>
 #endif
 
+#ifdef HAVE_OPENGL_GL_H
+# include <OpenGL/gl.h>
+#endif
+
 #ifdef HAVE_SYS_RESOURCE_H
 # include <sys/resource.h>
 #endif
@@ -13756,6 +13959,10 @@ cat >>conftest.$ac_ext <<_ACEOF
 
 #ifdef HAVE_GL_GL_H
 # include <GL/gl.h>
+#endif
+
+#ifdef HAVE_OPENGL_GL_H
+# include <OpenGL/gl.h>
 #endif
 
 #ifdef HAVE_SYS_RESOURCE_H
@@ -13869,6 +14076,10 @@ cat >>conftest.$ac_ext <<_ACEOF
 # include <GL/gl.h>
 #endif
 
+#ifdef HAVE_OPENGL_GL_H
+# include <OpenGL/gl.h>
+#endif
+
 #ifdef HAVE_SYS_RESOURCE_H
 # include <sys/resource.h>
 #endif
@@ -13977,6 +14188,10 @@ cat >>conftest.$ac_ext <<_ACEOF
 
 #ifdef HAVE_GL_GL_H
 # include <GL/gl.h>
+#endif
+
+#ifdef HAVE_OPENGL_GL_H
+# include <OpenGL/gl.h>
 #endif
 
 #ifdef HAVE_SYS_RESOURCE_H
@@ -14090,6 +14305,10 @@ cat >>conftest.$ac_ext <<_ACEOF
 # include <GL/gl.h>
 #endif
 
+#ifdef HAVE_OPENGL_GL_H
+# include <OpenGL/gl.h>
+#endif
+
 #ifdef HAVE_SYS_RESOURCE_H
 # include <sys/resource.h>
 #endif
@@ -14198,6 +14417,10 @@ cat >>conftest.$ac_ext <<_ACEOF
 
 #ifdef HAVE_GL_GL_H
 # include <GL/gl.h>
+#endif
+
+#ifdef HAVE_OPENGL_GL_H
+# include <OpenGL/gl.h>
 #endif
 
 #ifdef HAVE_SYS_RESOURCE_H
@@ -14310,6 +14533,10 @@ cat >>conftest.$ac_ext <<_ACEOF
 # include <GL/gl.h>
 #endif
 
+#ifdef HAVE_OPENGL_GL_H
+# include <OpenGL/gl.h>
+#endif
+
 #ifdef HAVE_SYS_RESOURCE_H
 # include <sys/resource.h>
 #endif
@@ -14418,6 +14645,10 @@ cat >>conftest.$ac_ext <<_ACEOF
 
 #ifdef HAVE_GL_GL_H
 # include <GL/gl.h>
+#endif
+
+#ifdef HAVE_OPENGL_GL_H
+# include <OpenGL/gl.h>
 #endif
 
 #ifdef HAVE_SYS_RESOURCE_H
@@ -14530,6 +14761,10 @@ cat >>conftest.$ac_ext <<_ACEOF
 # include <GL/gl.h>
 #endif
 
+#ifdef HAVE_OPENGL_GL_H
+# include <OpenGL/gl.h>
+#endif
+
 #ifdef HAVE_SYS_RESOURCE_H
 # include <sys/resource.h>
 #endif
@@ -14638,6 +14873,10 @@ cat >>conftest.$ac_ext <<_ACEOF
 
 #ifdef HAVE_GL_GL_H
 # include <GL/gl.h>
+#endif
+
+#ifdef HAVE_OPENGL_GL_H
+# include <OpenGL/gl.h>
 #endif
 
 #ifdef HAVE_SYS_RESOURCE_H
@@ -14750,6 +14989,10 @@ cat >>conftest.$ac_ext <<_ACEOF
 # include <GL/gl.h>
 #endif
 
+#ifdef HAVE_OPENGL_GL_H
+# include <OpenGL/gl.h>
+#endif
+
 #ifdef HAVE_SYS_RESOURCE_H
 # include <sys/resource.h>
 #endif
@@ -14858,6 +15101,10 @@ cat >>conftest.$ac_ext <<_ACEOF
 
 #ifdef HAVE_GL_GL_H
 # include <GL/gl.h>
+#endif
+
+#ifdef HAVE_OPENGL_GL_H
+# include <OpenGL/gl.h>
 #endif
 
 #ifdef HAVE_SYS_RESOURCE_H
@@ -14970,6 +15217,10 @@ cat >>conftest.$ac_ext <<_ACEOF
 # include <GL/gl.h>
 #endif
 
+#ifdef HAVE_OPENGL_GL_H
+# include <OpenGL/gl.h>
+#endif
+
 #ifdef HAVE_SYS_RESOURCE_H
 # include <sys/resource.h>
 #endif
@@ -15078,6 +15329,10 @@ cat >>conftest.$ac_ext <<_ACEOF
 
 #ifdef HAVE_GL_GL_H
 # include <GL/gl.h>
+#endif
+
+#ifdef HAVE_OPENGL_GL_H
+# include <OpenGL/gl.h>
 #endif
 
 #ifdef HAVE_SYS_RESOURCE_H
@@ -15190,6 +15445,10 @@ cat >>conftest.$ac_ext <<_ACEOF
 # include <GL/gl.h>
 #endif
 
+#ifdef HAVE_OPENGL_GL_H
+# include <OpenGL/gl.h>
+#endif
+
 #ifdef HAVE_SYS_RESOURCE_H
 # include <sys/resource.h>
 #endif
@@ -15298,6 +15557,10 @@ cat >>conftest.$ac_ext <<_ACEOF
 
 #ifdef HAVE_GL_GL_H
 # include <GL/gl.h>
+#endif
+
+#ifdef HAVE_OPENGL_GL_H
+# include <OpenGL/gl.h>
 #endif
 
 #ifdef HAVE_SYS_RESOURCE_H
@@ -15410,6 +15673,10 @@ cat >>conftest.$ac_ext <<_ACEOF
 # include <GL/gl.h>
 #endif
 
+#ifdef HAVE_OPENGL_GL_H
+# include <OpenGL/gl.h>
+#endif
+
 #ifdef HAVE_SYS_RESOURCE_H
 # include <sys/resource.h>
 #endif
@@ -15518,6 +15785,10 @@ cat >>conftest.$ac_ext <<_ACEOF
 
 #ifdef HAVE_GL_GL_H
 # include <GL/gl.h>
+#endif
+
+#ifdef HAVE_OPENGL_GL_H
+# include <OpenGL/gl.h>
 #endif
 
 #ifdef HAVE_SYS_RESOURCE_H
@@ -15630,6 +15901,10 @@ cat >>conftest.$ac_ext <<_ACEOF
 # include <GL/gl.h>
 #endif
 
+#ifdef HAVE_OPENGL_GL_H
+# include <OpenGL/gl.h>
+#endif
+
 #ifdef HAVE_SYS_RESOURCE_H
 # include <sys/resource.h>
 #endif
@@ -15738,6 +16013,10 @@ cat >>conftest.$ac_ext <<_ACEOF
 
 #ifdef HAVE_GL_GL_H
 # include <GL/gl.h>
+#endif
+
+#ifdef HAVE_OPENGL_GL_H
+# include <OpenGL/gl.h>
 #endif
 
 #ifdef HAVE_SYS_RESOURCE_H
@@ -15850,6 +16129,10 @@ cat >>conftest.$ac_ext <<_ACEOF
 # include <GL/gl.h>
 #endif
 
+#ifdef HAVE_OPENGL_GL_H
+# include <OpenGL/gl.h>
+#endif
+
 #ifdef HAVE_SYS_RESOURCE_H
 # include <sys/resource.h>
 #endif
@@ -15958,6 +16241,10 @@ cat >>conftest.$ac_ext <<_ACEOF
 
 #ifdef HAVE_GL_GL_H
 # include <GL/gl.h>
+#endif
+
+#ifdef HAVE_OPENGL_GL_H
+# include <OpenGL/gl.h>
 #endif
 
 #ifdef HAVE_SYS_RESOURCE_H
@@ -16070,6 +16357,10 @@ cat >>conftest.$ac_ext <<_ACEOF
 # include <GL/gl.h>
 #endif
 
+#ifdef HAVE_OPENGL_GL_H
+# include <OpenGL/gl.h>
+#endif
+
 #ifdef HAVE_SYS_RESOURCE_H
 # include <sys/resource.h>
 #endif
@@ -16178,6 +16469,10 @@ cat >>conftest.$ac_ext <<_ACEOF
 
 #ifdef HAVE_GL_GL_H
 # include <GL/gl.h>
+#endif
+
+#ifdef HAVE_OPENGL_GL_H
+# include <OpenGL/gl.h>
 #endif
 
 #ifdef HAVE_SYS_RESOURCE_H
@@ -16290,6 +16585,10 @@ cat >>conftest.$ac_ext <<_ACEOF
 # include <GL/gl.h>
 #endif
 
+#ifdef HAVE_OPENGL_GL_H
+# include <OpenGL/gl.h>
+#endif
+
 #ifdef HAVE_SYS_RESOURCE_H
 # include <sys/resource.h>
 #endif
@@ -16343,6 +16642,7 @@ _ACEOF
 
 
 
+if test x"$enable_hopengl" != x"no"; then
 echo "$as_me:$LINENO: checking Haskell type for GLboolean" >&5
 echo $ECHO_N "checking Haskell type for GLboolean... $ECHO_C" >&6
 if test "${fptools_cv_htype_GLboolean+set}" = set; then
@@ -16399,6 +16699,10 @@ cat >>conftest.$ac_ext <<_ACEOF
 
 #ifdef HAVE_GL_GL_H
 # include <GL/gl.h>
+#endif
+
+#ifdef HAVE_OPENGL_GL_H
+# include <OpenGL/gl.h>
 #endif
 
 #ifdef HAVE_SYS_RESOURCE_H
@@ -16511,6 +16815,10 @@ cat >>conftest.$ac_ext <<_ACEOF
 # include <GL/gl.h>
 #endif
 
+#ifdef HAVE_OPENGL_GL_H
+# include <OpenGL/gl.h>
+#endif
+
 #ifdef HAVE_SYS_RESOURCE_H
 # include <sys/resource.h>
 #endif
@@ -16619,6 +16927,10 @@ cat >>conftest.$ac_ext <<_ACEOF
 
 #ifdef HAVE_GL_GL_H
 # include <GL/gl.h>
+#endif
+
+#ifdef HAVE_OPENGL_GL_H
+# include <OpenGL/gl.h>
 #endif
 
 #ifdef HAVE_SYS_RESOURCE_H
@@ -16731,6 +17043,10 @@ cat >>conftest.$ac_ext <<_ACEOF
 # include <GL/gl.h>
 #endif
 
+#ifdef HAVE_OPENGL_GL_H
+# include <OpenGL/gl.h>
+#endif
+
 #ifdef HAVE_SYS_RESOURCE_H
 # include <sys/resource.h>
 #endif
@@ -16839,6 +17155,10 @@ cat >>conftest.$ac_ext <<_ACEOF
 
 #ifdef HAVE_GL_GL_H
 # include <GL/gl.h>
+#endif
+
+#ifdef HAVE_OPENGL_GL_H
+# include <OpenGL/gl.h>
 #endif
 
 #ifdef HAVE_SYS_RESOURCE_H
@@ -16951,6 +17271,10 @@ cat >>conftest.$ac_ext <<_ACEOF
 # include <GL/gl.h>
 #endif
 
+#ifdef HAVE_OPENGL_GL_H
+# include <OpenGL/gl.h>
+#endif
+
 #ifdef HAVE_SYS_RESOURCE_H
 # include <sys/resource.h>
 #endif
@@ -17059,6 +17383,10 @@ cat >>conftest.$ac_ext <<_ACEOF
 
 #ifdef HAVE_GL_GL_H
 # include <GL/gl.h>
+#endif
+
+#ifdef HAVE_OPENGL_GL_H
+# include <OpenGL/gl.h>
 #endif
 
 #ifdef HAVE_SYS_RESOURCE_H
@@ -17171,6 +17499,10 @@ cat >>conftest.$ac_ext <<_ACEOF
 # include <GL/gl.h>
 #endif
 
+#ifdef HAVE_OPENGL_GL_H
+# include <OpenGL/gl.h>
+#endif
+
 #ifdef HAVE_SYS_RESOURCE_H
 # include <sys/resource.h>
 #endif
@@ -17279,6 +17611,10 @@ cat >>conftest.$ac_ext <<_ACEOF
 
 #ifdef HAVE_GL_GL_H
 # include <GL/gl.h>
+#endif
+
+#ifdef HAVE_OPENGL_GL_H
+# include <OpenGL/gl.h>
 #endif
 
 #ifdef HAVE_SYS_RESOURCE_H
@@ -17391,6 +17727,10 @@ cat >>conftest.$ac_ext <<_ACEOF
 # include <GL/gl.h>
 #endif
 
+#ifdef HAVE_OPENGL_GL_H
+# include <OpenGL/gl.h>
+#endif
+
 #ifdef HAVE_SYS_RESOURCE_H
 # include <sys/resource.h>
 #endif
@@ -17499,6 +17839,10 @@ cat >>conftest.$ac_ext <<_ACEOF
 
 #ifdef HAVE_GL_GL_H
 # include <GL/gl.h>
+#endif
+
+#ifdef HAVE_OPENGL_GL_H
+# include <OpenGL/gl.h>
 #endif
 
 #ifdef HAVE_SYS_RESOURCE_H
@@ -17611,6 +17955,10 @@ cat >>conftest.$ac_ext <<_ACEOF
 # include <GL/gl.h>
 #endif
 
+#ifdef HAVE_OPENGL_GL_H
+# include <OpenGL/gl.h>
+#endif
+
 #ifdef HAVE_SYS_RESOURCE_H
 # include <sys/resource.h>
 #endif
@@ -17719,6 +18067,10 @@ cat >>conftest.$ac_ext <<_ACEOF
 
 #ifdef HAVE_GL_GL_H
 # include <GL/gl.h>
+#endif
+
+#ifdef HAVE_OPENGL_GL_H
+# include <OpenGL/gl.h>
 #endif
 
 #ifdef HAVE_SYS_RESOURCE_H
@@ -17831,6 +18183,10 @@ cat >>conftest.$ac_ext <<_ACEOF
 # include <GL/gl.h>
 #endif
 
+#ifdef HAVE_OPENGL_GL_H
+# include <OpenGL/gl.h>
+#endif
+
 #ifdef HAVE_SYS_RESOURCE_H
 # include <sys/resource.h>
 #endif
@@ -17883,6 +18239,7 @@ cat >>confdefs.h <<_ACEOF
 _ACEOF
 
 
+fi
 
 for ac_const_name in E2BIG EACCES EADDRINUSE EADDRNOTAVAIL EADV EAFNOSUPPORT EAGAIN EALREADY EBADF EBADMSG EBADRPC EBUSY ECHILD ECOMM ECONNABORTED ECONNREFUSED ECONNRESET EDEADLK EDESTADDRREQ EDIRTY EDOM EDQUOT EEXIST EFAULT EFBIG EFTYPE EHOSTDOWN EHOSTUNREACH EIDRM EILSEQ EINPROGRESS EINTR EINVAL EIO EISCONN EISDIR ELOOP EMFILE EMLINK EMSGSIZE EMULTIHOP ENAMETOOLONG ENETDOWN ENETRESET ENETUNREACH ENFILE ENOBUFS ENODATA ENODEV ENOENT ENOEXEC ENOLCK ENOLINK ENOMEM ENOMSG ENONET ENOPROTOOPT ENOSPC ENOSR ENOSTR ENOSYS ENOTBLK ENOTCONN ENOTDIR ENOTEMPTY ENOTSOCK ENOTTY ENXIO EOPNOTSUPP EPERM EPFNOSUPPORT EPIPE EPROCLIM EPROCUNAVAIL EPROGMISMATCH EPROGUNAVAIL EPROTO EPROTONOSUPPORT EPROTOTYPE ERANGE EREMCHG EREMOTE EROFS ERPCMISMATCH ERREMOTE ESHUTDOWN ESOCKTNOSUPPORT ESPIPE ESRCH ESRMNT ESTALE ETIME ETIMEDOUT ETOOMANYREFS ETXTBSY EUSERS EWOULDBLOCK EXDEV
 do
@@ -17955,7 +18312,7 @@ done
 ac_save_LIBS="$LIBS"
 LIBS=;
 cat > conftest.$ac_ext <<EOF
-#line 17958 "configure"
+#line 18315 "configure"
 #include "confdefs.h"
 
 #if HAVE_WINDOWS_H
@@ -17996,7 +18353,7 @@ fi
 ac_save_LIBS="$LIBS"
 LIBS=;
 cat > conftest.$ac_ext <<EOF
-#line 17999 "configure"
+#line 18356 "configure"
 #include "confdefs.h"
 
 #if HAVE_WINDOWS_H
@@ -21451,6 +21808,7 @@ _ACEOF
 
 fi;
 
+
 # Check whether --with-preprocessor or --without-preprocessor was given.
 if test "${with_preprocessor+set}" = set; then
   withval="$with_preprocessor"
@@ -21459,11 +21817,13 @@ if test "${with_preprocessor+set}" = set; then
 _ACEOF
 
 fi;
+
 # Check whether --enable-timer or --disable-timer was given.
 if test "${enable_timer+set}" = set; then
   enableval="$enable_timer"
 
 fi;
+
 # Check whether --enable-profiling or --disable-profiling was given.
 if test "${enable_profiling+set}" = set; then
   enableval="$enable_profiling"
@@ -21472,6 +21832,7 @@ if test "${enable_profiling+set}" = set; then
 _ACEOF
 
 fi;
+
 # Check whether --enable-stack-dumps or --disable-stack-dumps was given.
 if test "${enable_stack_dumps+set}" = set; then
   enableval="$enable_stack_dumps"
@@ -21481,11 +21842,13 @@ _ACEOF
 
 fi;
 
+
 # Check whether --with-nmake or --without-nmake was given.
 if test "${with_nmake+set}" = set; then
   withval="$with_nmake"
   RM="del";CP="copy"
 fi;
+
 # Check whether --enable-large-banner or --disable-large-banner was given.
 if test "${enable_large_banner+set}" = set; then
   enableval="$enable_large_banner"
@@ -21495,11 +21858,13 @@ _ACEOF
 
 fi;
 
+
 # Check whether --with-gui or --without-gui was given.
 if test "${with_gui+set}" = set; then
   withval="$with_gui"
 
 fi;
+
 # Check whether --enable-internal-prims or --disable-internal-prims was given.
 if test "${enable_internal_prims+set}" = set; then
   enableval="$enable_internal_prims"
@@ -21511,6 +21876,7 @@ _ACEOF
 _ACEOF
 
 fi;
+
 # Check whether --enable-debug or --disable-debug was given.
 if test "${enable_debug+set}" = set; then
   enableval="$enable_debug"
@@ -21522,6 +21888,7 @@ _ACEOF
 _ACEOF
 
 fi;
+
 # Check whether --enable-tag-checks or --disable-tag-checks was given.
 if test "${enable_tag_checks+set}" = set; then
   enableval="$enable_tag_checks"
@@ -21530,11 +21897,13 @@ if test "${enable_tag_checks+set}" = set; then
 _ACEOF
 
 fi;
+
 # Check whether --enable-lint or --disable-lint was given.
 if test "${enable_lint+set}" = set; then
   enableval="$enable_lint"
 
 fi;
+
 # Check whether --enable-only98 or --disable-only98 was given.
 if test "${enable_only98+set}" = set; then
   enableval="$enable_only98"
@@ -21543,6 +21912,7 @@ if test "${enable_only98+set}" = set; then
 _ACEOF
 
 fi;
+
 
 # Check whether --with-pthreads or --without-pthreads was given.
 if test "${with_pthreads+set}" = set; then
@@ -21553,6 +21923,7 @@ _ACEOF
  MTCFLAGS="-D_REENTRANT"; LIBS="$LIBS -lpthread"
 fi;
 
+
 # Check whether --with-fptools or --without-fptools was given.
 if test "${with_fptools+set}" = set; then
   withval="$with_fptools"
@@ -21560,12 +21931,21 @@ if test "${with_fptools+set}" = set; then
 else
   FPTOOLS=../../fptools
 fi;
+
 # Check whether --enable-ffi or --disable-ffi was given.
 if test "${enable_ffi+set}" = set; then
   enableval="$enable_ffi"
 
 else
   enable_ffi="$dynamic_loading"
+fi;
+
+# Check whether --enable-hopengl or --disable-hopengl was given.
+if test "${enable_hopengl+set}" = set; then
+  enableval="$enable_hopengl"
+
+else
+  $enable_hopengl=yes
 fi;
 
 

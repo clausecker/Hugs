@@ -352,6 +352,10 @@ AC_CACHE_VAL(AC_CV_NAME,
 # include <GL/gl.h>
 #endif
 
+#ifdef HAVE_OPENGL_GL_H
+# include <OpenGL/gl.h>
+#endif
+
 #ifdef HAVE_SYS_RESOURCE_H
 # include <sys/resource.h>
 #endif
@@ -792,11 +796,10 @@ AC_DEFUN(FPTOOLS_HAVE_OPENGL,
 
 dnl Check for Mesa first if we were asked to.
   AC_ARG_ENABLE(Mesa,
-[  --enable-mesa
-	Prefer Mesa over a vendor's native OpenGL library (default=no)
-],
-                use_Mesa=$enableval,
-                use_Mesa=no)
+    AC_HELP_STRING([--enable-mesa],
+                   [prefer Mesa over a vendor's native OpenGL library (default=no)]),
+    use_Mesa=$enableval,
+    use_Mesa=no)
 
   if test x"$use_Mesa" = xyes; then
      GL_search_list="MesaGL  GL  opengl32"
