@@ -11,9 +11,10 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.78 $
- * $Date: 2003/02/17 03:07:56 $
+ * $Revision: 1.79 $
+ * $Date: 2003/02/17 10:41:35 $
  * ------------------------------------------------------------------------*/
+#include <math.h>
 #include "machdep.h"
 #include "prelude.h"
 #include "storage.h"
@@ -127,16 +128,6 @@ static Bool   local setValue       Args((HKEY, String, String, DWORD, LPBYTE, DW
 /* --------------------------------------------------------------------------
  * Find information about a file:
  * ------------------------------------------------------------------------*/
-
-#if RISCOS
-typedef struct { unsigned hi, lo; } Time;
-#define timeChanged(now,thn)    (now.hi!=thn.hi || now.lo!=thn.lo)
-#define timeSet(var,tm)         var.hi = tm.hi; var.lo = tm.lo
-#else
-typedef time_t Time;
-#define timeChanged(now,thn)    (now!=thn)
-#define timeSet(var,tm)         var = tm
-#endif
 
 Void getFileInfo(f,tm,sz)  /* find time stamp and size of file*/
 String f;
