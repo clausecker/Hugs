@@ -21,9 +21,6 @@
 #                   (you need perl, bison/yacc, etc to rebuild these files)
 # TAGS:           build emacs TAGS table
 
-# This rule goes first to make it the default choice
-default		:: winhugs.exe 
-
 CC		= cl /nologo
 VERSTR          = -DMONTH_YEAR="\"Nov 2003\""
 CFLAGS		= -MD -I. $(VERSTR)
@@ -44,48 +41,57 @@ CP		= copy
 EXEEXT		= .exe
 OBJEXT		= obj
 
-
 .SUFFIXES	:
-.SUFFIXES	: .c .h .obj
-PRELUDE		= config.h options.h prelude.h script.h platform.h
-HFILES		= $(PRELUDE) storage.h connect.h \
-		  errors.h command.h server.h HsFFI.h module.h machdep.h \
-		  opts.h strutil.h evaluator.h goal.h observe.h char.h
-CFILES		= hugs.c storage.c input.c static.c type.c subst.c \
-		  output.c compiler.c machine.c interp.c builtin.c \
-		  server.c ffi.c module.c machdep.c script.c opts.c \
-		  strutil.c errors.c evaluator.c goal.c observe.c char.c \
-		  Winhugs.c
+.SUFFIXES	: .c .h .$(OBJEXT)
 
-INCFILES	= parser.c preds.c bignums.c scc.c timer.c \
-		  printer.c iomonad.c interns.c array.c
+WOBJECTS        = winhugs.$(OBJEXT) winframe.$(OBJEXT) wintext.$(OBJEXT) \
+		  winhint.$(OBJEXT) winstln.$(OBJEXT) wintoolb.$(OBJEXT) \
+		  winutils.$(OBJEXT) 
+
+HFILES		= HsFFI.h builtin.h char.h command.h config.h connect.h \
+		  errors.h evaluator.h goal.h machdep.h module.h observe.h \
+		  options.h opts.h output.h prelude.h script.h server.h \
+		  storage.h strutil.h subst.h
+CFILES		= hugs.c runhugs.c server.c edit.c observe.c \
+		  builtin.c char.c compiler.c errors.c evaluator.c ffi.c \
+		  goal.c input.c machdep.c machine.c module.c opts.c \
+		  output.c plugin.c script.c static.c storage.c strutil.c \
+		  subst.c type.c version.c \
+		  Winhugs.c
+INCFILES	= array.c bignums.c dirprim.c interns.c iomonad.c \
+		  preds.c printer.c scc.c timeprim.c timer.c
 YFILES		= parser.y
 SOURCES		= $(HFILES) $(CFILES) $(INCFILES) $(YFILES) 
-OBJECTS		= storage.obj input.obj static.obj type.obj subst.obj \
-                  compiler.obj plugin.obj builtin.obj machine.obj output.obj \
-
-WOBJECTS        = winhugs.obj winframe.obj wintext.obj winhint.obj \
-                  winstln.obj wintoolb.obj winutils.obj 
-
-OBJECTS		= storage.obj input.obj static.obj type.obj subst.obj \
-		  compiler.obj plugin.obj builtin.obj machine.obj output.obj \
-		  ffi.obj version.obj module.obj machdep.obj script.obj \
-		  opts.obj strutil.obj errors.obj evaluator.obj goal.obj char.obj \
+OBJECTS		= builtin.$(OBJEXT) char.$(OBJEXT) compiler.$(OBJEXT) \
+		  errors.$(OBJEXT) evaluator.$(OBJEXT) ffi.$(OBJEXT) \
+		  goal.$(OBJEXT) input.$(OBJEXT) machdep.$(OBJEXT) \
+		  machine.$(OBJEXT) module.$(OBJEXT) opts.$(OBJEXT) \
+		  output.$(OBJEXT) plugin.$(OBJEXT) script.$(OBJEXT) \
+		  static.$(OBJEXT) storage.$(OBJEXT) strutil.$(OBJEXT) \
+		  subst.$(OBJEXT) type.$(OBJEXT) version.$(OBJEXT) \
 		  $(WOBJECTS)
+IOBJECTS	= hugs.$(OBJEXT) edit.$(OBJEXT) observe.$(OBJEXT) $(OBJECTS)
 
-IOBJECTS	= hugs.obj edit.obj observe.obj $(OBJECTS)
+################################################################
+# Default target
+################################################################
+
+# This rule goes first to make it the default choice
+default		:: all
+
+all		:: winhugs$(EXEEXT)
 
 ################################################################
 # Hugs interpreter and standalone evaluator
 ################################################################
 
-winhugs.exe	: $(IOBJECTS)  winhugs.res
-		  $(CC) $(LDFLAGS) $(IOBJECTS) winhugs.res  $(LIBS) -o winhugs.exe -link /subsystem:windows 
+winhugs$(EXEEXT) : $(IOBJECTS)  winhugs.res
+		  $(CC) $(LDFLAGS) $(IOBJECTS) winhugs.res  $(LIBS) -o winhugs$(EXEEXT) -link /subsystem:windows 
 
 
-SERVER_OBJECTS	= server.obj $(OBJECTS) 
-runhugs.exe	: runhugs.obj $(SERVER_OBJECTS)
-		  $(CC) $(LDFLAGS) runhugs.obj $(SERVER_OBJECTS) $(LIBS) -o runhugs.exe
+SERVER_OBJECTS	= server.$(OBJEXT) $(OBJECTS) 
+runhugs$(EXEEXT) : runhugs.$(OBJEXT) $(SERVER_OBJECTS)
+		  $(CC) $(LDFLAGS) runhugs.$(OBJEXT) $(SERVER_OBJECTS) $(LIBS) -o runhugs$(EXEEXT)
 
 #
 # Create all the FFI extension DLLs.
@@ -127,9 +133,9 @@ clean		::
 		  $(RM) *.hp
 distclean	:: clean
 distclean	::
-		  $(RM) winhugs.exe
-		  $(RM) runhugs.exe
-		  $(RM) ffihugs.exe
+		  $(RM) winhugs$(EXEEXT)
+		  $(RM) runhugs$(EXEEXT)
+		  $(RM) ffihugs$(EXEEXT)
 		  $(RM) *.pdf
 		  $(RM) TAGS
 		  $(RM) *~
@@ -144,14 +150,23 @@ TAGS		::
 # C and Yacc rules
 ################################################################
 
-.c.obj	:
+.c.$(OBJEXT)	:
 		  $(CC) -c $(CFLAGS) $(OPTFLAGS) $<
 
-# These are compiled with less optimisation to avoid optimisation bugs in
-# certain compilers.  This may be overly conservative on some compilers.
-compiler.obj	: compiler.c
+# Modules to be compiled without optimization.
+# (old comment: to avoid optimisation bugs in certain compilers.
+#               This may be overly conservative on some compilers.)
+# (The following explanation is based on a posting by Alastair Reid.)
+# These modules allocate cells on the Hugs heap and assume a conservative
+# garbage collector.  On some (especially RISC) architectures, the
+# optimizer may identify a pointer to a Cell as a common subexpression,
+# and hold that instead of the Cell.  This would then be missed by the
+# conservative garbage collector's simplistic scan of the C stack.
+# Modules associated with evaluation are safe because they don't assume
+# conservative GC (see IMPORTANT NOTICE in builtin.c).
+compiler.$(OBJEXT) : compiler.c
 		  $(CC) -c $(CFLAGS) compiler.c
-static.obj	: static.c
+static.$(OBJEXT) : static.c
 		  $(CC) -c $(CFLAGS) static.c
 
 # parser.c	: parser.y
@@ -162,29 +177,47 @@ static.obj	: static.c
 
 #dependencies for these files are incomplete
 
-wintext.obj	: $(HFILES) "winhugs\wintext.c"
+wintext.$(OBJEXT)	: $(HFILES) "winhugs\wintext.c"
 		  $(CC) -c $(CFLAGS) $(OPTFLAGS)  "winhugs\wintext.c" 
 
-winframe.obj    : $(HFILES) "winhugs\winframe.c"
+winframe.$(OBJEXT)    : $(HFILES) "winhugs\winframe.c"
 	          $(CC) -c $(CFLAGS) $(OPTFLAGS) "winhugs\winframe.c" 
 
-winhint.obj	: $(HFILES) "winhugs\winhint.c"
+winhint.$(OBJEXT)	: $(HFILES) "winhugs\winhint.c"
 		  $(CC) -c $(CFLAGS) $(OPTFLAGS) "winhugs\winhint.c" 
 
-winstln.obj	: $(HFILES) "winhugs\winstln.c"
+winstln.$(OBJEXT)	: $(HFILES) "winhugs\winstln.c"
 	          $(CC) -c $(CFLAGS) $(OPTFLAGS) "winhugs\winstln.c" 
 
-wintoolb.obj    : $(HFILES) "winhugs\wintoolb.c"
+wintoolb.$(OBJEXT)    : $(HFILES) "winhugs\wintoolb.c"
 	          $(CC) -c $(CFLAGS) $(OPTFLAGS) "winhugs\wintoolb.c" 
 
-winutils.obj    : $(HFILES) "winhugs\winutils.c"
+winutils.$(OBJEXT)    : $(HFILES) "winhugs\winutils.c"
 	          $(CC) -c $(CFLAGS) $(OPTFLAGS) "winhugs\winutils.c" 
 
-winhugs.obj    : $(HFILES) "winhugs\winhugs.c"
+winhugs.$(OBJEXT)    : $(HFILES) "winhugs\winhugs.c"
 	          $(CC) -c $(CFLAGS) $(OPTFLAGS) "winhugs\winhugs.c" 
 
 winhugs.res     : "winhugs\winhugs.rc"
                   $(RC) -fowinhugs.res "winhugs\winhugs.rc"
+
+# WinHugs modules
+#
+# The dependencies could be made tighter by not using HFILES throughout,
+# but individually naming the header files needed by each file. Elect
+# not to do this due to the overhead of having to keep it up-to-date.
+winhugs.$(OBJEXT): $(HFILES) \
+  winhugs/winhugs.c winhugs/menusbm.c winhugs/WinBrows.c winhugs/WinHugs.h \
+  winhugs/WinFrame.h winhugs/WinToolB.h winhugs/WinSTLN.h winhugs/WinUtils.h
+winframe.$(OBJEXT): $(HFILES) winhugs/winframe.c \
+  winhugs/WinFrame.h winhugs/WinSTLN.h winhugs/WinToolB.h winhugs/WinUtils.h
+winhint.$(OBJEXT): $(HFILES) winhugs/winhint.c \
+  winhugs/WinHint.h winhugs/WinUtils.h
+winstln.$(OBJEXT): $(HFILES) winhugs/winstln.c \
+  winhugs/WinSTLN.h winhugs/WinUtils.h
+wintoolb.$(OBJEXT): $(HFILES) winhugs/wintoolb.c \
+  winhugs/WinToolB.h winhugs/WinHint.h winhugs/WinUtils.h
+winutils.$(OBJEXT): $(HFILES) winhugs/winutils.c winhugs/WinUtils.h
 
 ################################################################
 # Generated object dependencies (Don't change or delete this line)
@@ -250,7 +283,7 @@ subst.$(OBJEXT): subst.c prelude.h config.h platform.h options.h storage.h \
   HsFFI.h connect.h errors.h output.h opts.h subst.h
 type.$(OBJEXT): type.c prelude.h config.h platform.h options.h storage.h HsFFI.h \
   connect.h errors.h output.h subst.h goal.h opts.h preds.c scc.c
-version.$(OBJEXT): today version.c prelude.h config.h platform.h options.h
+version.$(OBJEXT): version.c prelude.h config.h platform.h options.h
 
 ################################################################
 # End of generated object dependencies (Don't change or delete this line)
@@ -258,29 +291,11 @@ version.$(OBJEXT): today version.c prelude.h config.h platform.h options.h
 
 version.$(OBJEXT): echodate.h
 
-echodate.h: echodate.exe
-	$(PWD)/echodate.exe > echodate.h
+echodate.h: echodate$(EXEEXT)
+	$(PWD)/echodate$(EXEEXT) > echodate.h
 
-echodate.exe: msc/echodate.c
+echodate$(EXEEXT): msc/echodate.c
 	$(CC) $(LDFLAGS) msc/echodate.c -o $@
-
-# WinHugs modules
-#
-# The dependencies could be made tighter by not using HFILES throughout,
-# but individually naming the header files needed by each file. Elect
-# not to do this due to the overhead of having to keep it up-to-date.
-winhugs.$(OBJEXT): $(HFILES) \
-  winhugs/winhugs.c winhugs/menusbm.c winhugs/WinBrows.c winhugs/WinHugs.h \
-  winhugs/WinFrame.h winhugs/WinToolB.h winhugs/WinSTLN.h winhugs/WinUtils.h
-winframe.$(OBJEXT): $(HFILES) winhugs/winframe.c \
-  winhugs/WinFrame.h winhugs/WinSTLN.h winhugs/WinToolB.h winhugs/WinUtils.h
-winhint.$(OBJEXT): $(HFILES) winhugs/winhint.c \
-  winhugs/WinHint.h winhugs/WinUtils.h
-winstln.$(OBJEXT): $(HFILES) winhugs/winstln.c \
-  winhugs/WinSTLN.h winhugs/WinUtils.h
-wintoolb.$(OBJEXT): $(HFILES) winhugs/wintoolb.c \
-  winhugs/WinToolB.h winhugs/WinHint.h winhugs/WinUtils.h
-winutils.$(OBJEXT): $(HFILES) winhugs/winutils.c winhugs/WinUtils.h
 
 ################################################################
 # End of Makefile

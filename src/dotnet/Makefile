@@ -22,9 +22,6 @@
 #                   (you need perl, bison/yacc, etc to rebuild these files)
 # TAGS:           build emacs TAGS table
 
-# This rule goes first to make it the default choice
-default		:: hugs.exe runhugs.exe ffihugs.exe hugsscript.dll
-
 CC		= cl /nologo
 CFLAGS		= -clr -DDOTNET -DMONTH_YEAR="\"Nov 2003\""
 #CFLAGS		= -ML -Zi -DMONTH_YEAR="\"Nov 2003""
@@ -44,54 +41,68 @@ CP		= copy
 EXEEXT		= .exe
 OBJEXT		= obj
 
-
 .SUFFIXES	:
-.SUFFIXES	: .c .h .obj
-HFILES		= prelude.h config.h options.h storage.h connect.h \
-		  errors.h command.h server.h HsFFI.h module.h machdep.h \
-		  script.h opts.h strutil.h evaluator.h goal.h observe.h
-DOTNET_FILES    = dotnet\Invoker.cpp dotnet\prim.cpp dotnet\HugsServ.cpp dotnet\HugsWrapper.cpp
-CFILES		= hugs.c storage.c input.c static.c type.c subst.c \
-		  output.c compiler.c machine.c interp.c builtin.c \
-		  server.c ffi.c module.c machdep.c script.c opts.c \
-		  strutil.c errors.c evaluator.c goal.c observe.c char.c \
-		  $(DOTNET_FILES)
-INCFILES	= parser.c preds.c bignums.c scc.c timer.c \
-		  printer.c iomonad.c interns.c array.c
+.SUFFIXES	: .c .h .$(OBJEXT)
+
+DOTNET_FILES    = dotnet\Invoker.cpp dotnet\HugsServ.cpp \
+		  dotnet\HugsWrapper.cpp dotnet\prim.cpp
+DOBJECTS        = dotnet\Invoker.$(OBJEXT) dotnet\HugsServ.$(OBJEXT) \
+		  dotnet\prim.$(OBJEXT)  dotnet\HugsWrapper.$(OBJEXT)
+
+HFILES		= HsFFI.h builtin.h char.h command.h config.h connect.h \
+		  errors.h evaluator.h goal.h machdep.h module.h observe.h \
+		  options.h opts.h output.h prelude.h script.h server.h \
+		  storage.h strutil.h subst.h
+CFILES		= hugs.c runhugs.c server.c edit.c observe.c \
+		  builtin.c char.c compiler.c errors.c evaluator.c ffi.c \
+		  goal.c input.c machdep.c machine.c module.c opts.c \
+		  output.c plugin.c script.c static.c storage.c strutil.c \
+		  subst.c type.c version.c $(DOTNET_FILES)
+INCFILES	= array.c bignums.c dirprim.c interns.c iomonad.c \
+		  preds.c printer.c scc.c timeprim.c timer.c
 YFILES		= parser.y
 SOURCES		= $(HFILES) $(CFILES) $(INCFILES) $(YFILES) 
-OBJECTS		= storage.obj input.obj static.obj type.obj subst.obj \
-	          compiler.obj plugin.obj builtin.obj machine.obj output.obj \
-		  ffi.obj version.obj module.obj machdep.obj script.obj \
-		  opts.obj strutil.obj errors.obj evaluator.obj goal.obj char.obj
+OBJECTS		= builtin.$(OBJEXT) char.$(OBJEXT) compiler.$(OBJEXT) \
+		  errors.$(OBJEXT) evaluator.$(OBJEXT) ffi.$(OBJEXT) \
+		  goal.$(OBJEXT) input.$(OBJEXT) machdep.$(OBJEXT) \
+		  machine.$(OBJEXT) module.$(OBJEXT) opts.$(OBJEXT) \
+		  output.$(OBJEXT) plugin.$(OBJEXT) script.$(OBJEXT) \
+		  static.$(OBJEXT) storage.$(OBJEXT) strutil.$(OBJEXT) \
+		  subst.$(OBJEXT) type.$(OBJEXT) version.$(OBJEXT)
+IOBJECTS	= hugs.$(OBJEXT) edit.$(OBJEXT) observe.$(OBJEXT) $(OBJECTS) \
+		  hugs.res $(DOBJECTS)
 
-DOBJECTS        = dotnet\Invoker.obj dotnet\HugsServ.obj dotnet\HugsWrapper.obj dotnet\prim.obj 
-		  
-IOBJECTS	= hugs.obj edit.obj server.obj observe.obj hugs.res $(OBJECTS) $(DOBJECTS)
-PRELUDE		= config.h options.h prelude.h
+################################################################
+# Default target
+################################################################
+
+# This rule goes first to make it the default choice
+default		:: all
+
+all		:: hugs.exe runhugs.exe ffihugs.exe hugsscript.dll
 
 ################################################################
 # Hugs interpreter and standalone evaluator
 ################################################################
 
-hugs.exe	: $(IOBJECTS)
-		  $(LD) $(LDFLAGS) $(IOBJECTS)  $(LIBS) -o hugs.exe  $(LINK_FLAGS)
+hugs$(EXEEXT)	: $(IOBJECTS)
+		  $(LD) $(LDFLAGS) $(IOBJECTS)  $(LIBS) -o hugs$(EXEEXT)  $(LINK_FLAGS)
 		  
 
-SERVER_OBJECTS	= runhugs.res $(OBJECTS) server.obj $(DOBJECTS)
-runhugs.obj	: $(PRELUDE) hugs.c machdep.h timer.c runhugs.c
-runhugs.exe	: runhugs.obj $(SERVER_OBJECTS)
-		  $(LD) $(LDFLAGS) runhugs.obj $(SERVER_OBJECTS) $(LIBS) -o runhugs.exe $(LINK_FLAGS)
+SERVER_OBJECTS	= runhugs.res $(OBJECTS) server.$(OBJEXT) $(DOBJECTS)
+runhugs.$(OBJEXT) : $(PRELUDE) hugs.c machdep.h timer.c runhugs.c
+runhugs$(EXEEXT) : runhugs.$(OBJEXT) $(SERVER_OBJECTS)
+		  $(LD) $(LDFLAGS) runhugs.$(OBJEXT) $(SERVER_OBJECTS) $(LIBS) -o runhugs$(EXEEXT) $(LINK_FLAGS)
 
-ffihugs.exe	: ffihugs.obj $(SERVER_OBJECTS)
-		  $(CC) $(LDFLAGS) ffihugs.obj $(SERVER_OBJECTS) $(LIBS) -o ffihugs.exe $(LINK_FLAGS)
+ffihugs$(EXEEXT) : ffihugs.$(OBJEXT) $(SERVER_OBJECTS)
+		  $(CC) $(LDFLAGS) ffihugs.$(OBJEXT) $(SERVER_OBJECTS) $(LIBS) -o ffihugs$(EXEEXT) $(LINK_FLAGS)
 
-ffihugs.obj	: runhugs.obj
-		  $(CC) -c $(CFLAGS) $(OPTFLAGS) -DFFI_COMPILER runhugs.c /Foffihugs.obj
+ffihugs.$(OBJEXT) : runhugs.$(OBJEXT)
+		  $(CC) -c $(CFLAGS) $(OPTFLAGS) -DFFI_COMPILER runhugs.c /Foffihugs.$(OBJEXT)
 
-hugsscript.obj  : hugsscript.c
-hugsscript.dll  : $(SERVER_OBJECTS) hugsscript.obj
-		  $(CC) $(DLL_FLAGS) $(LDFLAGS) $(SERVER_OBJECTS) hugsscript.obj $(LIBS) -o hugsscript.dll
+hugsscript.$(OBJEXT)  : hugsscript.c
+hugsscript.dll  : $(SERVER_OBJECTS) hugsscript.$(OBJEXT)
+		  $(CC) $(DLL_FLAGS) $(LDFLAGS) $(SERVER_OBJECTS) hugsscript.$(OBJEXT) $(LIBS) -o hugsscript.dll
 
 #
 # Create all the FFI extension DLLs.
@@ -134,9 +145,9 @@ clean		::
 		  $(RM) *.hp
 distclean	:: clean
 distclean	::
-		  $(RM) hugs.exe
-		  $(RM) runhugs.exe
-		  $(RM) ffihugs.exe
+		  $(RM) hugs$(EXEEXT)
+		  $(RM) runhugs$(EXEEXT)
+		  $(RM) ffihugs$(EXEEXT)
 		  $(RM) *.pdf
 		  $(RM) TAGS
 		  $(RM) *~
@@ -151,37 +162,46 @@ TAGS		::
 # C and Yacc rules
 ################################################################
 
-.c.obj	:
+.c.$(OBJEXT)	:
 		  $(CC) -c $(CFLAGS) $(OPTFLAGS) $<
 
-dotnet\prim.obj	: dotnet\prim.cpp
-		  $(CC) -c $(CFLAGS) $(OPTFLAGS) -I. dotnet\prim.cpp /Fodotnet\prim.obj
+dotnet\prim.$(OBJEXT)	: dotnet\prim.cpp
+		  $(CC) -c $(CFLAGS) $(OPTFLAGS) -I. dotnet\prim.cpp /Fodotnet\prim.$(OBJEXT)
 
-dotnet\Invoker.obj : dotnet\Invoker.cpp
-		  $(CC) -c $(CFLAGS) $(OPTFLAGS) -I. dotnet\Invoker.cpp /Fodotnet\Invoker.obj
+dotnet\Invoker.$(OBJEXT) : dotnet\Invoker.cpp
+		  $(CC) -c $(CFLAGS) $(OPTFLAGS) -I. dotnet\Invoker.cpp /Fodotnet\Invoker.$(OBJEXT)
 
-dotnet\HugsServ.obj : dotnet\HugsServ.cpp
-		  $(CC) -c $(CFLAGS) $(OPTFLAGS) -I. dotnet\HugsServ.cpp /Fodotnet\HugsServ.obj
+dotnet\HugsServ.$(OBJEXT) : dotnet\HugsServ.cpp
+		  $(CC) -c $(CFLAGS) $(OPTFLAGS) -I. dotnet\HugsServ.cpp /Fodotnet\HugsServ.$(OBJEXT)
 
 dotnet\HugsServ.cpp : dotnet\HugsServ.h
 
-dotnet\HugsWrapper.obj : dotnet\HugsWrapper.cpp
-		  $(CC) -c $(CFLAGS) $(OPTFLAGS) -I. dotnet\HugsWrapper.cpp /Fodotnet\HugsWrapper.obj
+dotnet\HugsWrapper.$(OBJEXT) : dotnet\HugsWrapper.cpp
+		  $(CC) -c $(CFLAGS) $(OPTFLAGS) -I. dotnet\HugsWrapper.cpp /Fodotnet\HugsWrapper.$(OBJEXT)
 
 dotnet\HugsWrapper.cpp : dotnet\HugsWrapper.h
 
-dotnet\prim.obj : $(PRELUDE) dotnet\prim.cpp dotnet\Invoker.h dotnet\Invoker.cpp
+dotnet\prim.$(OBJEXT) : $(PRELUDE) dotnet\prim.cpp dotnet\Invoker.h dotnet\Invoker.cpp
 
 # Old & unused, but keep it around for now.
-#dotnet\HugsWrapper.dll : hugs.exe dotnet\HugsWrapper.cs
-#		  csc /t:library /unsafe /out:dotnet\HugsWrapper.dll dotnet\HugsWrapper.cs  /r:hugs.exe
+#dotnet\HugsWrapper.dll : hugs$(EXEEXT) dotnet\HugsWrapper.cs
+#		  csc /t:library /unsafe /out:dotnet\HugsWrapper.dll dotnet\HugsWrapper.cs  /r:hugs$(EXEEXT)
 #dotnet\HugsWrapper.dll: $(PRELUDE) dotnet\HugsWrapper.cs
 
-# These are compiled with less optimisation to avoid optimisation bugs in
-# certain compilers.  This may be overly conservative on some compilers.
-compiler.obj	: compiler.c
+# Modules to be compiled without optimization.
+# (old comment: to avoid optimisation bugs in certain compilers.
+#               This may be overly conservative on some compilers.)
+# (The following explanation is based on a posting by Alastair Reid.)
+# These modules allocate cells on the Hugs heap and assume a conservative
+# garbage collector.  On some (especially RISC) architectures, the
+# optimizer may identify a pointer to a Cell as a common subexpression,
+# and hold that instead of the Cell.  This would then be missed by the
+# conservative garbage collector's simplistic scan of the C stack.
+# Modules associated with evaluation are safe because they don't assume
+# conservative GC (see IMPORTANT NOTICE in builtin.c).
+compiler.$(OBJEXT) : compiler.c
 		  $(CC) -c $(CFLAGS) compiler.c
-static.obj	: static.c
+static.$(OBJEXT) : static.c
 		  $(CC) -c $(CFLAGS) static.c
 
 parser.c	: parser.y

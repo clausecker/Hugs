@@ -22,9 +22,6 @@
 #                   (you need perl, bison/yacc, etc to rebuild these files)
 # TAGS:           build emacs TAGS table
 
-# This rule goes first to make it the default choice
-default		:: hugs.exe runhugs.exe ffihugs.exe hugsscript.dll
-
 CC		= cl /nologo
 VERSTR          = -DMONTH_YEAR="\"Nov 2003\""
 CFLAGS		= -MD $(VERSTR)
@@ -57,28 +54,30 @@ LIBRARIES	= $(BUILD_DIR)/libraries/Prelude.hs
 INCLUDES	= $(BUILD_DIR)/include/HsFFI.h
 
 .SUFFIXES	:
-.SUFFIXES	: .c .h .obj
-HFILES		= HsFFI.h builtin.h command.h config.h connect.h errors.h \
-		  evaluator.h goal.h machdep.h module.h observe.h options.h \
-		  opts.h output.h prelude.h script.h server.h storage.h \
-		  strutil.h subst.h
+.SUFFIXES	: .c .h .$(OBJEXT)
+
+HFILES		= HsFFI.h builtin.h char.h command.h config.h connect.h \
+		  errors.h evaluator.h goal.h machdep.h module.h observe.h \
+		  options.h opts.h output.h prelude.h script.h server.h \
+		  storage.h strutil.h subst.h
 CFILES		= hugs.c runhugs.c server.c edit.c observe.c \
-		  builtin.c compiler.c errors.c evaluator.c \
-		  ffi.c goal.c input.c machdep.c machine.c \
-		  module.c opts.c output.c plugin.c script.c \
-		  static.c storage.c strutil.c subst.c \
-		  type.c version.c char.c
+		  builtin.c char.c compiler.c errors.c evaluator.c ffi.c \
+		  goal.c input.c machdep.c machine.c module.c opts.c \
+		  output.c plugin.c script.c static.c storage.c strutil.c \
+		  subst.c type.c version.c
 INCFILES	= array.c bignums.c dirprim.c interns.c iomonad.c \
 		  preds.c printer.c scc.c timeprim.c timer.c
 YFILES		= parser.y
 SOURCES		= $(HFILES) $(CFILES) $(INCFILES) $(YFILES) 
-OBJECTS		= builtin.obj compiler.obj errors.obj evaluator.obj \
-		  ffi.obj goal.obj input.obj machdep.obj machine.obj \
-		  module.obj opts.obj output.obj plugin.obj script.obj \
-		  static.obj storage.obj strutil.obj subst.obj \
-		  type.obj version.obj char.obj
-IOBJECTS	= hugs.obj edit.obj observe.obj hugs.res $(OBJECTS)
-PRELUDE		= config.h options.h prelude.h script.h
+OBJECTS		= builtin.$(OBJEXT) char.$(OBJEXT) compiler.$(OBJEXT) \
+		  errors.$(OBJEXT) evaluator.$(OBJEXT) ffi.$(OBJEXT) \
+		  goal.$(OBJEXT) input.$(OBJEXT) machdep.$(OBJEXT) \
+		  machine.$(OBJEXT) module.$(OBJEXT) opts.$(OBJEXT) \
+		  output.$(OBJEXT) plugin.$(OBJEXT) script.$(OBJEXT) \
+		  static.$(OBJEXT) storage.$(OBJEXT) strutil.$(OBJEXT) \
+		  subst.$(OBJEXT) type.$(OBJEXT) version.$(OBJEXT)
+IOBJECTS	= hugs.$(OBJEXT) edit.$(OBJEXT) observe.$(OBJEXT) $(OBJECTS) \
+		  hugs.res
 
 HEADERS		= HsFFI.h config.h unix\\MachDeps.h unix\\template-hsc.h
 
@@ -87,26 +86,34 @@ TOOLS		= ..\\tools\\Package.hs ..\\tools\\ParsePkgConf.hs \
 		  ..\\tools\\get_pkg_field
 
 ################################################################
+# Default target
+################################################################
+
+# This rule goes first to make it the default choice
+default		:: all
+
+all		:: hugs$(EXEEXT) runhugs$(EXEEXT) ffihugs$(EXEEXT) hugsscript.dll
+
+################################################################
 # Hugs interpreter and standalone evaluator
 ################################################################
 
-hugs.exe	: $(IOBJECTS)
-		  $(CC) $(LDFLAGS) $(IOBJECTS)  $(LIBS) -o hugs.exe 
-		  
+hugs$(EXEEXT)	: $(IOBJECTS)
+		  $(CC) $(LDFLAGS) $(IOBJECTS)  $(LIBS) -o hugs$(EXEEXT) 
 
-SERVER_OBJECTS	= server.obj runhugs.res $(OBJECTS) 
-runhugs.exe	: runhugs.obj $(SERVER_OBJECTS)
-		  $(CC) $(LDFLAGS) runhugs.obj $(SERVER_OBJECTS) $(LIBS) -o runhugs.exe
+SERVER_OBJECTS	= server.$(OBJEXT) runhugs.res $(OBJECTS) 
+runhugs$(EXEEXT) : runhugs.$(OBJEXT) $(SERVER_OBJECTS)
+		  $(CC) $(LDFLAGS) runhugs.$(OBJEXT) $(SERVER_OBJECTS) $(LIBS) -o runhugs$(EXEEXT)
 
-ffihugs.exe	: ffihugs.obj $(SERVER_OBJECTS)
-		  $(CC) $(LDFLAGS) ffihugs.obj $(SERVER_OBJECTS) $(LIBS) -o ffihugs.exe
+ffihugs$(EXEEXT) : ffihugs.$(OBJEXT) $(SERVER_OBJECTS)
+		  $(CC) $(LDFLAGS) ffihugs.$(OBJEXT) $(SERVER_OBJECTS) $(LIBS) -o ffihugs$(EXEEXT)
 
-ffihugs.obj	: runhugs.obj
-		  $(CC) -c $(CFLAGS) $(OPTFLAGS) -DFFI_COMPILER runhugs.c /Foffihugs.obj
+ffihugs.$(OBJEXT) : runhugs.$(OBJEXT)
+		  $(CC) -c $(CFLAGS) $(OPTFLAGS) -DFFI_COMPILER runhugs.c /Foffihugs.$(OBJEXT)
 
-hugsscript.obj  : hugsscript.c
-hugsscript.dll  : $(SERVER_OBJECTS) hugsscript.obj
-		  $(CC) $(DLL_FLAGS) $(LDFLAGS) $(SERVER_OBJECTS) hugsscript.obj $(LIBS) -o hugsscript.dll
+hugsscript.$(OBJEXT) : hugsscript.c
+hugsscript.dll  : $(SERVER_OBJECTS) hugsscript.$(OBJEXT)
+		  $(CC) $(DLL_FLAGS) $(LDFLAGS) $(SERVER_OBJECTS) hugsscript.$(OBJEXT) $(LIBS) -o hugsscript.dll
 
 ################################################################
 # Libraries, converted from raw sources out of the fptools tree
@@ -116,7 +123,7 @@ CONVERTERS	= unix/convert_libraries unix/hugs-package
 
 libraries	:: $(LIBRARIES) 
 
-$(LIBRARIES)	: runhugs.exe ffihugs.exe ../libraries/Hugs/*.* $(CONVERTERS) $(TOOLS) $(INCLUDES)
+$(LIBRARIES)	: runhugs$(EXEEXT) ffihugs$(EXEEXT) ../libraries/Hugs/*.* $(CONVERTERS) $(TOOLS) $(INCLUDES)
 		  -mkdir $(BUILD_DIR)\\tools
 		  $(CP) $(TOOLSDIR)\*.* $(BUILD_DIR)\\tools
 		  -mkdir $(BUILD_DIR)\\libraries
@@ -144,7 +151,7 @@ BUILD_FFI = env HUGSDIR='$(BUILD_DIR)' HUGSFLAGS='' ./ffihugs +G
 #
 # Create all the FFI extension DLLs.
 #
-FFIHUGS=ffihugs.exe
+FFIHUGS=ffihugs$(EXEEXT)
 FFIHUGS_OPTS=+G -98 -P../hugsdir/libraries +L-I../hugsdir/include
 
 .PHONY: ffi-dlls
@@ -162,7 +169,7 @@ ffi-dlls: $(FFIHUGS)
 ################################################################
 
 clean		::
-		  $(RM) echodate.exe
+		  $(RM) echodate$(EXEEXT)
 		  $(RM) *.o
 		  $(RM) *.O
 		  $(RM) *.obj
@@ -183,9 +190,9 @@ clean		::
 		  $(RM) *.hp
 distclean	:: clean
 distclean	::
-		  $(RM) hugs.exe
-		  $(RM) runhugs.exe
-		  $(RM) ffihugs.exe
+		  $(RM) hugs$(EXEEXT)
+		  $(RM) runhugs$(EXEEXT)
+		  $(RM) ffihugs$(EXEEXT)
 		  $(RM) *.pdf
 		  $(RM) TAGS
 		  $(RM) *~
@@ -200,14 +207,23 @@ TAGS		::
 # C and Yacc rules
 ################################################################
 
-.c.obj	:
+.c.$(OBJEXT)	:
 		  $(CC) -c $(CFLAGS) $(OPTFLAGS) $<
 
-# These are compiled with less optimisation to avoid optimisation bugs in
-# certain compilers.  This may be overly conservative on some compilers.
-compiler.obj	: compiler.c
+# Modules to be compiled without optimization.
+# (old comment: to avoid optimisation bugs in certain compilers.
+#               This may be overly conservative on some compilers.)
+# (The following explanation is based on a posting by Alastair Reid.)
+# These modules allocate cells on the Hugs heap and assume a conservative
+# garbage collector.  On some (especially RISC) architectures, the
+# optimizer may identify a pointer to a Cell as a common subexpression,
+# and hold that instead of the Cell.  This would then be missed by the
+# conservative garbage collector's simplistic scan of the C stack.
+# Modules associated with evaluation are safe because they don't assume
+# conservative GC (see IMPORTANT NOTICE in builtin.c).
+compiler.$(OBJEXT) : compiler.c
 		  $(CC) -c $(CFLAGS) compiler.c
-static.obj	: static.c
+static.$(OBJEXT) : static.c
 		  $(CC) -c $(CFLAGS) static.c
 
 parser.c	: parser.y
@@ -295,10 +311,10 @@ version.$(OBJEXT): version.c prelude.h config.h platform.h options.h
 
 version.$(OBJEXT): echodate.h
 
-echodate.h: echodate.exe
-	$(PWD)/echodate.exe > echodate.h
+echodate.h: echodate$(EXEEXT)
+	$(PWD)/echodate$(EXEEXT) > echodate.h
 
-echodate.exe: msc/echodate.c
+echodate$(EXEEXT): msc/echodate.c
 	$(CC) $(LDFLAGS) msc/echodate.c -o $@
 
 ################################################################
