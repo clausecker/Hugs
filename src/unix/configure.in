@@ -2,8 +2,8 @@ dnl ################################################################
 dnl Process this file with autoconf to produce a configure script.
 dnl
 dnl $RCSfile: configure.in,v $
-dnl $Revision: 1.9 $
-dnl $Date: 2001/06/08 23:33:13 $
+dnl $Revision: 1.10 $
+dnl $Date: 2001/06/14 20:42:39 $
 dnl ################################################################
 
 AC_INIT(../hugs.c)
@@ -15,6 +15,11 @@ dnl ################################################################
 
 dnl ToDo: if we have YACC, insert parser.c: parser.y in Makefile
 AC_PROG_YACC
+if (test "${YACC}x" == "byaccx"); then
+   echo "Found 'byacc', but the Hugs98 parser is incompatible with it."
+   echo "You need to install 'bison' and re-run the configure script."
+   exit 1;
+fi;
 AC_PROG_CC
 AC_PROG_CPP
 AC_CHECK_PROGS(PERL,perl)  dnl should test for perl5
