@@ -763,6 +763,7 @@ dnl--------------------------------------------------------------------
 if test "$enable_debug" = yes; then
     OPTFLAGS=""
 else
+    CFLAGS="-DNDEBUG=1 $CFLAGS"
     DEBUGFLAGS=""
     LDDEBUGFLAGS=""
 fi
