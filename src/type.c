@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: type.c,v $
- * $Revision: 1.65 $
- * $Date: 2003/02/15 00:02:20 $
+ * $Revision: 1.66 $
+ * $Date: 2003/02/20 16:44:37 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1814,11 +1814,8 @@ Cell e; {				/* bizarre manner for the benefit  */
 		instantiate(t);
 		shouldBe(line,snd(f),e,update,arg(fun(tr)),or);
 	    }					/* Unmentioned component   */
-	    /* this is just a sanity check, and avoiding it lets us
-	       handle records with polymoprhic components
 	    else if (!unify(arg(fun(td)),od,arg(fun(tr)),or))
 		internal("typeUpdFlds");
-	    */
 
 	    tr = arg(tr);
 	    td = arg(td);
