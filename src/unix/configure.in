@@ -125,8 +125,10 @@ AC_HEADER_SYS_WAIT
 AC_CHECK_HEADERS(
   stdarg.h stdlib.h unistd.h assert.h ctype.h string.h limits.h \
   fcntl.h sgtty.h termio.h termios.h signal.h \
+  arpa/inet.h \
+  netdb.h netinet/tcp.h \
   sys/stat.h sys/types.h sys/ioctl.h sys/resource.h sys/param.h \
-  sys/timers.h sys/utsname.h \
+  sys/socket.h sys/timers.h sys/uio.h sys/un.h sys/utsname.h \
   console.h pascal.h Files.h errno.h stat.h nlist.h ftw.h direct.h \
   dirent.h utime.h vfork.h
   )
@@ -157,6 +159,14 @@ dnl   valloc (in sunos, solaris, mips, amiga, next, minix, ultrix)
 AC_CHECK_HEADER(alloc.h,[AC_CHECK_FUNCS(farcalloc)])
 AC_CHECK_HEADER(malloc.h,[AC_CHECK_FUNCS(valloc)])
 
+dnl --------------------------------------------------
+dnl * test for netinet/in.h and in_addr_t
+dnl --------------------------------------------------
+AC_CHECK_HEADERS(netinet/in.h,
+ [AC_MSG_CHECKING(for in_addr_t in netinet/in.h)
+ AC_EGREP_HEADER(in_addr_t, netinet/in.h,
+  [AC_DEFINE(HAVE_IN_ADDR_T) AC_MSG_RESULT(yes)],
+  [AC_MSG_RESULT(no)])])
 
 dnl--------------------------------------------------------------------
 dnl
@@ -166,6 +176,10 @@ dnl--------------------------------------------------------------------
 
 dnl ** do we have long longs?
 FPTOOLS_C_LONG_LONG
+
+dnl ** check what fields struct msghdr contains
+FPTOOLS_MSGHDR_MSG_ACCRIGHTS
+FPTOOLS_MSGHDR_MSG_CONTROL
 
 dnl ** what are the sizes of various types
 dnl    (these must come before GHC_CHECK_ALIGNMENT)

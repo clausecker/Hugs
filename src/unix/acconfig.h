@@ -161,6 +161,9 @@
 
 @BOTTOM@
 
+/* Define if netinet/in.h defines the in_addr type.  */
+#undef HAVE_IN_ADDR_T
+
 /* Define if you have the dl library (-ldl).  */
 #undef HAVE_LIBDL
 
@@ -172,6 +175,12 @@
 
 /* Define if you have the editline library (-leditline).  */
 #undef HAVE_LIBREADLINE
+
+/* Define if struct msghdr contains msg_accrights field */
+#undef HAVE_MSGHDR_MSG_ACCRIGHTS
+ 
+/* Define if struct msghdr contains msg_control field */
+#undef HAVE_MSGHDR_MSG_CONTROL
 
 /* Define to Haskell type for cc_t */
 #undef HTYPE_CC_T
