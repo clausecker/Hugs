@@ -7,7 +7,6 @@ Hugs:"Foo"
 Hugs:
 IO Error: User error
 Reason: x
-
 Hugs:
 Program error: x
 
@@ -73,7 +72,6 @@ Thread raised error:
 IO Error: User error
 Reason: x
 
-
 Hugs:a worked
 a worked
 a worked
@@ -88,6 +86,5 @@ a worked
 Thread raised error:
 IO Error: User error
 Reason: x
-
 
 Hugs:Hugs:[Leaving Hugs]
