@@ -2,8 +2,8 @@ dnl ################################################################
 dnl Process this file with autoconf to produce a configure script.
 dnl
 dnl $RCSfile: configure.in,v $
-dnl $Revision: 1.10 $
-dnl $Date: 2001/06/14 20:42:39 $
+dnl $Revision: 1.11 $
+dnl $Date: 2001/06/22 23:00:37 $
 dnl ################################################################
 
 AC_INIT(../hugs.c)
@@ -55,7 +55,7 @@ AC_CHECK_HEADERS(
   stdarg.h stdlib.h unistd.h assert.h ctype.h string.h \
   fcntl.h sgtty.h termio.h termios.h signal.h \
   sys/stat.h sys/types.h sys/ioctl.h sys/resource.h sys/param.h \
-  console.h pascal.h Files.h errno.h stat.h nlist.h ftw.h dirent.h
+  console.h pascal.h Files.h errno.h stat.h nlist.h ftw.h direct.h dirent.h
   )
 
 AC_HEADER_TIME

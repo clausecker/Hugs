@@ -8,14 +8,28 @@
  * included in the distribution.
  *
  * $RCSfile: ffi.c,v $
- * $Revision: 1.2 $
- * $Date: 2001/02/12 19:53:46 $
+ * $Revision: 1.3 $
+ * $Date: 2001/06/22 23:00:36 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
 #include "storage.h"
 #include "connect.h"
 #include "errors.h"
+
+/* --------------------------------------------------------------------------
+ * Local function prototypes:
+ * ------------------------------------------------------------------------*/
+
+static Void local foreignType    Args((Int,Type));
+static Void local foreignGet     Args((Int,Type,String,Int));
+static Void local foreignPut     Args((Int,Type,String,Int));
+static Void local ffiDeclareList Args((Int,List,String));
+static Void local foreignType    Args((Int,Type));
+static Void local ffiGetList     Args((Int,List,String));
+static Void local ffiPutList     Args((Int,List,String));
+static Void local ffiCallFun     Args((Int,Text,List,List));
+static Void local ffiDeclareFun  Args((Int,Text,Bool,Bool,List,List));
 
 extern String scriptFile;
 

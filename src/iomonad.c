@@ -19,8 +19,8 @@
  * included in the distribution.
  *
  * $RCSfile: iomonad.c,v $
- * $Revision: 1.13 $
- * $Date: 2001/06/22 16:37:08 $
+ * $Revision: 1.14 $
+ * $Date: 2001/06/22 23:00:36 $
  * ------------------------------------------------------------------------*/
  
 Name nameIORun;			        /* run IO code                     */
@@ -34,9 +34,13 @@ static FILE *writingFile = 0;		/* points to file open for writing */
 #endif
 
 #if IO_HANDLES
-static String toIOErrorDescr Args((int,Bool));
-static Name toIOError Args((int));
+static String local toIOErrorDescr Args((int,Bool));
+static Name   local toIOError      Args((int));
+static Cell   local mkIOError      Args((Name,String,String,Cell));
+static Cell   local openHandle     Args((StackPtr,Cell,Int,Bool,String));
 #endif
+
+static Void local pushString       Args((String));
 
 /* --------------------------------------------------------------------------
  * IO monad control:
@@ -391,9 +395,10 @@ primFun(primPass) {			/* Auxiliary function		   */
 
 #if IO_HANDLES
 
-Cell openHandle(root,sCell,hmode,binary,loc) /* open handle to file named s in  */
+static
+Cell local openHandle(root,sCell,hmode,binary,loc) /* open handle to file named s in  */
 StackPtr root;
-Cell   sCell;                                /* the specified hmode             */
+Cell   sCell;                                      /* the specified hmode             */
 Int    hmode; 
 Bool   binary;
 String loc; {
@@ -463,7 +468,7 @@ String loc; {
  * Building strings:
  * ------------------------------------------------------------------------*/
 
-Void local pushString(s)       /* push pointer to string onto stack */
+static Void local pushString(s)       /* push pointer to string onto stack */
 String s; {
     Int  l      = strlen(s);
     push(nameNil);
@@ -477,7 +482,8 @@ String s; {
  * do.
  */
   
-Cell
+static
+Cell local
 mkIOError(kind, loc, desc, mbF)
 Name   kind;
 String loc;
@@ -507,7 +513,7 @@ Cell   mbF;
 /*
  * Map a libc error code to an IOError
  */
-static Name toIOError(errc)
+static Name local toIOError(errc)
 int errc;
 {
 #ifdef HAVE_ERRNO_H
@@ -535,7 +541,7 @@ int errc;
 /*
  * Map a libc error code to an IOError descriptive string
  */
-static String toIOErrorDescr(errc,isFile)
+static String local toIOErrorDescr(errc,isFile)
 int   errc;
 Bool  isFile;
 {
@@ -1731,6 +1737,7 @@ primFun(primFinalizerWaiting) {		/* IO Boolean			   */
 /* --------------------------------------------------------------------------
  * Directory primitives
  * ------------------------------------------------------------------------*/
+
 
 primFun(primCreateDirectory) { /* create a directory	   */
   int rc;

@@ -240,6 +240,9 @@
 /* Define if you have the <ctype.h> header file.  */
 #define HAVE_CTYPE_H 1
 
+/* Define if you have the <direct.h> header file.  */
+#define HAVE_DIRECT_H 1
+
 /* Define if you have the <dirent.h> header file.  */
 /* #undef HAVE_DIRENT_H */
 

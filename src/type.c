@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: type.c,v $
- * $Revision: 1.33 $
- * $Date: 2001/06/08 23:33:13 $
+ * $Revision: 1.34 $
+ * $Date: 2001/06/22 23:00:36 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -161,6 +161,8 @@ static Cell   local typeMonadComp     Args((Int,Cell));
 static Cell   local typeZComp	      Args((Int,Type,Cell,List));
 static Void   local typeCompy	      Args((Int,Type,List));
 static Cell   local typeMonadZComp    Args((Int,Cell));
+static List   local getPats           Args((List));
+static Cell   local tupleUp           Args((List));
 #endif
 static Void   local typeDo	      Args((Int,Cell));
 #if MUDO

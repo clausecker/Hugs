@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: builtin.c,v $
- * $Revision: 1.14 $
- * $Date: 2001/06/08 23:33:12 $
+ * $Revision: 1.15 $
+ * $Date: 2001/06/22 23:00:36 $
  * ------------------------------------------------------------------------*/
 
 /* We include math.h before prelude.h because SunOS 4's cpp incorrectly
@@ -77,6 +77,10 @@
 
 #ifdef HAVE_DIRENT_H
 #include <dirent.h>
+#endif
+
+#ifdef HAVE_DIRECT_H
+#include <direct.h>
 #endif
 
 #endif /* IO_MONAD */

@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.36 $
- * $Date: 2001/06/08 23:33:13 $
+ * $Revision: 1.37 $
+ * $Date: 2001/06/22 23:00:36 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -109,6 +109,8 @@ static List   local calcFunDeps		Args((List));
 static Void   local maybeAddPred	Args((Cell,Int,Int,List));
 static Cell   local copyAdj		Args((Cell,Int,Int));
 static Void   local tidyDerInst		Args((Inst));
+static List   local inheritFundeps      Args((Class,Cell,Int));
+static Void   local extendFundeps       Args((Class));
 
 static List   local otvarsZonk		Args((Cell,List,Int));
 static Void   local addDerivImp		Args((Inst));

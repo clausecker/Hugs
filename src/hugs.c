@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.39 $
- * $Date: 2001/06/22 18:51:34 $
+ * $Revision: 1.40 $
+ * $Date: 2001/06/22 23:00:36 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -92,6 +92,7 @@ static Void   local readOptions       Args((String));
 static Bool   local processOption     Args((String));
 static Void   local setHeapSize       Args((String));
 static Int    local argToInt          Args((String));
+static Void   local expandPath        Args((String,String,unsigned int));
 
 static Void   local loadProject       Args((String));
 static Void   local clearProject      Args((Void));

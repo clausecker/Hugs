@@ -12,8 +12,8 @@
  * included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.19 $
- * $Date: 2001/06/22 15:31:11 $
+ * $Revision: 1.20 $
+ * $Date: 2001/06/22 23:00:36 $
  * ------------------------------------------------------------------------*/
 
 #ifdef HAVE_SIGNAL_H
@@ -121,6 +121,7 @@ int allow_break_count = 0;
 
 static Bool   local createKey      Args((HKEY, String, PHKEY, REGSAM));
 static Bool   local queryValue     Args((HKEY, String, String, LPDWORD, LPBYTE, DWORD));
+static Bool   local queryString      Args((HKEY,String,String,String*));
 static Bool   local setValue       Args((HKEY, String, String, DWORD, LPBYTE, DWORD));
 static String local readRegString  Args((HKEY, String, String, String));
 static Int    local readRegInt     Args((String,Int));
