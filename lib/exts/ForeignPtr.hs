@@ -3,6 +3,8 @@ module ForeignPtr
 	  ForeignPtr             -- abstract, instance of: Eq
         , newForeignPtr          -- :: Ptr a -> FunPtr (Ptr a -> IO ()) -> IO (ForeignPtr a)
 --        , addForeignPtrFinalizer -- :: ForeignPtr a -> FunPtr (Ptr a -> IO ()) -> IO ()
+        , mallocForeignPtr       -- :: Storable a => IO (ForeignPtr a) 
+        , mallocForeignPtrBytes  -- :: Int        -> IO (ForeignPtr a)
 	, withForeignPtr         -- :: ForeignPtr a -> (Ptr a -> IO b) -> IO b
 	, foreignPtrToPtr	 -- :: ForeignPtr a -> Ptr a
 	, touchForeignPtr        -- :: ForeignPtr a -> IO ()
@@ -13,6 +15,8 @@ module ForeignPtr
 import Prelude
 import Ptr
 import Dynamic
+import Storable         ( Storable )
+import MarshalAlloc     ( malloc, mallocBytes, ptr_free )
 
 -- #include "Dynamic.h"
 -- INSTANCE_TYPEABLE1(ForeignPtr,foreignPtrTc,"ForeignPtr")
@@ -31,6 +35,16 @@ primitive newForeignPtr :: Ptr a -> FunPtr (Ptr a -> IO ()) -> IO (ForeignPtr a)
 -- addForeignPtrFinalizer :: ForeignPtr a -> FunPtr (Ptr a -> IO ()) -> IO ()
 
 primitive touchForeignPtr :: ForeignPtr a -> IO ()
+
+mallocForeignPtr :: Storable a => IO (ForeignPtr a)
+mallocForeignPtr = do
+  r <- malloc
+  newForeignPtr r ptr_free
+
+mallocForeignPtrBytes :: Int -> IO (ForeignPtr a)
+mallocForeignPtrBytes n = do
+  r <- mallocBytes n
+  newForeignPtr r ptr_free
 
 withForeignPtr :: ForeignPtr a -> (Ptr a -> IO b) -> IO b
 withForeignPtr fo io

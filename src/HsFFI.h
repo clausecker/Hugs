@@ -216,7 +216,7 @@ typedef struct {
 extern  HugsAPI4* hugsAPI4     (void);
 typedef void (*InitModuleFun4) (HugsAPI4*);
 
-
+extern void hs_perform_gc(void);
 
 /* Copied verbatim from prelude.h */
 

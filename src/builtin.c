@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: builtin.c,v $
- * $Revision: 1.32 $
- * $Date: 2002/09/12 11:59:35 $
+ * $Revision: 1.33 $
+ * $Date: 2002/09/18 16:09:21 $
  * ------------------------------------------------------------------------*/
 
 /* We include math.h before prelude.h because SunOS 4's cpp incorrectly
@@ -2602,6 +2602,11 @@ HugsAPI4* hugsAPI4() { /* build virtual function table */
 	api.freeStablePtr4= freeStablePtr4;
     }
     return &api;
+}
+
+void hs_perform_gc(void)
+{
+    garbageCollect();
 }
 
 /* --------------------------------------------------------------------------
