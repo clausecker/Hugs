@@ -35,7 +35,7 @@ die "$0 requires perl 5.0 or higher" unless $] >= 5.0;
 
 ($Pgm = $0) =~ s|.*/||;
 
-$tmpdir   = "c:/tmp"; #&fromEnv('TMPDIR',"/tmp");
+$tmpdir   = &fromEnv('TMPDIR',"/tmp");
 $shell    = "/bin/sh";
 $cmp      = "diff -q";
 $diff     = &fromEnv('CONTEXT_DIFF',"diff -c1");
