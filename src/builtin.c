@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: builtin.c,v $
- * $Revision: 1.63 $
- * $Date: 2003/09/19 10:04:37 $
+ * $Revision: 1.64 $
+ * $Date: 2003/09/19 14:44:19 $
  * ------------------------------------------------------------------------*/
 
 /* We include math.h before prelude.h because SunOS 4's cpp incorrectly
@@ -301,12 +301,12 @@ PROTO_PRIM(primDoubleDecode);
 PROTO_PRIM(primDoubleEncode);
 #endif /* HAVE_LIBM */
 
-PROTO_PRIM(primNullAddr);
-PROTO_PRIM(primPlusAddr);
-PROTO_PRIM(primMinusAddr);
-PROTO_PRIM(primAddrToInt);
-PROTO_PRIM(primEqAddr);
-PROTO_PRIM(primCmpAddr);
+PROTO_PRIM(primNullPtr);
+PROTO_PRIM(primPlusPtr);
+PROTO_PRIM(primMinusPtr);
+PROTO_PRIM(primPtrToInt);
+PROTO_PRIM(primEqPtr);
+PROTO_PRIM(primCmpPtr);
 
 PROTO_PRIM(primEqInt);
 PROTO_PRIM(primCmpInt);
@@ -337,8 +337,8 @@ EXT_PROTO_PRIM(primBkpt);
 EXT_PROTO_PRIM(primSetBkpt);
 #endif
 
-PROTO_PRIM(primPtrEq);
-PROTO_PRIM(primPtrToInt);
+PROTO_PRIM(primUnsafePtrEq);
+PROTO_PRIM(primUnsafePtrToInt);
 
 static Cell local followInd Args(( Cell ));
 
@@ -505,12 +505,12 @@ static struct primitive builtinPrimTable[] = {
   {"primRationalToFloat",  1, primRationalToFloat},
   {"primRationalToDouble", 1, primRationalToDouble},
 
-  {"nullAddr",          0, primNullAddr},
-  {"addrToInt",         1, primAddrToInt},
-  {"plusAddr",          2, primPlusAddr},
-  {"minusAddr",         2, primMinusAddr},
-  {"primEqAddr",        2, primEqAddr},
-  {"primCmpAddr",       2, primCmpAddr},
+  {"nullPtr",           0, primNullPtr},
+  {"ptrToInt",          1, primPtrToInt},
+  {"plusPtr",           2, primPlusPtr},
+  {"minusPtr",          2, primMinusPtr},
+  {"primEqPtr",         2, primEqPtr},
+  {"primCmpPtr",        2, primCmpPtr},
 
   {"primEqInt",         2, primEqInt},
   {"primCmpInt",        2, primCmpInt},
@@ -542,8 +542,8 @@ static struct primitive builtinPrimTable[] = {
   {"setBkpt",           2+IOArity, primSetBkpt},
 #endif
 
-  {"unsafePtrEq",       2, primPtrEq},          /* breaks the semantics  */
-  {"unsafePtrToInt",    1, primPtrToInt},       /* breaks the semantics  */
+  {"unsafePtrEq",       2, primUnsafePtrEq},    /* breaks the semantics  */
+  {"unsafePtrToInt",    1, primUnsafePtrToInt}, /* breaks the semantics  */
 
   {0,                   0, 0}
 };
@@ -1243,16 +1243,16 @@ primFun(primDoubleEncode) {            /* Double encode primitive          */
 #endif /* HAVE_LIBM */
 
 /* --------------------------------------------------------------------------
- * Addr primitives:
+ * Ptr primitives:
  * ------------------------------------------------------------------------*/
 
-CAFPtr(primNullAddr,0)                 /* Null pointer                     */
-PtrInt2Ptr(primPlusAddr,(char*)x+y)    /* Pointer arithmetic               */
-PtrPtr2Int(primMinusAddr,(char*)x-(char*)y) /* Pointer arithmetic          */
-PtrPtr2Bool(primEqAddr,x==y)           /* Addr equality primitive          */
-Ptr2Int(primAddrToInt,((Int)x))        /* geting the pointer               */
+CAFPtr(primNullPtr,0)                  /* Null pointer                     */
+PtrInt2Ptr(primPlusPtr,(char*)x+y)     /* Pointer arithmetic               */
+PtrPtr2Int(primMinusPtr,(char*)x-(char*)y) /* Pointer arithmetic           */
+PtrPtr2Bool(primEqPtr,x==y)            /* Pointer equality primitive       */
+Ptr2Int(primPtrToInt,((Int)x))         /* Getting the pointer              */
 
-primFun(primCmpAddr) {                 /* Pointer compare primitive        */
+primFun(primCmpPtr) {                  /* Pointer compare primitive        */
     Pointer x, y;
     PtrArg(x,2);
     PtrArg(y,1);
@@ -1575,7 +1575,7 @@ Cell c; {
  *    where
  *     ref = unsafePerformIO (newRef (error "cache", error "cache"))
  *     check x = derefRef ref >>= \ (x',a) ->
- *               if x `primPtrEq` x' then
+ *               if x `unsafePtrEq` x' then
  *                 return a
  *               else
  *                 let a = f x in
@@ -1583,18 +1583,18 @@ Cell c; {
  *                 return a
  */
 
-primFun(primPtrEq) {		       /* Unsafe pointer equality test     */
+primFun(primUnsafePtrEq) {		 /* Unsafe pointer equality test     */
     Cell x = followInd(primArg(2));
     Cell y = followInd(primArg(1));
     updateRoot( (x==y) ? nameTrue : nameFalse );
 }
 
-/* Companion function for use when debugging uses of primPtrEq.
+/* Companion function for use when debugging uses of unsafePtrEq.
  * Converts a heap pointer to an Int so you can look at it.
  * I don't think there's any way of using this function that 
  * doesn't break the semantics - debugging use only.
  */
-primFun(primPtrToInt) {
+primFun(primUnsafePtrToInt) {
     updateRoot(mkInt(followInd(primArg(1))));
 }
 

@@ -21,11 +21,11 @@ import Prelude
 instance Eq   Addr where (==)      = primEqAddr
 instance Show Addr where showsPrec = primShowsAddr
 
-primitive nullAddr      :: Addr
-primitive plusAddr      :: Addr -> Int -> Addr
-primitive primShowsAddr :: Int -> Addr -> ShowS
-primitive primEqAddr    :: Addr -> Addr -> Bool
-primitive addrToInt     :: Addr -> Int
+primitive nullAddr      "nullPtr"         :: Addr
+primitive plusAddr      "plusPtr"         :: Addr -> Int -> Addr
+primitive primShowsAddr "primShowsPtr"    :: Int -> Addr -> ShowS
+primitive primEqAddr    "primEqPtr"       :: Addr -> Addr -> Bool
+primitive addrToInt     "ptrToInt"        :: Addr -> Int
 
 primitive ptrToAddr    "primUnsafeCoerce" :: Ptr a -> Addr
 primitive addrToPtr    "primUnsafeCoerce" :: Addr -> Ptr a

@@ -8,8 +8,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: printer.c,v $
- * $Revision: 1.10 $
- * $Date: 2003/05/12 08:48:14 $
+ * $Revision: 1.11 $
+ * $Date: 2003/09/19 14:44:20 $
  * ------------------------------------------------------------------------*/
 
 static Void   local printer		Args((Name,Int));
@@ -77,7 +77,7 @@ static struct primitive printerPrimTable[] = {
   {"sprint",		2, primSPrint},
   {"nsprint",		2, primNSPrint},
   {"primShowsInt",	3, primBPrint},
-  {"primShowsAddr",	3, primBPrint},
+  {"primShowsPtr",	3, primBPrint},
   {"primShowsInteger",	3, primBPrint},
   {"primShowsFloat",	3, primBPrint},
   {"primShowsDouble",	3, primBPrint},

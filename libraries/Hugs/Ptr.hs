@@ -33,14 +33,14 @@ instance Eq   (Ptr a) where (==)      = primEqPtr
 instance Ord  (Ptr a) where compare   = primCmpPtr
 instance Show (Ptr a) where showsPrec = primShowsPtr
 
-primitive nullPtr      "nullAddr"      :: Ptr a
-primitive plusPtr      "plusAddr"      :: Ptr a -> Int -> Ptr b
-primitive minusPtr     "minusAddr"     :: Ptr a -> Ptr b -> Int
-primitive castPtr      "primUnsafeCoerce" :: Ptr a -> Ptr b
-primitive primShowsPtr "primShowsAddr" :: Int -> Ptr a -> ShowS
-primitive primEqPtr    "primEqAddr"    :: Ptr a -> Ptr a -> Bool
-primitive primCmpPtr   "primCmpAddr"   :: Ptr a -> Ptr a -> Ordering
-primitive ptrToInt     "addrToInt"     :: Ptr a -> Int
+primitive nullPtr                    :: Ptr a
+primitive plusPtr                    :: Ptr a -> Int -> Ptr b
+primitive minusPtr                   :: Ptr a -> Ptr b -> Int
+primitive castPtr "primUnsafeCoerce" :: Ptr a -> Ptr b
+primitive primShowsPtr               :: Int -> Ptr a -> ShowS
+primitive primEqPtr                  :: Ptr a -> Ptr a -> Bool
+primitive primCmpPtr                 :: Ptr a -> Ptr a -> Ordering
+primitive ptrToInt                   :: Ptr a -> Int
 
 alignPtr :: Ptr a -> Int -> Ptr a
 alignPtr p n = p `plusPtr` ((n - ptrToInt p `mod` n) `mod` n)
@@ -51,10 +51,10 @@ instance Eq   (FunPtr a) where (==)      = primEqFPtr
 instance Ord  (FunPtr a) where compare   = primCmpFPtr
 instance Show (FunPtr a) where showsPrec = primShowsFPtr
 
-primitive nullFunPtr    "nullAddr"      :: FunPtr a
-primitive primShowsFPtr "primShowsAddr" :: Int -> FunPtr a -> ShowS
-primitive primEqFPtr    "primEqAddr"    :: FunPtr a -> FunPtr a -> Bool
-primitive primCmpFPtr   "primCmpAddr"   :: FunPtr a -> FunPtr a -> Ordering
+primitive nullFunPtr    "nullPtr"       :: FunPtr a
+primitive primShowsFPtr "primShowsPtr"  :: Int -> FunPtr a -> ShowS
+primitive primEqFPtr    "primEqPtr"     :: FunPtr a -> FunPtr a -> Bool
+primitive primCmpFPtr   "primCmpPtr"    :: FunPtr a -> FunPtr a -> Ordering
 primitive castFunPtr "primUnsafeCoerce" :: FunPtr a -> FunPtr b
 primitive castFunPtrToPtr "primUnsafeCoerce" :: FunPtr a -> Ptr b
 primitive castPtrToFunPtr "primUnsafeCoerce" :: Ptr a -> FunPtr b
