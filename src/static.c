@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.73 $
- * $Date: 2002/06/18 00:19:48 $
+ * $Revision: 1.74 $
+ * $Date: 2002/06/21 20:53:32 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -962,6 +962,10 @@ Cell e; {
 					isTycon(fst(hd(ns))) &&
 					fst(hd(ns)) == nm) {
 					stuff = snd(hd(ns));
+					/* Add the constructors onto the 'exports' list */
+					for (ns=stuff;nonNull(ns);ns=tl(ns)) {
+					    exports=cons(hd(ns),exports);
+					}
 					break;
 				    }
 				}
