@@ -1,0 +1,2 @@
+ERROR static/mod31.hs - Import of class "Eq" clashes with type constructor in module "Prelude"
+Hugs:[Leaving Hugs]

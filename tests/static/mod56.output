@@ -1,0 +1,2 @@
+ERROR static/mod56.hs:3 - Can only derive instances of Ix for enumeration or product types
+Hugs:[Leaving Hugs]

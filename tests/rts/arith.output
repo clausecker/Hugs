@@ -1,0 +1,65 @@
+Hugs:"(-2147483647,-2147483648)"
+Hugs:"2147483647"
+Hugs:"3"
+Hugs:"-1"
+Hugs:"15"
+Hugs:"-10"
+Hugs:"(True,False)"
+Hugs:"(True,False)"
+Hugs:"[(1,-2),(-1,-2),(0,0),(0,0),(-1,2),(1,2)]"
+Hugs:"[(1,-2),(-2,1),(0,0),(0,0),(-2,-1),(1,2)]"
+Hugs:"
+Program error: {primQuotInt 1 0}
+
+Hugs:"
+Program error: {primRemInt 1 0}
+
+Hugs:Hugs:"3"
+Hugs:"-1"
+Hugs:"15"
+Hugs:"-10"
+Hugs:"(True,False)"
+Hugs:"(True,False)"
+Hugs:"[(1,-2),(-1,-2),(0,0),(0,0),(-1,2),(1,2)]"
+Hugs:"[(1,-2),(-2,1),(0,0),(0,0),(-2,-1),(1,2)]"
+Hugs:"
+Program error: {primQrmInteger 1 0}
+
+Hugs:"
+Program error: {primQrmInteger 1 0}
+
+Hugs:Hugs:"3.0"
+Hugs:"-1.0"
+Hugs:"15.0"
+Hugs:"-10.0"
+Hugs:"(True,False)"
+Hugs:"[1.66667,-1.66667,-0.0,0.0,-1.66667,1.66667]"
+Hugs:"
+Program error: {primDivFloat 1.0 0.0}
+
+Hugs:Hugs:"3.14159"
+Hugs:"[0.0,0.29552,0.564642,0.841471]"
+Hugs:"[1.0,0.955337,0.825336,0.540302]"
+Hugs:"[0.0,0.309336,0.684137,1.55741]"
+Hugs:"[0.0,0.304693,0.643501,1.5708]"
+Hugs:"[1.5708,1.2661,0.927295,0.0]"
+Hugs:"[0.0,0.291457,0.54042,0.785398]"
+Hugs:"[1.0,1.34986,1.82212,2.71828]"
+Hugs:"[-1.20397,-0.510826,0.0,2.30259]"
+Hugs:"
+Program error: {primLogDouble 0.0}
+
+Hugs:Hugs:Hugs:"[0.0,0.547723,0.774597,1.0]"
+Hugs:"
+Program error: {primSqrtFloat (-1.0)}
+
+Hugs:"[-2,-1,-1,-1,-1,0,1,2,2,2,2,3,10]"
+Hugs:"24"
+Hugs:"24"
+Hugs:"(-125,128)"
+Hugs:"(-125,128)"
+Hugs:"2"
+Hugs:"2"
+Hugs:Hugs:"(False,True,False)"
+Hugs:"(True,True,False)"
+Hugs:[Leaving Hugs]

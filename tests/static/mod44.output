@@ -1,0 +1,6 @@
+ERROR static/mod44.hs:5 - Overlapping instances for class "Eq"
+*** This instance   : Eq T
+*** Overlaps with   : Eq T
+*** Common instance : Eq T
+
+Hugs:[Leaving Hugs]

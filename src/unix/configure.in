@@ -2,8 +2,8 @@ dnl ################################################################
 dnl Process this file with autoconf to produce a configure script.
 dnl
 dnl $RCSfile: configure.in,v $
-dnl $Revision: 1.6 $
-dnl $Date: 2001/01/17 23:30:36 $
+dnl $Revision: 1.7 $
+dnl $Date: 2001/04/07 19:09:19 $
 dnl ################################################################
 
 AC_INIT(../hugs.c)
@@ -508,7 +508,7 @@ dnl ################################################################
 dnl Generate output files
 dnl ################################################################
 
-AC_OUTPUT(../Makefile ../../docs/Makefile ../../docs/hugs.1)
+AC_OUTPUT(../Makefile ../../docs/Makefile ../../docs/hugs.1 ../../tests/testScript)
 
 echo ''
 echo '************************************************'

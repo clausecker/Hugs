@@ -1,0 +1,2 @@
+ERROR static/mod39.hs:3 - Illegal constraints on class variable "a" in type of member function "f"
+Hugs:[Leaving Hugs]

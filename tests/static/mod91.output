@@ -1,0 +1,2 @@
+ERROR static/mod91.hs - Entity "eq" is not a member of class "Eq"
+Hugs:[Leaving Hugs]

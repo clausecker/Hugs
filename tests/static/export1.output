@@ -1,0 +1,2 @@
+ERROR static/export1.hs - Unknown entity "bar" exported from module "Bar"
+Hugs:[Leaving Hugs]
