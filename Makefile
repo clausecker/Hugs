@@ -21,7 +21,7 @@ ${RELEASE}.tar.gz:
 	cd src/unix; autoconf; autoheader
 	rm -rf /tmp/${RELEASE}
 	mkdir /tmp/${RELEASE}
-	tar cf - `find . ! -type d -print | egrep -v CVS` | (cd /tmp/${RELEASE}; tar xfBp -)
+	tar chf - `find . ! -type d -print | egrep -v CVS | egrep -v tests | egrep -v '~' | egrep -v '.#' ` | (cd /tmp/${RELEASE}; tar xfBp -)
 	cd /tmp; tar cf /tmp/hugs98.tar ${RELEASE}
 	gzip -9 /tmp/hugs98.tar
 	mv /tmp/hugs98.tar.gz ${RELEASE}.tar.gz
