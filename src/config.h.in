@@ -1110,9 +1110,6 @@
 /* Define to 1 if your <sys/time.h> declares `struct tm'. */
 #undef TM_IN_SYS_TIME
 
-/* Define to 1 to make the Haskell Char type range over Unicode. */
-#undef UNICODE_CHARS
-
 /* Define to 1 if you want to run Haskell code through a preprocessor. Note
    that there's the import chasing mechanism will not spot any CPP includes so
    you must :load (not :reload) if you change any (non-Haskell) configuration

@@ -861,9 +861,10 @@ Optional Features:
   --enable-lint           enable "lint" flags (for debugging use)
   --enable-only98         make Hugs Haskell 98 only
   --enable-ffi            include modules that use the FFI
-  --enable-unicode-chars=<encoding>
-                          allow the Haskell Char type to range over Unicode,
-                          with an optional byte encoding: locale or utf8
+  --enable-char-encoding  encode all character I/O using the byte encoding
+                          determined by the locale in effect at that time. To
+                          require that the UTF-8 encoding is always used, give
+                          the --enable-char-encoding=utf8 option.
   --enable-hopengl        build a Haskell binding for OpenGL (GL/GLU). On Mac
                           OS X, use --enable-hopengl=x11 to use X11 instead of
                           the "native" libraries. (default=no)
@@ -1668,16 +1669,12 @@ else
   enable_ffi=autodetect
 fi;
 
-# Check whether --enable-unicode-chars or --disable-unicode-chars was given.
-if test "${enable_unicode_chars+set}" = set; then
-  enableval="$enable_unicode_chars"
-
-cat >>confdefs.h <<\_ACEOF
-#define UNICODE_CHARS 1
-_ACEOF
+# Check whether --enable-char-encoding or --disable-char-encoding was given.
+if test "${enable_char_encoding+set}" = set; then
+  enableval="$enable_char_encoding"
 
 else
-  enable_unicode_chars=no
+  enable_char_encoding=no
 fi;
 
 
@@ -9271,8 +9268,8 @@ rm -f conftest.err conftest.$ac_objext conftest.$ac_ext
 echo "${ECHO_T}$wchar_t_is_unicode" >&6
 fi
 
-case $enable_unicode_chars in
-locale)
+case $enable_char_encoding in
+locale|yes)
   if test "${ac_cv_header_locale_h+set}" = set &&
      test "$wchar_t_is_unicode"; then
 
@@ -31381,7 +31378,7 @@ fi
 fi
 
 if test $HaveLibTermcap = YES && test $HaveLibReadline = YES &&
-   test "$enable_unicode_chars" != utf8; then
+   test "$enable_char_encoding" != utf8; then
     LIBS="-l$LibReadline $LIBS"
 
 cat >>confdefs.h <<\_ACEOF

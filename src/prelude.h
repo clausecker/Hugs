@@ -8,8 +8,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: prelude.h,v $
- * $Revision: 1.66 $
- * $Date: 2004/02/04 17:53:38 $
+ * $Revision: 1.67 $
+ * $Date: 2004/02/19 13:46:57 $
  * ------------------------------------------------------------------------*/
 #ifndef __PRELUDE_H__
 #define __PRELUDE_H__
@@ -177,6 +177,8 @@
 #define MULTI_INST       0
 #define WANT_FIXED_SIZE_TABLES 0 /* use fixed-size tables for internal structs */
                                  /* (as opposed to dynamically growable ones)  */
+
+#define UNICODE_CHARS    1 /* Char is Unicode (ISO-10646) */
 
 #define SHORT_CIRCUIT_COERCIONS 1
 

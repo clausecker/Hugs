@@ -201,13 +201,12 @@ AC_ARG_ENABLE(ffi,
                  [include modules that use the FFI]),
   , [enable_ffi=autodetect])
 
-AC_ARG_ENABLE(unicode-chars,
-  [AC_HELP_STRING([--enable-unicode-chars[[=<encoding>]]],
-                 [allow the Haskell Char type to range over Unicode,
-			  with an optional byte encoding: locale or utf8])],
-  AC_DEFINE([UNICODE_CHARS], [1],
-    [Define to 1 to make the Haskell Char type range over Unicode.]),
-  [enable_unicode_chars=no])
+AC_ARG_ENABLE(char-encoding,
+  [AC_HELP_STRING([--enable-char-encoding],
+     [encode all character I/O using the byte encoding determined by the
+      locale in effect at that time.  To require that the UTF-8 encoding
+      is always used, give the --enable-char-encoding=utf8 option.])],
+  , [enable_char_encoding=no])
 
 dnl--------------------------------------------------------------------
 dnl
@@ -415,8 +414,8 @@ if test "${ac_cv_header_wchar_h+set}" = set; then
   AC_MSG_RESULT([$wchar_t_is_unicode])
 fi
 
-case $enable_unicode_chars in
-locale)
+case $enable_char_encoding in
+locale|yes)
   if test "${ac_cv_header_locale_h+set}" = set &&
      test "$wchar_t_is_unicode"; then
     AC_DEFINE([CHAR_ENCODING_LOCALE], [1],
@@ -688,7 +687,7 @@ AC_CHECK_LIB(readline, readline, HaveLibReadline=YES; LibReadline=readline,
   AC_CHECK_LIB(editline, readline, HaveLibReadline=YES; LibReadline=editline,
     HaveLibReadline=NO))
 if test $HaveLibTermcap = YES && test $HaveLibReadline = YES &&
-   test "$enable_unicode_chars" != utf8; then
+   test "$enable_char_encoding" != utf8; then
     LIBS="-l$LibReadline $LIBS"
     AC_DEFINE([USE_READLINE], [1],
       [Define to 1 if a command line editor is available and should be
