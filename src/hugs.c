@@ -3,12 +3,13 @@
  *
  * The Hugs 98 system is Copyright (c) Mark P Jones, Alastair Reid, the
  * Yale Haskell Group, and the OGI School of Science & Engineering at OHSU,
- * 1994-2002, All rights reserved.  It is distributed as free software under
+ * 1994-2002, All rights reserved.  It is distributed as fr
+ee software under
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.105 $
- * $Date: 2002/10/31 01:44:24 $
+ * $Revision: 1.106 $
+ * $Date: 2002/11/09 04:43:51 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -426,7 +427,13 @@ String argv[]; {
 				        "HUGSPATH", PATHSEP, "");
 
     readOptions(readRegString(HKEY_LOCAL_MACHINE,hugsRegRoot,"Options",""), TRUE);
-    readOptions(readRegString(HKEY_CURRENT_USER, hugsRegRoot,"Options",""), TRUE);
+    if (!fromEnv("IGNORE_USER_REGISTRY",NULL)) {
+      /* If IGNORE_USER_REGISTRY exist as an env var, don't consult
+       * the user portion of the Registry. Emergency workaround if it has
+       * somehow become invalid.
+       */
+      readOptions(readRegString(HKEY_CURRENT_USER, hugsRegRoot,"Options",""), TRUE);
+    }
 #endif /* USE_REGISTRY */
 
 #if USE_PREFERENCES_FILE
