@@ -1,0 +1,3 @@
+ERROR "static/mod150.hs" - Duplicate export of entity "id"
+*** Could refer to M.id or Hugs.Prelude.id
+Hugs:[Leaving Hugs]
