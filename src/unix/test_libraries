@@ -36,7 +36,7 @@ test_module() {
 	# The +. flag ensures that ERRORs will be at the start of a line
 	$hugs +98 +. $module </dev/null >$tmpfile+
 	$hugs -98 +. $module </dev/null >$tmpfile-
-	if grep "^ERROR \"$module\" - Unable to open file \"$module\"" $tmpfile- >/dev/null
+	if grep "^ERROR - Can't find module \"$module\"" $tmpfile- >/dev/null
 	then	echo "missing  $module"
 	elif grep ^ERROR $tmpfile- >/dev/null
 	then
