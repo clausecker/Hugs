@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.108 $
- * $Date: 2002/11/18 16:36:59 $
+ * $Revision: 1.109 $
+ * $Date: 2002/11/23 03:33:19 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -2581,10 +2581,10 @@ String argv[]; {
 	   VirtualProtect(stackPtr, si.dwPageSize, 
 			  PAGE_GUARD | PAGE_READWRITE, &protect) ) {
 
-	  ERRMSG(0) "C stack overflow"
+	  /* careful not to do a garbage collection here (as it may have caused the overflow). */
+          ERRTEXT "ERROR - C stack overflow"
+          /* EEND does a longjmp back to a sane state. */
           EEND;
-	  /* ..and jump back out again. */
-	  longjmp(catch_error,1);
       } else {
 	  fatal("C stack overflow; unable to recover.");
       }
