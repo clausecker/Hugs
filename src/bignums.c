@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: bignums.c,v $
- * $Revision: 1.9 $
- * $Date: 2003/02/10 14:51:59 $
+ * $Revision: 1.10 $
+ * $Date: 2003/04/10 15:07:33 $
  * ------------------------------------------------------------------------*/
 
 /*#define DEBUG_BIGNUMS*/
@@ -107,7 +107,6 @@ static Bignum local digitsSub Args((List,List));
 static Bignum local bigMul    Args((Bignum,Bignum));
 static Bignum local bigQrm    Args((Bignum,Bignum));
 static List   local digitsQrm Args((List,List));
-static Cell   local bigToWord Args((Bignum));
 
 /*---------------------------------------------------------------------------
  * Simple bignum primitives:
@@ -174,6 +173,13 @@ double a; {
     }
 }
 
+/* The library documentation says that conversion between signed and
+ * unsigned types preserves representation, not sign.  Since this
+ * conversion uses fromInteger, and we do note know the original type,
+ * fromInteger is the same for Int and Word, and must accept values
+ * in the range MINNEGINT..MAXHUGSWORD.
+ */
+
 Cell bigToInt(n)			/* convert bignum to Int	   */
 Bignum n; {
     if (n!=ZERONUM) {
@@ -185,10 +191,10 @@ Bignum n; {
 		m = digitOf(hd(ds));
 		while (nonNull(ds=tl(ds))) {
 		    Int d = digitOf(hd(ds));
-		    if (b > (MAXPOSINT/BIGBASE))
+		    if (b > (MAXHUGSWORD/BIGBASE))
 			return NIL;
 		    b *= BIGBASE;
-		    if (d > (MAXPOSINT - m)/b)
+		    if (d > (MAXHUGSWORD - m)/b)
 			return NIL;
 		    m += b*d;
 		}
@@ -208,33 +214,6 @@ Bignum n; {
 	}
     }
     return mkInt(0);
-}
-
-static Cell local bigToWord(n)		/* convert bignum to Word          */
-Bignum n; {
-    if (n==ZERONUM) {
-	return mkInt(0);
-    } else if (fst(n)==NEGNUM) {
-	return NIL;
-    } else {
-	List ds = snd(n);
-	if (nonNull(ds)) {
-	    Unsigned m = digitOf(hd(ds));
-	    Unsigned b = 1;
-	    while (nonNull(ds=tl(ds))) {
-		Unsigned d = digitOf(hd(ds));
-		if (b > (MAXHUGSWORD/BIGBASE))
-		    return NIL;
-		b *= BIGBASE;
-		if (d > (MAXHUGSWORD - m)/b)
-		    return NIL;
-		m += b*d;
-	    }
-	    return mkInt(m);
-	} else {
-	    return mkInt(0);
-	}
-    }
 }
 
 double bigToDouble(n)			/* convert bignum to double	  */
@@ -372,7 +351,7 @@ primFun(primWordToInteger) {		/* Conversion :: Word -> Integer   */
 
 primFun(primIntegerToWord) {		/* Conversion :: Integer -> Word   */
     eval(primArg(1));
-    whnfHead = bigToWord(whnfHead);
+    whnfHead = bigToInt(whnfHead);
     if (nonNull(whnfHead))
 	updateRoot(whnfHead);
     else
