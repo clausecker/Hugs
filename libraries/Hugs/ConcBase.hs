@@ -50,7 +50,6 @@ import Hugs.Prelude(
 	IO(..), IOResult(..), threadToIOResult,
 	HugsException, catchHugsException, blockIO)
 import Hugs.IORef
-import System.IO.Error(ioeGetErrorString)
 
 ----------------------------------------------------------------
 -- The interface
