@@ -40,10 +40,9 @@ __   __ __  __  ____   ___      _________________________________________
      A/B/C{.hs,.lhs} and appended to each of the path prefixes in 
      HUGSPATH until the name of a readable file is found.
 
-   Most reported bugs have also been fixed; however, some issues primarily
-   related to functional dependencies still remain in this release.  See
-   the heading "Hugs Bugs & Features" on the Hugs web site for further 
-   information.
+   Most reported bugs have also been fixed; however, some issues still
+   remain.  See the heading "Hugs Bugs & Features" on the Hugs web site
+   for further information.
 
    Send email to hugs-users-request@haskell.org to join the hugs-users
    mailing list.  Bug reports should be sent to hugs-bugs@haskell.org.
