@@ -336,7 +336,6 @@ Cell   entity; { /* Entry from import/hiding list */
 			}
 		    }
 		    break;
-		    if (!lookForDataCon) break;
 		}
 		if (!impFound && isId) {
 		    List xs = sigs;
