@@ -775,20 +775,21 @@ dnl
 dnl Timer
 dnl
 dnl--------------------------------------------------------------------
-WANT_TIMER=0
+want_timer=no
 if test "$enable_timer" = yes; then
     if test "$ac_cv_header_time_h" = yes; then
-        WANT_TIMER=1
+        want_timer=yes
     elif test "$ac_cv_header_sys_time_h" = yes &&
 	 test "$ac_cv_header_sys_resource_h" = yes; then
-        WANT_TIMER=1
+        want_timer=yes
     else
         AC_MSG_WARN(
 [neither <time.h> nor (<sys/time.h> and <sys/resource.h>) is available
 (ignoring --enable-timer)])
     fi
 fi
-AC_DEFINE_UNQUOTED([WANT_TIMER], [$WANT_TIMER],
+if test "$want_timer" = yes; then
+  AC_DEFINE([WANT_TIMER], [1],
    [Define if you want to time every evaluation. Timing is included in
     the Hugs distribution for the purpose of benchmarking the Hugs
     interpreter, comparing its performance across a variety of different
@@ -800,6 +801,7 @@ AC_DEFINE_UNQUOTED([WANT_TIMER], [$WANT_TIMER],
     interpreter, without any significant optimizations, means that there
     are much more significant overheads than can be accounted for by
     small variations in Hugs code.])
+fi
 
 dnl These flags are gcc specific.  
 dnl They detecting many common programming errors but can get fooled
