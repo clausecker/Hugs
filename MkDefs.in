@@ -16,6 +16,9 @@ hugsdir		= @hugsdir@
 RM		= @RM@
 CP		= @CP@
 
+HOST_OS		= @HostOS_CPP@
+HOST_ARCH	= @HostArch_CPP@
+
 DLL		= @DLL@
 # end of @configure_input@
 ##########################################################################

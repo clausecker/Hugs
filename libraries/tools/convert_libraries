@@ -129,21 +129,34 @@ copy_examples() {
 
 # Convert hierarchical modules
 
-top_dir="`pwd`"
-case "$target" in
-/*)	HUGSDIR="$target" ;;
-*)	HUGSDIR="$top_dir/$target" ;;
-esac
-ffihugs=$top_dir/src/ffihugs
-runhugs=$top_dir/src/runhugs
-export HUGSDIR ffihugs runhugs
+build_package() {
+	source_dir=$1
+	target_dir=$2
+	cd $source_dir
+	top_dir=`echo $source_dir | sed 's:[^/][^/]*:..:g'`
 
-HUGSFLAGS=
-export HUGSFLAGS
+	HUGSDIR="$top_dir/$target"
+	HUGSFLAGS="-P{Hugs}/libraries:{Hugs}/packages/*:$top_dir/libraries/bootlib"
+	export HUGSDIR HUGSFLAGS
 
-HugsPackage=libraries/tools/hugs-package
-
-HugsSetup="$runhugs -98 $top_dir/fptools/libraries/Cabal/examples/hapax.hs"
+	runhugs=$top_dir/src/runhugs
+	ffihugs=$top_dir/src/ffihugs
+	HugsSetup="$runhugs -98 $top_dir/fptools/libraries/Cabal/examples/hapax.hs"
+	$HugsSetup configure --verbose --hugs \
+			--builddir="$top_dir/$target_dir" \
+			--with-hsc2hs="$top_dir/libraries/tools/hsc2hs" \
+			--with-cpphs="$top_dir/libraries/tools/cpphs" \
+			--with-compiler="$top_dir/src/ffihugs"
+	if $HugsSetup build --verbose; then
+		for name in LICEN[CS]E* COPYING* COPYRIGHT* copyright; do
+			if test -f $name; then
+				cp $name $top_dir/$target_dir/$package
+			fi
+		done
+	else	echo "Skipping $package package"
+	fi
+	cd "$top_dir"
+}
 
 # Distinguish two classes of package:
 # core_packages - released with Hugs and not independently updated
@@ -151,8 +164,8 @@ HugsSetup="$runhugs -98 $top_dir/fptools/libraries/Cabal/examples/hapax.hs"
 # extra_packages - packaged with Hugs, but may also be independently updated
 #	(each of these goes in a separate hierarchy under {Hugs}/packages)
 
-core_packages='base Cabal haskell98 haskell-src network'
-extra_packages='QuickCheck mtl fgl HaXml parsec HUnit'
+core_packages='base haskell98 haskell-src network'
+extra_packages='Cabal QuickCheck mtl fgl HaXml parsec HUnit'
 
 #
 # ToDo: fix -- cygwin supports 'unix' only when no -mno-cygwin is given to gcc
@@ -165,31 +178,18 @@ esac
 
 extra_packages="$extra_packages X11 HGL OpenGL GLUT OpenAL"
 
+build_package "libraries/hugsbase" $target/libraries
+
 for package in $core_packages
 do
-	sh $HugsPackage $src/$package
-	copy_examples $src/$package $HUGSDIR/demos/$package
+	build_package $src/$package $target/libraries
+	copy_examples $src/$package $target/demos/$package
 done
-cp $src/base/LICENSE $HUGSDIR/libraries
-
-echo Compiling $HUGSDIR/libraries/Hugs/Storable.hs
-HUGSFLAGS='' $ffihugs Hugs.Storable $HUGSDIR/libraries/Hugs/Storable_aux.c
 
 for package in $extra_packages
 do
-	cd $src/$package
-	if $HugsSetup configure --hugs --builddir="$HUGSDIR/packages/$package" --with-compiler="$ffihugs"; then
-		$HugsSetup build
-		copy_examples . $HUGSDIR/packages/$package/examples
-		for name in LICEN[CS]E* COPYING* COPYRIGHT* copyright; do
-			if test -f $name; then
-				cp $name $HUGSDIR/packages/$package
-			fi
-		done
-	else
-		echo "Skipping $package package"
-	fi
-	cd "$top_dir"
+	build_package $src/$package $target/packages/$package
+	copy_examples $src/$package $target/packages/$package/examples
 done
 
 # Compatibility with lib/exts:

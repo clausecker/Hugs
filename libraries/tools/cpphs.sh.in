@@ -1,0 +1,51 @@
+#! /bin/sh
+
+# @configure_input@
+
+# K&R C preprocessor
+# The files involved need not be called *.c
+
+usage="usage: $0 cpp_flags [-O<outfile>] infile"
+
+: ${cpp='@CPP_TRADITIONAL@'}
+
+: ${HUGSDIR='<HUGSDIR>'}	# set by Makefile
+
+cpp_flags="-I$HUGSDIR/include"
+infile=
+outfile=
+for arg
+do
+	case "$arg" in
+	-O*)	outfile=`echo x$arg | sed 's/^x-O//'` ;;
+	-[ID]*)	cpp_flags="$cpp_flags $arg" ;;
+	-*)	;;
+	*)	case "$infile" in
+		'')	infile="$arg" ;;
+		*)	case "$outfile" in
+			'')	outfile="$arg" ;;
+			*)	echo "$usage" >&2
+				exit 1 ;;
+			esac ;;
+		esac ;;
+	esac
+done
+
+case "$infile" in
+'')	echo "$usage" >&2
+	exit 1 ;;
+esac
+
+# for portability, we run the preprocessor on a .c file.
+tmp_cfile=/tmp/cppinput$$.c
+
+trap "rm -f $tmp_cfile; exit 0" 0 1 2 3 15
+
+cp "$infile" $tmp_cfile
+
+# gcc-3.3 on MacOS X 10.3 is reported to add #pragma
+$cpp $cpp_flags $tmp_cfile | grep -v '^#' |
+	case "$outfile" in
+	'')	cat -s ;;
+	*)	cat -s >"$outfile" ;;
+	esac

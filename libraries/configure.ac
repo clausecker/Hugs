@@ -129,6 +129,6 @@ dnl Definitions computed by ../configure, for insertion into Makefile
 MkDefs=../MkDefs
 AC_SUBST_FILE(MkDefs)  
 
-AC_CONFIG_FILES(Makefile tools/config tools/hugs-package)
+AC_CONFIG_FILES(Makefile tools/config tools/cpphs.sh)
 
 AC_OUTPUT

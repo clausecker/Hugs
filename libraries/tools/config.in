@@ -1,9 +1,6 @@
 # @configure_input@
-# Shell variable definitions for convert_libraries
+# Shell variable definitions for make_bootlib and convert_libraries
 
-cc=${CC-@CC@}
 : ${cpp='@CPP_TRADITIONAL@'}
-: ${happy=happy}
-: ${hsc2hs=hsc2hs}
 : ${SORT=@SortCmd@}
 : ${FIND=@FindCmd@}

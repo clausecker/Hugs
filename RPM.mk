@@ -51,11 +51,8 @@ tar: ${PACKAGE}.tar.gz
 #
 #  foo$ make FIND=/usr/bin/find HAPPY=c:/happy/happy-1.15/bin/happy ...
 #
-# (You'll find 'hsc2hs' included in a GHC distribution.)
-#
 FIND=find
 HAPPY=happy
-HSC2HS=hsc2hs
 
 ${PACKAGE}.tar.gz:
 	-rm -rf ${TARTMP}
@@ -67,20 +64,12 @@ ${PACKAGE}.tar.gz:
 	  cd hugs98; \
 	  cvs export -r ${HSLIBSTAG} `for lib in $(HSLIBSDIRS); do echo fptools/hslibs/$$lib; done`; \
 	  cvs export -r ${LIBRARIESTAG} fptools/config.sub fptools/config.guess fptools/install-sh `for lib in $(LIBRARIESDIRS); do echo fptools/libraries/$$lib; done`
+	  cvs export fptools/ghc/utils/hsc2hs
 # Unused, and the pathnames in there are too long for portable tar
 	cd ${TARTMP}/hugs98; rm -rf fptools/libraries/parsec/examples
 # preprocess these, so the package can be built without happy & ghc
 	$(FIND) ${TARTMP}/hugs98/fptools/libraries -name "*.ly" -o -name "*.y" | \
 		xargs -l $(HAPPY)
-	if test x"$(USING_AN_OLDER_HSC2HS)" != x"YES"; then \
-	  $(FIND) ${TARTMP}/hugs98/fptools/libraries -name "*.hsc" | \
-	    xargs -l $(HSC2HS) --no-compile --template=template-hsc.h; \
-	else \
-	  $(FIND) ${TARTMP}/hugs98/fptools/libraries -name "*.hsc" | \
-	    xargs -l $(HSC2HS) --no-compile; \
-	  $(FIND) ${TARTMP}/hugs98/fptools/libraries -name "*_hsc_make.c" | \
-	    xargs libraries/tools/hsc_kludge; \
-	fi
 	cp ${TARTMP}/hugs98/src/version.c ${TARTMP}
 	cd ${TARTMP}/hugs98/src; sed ${VERSION_SUBSTS} < ${TARTMP}/version.c > ${TARTMP}/hugs98/src/version.c
 # using `make parser.c' would be best, but by default yacc
