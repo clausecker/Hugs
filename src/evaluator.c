@@ -39,8 +39,6 @@ String hugsSuffixes	 = 0;		/* Source filename suffixes        */
  * ------------------------------------------------------------------------*/
 Void startEvaluator(Void)
 {
-    Script i;
-
     initScripts();
 
     hugsPath      = strCopy(HUGSPATH);

@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.121 $
- * $Date: 2003/03/09 23:53:04 $
+ * $Revision: 1.122 $
+ * $Date: 2003/03/10 14:39:00 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -85,8 +85,6 @@ static Text    evalModule = 0;  /* Name of module we eval exprs in */
 static Void local initialize(argc,argv)
 Int    argc;
 String argv[]; {
-    Script i;
-
     startEvaluator();
 
     setLastEdit((String)0,0);
