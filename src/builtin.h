@@ -7,14 +7,14 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: builtin.h,v $
- * $Revision: 1.6 $
- * $Date: 2003/11/14 00:14:39 $
+ * $Revision: 1.7 $
+ * $Date: 2004/09/30 16:49:04 $
  * ------------------------------------------------------------------------*/
 #ifndef __BUILTIN_H__
 #define __BUILTIN_H__
 
 extern String evalName  Args((Cell));
-extern Cell   mkIOError Args((Cell,Name,String,String,Cell));
+extern Cell   mkIOError Args((Cell *,Name,String,String,Cell *));
 
 /* --------------------------------------------------------------------------
  * Macros used to define primitives:

@@ -93,11 +93,11 @@ primFun(primCreateDirectory) { /* create a directory, :: String -> IO ()   */
   String s = evalName(IOArg(1));
   
   if (!s) {
-    IOFail(mkIOError(NIL,
+    IOFail(mkIOError(NULL,
 		     nameIllegal,
 		     "Directory.createDirectory",
 		     "illegal directory name",
-		     IOArg(1)));
+		     &IOArg(1)));
   }
   
 #if defined(_MSC_VER) || defined(__MINGW32__)
@@ -106,11 +106,11 @@ primFun(primCreateDirectory) { /* create a directory, :: String -> IO ()   */
    rc = mkdir(s,0777);
 #endif
    if (rc != 0) {
-      IOFail(mkIOError(NIL,
+      IOFail(mkIOError(NULL,
 		       toIOError(errno),
 		       "Directory.createDirectory",
 		       toIOErrorDescr(errno,FALSE),
-		       IOArg(1)));
+		       &IOArg(1)));
    }
   IOReturn(nameUnit);
 }
@@ -120,21 +120,21 @@ primFun(primRemoveDirectory) { /* remove a directory	   */
   String s = evalName(IOArg(1));
   
   if (!s) {
-    IOFail(mkIOError(NIL,
+    IOFail(mkIOError(NULL,
 		     nameIllegal,
 		     "Directory.removeDirectory",
 		     "illegal directory name",
-		     IOArg(1)));
+		     &IOArg(1)));
   }
   
    rc = rmdir(s);
 
    if (rc != 0) {
-     IOFail(mkIOError(NIL,
+     IOFail(mkIOError(NULL,
 		      toIOError(errno),
 		      "Directory.removeDirectory",
 		      toIOErrorDescr(errno,FALSE),
-		      IOArg(1)));
+		      &IOArg(1)));
    }
   IOReturn(nameUnit);
 }
@@ -144,21 +144,21 @@ primFun(primRemoveFile) { /* remove a file	   */
   String s = evalName(IOArg(1));
   
   if (!s) {
-    IOFail(mkIOError(NIL,
+    IOFail(mkIOError(NULL,
 		     nameIllegal,
 		     "Directory.removeFile",
 		     "illegal file name",
-		     IOArg(1)));
+		     &IOArg(1)));
   }
   
    rc = unlink(s);
 
    if (rc != 0) {
-     IOFail(mkIOError(NIL,
+     IOFail(mkIOError(NULL,
 		      toIOError(errno),
 		      "Directory.removeFile",
 		      toIOErrorDescr(errno,TRUE),
-		      IOArg(1)));
+		      &IOArg(1)));
    }
   IOReturn(nameUnit);
 }
@@ -183,11 +183,11 @@ primFun(primRenameDirectory) { /* rename a directory	   */
 
   tmpStr = evalName(IOArg(1));
   if (!tmpStr) {
-    IOFail(mkIOError(NIL,
+    IOFail(mkIOError(NULL,
 		     nameIllegal,
 		     "Directory.renameDirectory",
 		     "illegal directory name",
-		     IOArg(1)));
+		     &IOArg(1)));
   }
   to = ALLOC_STRING(strlen(tmpStr));
   strcpy(to, tmpStr);
@@ -195,11 +195,11 @@ primFun(primRenameDirectory) { /* rename a directory	   */
   from = evalName(IOArg(2));
   if (!from) {
     FREE_STRING(to);
-    IOFail(mkIOError(NIL,
+    IOFail(mkIOError(NULL,
 		     nameIllegal,
 		     "Directory.renameDirectory",
 		     "illegal directory name",
-		     IOArg(2)));
+		     &IOArg(2)));
   }
 
   rc = rename(from,to);
@@ -207,11 +207,11 @@ primFun(primRenameDirectory) { /* rename a directory	   */
   FREE_STRING(to);
 
   if (rc != 0) {
-     IOFail(mkIOError(NIL,
+     IOFail(mkIOError(NULL,
 		      toIOError(errno),
 		      "Directory.renameDirectory",
 		      toIOErrorDescr(errno,FALSE),
-		      IOArg(1)));
+		      &IOArg(1)));
   }
   IOReturn(nameUnit);
 }
@@ -224,11 +224,11 @@ primFun(primRenameFile) { /* rename a file	   */
 
   tmpStr = evalName(IOArg(1));
   if (!tmpStr) {
-    IOFail(mkIOError(NIL,
+    IOFail(mkIOError(NULL,
 		     nameIllegal,
 		     "Directory.renameFile",
 		     "illegal file name",
-		     IOArg(1)));
+		     &IOArg(1)));
   }
   to = ALLOC_STRING(strlen(tmpStr));
   strcpy(to, tmpStr);
@@ -236,29 +236,29 @@ primFun(primRenameFile) { /* rename a file	   */
   from = evalName(IOArg(2));
   if (!from) {
     FREE_STRING(to);
-    IOFail(mkIOError(NIL,
+    IOFail(mkIOError(NULL,
 		     nameIllegal,
 		     "Directory.renameFile",
 		     "illegal file name",
-		     IOArg(2)));
+		     &IOArg(2)));
   }
 
   if (isDirectory(from)) {
     FREE_STRING(to);
-    IOFail(mkIOError(NIL,
+    IOFail(mkIOError(NULL,
 		     namePermDenied,
 		     "Directory.renameFile",
 		     "is a directory",
-		     IOArg(2)));
+		     &IOArg(2)));
   }
 
   if (isDirectory(to)) {
     FREE_STRING(to);
-    IOFail(mkIOError(NIL,
+    IOFail(mkIOError(NULL,
 		     namePermDenied,
 		     "Directory.renameFile",
 		     "is a directory",
-		     IOArg(1)));
+		     &IOArg(1)));
   }
 
   rc = rename(from,to);
@@ -266,11 +266,11 @@ primFun(primRenameFile) { /* rename a file	   */
   FREE_STRING(to);
 
   if (rc != 0) {
-    IOFail(mkIOError(NIL,
+    IOFail(mkIOError(NULL,
 		     toIOError(errno),
 		     "Directory.renameFile",
 		     toIOErrorDescr(errno,TRUE),
-		     IOArg(1)));
+		     &IOArg(1)));
   }
   IOReturn(nameUnit);
 }
@@ -282,11 +282,11 @@ primFun(primGetDirectory) { /* IO String - get current directory. */
     pushString(buffer);
     IOReturn(pop());
   } else {
-    IOFail(mkIOError(NIL,
+    IOFail(mkIOError(NULL,
 		     toIOError(errno),
 		     "Directory.getCurrentDirectory",
 		     toIOErrorDescr(errno,FALSE),
-		     IOArg(1)));
+		     &IOArg(1)));
   }
 }
 
@@ -295,21 +295,21 @@ primFun(primSetDirectory) { /* String -> IO () - set current directory. */
   String s = evalName(IOArg(1));
 
   if (!s) {
-    IOFail(mkIOError(NIL,
+    IOFail(mkIOError(NULL,
 		     nameIllegal,
 		     "Directory.setCurrentDirectory",
 		     "illegal directory name",
-		     IOArg(1)));
+		     &IOArg(1)));
   }
   
    rc = chdir(s);
 
    if (rc != 0) {
-     IOFail(mkIOError(NIL,
+     IOFail(mkIOError(NULL,
 		      toIOError(errno),
 		      "Directory.setCurrentDirectory",
 		      toIOErrorDescr(errno,FALSE),
-		      IOArg(1)));
+		      &IOArg(1)));
    }
    IOReturn(nameUnit);
 }
@@ -320,11 +320,11 @@ primFun(primFileExist) { /* FilePath -> IO Bool - check to see if file exists. *
   struct stat st;
 
   if (!s) {
-    IOFail(mkIOError(NIL,
+    IOFail(mkIOError(NULL,
 		     nameIllegal,
 		     "Directory.doesFileExist",
 		     "illegal file name",
-		     IOArg(1)));
+		     &IOArg(1)));
   }
   
   rc = stat(s, &st);
@@ -340,11 +340,11 @@ primFun(primDirExist) { /* FilePath -> IO Bool - check to see if directory exist
   String s = evalName(IOArg(1));
 
   if (!s) {
-    IOFail(mkIOError(NIL,
+    IOFail(mkIOError(NULL,
 		     nameIllegal,
 		     "Directory.doesDirectoryExist",
 		     "illegal directory name",
-		     IOArg(1)));
+		     &IOArg(1)));
   }
   IOBoolResult(isDirectory(s));
 }
@@ -377,18 +377,18 @@ primFun(primGetPermissions) { /* FilePath -> IO (Bool,Bool,Bool,Bool) */
   
 
 #if __MWERKS__ && macintosh
-    IOFail(mkIOError(NIL,
+    IOFail(mkIOError(NULL,
 		     nameIllegal,
 		     "Directory.primGetPermissions",
 		     "operation not supported",
-		     IOArg(1)));
+		     &IOArg(1)));
 #else
   if (!s) {
-    IOFail(mkIOError(NIL,
+    IOFail(mkIOError(NULL,
 		     nameIllegal,
 		     "Directory.getPermissions",
 		     "illegal file name",
-		     IOArg(1)));
+		     &IOArg(1)));
   }
   
   isR = access(s, R_OK);
@@ -397,11 +397,11 @@ primFun(primGetPermissions) { /* FilePath -> IO (Bool,Bool,Bool,Bool) */
   rc = stat(s, &st);
   
   if (rc != 0) {
-    IOFail(mkIOError(NIL,
+    IOFail(mkIOError(NULL,
 		     toIOError(errno),
 		     "Directory.getPermissions",
 		     toIOErrorDescr(errno,TRUE),
-		     IOArg(1)));
+		     &IOArg(1)));
   } else {
     IOReturn(ap(ap(ap(ap( mkTuple(4),
 			  ToBool(isR == 0)),
@@ -419,11 +419,11 @@ primFun(primGetPermissions) { /* FilePath -> IO (Bool,Bool,Bool,Bool) */
    } else if (whnfHead==nameFalse) { \
       x = FALSE; \
    } else { \
-      IOFail(mkIOError(NIL, \
+      IOFail(mkIOError(NULL, \
 	     nameIllegal, \
 	     "Directory.setPermissions", \
 	     "illegal flag", \
-	     NIL)); \
+	     NULL)); \
    }
 
 #ifdef _MSC_VER
@@ -449,11 +449,11 @@ primFun(primSetPermissions) { /* FilePath -> Bool -> Bool -> Bool -> Bool -> IO 
   Bool   s;
   
 #if __MWERKS__ && macintosh
-    IOFail(mkIOError(NIL,
+    IOFail(mkIOError(NULL,
 		     nameIllegal,
 		     "Directory.primSetPermissions",
 		     "operation not supported",
-		     IOArg(1)));
+		     &IOArg(1)));
 #else
   EVAL_BOOL(s, IOArg(1));
   EVAL_BOOL(e, IOArg(2));
@@ -463,11 +463,11 @@ primFun(primSetPermissions) { /* FilePath -> Bool -> Bool -> Bool -> Bool -> IO 
   str = evalName(IOArg(5));
   
   if (!str) {
-    IOFail(mkIOError(NIL,
+    IOFail(mkIOError(NULL,
 		     nameIllegal,
 		     "Directory.setPermissions",
 		     "illegal file name",
-		     IOArg(5)));
+		     &IOArg(5)));
   }
 
   rc = stat(str, &st);
@@ -479,11 +479,11 @@ primFun(primSetPermissions) { /* FilePath -> Bool -> Bool -> Bool -> Bool -> IO 
 	       SET_CHMOD_FLAG(e||s, EXEC_FLAG));
 	     
   if (rc != 0) {
-    IOFail(mkIOError(NIL,
+    IOFail(mkIOError(NULL,
 		     toIOError(errno),
 		     "Directory.setPermissions",
 		     toIOErrorDescr(errno,TRUE),
-		     IOArg(5)));
+		     &IOArg(5)));
   } else {
     IOReturn(nameUnit);
   }
@@ -511,36 +511,36 @@ primFun(primGetDirContents) { /* FilePath -> IO [FilePath] */
   String fName = evalName(IOArg(1));
   
   if (!fName) {
-    IOFail(mkIOError(NIL,
+    IOFail(mkIOError(NULL,
 		     nameIllegal,
 		     "Directory.getDirectoryContents",
 		     "illegal directory name",
-		     IOArg(1)));
+		     &IOArg(1)));
   }
   
   if (strlen(fName) > FILENAME_MAX) {
-    IOFail(mkIOError(NIL,
+    IOFail(mkIOError(NULL,
 		     nameIllegal,
 		     "Directory.getDirectoryContents",
 		     "file name too long",
-		     IOArg(1)));
+		     &IOArg(1)));
   }
   
   /* First, check whether the directory exists... */
   if ( (stat(fName, &st) < 0) || !S_ISDIR(st.st_mode) ) {
-    IOFail(mkIOError(NIL,
+    IOFail(mkIOError(NULL,
 		     toIOError(errno),
 		     "Directory.getDirectoryContents",
 		     toIOErrorDescr(errno,FALSE),
-		     IOArg(1)));
+		     &IOArg(1)));
   }
   
   if (snprintf(buffer,sizeof(buffer)-1,"%s\\*.*",fName) < 0) {
-    IOFail(mkIOError(NIL,
+    IOFail(mkIOError(NULL,
 		     nameIllegal,
 		     "Directory.getDirectoryContents",
 		     "illegal directory name",
-		     IOArg(1)));
+		     &IOArg(1)));
   } else {
       buffer[sizeof(buffer)-1] = '\0';
   }
@@ -556,21 +556,21 @@ primFun(primGetDirContents) { /* FilePath -> IO [FilePath] */
     rc = _findnext(dirHandle, &fData);
   }
   if (errno != ENOENT) {
-    IOFail(mkIOError(NIL,
+    IOFail(mkIOError(NULL,
 		     toIOError(errno),
 		     "Directory.getDirectoryContents",
 		     toIOErrorDescr(errno,FALSE),
-		     IOArg(1)));
+		     &IOArg(1)));
   }
 
   /* Close and release resources */
   rc = _findclose(dirHandle);
   if (rc == -1 && errno != ENOENT) {
-    IOFail(mkIOError(NIL,
+    IOFail(mkIOError(NULL,
 		     toIOError(errno),
 		     "Directory.getDirectoryContents",
 		     toIOErrorDescr(errno,FALSE),
-		     IOArg(1)));
+		     &IOArg(1)));
   }
   IOReturn(ls);
 #elif defined(HAVE_DIRENT_H)
@@ -581,21 +581,21 @@ primFun(primGetDirContents) { /* FilePath -> IO [FilePath] */
   String fName = evalName(IOArg(1));
   
   if (!fName) {
-    IOFail(mkIOError(NIL,
+    IOFail(mkIOError(NULL,
 		     nameIllegal,
 		     "Directory.getDirectoryContents",
 		     "illegal file name",
-		     IOArg(1)));
+		     &IOArg(1)));
   }
   
   dir = opendir(fName);
   
   if (dir == NULL) {
-    IOFail(mkIOError(NIL,
+    IOFail(mkIOError(NULL,
 		     toIOError(errno),
 		     "Directory.getDirectoryContents",
 		     toIOErrorDescr(errno,FALSE),
-		     IOArg(1)));
+		     &IOArg(1)));
   }
   
   ls = nameNil;
@@ -617,11 +617,11 @@ primFun(primGetDirContents) { /* FilePath -> IO [FilePath] */
       ) {
     int rc = errno;
     closedir(dir);
-    IOFail(mkIOError(NIL,
+    IOFail(mkIOError(NULL,
 		     toIOError(rc),
 		     "Directory.getDirectoryContents",
 		     toIOErrorDescr(rc,FALSE),
-		     IOArg(1)));
+		     &IOArg(1)));
   }
 
   closedir(dir);
@@ -629,11 +629,11 @@ primFun(primGetDirContents) { /* FilePath -> IO [FilePath] */
 
 #else
   /* Sorry, don't know how to access a directory on your platform */
-    IOFail(mkIOError(NIL,
+    IOFail(mkIOError(NULL,
 		     nameIllegal,
 		     "Directory.getDirectoryContents",
 		     "operation not supported",
-		     IOArg(1)));
+		     &IOArg(1)));
 #endif
 }
 
@@ -643,21 +643,21 @@ primFun(primGetModTime) { /* FilePath -> IO Int{-time_t-} - get the mod. time of
   struct stat st;
 
   if (!s) {
-    IOFail(mkIOError(NIL,
+    IOFail(mkIOError(NULL,
 		     nameIllegal,
 		     "Directory.getModificationTime",
 		     "illegal file name",
-		     IOArg(1)));
+		     &IOArg(1)));
   }
   
   rc = stat(s, &st);
   
   if (rc < 0) {
-    IOFail(mkIOError(NIL,
+    IOFail(mkIOError(NULL,
 		     toIOError(errno),
 		     "Directory.getModificationTime",
 		     toIOErrorDescr(errno,TRUE),
-		     IOArg(1)));
+		     &IOArg(1)));
   } else {
     IOReturn(mkInt(st.st_mtime));
   }

@@ -14,8 +14,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: iomonad.c,v $
- * $Revision: 1.79 $
- * $Date: 2004/09/13 10:36:10 $
+ * $Revision: 1.80 $
+ * $Date: 2004/09/30 16:49:05 $
  * ------------------------------------------------------------------------*/
  
 Name nameIORun;			        /* run IO code                     */
@@ -32,9 +32,9 @@ static Cell hugsArgs;			/* value of getArgs                */
 #if IO_HANDLES
 static String local toIOErrorDescr Args((int,Bool));
 static Name   local toIOError      Args((int));
-static Int    local newHandle      Args((Cell,String));
+static Int    local newHandle      Args((Cell *,String));
 static String local modeString     Args((Int,Bool));
-static Cell   local openHandle     Args((StackPtr,Cell,Int,Bool,String));
+static Cell   local openHandle     Args((StackPtr,Cell *,Int,Bool,String));
 static Cell   local openFdHandle   Args((StackPtr,Int,Int,Bool,String));
 static Char   local hGetChar       Args((Int,String));
 #endif
@@ -378,7 +378,7 @@ primFun(primPass) {			/* Auxiliary function		   */
 
 static
 Int local newHandle(sCell,loc) /* return a free Handle or throw an IOError */
-Cell   sCell;
+Cell   *sCell;
 String loc; {
     Int i;
 
@@ -403,7 +403,7 @@ String loc; {
     }
 
     if (i>=(Int)MAX_HANDLES) {                  /* ... before we give up   */
-	IOFail(mkIOError(NIL,
+	IOFail(mkIOError(NULL,
 			 nameIllegal,
 			 loc,
 			 "too many handles open",
@@ -433,29 +433,29 @@ Bool binary; {
 static
 Cell local openHandle(root,sCell,hmode,binary,loc) /* open handle to file named s in  */
 StackPtr root;
-Cell   sCell;                                      /* the specified hmode  */
+Cell   *sCell;                                     /* the specified hmode  */
 Int    hmode;
 Bool   binary;
 String loc; {
     Int i;
-    String s = evalName(sCell);
+    String s = evalName(*sCell);
     String stmode = modeString(hmode,binary);
 
     /* openHandle() either returns a Handle or throws an IOError. */
 
     if (!s) {				/* check for valid name		   */
-	IOFail(mkIOError(NIL,
+	IOFail(mkIOError(NULL,
 			 nameIllegal,
 			 loc,
 			 "illegal file name",
-			 NIL));
+			 NULL));
     }
 
     i = newHandle(sCell,loc);
 
     /* prepare to open file    */
     if (!stmode || !(handles[i].hfp=fopen(s,stmode))) {
-	IOFail(mkIOError(NIL,
+	IOFail(mkIOError(NULL,
 			 toIOError(errno),
 			 loc,
 			 toIOErrorDescr(errno,TRUE),
@@ -488,11 +488,11 @@ String loc; {
     /* openFdHandle() either returns a Handle or throws an IOError. */
 
     if (!stmode || !(handles[i].hfp=fdopen(fd,stmode))) {
-	IOFail(mkIOError(NIL,
+	IOFail(mkIOError(NULL,
 			 toIOError(errno),
 			 loc,
 			 toIOErrorDescr(errno,TRUE),
-			 NIL));
+			 NULL));
     }
 
     handles[i].hmode = hmode;
@@ -526,19 +526,19 @@ static Char local hGetChar(Int h, String fname) {
 	c = FGetChar(handles[h].hfp);
     }
     if (c==EOF && !feof(handles[h].hfp)) {
-	IOFail(mkIOError(handles[h].hcell,
+	IOFail(mkIOError(&handles[h].hcell,
 			 toIOError(errno),
 			 fname,
 			 toIOErrorDescr(errno,TRUE),
-			 NIL));
+			 NULL));
     }
 #if CHAR_ENCODING
     else if (c==BAD_CHAR) {
-	IOFail(mkIOError(handles[h].hcell,
+	IOFail(mkIOError(&handles[h].hcell,
 			 nameProtocolError,
 			 fname,
 			 "invalid character encoding",
-			 NIL));
+			 NULL));
     }
 #endif /* CHAR_ENCODING */
     return c;
@@ -570,19 +570,19 @@ String s; {
   
 Cell
 mkIOError(mbH, kind, loc, desc, mbF)
-Cell   mbH;	/* a Handle or NIL */
+Cell   *mbH;	/* a Handle or NULL */
 Name   kind;	/* an IOErrorType */
 String loc;
 String desc;
-Cell   mbF;	/* a FilePath or NIL */
+Cell   *mbF;	/* a FilePath or NULL */
 {
     Cell str;
     push(nameIOError);
-    toparg(isNull(mbH) ? nameNothing : ap(nameJust,mbH));
+    toparg(mbH==NULL ? nameNothing : ap(nameJust,*mbH));
     toparg(kind);
     pushString(loc); str = pop(); toparg(str);
     pushString(desc); str = pop(); toparg(str);
-    toparg(isNull(mbF) ? nameNothing : ap(nameJust,mbF));
+    toparg(mbF==NULL ? nameNothing : ap(nameJust,*mbF));
     return pop();
 }
 
@@ -679,18 +679,18 @@ primFun(primGetEnv) {                 /* primGetEnv :: String -> IO String */
     String s = evalName(IOArg(1));    /* Eval name	                   */
     String r;
     if (!s) {			      /* check for valid name		   */
-	IOFail(mkIOError(NIL,
+	IOFail(mkIOError(NULL,
 			 nameIllegal,
 		         "System.getEnv",
 			 "illegal environment variable name",
-			 IOArg(1)));
+			 &IOArg(1)));
     }
     if ((r = getenv(s))==0) {    
-	IOFail(mkIOError(NIL,
+	IOFail(mkIOError(NULL,
 			 nameDoesNotExist,
 		         "System.getEnv",
 			 "environment variable not found",
-			 IOArg(1)));
+			 &IOArg(1)));
     }
     pushString(r);
     IOReturn(pop());
@@ -711,11 +711,11 @@ primFun(primSystem) {                   /* primSystem :: String -> IO Int  */
     String s = evalName(IOArg(1));	/* Eval name	                   */
     Int r;
     if (!s) {				/* check for valid string          */
-	IOFail(mkIOError(NIL,
+	IOFail(mkIOError(NULL,
 			 nameIllegal,
 		         "System.system",
 			 "illegal system command string",
-			 IOArg(1)));
+			 &IOArg(1)));
     }
     r = shellEsc(s, TRUE/*synchronous*/, TRUE/*use shell*/);
     IOReturn(mkInt(WEXITSTATUS(r)));
@@ -758,11 +758,11 @@ primFun(primSetArgs) {                  /* primSetArgs :: [String] -> IO () */
 primFun(primGetChar) {			/* Get character from stdin        */
     Int c = readTerminalChar();
     if (c==EOF) {
-	IOFail(mkIOError(handles[HSTDIN].hcell,
+	IOFail(mkIOError(&handles[HSTDIN].hcell,
 			 nameEOFErr,
 			 "Prelude.getChar",
 			 "end of file",
-			 NIL));
+			 NULL));
     }
 #if RAW_CONSOLE				/* Simulate echoing ourselves.     */
     FPutChar(c, stdout);
@@ -822,19 +822,19 @@ primFun(primHGetChar) {			/* Read character from handle	   */
     }
 
     if (!(handles[h].hmode&(HREAD|HREADWRITE))) {
-	IOFail(mkIOError(handles[h].hcell,
+	IOFail(mkIOError(&handles[h].hcell,
 			 nameIllegal,
 			 "IO.hGetChar",
 			 "handle is not readable",
-			 NIL));
+			 NULL));
     }
     c = hGetChar(h, "IO.hGetChar");
     if (c==EOF) {
-	IOFail(mkIOError(handles[h].hcell,
+	IOFail(mkIOError(&handles[h].hcell,
 			 nameEOFErr,
 			 "IO.hGetChar",
 			 "end of file",
-			 NIL));
+			 NULL));
     }
     IOReturn(mkChar(c));
 }
@@ -852,11 +852,11 @@ primFun(primHPutChar) {			/* print character on handle	   */
 	handles[h].hHaveRead = FALSE;
     }
     if (!(handles[h].hmode&(HWRITE|HAPPEND|HREADWRITE))) {
-	IOFail(mkIOError(handles[h].hcell,
+	IOFail(mkIOError(&handles[h].hcell,
 			 nameIllegal,
 			 "IO.hPutChar",
 			 "handle is not writable",
-			 NIL));
+			 NULL));
     }
 
 #if CHAR_ENCODING
@@ -869,11 +869,11 @@ primFun(primHPutChar) {			/* print character on handle	   */
 #endif
 
     if ( retval == EOF ) {
-	IOFail(mkIOError(handles[h].hcell,
+	IOFail(mkIOError(&handles[h].hcell,
 			 toIOError(errno),
 			 "IO.hPutChar",
 			 toIOErrorDescr(errno,TRUE),
-			 NIL));
+			 NULL));
     }
     IOReturn(nameUnit);
 }
@@ -890,11 +890,11 @@ primFun(primHPutStr) {			/* print string on handle	   */
 	handles[h].hHaveRead = FALSE;
     }
     if (!(handles[h].hmode&(HWRITE|HAPPEND|HREADWRITE))) {
-	IOFail(mkIOError(handles[h].hcell,
+	IOFail(mkIOError(&handles[h].hcell,
 			 nameIllegal,
 			 "IO.hPutStr",
 			 "handle is not writable",
-			 NIL));
+			 NULL));
     }
     blackHoleRoot();
     eval(pop());
@@ -935,11 +935,11 @@ primFun(primHContents) {		/* hGetContents :: Handle -> IO Str*/
     HandleArg(h,1+IOArity);
 
     if (!(handles[h].hmode&(HREAD|HREADWRITE))) { /* must have readable handle	   */
-        IOFail(mkIOError(handles[h].hcell,
+        IOFail(mkIOError(&handles[h].hcell,
 			 nameIllegal,
 		         "IO.hGetContents",
 		         "handle is not readable",
-		         NIL));
+		         NULL));
     }
 
     handles[h].hmode = HSEMICLOSED; /* semi-close handle		   */
@@ -952,11 +952,11 @@ primFun(primHContents) {		/* hGetContents :: Handle -> IO Str*/
 
 primFun(primContents) {			/* Get contents of stdin	   */
     if (!(handles[HSTDIN].hmode&HREAD)) {
-        IOFail(mkIOError(handles[HSTDIN].hcell,
+        IOFail(mkIOError(&handles[HSTDIN].hcell,
 			 nameIllegal,
 		         "Prelude.getContents",
 		         "handle is not readable",
-		         NIL));
+		         NULL));
     }
 
     handles[HSTDIN].hmode = HSEMICLOSED;
@@ -990,13 +990,13 @@ String   loc; {
 
     m = getIOMode(IOArg(1));
     if (m==HCLOSED) {			/* Only accept legal modes	   */
-	IOFail(mkIOError(NIL,
+	IOFail(mkIOError(NULL,
 			 nameIllegal,
 			 loc,
 			 "unknown handle mode",
-			 IOArg(2)));
+			 &IOArg(2)));
     }
-    IOReturn(openHandle(root,IOArg(2),m,binary,loc));
+    IOReturn(openHandle(root,&IOArg(2),m,binary,loc));
 }
 
 primFun(primOpenFile) {			/* open handle to a text file	   */
@@ -1031,11 +1031,11 @@ primFun(primOpenFd) {			/* open handle to file descriptor. */
 
     m = getIOMode(IOArg(2));
     if (m==HCLOSED) {			/* Only accept legal modes	   */
-        IOFail(mkIOError(NIL,
+        IOFail(mkIOError(NULL,
 		         nameIllegal,
 		         "openFd",
 		         "unknown handle mode",
-		         NIL));
+		         NULL));
     }
 
 #if defined(_WIN32) && !defined(__CYGWIN__)
@@ -1062,11 +1062,11 @@ primFun(primHandleToFd) {
     Int h;
     HandleArg(h,1+IOArity);
     if (IS_STANDARD_HANDLE(h) || handles[h].hmode==HCLOSED) {
-        IOFail(mkIOError(NIL,
+        IOFail(mkIOError(NULL,
 			 nameIllegal,
 		         "System.Posix.IO.handleToFd",
 		         "invalid handle",
-			 NIL));
+			 NULL));
     }
 #if HAVE_DUP
     {
@@ -1077,11 +1077,11 @@ primFun(primHandleToFd) {
         IOReturn(mkInt(fd));
     }
 #else
-    IOFail(mkIOError(handles[h].hcell,
+    IOFail(mkIOError(&handles[h].hcell,
 		     nameIllegal,
 		     "System.Posix.IO.handleToFd",
 		     "unsupported operation",
-		     NIL));
+		     NULL));
 #endif
 }
 
@@ -1090,11 +1090,11 @@ primFun(primHugsHIsEOF) {		/* Test for end of file on handle  */
     Int h;
     HandleArg(h,1+IOArity);
     if (handles[h].hmode==HCLOSED) {
-        IOFail(mkIOError(NIL,
+        IOFail(mkIOError(NULL,
 			 nameIllegal,
 		         "IO.hugsIsEOF",
 		         "handle is closed",
-			 NIL));
+			 NULL));
     }
     IOBoolResult(feof(handles[h].hfp));
 }
@@ -1106,11 +1106,11 @@ primFun(primHIsEOF) {	/* Test for end of file on handle  */
     Bool isEOF;
     HandleArg(h,1+IOArity);
     if (!(handles[h].hmode&(HREAD|HREADWRITE))) {
-        IOFail(mkIOError(NIL,
+        IOFail(mkIOError(NULL,
 			 nameIllegal,
 		         "IO.hIsEOF",
 		         "handle is closed",
-			 NIL));
+			 NULL));
     }
     fp = handles[h].hfp;
     isEOF = feof(fp);
@@ -1138,11 +1138,11 @@ primFun(primHFlush) {			/* Flush handle			   */
     Int h;
     HandleArg(h,1+IOArity);
     if (!(handles[h].hmode&(HWRITE|HAPPEND|HREADWRITE))) { /* Only allow flushing writable handles */
-        IOFail(mkIOError(handles[h].hcell,
+        IOFail(mkIOError(&handles[h].hcell,
 			 nameIllegal,
 		         "IO.hFlush",
 		         "handle is not writable",
-			 NIL));
+			 NULL));
     }
     fflush(handles[h].hfp);
     if (handles[h].hmode&HREADWRITE) {
@@ -1172,21 +1172,21 @@ primFun(primHGetPosn) {			/* Get file position               */
     long pos;
     HandleArg(h,1+IOArity);
     if (handles[h].hmode==HCLOSED) {
-	IOFail(mkIOError(NIL,
+	IOFail(mkIOError(NULL,
 			 nameIllegal,
 			 "IO.hGetPosn",
 			 "handle is closed",
-			 NIL));
+			 NULL));
     }
 #if HAVE_FTELL
     pos = ftell(handles[h].hfp);
     IOReturn(mkInt((Int)pos));
 #else
-    IOFail(mkIOError(NIL,
+    IOFail(mkIOError(NULL,
 		     nameIllegal,
 		     "IO.hGetPosn",
 		     "unsupported operation",
-		     NIL));
+		     NULL));
 #endif
 }
 
@@ -1198,11 +1198,11 @@ primFun(primHSetPosn) {			/* Set file position               */
     HandleArg(h,2+IOArity);
     IntArg(pos,1+IOArity);
     if (handles[h].hmode==HCLOSED) {
-	IOFail(mkIOError(NIL,
+	IOFail(mkIOError(NULL,
 			 nameIllegal,
 			 "IO.hSetPosn",
 			 "handle is closed",
-			 NIL));
+			 NULL));
     }
 #if HAVE_FSEEK
     fflush(handles[h].hfp);
@@ -1210,11 +1210,11 @@ primFun(primHSetPosn) {			/* Set file position               */
 	IOReturn(nameUnit);
     }
 #else
-    IOFail(mkIOError(NIL,
+    IOFail(mkIOError(NULL,
 		     nameIllegal,
 		     "IO.hSetPosn",
 		     "unsupported operation",
-		     NIL));
+		     NULL));
     }
 #endif
 }
@@ -1237,18 +1237,18 @@ primFun(primHSeek) {	/* Seek to new file posn */
 	sMode = SEEK_END;
 
     if (!(handles[h].hmode&(HWRITE|HREAD|HAPPEND|HREADWRITE))) {
-	IOFail(mkIOError(handles[h].hcell,
+	IOFail(mkIOError(&handles[h].hcell,
 			 nameIllegal,
 			 "IO.hSeek",
 			 "handle is not seekable",
-			 NIL));
+			 NULL));
     }
     if (fseek(handles[h].hfp,off,sMode) != 0) {
-	IOFail(mkIOError(handles[h].hcell,
+	IOFail(mkIOError(&handles[h].hcell,
 			 toIOError(errno),
 			 "IO.hSeek",
 			 toIOErrorDescr(errno,TRUE),
-			 NIL));
+			 NULL));
     }
 
     if (handles[h].hmode&HREADWRITE) {
@@ -1266,18 +1266,18 @@ primFun(primHLookAhead) { /* Peek at the next char */
     HandleArg(h,1+IOArity);
 
     if (!(handles[h].hmode&(HREAD|HREADWRITE|HWRITE))) {
-	IOFail(mkIOError(NIL,
+	IOFail(mkIOError(NULL,
 			 nameIllegal,
 			 "IO.hLookAhead",
 			 "handle is closed",
-			 NIL));
+			 NULL));
     }
     if (!(handles[h].hmode&(HREAD|HREADWRITE))) {
-	IOFail(mkIOError(handles[h].hcell,
+	IOFail(mkIOError(&handles[h].hcell,
 			 nameIllegal,
 			 "IO.hLookAhead",
 			 "handle is not readable",
-			 NIL));
+			 NULL));
     }
 #if CHAR_ENCODING
     if (handles[h].hLookAhead>=0) {
@@ -1287,11 +1287,11 @@ primFun(primHLookAhead) { /* Peek at the next char */
 #endif
     if (feof(handles[h].hfp) ||
 	(c = hGetChar(h, "IO.hLookAhead")) == EOF) {
-	IOFail(mkIOError(handles[h].hcell,
+	IOFail(mkIOError(&handles[h].hcell,
 			 nameEOFErr,
 			 "IO.hLookAhead",
 			 "end of file",
-			 NIL));
+			 NULL));
     }
 #if CHAR_ENCODING
     if (handles[h].hBinaryMode)
@@ -1315,11 +1315,11 @@ primFun(primHSetBuffering) {	/* Change a Handle's buffering */
     IntArg(sz,1+IOArity);
 
     if (handles[h].hmode==HCLOSED) {
-        IOFail(mkIOError(NIL,
+        IOFail(mkIOError(NULL,
 			 nameIllegal,
 		         "IO.hSetBuffering",
 		         "handle is closed",
-		         NIL));
+		         NULL));
     }
     switch(ty) {
     case 0:
@@ -1342,22 +1342,22 @@ primFun(primHSetBuffering) {	/* Change a Handle's buffering */
 	handles[h].hbufSize = sz;
 	break;
     default:
-	IOFail(mkIOError(handles[h].hcell,
+	IOFail(mkIOError(&handles[h].hcell,
 			 nameIllegal,
 			 "IO.hSetBuffering",
 			 "illegal buffer mode",
-			 NIL));
+			 NULL));
     }
 
     /* Change the buffering mode; setvbuf() flushes the old buffer. */
     /* Let setvbuf() allocate the buffer for us. */
     rc = setvbuf(handles[h].hfp, NULL, ty, sz);
     if (rc != 0) {
-	IOFail(mkIOError(handles[h].hcell,
+	IOFail(mkIOError(&handles[h].hcell,
 			 toIOError(errno),
 			 "IO.hSetBuffering",
 			 "unable to change buffering",
-			 NIL));
+			 NULL));
     }
 #if HAVE_ISATTY
     if ((handles[h].hmode&(HWRITE|HAPPEND|HREADWRITE)) &&
@@ -1373,11 +1373,11 @@ primFun(primHGetBuffering) {	/* Return buffering info of a handle. */
     HandleArg(h,1+IOArity);
 
     if (handles[h].hmode == HCLOSED) {
-        IOFail(mkIOError(NIL,
+        IOFail(mkIOError(NULL,
 			 nameIllegal,
 		         "IO.hGetBuffering",
 		         "handle is closed",
-		         NIL));
+		         NULL));
     }
     if (handles[h].hbufMode == HUNKNOWN_BUFFERING) {
 	/* figure out buffer mode and size. */
@@ -1447,11 +1447,11 @@ primFun(primHIsSeekable) {		/* Test if handle is writable   */
     }
     IOBoolResult(okHandle);
 #else
-    IOFail(mkIOError(handles[h].hcell,
+    IOFail(mkIOError(&handles[h].hcell,
 		     nameIllegal,
 		     "IO.hIsSeekable",
 		     "unsupported operation",
-		     NIL));
+		     NULL));
 #endif
 }
 
@@ -1467,26 +1467,26 @@ primFun(primHFileSize) {  /* If handle points to a regular file,
 
 #if HAVE_FSTAT
     if (!(handles[h].hmode&(HREAD|HWRITE|HREADWRITE|HAPPEND))) {
-	IOFail(mkIOError(handles[h].hcell,
+	IOFail(mkIOError(&handles[h].hcell,
 			 nameIllegal,
 			 "IO.hFileSize",
 			 "handle is (semi-)closed",
-			 NIL));
+			 NULL));
     }
     if (fstat(fileno(handles[h].hfp), &sb) != 0 || !S_ISREG(sb.st_mode)) {
-	IOFail(mkIOError(handles[h].hcell,
+	IOFail(mkIOError(&handles[h].hcell,
 			 nameIllegal,
 			 "IO.hFileSize",
 			 "not a regular file",
-			 NIL));
+			 NULL));
     }
     IOReturn(bigWord(sb.st_size));
 #else
-    IOFail(mkIOError(handles[h].hcell,
+    IOFail(mkIOError(&handles[h].hcell,
 		     nameIllegal,
 		     "IO.hFileSize",
 		     "unsupported operation",
-		     NIL));
+		     NULL));
 #endif
   }
 
@@ -1504,13 +1504,13 @@ primFun(primGetHandleNumber) {
 }
 
 primFun(primReadFile) {			/* read file as lazy string	   */
-    Cell hnd = openHandle(root,IOArg(1),HREAD,FALSE,"Prelude.readFile");
+    Cell hnd = openHandle(root,&IOArg(1),HREAD,FALSE,"Prelude.readFile");
     handles[intValOf(hnd)].hmode = HSEMICLOSED;
     IOReturn(ap(nameHreader,hnd));
 }
 
 primFun(primReadBinaryFile) {		/* read file as lazy string	   */
-    Cell hnd = openHandle(root,IOArg(1),HREAD,TRUE,"IOExtensions.readBinaryFile");
+    Cell hnd = openHandle(root,&IOArg(1),HREAD,TRUE,"IOExtensions.readBinaryFile");
     handles[intValOf(hnd)].hmode = HSEMICLOSED;
     IOReturn(ap(nameHreader,hnd));
 }
@@ -1522,11 +1522,11 @@ primFun(primHSetBinaryMode) {
     BoolArg(binary, 1+IOArity);
 
     if (handles[h].hmode==HCLOSED) {
-        IOFail(mkIOError(NIL,
+        IOFail(mkIOError(NULL,
 			 nameIllegal,
 		         "System.IO.hSetBinaryMode",
 		         "invalid handle",
-			 NIL));
+			 NULL));
     }
 #if defined(mingw32_TARGET_OS) || defined(_MSC_VER)
     setmode(fileno(handles[h].hfp), binary ? _O_BINARY : _O_TEXT);
@@ -1547,26 +1547,26 @@ primFun(primHPutBuf) {			/* write binary data from a buffer   */
 
     /* argument checks */
     if (!(handles[h].hmode & (HWRITE | HAPPEND | HREADWRITE))) {
-	IOFail(mkIOError(handles[h].hcell,
+	IOFail(mkIOError(&handles[h].hcell,
 			 nameIllegal,
 			 "System.IO.hPutBuf",
 			 "handle is not writable",
-			 NIL));
+			 NULL));
     }
     if (size < 0) {
-	IOFail(mkIOError(handles[h].hcell,
+	IOFail(mkIOError(&handles[h].hcell,
 			 nameIllegal,
 			 "System.IO.hPutBuf",
 			 "illegal buffer size",
-			 NIL));
+			 NULL));
     }
 #if CHAR_ENCODING
     if (!handles[h].hBinaryMode) {
-	IOFail(mkIOError(handles[h].hcell,
+	IOFail(mkIOError(&handles[h].hcell,
 			 nameIllegal,
 			 "System.IO.hPutBuf",
 			 "not a binary handle",
-			 NIL));
+			 NULL));
     }
 #endif
 
@@ -1580,11 +1580,11 @@ primFun(primHPutBuf) {			/* write binary data from a buffer   */
     while (size > 0) {
 	size -= (Int)fwrite(buf, 1, size, handles[h].hfp);
 	if (errno < 0) {
-	    IOFail (mkIOError(handles[h].hcell,
+	    IOFail (mkIOError(&handles[h].hcell,
 			      toIOError(errno),
 			      "System.IO.hPutBuf",
 			      toIOErrorDescr(errno,TRUE),
-			      NIL));
+			      NULL));
 	}
     }
 
@@ -1602,26 +1602,26 @@ primFun(primHGetBuf) {			/* read binary data into a buffer   */
 
     /* argument checks */
     if (!(handles[h].hmode & (HREAD | HREADWRITE))) {
-	IOFail(mkIOError(handles[h].hcell,
+	IOFail(mkIOError(&handles[h].hcell,
 			 nameIllegal,
 			 "System.IO.hGetBuf",
 			 "handle is not readable",
-			 NIL));
+			 NULL));
     }
     if (size < 0) {
-	IOFail(mkIOError(handles[h].hcell,
+	IOFail(mkIOError(&handles[h].hcell,
 			 nameIllegal,
 			 "System.IO.hGetBuf",
 			 "illegal buffer size",
-			 NIL));
+			 NULL));
     }
 #if CHAR_ENCODING
     if (!handles[h].hBinaryMode) {
-	IOFail(mkIOError(handles[h].hcell,
+	IOFail(mkIOError(&handles[h].hcell,
 			 nameIllegal,
 			 "System.IO.hGetBuf",
 			 "not a binary handle",
-			 NIL));
+			 NULL));
     }
 #endif
 
@@ -1644,11 +1644,11 @@ primFun(primHGetBuf) {			/* read binary data into a buffer   */
 	while (size > 0 && !feof(handles[h].hfp)) {
 	    size -= (Int)fread(buf, 1, size, handles[h].hfp);
 	    if (errno != 0) {
-		IOFail (mkIOError(handles[h].hcell,
+		IOFail (mkIOError(&handles[h].hcell,
 				  toIOError(errno),
 				  "System.IO.hGetBuf",
 				  toIOErrorDescr(errno,TRUE),
-				  NIL));
+				  NULL));
 	    }
 	}
     }
@@ -1683,11 +1683,11 @@ String   loc; {
     String stmode;
 
     if (!s) {
-        IOFail(mkIOError(NIL,
+        IOFail(mkIOError(NULL,
 			 nameIllegal,
 			 loc,
 		         "illegal file name",
-			 IOArg(2)));
+			 &IOArg(2)));
     }
     /* Note: there used to be a test here which would signal an
        IO error if the file didn't exist and the user was
@@ -1697,11 +1697,11 @@ String   loc; {
 
     stmode = modeString(hmode,binary);
     if  ( (wfp = fopen(s,stmode)) == NULL ) {
-	IOFail (mkIOError(NIL,
+	IOFail (mkIOError(NULL,
 			  toIOError(errno),
 			  loc,
 			  toIOErrorDescr(errno,TRUE),
-			  IOArg(2)));
+			  &IOArg(2)));
     }
     
     blackHoleRoot();
@@ -1729,11 +1729,11 @@ primFun(primHWaitForInput) { /* Check whether a character can be read
     
 #if defined(HAVE_SELECT)
     if (!(handles[h].hmode&(HREAD|HREADWRITE))) {
-	IOFail(mkIOError(handles[h].hcell,
+	IOFail(mkIOError(&handles[h].hcell,
 			 nameIllegal,
 			 "IO.hWaitForInput",
 			 "handle is not readable",
-			 NIL));
+			 NULL));
     }
     {
 	/* Implementation is a rip-off of GHC's inputReady.c */
@@ -1752,11 +1752,11 @@ primFun(primHWaitForInput) { /* Check whether a character can be read
 	
 	while ( (ready = select(maxfd, &rfd, NULL, NULL, &tv)) < 0 ) {
 	    if (errno != EINTR) {
-		IOFail(mkIOError(handles[h].hcell,
+		IOFail(mkIOError(&handles[h].hcell,
 				 nameIllegal,
 				 "IO.hWaitForInput",
 				 "input waiting terminated by signal",
-				 NIL));
+				 NULL));
 	    }
 	}
 	IOBoolResult(ready > 0);
@@ -1765,11 +1765,11 @@ primFun(primHWaitForInput) { /* Check whether a character can be read
     /* For now, punt on implementing async IO under Win32 */
     /* For other platforms that don't support select() on file
        file descs, please insert code that'll work. */
-    IOFail(mkIOError(handles[h].hcell,
+    IOFail(mkIOError(&handles[h].hcell,
 		     nameIllegal,
 		     "IO.hWaitForInput",
 		     "unsupported operation",
-		     NIL));
+		     NULL));
 #endif
 }
 
@@ -1777,11 +1777,11 @@ primFun(primHIsTerminalDevice) { /* Does the handle refer to a terminal? */
     Int h;
     HandleArg(h, 1+IOArity);
     if (handles[h].hmode==HCLOSED) {
-	IOFail(mkIOError(NIL,
+	IOFail(mkIOError(NULL,
 			 nameIllegal,
 			 "System.IO.hIsTerminalDevice",
 			 "invalid handle",
-			 NIL));
+			 NULL));
     }
 #if HAVE_ISATTY
     IOBoolResult(isatty(fileno(handles[h].hfp)));
@@ -1795,11 +1795,11 @@ primFun(primHGetEcho) {
     Int fd;
     HandleArg(h, 1+IOArity);
     if (handles[h].hmode==HCLOSED) {
-        IOFail(mkIOError(NIL,
+        IOFail(mkIOError(NULL,
 			 nameIllegal,
 		         "System.IO.hGetEcho",
 		         "invalid handle",
-			 NIL));
+			 NULL));
     }
     fd = fileno(handles[h].hfp);
 #if HAVE_ISATTY
@@ -1816,11 +1816,11 @@ primFun(primHSetEcho) {
     HandleArg(h, 2+IOArity);
     BoolArg(echo, 1+IOArity);
     if (handles[h].hmode==HCLOSED) {
-        IOFail(mkIOError(NIL,
+        IOFail(mkIOError(NULL,
 			 nameIllegal,
 		         "System.IO.hSetEcho",
 		         "invalid handle",
-			 NIL));
+			 NULL));
     }
     fd = fileno(handles[h].hfp);
 #if HAVE_ISATTY
@@ -1895,11 +1895,11 @@ primFun(primEqRef) {			/* Ref a -> Ref a -> Bool	   */
 primFun(primMakeSP) {			/* a -> IO (StablePtr a)	   */
     HugsStablePtr sp = mkStablePtr(IOArg(1));
     if (sp == 0) {
-        IOFail(mkIOError(NIL,
+        IOFail(mkIOError(NULL,
 			 nameIllegal,
 			 "Foreign.makeStablePtr",
 		         "illegal operation",
-			 NIL));
+			 NULL));
     }
     IOReturn(mkInt(sp));
 }
