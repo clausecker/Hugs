@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: type.c,v $
- * $Revision: 1.38 $
- * $Date: 2001/12/13 18:51:18 $
+ * $Revision: 1.39 $
+ * $Date: 2002/01/09 14:10:05 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1363,6 +1363,8 @@ Cell e;
 List qss; {
     List pss, ass;
     List zpat, zexp;
+    Int  len;
+    Text zName;
 #if IPARAM
     List svPreds;
 #endif
@@ -1388,10 +1390,20 @@ List qss; {
     leaveBindings();
 
     /* now, we construct a regular comprehension out of the parallel one */
-    zpat = mkTuple(length(qss));
-    zexp = findQualName(mkQVar(findText("List"),zipName(length(qss))));
-    if (isNull(zexp))
-        zexp = findQualName(mkQVar(findText("Prelude"),zipName(length(qss))));
+    len   = length(qss);
+    zName = zipName(len);
+    zpat  = mkTuple(len);
+    zexp  = findQualFun(findText("List"),zName);
+    if (isNull(zexp)) {
+      /* Why not just flag an error? [sof] */
+      zexp = findQualFun(findText(STD_PRELUDE),zName);
+    }
+    if (isNull(zexp)) {
+	ERRMSG(l) "\"%s\" not in scope (introduced by parallel comprehension)", textToStr(zName) ETHEN
+	ERRTEXT   "\n*** Possible cause: \"List\" library not loaded"
+	EEND;
+    
+    }
     for (pss=qss, ass=rev(gatheredAss);nonNull(pss);pss=tl(pss), ass=tl(ass)) {
 	List ps = tupleUp(getPats(hd(ass)));
 	zpat = ap(zpat, ps);
