@@ -579,17 +579,30 @@ but the occurrence of <literal>a</literal> in the signature of
 <function>cmp</function> is bound by the pattern <literal>(f::a-&gt;b)</literal>.
 </para>
 
-<para>
+<para>There are some differences with GHC's scoped type variables:</para>
+
+<itemizedlist>
+<listitem><para>
 In GHC, type variables bound by pattern annotations are existentially
 quantified, and so may be instantiated.
 Thus the following is accepted by GHC but not Hugs:
 <programlisting>
 g (xs::[a]) = xs ++ "\n"
 </programlisting>
+</para></listitem>
+
+<listitem><para>
+In GHC, type variables bound in the head of a class or instance declaration
+are bound in method definitions in the <literal>where</literal> part,
+but this is not the case in Hugs.
+</para></listitem>
+
+<listitem><para>
 GHC also allows <emphasis>result type signatures</emphasis>,
 where a type signature is attached to the left side of a function definition,
 but Hugs does not.
-</para>
+</para></listitem>
+</itemizedlist>
 
 </sect1>
 
