@@ -81,7 +81,6 @@ typedef struct tagOneBufferKey {
 } ONE_BUFFER_KEY;
 
 
-
 /* --------------------------------------------------------------------------
  * Local functions protoypes:
  * ------------------------------------------------------------------------*/
@@ -162,6 +161,7 @@ static VOID             WinMoveTo               (HWND, UINT, UINT);
 #define FIRST_ROW		     1  /* rows are in [1..twi->Rows]	    */
 #define FIRST_COL		     1  /* cols are in [1..twi->Cols]	    */
 
+typedef CHAR (*BufferEdPrevType)[EDIT_BUFFER_MAX_LENGTH+1];
 
 /* --------------------------------------------------------------------------
  * The color palette:
@@ -2689,7 +2689,7 @@ CHAR *WinGets(HWND hWnd, CHAR *s)
 
  twi = (TEXTWINDOWINFO*) GetWindowLong(hWnd, 0);
 
- BufferEdPrev = (FPOINTER*) GlobalLock(twi->hBufferEdPrev);
+ BufferEdPrev = (BufferEdPrevType) GlobalLock(twi->hBufferEdPrev);
  iscursor = WinSetcursor(hWnd, TRUE);
  twi->InEdit = TRUE;
  twi->EdStr = (FPOINTER)s;
@@ -2864,7 +2864,7 @@ INT WinGetc (HWND hWnd, FILE *fp)
   twi = (TEXTWINDOWINFO*) GetWindowLong(hWnd, 0);
 
   BufferEd = (FPOINTER)GlobalLock(twi->hBufferEd);
-  BufferEdPrev = (FPOINTER*) GlobalLock(twi->hBufferEdPrev);
+  BufferEdPrev = (BufferEdPrevType)GlobalLock(twi->hBufferEdPrev);
 
   while (twi->IoInx < 0) { /* If BufferEd is empty fill it */
 
@@ -3042,19 +3042,6 @@ INT cdecl hWndTextPrintf (const CHAR * format, ...)
 static VOID MyMemMove (FPOINTER dest, FPOINTER src, ULONG n)
 {
   memmove((void far *) dest, (void far *) src, (size_t) n);
-/*  ULONG BytesLeft, nBytes;
-
-  BytesLeft = n;
-
-  do {
-    nBytes = min (BytesLeft, 32767U);
-    memmove((void far *) dest, (void far *) src, (size_t)nBytes);
-
-    dest += nBytes;
-    src  += nBytes;
-    BytesLeft -= nBytes;
-  } while (BytesLeft);
-*/
 }
 
 /* Set n bytes to value at dest */
@@ -3062,14 +3049,5 @@ static VOID MyMemSet (FPOINTER dest, CHAR value, ULONG n)
 {
 
  memset((void far *)dest, (int) value, (size_t) n);
-/*
-  FPOINTER end;
-
-  for (end=dest+n; dest<end; dest++)
-    *dest = value;
-*/
 }
-
-
-
 #endif // HUGS_FOR_WINDOWS
