@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: builtin.c,v $
- * $Revision: 1.56 $
- * $Date: 2003/03/21 01:08:01 $
+ * $Revision: 1.57 $
+ * $Date: 2003/04/03 15:44:10 $
  * ------------------------------------------------------------------------*/
 
 /* We include math.h before prelude.h because SunOS 4's cpp incorrectly
@@ -1125,13 +1125,13 @@ FloatFloat2Float(primPlusFloat,x+y)    /* Float addition primitive         */
 FloatFloat2Float(primMinusFloat,x-y)   /* Float subtraction primitive      */
 FloatFloat2Float(primMulFloat,x*y)     /* Float multiplication primitive   */
 Float2Float(primNegFloat,-x)           /* Float negation primitive         */
-FloatFloat2FloatNonZero(primDivFloat,x/y)/* Float division primitive       */
+FloatFloat2Float(primDivFloat,x/y)     /* Float division primitive       */
 
-DoubleDouble2Double(primPlusDouble,x+y)/* Double addition primitive        */
+DoubleDouble2Double(primPlusDouble,x+y) /* Double addition primitive        */
 DoubleDouble2Double(primMinusDouble,x-y)/* Double subtraction primitive    */
-DoubleDouble2Double(primMulDouble,x*y) /* Double multiplication primitive  */
-Double2Double(primNegDouble,-x)        /* Double negation primitive        */
-DoubleDouble2DoubleNonZero(primDivDouble,x/y)/* Double division primitive  */
+DoubleDouble2Double(primMulDouble,x*y)  /* Double multiplication primitive  */
+Double2Double(primNegDouble,-x)         /* Double negation primitive        */
+DoubleDouble2Double(primDivDouble,x/y)  /* Double division primitive  */
 
 #ifdef HAVE_LIBM
 Float2Float(primSinFloat,sin(x))       /* Float sin (trig) primitive       */
