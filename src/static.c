@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.100 $
- * $Date: 2002/09/17 03:40:33 $
+ * $Revision: 1.101 $
+ * $Date: 2002/09/17 05:41:26 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -915,7 +915,7 @@ Pair importSpec; {
 	  /* Locate and remove the sub-entity. */
 	  Cell ls = entityIsMember(fst(hd(orphans)), imports);
 	  if (ls && isPair(hd(ls))) {
-	    snd(hd(ls)) = removeCell(hd(snd(hd(orphans))), snd(hd(ls)));
+	    snd(hd(ls)) = removeCell(hd(snd(hd(orphans))), dupList(snd(hd(ls))));
 	  }
 	}
 
@@ -1032,7 +1032,6 @@ Cell e; {
 	           return pair(ent,cs);
 		   
     default:   
-      fprintf(stderr, "%d\n", whatIs(ent)); fflush(stderr);
                internal("importEntity");
 	       return NIL;
     }
