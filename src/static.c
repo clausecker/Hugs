@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.118 $
- * $Date: 2002/11/03 03:56:04 $
+ * $Revision: 1.119 $
+ * $Date: 2002/11/03 04:19:07 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1207,6 +1207,9 @@ Cell e; {
 		for(;nonNull(ents);ents=tl(ents)) {
 		    Cell qid;
 		    Text txtNm;
+		    Name nm;
+		    Tycon tc;
+		    Class cc;
 		    
 		    /* Build the (alias) qualified entity and
 		       test whether it's in scope - ugly. */
@@ -1234,9 +1237,18 @@ Cell e; {
 			    internal("checkExport");
 			}
 		    }
-		    if ( (findName(txtNm)  && !isNull(findQualName(qid)))  ||
-		         (findTycon(txtNm) && !isNull(findQualTycon(qid))) ||
-			 (findClass(txtNm) && !isNull(findQualClass(qid))) ) {
+		    /* Check that the entity E is available 
+		     * as E (from module M) and A.E
+		     */
+		    if ( ( (nm = findName(txtNm))  && 
+		            name(nm).mod == m      &&
+			    !isNull(findQualName(qid)))  ||
+		         ( (tc = findTycon(txtNm)) &&
+			    tycon(tc).mod == m     &&
+			    !isNull(findQualTycon(qid))) ||
+			 ( (cc = findClass(txtNm)) && 
+			    cclass(cc).mod == m    && 
+			    !isNull(findQualClass(qid))) ) {
 			exports=cons(hd(ents),exports);
 		    }
 		}
