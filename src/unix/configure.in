@@ -126,7 +126,9 @@ AC_CHECK_HEADERS(
   stdarg.h stdlib.h unistd.h assert.h ctype.h string.h limits.h \
   fcntl.h sgtty.h termio.h termios.h signal.h \
   sys/stat.h sys/types.h sys/ioctl.h sys/resource.h sys/param.h \
-  console.h pascal.h Files.h errno.h stat.h nlist.h ftw.h direct.h dirent.h
+  sys/timers.h sys/utsname.h \
+  console.h pascal.h Files.h errno.h stat.h nlist.h ftw.h direct.h \
+  dirent.h utime.h vfork.h
   )
 
 AC_HEADER_TIME
@@ -139,7 +141,7 @@ dnl DOS include files
 AC_CHECK_HEADERS(dos.h conio.h io.h std.h) 
 
 dnl Windows include files
-AC_CHECK_HEADERS(windows.h)
+AC_CHECK_HEADERS(windows.h winsock.h)
 
 dnl dynamic loading include files
 AC_CHECK_HEADERS(dlfcn.h dl.h mach-o/dyld.h) 
@@ -294,14 +296,16 @@ AC_CHECK_FUNCS(sigprocmask)
 AC_CHECK_FUNCS(getrusage)
 AC_CHECK_FUNCS(times)
 AC_CHECK_FUNCS(isatty)
-AC_CHECK_FUNCS(fstat)
+AC_CHECK_FUNCS(fstat lstat)
 AC_CHECK_FUNCS(select)
+AC_CHECK_FUNCS(getclock)
 AC_CHECK_FUNCS(gettimeofday)
 AC_CHECK_FUNCS(ftime)
 AC_CHECK_FUNCS(time)
 AC_CHECK_FUNCS(localtime)
 AC_CHECK_FUNCS(gmtime)
 AC_CHECK_FUNCS(mktime)
+AC_CHECK_FUNCS(readdir_r)
 
 dnl--------------------------------------------------------------------
 dnl
