@@ -1,5 +1,8 @@
 /* src/config.h.in.  Generated from configure.ac by autoheader.  */
 
+/* platform-specific defines */
+#include "platform.h"
+
 /* The alignment of a `char'. */
 #undef ALIGNMENT_CHAR
 

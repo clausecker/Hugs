@@ -8,13 +8,12 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: prelude.h,v $
- * $Revision: 1.64 $
- * $Date: 2004/01/31 00:59:11 $
+ * $Revision: 1.65 $
+ * $Date: 2004/01/31 13:07:50 $
  * ------------------------------------------------------------------------*/
 #ifndef __PRELUDE_H__
 #define __PRELUDE_H__
 
-#include "platform.h"	/* platform-specific defines */
 #include "config.h"
 #include "options.h"
 #include <stdio.h>

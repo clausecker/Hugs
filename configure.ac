@@ -5,14 +5,16 @@ dnl produce a configure script.
 dnl
 dnl--------------------------------------------------------------------
 
-AC_INIT(src/hugs.c)
-
 dnl We need 2.50 for AC_HELP_STRING.
 AC_PREREQ(2.50)
+
+AC_INIT(src/hugs.c)
 
 AC_CONFIG_AUX_DIR(ac_aux)
 
 AC_CONFIG_HEADER(src/config.h src/options.h)
+AH_TOP([/* platform-specific defines */
+#include "platform.h"])
 
 dnl--------------------------------------------------------------------
 dnl Choose host(/target/build) platform
