@@ -12,9 +12,11 @@
  * Major releases are of the form "<month> <year>"
  * Minor releases are of the form "Version YYYYMMDD"
  * Anyone else should use a different format to avoid confusion.    
+ *
+ * But don't actually modify this file.  Use a script to do the dirty work.
  */
 #if MAJOR_RELEASE
-#define HUGS_VERSION "Oct 2002 RC1"
+#define HUGS_VERSION "MONTH_YEAR"
 #else
 #define HUGS_VERSION "SNAP YYYYMMDD"
 #endif
