@@ -2,7 +2,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 
 [assembly: AssemblyCompany("The sof company")]
-[assembly: AssemblyCopyright("Copyright (c) 2002, sof")]
+[assembly: AssemblyCopyright("Copyright (c) 2002-2003, sof")]
 [assembly: AssemblyTrademark("")]
 
 [assembly: AssemblyProduct("HsWrapGen")]

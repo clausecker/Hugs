@@ -1,3 +1,6 @@
+//
+// (c) sof, 2002-2003
+//
 using System;
 
 namespace HsWrapGen

@@ -1,3 +1,7 @@
+#
+# Makefile for hswrapgen, basic tool for generating
+# Haskell .NET declarations from a .NET type.
+#
 
 CSC=csc
 CSC_OPTS=
