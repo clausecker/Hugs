@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: storage.c,v $
- * $Revision: 1.71 $
- * $Date: 2003/06/12 12:53:21 $
+ * $Revision: 1.72 $
+ * $Date: 2003/08/05 17:26:32 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1583,7 +1583,7 @@ Module m; {
  * original state immediately before the file was read.
  * ------------------------------------------------------------------------*/
 
-typedef struct strScript{              /* record of storage state prior to */
+typedef struct strScriptStorage {      /* record of storage state prior to */
     Text  file;                        /* reading script/module            */
     Text  textHw;
     Text  nextNewText;
