@@ -98,6 +98,7 @@ if test -f $source_dir/config.mk; then
 	GLU_FRAMEWORKS="`sed -n 's/^GLU_FRAMEWORKS=//p' $source_dir/config.mk`"
 	GLU_LIBS="`sed -n 's/^GLU_LIBS=//p' $source_dir/config.mk`"
 	GLUT_EXTRA_LIBS="`sed -n 's/^GLUT_EXTRA_LIBS=//p' $source_dir/config.mk`"
+	test -n "$GLUT_EXTRA_LIBS" && GLUT_EXTRA_LIBS=", \"$GLUT_EXTRA_LIBS\""
 	GLUT_CFLAGS="`sed -n 's/^GLUT_CFLAGS=//p' $source_dir/config.mk`"
 	GLUT_FRAMEWORKS="`sed -n 's/^GLUT_FRAMEWORKS=//p' $source_dir/config.mk`"
 	GLUT_LIBS="`sed -n 's/^GLUT_LIBS=//p' $source_dir/config.mk`"
