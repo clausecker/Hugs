@@ -260,7 +260,7 @@ test_rts() {
   perl runstdtest $HUGS +q -pHugs: -s23 "-Orts/ioerror1.hs" "-irts/ioerror1.input" "-o1rts/ioerror1.output"
   perl runstdtest $HUGS +q -pHugs: -s17 "-Orts/ioerror2.hs" "-irts/ioerror2.input" "-o1rts/ioerror2.output"
 
-  perl runstdtest $HUGS +q -pHugs: -s51 "-Orts/mvar.hs" "-irts/mvar.input" "-o1rts/mvar.output"
+  perl runstdtest $HUGS +q -pHugs: -s57 "-Orts/mvar.hs" "-irts/mvar.input" "-o1rts/mvar.output"
 
   # Old test code - it will probably get resurrected at some stage
   # 
@@ -349,7 +349,7 @@ test_libs() {
   echo "--!!! Performing static tests on GHC-compatible libraries"
   perl runstdtest $HUGS +q -pHugs: Addr       -s16 "-o1libs/Loaded.output"
   perl runstdtest $HUGS +q -pHugs: Bits       -s16 "-o1libs/Loaded.output"
-  perl runstdtest $HUGS +q -pHugs: Concurrent -s47 "-o1libs/Loaded.output"
+  perl runstdtest $HUGS +q -pHugs: Concurrent -s53 "-o1libs/Loaded.output"
   perl runstdtest $HUGS +q -pHugs: Dynamic    -s35 "-o1libs/Loaded.output"
   perl runstdtest $HUGS +q -pHugs: Exception  -s16 "-o1libs/Loaded.output"
   perl runstdtest $HUGS +q -pHugs: Foreign    -s19 "-o1libs/Loaded.output"
@@ -357,7 +357,7 @@ test_libs() {
   perl runstdtest $HUGS +q -pHugs: IOExts     -s32 "-o1libs/Loaded.output"
   perl runstdtest $HUGS +q -pHugs: Int        -s19 "-o1libs/Loaded.output"
   perl runstdtest $HUGS +q -98 -pHugs: LazyST -s36 "-o1libs/Loaded.output"
-  perl runstdtest $HUGS +q -pHugs: NumExts    -s16 "-o1libs/Loaded.output"
+  perl runstdtest $HUGS +q -pHugs: NumExts    -s19 "-o1libs/Loaded.output"
   perl runstdtest $HUGS +q -pHugs: Pretty     -s16 "-o1libs/Loaded.output"
   perl runstdtest $HUGS +q -98 -pHugs: ST     -s36 "-o1libs/Loaded.output"
   perl runstdtest $HUGS +q -pHugs: Stable     -s16 "-o1libs/Loaded.output"
@@ -380,8 +380,8 @@ test_libs() {
   perl runstdtest $HUGS +q -pHugs: Int     -s24 "-Olibs/intTest.hs" "-ilibs/intTest.input" "-o1libs/intTest.output"
   perl runstdtest $HUGS +q -pHugs: libs/FixIO.lhs -s37 "-ilibs/FixIO.input" "-o1libs/FixIO.output"
   perl runstdtest $HUGS +q -pHugs: libs/testAddr.hs -s20 "-ilibs/Addr.input" "-o1libs/Addr.output"
-  perl runstdtest $HUGS +q -pHugs: libs/prodcon.hs -s51 "-ilibs/prodcon.input" "-o1libs/prodcon.output"
-  perl runstdtest $HUGS +q -pHugs: libs/except1.hs -s53 "-ilibs/except1.input" "-o1libs/except1.output"
+  perl runstdtest $HUGS +q -pHugs: libs/prodcon.hs -s57 "-ilibs/prodcon.input" "-o1libs/prodcon.output"
+  perl runstdtest $HUGS +q -pHugs: libs/except1.hs -s57 "-ilibs/except1.input" "-o1libs/except1.output"
 
 } # End of test_libs
 
