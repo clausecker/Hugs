@@ -19,7 +19,7 @@ cpp_flags='-D__HUGS__'
 cc=${CC-@CC@}
 : ${cpp='gcc -P -E -traditional -xc'}
 : ${hsc2hs=hsc2hs}
-: ${greencard=green-card}
+: ${greencard=greencard}
 : ${ffihugs=@BINDIR@/ffihugs}
 : ${runhugs=@BINDIR@/runhugs}
 : ${HUGSDIR=@HUGSDIR@}
@@ -81,9 +81,15 @@ extract_includes() {
 }
 
 hack_foreign() {
-	sed '	/^foreign[	 ]/ {
-			s/"\([^ ]*\)"/"'"$1"' \1"/
+	sed '	/^[ 	]*foreign[	 ]/ {
 			s/CALLCONV/'"$CALLCONV"'/
+			/export/ n
+			/"dynamic/ n
+			/"wrapper/ n
+			s/"\([^ ]*\)"/"'"$1"' \1"/
+			s/"static \([^ ]*\)"/"static '"$1"' \1"/
+			s/"static"/"static '"$1"'"/
+			/"/ ! s/\([a-z][a-zA-Z0-9_]*\)[ 	]*::/"'"$1"' \1" &/
 		}'
 }
 
