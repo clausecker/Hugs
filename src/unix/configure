@@ -591,7 +591,7 @@ test -n "$YACC" && break
 done
 test -n "$YACC" || YACC="yacc"
 
-if (test "${YACC}x" == "byaccx"); then
+if (test "`basename ${YACC}`x" == "byaccx"); then
    echo "Found 'byacc', but the Hugs98 parser is incompatible with it."
    echo "You need to install 'bison' and re-run the configure script."
    exit 1;

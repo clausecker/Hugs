@@ -2,8 +2,8 @@ dnl ################################################################
 dnl Process this file with autoconf to produce a configure script.
 dnl
 dnl $RCSfile: configure.in,v $
-dnl $Revision: 1.15 $
-dnl $Date: 2001/08/10 01:08:09 $
+dnl $Revision: 1.16 $
+dnl $Date: 2001/09/17 22:24:12 $
 dnl ################################################################
 
 AC_INIT(../hugs.c)
@@ -15,7 +15,7 @@ dnl ################################################################
 
 dnl ToDo: if we have YACC, insert parser.c: parser.y in Makefile
 AC_PROG_YACC
-if (test "${YACC}x" == "byaccx"); then
+if (test "`basename ${YACC}`x" == "byaccx"); then
    echo "Found 'byacc', but the Hugs98 parser is incompatible with it."
    echo "You need to install 'bison' and re-run the configure script."
    exit 1;
