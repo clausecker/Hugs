@@ -9,8 +9,8 @@
  * included in the distribution.
  *
  * $RCSfile: storage.h,v $
- * $Revision: 1.12 $
- * $Date: 2000/12/13 08:28:57 $
+ * $Revision: 1.13 $
+ * $Date: 2000/12/13 09:01:54 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -557,6 +557,8 @@ struct strName {
     Cell type;
     Cell defn;
     Addr code;
+    Text callconv;                      /* for foreign import/export       */
+    Text extFun;                        /* for foreign import/export       */
     Prim primDef;
     Name nextNameHash;
 #if PROFILING

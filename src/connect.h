@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: connect.h,v $
- * $Revision: 1.12 $
- * $Date: 2000/12/13 08:44:30 $
+ * $Revision: 1.13 $
+ * $Date: 2000/12/13 09:01:54 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -306,6 +306,14 @@ extern  Void   h98CheckCtxt	Args((Int,String,Bool,List,Inst));
 extern  Void   h98CheckType	Args((Int,String,Cell,Type));
 extern  Void   h98DoesntSupport	Args((Int,String));
 
+extern  Void   ffi              Args((Int));
+extern  Void   foreignHeader    Args((Void));
+extern  Void   foreignFooter    Args((List,List,List));
+extern  Void   implementForeignImport Args((Int,Bool,Text,List,List,Bool));
+extern  Void   implementForeignExport Args((Int,Bool,Text,List,List,Bool));
+extern  Void   implementForeignLabel  Args((Int,Text,Text));
+extern  Bool   generate_ffi;
+
 extern  Void   typeChecker      Args((Int));
 extern  Type   typeCheckExp	Args((Bool));
 extern  Void   typeCheckDefns	Args((Void));
@@ -380,6 +388,7 @@ extern  String findMPathname    Args((String,String,String));
 #if PROFILING
 extern  String timeString	Args((Void));
 #endif
+extern  String mkFFIFilename    Args((String));
 
 extern  Int    shellEsc		Args((String));
 extern  Int    getTerminalWidth Args((Void));

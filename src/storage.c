@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: storage.c,v $
- * $Revision: 1.11 $
- * $Date: 2000/12/13 08:28:57 $
+ * $Revision: 1.12 $
+ * $Date: 2000/12/13 09:01:54 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -481,6 +481,8 @@ Cell parent; {
     name(nameHw).number       = EXECNAME;
     name(nameHw).defn         = NIL;
     name(nameHw).type         = NIL;
+    name(nameHw).callconv     = 0;
+    name(nameHw).extFun       = 0;
     name(nameHw).primDef      = 0;
     name(nameHw).code         = 0;
 #if !IGNORE_MODULES

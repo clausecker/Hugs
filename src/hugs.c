@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.24 $
- * $Date: 2000/09/14 05:49:35 $
+ * $Revision: 1.25 $
+ * $Date: 2000/12/13 09:01:54 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -2193,6 +2193,7 @@ Int what; {                     /* system to respond as appropriate ...    */
     builtIn(what);
     controlFuns(what);
     plugins(what);
+    ffi(what);
 }
 
 /* --------------------------------------------------------------------------

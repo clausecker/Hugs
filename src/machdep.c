@@ -12,8 +12,8 @@
  * included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.8 $
- * $Date: 2000/03/08 14:31:10 $
+ * $Revision: 1.9 $
+ * $Date: 2000/12/13 09:01:54 $
  * ------------------------------------------------------------------------*/
 
 #ifdef HAVE_SIGNAL_H
@@ -1438,6 +1438,22 @@ String file; {
     return dllPath;
 }
 
+String mkFFIFilename(file)                      /* get DLL path for module */
+String file; {
+    static char path[MAXPATHLEN+1];
+    String dot;
+    String slash;
+    slash = strrchr(file,SLASH);        /* drop path to file                */
+    if (slash) {
+	file = slash;
+    }
+    dot = strrchr(file,'.');           /* patch file extension             */
+    dot = dot ? dot : file + strlen(file);
+    strcpy(path, file);
+    strcpy(path + (dot - file),".c");
+    return path;
+}
+
 extern String scriptFile;
 
 #ifdef LEADING_UNDERSCORE
@@ -1469,6 +1485,16 @@ Int version; {
 		getDLLSymbol(mkDLLFilename(scriptFile),INIT_MODULE_FUN);
 	    if (initModule) {
 		(*initModule)(hugsAPI2()); 
+		return;
+	    }
+	    break;
+	}
+    case 3 : 
+	{ 
+	    InitModuleFun3 initModule = (InitModuleFun3) 
+		getDLLSymbol(mkDLLFilename(scriptFile),INIT_MODULE_FUN);
+	    if (initModule) {
+		(*initModule)(hugsAPI3()); 
 		return;
 	    }
 	    break;

@@ -45,14 +45,15 @@ CP		= @CP@
 HFILES		= prelude.h config.h options.h storage.h connect.h \
 		  errors.h command.h server.h subst.h
 CFILES		= hugs.c storage.c input.c static.c type.c subst.c \
-		  output.c compiler.c machine.c builtin.c server.c
+		  output.c compiler.c machine.c builtin.c server.c \
+		  ffi.c
 INCFILES	= parser.c preds.c bignums.c machdep.c timer.c scc.c \
 		  printer.c iomonad.c interns.c stmonad.c array.c
 YFILES		= parser.y
 SOURCES		= $(HFILES) $(CFILES) $(INCFILES) $(YFILES) 
 OBJECTS		= storage@OBJ@ input@OBJ@    static@OBJ@ type@OBJ@    \
 		  subst@OBJ@   compiler@OBJ@ plugin@OBJ@ builtin@OBJ@ \
-		  machine@OBJ@ output@OBJ@
+		  machine@OBJ@ output@OBJ@ ffi@OBJ@
 IOBJECTS	= hugs@OBJ@ $(OBJECTS)
 PRELUDE		= config.h options.h prelude.h win-text.h
 
