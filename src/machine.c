@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: machine.c,v $
- * $Revision: 1.10 $
- * $Date: 2002/10/10 14:57:25 $
+ * $Revision: 1.11 $
+ * $Date: 2002/11/02 00:21:33 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -86,12 +86,14 @@ Addr m; {
     return intAt(m);
 }
 
-#if !BREAK_FLOATS
 Float FloatAt(m)
 Addr m; {
+#if BREAK_FLOATS
+    return floatFromParts(cellAt(m),cellAt(m+1));
+#else
     return floatAt(m);
-}
 #endif
+}
 
 Cell CellAt(m)
 Addr m; {

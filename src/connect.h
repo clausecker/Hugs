@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: connect.h,v $
- * $Revision: 1.53 $
- * $Date: 2002/10/31 01:41:02 $
+ * $Revision: 1.54 $
+ * $Date: 2002/11/02 00:21:32 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -403,9 +403,7 @@ extern  Void   evalFails        Args((StackPtr));
 
 #if BYTECODE_PRIMS
 extern Int     IntAt            Args((Addr));
-#if !BREAK_FLOATS
 extern Float   FloatAt          Args((Addr));
-#endif
 extern Cell    CellAt           Args((Addr));
 extern Text    TextAt           Args((Addr));
 extern Addr    AddrAt           Args((Addr));

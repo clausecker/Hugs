@@ -11,8 +11,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: interns.c,v $
- * $Revision: 1.6 $
- * $Date: 2002/04/11 23:20:18 $
+ * $Revision: 1.7 $
+ * $Date: 2002/11/02 00:21:33 $
  * ------------------------------------------------------------------------*/
  
 /* --------------------------------------------------------------------------
@@ -36,7 +36,7 @@ Int what; {
 #undef predef
 		       break;
 
-	case RESET   : linkInternals();
+	case RESET :   linkInternals();
 		       break;
     }
 }
@@ -52,9 +52,7 @@ PROTO_PRIM(primNameString);
 #if BYTECODE_PRIMS
 PROTO_PRIM(primNameCode);
 PROTO_PRIM(primIntAt);
-#if !BREAK_FLOATS
 PROTO_PRIM(primFloatAt);
-#endif
 PROTO_PRIM(primCellAt);
 PROTO_PRIM(primNameAt);
 PROTO_PRIM(primBytecodeAt);
@@ -74,9 +72,7 @@ static struct primitive internalPrimTable[] = {
 #if BYTECODE_PRIMS
   {"nameCode",      1, primNameCode},
   {"intAt",         1, primIntAt},
-#if !BREAK_FLOATS       
   {"floatAt",       1, primFloatAt},
-#endif		        
   {"cellAt",        1, primCellAt},
   {"nameAt",        1, primNameAt},
   {"bytecodeAt",    1, primBytecodeAt},
@@ -107,7 +103,8 @@ static Name nameHugsPrim;             /*    	       | Prim  String      */
 static Name nameHugsError;            /*    	       | Error Cell        */
 
 static Void linkInternals() {
-    moduleInternals = findModule(findText("HugsInternals"));
+    String internLib = (newLibraries ? "Hugs.Internals" : "HugsInternals");
+    moduleInternals = findModule(findText(internLib));
     if (nonNull(moduleInternals)) {
 	setCurrModule(moduleInternals);
 	nameHugsApply   = findName(findText("Apply"));
@@ -390,13 +387,11 @@ primFun(primIntAt) {                  /* Obtain Int at address             */
   IntResult(IntAt(m));
 }
 
-#if !BREAK_FLOATS
 primFun(primFloatAt) {                /* Obtain float at address           */
   Addr m;                             /*  :: Addr -> Cell                  */
   IntArg(m,1);
   FloatResult(FloatAt(m));
 }
-#endif
 
 primFun(primCellAt) {                 /* Obtain cell at address            */
   Addr m;                             /*  :: Addr -> Cell                  */
