@@ -64,6 +64,7 @@ module Prelude (
     IO(..), IOResult(..), primExitWith, Addr, Word, StablePtr, ForeignObj,
     basicIORun, IOFinished(..),
     threadToIOResult,
+    HugsException, catchHugsException, primThrowException,
 
     Bool(False, True),
     Maybe(Nothing, Just),
@@ -1621,11 +1622,12 @@ toObj   = unsafeCoerce
 fromObj :: Obj -> a
 fromObj = unsafeCoerce
 
-
 newtype IO a = IO ((IOError -> IOResult) -> (a -> IOResult) -> IOResult)
+
 data IOResult 
   = Hugs_ExitWith    Int
   | Hugs_Error       IOError
+  | Hugs_Catch       IOResult (HugsException -> IOResult) (IOError -> IOResult) (Obj -> IOResult)
   | Hugs_ForkThread  IOResult IOResult
   | Hugs_DeadThread
   | Hugs_YieldThread IOResult
@@ -1638,6 +1640,20 @@ data IOFinished a
 
 hugsPutStr :: String -> IO ()
 hugsPutStr  = putStr
+
+data HugsException
+primitive primCatchException :: a -> Either HugsException a
+primitive primThrowException :: HugsException -> a
+primitive primShowException  :: HugsException -> String
+
+instance Show HugsException where showsPrec _ x r = primShowException x ++ r
+
+catchHugsException :: IO a -> (HugsException -> IO a) -> IO a
+catchHugsException (IO m) k = IO $ \ f s ->
+  Hugs_Catch (m Hugs_Error (Hugs_Return . toObj))
+             (\ e -> case (k e) of { IO k' -> k' f s })
+             f
+             (s . fromObj)
 
 hugsIORun  :: IO a -> Either Int a
 hugsIORun m = 
@@ -1656,6 +1672,7 @@ hugsIORun m =
 basicIORun :: IO a -> IOFinished a
 basicIORun (IO m) = loop [m Hugs_Error (Hugs_Return . toObj)]
 
+
 threadToIOResult :: IO a -> IOResult
 threadToIOResult (IO m) = m Hugs_Error (const Hugs_DeadThread)
 
@@ -1665,12 +1682,26 @@ loop :: [IOResult] -> IOFinished a
 loop []                      = error "no more threads (deadlock?)"
 loop [Hugs_Return   a]       = Finished_Return (fromObj a)
 loop (Hugs_Return   a:r)     = loop (r ++ [Hugs_Return a])
+loop (Hugs_Catch m f1 f2 s:r)= loop (hugs_catch m f1 f2 s : r)
 loop (Hugs_Error    e:_)     = Finished_Error  e
 loop (Hugs_ExitWith i:_)     = Finished_ExitWith i
 loop (Hugs_DeadThread:r)     = loop r
 loop (Hugs_ForkThread a b:r) = loop (a:b:r)
 loop (Hugs_YieldThread a:r)  = loop (r ++ [a])
 loop _                       = undefined
+
+hugs_catch :: IOResult -> (HugsException -> IOResult) -> (IOError -> IOResult) -> (Obj -> IOResult) -> IOResult
+hugs_catch m f1 f2 s = case primCatchException (catch' m) of
+  Left  exn                   -> f1 exn
+  Right (Hugs_Return a)       -> s a
+  Right (Hugs_Error e)        -> f2 e
+  Right (Hugs_ForkThread a b) -> Hugs_ForkThread (Hugs_Catch a f1 f2 s) b
+  Right (Hugs_YieldThread a)  -> Hugs_YieldThread (Hugs_Catch a f1 f2 s)
+  Right r                     -> r
+ where
+  catch' :: IOResult -> IOResult
+  catch' (Hugs_Catch m' f1' f2' s') = hugs_catch m' f1' f2' s'
+  catch' x                          = x
 
 primExitWith     :: Int -> IO a
 primExitWith c    = IO (\ f s -> Hugs_ExitWith c)

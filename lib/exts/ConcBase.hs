@@ -53,7 +53,8 @@ import IOExts
 -- The interface
 ----------------------------------------------------------------
 
-forkIO      :: IO () -> IO () -- Spawn a thread
+forkIO       :: IO () -> IO () -- Spawn a thread
+yield        :: IO ()
 
 newEmptyMVar :: IO (MVar a)
 newMVar      :: a -> IO (MVar a)
@@ -63,10 +64,8 @@ putMVar      :: MVar a -> a -> IO ()
 instance Eq (MVar a) where
   (==) = primEqMVar
 
-swapMVar :: MVar a -> a -> IO a
-
-readMVar :: MVar a -> IO a
-
+swapMVar    :: MVar a -> a -> IO a
+readMVar    :: MVar a -> IO a
 isEmptyMVar :: MVar a -> IO Bool
 
 ----------------------------------------------------------------
@@ -90,8 +89,7 @@ readMVar mvar =
 kill :: IO a
 kill = IO (\f s -> Hugs_DeadThread)
 
-yield   :: IO ()
-yield    = IO (\ f s -> Hugs_YieldThread (s ()))
+yield = IO (\ f s -> Hugs_YieldThread (s ()))
 
 -- kill current thread passing its continuation to m
 blockIO :: ((a -> IOResult) -> IO b) -> IO a
@@ -105,12 +103,19 @@ continueIO cc = IO (\ f s -> Hugs_ForkThread (s ()) cc)
 
 -- The thread is scheduled immediately and runs with its own success/error
 -- continuations.
-forkIO m = continueIO (threadToIOResult (m `catch` forkErrHandler))
+forkIO m = continueIO (threadToIOResult ((m `catchHugsException` forkExnHandler) `catch` forkErrHandler))
 
 forkErrHandler :: IOError -> IO a
 forkErrHandler e = do
     putStr "Uncaught error in forked process: \n  "
-    putStr (ioeGetErrorString e)
+    putStr (show e)
+    putStr "\n"           
+    kill
+
+forkExnHandler :: HugsException -> IO a
+forkExnHandler e = do
+    putStr "Uncaught exception in forked process: \n  "
+    putStr (show e)
     putStr "\n"           
     kill
 
