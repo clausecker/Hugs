@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: input.c,v $
- * $Revision: 1.39 $
- * $Date: 2002/03/21 18:34:59 $
+ * $Revision: 1.40 $
+ * $Date: 2002/04/09 21:23:27 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1496,15 +1496,17 @@ static Int local yylex() {             /* Read next input token ...        */
     static Bool insertOpen    = FALSE;
     static Bool insertClose   = FALSE;
     static Bool insertedToken = FALSE;
+    static Bool inADo         = FALSE;
     static Text textRepeat;
 
-#define lookAhead(t) {skipWhitespace(); insertOpen = (c0!='{'); return t;}
+#define lookAhead(t) {skipWhitespace(); insertOpen = (c0!='{'); inADo = (t==DO); return t;}
 
     if (firstToken) {                  /* Special case for first token     */
 	indentDepth   = (-1);
 	firstToken    = FALSE;
 	insertOpen    = FALSE;
 	insertedToken = FALSE;
+	inADo         = FALSE;
 	if (reading==KEYBOARD)
 	    textRepeat = findText(repeatStr);
 	return firstTokenIs;
@@ -1518,10 +1520,25 @@ static Int local yylex() {             /* Read next input token ...        */
 	   empty braces are inserted.
 	   
 	   cf. of Section B.3 (note 2) of the Haskell98 report.
+
+	   Extension: adopt GHC's special (and useful) handling of
+	   the following (comment straight out of ghc/compiler/parser/Lex.lhs):
+	   
+	   There's also a special hack in here to deal with
+
+	       do
+	        ....
+		e $ do
+		blah
+
+   	   i.e. the inner context is at the same indentation level as the outer
+	   context.  This is strictly illegal according to Haskell 98, but
+	   there's a lot of existing code using this style and it doesn't make
+	   any sense to disallow it, since empty 'do' lists don't make sense.
 	*/
 	insertClose = 
-	    (indentDepth >=0 &&
-	     column <= layout[indentDepth] );
+	    (indentDepth >=0 && (inADo ? column <  layout[indentDepth] :
+ 				         column <= layout[indentDepth]));
 	if (!insertClose) {
 	    goOffside(column);
 	}
