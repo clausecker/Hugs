@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.98 $
- * $Date: 2002/10/10 16:18:07 $
+ * $Revision: 1.99 $
+ * $Date: 2002/10/11 14:14:08 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -304,8 +304,8 @@ static Void local loadPrelude() {  /* load in the Prelude module(s). */
 
     /* All -P (and N) options processed, set the effective import search path. */
     hugsPath = strCopy (wantNewLibraries ? hugsPath_2 : hugsPath_1);
-    if (hugsPath_1) free(hugsPath_1);
-    if (hugsPath_2) free(hugsPath_2);
+    if (hugsPath_1) { free(hugsPath_1); hugsPath_1 = 0; }
+    if (hugsPath_2) { free(hugsPath_2); hugsPath_2 = 0; }
 
     /* Figure out whether we're using the 'new' Prelude
      * or not -- if STD_PRELUDE_HUGS is reachable via the
@@ -869,19 +869,37 @@ String s; {                             /* return FALSE if none found.     */
 
 	    case 'P' : {
                            String prelLoc;
- 	                   String savedPath = hugsPath_1;
-			   hugsPath_1 = substPath(s+1,hugsPath_1 ? hugsPath_1 : "");
-			   prelLoc = findMPathname(NULL,STD_PRELUDE, hugsPath_1);
-			   /* prelLoc points to static storage, don't free. */
-			   if (!prelLoc) {
-			     Printf("ERROR: unable to locate Prelude along new path: \"%s\" - ignoring it.\n", hugsPath_1);
-			     if (hugsPath_1) free(hugsPath_1);
-			     hugsPath_1 = savedPath;
+ 	                   String savedPath;
+			   
+			   /* tiresome code duplication */
+			   if (hugsPath) {
+			       savedPath = hugsPath;
+			       hugsPath  = substPath(s+1,hugsPath ? hugsPath : "");
+			       prelLoc = findMPathname(NULL,STD_PRELUDE, hugsPath);
+			       /* prelLoc points to static storage, don't free. */
+			       if (!prelLoc) {
+				   Printf("ERROR: unable to locate Prelude along new path: \"%s\" - ignoring it.\n", hugsPath_1);
+				   if (hugsPath) free(hugsPath);
+				   hugsPath = savedPath;
+			       } else {
+				   if (savedPath) free(savedPath);
+			       }
+			       
 			   } else {
-			     if (savedPath) free(savedPath);
-			     savedPath = hugsPath_2;
-			     hugsPath_2 = substPath(s+1,hugsPath_2 ? hugsPath_2 : "");
-			     if (savedPath) free(savedPath);
+			       savedPath = hugsPath_1;
+			       hugsPath_1 = substPath(s+1,hugsPath_1 ? hugsPath_1 : "");
+			       prelLoc = findMPathname(NULL,STD_PRELUDE, hugsPath_1);
+			       /* prelLoc points to static storage, don't free. */
+			       if (!prelLoc) {
+				   Printf("ERROR: unable to locate Prelude along new path: \"%s\" - ignoring it.\n", hugsPath_1);
+				   if (hugsPath_1) free(hugsPath_1);
+				   hugsPath_1 = savedPath;
+			       } else {
+				   if (savedPath) free(savedPath);
+				   savedPath = hugsPath_2;
+				   hugsPath_2 = substPath(s+1,hugsPath_2 ? hugsPath_2 : "");
+				   if (savedPath) free(savedPath);
+			       }
 			   }
 			   return TRUE;
 		       }
@@ -889,7 +907,7 @@ String s; {                             /* return FALSE if none found.     */
 	    case 'S' : {
 			   String saveSuffixes = hugsSuffixes;
 			   hugsSuffixes = substPath(s+1,hugsSuffixes);
-			   if (!findMPathname(NULL,STD_PRELUDE,hugsPath_1)) {
+			   if ( !findMPathname(NULL,STD_PRELUDE,(hugsPath ? hugsPath : hugsPath_1)) ) {
 			       Printf("ERROR: unable to locate Prelude with new suffix list: \"%s\" - ignoring it.\n", hugsSuffixes);
 			       free(hugsSuffixes);
 			       hugsSuffixes = saveSuffixes;
