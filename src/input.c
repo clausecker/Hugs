@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: input.c,v $
- * $Revision: 1.65 $
- * $Date: 2003/03/16 14:20:25 $
+ * $Revision: 1.66 $
+ * $Date: 2003/03/16 17:59:13 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -815,6 +815,7 @@ Int r; {                               /* from input of the form 0c{digs}  */
 static Cell local readNumber() {        /* read numeric constant           */
     Int   n           = 0;
     Bool  intTooLarge = FALSE;
+    Bool  floatingPt  = FALSE;		/* floating point literal?         */
 
     if (c0=='0') {
 	if (c1=='x' || c1=='X')         /* Maybe a hexadecimal literal?    */
@@ -832,25 +833,8 @@ static Cell local readNumber() {        /* read numeric constant           */
 	skip();
     } while (isISO(c0) && isIn(c0,DIGIT));
 
-    /* Check whether this is the start of a floating point literal.
-     * Doing this properly needs 2 characters of lookahead to avoid
-     * mis-scanning things like 9e+a, but we approximate.
-     */
-    if (!(c0=='.' && isISO(c1) && isIn(c1,DIGIT) ||
-          (c0=='e' || c0=='E') &&
-	  isISO(c1) && (isIn(c1,DIGIT) || c1=='-' || c1=='+'))) {
-	endToken();
-	if (!intTooLarge)
-	    return mkInt(n);
-#if BIGNUMS
-	return bigStr(tokenStr);
-#else
-	ERRMSG(row) "Integer literal out of range"
-	EEND;
-#endif
-    }
-
-    if (c0=='.') {
+    if (c0=='.' && isISO(c1) && isIn(c1,DIGIT)) {	/* decimal part */
+	floatingPt = TRUE;
 	saveTokenChar(c0);                  /* save decimal point          */
 	skip();
 	do {                                /* process fractional part ... */
@@ -859,12 +843,12 @@ static Cell local readNumber() {        /* read numeric constant           */
 	} while (isISO(c0) && isIn(c0,DIGIT));
     }
 
-    /* Look for exponent part.  Again 2 characters of lookahead are
-     * required to avoid mis-scanning things like 9.0e+a, but we
-     * approximate.
+    /* Look for exponent part.  BUG: since we don't use 2 characters of
+     * lookahead, we mis-scan things like 9e+a and 9.0e+a.
      */
     if ((c0=='e' || c0=='E') &&
 	isISO(c1) && (isIn(c1,DIGIT) || c1=='-' || c1=='+')) {
+	floatingPt = TRUE;
 	saveTokenChar('e');
 	skip();
 	if (c0=='-') {
@@ -887,12 +871,25 @@ static Cell local readNumber() {        /* read numeric constant           */
     }
 
     endToken();
-#ifndef HAVE_LIBM
-    ERRMSG(row) "No floating point numbers in this implementation"
-    EEND;
-#endif
 
-    return mkDouble(stringToDouble(tokenStr));
+    if (floatingPt) {
+#ifdef HAVE_LIBM
+	return mkDouble(stringToDouble(tokenStr));
+#else
+	ERRMSG(row) "No floating point numbers in this implementation"
+	EEND;
+	return NIL;
+#endif
+    } else if (intTooLarge) {
+#if BIGNUMS
+	return bigStr(tokenStr);
+#else
+	ERRMSG(row) "Integer literal out of range"
+	EEND;
+	return NIL;
+#endif
+    } else
+	return mkInt(n);
 }
 
 static Cell local readChar() {         /* read character constant          */
