@@ -11,7 +11,7 @@ bindings, and this extension provides the necessary syntactic support.
 
 Here is a simple (yet contrived) example:
 
-        import MonadRec
+        import Control.Monad.Fix
 
         justOnes = mdo xs <- Just (1:xs)
                        return xs
@@ -22,22 +22,20 @@ There are three important points in using the recursive-do notation:
 
   1. The recursive version of the do-notation uses the keyword mdo (rather
      than do).
-  2. The scripts using mdo should import MonadRec
+  2. The scripts using mdo should "import Control.Monad.Fix" (*)
   3. Hugs must be started with -98 flag
 
-The MonadRec library introduces the MonadRec class. It's definition is:
+The Control.Monad.Fix library introduces the MonadFix class. 
+It's definition is:
 
         class Monad m => MonadRec m where
              mfix :: (a -> m a) -> m a
 
-The MonadRec class declares the function mfix, which dictates how the
-recursion should behave. If recursive bindings are required for a monad, 
-then that monad must be declared an instance of the MonadRec class.
-For details, see the above mentioned references.
+If recursive bindings are required for a monad, then that monad must be 
+declared an instance of the MonadFix class. The following instances of 
+MonadFix are automatically provided: List, Maybe, IO, and state monads 
+(both lazy and strict).
 
-The MonadRec library automatically declares List, Maybe, IO, and
-state monads (both lazy and strict) as instances of the MonadRec class. 
- 
 The web page: "http://www.cse.ogi.edu/PacSoft/projects/rmb" contains
 up to date information on recursive-monadic-bindings.
 
@@ -49,3 +47,7 @@ ICFP'00, pp. 174-185, 2000.
 
 [EL02] Levent Erkök and John Launchbury. A recursive do for Haskell. In
 the Proceedings of the Haskell Workshop'02, pp. 29-37, 2002.
+
+------------------------------------------------------------------------------
+
+(*) For technical reasons "Control.Monad.Fix" must be imported unqualified. 
