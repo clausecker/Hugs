@@ -8,8 +8,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: prelude.h,v $
- * $Revision: 1.49 $
- * $Date: 2003/07/24 09:27:35 $
+ * $Revision: 1.50 $
+ * $Date: 2003/08/27 19:59:54 $
  * ------------------------------------------------------------------------*/
 #ifndef __PRELUDE_H__
 #define __PRELUDE_H__
@@ -17,6 +17,16 @@
 #include "config.h"
 #include "options.h"
 #include <stdio.h>
+
+#if HAVE_STDLIB_H
+# include <stdlib.h>
+#endif
+#ifdef HAVE_SYS_TYPES_H
+# include <sys/types.h>
+#endif
+#if HAVE_UNISTD_H
+# include <unistd.h>
+#endif
 
 /*---------------------------------------------------------------------------
  * Most of the configuration code from earlier versions of Hugs has been moved
@@ -552,10 +562,6 @@ extern  int  kbhit	Args((void));
 # include <alloc.h>
 # define farCalloc(n,s)	farcalloc((unsigned long)n,(unsigned long)s)
 #elif HAVE_VALLOC
-# include <stdlib.h>
-#ifndef __SYMBIAN32__
-# include <malloc.h>
-#endif
 # define farCalloc(n,s)	(Void *)valloc(((unsigned)n)*((unsigned)s))
 #else
 # define farCalloc(n,s)	(Void *)calloc(((unsigned)n),((unsigned)s))
@@ -616,12 +622,7 @@ extern  int  kbhit	Args((void));
  * File operations:
  *-------------------------------------------------------------------------*/
 
-#if HAVE_UNISTD_H
-# ifdef HAVE_SYS_TYPES_H
-# include <sys/types.h>
-# endif
-# include <unistd.h>
-#elif !defined(_MSC_VER)
+#if !defined(HAVE_UNISTD_H) && !defined(_MSC_VER)
 extern int 	chdir 	   Args((const char*));
 #endif
 
@@ -629,9 +630,7 @@ extern int 	chdir 	   Args((const char*));
 #include <direct.h>
 #endif
 
-#if HAVE_STDLIB_H
-# include <stdlib.h>
-#else
+#ifndef HAVE_STDLIB_H
 extern int      system	   Args((const char *));
 extern double   atof	   Args((const char *));
 extern void     exit       Args((int));
