@@ -264,6 +264,19 @@ mkdir -p $compat
   hslibs net SocketPrim.hs		# -> Network.Socket
   hslibs net URI.hs			# -> Network.URI
 
+# hslibs posix DL.hs
+# hslibs posix DLPrim.hsc
+# hslibs posix POpen.hs
+# hslibs posix Posix.lhs
+  hslibs posix PosixDB.lhs
+# hslibs posix PosixErr.lhs
+  hslibs posix PosixFiles.lhs
+  hslibs posix PosixIO.lhs
+  hslibs posix PosixProcEnv.lhs
+# hslibs posix PosixProcPrim.lhs
+  hslibs posix PosixTTY.lhs
+# hslibs posix PosixUtil.lhs
+
   hslibs text Pretty.lhs		# -> Text.PrettyPrint.HughesPJ
   hslibs text RegexString.lhs		# -> Text.Regex
 
@@ -284,7 +297,7 @@ mkdir -p $compat
   hslibs util GetOpt.lhs		# -> System.Console.GetOpt
 # hslibs util Memo.lhs			# Hugs module is different
 # hslibs util Observe.lhs		# Hugs module is different
-# hslibs util Readline.lhs		# -> System.Console.Readline
+# hslibs util Readline.hs		# -> System.Console.Readline
 # hslibs util Select.lhs
   hslibs util Unique.lhs		# -> Data.Unique
 
