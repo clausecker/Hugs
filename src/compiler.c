@@ -10,8 +10,8 @@
  * included in the distribution.
  *
  * $RCSfile: compiler.c,v $
- * $Revision: 1.4 $
- * $Date: 2001/01/08 21:43:06 $
+ * $Revision: 1.5 $
+ * $Date: 2001/04/27 01:00:35 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -2041,7 +2041,7 @@ Cell e; {
     name(n).arity = arity+numExtraVars;
     e             = preComp(e);
 #if DEBUG_SHOWSC
-    if (preludeLoaded && debugSC) {
+    if (debugSC) {
 	printSc(stdout,name(n).text,name(n).arity,e);
     }
 #endif

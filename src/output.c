@@ -9,8 +9,8 @@
  * included in the distribution.
  *
  * $RCSfile: output.c,v $
- * $Revision: 1.16 $
- * $Date: 2001/02/14 12:15:05 $
+ * $Revision: 1.17 $
+ * $Date: 2001/04/27 01:00:35 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -46,6 +46,7 @@ static Void local putSimpleAp    Args((Cell,Int));
 static Void local putTuple       Args((Int,Cell));
 static Int  local unusedTups     Args((Int,Cell));
 static Void local unlexVar       Args((Text));
+static Void local unlexFullVar   Args((Module,Text));
 static Void local unlexOp        Args((Text));
 static Void local unlexCharConst Args((Cell));
 static Void local unlexStrConst  Args((Text));
@@ -170,7 +171,9 @@ Cell e; {
 			  putChr(']');
 			  break;
 
-	case AP         : putAp(d,e);
+        case AP         : putChr('(');
+	                  putAp(d,e);
+                          putChr(')');
 			  break;
 
 	case NAME       : 
@@ -366,6 +369,8 @@ Cell e; {
     }
     putDepth--;
 }
+
+
 
 static Void local putFlds(exp,fs)       /* Output exp using labelled fields*/
 Cell exp;
@@ -680,7 +685,6 @@ Cell e; {                               /* args not yet printed ...        */
 static Void local unlexVar(t)          /* print text as a variable name    */
 Text t; {                              /* operator symbols must be enclosed*/
     String s = textToStr(t);           /* in parentheses... except [] ...  */
-
     if ((isascii(s[0]) && isalpha(s[0])) || s[0]=='_' || s[0]=='[' || s[0]=='(')
 	putStr(s);
     else {
@@ -688,6 +692,14 @@ Text t; {                              /* operator symbols must be enclosed*/
 	putStr(s);
 	putChr(')');
     }
+}
+
+static Void local unlexFullVar(m,t)    /* print text as a variable name    */
+Module m;
+Text t; {                              
+    putStr(textToStr(module(m).text));
+    putChr('.');
+    putStr(textToStr(t));
 }
 
 static Void local unlexOp(t)           /* print text as operator name      */
@@ -773,7 +785,8 @@ Int  co; {
 	case OFFSET     : pPutOffset(offsetOf(e));
 			  break;
 
-	case NAME       : unlexVar(name(e).text);
+        case NAME       : 
+	                  unlexFullVar(name(e).mod,name(e).text);
 			  break;
 
 #if TREX
@@ -821,17 +834,24 @@ Int  co; {
 			  CLOSE(d>WHERE_PREC);
 			  break;
 
-	case COND       : OPEN(d>COND_PREC);
-			  putStr("if ");
-			  pPut(COND_PREC+1,fst3(snd(e)),co);
-			  putStr(" then ");
-			  pPut(COND_PREC+1,snd3(snd(e)),co);
-			  putStr(" else ");
-			  pPut(COND_PREC+1,thd3(snd(e)),co);
-			  CLOSE(d>COND_PREC);
-			  break;
-
-	default         : internal("pPut");
+        case COND       : { Int  left = outColumn;
+	                    OPEN(d>COND_PREC);
+			    putStr("case ");
+			    pPut(COND_PREC+1,fst3(snd(e)),co);
+			    putStr(" of");
+			    pIndent(left+2);
+			    putStr(" ; Prelude.True -> ");
+			    pPut(COND_PREC+1,snd3(snd(e)),co);
+			    pIndent(left+2);
+			    putStr(" ; Prelude.False ->  ");
+			    pPut(COND_PREC+1,thd3(snd(e)),co);
+			    pIndent(left+2);
+			    putStr("}");
+			    CLOSE(d>COND_PREC);
+			    break;
+	                   }
+	default         : printf("[e = %d, whatIs(e) = %d]\n",e,whatIs(e));
+	                  internal("pPut");
     }
 }
 
@@ -869,12 +889,14 @@ Int  ts;                                /* for possibility of either too   */
 Cell e;                                 /* few or too many args to constr  */
 Int  co; {
     Int i;
-    putChr('(');
+    putStr("(#");
+    putInt(ts);
+    putChr(' ');
     if ((i=punusedTups(ts,e,co))>0) {
 	while (--i>0)
-	    putChr(',');
-	putChr(')');
+	    putChr(' ');
     }
+    putChr(')');
 }
 
 static Int local punusedTups(ts,e,co)   /* print first part of tuple expr  */
@@ -883,8 +905,8 @@ Cell e;                                 /* args not yet printed ...        */
 Int  co; {
     if (isAp(e)) {
 	if ((ts=punusedTups(ts,fun(e),co)-1)>=0) {
-	    pPut(NEVER,arg(e),co);
-	    putChr(ts>0?',':')');
+	    pPut(ALWAYS,arg(e),co);
+	    putStr(ts>0?" ":"");
 	}
 	else {
 	    putChr(' ');
@@ -896,7 +918,7 @@ Int  co; {
 
 static Void local pPutOffset(n)         /* pretty print offset number      */
 Int n; {
-    putChr('o');
+    putChr('_');
     putInt(n);
 }
 
@@ -907,17 +929,17 @@ Int  co; {
     Int n    = length(vs);
     Int i;
 
-    putStr("let { ");
+    putStr("let ");
     for (i=0; i<n; i++) {
 	pPutOffset(co+i+1);
 	putChr(' ');
 	pLiftedStart(hd(vs),co+n,"=");
 	vs = tl(vs);
 	if (nonNull(vs))
-	    pIndent(left+6);
+	    pIndent(left+4);
     }
     pIndent(left);
-    putStr("} in  ");
+    putStr("in ");
     return n;
 }
 
@@ -926,8 +948,8 @@ Cell   e;
 Int    co;
 String eq; {
     if (whatIs(e)!=GUARDED) {
-	putStr(eq);
-	putChr(' ');
+      putStr(eq);
+      putChr(' ');
     }
     pLifted(e,co,eq);
 }
@@ -938,23 +960,31 @@ Int    co;
 String eq; {
     switch (whatIs(e)) {
 	case GUARDED : {   Int  left = outColumn;
+	                   Int count = 0;
+                           Int tmp;
 			   List gs   = snd(e);
 			   if (isNull(gs))
 			       internal("pLifted");
 			   for (;;) {
-			       putStr("| ");
+			       count++;
+			       putStr("case ");
 			       pPut(NEVER,fst(hd(gs)),co);
-			       putChr(' ');
-			       putStr(eq);
-			       putChr(' ');
+			       putStr(" of ");
+			       pIndent(left + 2);
+			       putStr("{ Prelude.True -> ");
 			       pPut(NEVER,snd(hd(gs)),co);
-			       putStr(";\n");
+			       pIndent(left + 2);
+			       putStr("; _ -> \n");
 			       gs = tl(gs);
-			       if (nonNull(gs))
-				   pIndent(left);
-			       else
+			       pIndent(left);
+			       if (!nonNull(gs))
 				   break;
 			   }
+			   putStr("_fatbar ");
+			   for(tmp = 0;tmp < count;tmp++) {
+			     putChr('}');
+			   }
+			   putStr(";\n");
 		       }
 		       break;
 
@@ -963,11 +993,13 @@ String eq; {
 		       break;
 
 	case FATBAR  : {   Int left = outColumn;
-			   pLifted(fst(snd(e)),co,eq);
-			   pIndent(left);
-			   putStr("FATBAR\n");
-			   pIndent(left);
+                           putStr("let_ _fatbar = \n");
+			   pIndent(left+2);
 			   pLifted(snd(snd(e)),co,eq);
+			   pIndent(left);
+                           putStr("in\n");
+			   pIndent(left+2);
+			   pLifted(fst(snd(e)),co,eq);
 		       }
 		       break;
 
@@ -983,8 +1015,10 @@ String eq; {
 			       putChr(' ');
 			       pLiftedStart(snd(hd(cs)),co+arity,"->");
 			   }
+			   pIndent(left+2);
+			   putStr("_ -> _fatbar\n");
 			   pIndent(left);
-			   putStr("}\n");
+			   putStr("};\n");
 		       }
 		       break;
 
@@ -993,16 +1027,47 @@ String eq; {
 #endif
 	case NUMCASE : {   Int  left = outColumn;
 			   Cell t    = snd(e);
+			   Cell h     = getHead(snd3(t));
+			   String eqInt     = "Prelude.primEqInt";
+			   String eqInteger = "Prelude.primEqInteger";
+			   String eqDouble  = "Prelude.primEqDouble";
+			   String theEq     = "** BAD EQUALITY **";
 			   Int  ar;
 			   putStr("case ");
+			   switch (whatIs(h)) {
+			   case NAME: 
+			     if (h==nameFromInt) {
+			       theEq = eqInt;
+			     } else if (h == nameFromInteger) {
+			       theEq = eqInteger;
+			     } else if (h == nameFromDouble) {
+			       theEq = eqInteger;
+			     } else {
+			       ERRMSG(0) "error in NUMCASE" EEND;
+			     }
+			     break;
+			   case ADDPAT:
+			       ERRMSG(0) "error in NUMCASE " EEND;
+			     break;
+			   default:
+			       ERRMSG(0) "error in NUMCASE" EEND;
+			     break;			     
+			   }
+			   putStr(theEq);
+			   putStr(" (");
 			   pPut(NEVER,fst3(t),co);
-			   putStr(" of {\n");
-			   pIndent(left+2);
+			   putStr(") (");
 			   ar =  pDiscr(snd3(t),co);
-			   putChr(' ');
+			   putStr(") of\n");
+			   pIndent(left+2);
+			   putStr("{ Prelude.True ");
 			   pLiftedStart(thd3(t),co+ar,"->");
+			   putStr("\n");
+			   pIndent(left+2);
+			   putStr("  _ -> _fatbar\n");
+			   pIndent(left+2);
+			   putStr("};\n");
 			   pIndent(left);
-			   putStr("}\n");
 		       }
 		       break;
 
@@ -1028,7 +1093,7 @@ Int  co; {
 
 	case NAME     : {   Int i = 0;
 			    arity = name(d).arity;
-			    unlexVar(name(d).text);
+			    unlexFullVar(name(d).mod,name(d).text);
 			    for (; i<arity; ++i) {
 				putChr(' ');
 				pPutOffset(co+arity-i);
@@ -1038,13 +1103,14 @@ Int  co; {
 
 	case TUPLE    : {   Int i = 0;
 			    arity = tupleOf(d);
-			    putChr('(');
+			    putChr('#');
+			    putInt(arity);
+			    putChr(' ');
 			    pPutOffset(co+arity);
 			    while (++i<arity) {
-				putChr(',');
+				putChr(' ');
 				pPutOffset(co+arity-i);
 			    }
-			    putChr(')');
 			}
 			break;
 
@@ -1070,6 +1136,7 @@ Int   arity;
 Cell  e; {
     Int i;
     outputStream = fp;
+
     putChr('\n');
     outColumn = 0;
     unlexVar(t);
@@ -1614,5 +1681,6 @@ Pair  fd; {
 	}
     }
 }
+
 
 /*-------------------------------------------------------------------------*/

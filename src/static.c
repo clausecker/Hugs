@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.34 $
- * $Date: 2001/04/07 18:28:44 $
+ * $Revision: 1.35 $
+ * $Date: 2001/04/27 01:00:35 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1889,7 +1889,7 @@ Class c; {				/* and other parts of class struct.*/
 */
 
     mno		       = cclass(c).numSupers + cclass(c).numMembers;
-    cclass(c).dcon     = addPrimCfun(generateText("Make.%s",c),mno,0,NIL);
+    cclass(c).dcon     = addPrimCfun(generateText("%s",c),mno,0,NIL);
     if (mno==1)	{			/* Single entry dicts use newtype  */
 	name(cclass(c).dcon).defn = nameId;
 	if (nonNull(cclass(c).members)) {
@@ -1928,7 +1928,7 @@ Int   no; {
     Name s;
     char buf[16];
 
-    sprintf(buf,"sc%d.%s",no,"%s");
+    sprintf(buf,"_sc%d_%s",no,"%s");
     s              = newName(generateText(buf,c),c);
     name(s).line   = cclass(c).line;
     name(s).arity  = 1;
