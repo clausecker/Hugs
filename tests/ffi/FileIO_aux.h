@@ -13,3 +13,4 @@
 #endif
 
 extern int open_for_read(const char* pathname);
+extern int getErrno();

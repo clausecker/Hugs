@@ -1,4 +1,5 @@
 #include "FileIO_aux.h"
+#include <errno.h>
 
 int open_for_read(const char* pathname)
 {
@@ -11,3 +12,5 @@ int open_for_read(const char* pathname)
 #endif
 	     );
 }
+
+int getErrno() { return errno; }

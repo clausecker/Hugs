@@ -14,8 +14,12 @@ tests = do
   putStrLn "\nTesting open, write and close"
   testWrite "/tmp/test_write" "Test successful"
 
-foreign import ccall safe "static errno.h &errno" errno :: Ptr Int
-        
+-- Not permitted by a strict interpretation of the FFI, as errno may be
+-- a macro.
+-- foreign import ccall safe "static errno.h &errno" errno :: Ptr Int
+
+foreign import ccall "FileIO_aux.h" getErrno :: IO Int
+
 withString0 s = bracket (newArray0 '\0' s) free
 withBuffer sz m = do
   b <- mallocArray sz
@@ -44,7 +48,7 @@ unix s m = do
   x <- m
   if x < 0 
    then do
-     err <- peek errno
+     err <- getErrno
      ioError $ userError $ s ++ ": " ++ show (x,err)
    else return x
 
