@@ -5,16 +5,15 @@ extern "C" {
 #include "connect.h"
 #include "builtin.h"
 #include "errors.h"
+#include "evaluator.h"
 #include "prim.h"
 #include "Invoker.h"
 };
 
+/* Utility macro for converting a System::String to a char* (and later on, free it.) */
 #define ToCharString(str) \
   (char*)System::Runtime::InteropServices::Marshal::StringToHGlobalAnsi(str).ToPointer()
 #define FreeCharString(pstr) System::Runtime::InteropServices::Marshal::FreeHGlobal(pstr)
-
-extern "C" ::String evalName            Args((Cell));
-extern "C" ::String pushString          Args((::String));
 
 /* --------------------------------------------------------------------------
  * .NET Ptrs: like mallocPtrs, but store managed pointers instead.
@@ -31,16 +30,18 @@ __gc struct strDotNetPtr {      /* .NET pointer description            */
  * Encoding a global variable in Managed C++;
  */
 __gc class DotNetPtrTable {
- public:
+private:
+  static System::Array __gc* m_table;
+public:
   static DotNetPtrTable() {
     int i;
     m_table = Array::CreateInstance(__typeof(__gc struct strDotNetPtr), NUM_DOTNETPTRS); 
     for (i=0; i < NUM_DOTNETPTRS; i++) {
       __gc struct strDotNetPtr* rec = new __gc struct strDotNetPtr;
-      rec->ptr = 0;
-      rec->cleanup = 0;
+      rec->ptr      = 0;
+      rec->cleanup  = 0;
       rec->refCount = 0;
-      rec->npcell = NIL;
+      rec->npcell   = NIL;
       m_table->SetValue(rec,i);
     }
   }
@@ -63,9 +64,6 @@ __gc class DotNetPtrTable {
 #endif
     return res;
   }
-
-private:
-  static System::Array __gc* m_table;
 };
 
 __gc struct strDotNetPtr* idxDotNetPtr(int i) {
@@ -75,14 +73,12 @@ __gc struct strDotNetPtr* idxDotNetPtr(int i) {
 #define dotNetPtrOf(c)   snd(c)
 #define derefNP(c)       (idxDotNetPtr((Int)dotNetPtrOf(c))->ptr)
 
-extern System::Object* getNP(Cell c);
+static Cell mkDotNetPtr Args((System::Object *, Void (*)(System::Object *)));
 
-extern System::Object* getNP(Cell c) {
+extern "C" {
+System::Object __gc* getNP(Cell c) {
   return derefNP(c);
 }
-extern "C" {
-Cell mkDotNetPtr Args((System::Object *, Void (*)(System::Object *)));
-Cell mkIOError   Args((Cell,Name,::String,::String,Cell));
 
 static Void incDotNetPtrRefCnt  Args((Int, Int));
 
@@ -123,10 +119,11 @@ Void markDotNetPtrs(Int* marks) {
   }
 }
 
-/* It might GC (because it uses a table not a list) which will trash any
- * unstable pointers.  
- * (It happens that we never use it with unstable pointers.)
+/*
+ * Allocate .NET object reference on the heap, tagging it with
+ * an NPCELL.
  */
+static
 Cell
 mkDotNetPtr(Object* ptr,void (*cleanup)(Object*)) { 
   int i;
@@ -151,10 +148,10 @@ mkDotNetPtr(Object* ptr,void (*cleanup)(Object*)) {
   }
   c = ap(NPCELL,i);
 
-  rec->ptr = ptr;
-  rec->cleanup = cleanup;
+  rec->ptr      = ptr;
+  rec->cleanup  = cleanup;
   rec->refCount = 1;
-  rec->npcell = c;
+  rec->npcell   = c;
 
 #if 0
   Console::WriteLine("Created {0} at idx {1} {2}", ptr->ToString(), __box(i), __box(snd(c)));
@@ -174,10 +171,10 @@ incDotNetPtrRefCnt(Int n, Int i) { /* change ref count of MallocPtr */
   rec->refCount += i;
   if (rec->refCount <= 0) {
     rec->cleanup(rec->ptr);
-    rec->ptr = 0;
-    rec->cleanup = 0;
+    rec->ptr      = 0;
+    rec->cleanup  = 0;
     rec->refCount = 0;
-    rec->npcell = NIL;
+    rec->npcell   = NIL;
 #if 0
     Console::WriteLine("adjusting hw {0} {1}", 
 		       __box(n),
@@ -336,7 +333,7 @@ Void primInvoker(StackPtr root,Name n) {
        break;
      case FFI_TYPE_STABLE:
        eval(primArg((len-i)+primArity));
-       args->SetValue(__box((int)whnfHead), i);
+       args->SetValue(__box((int)intOf(whnfHead)), i);
        break;
      case FFI_TYPE_OBJECT:
        eval(primArg((len-i)+primArity));
