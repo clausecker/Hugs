@@ -45,6 +45,7 @@ Win32)	CALLCONV=stdcall
 *)	CALLCONV=ccall
 	tmpdir_root="/tmp" ;;
 esac
+cpp_flags="$cpp_flags -DCALLCONV=$CALLCONV"
 
 while [ $# -gt 0 ]
 do	case $1 in
@@ -90,75 +91,6 @@ tmpdir=$tmpdir_root/cvt.$$
 trap "rm -rf $tmpdir; exit 0" 0 1 2 3 15
 mkdir $tmpdir
 
-# Convert a module using the FFI from conventional to standard form:
-# - change the calling convention CALLCONV to ccall on Unix, stdcall on Win32
-# - collect all the header files included by the module, if necessary
-#   produce a new header that includes them, and ensure all the foreign
-#   import declarations in the file refer to a header.
-
-hack_foreign() {
-	file=$1
-
-	# Determine the list of headers used by the file
-	# bug: <foo.h> and "foo.h" will not be unified
-	header_list=$file.hdrs
-	(
-		for h in $c_includes
-		do	echo "\"$h\""
-		done
-
-		sed -n 's/[ 	][ 	]*/ /g
-			s/^>* *{-# OPTIONS -#include \(.*\) #-}/\1/p
-			/^>* *foreign import / {
-				s/[^"]*"\([a-zA-Z0-9_][a-zA-Z0-9_]*\.h\).*/"\1"/p
-				s/[^"]*"[^"]* \([a-zA-Z0-9_][a-zA-Z0-9_]*\.h\).*/"\1"/p
-			}' $file
-	) | $SORT -u >$header_list
-
-	# If necessary, generate our own header file
-	case `wc -l <$header_list | sed 's/ *//'` in
-	0)	header= ;;
-	1)	header=`sed 's/["<>]//g' $header_list` ;;
-	*)
-		if grep '^>*[ 	]*foreign' $file | egrep -v 'export|"(dynamic|wrapper)|\.h' | grep . >/dev/null
-		then
-			full_header=`echo $file | sed 's/\.[^.]*$/_inc.h/'`
-			header=`basename $full_header`
-			HEADER=`echo $header | tr a-z. A-Z_`
-			(
-				echo "#ifndef $HEADER"
-				echo "#define $HEADER"
-				sed 's/^/#include /' $header_list
-				echo "#endif"
-			) >$full_header
-		else
-			header=
-		fi ;;
-	esac
-
-	# Hack the original module
-	# (but leave explicitly specified headers alone)
-	tmpfile=$file.new
-	sed '	/^>* *{-# OPTIONS /d
-		/^>*[ 	]*foreign[	 ]/ {
-			s/CALLCONV/'"$CALLCONV"'/
-			/export/ b end
-			/"dynamic[ "]/ b end
-			/"wrapper[ "]/ b end
-			/"[^"]*\.h[^"]*"/ b end
-			/"static[ "]/ {
-				s:"static:"static '"$header"':
-				b end
-			}
-			s:":"'"$header"' :
-			/"/ !s/[a-z][a-zA-Z0-9_]*[ 	]*::/"'"$header"'" &/
-			: end
-		}' $file >$tmpfile
-	cp $tmpfile $file
-
-	rm -r $tmpfile $header_list
-}
-
 # Preprocess the argument file with the C preprocessor
 # usage: through_cpp filename cpp-args
 
@@ -176,7 +108,6 @@ through_cpp() {
 
 module_list=$tmpdir/list.1
 all_modules=$tmpdir/list.2
-ffi_modules=$tmpdir/list.3
 
 (
 	cd $source_dir
@@ -218,10 +149,10 @@ do	echo "Converting $modname"
 		# don't run hsc2hs if its output is already present
 		hsc_make="${target_stem}_hsc_make"
 		$cc $cpp_flags $includes -o "$hsc_make" "${stem}_hsc_make.c"
-		$hsc_make >$target_stem.hs
+		$hsc_make | sed "s/CALLCONV/$CALLCONV/g" >$target_stem.hs
 		rm "$hsc_make${EXEEXT}"
 	elif [ -f $stem.hsc ]; then
-		cp "$stem.hsc" "$target_stem.hsc"
+		sed "s/CALLCONV/$CALLCONV/g" "$stem.hsc" >"$target_stem.hsc"
 		$hsc2hs --cc="$cc" $cpp_flags $includes "$target_stem.hsc"
 		rm "$target_stem.hsc"
 	elif [ -f $stem.gc ]; then
@@ -255,33 +186,6 @@ done <$module_list
 
 # Pass 2: compile FFI modules
 
-# Pass 2a: identify possible FFI modules
-
-while read modname
-do
-	stem=$target_dir/$modname
-	if [ -f $stem.lhs ]
-	then	filename=$stem.lhs
-	else	filename=$stem.hs
-	fi
-
-	# Crude test for foreign declarations.
-	# Running ffihugs on a few extras does no harm.
-
-	if grep '^>*[ 	]*foreign[ 	][ 	]*[ei][mx]port' $filename >/dev/null
-	then	echo $filename
-	fi
-done <$module_list >$ffi_modules
-
-# Pass 2b: convert FFI modules to standard form
-
-while read filename
-do
-	hack_foreign $filename
-done <$ffi_modules
-
-# Pass 2c: compile FFI modules
-
 conf_in=$source_dir/package.conf.in
 
 if [ -f "$conf_in" ]
@@ -309,32 +213,58 @@ then	extra_libraries=`get_pkg_field extra-libs | sed 's/HS[^ ]*_cbits *//'`
 	extra_frameworks=`get_pkg_field extra-frameworks`
 fi
 
-while read filename
+while read modname
 do
-	dstdir=`dirname $filename`
+	stem=$target_dir/$modname
+	if [ -f $stem.lhs ]
+	then	filename=$stem.lhs
+	else	filename=$stem.hs
+	fi
 
-	cmd="$ffihugs +G -98 -P$target_dir:"
-	for flag in -I$dstdir -I$source_dir/include
-	do	cmd="$cmd +L$flag"
-	done
-	for file in `sed -n 's/{-# CBITS \(.*\) #-}/\1/p' $filename`
-	do	cmd="$cmd +L$source_dir/cbits/$file"
-	done
-	for flag in $extra_ld_opts $extra_cc_opts
-	do	cmd="$cmd +L$flag"
-	done
-	for lib in $extra_libraries
-	do	if test "$platform" = Win32 && test "$cc" != gcc; then
-			cmd="$cmd +L$lib.lib"
-		else
-			cmd="$cmd +L-l$lib"
-		fi
-	done
-	for framework in $extra_frameworks
-	do	cmd="$cmd +L-framework +L$framework"
-	done
-	cmd="$cmd $filename"
+	# Crude test for foreign declarations.
+	# Running ffihugs on a few extras does no harm.
 
-	echo "Compiling $filename"
-	$cmd
-done <$ffi_modules
+	if grep '^>*[ 	]*foreign[ 	][ 	]*[ei][mx]port' $filename >/dev/null
+	then
+		dstdir=`dirname $filename`
+
+		cmd="$ffihugs +G -98 -P$target_dir:"
+
+		# Determine the list of headers used by the file
+		# bug: <foo.h> and "foo.h" will not be unified
+		header_list=$file.hdrs
+		(
+			for h in $c_includes
+			do	echo "\"$h\""
+			done
+			sed -n 's/^>* *{-# OPTIONS.*-#include  *\([^ ]*\).*/\1/p' $filename
+		) | $SORT -u >$header_list
+		for h in `cat $header_list`
+		do	cmd="$cmd +i$h"
+		done
+
+		for flag in -I$dstdir -I$source_dir/include
+		do	cmd="$cmd +L$flag"
+		done
+		for file in `sed -n 's/{-# CBITS \(.*\) #-}/\1/p' $filename`
+		do	cmd="$cmd +L$source_dir/cbits/$file"
+		done
+		for flag in $extra_ld_opts $extra_cc_opts
+		do	cmd="$cmd +L$flag"
+		done
+		for lib in $extra_libraries
+		do	if test "$platform" = Win32 && test "$cc" != gcc; then
+				cmd="$cmd +L$lib.lib"
+			else
+				cmd="$cmd +L-l$lib"
+			fi
+		done
+		for framework in $extra_frameworks
+		do	cmd="$cmd +L-framework +L$framework"
+		done
+		cmd="$cmd $filename"
+
+		echo "Compiling $filename"
+		$cmd
+	fi
+done <$module_list
