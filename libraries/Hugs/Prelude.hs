@@ -1820,9 +1820,9 @@ primitive primEqHandle :: Handle -> Handle -> Bool
 
 instance Show Handle where
     showsPrec _ h = case primGetHandleNumber h of
-	0 -> showString "stdin"
-	1 -> showString "stdout"
-	2 -> showString "stderr"
+	0 -> showString "<stdin>"
+	1 -> showString "<stdout>"
+	2 -> showString "<stderr>"
 	_ -> showString "<handle>"
 
 primitive primGetHandleNumber :: Handle -> Int
