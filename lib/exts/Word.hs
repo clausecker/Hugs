@@ -109,7 +109,8 @@ instance Bits Word8 where
   x `xor` y     = to (binop xor x y)
   complement    = to . complement . from
   x `shift` i   = to (from x `shift` i)
---  rotate      
+  x `rotate` i  = to (from x `rot` i)
+    where rot = primRotateWord 8
   bit           = to . bit
   setBit x i    = to (setBit (from x) i)
   clearBit x i  = to (clearBit (from x) i)
@@ -184,7 +185,8 @@ instance Bits Word16 where
   x `xor` y     = to (binop xor x y)
   complement    = to . complement . from
   x `shift` i   = to (from x `shift` i)
---  rotate      
+  x `rotate` i  = to (from x `rot` i)
+    where rot = primRotateWord 16
   bit           = to . bit
   setBit x i    = to (setBit (from x) i)
   clearBit x i  = to (clearBit (from x) i)
@@ -265,7 +267,7 @@ instance Bits Word32 where
   xor           = primXorWord
   complement    = primComplementWord
   shift         = primShiftWord
-  rotate        = primRotateWord
+  rotate        = primRotateWord 32
   bit           = primBitWord
   setBit x i    = x .|. bit i
   clearBit x i  = x .&. complement (bit i)
@@ -357,7 +359,7 @@ primitive primOrWord        :: Word32 -> Word32 -> Word32
 primitive primXorWord       :: Word32 -> Word32 -> Word32
 primitive primComplementWord:: Word32 -> Word32
 primitive primShiftWord     :: Word32 -> Int -> Word32
-primitive primRotateWord    :: Word32 -> Int -> Word32
+primitive primRotateWord    :: Int -> Word32 -> Int -> Word32
 primitive primBitWord       :: Int -> Word32
 primitive primTestWord      :: Word32 -> Int -> Bool
 
