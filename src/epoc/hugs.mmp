@@ -15,7 +15,7 @@ SOURCE output.c compiler.c machine.c builtin.c plugin.c
 SOURCE epoc\epoc.c epoc\epoc_input.c
 
 SYSTEMINCLUDE   \epoc32\include\libc \epoc32\include
-USERINCLUDE     \epoc_code\hugs98\src
+USERINCLUDE     \epoc_code\hugs98\src \epoc_code\hugs98\src\epoc
 
 #if defined(MARM)
 LIBRARY			ecrt0.o
