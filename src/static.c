@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.68 $
- * $Date: 2002/05/30 21:23:01 $
+ * $Revision: 1.69 $
+ * $Date: 2002/06/13 22:01:30 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -226,6 +226,7 @@ static Void   local depConFlds		Args((Int,Cell,Bool));
 static Void   local depUpdFlds		Args((Int,Cell));
 static List   local depFields		Args((Int,Cell,List,Bool));
 static Cell   local checkNameAmbig      Args((Int,Text,Cell));
+static Cell   local checkTyconAmbig     Args((Int,Text,Cell));
 #if IPARAM
 static Void   local depWith		Args((Int,Cell));
 static List   local depDwFlds		Args((Int,Cell,List));
@@ -794,26 +795,14 @@ static Void local importTycon(source,tc)
 Module source;
 Tycon tc; {
     Tycon clash=addTycon(tc);
+    Class cc;
     if (nonNull(clash) && clash!=tc
       /* See importName() comment. */
      && tycon(tc).mod != tycon(clash).mod ) {
       tycon(clash).clashes = cons(tc,tycon(clash).clashes);
-      /*
-	ERRMSG(0) "Tycon \"%s\" imported from \"%s\" already defined in module \"%s\"",
-		  textToStr(tycon(tc).text),
-		  textToStr(module(source).text),
-		  textToStr(module(tycon(clash).mod).text)	
-	EEND;
-      */
     }
-    if (nonNull(findClass(tycon(tc).text))) {
-      tycon(clash).clashes = cons(tc,tycon(clash).clashes);
-      /*
-	ERRMSG(0) "Import of type constructor \"%s\" clashes with class in module \"%s\"",
-		  textToStr(tycon(tc).text),
-		  textToStr(module(tycon(tc).mod).text)	
-	EEND;
-      */
+    if ( nonNull(cc = findClass(tycon(tc).text)) ) {
+      cclass(cc).clashes = cons(tc,cclass(cc).clashes);
     }
 }
 
@@ -824,14 +813,10 @@ Class c; {
     if (nonNull(clash) && clash!=c
       /* See importName() comment. */
      && cclass(c).mod != cclass(clash).mod ) {
+	/* Hmm..don't quite understand why we need to record the clash
+	   on both the class values here..*/
+        cclass(c).clashes = cons(clash,cclass(c).clashes);
         cclass(clash).clashes = cons(c,cclass(clash).clashes);
-	/*
-	ERRMSG(0) "Class \"%s\" imported from \"%s\" already defined in module \"%s\"",
-		  textToStr(cclass(c).text),
-		  textToStr(module(source).text),
-		  textToStr(module(cclass(clash).mod).text)	
-	EEND;
-	*/
     }
     if (nonNull(findTycon(cclass(c).text))) {
         cclass(clash).clashes = cons(c,cclass(clash).clashes);
@@ -1077,7 +1062,7 @@ Cell what; {				/* SYNONYM/DATATYPE/etc...	   */
     Text t = textOf(getHead(lhs));
     Tycon tc = findTycon(t);
 
-    if (nonNull(tc = findTycon(t))) {
+    if ( nonNull(tc) ) {
 	ERRMSG(line) "Repeated definition of type constructor \"%s\"",
 		     textToStr(t)
 	EEND;
@@ -2576,6 +2561,9 @@ Type type; {
 				      "Undefined type constructor \"%s\"",
 				      identToStr(type)
 				  EEND;
+			      }
+			      if ( whatIs(type) != QUALIDENT ) {
+				  checkTyconAmbig(line,tycon(tc).text,tc);
 			      }
 			      if (cellIsMember(tc,tyconDefns) &&
 				  !cellIsMember(tc,tcDeps)) {
@@ -7033,6 +7021,33 @@ Cell e; {
 	    ERRTEXT "\n" EEND;
     }
 
+    return e;
+}
+
+static Cell local checkTyconAmbig(line,t,e)
+Int line;
+Text t;
+Cell e; {
+    Tycon tc;
+    
+    if (isTycon(e)) {
+	tc = e;
+    } else {
+	tc = findTycon(t);
+    }
+    
+    if (!isNull(tc) && nonNull(tycon(tc).clashes)) {
+	Text t = tycon(tc).text;
+	List ls = tycon(tc).clashes;
+	ERRMSG(line) "Ambiguous type constructor occurrence \"%s\"", textToStr(t) ETHEN
+	    ERRTEXT "\n*** Could refer to: " ETHEN
+	    ERRTEXT "%s.%s ", textToStr(module(tycon(tc).mod).text), textToStr(tycon(tc).text) ETHEN
+	    for(;nonNull(ls);ls=tl(ls)) {
+		ERRTEXT "%s.%s", textToStr(module(tycon(hd(ls)).mod).text), textToStr(tycon(hd(ls)).text)
+		ETHEN
+	    }
+	    ERRTEXT "\n" EEND;
+    }
     return e;
 }
 
