@@ -32,6 +32,9 @@ X_PRE_LIBS='@X_PRE_LIBS@'
 X_LIBS='@X_LIBS@'
 X_EXTRA_LIBS='@X_EXTRA_LIBS@'
 
+GL_CFLAGS='@GL_CFLAGS@'
+GL_LIBS='@GL_LIBS@'
+
 case `uname -a` in
 *CYGWIN*) platform=Win32 ;;
 *)	platform=Unix ;;
@@ -167,7 +170,18 @@ do	echo "Converting $modname"
 			$greencard -t ffi -i $abs_src_dir $modname.gc
 		)
 	elif [ -f $stem.hs ]; then
-		$cpp $cpp_flags $includes $stem.hs | cat -s >$target_stem.hs
+		# MEGA hack for HOpenGL stuff. Perhaps it would be a good
+		# idea to mangle *every* file with hack_foreign, using
+		# info from the package field c_includes somehow, but this
+		# doesn't work yet.
+		case $modname in
+		Graphics/Rendering/OpenGL*)
+			$cpp $cpp_flags $includes $stem.hs | cat -s | hack_foreign "HsOpenGL.h" >$target_stem.hs ;;
+		Graphics/UI/GLUT*)
+			$cpp $cpp_flags $includes $stem.hs | cat -s | hack_foreign "HsGLUT.h" >$target_stem.hs ;;
+		*)
+			$cpp $cpp_flags $includes $stem.hs | cat -s >$target_stem.hs ;;
+		esac
 	elif [ -f $stem.lhs ]; then
 		$cpp $cpp_flags $includes $stem.lhs | cat -s >$target_stem.lhs
 	elif [ -f $stem.y ]; then
@@ -202,6 +216,7 @@ if [ -f "$conf_in" ]
 then	$cpp $cpp_flags $includes \
 		-DX_CFLAGS=",\"$X_CFLAGS\"" -DX_PRE_LIBS=",\"$X_PRE_LIBS\"" \
 		-DX_LIBS=",\"$X_LIBS\"" -DX_EXTRA_LIBS=",\"$X_EXTRA_LIBS\"" \
+		-DGL_CFLAGS=",\"$GL_CFLAGS\"" -DGL_LIBS=",\"$GL_LIBS\"" \
 		$conf_in >$tmp
 	conf=$tmp
 fi
