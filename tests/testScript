@@ -443,9 +443,7 @@ test_libs() {
   perl runstdtest $HUGS $STDOPTS -98 Quote "-o1libs/Loaded.output"
 
   echo "-- !!! Performing static tests on the hslibs libraries"
-  perl runstdtest $HUGS $STDOPTS -98 -W -Olibs/libs1.hs "-o1libs/Loaded.output"
-  perl runstdtest $HUGS $STDOPTS -98 -W -Olibs/libs2.hs "-o1libs/Loaded.output"
-  perl runstdtest $HUGS $STDOPTS -98 -W -Olibs/libs3.hs "-o1libs/Loaded.output"
+  perl runstdtest $HUGS $STDOPTS -98 -W -Olibs/libs.hs "-o1libs/Loaded.output"
 
   echo "-- !!! Performing dynamic tests on libraries"
   # Specific tests - checking that old bugs have been fixed 
