@@ -9,8 +9,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: compiler.c,v $
- * $Revision: 1.17 $
- * $Date: 2003/09/19 10:04:37 $
+ * $Revision: 1.18 $
+ * $Date: 2003/10/06 17:01:50 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -685,8 +685,8 @@ List flds; {
  * a newtype construction.
  * ------------------------------------------------------------------------*/
 
-Bool failFree(pat)                /* is pattern failure free? (do we need  */
-Cell pat; {                       /* a conformality check?)                */
+Bool failFree(pat)                /* is pattern failure free?              */
+Cell pat; {                       /* (can we omit the default case?)       */
     Cell c = getHead(pat);
 
     switch (whatIs(c)) {
@@ -881,6 +881,7 @@ static List local remPat(pat,expr,lds)
 Cell pat;                         /* Produce list of definitions for eqn   */
 Cell expr;                        /* pat = expr, including a conformality  */
 List lds; {                       /* check if required.                    */
+    Cell refPat = refutePat(pat);
 
     /* Conformality test (if required):
      *   pat = expr  ==>    nv = LETREC confCheck nv@pat = nv
@@ -888,13 +889,12 @@ List lds; {                       /* check if required.                    */
      *                      remPat1(pat,nv,.....);
      */
 
-    if (!failFree(pat)) {
+    if (refPat!=WILDCARD) {
 	Cell confVar = inventVar();
 	Cell nv      = inventVar();
 	Cell locfun  = pair(confVar,         /* confVar [([nv@refPat],nv)] */
 			    singleton(pair(singleton(ap(ASPAT,
-							pair(nv,
-							     refutePat(pat)))),
+							pair(nv,refPat))),
 					   nv)));
 
 	if (whatIs(expr)==GUARDED) {         /* A spanner ... special case */
