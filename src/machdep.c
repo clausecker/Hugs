@@ -11,8 +11,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.122 $
- * $Date: 2004/10/16 17:14:24 $
+ * $Revision: 1.123 $
+ * $Date: 2004/10/21 09:11:38 $
  * ------------------------------------------------------------------------*/
 #include "prelude.h"
 #include "storage.h"
@@ -1212,6 +1212,87 @@ Bool getBuffTerminal(Int fd) {
 }
 
 Void setBuffTerminal(Int fd, Bool buffered) {
+}
+
+#elif IS_WINDOWS
+
+static Bool messedWithTerminal = FALSE;
+static DWORD originalSettings;
+
+Int getTerminalWidth() {
+    return 80;
+}
+
+Void normalTerminal() {                 /* restore terminal initial state  */
+    if (messedWithTerminal) {
+ 	HANDLE hIn;
+
+ 	hIn = GetStdHandle(STD_INPUT_HANDLE);
+ 	SetConsoleMode(hIn, originalSettings);
+	messedWithTerminal = FALSE;
+    }
+}
+
+Bool getEchoTerminal(Int fd) {
+    if (fd==0) {
+ 	DWORD mo;
+ 	HANDLE hIn;
+
+ 	hIn = GetStdHandle(STD_INPUT_HANDLE);
+ 	GetConsoleMode(hIn, &mo);
+	return (mo & ENABLE_ECHO_INPUT)!=0;
+    } else
+	return FALSE;
+}
+
+Void setEchoTerminal(Int fd, Bool echo) {
+    if (fd==0) {
+ 	DWORD mo;
+ 	HANDLE hIn;
+
+ 	hIn = GetStdHandle(STD_INPUT_HANDLE);
+ 	GetConsoleMode(hIn, &mo);
+	if (!messedWithTerminal) {
+	    originalSettings = mo;
+	    messedWithTerminal = TRUE;
+	}
+	if (echo)
+	    mo |= ENABLE_ECHO_INPUT;
+	else
+	    mo &= ~ENABLE_ECHO_INPUT;
+ 	SetConsoleMode(hIn, mo);
+    }
+}
+
+Bool getBuffTerminal(Int fd) {
+    if (fd==0) {
+ 	DWORD mo;
+ 	HANDLE hIn;
+
+ 	hIn = GetStdHandle(STD_INPUT_HANDLE);
+ 	GetConsoleMode(hIn, &mo);
+	return (mo & ENABLE_LINE_INPUT)!=0;
+    } else
+	return FALSE;
+}
+
+Void setBuffTerminal(Int fd, Bool buffered) {
+    if (fd==0) {
+ 	DWORD mo;
+ 	HANDLE hIn;
+
+ 	hIn = GetStdHandle(STD_INPUT_HANDLE);
+ 	GetConsoleMode(hIn, &mo);
+	if (!messedWithTerminal) {
+	    originalSettings = mo;
+	    messedWithTerminal = TRUE;
+	}
+	if (buffered)
+	    mo |= ENABLE_LINE_INPUT;
+	else
+	    mo &= ~ENABLE_LINE_INPUT;
+ 	SetConsoleMode(hIn, mo);
+    }
 }
 
 #else /* no terminal driver - eg DOS, RISCOS */
