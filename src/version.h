@@ -16,6 +16,6 @@
 #if MAJOR_RELEASE
 #define HUGS_VERSION "MONTH_YEAR"
 #else
-#define HUGS_VERSION "Version YYYYMMDD"
+#define HUGS_VERSION "SNAP YYYYMMDD"
 #endif
 
