@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: builtin.c,v $
- * $Revision: 1.12 $
- * $Date: 2001/04/02 04:24:13 $
+ * $Revision: 1.13 $
+ * $Date: 2001/05/30 03:15:37 $
  * ------------------------------------------------------------------------*/
 
 /* We include math.h before prelude.h because SunOS 4's cpp incorrectly
@@ -2171,11 +2171,11 @@ Int what; {
 		       pFun(nameEnRange,   "_range",   "enRange");
 		       pFun(nameEnIndex,   "_index",   "enIndex");
 		       pFun(nameEnInRng,   "_inRange", "enInRng");
-		       pFun(nameEnToEn,    "_ToEnum",  "enToEn");
-		       pFun(nameEnFrEn,    "_FrEnum",  "enFrEn");
-		       pFun(nameEnFrom,    "_From",    "enFrom");
-		       pFun(nameEnFrTo,    "_FromTo",  "enFrTo");
-		       pFun(nameEnFrTh,    "_FromThen","enFrTh");
+		       pFun(nameEnToEn,    "_toEnum",  "enToEn");
+		       pFun(nameEnFrEn,    "_frEnum",  "enFrEn");
+		       pFun(nameEnFrom,    "_from",    "enFrom");
+		       pFun(nameEnFrTo,    "_fromTo",  "enFrTo");
+		       pFun(nameEnFrTh,    "_fromThen","enFrTh");
 
 		       pFun(nameBlackHole, "_Gc Black Hole",    "gcBhole");
 		       pFun(nameInd,	   "_indirect", "error");

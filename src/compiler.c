@@ -10,8 +10,8 @@
  * included in the distribution.
  *
  * $RCSfile: compiler.c,v $
- * $Revision: 1.6 $
- * $Date: 2001/04/30 19:41:35 $
+ * $Revision: 1.7 $
+ * $Date: 2001/05/30 03:15:37 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -97,6 +97,7 @@ static Void local newGlobalFunction     Args((Name,Int,List,Int,Cell));
 
 #if DEBUG_SHOWSC
 static Void local debugConstructors     Args((FILE *fp,Cell c));
+static Void local debugConstructor      Args((FILE *fp,Name c));
 #endif
 
 /* --------------------------------------------------------------------------
@@ -1995,18 +1996,21 @@ Void compileDefns() {			/* compile script definitions	   */
 	switch(whatIs(t)) {
 	case TYCON:
 	  if (tycon(t).what == DATATYPE
-	      && nonNull(tycon(t).defn)) {
-	    fprintf(scfp,"data %s\n = ",
+	      && nonNull(tycon(t).defn)
+	      && tycon(t).mod == mod) {
+	    fprintf(scfp,"data %s",
 		    textToStr(tycon(t).text));
 	    debugConstructors(scfp,tycon(t).defn);
 	    fprintf(scfp,";\n");
 	  }
 	  break;
 	case CLASS:
-	  fprintf(scfp,"data %s = ",
-		  textToStr(cclass(t).text));
-	  debugConstructors(scfp,cclass(t).dcon);
-	  fprintf(scfp,";\n");
+	  if (cclass(t).mod == mod) {
+	    fprintf(scfp,"data %s = ",
+		    textToStr(cclass(t).text));
+	    debugConstructor(scfp,cclass(t).dcon);
+	    fprintf(scfp,";\n");
+	  }
 	  break;
 	default:
 	  fprintf(scfp,"** unknown datacons **");
@@ -2044,15 +2048,20 @@ Void compileDefns() {			/* compile script definitions	   */
 
 #if DEBUG_SHOWSC
 static Void local debugConstructors(FILE *fp,Cell c) {
+  char ch = '=';
+  while(isAp(c)) {
+    if (whatIs(hd(c)) == NAME) {
+      fprintf(fp,"\n %c ",ch);
+      ch = '|';
+      debugConstructor(fp,hd(c));
+    }
+    c = tl(c);
+  }
+}
+
+static Void local debugConstructor(FILE *fp,Name c) {
   int i;
   switch(whatIs(c)) {
-  case AP:
-    debugConstructors(fp,hd(c));
-    if (nonNull(tl(c))) {
-      fprintf(fp,"\n | ");
-      debugConstructors(fp,tl(c));
-    }
-    break;
   case NAME: 
     fprintf(fp,"%s",textToStr(name(c).text));
     for(i=0;i < name(c).arity;i++) {

@@ -9,8 +9,8 @@
  * included in the distribution.
  *
  * $RCSfile: output.c,v $
- * $Revision: 1.18 $
- * $Date: 2001/04/30 19:41:35 $
+ * $Revision: 1.19 $
+ * $Date: 2001/05/30 03:15:37 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -46,7 +46,7 @@ static Void local putSimpleAp    Args((Cell,Int));
 static Void local putTuple       Args((Int,Cell));
 static Int  local unusedTups     Args((Int,Cell));
 static Void local unlexVar       Args((Text));
-static Void local unlexFullVar   Args((Module,Text));
+static Void local unlexFullVar   Args((Name));
 static Void local unlexOp        Args((Text));
 static Void local unlexCharConst Args((Cell));
 static Void local unlexStrConst  Args((Text));
@@ -171,9 +171,7 @@ Cell e; {
 			  putChr(']');
 			  break;
 
-        case AP         : putChr('(');
-	                  putAp(d,e);
-                          putChr(')');
+        case AP         : putAp(d,e);
 			  break;
 
 	case NAME       : 
@@ -694,13 +692,29 @@ Text t; {                              /* operator symbols must be enclosed*/
     }
 }
 
-static Void local unlexFullVar(m,t)    /* print text as a variable name    */
-Module m;
-Text t; {                              
-    putStr(textToStr(module(m).text));
+static Void local unlexFullVar(n)  /* print text as a variable name    */
+Name n; {                              
+  Module m = name(n).mod;
+  Text t = name(n).text;
+  if (name(n).parent 
+      && isName(name(n).parent)
+      && isPair(name(name(n).parent).defn)
+      && snd(name(name(n).parent).defn) == n) {
+    /* Constructor with strict fields are handled in
+     * a strange manner. Here we print the true construtor name
+     */
+    unlexFullVar(name(n).parent);  
+  } else {
+    if (name(n).primDef) {
+      putStr("Prelude");
+    } else {
+      putStr(textToStr(module(m).text));
+    }
     putChr('.');
     putStr(textToStr(t));
+  }
 }
+
 
 static Void local unlexOp(t)           /* print text as operator name      */
 Text t; {                              /* alpha numeric symbols must be    */
@@ -786,7 +800,7 @@ Int  co; {
 			  break;
 
         case NAME       : 
-	                  unlexFullVar(name(e).mod,name(e).text);
+                          unlexFullVar(e);
 			  break;
 
 #if TREX
@@ -1027,11 +1041,11 @@ String eq; {
 	case NUMCASE : {   Int  left = outColumn;
 			   Cell t    = snd(e);
 			   Cell h     = getHead(snd3(t));
-			   String eqInt     = "Prelude.primEqInt";
-			   String eqInteger = "Prelude.primEqInteger";
-			   String eqDouble  = "Prelude.primEqDouble";
+			   String eqInt     = "Prelude.primPmInt";
+			   String eqInteger = "Prelude.primPmInteger";
+			   String eqDouble  = "Prelude.primPmFlt";
 			   String theEq     = "** BAD EQUALITY **";
-			   Int  ar;
+			   Int  ar = 0;
 			   putStr("case ");
 			   switch (whatIs(h)) {
 			   case NAME: 
@@ -1040,7 +1054,7 @@ String eq; {
 			     } else if (h == nameFromInteger) {
 			       theEq = eqInteger;
 			     } else if (h == nameFromDouble) {
-			       theEq = eqInteger;
+			       theEq = eqDouble;
 			     } else {
 			       ERRMSG(0) "error in NUMCASE" EEND;
 			     }
@@ -1054,9 +1068,11 @@ String eq; {
 			   }
 			   putStr(theEq);
 			   putStr(" (");
-			   pPut(NEVER,fst3(t),co);
+			   pPut(NEVER,arg(fun(snd3(t))),co);
 			   putStr(") (");
-			   ar =  pDiscr(snd3(t),co);
+			   pPut(NEVER,arg(snd3(t)),co);
+			   putStr(") (");
+			   pPut(NEVER,fst3(t),co);
 			   putStr(") of\n");
 			   pIndent(left+2);
 			   putStr("{ Prelude.True ");
@@ -1092,7 +1108,7 @@ Int  co; {
 
 	case NAME     : {   Int i = 0;
 			    arity = name(d).arity;
-			    unlexFullVar(name(d).mod,name(d).text);
+			    unlexFullVar(d);
 			    for (; i<arity; ++i) {
 				putChr(' ');
 				pPutOffset(co+arity-i);
