@@ -1694,20 +1694,19 @@ instance Show IOErrorType where
       DotNetException   -> ".NET exception"
 
 instance Show IOException where
-  showsPrec p (IOError mbHandle kind loc descr mbFile) = 
-    showString "IO Error: " . showsPrec p kind . 
+  showsPrec p (IOError hdl iot loc s fn) =
+    (case fn of
+       Nothing -> case hdl of
+		      Nothing -> id
+		      Just h  -> showsPrec p h . showString ": "
+       Just name -> showString name . showString ": ") .
     (case loc of
        "" -> id
-       _  -> showString "\nAction: " . showString loc) .
-      (case mbHandle of
-	 Nothing -> id
-	 Just h -> showString "\nHandle: " . showsPrec p h) .
-      (case descr of
-	 "" -> id
-	 _  -> showString "\nReason: " . showString descr) .
-      (case mbFile of
-	 Nothing -> id
-	 Just name -> showString "\nResource: " . showString name)
+       _  -> showString loc . showString ": ") .
+    showsPrec p iot .
+    (case s of
+       "" -> id
+       _  -> showString " (" . showString s . showString ")")
 
 -- Monadic I/O: --------------------------------------------------------------
 
