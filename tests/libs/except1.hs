@@ -29,8 +29,8 @@ t2 = do
   try (yield >> print "Foo" >> lose2 "foo")
   print "Bar"
 
-try2 :: IO a -> IO (Either HugsException a)
-try2 m = catchHugsException (m >>= return . Right) (return . Left)
+try2 :: IO a -> IO (Either Exception a)
+try2 m = catch (m >>= return . Right) (return . Left)
 
 lose1 x = ioError (userError x)
 lose2 x = error x

@@ -2,12 +2,12 @@ Type :? for help
 Hugs:Start of test 1
 3
 Caught error: a
-Caught error: {primDivInt 1 0}
+Caught error: divide by zero
 End of test 1
 
 Hugs:Start of test 2
 caught error b
-caught error {primQrmInteger 1 0}
+caught error divide by zero
 ok
 End of test 2
 

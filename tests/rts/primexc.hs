@@ -1,31 +1,28 @@
 -- !!! Testing primitive exception support
 
-import Hugs.Prelude( HugsException, IO(..) )
-
--- data HugsException
+import Hugs.Prelude( Exception, IO(..) )
 
 -- Note that these primitives break referential transparency.
 -- They should not be exported to the user in this form.
 -- They should always be wrapped in a referentially transparent
 -- cover.
 
-primitive primCatchException :: a -> Either HugsException a
--- primitive primThrowException :: HugsException -> a
-primitive primShowException  :: HugsException -> String
+primitive primCatchException :: a -> Either Exception a
+-- primitive primThrowException :: Exception -> a
 
 -- One level of error catching
 test1 :: Int -> IO ()
 test1 x = case primCatchException x of
   Left err -> do
     putStr "Caught error: "
-    putStrLn $ primShowException err
+    print err
   Right x -> do
     print x
 
 -- Exception catching in the IO monad
 -- Won't behave correctly if combined with threads - use the Prelude
 -- code for that!
-catch' :: IO a -> (HugsException -> IO a) -> IO a
+catch' :: IO a -> (Exception -> IO a) -> IO a
 catch' (IO m) h = IO (\ f s -> 
   case primCatchException (m f s) of
     Left exn -> case h exn of { (IO h') -> h' f s }

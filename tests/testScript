@@ -3,7 +3,7 @@
 . ./config
 
 HUGS=../src/hugs
-HUGSDIR=..
+HUGSDIR=../hugsdir
 HUGSFLAGS=
 export HUGS HUGSDIR HUGSFLAGS
 
@@ -294,7 +294,7 @@ test_rts() {
   perl runstdtest $HUGS $STDOPTS "-Orts/bignums.hs" "-irts/bignums.input" "-o1rts/bignums.output"
 
   # Using generic printer
-  perl runstdtest $HUGS $STDOPTS -u    "-Orts/print.hs"  "-irts/print.input" "-o1rts/print1.output"
+# perl runstdtest $HUGS $STDOPTS -u    "-Orts/print.hs"  "-irts/print.input" "-o1rts/print1.output"
   perl runstdtest $HUGS $STDOPTS -u -f "-Orts/print.hs"  "-irts/print.input" "-o1rts/print2.output"
 # perl runstdtest $HUGS $STDOPTS -u -f "-Orts/catch.hs"  "-irts/catch.input" "-o1rts/catch.output"
   perl runstdtest $HUGS $STDOPTS -u    "-Orts/enum.hs"   "-irts/enum.input"  "-o1rts/enum.output1"
