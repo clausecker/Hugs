@@ -46,10 +46,6 @@ Bool multiInstRes = FALSE;
 Bool oldIParamSyntax = FALSE;
 #endif
 
-Bool optImplicitImportRoot = TRUE;      
-   /* TRUE => directory of importing module added to search path
-    *         while resolving imports from that module.
-    */
 Bool printTypeUseDefaults = FALSE;
 
 
@@ -136,7 +132,6 @@ struct options toggle[] = {     /* List of command line toggles    */
     Option('u', 1, "Use \"show\" to display results",       &useShow),
     Option('I', 1, "Display results of IO programs",        &displayIO),
     Option('T', 1, "Apply 'defaulting' when printing types", &printTypeUseDefaults),
-    Option('X', 1, "Implicitly add path of importing module to search path", &optImplicitImportRoot),
 /* Conditional toggles: */
 #if HUGS_FOR_WINDOWS
     Option('A', 1, "Auto load files",		   	    &autoLoadFiles),
