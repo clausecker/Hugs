@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.29 $
- * $Date: 2001/01/30 15:05:12 $
+ * $Revision: 1.30 $
+ * $Date: 2001/02/13 01:02:16 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -2970,7 +2970,7 @@ Inst in; {
 			ERRTEXT "\n*** This instance    : "
 			ETHEN ERRPRED(inst(in).head);
 			ERRTEXT "\n*** Conflicts with   : "
-			ETHEN ERRPRED(inst(hd(ins)).head);
+			ETHEN ERRPRED(inst(hd(ins1)).head);
 			ERRTEXT "\n*** For class        : "
 			ETHEN ERRPRED(cclass(c).head);
 			ERRTEXT "\n*** Under dependency : "
