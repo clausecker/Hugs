@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: input.c,v $
- * $Revision: 1.12 $
- * $Date: 2000/07/28 04:23:46 $
+ * $Revision: 1.13 $
+ * $Date: 2000/08/03 00:07:17 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -141,6 +141,15 @@ static Cell varQualified;               /* qualified                       */
 static Cell varAsMod;                   /* as                              */
 
 static List imps;                       /* List of imports to be chased    */
+
+#if HERE_DOC
+enum { START = 0,
+       DOLLAR_PAREN,
+       HERE_VAR,
+       CLOSE_PAREN,
+       KEEP_GOING };
+static Int hereState = START;
+#endif
 
 /* --------------------------------------------------------------------------
  * Character set handling:
@@ -284,6 +293,7 @@ String prompt; {                       /* standard in (i.e. console/kbd)   */
     c1          = ' ';
     column      = (-1);
     row         = 0;
+    hereState   = START;
 
 #if USE_READLINE
     /* Paranoid freeing code supplied by Sverker Nilsson (sverker@opq.se) 
@@ -823,46 +833,39 @@ static Cell local readString() {       /* read string literal              */
 }
 
 #if HERE_DOC
-enum { START = 0,
-       FIRST_DOLLAR,
-       HERE_VAR,
-       SECOND_DOLLAR,
-       KEEP_GOING };
-static Int hereState = START;
-
 static Cell local readHereString() {       /* read fragment of here doc    */
     startToken();
     while ((c0!='\'' || c1!='\'') && c0!=EOF) {
 	if (c0 == '$') {
-	    if (c1 == '$')
-		skip();
-	    else
-		hereState = FIRST_DOLLAR;
+	    skip();
+	    switch (c0) {
+	    case '$' :
 		break;
+	    case '(' :
+		hereState = DOLLAR_PAREN;
+		goto urgh;
+	    default :
+		ERRMSG(row) "Singleton $ in here document"
+		EEND;
+	    }
 	}
 	saveTokenChar(c0);
 	skip();
     }
-
-    if (c0=='\'' && c1=='\'') {
-	skip(); skip();
-    } else if (c0 != '$') {
+    if (c0==EOF) {
 	ERRMSG(row) "Improperly terminated here document"
 	EEND;
     }
+    /* eat the closing ticks */
+    skip(); skip();
+
+  urgh:
     endToken();
     return mkStr(findText(tokenStr));
 }
 
-static Void local hereDollar() {
+static Void local hereJoin() {
     Text plusplus = findText("++");
-    skipWhitespace();
-    if (c0!='$') {
-	hereState = START;
-	ERRMSG(row) "improperly escaped variable in here document"
-	EEND;
-    }
-    skip();
     push(yylval = ap(VAROPCELL,plusplus));
 }
 #endif
@@ -1345,20 +1348,27 @@ static Int local yylex() {             /* Read next input token ...        */
 #if HERE_DOC
     if (hereState) {
 	switch (hereState) {
-	case FIRST_DOLLAR :
+	case DOLLAR_PAREN :
 	{
-	    hereDollar();
+	    skip();
 	    hereState = HERE_VAR;
+	    hereJoin();
 	    return VAROP;
 	}
 	case HERE_VAR :
-	    hereState = SECOND_DOLLAR;
+	    hereState = CLOSE_PAREN;
 	    /* will parse and return id, and come back in the right state */
 	    break;
-        case SECOND_DOLLAR :
+        case CLOSE_PAREN :
 	{
-	    hereDollar();
+	    skipWhitespace();
+	    if (c0!=')') {
+		ERRMSG(row) "Improperly escaped variable in here document"
+		EEND;
+	    }
+	    skip();
 	    hereState = KEEP_GOING;
+	    hereJoin();
 	    return VAROP;
 	}
         case KEEP_GOING :
