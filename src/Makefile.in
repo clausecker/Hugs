@@ -195,10 +195,23 @@ TAGS		::
 .c@OBJ@	:
 		  $(CC) -c $(CFLAGS) $(OPTFLAGS) $<
 
-# These are compiled with less optimisation to avoid optimisation bugs in
-# certain compilers.  This may be overly conservative on some compilers.
+# Modules to be compiled without optimization.
+# (old comment: to avoid optimisation bugs in certain compilers.
+#               This may be overly conservative on some compilers.)
+# (The following explanation is based on a posting by Alastair Reid.)
+# These modules allocate cells on the Hugs heap and assume a conservative
+# garbage collector.  On some (especially RISC) architectures, the
+# optimizer may identify a pointer to a Cell as a common subexpression,
+# and hold that instead of the Cell.  This would then be missed by the
+# conservative garbage collector's simplistic scan of the C stack.
+# Modules associated with evaluation are safe because they don't assume
+# conservative GC (see IMPORTANT NOTICE in builtin.c).
 compiler@OBJ@	: compiler.c
 		  $(CC) -c $(CFLAGS) compiler.c
+module@OBJ@	: module.c
+		  $(CC) -c $(CFLAGS) module.c
+subst@OBJ@	: subst.c
+		  $(CC) -c $(CFLAGS) subst.c
 static@OBJ@	: static.c
 		  $(CC) -c $(CFLAGS) static.c
 type@OBJ@	: type.c
