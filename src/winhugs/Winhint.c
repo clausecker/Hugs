@@ -2,9 +2,10 @@
  * WinHint.c:	José Enrique Gallardo Ruiz, Feb 1999
  *
  * Hugs for Windows is Copyright (c) José Enrique Gallardo, Mark P Jones,
- * Alastair Reid and the Yale Haskell Group 1994-99, and is distributed as
- * Open Source software under the Artistic License; see the file "Artistic"
- * that is included in the distribution for details.
+ * Alastair Reid, the Yale Haskell Group, and the Oregon Graduate Institute
+ * of Science and Technology, 1994-1999, All rights reserved.  It is
+ * distributed as free software under the license in the file "License",
+ * which is included in the distribution.
  *
  * This file contains the implementation of hint windows
  * ------------------------------------------------------------------------*/
