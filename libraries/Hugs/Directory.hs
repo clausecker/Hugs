@@ -1,7 +1,7 @@
 --
 -- Hugs98 implementation of the Haskell 98 module, Directory.
 --
-module Directory
+module Hugs.Directory
 	( Permissions ( readable     -- :: Permissions -> Bool
 	              , writable     -- :: Permissions -> Bool
 		      , executable   -- :: Permissions -> Bool
@@ -30,7 +30,7 @@ module Directory
 	, getModificationTime 	     -- :: FilePath -> IO ClockTime
 	) where
 
-import Time ( ClockTime(..) )
+import System.Time ( ClockTime(..) )
 
 data Permissions
  = Permissions 
