@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: connect.h,v $
- * $Revision: 1.81 $
- * $Date: 2003/11/19 21:49:47 $
+ * $Revision: 1.82 $
+ * $Date: 2003/11/22 19:08:52 $
  * ------------------------------------------------------------------------*/
 #ifndef __CONNECT_H__
 #define __CONNECT_H__
@@ -82,6 +82,7 @@ extern Name  nameMFix;			/* for translating mdo-notation	   */
 #endif
 
 extern Name  namePrint;			/* printing primitive		   */
+extern Name  nameNPrint;		/* internal printer                */
 
 #if    IO_MONAD
 extern Type   typeIO;		        /* For the IO monad, IO 	   */
