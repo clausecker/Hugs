@@ -288,6 +288,19 @@ Hugs defines these instances only for tuple types of size 5 or less
 </para></listitem>
 </varlistentry>
 
+<varlistentry>
+<term>File locking</term>
+<listitem><para>
+Hugs does not attempt attempt to enforce the multiple-reader single-writer
+locking on files required by Haskell 98.
+Thus under Hugs programs that read and write the same file
+at the same time may see an inconsistent state,
+and programs that write to the same file more than once may produce
+corrupt output.
+Under Haskell 98, both kinds of program would fail at runtime.
+</para></listitem>
+</varlistentry>
+
 </variablelist>
 
 </sect2>
