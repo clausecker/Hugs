@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: storage.c,v $
- * $Revision: 1.58 $
- * $Date: 2002/11/29 13:05:43 $
+ * $Revision: 1.59 $
+ * $Date: 2003/01/22 19:15:23 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1889,6 +1889,37 @@ static Int markCount, stackRoots;
 
 #endif /* !GC_STATISTICS */
 
+#if FAST_WHATIS
+
+unsigned char whatCode[N_WHATCODE];  /* array of whatIs codes */
+
+#define fillWhatCode(code, from, to) memset(whatCode+from, code, to-from)
+
+static Void initFastWhat(Void) {
+	int i;
+
+	for (i = 0; i < TUPMIN; i++)
+		whatCode[i] = i;
+#if TREX
+	fillWhatCode(TUPLE,   TUPMIN,  EXTMIN);
+	fillWhatCode(EXT,     EXTMIN,  OFFMIN);
+#else
+	fillWhatCode(TUPLE,   TUPMIN,  OFFMIN);
+#endif
+	fillWhatCode(OFFSET,  OFFMIN,  MODMIN);
+	fillWhatCode(MODULE,  MODMIN,  TYCMIN);
+	fillWhatCode(TYCON,   TYCMIN,  NAMEMIN);
+	fillWhatCode(NAME,    NAMEMIN, INSTMIN);
+	fillWhatCode(INSTANCE,INSTMIN, CLASSMIN);
+	fillWhatCode(CLASS,   CLASSMIN,CHARMIN);
+	fillWhatCode(CHARCELL,CHARMIN, INTMIN);
+	fillWhatCode(INTCELL, INTMIN,  INTMAX+1);    /* +1 is intentional */
+}
+
+#undef fillWhatCode
+
+#endif /* FAST_WHATIS */
+
 Cell pair(l,r)                          /* Allocate pair (l, r) from       */
 Cell l, r; {                            /* heap, garbage collecting first  */
     Cell c = freeList;                  /* if necessary ...                */
@@ -2402,6 +2433,7 @@ Cell c; {                               /* except that Cells refering to   */
 /* rather high.  The recoded version below attempts to improve the average */
 /* performance for whatIs() using a binary search for part of the analysis */
 
+#if !FAST_WHATIS
 Cell whatIs(c)                         /* identify type of cell            */
 register Cell c; {
     if (isPair(c)) {
@@ -2443,6 +2475,7 @@ register Cell c; {
     if (c>=TUPMIN)   return TUPLE;
     return c;*/
 }
+#endif
 
 #if DEBUG_PRINTER
 /* A very, very simple printer.
@@ -3798,6 +3831,9 @@ Int what; {
 
 		       scriptHw = 0;
 
+#if FAST_WHATIS
+		       initFastWhat();
+#endif
 		       break;
 	case EXIT    : 
 	               /* Let go of dynamic storage */

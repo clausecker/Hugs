@@ -8,8 +8,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: prelude.h,v $
- * $Revision: 1.39 $
- * $Date: 2002/09/09 14:45:02 $
+ * $Revision: 1.40 $
+ * $Date: 2003/01/22 19:15:21 $
  * ------------------------------------------------------------------------*/
 
 #include "config.h"
@@ -116,6 +116,8 @@
  *                    integerToInt (intToInteger x) -> x
  *                    rationalToFloat  (fromDouble {dict} x) -> doubleToFloat x
  *                    rationalToDouble (fromDouble {dict} x) -> x
+ *   FAST_WHATIS    to use a macro instead of a func for whatIs(), for speed
+ *   FAST_WHATIS1   to use whatIs1(), a faster version of whatIs(), for speed
  *-------------------------------------------------------------------------*/
 
 #if !HASKELL_98_ONLY
@@ -161,6 +163,9 @@
                                  /* (as opposed to dynamically growable ones)  */
 
 #define SHORT_CIRCUIT_COERCIONS 1
+
+#define FAST_WHATIS      1
+#define FAST_WHATIS1     1	 /* can only use if FAST_WHATIS is 1 */
 
 /*---------------------------------------------------------------------------
  * Platform-dependent settings:

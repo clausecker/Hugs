@@ -8,8 +8,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: storage.h,v $
- * $Revision: 1.47 $
- * $Date: 2002/11/06 15:50:11 $
+ * $Revision: 1.48 $
+ * $Date: 2003/01/22 19:15:23 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -181,7 +181,12 @@ extern  Void	     markWithoutMove Args((Cell));
 #define isPair(c)    ((c)<0)
 #define isGenPair(c) ((c)<0 && -heapSize<=(c))
 
+#if FAST_WHATIS
+#define whatIs(c)    (isPair(c)? (isTag(fst(c)) ? fst(c) : AP ) : whatCode[c])
+extern unsigned char whatCode[];
+#else
 extern	Cell	     whatIs    Args((Cell));
+#endif
 
 /* --------------------------------------------------------------------------
  * Box cell tags are used as the fst element of a pair to indicate that
@@ -195,6 +200,9 @@ extern	Cell	     whatIs    Args((Cell));
 #define isTag(c)     (TAGMIN<=(c) && (c)<SPECMIN) /* Tag cell values	   */
 #define isBoxTag(c)  (TAGMIN<=(c) && (c)<BCSTAG)  /* Box cell tag values   */
 #define isConTag(c)  (BCSTAG<=(c) && (c)<SPECMIN) /* Constr cell tag values*/
+#if FAST_WHATIS1
+#define TAG_MASK     (~0x7f)	  /* This masks 0..SPECMIN-1		   */
+#endif
 
 #define INDIRECT     1		  /* Indirection node:	      snd :: Cell  */
 #define INDIRECT1    2		  /* Temporary indirection:   snd :: Cell  */
@@ -409,6 +417,53 @@ extern void growDynTable       Args((DynTable*));
  * Special cell values:
  * ------------------------------------------------------------------------*/
 
+#if FAST_WHATIS1
+
+#define SPECMIN      129	  /* must be out of TAG_MASK range         */
+
+#define NONE	     129	  /* Dummy stub				   */
+#define STAR	     130	  /* Representing the kind of types	   */
+#if TREX
+#define ROW	     131	  /* Representing the kind of rows	   */
+#endif
+#define WILDCARD     132	  /* Wildcard pattern			   */
+
+#define SKOLEM	     133	  /* Skolem constant			   */
+
+#define DOTDOT       134          /* ".." in import/export list            */
+
+#if BIGNUMS
+#define ZERONUM      136	  /* The zero bignum (see POSNUM, NEGNUM)  */
+#endif
+
+#define NAME	     138	  /* whatIs code for isName		   */
+#define TYCON	     139	  /* whatIs code for isTycon		   */
+#define CLASS	     140	  /* whatIs code for isClass		   */
+#define MODULE       141          /* whatIs code for isModule              */
+#define INSTANCE     142          /* whatIs code for isInst                */
+#define TUPLE	     143	  /* whatIs code for tuple constructor	   */
+#define OFFSET	     144	  /* whatis code for offset		   */
+#define AP	     145	  /* whatIs code for application node	   */
+#define CHARCELL     146	  /* whatIs code for isChar		   */
+#if TREX
+#define EXT	     147	  /* whatIs code for isExt		   */
+#endif
+
+#define SIGDECL      148	  /* Signature declaration		   */
+#define FIXDECL      149	  /* Fixity declaration			   */
+#define FUNBIND	     150	  /* Function binding			   */
+#define PATBIND	     151	  /* Pattern binding			   */
+
+#define DATATYPE     158	  /* Datatype type constructor		   */
+#define NEWTYPE	     159	  /* Newtype type constructor		   */
+#define SYNONYM	     160	  /* Synonym type constructor		   */
+#define RESTRICTSYN  161	  /* Synonym with restricted scope	   */
+
+#define NODEPENDS    163	  /* Stop calculation of deps in type check*/
+#define PREDEFINED   164	  /* Predefined name, not yet filled       */
+
+#else	/* !FAST_WHATIS1 */
+
 #define SPECMIN      101
 #define isSpec(c)    (SPECMIN<=(c) && (c)<TUPMIN)/* Special cell values    */
 
@@ -452,6 +507,8 @@ extern void growDynTable       Args((DynTable*));
 
 #define NODEPENDS    135	  /* Stop calculation of deps in type check*/
 #define PREDEFINED   136	  /* Predefined name, not yet filled       */
+
+#endif 	/* !FAST_WHATIS1 */
 
 /* --------------------------------------------------------------------------
  * Tuple data/type constructors:
@@ -812,7 +869,20 @@ extern Text   findModAlias   Args((Text));
  * ------------------------------------------------------------------------*/
 
 #define INTMIN	     (CHARMIN+NUM_CHARS)
+
+#if FAST_WHATIS
+
+/* All ints out of the range defined below are boxed, so we want the biggest
+ * INTMAX possible. But the bigger INTMAX is, the bigger the whatIs array.
+ * We strike a balance by choosing an integer range of 4096.
+ */
+
+#define INTMAX	     (INTMIN+4096)
+#define N_WHATCODE   (INTMAX+1)			 /* size of whatCode array */
+#else
 #define INTMAX	     (MAXPOSINT)
+#endif
+
 #define isSmall(c)   (INTMIN<=(c))
 #define INTZERO      (INTMIN/2 + INTMAX/2)
 #define MINSMALLINT  (INTMIN - INTZERO)
@@ -1243,3 +1313,17 @@ extern  List   addTyconsMatching Args((String,List));
 extern  List   addNamesMatching  Args((String,List));
 
 /*-------------------------------------------------------------------------*/
+
+#if FAST_WHATIS1
+
+/* whatIs1 is faster than whatIs, but it will return NIL if fst(c) is NIL
+ * Used with care in the right places it gains us speed.
+ */
+
+#define isTag1(c)   (((c) & TAG_MASK) == 0)	    /* doesn't exclude NIL */
+
+#define whatIs1(c)  (isPair(c)? (isTag1(fst(c))? fst(c) : AP ) : whatCode[c])
+
+#define isAp1(c)    (isPair(c) && !isTag1(fst(c)))
+
+#endif

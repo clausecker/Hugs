@@ -8,8 +8,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: subst.c,v $
- * $Revision: 1.25 $
- * $Date: 2002/10/11 00:10:07 $
+ * $Revision: 1.26 $
+ * $Date: 2003/01/22 19:15:23 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -300,7 +300,11 @@ Type t; {				/* to explicitly scoped vars	   */
 Tyvar *getTypeVar(t,o)			/* get number of type variable	   */
 Type t; 				/* represented by (t,o) [if any].  */
 Int  o; {
+#if FAST_WHATIS1
+    switch (whatIs1(t)) {
+#else
     switch (whatIs(t)) {
+#endif
 	case INTCELL   : return tyvar(intOf(t));
 	case OFFSET    : return tyvar(o+offsetOf(t));
 	case VARIDCELL :
