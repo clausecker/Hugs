@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: ffi.c,v $
- * $Revision: 1.33 $
- * $Date: 2003/10/14 13:56:21 $
+ * $Revision: 1.34 $
+ * $Date: 2003/12/18 05:29:16 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -216,6 +216,7 @@ List es; {
     out = NIL;
 
     compileAndLink(fn, ffiFlags);
+    if (ffiFlags) { free(ffiFlags); ffiFlags=0; }
 }
 
 #ifdef DOTNET
