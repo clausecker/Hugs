@@ -124,7 +124,7 @@ packages='base haskell98 haskell-src network parsec QuickCheck'
 #
 case `uname -a` in
 *CYGWIN*) ;;
-*)	packages='$packages unix';;
+*)	packages="$packages unix";;
 esac
 
 # crude check whether HOpenGL was enabled in configure
