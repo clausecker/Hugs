@@ -42,12 +42,12 @@ Long version:
 
       Pick one of the following configurations:
 
-        msc:    Microsoft Visual C++ 
-        bcc32:  32 bit Borland C
-        win32:  32 bit Borland C, Hugs for Windows
-        djgpp2: DJGPP2
+        msc:     Microsoft Visual C++ 
+        winhugs: Microsoft Visual C++, Hugs for Windows
+        bcc32:   32 bit Borland C
+        djgpp2:  DJGPP2
 
-      cd Hugs98\src\{msc,bcc32,bcc16,djgpp2}
+      cd Hugs98\src\{msc,winhugs,bcc32,djgpp2}
       config.bat
 
         If you haven't used Visual C++ or Borland C from the command line
