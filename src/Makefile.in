@@ -10,18 +10,18 @@
 
 # Targets:
 #
-# <default>:   	 make hugs@EXE@ and runhugs@EXE@
-# libraries:	 generate libraries from fptools raw sources
-#		 (located in $(FPTOOLS))
-# install:	 make and install programs/libraries
-# hugs@EXE@:    	 make minimal working system
-# runhugs@EXE@:	 make batch-mode version of Hugs
-# clean:       	 delete files not required in running system
-# distclean:     delete files that can be regenerated using C compiler
-# veryclean:     delete all machine generated files 
-#                  (you need perl, bison/yacc, etc to rebuild these files)
-# check:	 run regression tests
-# TAGS:          build emacs TAGS table
+# <default>:   	  make hugs@EXE@ and runhugs@EXE@
+# libraries:	  generate libraries from fptools raw sources
+#		  (located in $(FPTOOLS))
+# install:	  make and install programs/libraries
+# hugs@EXE@:	  make minimal working system
+# runhugs@EXE@:	  make batch-mode version of Hugs
+# clean:       	  delete files not required in running system
+# distclean:      delete files that can be regenerated using C compiler
+# veryclean:      delete all machine generated files 
+#                   (you need perl, bison/yacc, etc to rebuild these files)
+# check:	  run regression tests
+# TAGS:           build emacs TAGS table
 
 # This rule goes first to make it the default choice
 default		:: hugs@EXE@ runhugs@EXE@ libraries
@@ -73,12 +73,12 @@ HFILES		= HsFFI.h builtin.h command.h config.h connect.h errors.h \
 		  strutil.h subst.h
 CFILES		= hugs.c runhugs.c server.c edit.c observe.c \
 		  builtin.c compiler.c errors.c evaluator.c \
-		  ffi.c goal.c input.c \
-		  machdep.c machine.c module.c opts.c output.c \
-		  plugin.c script.c static.c storage.c \
-		  strutil.c subst.c type.c version.c
-INCFILES	= parser.c preds.c bignums.c timer.c scc.c \
-		  printer.c iomonad.c interns.c array.c
+		  ffi.c goal.c input.c machdep.c machine.c \
+		  module.c opts.c output.c plugin.c script.c \
+		  static.c storage.c strutil.c subst.c \
+		  type.c version.c
+INCFILES	= array.c bignums.c interns.c iomonad.c \
+		  parser.c preds.c printer.c scc.c timer.c
 YFILES		= parser.y
 SOURCES		= $(HFILES) $(CFILES) $(INCFILES) $(YFILES) 
 OBJECTS		= builtin@OBJ@ compiler@OBJ@ errors@OBJ@ evaluator@OBJ@ \
@@ -91,8 +91,9 @@ PRELUDE		= config.h options.h prelude.h script.h
 
 HEADERS		= HsFFI.h config.h unix/MachDeps.h unix/template-hsc.h
 
-TOOLS		= ../tools/Package.hs ../tools/ParsePkgConf.hs \
-		  ../tools/get_pkg_field
+TOOLSDIR	= ../tools
+TOOLS		= $(TOOLSDIR)/Package.hs $(TOOLSDIR)/ParsePkgConf.hs \
+		  $(TOOLSDIR)/get_pkg_field
 
 ################################################################
 # Hugs interpreter and standalone evaluator
