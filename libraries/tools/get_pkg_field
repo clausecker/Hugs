@@ -30,7 +30,8 @@ getField field pkg_file = do
 
 parsePackageConfig :: String -> [(String, String)]
 parsePackageConfig =
-	mapMaybe splitField . squash . map trimTrailingSpace .
+	mapMaybe splitField . squash .
+		filter (not . null) . map trimTrailingSpace .
 		filter (not . isComment) . lines
 
 trimTrailingSpace :: String -> String
@@ -38,7 +39,6 @@ trimTrailingSpace = reverse . dropWhile isSpace . reverse
 
 squash :: [String] -> [String]
 squash [] = []
-squash ("":ls) = squash ls
 squash (l:ls) = unwords (l:map (dropWhile isSpace) conts) : squash rest
   where	(conts, rest) = span isContinuation ls
 
