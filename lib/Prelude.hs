@@ -623,14 +623,6 @@ instance Show a => Show [a]  where
 -- data (a,b) = (a,b) deriving (Eq, Ord, Ix, Read, Show)
 -- etc..
 
--- Functions ----------------------------------------------------------------
-
-instance Show (a -> b) where
-    showsPrec p f = showString "<<function>>"
-
-instance Functor ((->) a) where
-    fmap = (.)
-
 -- Standard Integral types --------------------------------------------------
 
 data Int      -- builtin datatype of fixed size integers
