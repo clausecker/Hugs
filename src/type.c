@@ -7,8 +7,8 @@
  * in the distribution for details.
  *
  * $RCSfile: type.c,v $
- * $Revision: 1.2 $
- * $Date: 1999/07/28 18:48:24 $
+ * $Revision: 1.3 $
+ * $Date: 1999/07/28 23:00:36 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -138,7 +138,7 @@ static Void   local typeDo	      Args((Int,Cell));
 static Void   local typeConFlds	      Args((Int,Cell));
 static Void   local typeUpdFlds	      Args((Int,Cell));
 #if IPARAM
-static Cell   local typeDwhere	      Args((Int,Cell));
+static Cell   local typeWith	      Args((Int,Cell));
 #endif
 static Cell   local typeFreshPat      Args((Int,Cell));
 
@@ -723,7 +723,7 @@ Cell e; {
 			  break;
 
 #if IPARAM
-	case DWHRE	: return typeDwhere(l,e);
+	case DWHRE	: return typeWith(l,e);
 #endif
 
 	case COND	: {   Int beta = newTyvars(1);
@@ -1382,10 +1382,10 @@ Cell e; {				/* bizarre manner for the benefit  */
 }
 
 #if IPARAM
-static Cell local typeDwhere(line,e)	/* Type check a dwhere		   */
+static Cell local typeWith(line,e)	/* Type check a with		   */
 Int  line;
 Cell e; {
-    static String update = "dwhere";
+    static String update = "with";
     List fs    = snd(snd(e));		/* List of field specifications	   */
     List ts    = NIL;			/* List of types for fields	   */
     Int  n     = length(fs);
@@ -1419,12 +1419,12 @@ Cell e; {
 
     /* Calculate type and translation for each expr in the field list	   */
     for (fs1=fs, dp=dpreds, i=alpha+2; nonNull(fs1); fs1=tl(fs1), dp=tl(dp), i++) {
-	static String dwhere = "with";
+	static String with = "with";
         Cell ev = hd(dp);
 	snd(hd(fs1)) = typeExpr(line,snd(hd(fs1)));
 	bindTv(i,typeIs,typeOff);
 	if (nonNull(ev)) {
-	    shouldBe(line,fst(hd(fs1)),e,dwhere,snd(fst3(ev)),intOf(snd3(ev)));
+	    shouldBe(line,fst(hd(fs1)),e,with,snd(fst3(ev)),intOf(snd3(ev)));
 	    bs = cons(cons(pair(thd3(ev), cons(triple(NIL, mkInt(line), snd(hd(fs1))), NIL)), NIL), bs);
 	}
     }

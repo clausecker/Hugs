@@ -7,8 +7,8 @@
  * in the distribution for details.
  *
  * $RCSfile: input.c,v $
- * $Revision: 1.2 $
- * $Date: 1999/07/28 18:48:14 $
+ * $Revision: 1.3 $
+ * $Date: 1999/07/28 23:00:34 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -111,7 +111,7 @@ static Text textThen,    textElse,     textWhere,  textLet,    textIn;
 static Text textInfix,   textInfixl,   textInfixr, textPrim,   textNewtype;
 static Text textDefault, textDeriving, textDo,     textClass,  textInstance;
 #if IPARAM
-static Text textDwhere,  textDlet;
+static Text textWith,  textDlet;
 #endif
 
 static Text textCoco,    textEq,       textUpto,   textAs,     textLambda;
@@ -1431,7 +1431,7 @@ static Int local yylex() {             /* Read next input token ...        */
 	if (it==textWildcard)	       return '_';
 	if (it==textAll && !haskell98) return ALL;
 #if IPARAM
-	if (it==textDwhere && !haskell98) lookAhead(DWHERE);
+	if (it==textWith && !haskell98) lookAhead(WITH);
 	if (it==textDlet   && !haskell98) lookAhead(DLET);
 #endif
 	if (it==textRepeat && reading==KEYBOARD)
@@ -1597,7 +1597,7 @@ Int what; {
 		       textClass      = findText("class");
 		       textInstance   = findText("instance");
 #if IPARAM
-		       textDwhere     = findText("with");
+		       textWith       = findText("with");
 		       textDlet       = findText("dlet");
 #endif
 		       textCoco       = findText("::");

@@ -7,8 +7,8 @@
  * in the distribution for details.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.2 $
- * $Date: 1999/07/28 18:48:20 $
+ * $Revision: 1.3 $
+ * $Date: 1999/07/28 23:00:36 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -204,7 +204,7 @@ static Void   local depConFlds		Args((Int,Cell,Bool));
 static Void   local depUpdFlds		Args((Int,Cell));
 static List   local depFields		Args((Int,Cell,List,Bool));
 #if IPARAM
-static Void   local depDwhere		Args((Int,Cell));
+static Void   local depWith		Args((Int,Cell));
 static List   local depDwFlds		Args((Int,Cell,List));
 #endif
 #if TREX
@@ -5286,7 +5286,7 @@ Cell e; {
 			  break;
 
 #if IPARAM
-	case DWHRE	: depDwhere(line,e);
+	case DWHRE	: depWith(line,e);
 			  break;
 #endif
 
@@ -5595,7 +5595,7 @@ Bool isP; {
 }
 
 #if IPARAM
-static Void local depDwhere(line,e)	/* check dwhere using fields	   */
+static Void local depWith(line,e)	/* check with using fields	   */
 Int  line;
 Cell e; {
     fst(snd(e)) = depExpr(line,fst(snd(e)));

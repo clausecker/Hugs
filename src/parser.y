@@ -10,8 +10,8 @@
  * in the distribution for details.
  *
  * $RCSfile: parser.y,v $
- * $Revision: 1.2 $
- * $Date: 1999/07/28 18:48:18 $
+ * $Revision: 1.3 $
+ * $Date: 1999/07/28 23:00:35 $
  * ------------------------------------------------------------------------*/
 
 %{
@@ -83,7 +83,7 @@ static Void   local noIP	 Args((String));
 %token INFIXN     INFIXL     INFIXR     PRIMITIVE  TNEWTYPE
 %token DEFAULT    DERIVING   DO         TCLASS     TINSTANCE
 /*#if IPARAM*/
-%token DWHERE DLET
+%token WITH DLET
 /*#endif*/
 %token REPEAT	  ALL        NUMLIT     CHARLIT	   STRINGLIT
 %token VAROP      VARID	     CONOP      CONID
@@ -696,7 +696,7 @@ exp	  : exp_err			{$$ = $1;}
 	  | error			{syntaxError("expression");}
 	  ;
 exp_err	  : exp0a COCO sigType		{$$ = gc3(ap(ESIGN,pair($1,$3)));}
-	  | exp0a DWHERE dbinds		{
+	  | exp0a WITH dbinds		{
 #if IPARAM
 					 $$ = gc3(ap(DWHRE,pair($1,$3)));
 #else
@@ -844,8 +844,7 @@ dbs0	  : /* empty */			{$$ = gc0(NIL);}
 	  ;
 dbs1	  : dbs0 dbind			{$$ = gc2(cons($2,$1));}
 	  ;
-dbind	  : var '=' exp			{$$ = gc3(pair($1,$3));}
-	  | var				{$$ = gc1(pair($1,$1));}
+dbind	  : IPVARID '=' exp		{$$ = gc3(pair($1,$3));}
 	  ;
 
 /*- List Expressions: -------------------------------------------------------*/
@@ -1026,7 +1025,7 @@ static String local unexpected() {     /* find name for unexpected token   */
 	case ALL       : keyword("forall");
 #if IPARAM
 	case DLET      : keyword("dlet");
-	case DWHERE    : keyword("with");
+	case WITH      : keyword("with");
 #endif
 #undef keyword
 
