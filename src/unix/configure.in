@@ -217,6 +217,10 @@ AC_CHECK_PROGS(DOCBOOK2DVI,[docbook2dvi db2dvi],[])
 AC_CHECK_PROGS(DOCBOOK2PDF,[docbook2pdf db2pdf],[])
 AC_CHECK_PROGS(DOCBOOK2PS,[docbook2ps db2ps],[])
 
+dnl Look for right versions of 'find' and 'sort' (win32 only, really.)
+FPTOOLS_FIND_FIND
+FPTOOLS_FIND_SORT
+
 dnl AC_PROG_INSTALL
 
 dnl POSIX systems prefer "diff -C 1"; SunOS4 prefers "diff -c1".
@@ -728,6 +732,9 @@ dnl--------------------------------------------------------------------
 dnl Try the MS Visual C flags
 HUGS_TRY_DYNLINK([/LD])
 HUGS_TRY_DYNLINK([/LD /ML /nologo])
+
+dnl Try the win32 way
+HUGS_TRY_DYNLINK([-shared])
 
 dnl Try the gcc flags
 HUGS_TRY_DYNLINK([-shared -fPIC])
