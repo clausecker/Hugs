@@ -11,8 +11,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: server.c,v $
- * $Revision: 1.38 $
- * $Date: 2003/04/08 14:57:21 $
+ * $Revision: 1.39 $
+ * $Date: 2003/08/12 19:46:43 $
  * ------------------------------------------------------------------------*/
 #include "prelude.h"
 #include "storage.h"
@@ -205,6 +205,7 @@ String argv[]; {
       setHugsAPI();
       
       BEGIN_PROTECT			/* Too much text for protect()	   */
+      Int i;
 
       startEvaluator();
 
@@ -212,7 +213,13 @@ String argv[]; {
 	readOptions(argv[0],FALSE);
       } else {
 	readOptionSettings();
-	processOptionVector(argc,argv);
+	/* re-parse options for the benefit of #! (which takes only one arg) */
+	for (i=1; i<argc && (argv[i][0]=='+' || argv[i][0]=='-'); ++i) {
+	  if (!readOptions2(argv[i])) {
+	    setError("Unrecognised option");
+	    return NULL;
+	  }
+	}
       }
       EnableOutput(FALSE);
       loadPrelude();
