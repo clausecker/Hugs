@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: input.c,v $
- * $Revision: 1.14 $
- * $Date: 2000/08/04 17:00:34 $
+ * $Revision: 1.15 $
+ * $Date: 2000/11/22 18:15:27 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -146,6 +146,7 @@ static List imps;                       /* List of imports to be chased    */
 enum { START = 0,
        KEEP_GOING,
        BEGIN_VAR,
+       ISSUE_QUOTE,
        HERE_VAR,
        END_VAR,
        CLOSE_PAREN };
@@ -871,6 +872,11 @@ static Void local hereJoin() {
     Text plusplus = findText("++");
     push(yylval = ap(VAROPCELL,plusplus));
 }
+
+static Void local hereQuote() {
+    Text quote = findText("quote");
+    push(yylval = ap(VARIDCELL,quote));
+}
 #endif
 
 static Void local saveStrChr(c)        /* save character in string         */
@@ -1356,8 +1362,12 @@ static Int local yylex() {             /* Read next input token ...        */
 	    return STRINGLIT;
 	case BEGIN_VAR :
 	    hereJoin();
-	    hereState = HERE_VAR;
+	    hereState = ISSUE_QUOTE;
 	    return VAROP;
+	case ISSUE_QUOTE :
+	    hereQuote();
+	    hereState = HERE_VAR;
+	    return VARID;
 	case HERE_VAR :
 	    hereState = END_VAR;
 	    /* will parse and return id, and come back in the right state */
