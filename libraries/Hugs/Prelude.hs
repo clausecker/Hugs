@@ -569,7 +569,8 @@ intToDigit i
   | otherwise            =  error "Char.intToDigit: not a digit"
 
 toUpper, toLower      :: Char -> Char
-toUpper c | isLower c  = toEnum (fromEnum c - fromEnum 'a' + fromEnum 'A')
+toUpper c | c == '\xdf' || c == '\xff' = c	-- lower, but no upper
+	  | isLower c  = toEnum (fromEnum c - fromEnum 'a' + fromEnum 'A')
 	  | otherwise  = c
 
 toLower c | isUpper c  = toEnum (fromEnum c - fromEnum 'A' + fromEnum 'a')
