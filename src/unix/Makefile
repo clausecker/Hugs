@@ -1,4 +1,4 @@
-ROOT := ${subst /src/unix,,${shell pwd}}
+ROOT := ${subst /src/unix,,${shell pwd}}/hugsdir
 OPTS =  --enable-ffi \
 	--with-fptools=../../fptools
 #	--disable-large-banner
