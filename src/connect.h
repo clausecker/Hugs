@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: connect.h,v $
- * $Revision: 1.82 $
- * $Date: 2003/11/22 19:08:52 $
+ * $Revision: 1.83 $
+ * $Date: 2003/12/04 13:53:51 $
  * ------------------------------------------------------------------------*/
 #ifndef __CONNECT_H__
 #define __CONNECT_H__
@@ -281,6 +281,7 @@ extern  Syntax defaultSyntax    Args((Text));
 extern  Syntax syntaxOf		Args((Name));
 extern  String unlexChar        Args((Char,Char));
 extern  Void   printString	Args((String));
+extern  Char   getStrChr	Args((String *));
 
 extern  Void   substitution	Args((Int));
 

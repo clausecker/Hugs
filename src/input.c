@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: input.c,v $
- * $Revision: 1.79 $
- * $Date: 2003/12/02 18:50:56 $
+ * $Revision: 1.80 $
+ * $Date: 2003/12/04 13:53:51 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -906,6 +906,17 @@ Char c; {
 		saveChar('0');
 	}
     }
+}
+
+/* Extract a Char from a string built with saveStrChr(), advancing the ptr */
+Char getStrChr(String *sp) {
+    Char c = ExtractChar(*sp);
+    if (c=='\\') {
+	c = ExtractChar(*sp);
+	if (c!='\\')
+	    c = '\0';
+    }
+    return c;
 }
 
 static Cell local readAChar(isStrLit)  /* read single char constant        */

@@ -8,8 +8,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: output.c,v $
- * $Revision: 1.35 $
- * $Date: 2003/12/04 13:48:29 $
+ * $Revision: 1.36 $
+ * $Date: 2003/12/04 13:53:51 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -757,14 +757,7 @@ Text t; {
     while (*s) {
       String ch;
 	Char   c  = ' ';
-	Char   sc = ExtractChar(s);
-
-        if (sc == '\\')
-	  sc = ExtractChar(s);
-
-        if (!sc) {
-	  ERRMSG(0) "error in unlexStrConst" EEND;
-	}
+	Char   sc = getStrChr(&s);
 
 	ch = unlexChar(sc,'\"');
 

@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: machine.c,v $
- * $Revision: 1.21 $
- * $Date: 2003/12/02 12:15:53 $
+ * $Revision: 1.22 $
+ * $Date: 2003/12/04 13:53:51 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1624,17 +1624,13 @@ static Void local evalString(n)        /* expand STRCELL at node n         */
 Cell n; {
     Text t = textOf(n);
     String s = textToStr(t);
-    Char c = ExtractChar(s);
-    if (c==0) {
+    Char c;
+    if (*s==0) {
 	fst(n) = INDIRECT;
 	snd(n) = nameNil;
 	return;
     }
-    else if (c=='\\') {
-	c = ExtractChar(s);
-	if (c!='\\')
-	    c = 0;
-    }
+    c = getStrChr(&s);
     push(n);                           /* protect n during mkStr           */
     fst(n) = consChar(c);
     snd(n) = mkStr(t + (s-textToStr(t)));
