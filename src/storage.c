@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: storage.c,v $
- * $Revision: 1.82 $
- * $Date: 2003/12/03 13:32:01 $
+ * $Revision: 1.83 $
+ * $Date: 2003/12/15 17:58:14 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -3762,8 +3762,8 @@ Int what; {
 		       TABALLOC(tabExt,	   Text,	     NUM_EXT)
 #endif
 #if OBSERVATIONS
-                       TABALLOC(tabObserve,struct Observe,   NUM_OBS_TAGS)
-                       TABALLOC(tabBreakpt,struct Breakpt,   NUM_BRKPTS)
+                       TABALLOC(tabObserve,struct strObserve, NUM_OBS_TAGS)
+                       TABALLOC(tabBreakpt,struct strBreakpt, NUM_BRKPTS)
 #endif
 		       clearStack();
 
