@@ -7,8 +7,8 @@
  * in the distribution for details.
  *
  * $RCSfile: input.c,v $
- * $Revision: 1.4 $
- * $Date: 1999/08/05 16:59:34 $
+ * $Revision: 1.5 $
+ * $Date: 1999/08/19 19:59:21 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1128,7 +1128,7 @@ Char   sys; {                          /* character for shell escape       */
     for (; cmds->cmdString; ++cmds)
 	if (strcmp((cmds->cmdString),tokenStr)==0 ||
 	    (tokenStr[0]==start &&
-	     tokenStr[1]==(cmds->cmdString)[1] &&
+	     tolower(tokenStr[1])==(cmds->cmdString)[1] &&
 	     tokenStr[2]=='\0'))
 	    return (cmds->cmdCode);
     return BADCMD;
