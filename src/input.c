@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: input.c,v $
- * $Revision: 1.46 $
- * $Date: 2002/07/19 21:43:17 $
+ * $Revision: 1.47 $
+ * $Date: 2002/07/19 22:13:48 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -409,19 +409,19 @@ String nm;                              /* named file (specified length is */
 Long   len; {                           /* used to set target for reading) */
 #if SUPPORT_PREPROCESSOR
     if (preprocessor) {
-	Int reallen = strlen(preprocessor) + 1 + strlen(nm) + 2;
-	char *cmd = malloc(reallen);
+	Int reallen = strlen(preprocessor) + 1 + strlen(nm) + 1;
+	char *cmd = malloc(reallen+1);
 	if (cmd == NULL) {
 	    ERRMSG(0) "Unable to allocate memory for filter command."
 	    EEND_NORET;
 	    return FALSE;
 	}
-	if (snprintf(cmd,reallen-1, "%s %s", preprocessor, nm) < 0) {
+	if (snprintf(cmd,reallen, "%s %s", preprocessor, nm) < 0) {
 	    ERRMSG(0) "Unable to allocate memory for filter command."
 	    EEND_NORET;
 	    return FALSE;
 	} else {
-	    cmd[reallen-1] = '\0';
+	    cmd[reallen] = '\0';
 	}
 	inputStream = popen(cmd,"r");
 	free(cmd);
