@@ -601,9 +601,10 @@ Pair importSpec; {
 		
 		for(;nonNull(subs);subs=tl(subs)) {
 		  if (!entityIsMember(hd(subs),hiddenSubs)) {
-		      /* Register the sub-entity as imported */
+		    /* Register the sub-entity as imported */
+		    if (!isQual)
 		      importName(impMod, hd(subs));
-		      modImps = cons(hd(subs), modImps);
+		    modImps = cons(hd(subs), modImps);
 		  }
 		}
 	    }
