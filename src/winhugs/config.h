@@ -1,6 +1,51 @@
 /* ../config.h.  Generated automatically by configure.  */
 /* ../config.h.in.  Generated automatically from configure.in by autoheader.  */
 
+/* Define to alignment constraint on chars */
+#define ALIGNMENT_CHAR 1
+
+/* Define to alignment constraint on doubles */
+#define ALIGNMENT_DOUBLE 8
+
+/* Define to alignment constraint on floats */
+#define ALIGNMENT_FLOAT 4
+
+/* Define to alignment constraint on ints */
+#define ALIGNMENT_INT 4
+
+/* Define to alignment constraint on longs */
+#define ALIGNMENT_LONG 4
+
+/* Define to alignment constraint on long longs */
+#define ALIGNMENT_LONG_LONG 8
+
+/* Define to alignment constraint on shorts */
+#define ALIGNMENT_SHORT 2
+
+/* Define to alignment constraint on unsigned chars */
+#define ALIGNMENT_UNSIGNED_CHAR 1
+
+/* Define to alignment constraint on unsigned ints */
+#define ALIGNMENT_UNSIGNED_INT 4
+
+/* Define to alignment constraint on unsigned longs */
+#define ALIGNMENT_UNSIGNED_LONG 4
+
+/* Define to alignment constraint on unsigned long longs */
+#define ALIGNMENT_UNSIGNED_LONG_LONG 8
+
+/* Define to alignment constraint on unsigned shorts */
+#define ALIGNMENT_UNSIGNED_SHORT 2
+
+/* Define to alignment constraint on void pointers */
+#define ALIGNMENT_VOID_P 4
+
+/* C compiler invocation use to build a dynamically loadable library.
+ * Typical value: "gcc -shared"
+ * Must evaluate to a literal C string.
+ */
+#define MKDLL_CMD "cl /LD"
+
 /* Define if using alloca.c.  */
 #define C_ALLOCA 1
 
