@@ -14,8 +14,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: iomonad.c,v $
- * $Revision: 1.65 $
- * $Date: 2003/11/14 00:14:39 $
+ * $Revision: 1.66 $
+ * $Date: 2003/12/02 12:15:51 $
  * ------------------------------------------------------------------------*/
  
 Name nameIORun;			        /* run IO code                     */
@@ -36,6 +36,7 @@ static Int    local newHandle      Args((Cell,String));
 static String local modeString     Args((Int,Bool));
 static Cell   local openHandle     Args((StackPtr,Cell,Int,Bool,String));
 static Cell   local openFdHandle   Args((StackPtr,Int,Int,Bool,String));
+static Char   local hGetChar       Args((Int));
 #endif
 
 #if IO_HANDLES
@@ -487,6 +488,15 @@ String loc; {
     return (handles[i].hcell = ap(HANDCELL,i));
 }
 
+static Char local hGetChar(Int h) {
+    Int c;
+    if (h==HSTDIN)
+	c = readTerminalChar();
+    else {
+	c = FGetChar(handles[h].hfp);
+    }
+    return c;
+}
 
 /* --------------------------------------------------------------------------
  * Building strings:
@@ -494,10 +504,16 @@ String loc; {
 
 Void pushString(s)       /* push pointer to string onto stack */
 String s; {
-    Int  l      = strlen(s);
-    push(nameNil);
-    while (--l >= 0) {
-	topfun(consChar(((unsigned char *)s)[l]));
+    if (*s == '\0')
+	push(nameNil);
+    else {
+	Cell l = ap(consChar(ExtractChar(s)),NIL);
+	push(l);
+	while (*s) {
+	    snd(l) = ap(consChar(ExtractChar(s)),NIL);
+	    l = snd(l);
+	}
+	snd(l) = nameNil;
     }
 }
 
@@ -716,7 +732,7 @@ primFun(primGetChar) {			/* Get character from stdin w/ echo*/
 			 NIL));
     }
 #if !(__MWERKS__ && macintosh)	/* Metrowerks console has no NO_ECHO mode. */
-    putchar(c);
+    FPutChar(c, stdout);
     fflush(stdout);
 #endif
     IOReturn(mkChar(c));
@@ -724,7 +740,7 @@ primFun(primGetChar) {			/* Get character from stdin w/ echo*/
 
 primFun(primPutChar) {			/* print character on stdout	   */
     eval(pop());
-    putchar(charOf(whnfHead));
+    FPutChar(charOf(whnfHead), stdout);
     fflush(stdout);
     IOReturn(nameUnit);
 }
@@ -735,7 +751,7 @@ primFun(primPutStr) {			/* print string on stdout	   */
     while (whnfHead==nameCons) {
 	eval(top());
 	checkChar();
-	putchar(charOf(whnfHead));
+	FPutChar(charOf(whnfHead), stdout);
 #if FLUSHEVERY
 	fflush(stdout);
 #endif
@@ -772,7 +788,7 @@ primFun(primHGetChar) {			/* Read character from handle	   */
     }
 
     if (handles[h].hmode&(HREAD|HREADWRITE)) {
-	Int c = (h==HSTDIN ? readTerminalChar() : getc(handles[h].hfp));
+	Int c = hGetChar(h);
 	if (c!=EOF) {
 	    IOReturn(mkChar(c));
 	} else if ( feof(handles[h].hfp) ) {
@@ -807,7 +823,7 @@ primFun(primHPutChar) {			/* print character on handle	   */
 	handles[h].hHaveRead = FALSE;
     }
     if (handles[h].hmode&(HWRITE|HAPPEND|HREADWRITE)) {
-	if ( putc(c,handles[h].hfp) == EOF ) {
+	if ( FPutChar(c, handles[h].hfp) == EOF ) {
 	  IOFail(mkIOError(handles[h].hcell,
 			   toIOError(errno),
 			   "IO.hPutChar",
@@ -839,7 +855,7 @@ primFun(primHPutStr) {			/* print string on handle	   */
 	eval(pop());
 	while (whnfHead==nameCons) {
 	    eval(pop());
-	    putc(charOf(whnfHead),handles[h].hfp);
+	    FPutChar(charOf(whnfHead),handles[h].hfp);
 #if FLUSHEVERY
 	    if ( h <= 2 ) {  /* Only flush the standard handles */
 	      fflush(handles[h].hfp);
@@ -865,7 +881,7 @@ primFun(primHreader) {			/* read String from a handle 	   */
     Int h;                              /* Handle -> String                */
     HandleArg(h,1);
     if (handles[h].hmode&HSEMICLOSED) {	/* read requires semi-closed handle*/
-	Int c = (h==HSTDIN ? readTerminalChar() : getc(handles[h].hfp));
+	Int c = hGetChar(h);
 	if (c!=EOF && c>=0 && c<=MAXCHARVAL) {
 	    updapRoot(consChar(c),ap(nameHreader,primArg(1)));
 	    return;
@@ -1202,7 +1218,7 @@ primFun(primHLookAhead) { /* Peek at the next char */
 
   if (handles[h].hmode&(HREAD|HREADWRITE)) {
     if (!feof(handles[h].hfp)) {
-      if ((c = fgetc(handles[h].hfp)) != EOF) {
+      if ((c = hGetChar(h)) != EOF) {
 	ungetc(c, handles[h].hfp);
 	IOReturn(mkChar(c));
       } else {
@@ -1496,7 +1512,7 @@ String   loc; {
 	while (whnfHead==nameCons) {
 	  eval(top());
 	  checkChar();
-	  fputc(charOf(whnfHead),wfp);
+	  FPutChar(charOf(whnfHead),wfp);
 	  drop();
 	  eval(pop());
 	}

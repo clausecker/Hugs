@@ -8,8 +8,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: output.c,v $
- * $Revision: 1.33 $
- * $Date: 2003/11/14 00:14:39 $
+ * $Revision: 1.34 $
+ * $Date: 2003/12/02 12:15:53 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -17,6 +17,7 @@
 #include "connect.h"
 #include "errors.h"
 #include "output.h"
+#include "char.h"
 #include <ctype.h>
 
 #if OBSERVATIONS
@@ -753,18 +754,19 @@ Text t; {
     Bool   lastWasEsc   = FALSE;
 
     putChr('\"');
-    for (; *s; s++) {
+    while (*s) {
       String ch;
 	Char   c  = ' ';
+	Char   sc = ExtractChar(s);
 
-        if (*s == '\\')
-	  s++;
+        if (sc == '\\')
+	  sc = ExtractChar(s);
 
-        if (!*s) {
+        if (!sc) {
 	  ERRMSG(0) "error in unlexStrConst" EEND;
 	}
 
-	ch = unlexChar(*(unsigned char *)s,'\"');
+	ch = unlexChar(sc,'\"');
 
 	if ((lastWasSO && *ch=='H') ||
 		(lastWasEsc && lastWasDigit && isascii(*ch) && isdigit(*ch)))

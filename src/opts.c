@@ -10,6 +10,7 @@
 #include "machdep.h"
 #include "strutil.h"
 #include "opts.h"
+#include "char.h"
 
 #if HUGS_FOR_WINDOWS
 #include "winhugs/winhugs.h"
@@ -318,8 +319,8 @@ String s; {
 	 * the start.
 	 */
 	*next = '\0';
-	for(t=s; *t; ++t) {
-	    PUTS(unlexChar(*(unsigned char *)t,'"'));
+	for(t=s; *t; ) {
+	    PUTS(unlexChar(ExtractChar(t),'"'));
 	}
 	next+=strlen(next);
 	PUTS("\" ");

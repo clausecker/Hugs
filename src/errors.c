@@ -14,6 +14,7 @@
 #include "output.h"
 #include "opts.h"
 #include "goal.h"
+#include "char.h"
 #include "evaluator.h" /* everybody() proto only */
 #include <setjmp.h>
 
@@ -264,7 +265,7 @@ va_dcl {
 Void hugsPutchar(c)
 int c; {
     if (!disableOutput) {
-	putchar(c);
+	FPutChar(c, stdout);
     } else {
 	bufferedPutchar(&outputStream, c);
     }
@@ -314,7 +315,7 @@ Void hugsPutc(c, fp)
 int   c;
 FILE* fp; {
     if (!disableOutput) {
-	putc(c,fp);
+	FPutChar(c,fp);
     } else {
 	bufferedPutchar(&outputStream, c);
     }

@@ -9,8 +9,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: compiler.c,v $
- * $Revision: 1.23 $
- * $Date: 2003/11/14 00:14:39 $
+ * $Revision: 1.24 $
+ * $Date: 2003/12/02 12:15:50 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -18,6 +18,7 @@
 #include "connect.h"
 #include "errors.h"
 #include "goal.h"
+#include "char.h"
 #include "output.h"	/* needed for DEBUG_CODE|DEBUG_SHOWSC */
 #include "opts.h"	/* needed for DEBUG_SHOWSC */
 
@@ -1470,11 +1471,13 @@ tidyHd: switch (whatIs(p=hd(maPats(ma)))) {
 			     return FALSE;
 
 	    case STRCELL   : {   String s = textToStr(textOf(p));
-				 for (p=NIL; *s!='\0'; ++s)
+				 for (p=NIL; *s!='\0'; )
 				     if (*s!='\\' || *++s=='\\')
-					 p = ap(consChar(*(unsigned char *)s),p);
-				     else
+					 p = ap(consChar(ExtractChar(s)),p);
+				     else {
 					 p = ap(consChar('\0'),p);
+					 s++;
+				     }
 				 hd(maPats(ma)) = revOnto(p,nameNil);
 			     }
 			     return FALSE;

@@ -11,8 +11,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.106 $
- * $Date: 2003/11/29 02:38:26 $
+ * $Revision: 1.107 $
+ * $Date: 2003/12/02 12:15:52 $
  * ------------------------------------------------------------------------*/
 #include "prelude.h"
 #include "storage.h"
@@ -21,6 +21,7 @@
 #include "opts.h"
 #include "strutil.h"
 #include "machdep.h"
+#include "char.h"
 #include "evaluator.h" /* everybody() proto only */
 
 /*#define DEBUG_SEARCH*/
@@ -1130,7 +1131,7 @@ Int getTerminalWidth() {                /* determine width of terminal     */
 }
 
 Int readTerminalChar() {                /* read character from terminal    */
-    return getchar();                   /* without echo, assuming that     */
+    return FGetChar(stdin);             /* without echo, assuming that     */
 }                                       /* noechoTerminal() is active...   */
 
 #elif __MWERKS__ && macintosh

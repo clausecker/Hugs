@@ -13,6 +13,17 @@
  * Extended to Unicode by Dimitry Golubovsky <dimitry@golubovsky.org>.
  * ------------------------------------------------------------------------*/
 
+/* Possibly shorter version of Char for use in arrays. */
+#if UNICODE_CHARS
+typedef	Char ShortChar;
+#else
+typedef	unsigned char ShortChar;
+#endif
+
+/* --------------------------------------------------------------------------
+ * Character classification and other primitives.
+ * ------------------------------------------------------------------------*/
+
 extern	Bool		charTabBuilt;
 extern  unsigned char   charTable[];
 
@@ -65,5 +76,46 @@ extern	Char	toLower		Args((Char));
 extern	Char	toTitle		Args((Char));
 extern	Int	uni_gencat	Args((Char));
 #endif
+
+/* --------------------------------------------------------------------------
+ * Encoding of Chars as sequences of bytes.
+ *
+ * The byte encoding is assumed to be an extension of ASCII.  These macros
+ * should be used unless you're sure you're dealing with ASCII.
+ *
+ * In an ideal world, we would use Unicode characters uniformly inside
+ * the program.  However, to minimize changes to the rest of the program,
+ * and to save space, we also encode strings in the text table with the
+ * same encoding as we use for I/O.
+ *
+ * The interface is:
+ *
+ *	int MAX_CHAR_ENCODING
+ *		Maximum number of bytes to encode a Char.
+ *	Char FPutChar(Char c, FILE *f)
+ *		Output the encoding of the c, returning c if successful,
+ *		EOF if not.
+ *	Char FGetChar(FILE *f)
+ *		Read and decode a Char, returning the Char if successful,
+ *		or EOF if end-of-file or a coding error is encountered.
+ *	void AddChar(Char c, String &sp)
+ *		Add the encoding of c to the string, moving the pointer.
+ *		At least MAX_CHAR_ENCODING bytes should be available.
+ *	Char ExtractChar(String &sp)
+ *		Decode a Char from the string, moving the pointer.
+ *		Returns '\0' on end of string or coding error.
+ *	Bool charIsRepresentable(Char c)
+ *		Tests whether s can be represented without loss using
+ *		the selected encoding.
+ * ------------------------------------------------------------------------*/
+
+#define MAX_CHAR_ENCODING 1
+
+#define	FPutChar(c,f)	(fputc(c, f))
+#define	FGetChar(f)	(getc(f))
+#define	AddChar(c,s)	(*(s)++ = (c))
+#define	ExtractChar(s)	(*(unsigned char *)(s)++)
+
+#define	charIsRepresentable(c)	isLatin1(c)
 
 #endif /* CHAR_H */

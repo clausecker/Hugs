@@ -8,8 +8,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: printer.c,v $
- * $Revision: 1.13 $
- * $Date: 2003/11/14 00:14:39 $
+ * $Revision: 1.14 $
+ * $Date: 2003/12/02 12:15:53 $
  * ------------------------------------------------------------------------*/
 
 static Void   local printer		Args((Name,Int));
@@ -501,7 +501,7 @@ Name nm; {
 static Void local outStr(s)		/* output string s		   */
 String s; {
     while (*s)
-	outCh(*(unsigned char *)s++);
+	outCh(ExtractChar(s));
 }
 
 static Void local outPr(pr,d,e)		/* output expr e with printer pr,  */

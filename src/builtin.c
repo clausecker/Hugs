@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: builtin.c,v $
- * $Revision: 1.71 $
- * $Date: 2003/11/14 01:55:16 $
+ * $Revision: 1.72 $
+ * $Date: 2003/12/02 12:15:49 $
  * ------------------------------------------------------------------------*/
 
 /* We include math.h before prelude.h because SunOS 4's cpp incorrectly
@@ -1398,7 +1398,7 @@ FILE *fp; {                             /* and print it on fp              */
 		drop();
 	    }
 	    else {
-		putc(charOf(whnfHead),fp);
+		FPutChar(charOf(whnfHead),fp);
 		fflush(fp);
 	    }
 	}

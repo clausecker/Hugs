@@ -7,14 +7,15 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: machine.c,v $
- * $Revision: 1.20 $
- * $Date: 2003/11/22 19:09:50 $
+ * $Revision: 1.21 $
+ * $Date: 2003/12/02 12:15:53 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
 #include "storage.h"
 #include "connect.h"
 #include "errors.h"
+#include "char.h"
 #include "opts.h"	/* needed for DEBUG_CODE */
 #include <setjmp.h>
 
@@ -1622,20 +1623,21 @@ unw:switch (whatIs(n)) {
 static Void local evalString(n)        /* expand STRCELL at node n         */
 Cell n; {
     Text t = textOf(n);
-    Int  c = *(unsigned char *)textToStr(t);
+    String s = textToStr(t);
+    Char c = ExtractChar(s);
     if (c==0) {
 	fst(n) = INDIRECT;
 	snd(n) = nameNil;
 	return;
     }
     else if (c=='\\') {
-	c = *(unsigned char *)textToStr(++t);
+	c = ExtractChar(s);
 	if (c!='\\')
 	    c = 0;
     }
     push(n);                           /* protect n during mkStr           */
     fst(n) = consChar(c);
-    snd(n) = mkStr(++t);
+    snd(n) = mkStr(t + (s-textToStr(t)));
     drop();
 }
 

@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: input.c,v $
- * $Revision: 1.77 $
- * $Date: 2003/12/01 09:55:45 $
+ * $Revision: 1.78 $
+ * $Date: 2003/12/02 12:15:51 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -66,7 +66,7 @@ String preprocessor  = 0;
 
 static Bool local fileInput       Args((String,Long));
 static Bool local literateMode    Args((String));
-static Bool local linecmp         Args((String,String));
+static Bool local linecmp         Args((String,ShortChar *));
 static Int  local nextLine        Args((Void));
 static Void local skip            Args((Void));
 static Void local thisLineIs      Args((Int));
@@ -212,11 +212,11 @@ static String nextStringChar;          /* next char in string buffer       */
 #if     USE_READLINE                   /* for command line editors         */
 static  String currentLine;            /* editline or GNU readline         */
 static  String nextChar;
-#define nextConsoleChar() (unsigned char)(*nextChar=='\0' ? '\n' : *nextChar++)
+#define nextConsoleChar() (*nextChar=='\0' ? '\n' : ExtractChar(nextChar))
 extern  Void add_history  Args((String));
 extern  String readline   Args((String));
 #else
-#define nextConsoleChar() getc(stdin)
+#define nextConsoleChar() FGetChar(stdin)
 #endif
 
 static  Int litLines;                  /* count defn lines in lit script   */
@@ -237,7 +237,7 @@ Char c; {
 }
 
 #define LINEBUFFER_SIZE 1000
-static char lineBuffer[LINEBUFFER_SIZE];
+static ShortChar lineBuffer[LINEBUFFER_SIZE];
 static int lineLength = 0;
 static int inCodeBlock = FALSE; /* Inside \begin{code}..\end{code} */
 static int linePtr = 0;
@@ -417,7 +417,7 @@ String nm; {
 
 static Bool local linecmp(s,line)       /* compare string with line        */
 String s;                               /* line may end in whitespace      */
-String line; {
+ShortChar *line; {
     Int i=0;
     while (s[i] != '\0' && s[i] == line[i]) {
 	++i;
@@ -438,7 +438,7 @@ static Int local nextLine()
     int ch;
 
     for (lineLength = 0; lineLength < LINEBUFFER_SIZE-1; lineLength++) {
-        lineBuffer[lineLength] = (ch = fgetc(inputStream));
+        lineBuffer[lineLength] = (ch = FGetChar(inputStream));
         if (ch == EOF)
             break;
 #if MULTI_LINEFEED
@@ -459,7 +459,6 @@ static Int local nextLine()
     }
     lineBuffer[lineLength] = '\0';
 
-    /* printf("Read: \"%s\"", lineBuffer); */
     if (lineLength <= 0) { /* EOF / IO error, who knows.. */
 	return lineLength;
     }
@@ -493,7 +492,6 @@ static Int local nextLine()
 	    }
 	}
     }
-    /* printf("Read: \"%s\"", lineBuffer); */
     return lineLength;
 }
     
@@ -537,9 +535,9 @@ static Void local skip() {              /* move forward one char in input  */
 		}
 	    }
 	} else if (reading==NOKEYBOARD) {
-	    c1 = c0=='\n' ? EOF : getc(stdin);
+	    c1 = c0=='\n' ? EOF : FGetChar(stdin);
 	} else if (reading==STRING) {
-	    c1 = (unsigned char) *nextStringChar++;
+	    c1 = ExtractChar(nextStringChar);
 	    if (c1 == '\0')
 		c1 = EOF;
 	}
@@ -551,11 +549,11 @@ static Void local skip() {              /* move forward one char in input  */
 		}
 		else {
 		    linePtr = 0;
-		    c1 = (unsigned char)lineBuffer[linePtr++];
+		    c1 = lineBuffer[linePtr++];
 		}
 	    }
 	    else {
-		c1 = (unsigned char)lineBuffer[linePtr++];
+		c1 = lineBuffer[linePtr++];
 	    }
 	}
 
@@ -650,22 +648,22 @@ static Void local closeAnyInput() {    /* Close input stream, if open,     */
  * ------------------------------------------------------------------------*/
 
 #define MAX_TOKEN           4000
-#define startToken()        tokPos = 0
-#define saveTokenChar(c)    if (tokPos<=MAX_TOKEN) saveChar(c); else ++tokPos
-#define saveChar(c)         tokenStr[tokPos++]=(char)(c)
+#define startToken()        tokPtr = tokenStr
+#define saveTokenChar(c)    if (tokPtr<=tokenStr+MAX_TOKEN-MAX_CHAR_ENCODING) saveChar(c); else ++tokPtr
+#define saveChar(c)         AddChar((c), tokPtr)
 #define overflows(n,b,d,m)  (n > ((m)-(d))/(b))
 
 static char tokenStr[MAX_TOKEN+1];     /* token buffer                     */
-static Int  tokPos;                    /* input position in buffer         */
+static String tokPtr;                  /* input position in buffer         */
 static Int  identType;                 /* identifier type: CONID / VARID   */
 static Int  opType;                    /* operator type  : CONOP / VAROP   */
 									   
 static Void local endToken() {         /* check for token overflow         */
-    if (tokPos>MAX_TOKEN) {						   
+    if (tokPtr>tokenStr+MAX_TOKEN) {
 	ERRMSG(row) "Maximum token length (%d) exceeded", MAX_TOKEN	   
 	EEND;								   
     }									   
-    tokenStr[tokPos] = '\0';						   
+    *tokPtr = '\0';						   
 }									   
 									   
 static Text local readOperator() {     /* read operator symbol             */
@@ -900,7 +898,7 @@ Char c; {
 	saveTokenChar(c);
     }
     else {                             /* save null char as TWO null chars */
-	if (tokPos+1<MAX_TOKEN) {
+	if (tokPtr<tokenStr+MAX_TOKEN-1) {
 	    saveChar('\\');
 	    if (c=='\\')
 		saveChar('\\');
@@ -917,17 +915,19 @@ Bool isStrLit; {                       /* TRUE => enable \& and gaps       */
     if (c0=='\\') {                    /* escape character?                */
 	c = readEscapeChar(isStrLit,TRUE);
 #if UNICODE_CHARS
-	if (isStrLit && !isNull(c) && !isLatin1(charOf(c))) {
+	if (isStrLit && !isNull(c) && !charIsRepresentable(charOf(c))) {
 	    ERRMSG(row) "Unrepresentable character `\\%d' in string literal", ((int)charOf(c))
 	    EEND;
 	}
 #endif
 	return c;
     }
+#if !UNICODE_CHARS
     if (!isLatin1(c0)) {
 	ERRMSG(row) "Non Latin-1 character `\\%d' in constant", ((int)c0)
 	EEND;
     }
+#endif
     skip();                            /* normal character?                */
     return c;
 }
@@ -1163,8 +1163,8 @@ String s; {                            /* escapes if any parts need them   */
 	}
 	if (*t) {		       
 	    Putchar('"');	       
-	    for (t=s; *t; t++)	       
-		Printf("%s",unlexChar(*(unsigned char *)t,'"'));
+	    for (t=s; *t; )
+		Printf("%s",unlexChar(ExtractChar(t),'"'));
 	    Putchar('"');	       
 	}			       
 	else			       
@@ -1767,15 +1767,16 @@ loop:	    skip();                     /* Skip qualifying dot             */
 
 Bool isModuleId(s)
 String s; {
-    if (!isIn(*(unsigned char *)s,LARGE))
-        return FALSE;
-    while (isIn(*(unsigned char *)s,LARGE)) {
-        while (isIn(*(unsigned char *)s,IDAFTER))
-            s++;
-        if (*s == '.')
-            s++;
-    }
-    return (*s == '\0');
+    Char c;
+    do {
+	c = ExtractChar(s);
+	if (!isIn(c,LARGE))
+	    return FALSE;
+	do {
+	    c = ExtractChar(s);
+	} while (isIn(c,IDAFTER));
+    } while (c == '.');
+    return (c == '\0');
 }
 
 static Int local repeatLast() {         /* Obtain last expression entered  */
@@ -1789,7 +1790,7 @@ static Int local repeatLast() {         /* Obtain last expression entered  */
 Syntax defaultSyntax(t)			/* Find default syntax of var named*/
 Text t; {				/* by t ...			   */
     String s = textToStr(t);
-    return isIn(*(unsigned char *)s,SYMBOL) ? DEF_OPSYNTAX : APPLIC;
+    return isIn(ExtractChar(s),SYMBOL) ? DEF_OPSYNTAX : APPLIC;
 }
 
 Syntax syntaxOf(n)			/* Find syntax for name		   */

@@ -16,11 +16,11 @@ builtin$(OBJ): builtin.c prelude.h config.h platform.h options.h storage.h \
   HsFFI.h connect.h errors.h machdep.h char.h builtin.h bignums.c \
   printer.c iomonad.c timeprim.c dirprim.c array.c
 char$(OBJ): char.c prelude.h config.h platform.h options.h storage.h HsFFI.h \
-  connect.h errors.h char.h
+  connect.h errors.h char.h unitable.c
 compiler$(OBJ): compiler.c prelude.h config.h platform.h options.h storage.h \
-  HsFFI.h connect.h errors.h goal.h output.h opts.h
+  HsFFI.h connect.h errors.h goal.h char.h output.h opts.h
 errors$(OBJ): errors.c prelude.h config.h platform.h options.h storage.h \
-  HsFFI.h connect.h errors.h output.h opts.h goal.h evaluator.h
+  HsFFI.h connect.h errors.h output.h opts.h goal.h char.h evaluator.h
 evaluator$(OBJ): evaluator.c prelude.h config.h platform.h options.h \
   storage.h HsFFI.h connect.h errors.h script.h output.h strutil.h opts.h \
   machdep.h evaluator.h
@@ -32,15 +32,16 @@ input$(OBJ): input.c prelude.h config.h platform.h options.h storage.h \
   HsFFI.h connect.h command.h errors.h module.h script.h opts.h goal.h \
   machdep.h char.h parser.c
 machdep$(OBJ): machdep.c prelude.h config.h platform.h options.h storage.h \
-  HsFFI.h connect.h errors.h opts.h strutil.h machdep.h evaluator.h
+  HsFFI.h connect.h errors.h opts.h strutil.h machdep.h char.h \
+  evaluator.h
 machine$(OBJ): machine.c prelude.h config.h platform.h options.h storage.h \
-  HsFFI.h connect.h errors.h opts.h
+  HsFFI.h connect.h errors.h char.h opts.h
 module$(OBJ): module.c prelude.h config.h platform.h options.h storage.h \
   HsFFI.h connect.h errors.h module.h output.h
 opts$(OBJ): opts.c prelude.h config.h platform.h options.h storage.h HsFFI.h \
-  connect.h errors.h machdep.h strutil.h opts.h
+  connect.h errors.h machdep.h strutil.h opts.h char.h
 output$(OBJ): output.c prelude.h config.h platform.h options.h storage.h \
-  HsFFI.h connect.h errors.h output.h
+  HsFFI.h connect.h errors.h output.h char.h
 plugin$(OBJ): plugin.c prelude.h config.h platform.h options.h storage.h \
   HsFFI.h connect.h
 script$(OBJ): script.c prelude.h config.h platform.h options.h storage.h \
