@@ -18,26 +18,24 @@ import Hugs.Prelude( ExitCode(..), catchException, throw )
 primitive getArgs     "primGetArgs"     :: IO [String]
 primitive getProgName "primGetProgName" :: IO String
 
-primitive primSetArgs       :: [String] -> IO ()
-primitive primSetProgName   :: String -> IO ()
+primitive setArgs     "primSetArgs"     :: [String] -> IO ()
+primitive setProgName "primSetProgName" :: String -> IO ()
 
--- duplicated from Control.Exception
-act `finally` sequel = do
-    r <- act `catchException` \e -> sequel >> throw e
-    sequel
+-- Run an action with a value temporarily overridden
+-- (a special case of Control.Exception.bracket)
+with :: IO a -> (a -> IO ()) -> a -> IO b -> IO b
+with getVal setVal newVal act = do
+    oldVal <- getVal
+    setVal newVal
+    r <- act `catchException` \e -> setVal oldVal >> throw e
+    setVal oldVal
     return r
 
 withArgs :: [String] -> IO a -> IO a
-withArgs args act = do
-    old_args <- getArgs
-    primSetArgs args
-    act `finally` primSetArgs old_args
+withArgs = with getArgs setArgs
 
 withProgName :: String -> IO a -> IO a
-withProgName name act = do
-    old_name <- getProgName
-    primSetProgName name
-    act `finally` primSetProgName old_name
+withProgName = with getProgName setProgName
 
 primitive getEnv            :: String -> IO String
 
