@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.82 $
- * $Date: 2002/05/18 10:14:56 $
+ * $Revision: 1.83 $
+ * $Date: 2002/05/23 14:55:09 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1249,7 +1249,9 @@ Long   len; {                           /* length of script file   */
     AddFileToFileNamesMenu(&FilesMenu, RealPath(fname));
 #endif
 
-    Printf("Reading file \"%s\":\n",fname);  FlushStdout();
+    if (!quiet) {
+	Printf("Reading file \"%s\":\n",fname);  FlushStdout();
+    }
     setLastEdit(fname,0);
 
     needsImports = FALSE;
