@@ -9,8 +9,8 @@
  * included in the distribution.
  *
  * $RCSfile: subst.c,v $
- * $Revision: 1.6 $
- * $Date: 1999/09/13 15:06:13 $
+ * $Revision: 1.7 $
+ * $Date: 1999/09/15 21:39:05 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -62,6 +62,14 @@ static Bool local inserter		Args((Type,Int,Type,Int));
 static Int  local remover		Args((Text,Type,Int));
 static Int  local tailVar		Args((Type,Int));
 #endif
+
+static Bool local pairImprove		Args((Int,Class,Cell,Int,Cell,Int));
+static Bool local instImprove		Args((Int,Cell,Int));
+static Bool local improveAgainst	Args((Int,List,Cell,Int));
+#if IPARAM
+static Bool local ipImprove		Args((Int,Cell,Int,Cell,Int));
+#endif
+
 static Bool local kvarToVarBind		Args((Tyvar *,Tyvar *));
 static Bool local kvarToTypeBind	Args((Tyvar *,Type,Int));
 
@@ -1396,8 +1404,9 @@ Int   o; {				/* match is found, then tyvars from*/
  * Improvement:
  * ------------------------------------------------------------------------*/
 
-Void improve(line,ps)			/* Improve a list of predicates    */
+Void improve(line,sps,ps)		/* Improve a list of predicates    */
 Int  line;
+List sps;
 List ps; {
     Bool improved;
     List ps1;
@@ -1407,48 +1416,63 @@ List ps; {
 	    Cell pi = fst3(hd(ps1));
 	    Int  o  = intOf(snd3(hd(ps1)));
 	    Cell c  = getHead(pi);
-	    if (isClass(c) && nonNull(cclass(c).fds)) {
-		List qs = tl(ps1);
-		improved |= instImprove(line,pi,o);
-		for (; nonNull(qs); qs=tl(qs)) {
-		    Cell pi1 = fst3(hd(qs));
-		    Int  o1  = intOf(snd3(hd(qs)));
-		    Cell d  = getHead(pi1);
-		    if (isClass(d) && c==d) {
-			improved |= pairImprove(line,c,pi,o,pi1,o1);
-		    }
-		}
+	    if ((isClass(c) && nonNull(cclass(c).fds)) || isIP(c)) {
+		improved |= improveAgainst(line,sps,pi,o);
+		if (!isIP(c))
+		    improved |= instImprove(line,pi,o);
+		improved |= improveAgainst(line,tl(ps1),pi,o);
 	    }
-#if IPARAM
-	    else if (isIP(c)) {
-		List qs = tl(ps1);
-		for (; nonNull(qs); qs=tl(qs)) {
-		    Cell pi1 = fst3(hd(qs));
-		    Cell d   = fun(pi1);
-		    if (isIP(d) && textOf(c)==textOf(d)) {
-		        Type t  = arg(pi);
-		        Type t1 = arg(pi1);
-			Int  o1 = intOf(snd3(hd(qs)));
-			if (!sameType(t,o,t1,o1)) {
-			    if (!unify(t,o,t1,o1)) {
-				ERRMSG(line) "Mismatching uses of implicit parameter\n"
-				ETHEN
-				ERRTEXT "\n***  "
-				ETHEN ERRPRED(copyPred(pi1,o1));
-				ERRTEXT "\n***  "
-				ETHEN ERRPRED(copyPred(pi,o));
-				ERRTEXT "\n"
-				EEND;
-			    }
-			    improved = TRUE;
-			}
-		    }
-		}
-	    }
-#endif
 	}
     } while (improved);
 }
+
+Bool improveAgainst(line,ps,pi,o)
+Int line;
+List ps;
+Cell pi;
+Int o; {
+    Bool improved = FALSE;
+    Cell h = getHead(pi);
+    for (; nonNull(ps); ps=tl(ps)) {
+	Cell pr = hd(ps);
+	Cell pi1 = fst3(pr);
+	Int o1 = intOf(snd3(pr));
+	Cell h1 = getHead(pi1);
+	if (isClass(h1) && h==h1)
+	    improved |= pairImprove(line,h,pi,o,pi1,o1);
+#if IPARAM
+	else if (isIP(h1) && textOf(h1) == textOf(h))
+	    improved |= ipImprove(line,pi,o,pi1,o1);
+#endif
+    }
+    return improved;
+}
+
+#if IPARAM
+Bool ipImprove(line,pi,o,pi1,o1)
+Int line;
+Cell pi;
+Int o;
+Cell pi1;
+Int o1; {
+    Type t  = arg(pi);
+    Type t1 = arg(pi1);
+    if (!sameType(t,o,t1,o1)) {
+	if (!unify(t,o,t1,o1)) {
+	    ERRMSG(line) "Mismatching uses of implicit parameter\n"
+	    ETHEN
+	    ERRTEXT "\n***  "
+	    ETHEN ERRPRED(copyPred(pi1,o1));
+	    ERRTEXT "\n***  "
+	    ETHEN ERRPRED(copyPred(pi,o));
+	    ERRTEXT "\n"
+	    EEND;
+	}
+	return TRUE;
+    }
+    return FALSE;
+}
+#endif
 
 Bool pairImprove(line,c,pi1,o1,pi,o)	/* Look for improvement of (pi1,o1)*/
 Int   line;				/* against (pi,o), assuming that   */

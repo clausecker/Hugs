@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: type.c,v $
- * $Revision: 1.8 $
- * $Date: 1999/09/13 15:06:13 $
+ * $Revision: 1.9 $
+ * $Date: 1999/09/15 21:39:06 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1023,7 +1023,7 @@ Bool   addEvid; {			/* TRUE => add \ev -> ...	   */
 
     preds = NIL;
     check(l,e,NIL,wh,t,o);
-    improve(l,preds);
+    improve(l,ps,preds);
 
     clearMarks();
     mapProc(markAssumList,defnBounds);
@@ -1503,7 +1503,7 @@ List bs; {
     preds = NIL;			/* Type check the bindings	   */
     mapProc(restrictedBindAss,bs);
     mapProc(typeBind,bs);
-    improve(line,preds);
+    improve(line,NIL,preds);
     normPreds(line);
     elimTauts();
     preds = revOnto(preds,savePreds);
@@ -1670,7 +1670,7 @@ List bs; {
 
 	preds = NIL;
 	mapProc(typeBind,hd(imps));
-	improve(line,preds);
+	improve(line,NIL,preds);
 
 	clearMarks();
 	mapProc(markAssumList,tl(defnBounds));
@@ -1723,7 +1723,7 @@ List bs; {
 	enterPendingBtyvs();
 	for (; nonNull(alts); alts=tl(alts))
 	    typeAlt(extbind,fst(b),hd(alts),t,o,m);
-	improve(line,preds);
+	improve(line,ps,preds);
 	leavePendingBtyvs();
 
 	if (nonNull(ps))		/* Add dict params, if necessary   */
@@ -2077,7 +2077,7 @@ Int    beta; {
 	typeAlt(wh,mem,hd(alts),t,o,m);
 	qualify(tl(ps),hd(alts));	/* Add any extra dict params	   */
     }
-    improve(line,preds);
+    improve(line,evids,preds);
     leavePendingBtyvs();
 
     evids = appendOnto(dupList(tl(ps)),	/* Build full complement of dicts  */
@@ -2365,7 +2365,7 @@ Bool useDefs; {				/* using defaults if reqd	   */
     type      = typeIs;
     beta      = typeOff;
     clearMarks();
-    improve(0,preds);
+    improve(0,NIL,preds);
     normPreds(0);
     elimTauts();
     preds     = scSimplify(preds);

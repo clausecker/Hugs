@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: preds.c,v $
- * $Revision: 1.7 $
- * $Date: 1999/09/13 15:06:12 $
+ * $Revision: 1.8 $
+ * $Date: 1999/09/15 21:39:04 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -258,13 +258,14 @@ Int  d; {
     Class h1 = getHead(pi1);
     Class h  = getHead(pi);
 
+    /* the h==h1 test is just an optimization, and I'm not
+       sure it will work with IPs, so I'm being conservative
+       and commenting it out */
     if (/* h==h1 && */ samePred(pi1,o1,pi,o))
 	return e;
 
-    /* this doesn't make any sense to me...
+    /* the cclass.level test is also an optimization */
     if (isClass(h1) && (!isClass(h) || cclass(h).level<cclass(h1).level)) {
-    */
-    if (isClass(h1) && isClass(h) && cclass(h).level<cclass(h1).level) {
 	Int  beta  = newKindedVars(cclass(h1).kinds);
 	List scs   = cclass(h1).supers;
 	List dsels = cclass(h1).dsels;
@@ -763,24 +764,6 @@ static List local elimPredsUsing(ps,sps)/* Try to discharge or defer preds,*/
 List ps;				/* splitting if necessary to match */
 List sps; {				/* context ps.  sps = savePreds.   */
     List rems = NIL;
-#if IPARAM
-    /* with IPs, we need to unify instead of match, so do IPs first	   */
-    /* do we need to do something similar for elimOuterPreds?		   */
-    List ips = splitOutIPs();
-    while (nonNull(ips)) {
-	Cell ip = fst3(hd(ips));
-	Int  o  = intOf(snd3(hd(ips)));
-	Cell ev = ipEntail(ps,ip,o);
-
-	if (nonNull(ev)) {		/* Discharge if ps ||- (ip,o)	   */
-	    overEvid(thd3(hd(ips)),ev);
-	} else {
-	    preds = revOnto(ips, preds);
-	    return NIL;
-	}
-	ips = tl(ips);
-    }
-#endif
     while (nonNull(preds)) {		/* Pick a predicate from preds	   */
 	Cell p  = preds;
 	Cell pi = fst3(hd(p));

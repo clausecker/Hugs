@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.9 $
- * $Date: 1999/09/13 15:06:12 $
+ * $Revision: 1.10 $
+ * $Date: 1999/09/15 21:39:04 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1867,10 +1867,7 @@ List vs; {				/* listed in us.		   */
 
 	case POLYTYPE  : return typeVarsIn(monotypeOf(ty),polySigOf(ty),vs);
 
-	case QUAL      : {   List qs = fst(snd(ty));
-			     for (; nonNull(qs); qs=tl(qs)) {
-				 vs = typeVarsIn(hd(qs),us,vs);
-			     }
+	case QUAL      : {   vs = typeVarsIn(fst(snd(ty)),us,vs);
 			     return typeVarsIn(snd(snd(ty)),us,vs);
 			 }
 
@@ -2156,6 +2153,14 @@ List os; {				/* find list of offsets in those   */
     return us;
 }
 
+static Bool local odiff(us,vs)
+List us, vs; {
+    while (nonNull(us) && cellIsMember(hd(us),vs)) {
+	us = tl(us);
+    }
+    return us;
+}
+
 static Bool local osubset(us,vs)	/* Determine whether us is subset  */
 List us, vs; {				/* of vs			   */
     while (nonNull(us) && cellIsMember(hd(us),vs)) {
@@ -2202,29 +2207,34 @@ Type type; {				/* ambiguous 			   */
 	List ps   = fst(snd(type));	/* ambiguous			   */
 	List tvps = offsetTyvarsIn(ps,NIL);
 	List tvts = offsetTyvarsIn(snd(snd(type)),NIL);
-    	List fds  = NIL;
-
-	for (; nonNull(ps); ps=tl(ps)) {/* Calc functional dependencies	   */
-	    Cell pi = hd(ps);
-	    Cell c  = getHead(pi);
-	    if (isClass(c)) {
-		List fs = cclass(c).fds;
-		for (; nonNull(fs); fs=tl(fs)) {
-		    fds = cons(pair(otvars(pi,fst(hd(fs))),
-				    otvars(pi,snd(hd(fs)))),fds);
-		}
-	    }
-#if IPARAM
-	    else if (isIP(c)) {
-		fds = cons(pair(NIL,offsetTyvarsIn(arg(pi),NIL)),fds);
-	    }
-#endif
-	}
+    	List fds  = calcFunDeps(ps);
 
 	tvts = oclose(fds,tvts);	/* Close tvts under fds		   */
 	return !osubset(tvps,tvts);
     }
     return FALSE;
+}
+
+List calcFunDeps(ps)
+List ps; {
+    List fds  = NIL;
+    for (; nonNull(ps); ps=tl(ps)) {/* Calc functional dependencies	   */
+	Cell pi = hd(ps);
+	Cell c  = getHead(pi);
+	if (isClass(c)) {
+	    List fs = cclass(c).fds;
+	    for (; nonNull(fs); fs=tl(fs)) {
+		fds = cons(pair(otvars(pi,fst(hd(fs))),
+				otvars(pi,snd(hd(fs)))),fds);
+	    }
+	}
+#if IPARAM
+	else if (isIP(c)) {
+	    fds = cons(pair(NIL,offsetTyvarsIn(arg(pi),NIL)),fds);
+	}
+#endif
+    }
+    return fds;
 }
 
 Void ambigError(line,where,e,type)	/* produce error message for	   */
@@ -2571,6 +2581,8 @@ static Void local checkInstDefn(in)	/* Validate instance declaration   */
 Inst in; {
     Int  line   = inst(in).line;
     List tyvars = typeVarsIn(inst(in).head,NIL,NIL);
+    List tvps = NIL, tvts = NIL;
+    List fds = NIL;
 
     if (haskell98) {			/* Check for `simple' type	   */
 	List tvs = NIL;
@@ -2595,6 +2607,9 @@ Inst in; {
 	}
     }
 
+    /* add in the tyvars from the `specifics' so that we don't
+       prematurely complain about undefined tyvars */
+    tyvars = typeVarsIn(inst(in).specifics,NIL,tyvars);
     inst(in).head = depPredExp(line,tyvars,inst(in).head);
 
     if (haskell98) {
@@ -2606,6 +2621,19 @@ Inst in; {
     }
 
     map2Over(depPredExp,line,tyvars,inst(in).specifics);
+
+    /* OK, now we start over, and test for ambiguity */
+    tvts = offsetTyvarsIn(inst(in).head,NIL);
+    tvps = offsetTyvarsIn(inst(in).specifics,NIL);
+    fds  = calcFunDeps(inst(in).specifics);
+    tvts = oclose(fds,tvts);
+    tvts = odiff(tvps,tvts);
+    if (!isNull(tvts)) {
+	ERRMSG(line) "Undefined type variable \"%s\"",
+	  textToStr(textOf(nth(offsetOf(hd(tvts)),tyvars)))
+	EEND;
+    }
+
     h98CheckCtxt(line,"instance definition",FALSE,inst(in).specifics,NIL);
     inst(in).numSpecifics = length(inst(in).specifics);
     inst(in).c            = getHead(inst(in).head);
