@@ -11,8 +11,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: server.c,v $
- * $Revision: 1.33 $
- * $Date: 2003/03/10 02:12:24 $
+ * $Revision: 1.34 $
+ * $Date: 2003/03/10 14:38:19 $
  * ------------------------------------------------------------------------*/
 #include "prelude.h"
 #include "storage.h"
@@ -205,7 +205,6 @@ String argv[]; {
       setHugsAPI();
       
       BEGIN_PROTECT			/* Too much text for protect()	   */
-      Int i;
 
       startEvaluator();
 
@@ -213,6 +212,7 @@ String argv[]; {
 	readOptions(argv[0],FALSE);
       } else {
 	readOptionSettings();
+	processOptionVector(argc,argv);
       }
       EnableOutput(FALSE);
       loadPrelude();
