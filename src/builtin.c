@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: builtin.c,v $
- * $Revision: 1.55 $
- * $Date: 2003/03/20 18:15:26 $
+ * $Revision: 1.56 $
+ * $Date: 2003/03/21 01:08:01 $
  * ------------------------------------------------------------------------*/
 
 /* We include math.h before prelude.h because SunOS 4's cpp incorrectly
@@ -546,7 +546,7 @@ static struct primitive builtinPrimTable[] = {
 #if OBSERVATIONS
   {"observe",           2, primObserve},
   {"bkpt",              2, primBkpt},
-  {"setBkpt",           4, primSetBkpt},
+  {"setBkpt",           2+IOArity, primSetBkpt},
 #endif
 
   {"unsafePtrEq",       2, primPtrEq},          /* breaks the semantics  */
