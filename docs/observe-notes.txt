@@ -1,0 +1,298 @@
+
+Hugs debugging primitives
+---------------------------
+
+This release of Hugs contains support for debugging by observations
+inspired by the Andy Gill's Hood library. [1,2]
+
+Hood is a portable Haskell library that implements the combinator
+
+    Observable a => observe :: String -> a -> a
+
+The partial application
+
+    observe tag
+
+behaves exactly like the identity function, but also records the value
+of data to which it is applied. Any observations made are reported at
+the end of the computation. The `tag' argument is used to label the
+observed value when it is reported. Non-strict semantics is preserved
+--- observe does not evaluate its second argument.
+
+HugsHood uses the same observation model but differs in a number of ways.
+
+* It is much faster. This is because HugsHood is implemented within the 
+  Hugs evaluator and uses primitive builtin functions.
+  Performance depends upon the volume of observations. More frequent
+  observations incur a higher overhead. As a simple comparison, a
+  test program which executed 1 million reductions and made 250
+  observations incurred a 625 percent overhead when observations were made
+  with the Hood library but just 10 percent when using HugsHood.
+
+  Caveat: When not using observations, the modifications to the evaluator
+  to support HugsHood imposes an overhead of about 6 percent.
+
+* It is possible to easily observe arbitrary data structures. HugsHood 
+  implements the primitive 
+
+  observe :: String -> a -> a
+
+  which is unconstrained by the need to build instances of the
+  Observable class for each user defined data type whose values are
+  being observed. HugsHood uses an internal primitive function to
+  display observed values.  This may be considered both an advantage
+  and a disadvantage: one does not need to define how to observe
+  values, but one cannot define special user views of data.
+
+* No modification to the program (apart from instrumentation with
+  observe) is required. The Hood library must be invoked using a 
+  special IO monadic combinator to ensure that observations are collected
+  and displayed.
+
+* There are a number of minor differences in the display format which are
+  a consequence of the Hugs implementation. These are described below.
+
+Using HugsHood
+----------------
+Modules that use HugsHood combinators must import the module Observe.lhs
+from the lib/exts directory. Its only role is to provide the necessary 
+primitive definitions, namely:
+
+primitive observe :: String -> a -> a
+primitive bkpt    :: String -> a -> a
+primitive setBkpt :: String -> Bool -> IO ()
+
+Breakpoints
+------------
+HugsHood implements breakpoints. A program can be instrumented with the
+`bkpt' function. The partial application 
+    
+    bkpt bkpt_name
+
+behaves exactly like the identity function, except that before it
+returns its argument it checks if bkpt_name is enabled, and if it is
+the user is presented with the opportunity to view observed data.  A
+small set of commands is available when Hugs halts due to a
+breakpoint:
+
+  p [tag_name]  Print observations made since the computation began.
+                If an observation tag is suppled then only the
+                associated observations will be displayed. Otherwise
+                all observations will be displayed.
+
+  c [n]         Continue with program evaluation. With no arguments,
+                evaluation will continue until another active breakpoint
+                is encountered. The optional numeric argument will skip 
+                n active breakpoints before stopping.
+                
+  s bkpt_name   Set a breakpoint.
+  
+  r [bkpt_name] Reset a named breakpoint or, if no breakpoint name is
+                supplied, reset all breakpoints. 
+
+A breakpoint is by default disabled. It can be enabled by using the 
+`s' command in the debug breakpoint dialogue, or by using the 
+setBkpt combinator. Clearly at least one breakpoint must be enabled
+using setBkpt before a breakpoint dialogue can be triggered.
+
+Breakpoint Example
+------------------
+Here is a very simple program using the three combinators.
+
+import Observe
+
+prog n = do { setBkpt "fib" True; putStr $ show (observe "fun" f n) }
+f 0 = 1
+f n = n * (bkpt "fib" $ observe "fun" f (n-1))
+
+The following sample session shows how the `p' add `c' commands
+can be used.
+
+Main> prog 4
+Break @ fib> p
+
+>>>>>>> Observations <<<<<<
+
+fun
+  { \ 4  -> _
+  }
+
+Break @ fib> c
+Break @ fib> p
+
+>>>>>>> Observations <<<<<<
+
+fun
+  { \ 4  -> _
+  , \ 3  -> _
+  }
+
+Break @ fib> c 2
+Break @ fib> p
+
+>>>>>>> Observations <<<<<<
+
+fun
+  { \ 4  -> _
+  , \ 3  -> _
+  , \ 2  -> _
+  , \ 1  -> _
+  }
+
+Break @ fib> c
+24
+(98 reductions, 299 cells)
+
+>>>>>>> Observations <<<<<<
+
+fun
+  { \ 4  -> 24
+  , \ 3  -> 6
+  , \ 2  -> 2
+  , \ 1  -> 1
+  , \ 0  -> 1
+  }
+
+10 observations recorded
+
+   
+Differences from Hood
+---------------------
+HugsHood uses a similar style of display to Hood, though there are
+differences. One trivial difference is that Hood reports tags with a
+leading `--' while HugsHood does not.  
+
+Consider now more significant differences. Here we observe map.
+
+Observe> take 3 $ observe "map" map (+1) [1..]
+[2,3,4]
+(138 reductions, 286 cells)
+
+>>>>>>> Observations <<<<<<
+
+map
+  { \ { \ 3  -> 4
+      , \ 2  -> 3
+      , \ 1  -> 2
+      } (1 : 2 : 3 : _)  -> 2 : 3 : 4 : _
+  }
+
+8 observations recorded
+
+Note that observe does not compromise laziness. map is seen to
+be a single application to the (+1) function and the list
+(1 : 2 : 3 : _),  returning 2 : 3 : 4 : _. Here the underscore
+denotes the unevaluated tail of a list.
+
+By comparison, observing fold looks quite different.
+
+Observe> observe "fold" foldr (+) 0 [1..3]
+6
+(92 reductions, 314 cells)
+
+>>>>>>> Observations <<<<<<
+
+fold
+  { \ primPlusInteger 0 []  -> 0
+  , \ { \ 3 0  -> 3
+      } 0 (3 : [])  -> 3
+  , \ { \ 2 3  -> 5
+      } 0 (2 : 3 : [])  -> 5
+  , \ { \ 1 5  -> 6
+      } 0 (1 : 2 : 3 : [])  -> 6
+  }
+
+22 observations recorded
+
+Here four invocations of foldr are reported. primPlusInteger is the 
+instance of the (+) function which is used by foldr, but it is not
+applied in the base case and so its argument/result cannot be shown.
+
+map is defined using a list comprehension, and so its recursive
+structure is not as clearly shown as is the fold case. To observe 
+the behaviour of the higher order function only, use
+
+Main> foldr (observe "plus" (+)) 0 [1..3]
+6
+(92 reductions, 201 cells)
+
+>>>>>>> Observations <<<<<<
+
+plus
+  { \ 3 0  -> 3
+  , \ 2 3  -> 5
+  , \ 1 5  -> 6
+  }
+
+9 observations recorded
+
+Hood reports both the map and fold expressions above in a style similar
+to the map example. We could modify the observation formatting scheme
+to (say) make recursive higher order functions report observations in
+the map-like style, but it is not clear that this is necessary,
+especially as argument functions can always be explicitly observed as
+in the "plus" example above.
+
+The `_' symbol is used to indicate an unevaluated expression.
+In Hood all unevaluated expressions will be displayed using _.
+In HugsHood, _ denotes an unevaluated expression, but not all unevaluated
+expression are denoted by _.
+
+For example the expression fst $ observe "pair" (1,2) yields
+
+-- pair
+  (1, _)
+
+in both Hugs and HugsHood. However, fst $ observe "pair" ('a','b') yields
+
+pair
+  ('a','b')
+
+in HugsHood, and ('a', _) in Hood. This is because HugsHood (unlike
+Hood) does not actually record evaluation steps. It merely maintains an
+internal pointer to that part of the heap representing the tagged
+expression. If the expression in not in weak head normal form, then it
+obviously has not been evaluated and so it is reported as just `_';
+otherwise it displayed.  Integer constants like 1 and 2 are not in
+WHNF, as they must be coerced to the correct type when evaluated.
+Characters though are in WHNF so it is not possible to discern whether
+a character was evaluated.
+
+Another consequence of the HugsHood implementation by pointers rather
+than Hood's implementation by tracing evaluation is that the strictness
+behaviour of a function can be masked. Consider the example:
+
+lazy pair = let x = observe "fst" fst pair
+                y = snd pair
+            in  (y,x)
+
+For the expression lazy (1,2) Hood reports 
+
+-- fst
+  { \ (1, _)  -> 1
+  }
+while HugsHood reports
+
+fst
+  { \ (1,2)  -> 1
+  }
+
+HugsHood should not be used to deduce the strictness behaviour of a
+function, or it should be done only with caution 
+
+Bug Reports
+------------
+Please report bugs to Richard Watson, rwatson@usq.edu.au
+
+In particular, if the message
+    Warning: observation sanity counter > 0
+appears, and your program has not terminated abnormally, please report
+the error situation.
+
+References
+----------
+
+[1] Andy Gill. Debugging Haskell by Observing Intermediate Data
+    Structures. In Draft Proceedings of the 2000 Haskell Workshop.
+[2] The Haskell Object Observation Debugger
+    http://www.haskell.org/hood/

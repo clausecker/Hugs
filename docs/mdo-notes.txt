@@ -1,0 +1,61 @@
+Recursive Monadic Bindings
+
+Hugs supports the recursive-do notation, an extension to the do-notation that
+allows recursive bindings. This is based on the work by the same title [EL00].
+The do-notation in Haskell is not recursive. This means that the variables
+bound in the do-notation enter into scope only after their bindings take
+place. Compare this to a let expression in Haskell, in which let-bound
+variables are visible in the entire binding group. It turns out that several
+applications can benefit from recursive bindings. A simple example of it's use
+is:
+
+        import MonadRec
+
+        justOnes = mdo xs <- Just (1:xs)
+                       return xs
+
+As expected, justOnes evaluates to Just [1,1,1,1,1,1,1,1,1,1,.....
+
+There are three important points in using the recursive-do notation:
+
+  1. The recursive version of the do-notation uses the keyword mdo (rather
+     than do).
+  2. The scripts using mdo should import MonadRec
+  3. Hugs must be started with -98 flag
+
+The MonadRec library introduces the MonadRec class. It's definition is:
+
+        class Monad m => MonadRec m where
+             mfix :: (a -> m a) -> m a
+
+The MonadRec class declares the function mfix, which dictates how the
+recursion should behave. If recursive bindings are required for a monad, then
+that monad must be declared an instance of the MonadRec class. For details,
+see the above mentioned reference.
+
+The MonadRec library automatically declares List and Maybe monads as instances
+of the MonadRec class. So, no special care is needed for these two instances.
+The Hugs IOExts library defines fixIO and ST library defines fixST functions.
+These are exactly the mfix functions corresponding to the internal IO and ST
+monads. To use recursive-bindings with IOExts and ST libraries, just say:
+
+
+        import IOExts
+        instance MonadRec IO where mfix = fixIO
+
+and,
+
+        import ST
+        instance MonadRec (ST s) where mfix = fixST
+
+respectively. (And similarly for the LazyST library.) Then, the mdo-notation
+will become automatically available for the IO and ST monads.
+ 
+The web page: http://www.cse.ogi.edu/PacSoft/projects/muHugs/   contains
+upto-date information on recursive-monadic-bindings.
+
+------------------------------------------------------------------------------
+
+[EL00] Levent Erkök and John Launchbury. Recursive Monadic Bindings. In the
+Proceedings of the International Conference on Functional Programming,
+ICFP'00, pp. 174-185, 2000.
