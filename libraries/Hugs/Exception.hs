@@ -28,9 +28,9 @@ module Hugs.Exception(
 
 	-- Exception predicates
 
-	justIoErrors,		-- :: Exception -> Maybe IOError
-	justUserErrors,		-- :: Exception -> Maybe String
-        justHugsExceptions,     -- :: Exception -> Maybe HugsException
+	ioErrors,		-- :: Exception -> Maybe IOError
+	userErrors,		-- :: Exception -> Maybe String
+	hugsExceptions,		-- :: Exception -> Maybe HugsException
 
 	-- Throwing exceptions
 
@@ -42,9 +42,7 @@ module Hugs.Exception(
         unblock,		-- :: IO a -> IO a
   ) where
 
-import Prelude hiding ( ioError )
-import Hugs.Prelude hiding ( ioError )
-import qualified Hugs.Prelude
+import Hugs.Prelude
 import Hugs.IO
 
 ----------------------------------------------------------------
@@ -64,11 +62,8 @@ instance Show Exception where
 ----------------------------------------------------------------
 
 throwIO :: Exception -> IO a
-throwIO (IOException err)   = Hugs.Prelude.ioError err
+throwIO (IOException err)   = ioError err
 throwIO (HugsException exn) = primThrowException exn
-
-ioError :: Exception -> IO a
-ioError = throwIO
 
 catchException :: IO a -> (Exception -> IO a) -> IO a
 catchException m k = do
@@ -93,18 +88,18 @@ unblock m = m
 -- Exception Predicates
 ----------------------------------------------------------------
 
-justIoErrors		:: Exception -> Maybe IOError
-justUserErrors		:: Exception -> Maybe String
-justHugsExceptions	:: Exception -> Maybe HugsException
+ioErrors		:: Exception -> Maybe IOError
+userErrors		:: Exception -> Maybe String
+hugsExceptions		:: Exception -> Maybe HugsException
 
-justIoErrors (IOException e) = Just e
-justIoErrors _ = Nothing
+ioErrors (IOException e) = Just e
+ioErrors _ = Nothing
 
-justUserErrors (IOException e) | isUserError e = Just (ioeGetErrorString e)
-justUserErrors _ = Nothing
+userErrors (IOException e) | isUserError e = Just (ioeGetErrorString e)
+userErrors _ = Nothing
 
-justHugsExceptions (HugsException e) = Just e
-justHugsExceptions _ = Nothing
+hugsExceptions (HugsException e) = Just e
+hugsExceptions _ = Nothing
 
 ----------------------------------------------------------------
 -- End
