@@ -146,18 +146,18 @@ primitive toClockTimePrim :: Int -> Int -> Int
 			  -> Int -> Int -> IO Int
 
 toUTCTime :: ClockTime -> CalendarTime
-toUTCTime = toCalTime True
+toUTCTime ct = unsafePerformIO (toCalTime True ct)
 
-toCalendarTime :: ClockTime -> CalendarTime
+toCalendarTime :: ClockTime -> IO CalendarTime
 toCalendarTime = toCalTime False
 
-toCalTime :: Bool -> ClockTime -> CalendarTime
+toCalTime :: Bool -> ClockTime -> IO CalendarTime
 toCalTime toUTC (ClockTime s msecs)
   | (s > fromIntegral (maxBound :: Int)) || 
     (s < fromIntegral (minBound :: Int))
   = error ((if toUTC then "toUTCTime: " else "toCalendarTime: ") ++
            "clock secs out of range")
-  | otherwise = unsafePerformIO $ do
+  | otherwise = do
     (sec,min,hour,mday,mon,year,wday,yday,isdst,zone,off) <- 
   		toCalTimePrim (if toUTC then 1 else 0) (fromIntegral s)
     return (CalendarTime{ ctYear=1900+year
@@ -178,7 +178,7 @@ primitive toCalTimePrim :: Int -> Int -> IO (Int,Int,Int,Int,Int,Int,Int,Int,Int
 
 -- non-standard Show instance, but worth it..? (provided by GHC too).
 instance Show ClockTime where
-  show ct = calendarTimeToString (toCalendarTime ct)
+  show ct = calendarTimeToString (unsafePerformIO (toCalendarTime ct))
 
 addToClockTime :: TimeDiff -> ClockTime -> ClockTime
 addToClockTime (TimeDiff year mon day hour min sec psec)
