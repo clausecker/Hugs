@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.120 $
- * $Date: 2002/11/03 04:32:12 $
+ * $Revision: 1.121 $
+ * $Date: 2002/11/04 01:35:07 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -29,6 +29,7 @@ static Name   local lookupName		Args((Text,List));
 static List   local checkSubentities	Args((List,List,List,String,Text));
 static List   local checkExportTycon	Args((List,Text,Cell,Tycon));
 static List   local checkExportClass	Args((List,Text,Cell,Class));
+static List   local checkExportModule	Args((List,Text,Cell));
 static List   local checkExport		Args((List,Text,Cell));
 static List   local checkImportEntity	Args((List,Module,Bool,Cell));
 static List   local resolveImportList	Args((Module,Cell,Bool));
@@ -1102,6 +1103,115 @@ Cell  spec; {
     }
 }
 
+static List local checkExportModule(exports,mt,e) 
+List exports;
+Text mt;
+Cell e; {
+  /* The name refers to the module alias; get at the modules it refers to */
+    Text alias = textOf(snd(e));
+    List mods = findQualifiers(alias);
+    Module m;
+
+    /* Re-exporting a module we didn't import isn't allowed. */
+    if (isNull(mods)) {
+        ERRMSG(0) "Unknown module \"%s\" exported from module \"%s\"",
+	          textToStr(alias),
+	          textToStr(mt)
+	EEND;
+    }
+    for (;nonNull(mods);mods=tl(mods)) {
+         m = hd(mods);
+	 if (m == currentModule) {
+	     /* Exporting the current module exports all local definitions */
+	     List xs;
+
+	     for(xs=module(m).classes; nonNull(xs); xs=tl(xs)) {
+	       if (cclass(hd(xs)).mod==m) 
+	           exports = checkExportClass(exports,mt,DOTDOT,hd(xs));
+	     }
+	     for(xs=module(m).tycons; nonNull(xs); xs=tl(xs)) {
+	       if (tycon(hd(xs)).mod==m) 
+		   exports = checkExportTycon(exports,mt,DOTDOT,hd(xs));
+	     }
+	     for(xs=module(m).names; nonNull(xs); xs=tl(xs)) {
+	         if (name(hd(xs)).mod==m && 
+		     /* don't add the dcons - real cheesy way of
+			testing for a dcon-like name. */
+		     !startsQual(textToStr(name(hd(xs)).text)[0])) {
+		     exports = cons(hd(xs),exports);
+		 }
+	     }
+	 } else {
+	     /* Re-exporting a module alias M exports all unqualified
+	      * entities that have been imported into scope by modules
+	      * having that alias _and_ for which the qualified (by
+	      * the _alias_ M) entities are also visible.
+	      */
+	     List xs = module(currentModule).modImports;
+	     List ents = NIL;
+	
+	     for(;nonNull(xs);xs=tl(xs)) {
+	       if (isPair(hd(xs)) && fst(hd(xs)) == m) {
+		   ents = snd(snd(hd(xs)));
+		   break;
+	       }
+	     }
+	     if (isNull(xs)) {
+	         ents = module(m).exports;
+	     }
+	     for(;nonNull(ents);ents=tl(ents)) {
+	       Cell qid;
+	       Text txtNm;
+	       Name nm;
+	       Tycon tc;
+	       Class cc;
+	       
+	       /* Build the (alias) qualified entity and
+		  test whether it's in scope - ugly. */
+	       if (isName(hd(ents))) {
+		   txtNm = name(hd(ents)).text;
+		   qid = mkQId(alias,mkVar(txtNm));
+	       } else if (isTycon(hd(ents))) {
+		   txtNm = tycon(hd(ents)).text;
+		   qid = mkQId(alias,mkCon(txtNm));
+	       } else if (isClass(hd(ents))) {
+		   txtNm = cclass(hd(ents)).text;
+		   qid = mkQId(alias,mkCon(txtNm));
+	       } else if (isQualIdent(hd(ents))) {
+		   txtNm = qtextOf(hd(ents));
+		   qid = mkQId(alias,snd(snd(hd(ents))));
+	       } else {
+		   /* (tycon/class, enties) */
+		   if (isTycon(fst(hd(ents)))) {
+		       txtNm = tycon(fst(hd(ents))).text;
+		       qid = mkQId(alias,mkCon(txtNm));
+		   } else if (isClass(fst(hd(ents)))) {
+		       txtNm = cclass(fst(hd(ents))).text;
+		       qid = mkQId(alias,mkCon(txtNm));
+		   } else {
+		       internal("checkExportModule");
+		   }
+	       }
+	       /* Check that the entity E is available 
+		* as E (from module M) and A.E
+		*/
+	       if ( ( (nm = findName(txtNm))  && 
+		      name(nm).mod == m      &&
+		      !isNull(findQualName(qid)))  ||
+		    ( (tc = findTycon(txtNm)) &&
+		      tycon(tc).mod == m     &&
+		      !isNull(findQualTycon(qid))) ||
+		    ( (cc = findClass(txtNm)) && 
+		      cclass(cc).mod == m    && 
+		      !isNull(findQualClass(qid))) ) {
+		   exports=cons(hd(ents),exports);
+	       }
+	     }
+	 }
+    }
+    return exports;
+}
+
 static List local checkExport(exports,mt,e) /* Process entry in export list*/
 List exports;
 Text mt; 
@@ -1145,109 +1255,7 @@ Cell e; {
 	}
 	return exports;
     } else if (MODULEENT == fst(e)) {
-	/* The name refers to the module alias; get
-	   at the modules it refers to */
-	Text alias = textOf(snd(e));
-        List mods = findQualifiers(alias);
-	Module m;
-
-	/* Re-exporting a module we didn't import isn't allowed. */
-	if (isNull(mods)) {
-	    ERRMSG(0) "Unknown module \"%s\" exported from module \"%s\"",
-		      textToStr(alias),
-		      textToStr(mt)
-	    EEND;
-	}
-	for (;nonNull(mods);mods=tl(mods)) {
-	    m = hd(mods);
-	    if (m == currentModule) {
-		/* Exporting the current module exports local definitions */
-		List xs;
-		for(xs=module(m).classes; nonNull(xs); xs=tl(xs)) {
-		    if (cclass(hd(xs)).mod==m) 
-			exports = checkExportClass(exports,mt,DOTDOT,hd(xs));
-		}
-		for(xs=module(m).tycons; nonNull(xs); xs=tl(xs)) {
-		    if (tycon(hd(xs)).mod==m) 
-			exports = checkExportTycon(exports,mt,DOTDOT,hd(xs));
-		}
-		for(xs=module(m).names; nonNull(xs); xs=tl(xs)) {
-		    if (name(hd(xs)).mod==m && 
-			/* don't add the dcons - real cheesy way of
-			   testing for a dcon-like name. */
-			!startsQual(textToStr(name(hd(xs)).text)[0])) {
-			exports = cons(hd(xs),exports);
-		    }
-		}
-	    } else {
-		/* Re-exporting a module alias M exports all unqualified
-		 * entities that have been imported into scope by modules
-		 * having that alias _and_ for which the qualified (by
-		 * the _alias_ M) entities are also visible.
-		 */
-		List xs = module(currentModule).modImports;
-		List ents = NIL;
-
-		for(;nonNull(xs);xs=tl(xs)) {
-		    if (isPair(hd(xs)) && fst(hd(xs)) == m) {
-			ents = snd(snd(hd(xs)));
-			break;
-		    }
-		}
-		if (isNull(xs)) {
-		    ents = module(m).exports;
-		}
-		for(;nonNull(ents);ents=tl(ents)) {
-		    Cell qid;
-		    Text txtNm;
-		    Name nm;
-		    Tycon tc;
-		    Class cc;
-		    
-		    /* Build the (alias) qualified entity and
-		       test whether it's in scope - ugly. */
-		    if (isName(hd(ents))) {
-			txtNm = name(hd(ents)).text;
-			qid = mkQId(alias,mkVar(txtNm));
-		    } else if (isTycon(hd(ents))) {
-			txtNm = tycon(hd(ents)).text;
-			qid = mkQId(alias,mkCon(txtNm));
-		    } else if (isClass(hd(ents))) {
-			txtNm = cclass(hd(ents)).text;
-			qid = mkQId(alias,mkCon(txtNm));
-		    } else if (isQualIdent(hd(ents))) {
-			txtNm = qtextOf(hd(ents));
-			qid = mkQId(alias,snd(snd(hd(ents))));
-		    } else {
-		        /* (tycon/class, enties) */
-			if (isTycon(fst(hd(ents)))) {
-			    txtNm = tycon(fst(hd(ents))).text;
-			    qid = mkQId(alias,mkCon(txtNm));
-			} else if (isClass(fst(hd(ents)))) {
-			    txtNm = cclass(fst(hd(ents))).text;
-			    qid = mkQId(alias,mkCon(txtNm));
-			} else {
-			    internal("checkExport");
-			}
-		    }
-		    /* Check that the entity E is available 
-		     * as E (from module M) and A.E
-		     */
-		    if ( ( (nm = findName(txtNm))  && 
-		            name(nm).mod == m      &&
-			    !isNull(findQualName(qid)))  ||
-		         ( (tc = findTycon(txtNm)) &&
-			    tycon(tc).mod == m     &&
-			    !isNull(findQualTycon(qid))) ||
-			 ( (cc = findClass(txtNm)) && 
-			    cclass(cc).mod == m    && 
-			    !isNull(findQualClass(qid))) ) {
-			exports=cons(hd(ents),exports);
-		    }
-		}
-	    }
-	}
-	return exports;
+	return checkExportModule(exports,mt,e);
     } else {
 	Cell ident = fst(e); /* class name or type name */
 	Cell parts = snd(e); /* members or constructors */
