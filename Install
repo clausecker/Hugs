@@ -1,3 +1,6 @@
+Building and Installing Hugs from Source
+========================================
+
 The following procedure is suggested for installation of Hugs on a Unix
 machine.  (Precompiled binaries are provided for common PC platforms,
 although similar installation procedures can be used for these machines
@@ -30,13 +33,28 @@ Long version:
 
     On Unix, MacOS X, or other platform providing sh, sed and related tools:
 
-      cd Hugs98/src/unix
-      ./configure --exec-prefix=/usr/local/solaris --datadir=/usr/local/lib
-      -- This tests the capabilities of your C compiler and OS
-      -- and arranges to install binaries in the directories places.
+        cd hugs98/src/unix
+        ./configure --exec-prefix=/usr/local/solaris
+
+      This runs many small tests on the compiler, preprocessor, linker,
+      etc to determine how your system is configured.  It combines this
+      with any configuration flags to generate these files
+        src/Makefile          -- used to control compilation
+        src/config.h          -- #included into every C file in Hugs
+        src/options.h         -- #included into every C file in Hugs
+        src/unix/hugs-package -- script to convert library packages for Hugs
+      plus some others related to documentation and testing.
 
       Read Hugs98/src/unix/INSTALL to find out about general configuration
-      options.  Hugs specific options are listed at the end of this file.
+      options.  Hugs-specific options are listed at the end of this file.
+
+    On Cygwin, the above might also work.  If not, try
+
+        cd hugs98/src/unix
+        ../msc/config.sh
+
+    Other platforms can't run the configure scripts directly - and so the
+    instructions vary according to which system you're using:
 
     On Windows:
 
@@ -50,16 +68,65 @@ Long version:
       cd Hugs98\src\{msc,winhugs,bcc32,djgpp2}
       config.bat
 
-        If you haven't used Visual C++ or Borland C from the command line
-        before, you might have to define some environment variables (in
-        autoexec.bat or using "Control Panel|System") before you can use
-        the compiler - check your compiler documentation.
+    On another platform:
 
-      make hugs.exe   (or nmake hugs.exe with Visual C++)
+      If you can't run the configure script, pick one of the Windows
+      configurations and use it as a basis for constructing the
+      following files
+
+        src/Makefile
+        src/options.h   # Configuration options
+        src/config.h    # Description of your machine/compiler/OS
+
+ 2) Build Hugs and the libraries
+
+    This step builds the executables, calls the shell script
+    src/unix/convert_libraries to convert the Haskell library
+    packages under fptools into libraries under hugsdir for use by
+    Hugs, and then runs ffihugs to compile modules that use the ffi.
+    (libraries/Hugs contains Hugs-specific modules that are also
+    copied into hugsdir.)
+
+    On Unix, MacOS X etc:
+
+        cd ..
+        make
+
+      At this point, you might like to run a few tests to make sure
+      everything's working:
+
+        HUGSDIR=../hugsdir ./hugs
+        -- Run a few tests like 1+2, [1..], etc.  Use ":quit" to exit
+
+      Regression tests are run by "make check".  You can also run
+      "make LibStatus", which creates a file LibStatus giving the
+      status of each module in fptools/libraries -- none of them
+      should be ERROR.
+
+    On Windows:
+
+      (See src/msc/README for an alternative method using Cygwin.)
+
+      If you haven't used Visual C++ or Borland C from the command line
+      before, you might have to define some environment variables (in
+      autoexec.bat or using "Control Panel|System") before you can use
+      the compiler - check your compiler documentation.
+
+        make hugs.exe   (or nmake hugs.exe with Visual C++)
 
       If you prefer to use an integrated development environment,
       run "make hugs.exe -n" to get a list of the files we compile
       and add them to your project.
+
+      You have to "move hugs.exe ..\hugsdir" before running it, and
+      similarly for runhugs and ffihugs.
+
+      NB: there's no story for running src/unix/convert_libraries here;
+      it probably has to be done under Cygwin, or you need to get
+      pre-converted libraries from somewhere.  Then you would need to
+      compile at least one ffi module:
+
+        ..\hugsdir\ffihugs +G -98 -P +L../libraries/Hugs/Storable_aux.c Hugs.Storable
 
     On MacOS (pre MacOS X):
 
@@ -71,29 +138,6 @@ Long version:
 
       Preferences in the form of a Hugs command line string can be saved
       in a file "Hugs Preferences" in the same folder as the application.
-
-    On another platform:
-
-      If you can't run the configure script, pick one of the Windows
-      configurations and use it as a basis for constructing the
-      following files
-
-        Hugs98/src/Makefile
-        Hugs98/src/options.h   # Configuration options
-        Hugs98/src/config.h    # Description of your machine/compiler/OS
-
- 2) Build Hugs and associated files
-
-    cd ..
-    make
-
-    At this point, you might like to run a few tests to make sure
-    everything's working.
-
-      ./hugs -P../lib
-      -- Run a few tests like 1+2, [1..], etc.  Use ":quit" to exit
-
-    On Windows, you have to "move hugs.exe .." before running it.
 
  3) Install Hugs in chosen directories
 
@@ -120,8 +164,6 @@ Long version:
       chmod 755 echo
       ./echo Hello World
 
-    On Unix, regression tests are run by "make check".
-
     Administrators of sites with multiple architectures often prefer to
     install a shell script in /usr/local/bin which will select an
     appropriate binary according to the architecture on which it is
@@ -146,7 +188,8 @@ Long version:
     If you ran "make install", you could delete the entire Hugs source
     tree - but you might want to keep the Hugs98/doc directory.
 
-Hugs specific configuration options:
+Hugs specific configuration options
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
  --enable-ffi / --disable-ffi
 
