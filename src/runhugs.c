@@ -7,13 +7,19 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: runhugs.c,v $
- * $Revision: 1.15 $
- * $Date: 2003/03/07 00:52:13 $
+ * $Revision: 1.16 $
+ * $Date: 2003/03/09 23:53:07 $
  * ------------------------------------------------------------------------*/
 
 #include <stdio.h>
 #include <stdlib.h>
+#define HUGS_SERVER
+
 #include "prelude.h"
+#include "storage.h"
+#include "connect.h"
+#include "machdep.h"
+#include "observe.h"
 #include "server.h"
 
 #if defined(_MSC_VER) && !defined(_MANAGED)
@@ -25,9 +31,6 @@ static void check     Args((void));
 static void loadHugs  Args((int, char**));
 
 static HugsServerAPI* hugs = 0;
-
-/* An optional nicety to call initSystem(); not required. */
-extern int            initSystem  Args((void));
 
 static void check() {
     char* err = hugs->clearError();

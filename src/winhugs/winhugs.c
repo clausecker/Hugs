@@ -13,6 +13,7 @@
 
 #define STRICT 1
 
+#include <windows.h>
 #include <shellapi.h>
 #include <commdlg.h>
 #include <time.h>
@@ -21,7 +22,30 @@
 #include <stdarg.h>
 #include <setjmp.h>
 #include <direct.h>
+#include <ctype.h>
+#include <signal.h>
 
+#include "prelude.h"
+#include "storage.h"
+#include "connect.h"
+#include "errors.h"
+#include "machdep.h"
+#include "strutil.h"
+#include "script.h"
+#include "opts.h"
+#include "evaluator.h"
+
+/* Hack and slash */
+struct options {                        /* command line option toggles     */
+    char   c;                           /* table defined in main app.      */
+#if !HASKELL_98_ONLY
+    int    h98;                         /* set in Haskell'98 mode?         */
+#endif
+    String description;
+    Bool   *flag;
+};
+
+extern struct options toggle[];
 
 #include "WinFrame.h"
 #include "WinToolB.h"
@@ -670,10 +694,10 @@ static VOID local DoInitMenu (HWND hWnd, UINT message, WPARAM wParam, LPARAM lPa
 
   EnableMenuItem((HMENU)wParam, ID_MAKE,	(projectLoaded	? MF_ENABLED : MF_GRAYED)|MF_BYCOMMAND);
 
-  EnableMenuItem((HMENU)wParam, ID_CLEARALL,	(!projectLoaded && (namesUpto > 1)
+  EnableMenuItem((HMENU)wParam, ID_CLEARALL,	(!projectLoaded && (getScriptHwMark() > 1)
 								? MF_ENABLED : MF_GRAYED)|MF_BYCOMMAND);
 
-  EnableMenuItem((HMENU)wParam, ID_COMPILE,	(!projectLoaded && (namesUpto > 1)
+  EnableMenuItem((HMENU)wParam, ID_COMPILE,	(!projectLoaded && (getScriptHwMark() > 1)
 								? MF_ENABLED : MF_GRAYED)|MF_BYCOMMAND);
 }
 
@@ -1314,7 +1338,7 @@ LRESULT CALLBACK ScriptManDlgProc(HWND hDlg, UINT msg,
     switch (msg) {
 	case WM_INITDIALOG: {
 	    Int i;
-	    smLoaded = numScripts;
+	    smLoaded = numLoadedScripts();
 	    smUpto   = 0;
 
 	    CenterDialogInParent(hDlg);
@@ -1324,8 +1348,8 @@ LRESULT CALLBACK ScriptManDlgProc(HWND hDlg, UINT msg,
 
 	    SendDlgItemMessage(hDlg, LB_SCRIPTS, WM_SETREDRAW,FALSE,0L);
 
-	    for (i=0; i<namesUpto; i++)
-		SmAddScr(hDlg,scriptReal[i]);
+	    for (i=0; i<getScriptHwMark(); i++)
+		SmAddScr(hDlg,getScriptRealName(i));
 	    SmSelScr(hDlg,0);
 	    SendDlgItemMessage(hDlg,LB_SCRIPTS,LB_SETCURSEL, 0, 0L);
 	    SendDlgItemMessage(hDlg,LB_SCRIPTS,WM_SETREDRAW,TRUE,0L);
@@ -1437,19 +1461,20 @@ LRESULT CALLBACK ScriptManDlgProc(HWND hDlg, UINT msg,
 
 		case IDOK: {
 		    Int i;
-		    for (i=0; i<namesUpto; i++)
-			if (scriptName[i]) {
-			    free(scriptName[i]);
-			    free(scriptReal[i]);
-		    }	 
-		    for (i=0; i<smUpto; i++) {
-			scriptName[i] = smFile[i];
-			scriptReal[i] = strCopy(RealPath(scriptName[i]));
-			smFile[i]     = 0;
+		    /* Sigh, script stack hackery. */
+		    for (i=0; i<getScriptHwMark(); i++)
+			if (getScriptName(i)) {
+			    free(getScriptName(i));
+			    free(getScriptRealName(i));
 		    }
-		    namesUpto  = smUpto;
-		    numScripts = smLoaded;
-		    dropScriptsFrom(numScripts-1);
+		    for (i=0; i<smUpto; i++) {
+		      setScriptName(i,smFile[i]);
+		      setScriptRealName(i,strCopy(RealPath(smFile[i])));
+		      smFile[i]     = 0;
+		    }
+		    setScriptHwMark(smUpto);
+		    setNumLoadedScripts(smLoaded);
+		    dropScriptsFrom(smLoaded-1);
 		    PostMessage(hWndMain,WM_COMMAND,ID_COMPILE,0L);
 		    EndDialog(hDlg,TRUE);
 		    return TRUE;
@@ -1502,7 +1527,7 @@ static CHAR local *GetFileNameFromFileNamesMenu (FILENAMESMENU* fnm, UINT i)
   }
 }
 
-static VOID local AddFileToFileNamesMenu(FILENAMESMENU* fnm, LPSTR NewFileName)
+VOID AddFileToFileNamesMenu(FILENAMESMENU* fnm, LPSTR NewFileName)
 {
   HMENU 	hMainMenu, hFilesSubMenu;
   CHAR		shortFName[_MAX_PATH], MenuContents[_MAX_PATH];
@@ -1665,7 +1690,7 @@ static VOID local GetFromRegistryScreenPosition(INT *X, INT *Y)
 }
 
 
-static VOID local ReadGUIOptions(VOID)
+VOID ReadGUIOptions(VOID)
 {
   /* Get last working dir and set it */
   SetWorkingDir(readRegString(HKEY_CURRENT_USER,hugsRegRoot,RKEY_LASTPATH, ".\\"));
@@ -1676,7 +1701,7 @@ static VOID local ReadGUIOptions(VOID)
 }
 
 
-static VOID local SaveGUIOptions(VOID)
+VOID SaveGUIOptions(VOID)
 {
   writeRegString(RKEY_DOCPATH, readRegString(HKEY_CURRENT_USER,hugsRegRoot,RKEY_DOCPATH, DEFAULT_DOC_DIR));
 
@@ -1759,6 +1784,116 @@ static VOID local SaveToRegistryMenus()
 
 }
 
+
+/* --------------------------------------------------------------------------
+ * Evaluator code
+ * ------------------------------------------------------------------------*/
+
+Bool InAutoReloadFiles = FALSE;	/* TRUE =>loading files before eval*/
+Bool autoLoadFiles     = FALSE; /* TRUE => automatically reloaded modified files */
+
+#if USE_THREADS
+Void  stopEvaluatorThread Args((Void));
+static DWORD local evaluatorThreadBody  Args((LPDWORD));
+
+static HANDLE  evaluatorThread=NULL;
+static DWORD   evaluatorThreadId;
+static Bool    evaluatorThreadRunning = FALSE;
+static jmp_buf goToEvaluator;
+
+Void loopInBackground (Void) { 
+    MSG msg;
+
+    /* WaitForSingleObject(evaluatorThread, INFINITE); */
+    while ( evaluatorThreadRunning && GetMessage(&msg, NULL, 0, 0) ) {
+      if (!TranslateAccelerator(hWndMain, hAccelTable, &msg)) {
+         TranslateMessage(&msg);
+         DispatchMessage(&msg);
+      }
+    }
+}
+
+Void stopEvaluatorThread(Void) {
+
+    if(evaluatorThreadRunning){
+
+      if(GetCurrentThreadId() != evaluatorThreadId) {
+       MessageBox(NULL, "stopEvaluatorThread executed by main thread !!!","Error", MB_OK);
+      }
+
+      evaluatorThreadRunning = FALSE;
+      SuspendThread(evaluatorThread);
+      /* stop here until resumed */
+      longjmp(goToEvaluator,1);
+    }
+}
+
+static DWORD local evaluatorThreadBody(LPDWORD notUsed) {
+
+    Int evaluatorNumber = setjmp(goToEvaluator);
+
+#if defined(_MSC_VER) && !defined(_MANAGED)
+    /* Under Win32 (when compiled with MSVC), we specially
+     * catch and handle SEH stack overflows.
+     */
+    __try {
+#endif
+    evaluator(findEvalModule());
+    stopEvaluatorThread();
+
+#if defined(_MSC_VER) && !defined(_MANAGED)
+    } __except ( ((GetExceptionCode() == EXCEPTION_STACK_OVERFLOW) ? 
+		  EXCEPTION_EXECUTE_HANDLER : 
+		  EXCEPTION_CONTINUE_SEARCH) ) {
+	/* Closely based on sample code in Nov 1999 Dr GUI MSDN column */
+	char* stackPtr;
+	static SYSTEM_INFO si;
+	static MEMORY_BASIC_INFORMATION mi;
+	static DWORD protect;
+ 
+      /* get at the current stack pointer */
+      _asm mov stackPtr, esp;
+
+      /* query for page size + VM info for the allocation chunk we're currently in. */
+      GetSystemInfo(&si);
+      VirtualQuery(stackPtr, &mi, sizeof(mi));
+
+      /* Abandon the C stack and, most importantly, re-insert
+         the page guard bit. Do this on the page above the
+	 current one, not the one where the exception was raised. */
+      stackPtr = (LPBYTE) (mi.BaseAddress) - si.dwPageSize;
+      if ( VirtualFree(mi.AllocationBase,
+		       (LPBYTE)stackPtr - (LPBYTE) mi.AllocationBase, 
+		       MEM_DECOMMIT) &&
+	   VirtualProtect(stackPtr, si.dwPageSize, 
+			  PAGE_GUARD | PAGE_READWRITE, &protect) ) {
+
+	  /* careful not to do a garbage collection here (as it may have caused the overflow). */
+          ERRTEXT "ERROR - C stack overflow"
+          /* EEND does a longjmp back to a sane state. */
+          EEND;
+      } else {
+	  fatal("C stack overflow; unable to recover.");
+      }
+    }
+#endif
+    /* not reached*/
+    return 0;
+}
+
+Void startEvaluatorThread(Void) {
+    if (!evaluatorThread)
+      evaluatorThread = CreateThread(NULL,
+                                   0,
+                                   (LPTHREAD_START_ROUTINE)evaluatorThreadBody,
+                                   NULL,
+                                   CREATE_SUSPENDED,
+                                   &evaluatorThreadId);
+    evaluatorThreadRunning = TRUE;
+    ResumeThread(evaluatorThread);
+}
+
+#endif /* USE_THREADS */
 
 /* --------------------------------------------------------------------------
  * Other functions

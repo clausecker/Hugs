@@ -14,8 +14,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: iomonad.c,v $
- * $Revision: 1.47 $
- * $Date: 2003/03/03 06:31:04 $
+ * $Revision: 1.48 $
+ * $Date: 2003/03/09 23:53:05 $
  * ------------------------------------------------------------------------*/
  
 Name nameIORun;			        /* run IO code                     */
@@ -28,7 +28,6 @@ static Name nameHreader;	        /* auxiliary function		   */
 #endif
 
 #if IO_HANDLES
-Cell                mkIOError      Args((Cell,Name,String,String,Cell));
 static String local toIOErrorDescr Args((int,Bool));
 static Name   local toIOError      Args((int));
 static Cell   local openHandle     Args((StackPtr,Cell,Int,Bool,String));

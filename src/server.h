@@ -7,74 +7,24 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: server.h,v $
- * $Revision: 1.9 $
- * $Date: 2003/03/07 00:52:13 $
+ * $Revision: 1.10 $
+ * $Date: 2003/03/09 23:53:08 $
  * ------------------------------------------------------------------------*/
+#include "HugsAPI.h"
 
-#ifndef Args
-# if HAVE_PROTOTYPES
-#  define Args(x) x
-# else
-#  define Args(x) ()
-# endif
-#endif /* !defined Args */
+/* These have non-local scope, as they're used when creating 
+ * extended/delegated versions of the server API (cf. the server
+ * interface provided by the .NET extensions.)
+ */
+extern Void   setError        Args((String));
+extern Void   startEval       Args((Void));
+extern Bool   safeEval        Args((Cell));
+extern String ClearError      Args((Void));
+extern Cell   getTypeableDict Args((Type));
+extern char*  lastError;
 
-#ifdef __cplusplus 
-extern "C" {
-#endif
-
-typedef int HVal;     /* Haskell values are represented by stable pointers */
-
-typedef struct _HugsServerAPI {
-    char* (*clearError     ) Args((void));
-    void  (*setHugsArgs    ) Args((int, char**));
-    int   (*getNumScripts  ) Args((void));
-    void  (*reset          ) Args((int));
-    void  (*setOutputEnable) Args((unsigned));
-    void  (*changeDir      ) Args((char*));
-    void  (*loadProject    ) Args((char*));
-    void  (*loadFile       ) Args((char*));
-    void  (*loadFromBuffer ) Args((char*));
-    void  (*setOptions     ) Args((char*));
-    char* (*getOptions     ) Args((void));
-    HVal  (*compileExpr    ) Args((char*,char*));
-    void  (*garbageCollect ) Args((void));
-
-    void  (*lookupName     ) Args((char*,char*)); /* push values onto stack*/
-
-    void  (*mkInt          ) Args((int));
-    void  (*mkAddr         ) Args((void*));
-    void  (*mkString       ) Args((char*));
-
-    void  (*apply          ) Args((void));      /* manipulate top of stack */
-
-    int   (*evalInt        ) Args((void));      /* evaluate top of stack   */
-    void* (*evalAddr       ) Args((void));
-    char* (*evalString     ) Args((void));
-
-    int   (*doIO           ) Args((void));
-    int   (*doIO_Int       ) Args((int*));
-    int   (*doIO_Addr      ) Args((void**));
-
-    HVal  (*popHVal        ) Args((void));      /* pop stack               */
-    void  (*pushHVal       ) Args((HVal));      /* push back onto stack    */
-    void  (*freeHVal       ) Args((HVal)); 
-} HugsServerAPI;
-
-/* type of "initHugsServer" function */
-typedef HugsServerAPI *(*HugsServerInitFun) Args((int, char**));
-/* type of "shutdownHugsServer" function */
-typedef void (*HugsServerShutdownFun) Args((HugsServerAPI*));
-
-  //extern HugsServerAPI* initHugsServer Args((int, char**));
-DLLEXPORT(HugsServerAPI*) initHugsServer Args((Int, String[]));
-
-DLLEXPORT(Void) shutdownHugsServer Args((HugsServerAPI*));
-
-/* In case the server API couldn't be initialised, look at 'lastError'. */
-extern char* lastError;
-#ifdef __cplusplus 
-};
-#endif
-
+/* Get the API method table from the currently running interpreter.
+ * => the interpreter / server is assumed to have already been initialized.
+ */
+extern HugsServerAPI* getHugsAPI();
 /* ------------------------------------------------------------------------*/

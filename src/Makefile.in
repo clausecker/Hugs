@@ -54,22 +54,23 @@ INCLUDE		= $(BUILD_DIR)/include/HsFFI.h
 .SUFFIXES	:
 .SUFFIXES	: .c .h @OBJ@
 HFILES		= HsFFI.h builtin.h command.h config.h connect.h errors.h \
-		  machdep.h module.h options.h prelude.h script.h server.h \
-		  storage.h subst.h
+		  evaluator.h goal.h machdep.h module.h observe.h options.h \
+		  opts.h prelude.h script.h server.h storage.h strutil.h subst.h
 CFILES		= hugs.c runhugs.c server.c \
-		  builtin.c compiler.c ffi.c input.c \
-		  machdep.c machine.c module.c output.c \
+		  builtin.c compiler.c errors.c evaluator.c ffi.c goal.c input.c \
+		  machdep.c machine.c module.c observe.c opts.c output.c \
 		  plugin.c script.c static.c storage.c \
-		  subst.c type.c version.c
+		  strutil.c subst.c type.c version.c
 INCFILES	= parser.c preds.c bignums.c timer.c scc.c \
 		  printer.c iomonad.c interns.c stmonad.c array.c
 YFILES		= parser.y
 SOURCES		= $(HFILES) $(CFILES) $(INCFILES) $(YFILES) 
-OBJECTS		= builtin@OBJ@ compiler@OBJ@ ffi@OBJ@ input@OBJ@ \
-		  machdep@OBJ@ machine@OBJ@ module@OBJ@ output@OBJ@ \
-		  plugin@OBJ@ script@OBJ@ static@OBJ@ storage@OBJ@ \
-		  subst@OBJ@ type@OBJ@ version@OBJ@
-IOBJECTS	= hugs@OBJ@ $(OBJECTS)
+OBJECTS		= builtin@OBJ@ compiler@OBJ@ errors@OBJ@ evaluator@OBJ@ \
+		  ffi@OBJ@ goal@OBJ@ input@OBJ@ machdep@OBJ@ machine@OBJ@ \
+		  module@OBJ@ opts@OBJ@ output@OBJ@ plugin@OBJ@ script@OBJ@ \
+		  static@OBJ@ storage@OBJ@ strutil@OBJ@ subst@OBJ@ \
+		  type@OBJ@ version@OBJ@
+IOBJECTS	= hugs@OBJ@ server@OBJ@ observe@OBJ@ $(OBJECTS)
 PRELUDE		= config.h options.h prelude.h script.h
 
 HEADERS		= ../include/GreenCard.h HsFFI.h
@@ -234,28 +235,42 @@ parser.c	: parser.y
 # veryclean	::
 # 		  $(RM) parser.c
 
-server@OBJ@	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h \
-		  command.h machdep.h timer.c hugs.c server.c server.h
-hugs@OBJ@	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h \
-		  command.h machdep.h timer.c
-storage@OBJ@	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h
-input@OBJ@	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h \
-		  parser.c command.h module.h
-subst@OBJ@	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h subst.h
-static@OBJ@	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h subst.h \
-		  scc.c module.h
-type@OBJ@	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h subst.h \
-		  preds.c scc.c	       
-output@OBJ@	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h
-compiler@OBJ@	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h 
-machine@OBJ@	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h
-plugin@OBJ@	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h
-builtin@OBJ@	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h builtin.h \
-		  bignums.c printer.c iomonad.c interns.c stmonad.c array.c dirprim.c timeprim.c
-ffi@OBJ@	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h
-module@OBJ@	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h module.h
-machdep@OBJ@	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h machdep.h
-script@OBJ@	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h 
+server@OBJ@	: $(PRELUDE) storage.h connect.h errors.h script.h \
+		  machdep.h evaluator.h opts.h strutil.h server.h
+hugs@OBJ@	: $(PRELUDE) storage.h connect.h errors.h command.h \
+		  script.h opts.h strutil.h evaluator.h machdep.h \
+		  goal.h output.h timer.c 
+storage@OBJ@	: $(PRELUDE) storage.h connect.h errors.h opts.h \
+		  machdep.h evaluator.h
+input@OBJ@	: $(PRELUDE) storage.h connect.h errors.h command.h \
+		  module.h script.h opts.h goal.h machdep.h parser.c 
+subst@OBJ@	: $(PRELUDE) storage.h connect.h errors.h output.h \
+                  opts.h subst.h
+static@OBJ@	: $(PRELUDE) storage.h connect.h errors.h machdep.h \
+		  output.h subst.h module.h opts.h goal.h scc.c 
+type@OBJ@	: $(PRELUDE) storage.h connect.h errors.h output.h \
+		  subst.h goal.h preds.c scc.c
+output@OBJ@	: $(PRELUDE) storage.h connect.h errors.h output.h
+compiler@OBJ@	: $(PRELUDE) storage.h connect.h errors.h goal.h
+machine@OBJ@	: $(PRELUDE) storage.h connect.h errors.h
+plugin@OBJ@	: $(PRELUDE) storage.h connect.h errors.h
+builtin@OBJ@	: $(PRELUDE) storage.h connect.h errors.h machdep.h \
+		  builtin.h bignums.c printer.c iomonad.c interns.c \
+		  stmonad.c array.c dirprim.c timeprim.c
+ffi@OBJ@	: $(PRELUDE) storage.h connect.h errors.h output.h
+module@OBJ@	: $(PRELUDE) storage.h connect.h errors.h module.h
+machdep@OBJ@	: $(PRELUDE) storage.h connect.h errors.h command.h \
+		  opts.h machdep.h
+script@OBJ@	: $(PRELUDE) storage.h connect.h errors.h machdep.h \
+		  opts.h strutil.h script.h 
+strutil@OBJ@	: $(PRELUDE) storage.h connect.h errors.h strutil.h
+errors@OBJ@	: $(PRELUDE) storage.h connect.h errors.h output.h \
+		  opts.h goal.h evaluator.h
+goal@OBJ@	: $(PRELUDE) storage.h machdep.h opts.h goal.h
+observe@OBJ@	: $(PRELUDE) storage.h connect.h errors.h command.h \
+		  machdep.h builtin.h output.h observe.h
+evaluator@OBJ@	: $(PRELUDE) storage.h connect.h errors.h script.h \
+		  output.h strutil.h opts.h machdep.h evaluator.h
 
 ################################################################
 # Regression tests (none supplied)

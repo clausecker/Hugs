@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: connect.h,v $
- * $Revision: 1.70 $
- * $Date: 2003/03/05 15:21:45 $
+ * $Revision: 1.71 $
+ * $Date: 2003/03/09 23:53:03 $
  * ------------------------------------------------------------------------*/
 #ifndef __CONNECT_H__
 #define __CONNECT_H__
@@ -165,11 +165,6 @@ extern Name  nameShowRecRowCls;         /* Trex.ShowRecRow class           */
 extern Name  nameEqRecRowCls;           /* Trex.EqRecRow class             */
 #endif
 
-extern String repeatStr;		/* Repeat last command string	   */
-extern String hugsEdit;			/* String for editor command	   */
-extern String hugsPath;			/* String for file search path	   */
-extern String projectPath;		/* String for project search path  */
-extern String hugsSuffixes;		/* Source filename suffixes        */
 extern String versionString;		/* String containing version name  */
 #if USE_REGISTRY
 extern String hugsRegRoot;		/* Root in registry for windows    */
@@ -257,64 +252,22 @@ extern Int   numGcs;			/* number of garbage collections   */
 extern Bool  broken;			/* indicates interrupt received    */
 extern Bool  preludeLoaded;		/* TRUE => prelude has been loaded */
 
-extern Bool  gcMessages;		/* TRUE => print GC messages	   */
-extern Bool  literateScripts;		/* TRUE => default lit scripts     */
-extern Bool  literateErrors;		/* TRUE => report errs in lit scrs */
-extern Bool  showInstRes;               /* TRUE => show instance resolution */
-#if MULTI_INST
-extern Bool  multiInstRes;              /* TRUE => use multi inst resolution */
-#endif
-extern Bool  useQualifiedNames;         /* TRUE => qualify names when printing types and terms */
-extern Bool  hereDocs;                  /* TRUE => enable `here documents' */
-#if IPARAM
-extern Bool  oldIParamSyntax;           /* TRUE => support 'dlet' and 'with' binding forms */
-#endif
-extern Bool  optImplicitImportRoot;     /* see comment next to declaration in hugs.c */
-
-extern Int   cutoff;			/* Constraint Cutoff depth	   */
-
-#if SUPPORT_PREPROCESSOR
-extern String preprocessor;             /* preprocessor command            */
-#endif
-
-#if DEBUG_CODE
-extern Bool  debugCode;		        /* TRUE => print G-code to screen  */
-#endif
-#if DEBUG_SHOWSC
-extern Bool  debugSC;			/* TRUE => print SC to screen  */
-extern Void  printSc Args((FILE*, Text, Int, Cell));
-#endif
-extern Bool  kindExpert;		/* TRUE => display kind errors in  */
-					/* 	   full detail		   */
-extern Bool  allowOverlap;		/* TRUE => allow overlapping insts */
-extern Bool  allowUnsafeOverlap;	/* TRUE => in addition, allow      */
-					/* potentially inconsistent        */
-					/* overlapping instances           */
-
-extern Bool   listScripts;              /* TRUE => list scripts after loading*/
-extern Bool   chaseImports;             /* TRUE => chase imports on load   */
-extern Bool   quiet;                    /* TRUE => don't show progress     */
-extern Bool   generateFFI;              /* TRUE => generate ffi code       */
 
 /* --------------------------------------------------------------------------
  * Function prototypes etc...
  * ------------------------------------------------------------------------*/
-
-extern Void everybody Args((Int));
-
 #define RESET   1		/* reset subsystem                         */
 #define MARK    2		/* mark parts of graph in use by subsystem */
 #define INSTALL 3		/* install subsystem (executed once only)  */
 #define EXIT	4		/* Take action immediately before exit()   */
 #define BREAK   5		/* Take action after program break	   */
 
-typedef long   Target;
-extern  Void   setGoal          Args((String, Target));
-extern  Void   soFar            Args((Target));
-extern  Void   done             Args((Void));
-extern  String fromEnv		Args((String,String));
-extern  String strCopy          Args((String));
-extern  Void   setLastEdit      Args((String,Int));
+/* hugs.c exports: */
+extern  Void   shutdownHugs     Args((Void));
+extern  Void   promptForInput   Args((String));
+/* The next two are only reqd by winhugs */
+extern  Void   runEditor        Args((Void));
+extern Module  findEvalModule   Args((Void));
 
 extern  Void   storage          Args((Int));
 
@@ -481,17 +434,6 @@ extern  String mkFFIFilename2   Args((String));
 extern  Void   freeDLL          Args((void*));
 extern  Void   compileAndLink   Args((String,String));
 
-extern  Int    shellEsc		Args((String,Bool,Bool));
-extern  Int    getTerminalWidth Args((Void));
-extern  Void   normalTerminal	Args((Void));
-extern  Void   noechoTerminal	Args((Void));
-extern  Int    readTerminalChar Args((Void));
-extern  Void   gcStarted	Args((Void));
-extern  Void   gcScanning	Args((Void));
-extern  Void   gcRecovered	Args((Int));
-extern  Void   gcCStack		Args((Void));
-extern  Void   needPrims        Args((Int)); 
-
 extern  Void   plugins          Args((Int));
 extern  Bool   havePlugin       Args((String));
 extern  List   calcFunDepsPreds Args((List));
@@ -499,8 +441,6 @@ extern  Inst   findInstFor      Args((Cell,Int));
 #if MULTI_INST
 extern  List   findInstsFor     Args((Cell,Int));
 #endif
-
-extern Bool    initSystem        Args((Void));
 
 #if HUGS_FOR_WINDOWS
 extern  Void saveInputState	Args((Void));
@@ -513,13 +453,51 @@ extern  Void restoreInputState	Args((Void));
 #define argNum(n)       (n)%NUMARGS
 #define seqNum(n)       (n)/NUMARGS
 extern Bool   printingObservations;     /* TRUE => print observed exprs    */
-extern Bool   rootOpt;                  /* TRUE => enable root optimisation*/
 extern Int    appNum;                   /* for counting applications       */
 extern Int    obsCount;			/* sanity counter for observations */
-extern Void   breakDialogue    Args((String));
 extern Bool   isWhnf           Args((Cell));
 extern Cell   getCaf           Args((Cell));
 extern Int    countObserve     Args((Void));
+#endif
+
+/*---------------------------------------------------------------------------
+ * Compiler output
+ * Tweaking this lets us redirect prompts, error messages, etc - but has no
+ * effect on output of Haskell programs (which should use hPutStr and friends).
+ *-------------------------------------------------------------------------*/
+
+#if REDIRECT_OUTPUT
+extern Void   hugsPrintf            Args((const char *, ...));
+extern Void   hugsPutchar           Args((int));
+extern Void   hugsFlushStdout       Args((Void));
+extern Void   hugsEnableOutput      Args((Bool));
+extern String hugsClearOutputBuffer Args((Void));
+			    
+extern Void   hugsFFlush    	    Args((FILE*));
+extern Void   hugsFPrintf   	    Args((FILE*, const char*, ...));
+extern Void   hugsPutc      	    Args((int, FILE*));
+
+#define Printf         	     hugsPrintf
+#define Putchar        	     hugsPutchar
+#define FlushStdout    	     hugsFlushStdout
+#define EnableOutput   	     hugsEnableOutput
+#define ClearOutputBuffer    hugsClearOutputBuffer
+
+#define FFlush               hugsFFlush
+#define FPrintf              hugsFPrintf
+#define Putc                 hugsPutc
+			     
+#else			     
+			     
+#define Printf               printf
+#define Putchar              putchar
+#define FlushStdout()        fflush(stdout)
+#define EnableOutput(f)      doNothing()
+#define ClearOutputBuffer()  0
+
+#define FFlush               fflush
+#define FPrintf              fprintf
+#define Putc                 putc
 #endif
 
 /*-------------------------------------------------------------------------*/

@@ -7,15 +7,17 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: type.c,v $
- * $Revision: 1.68 $
- * $Date: 2003/03/07 00:42:22 $
+ * $Revision: 1.69 $
+ * $Date: 2003/03/09 23:53:09 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
 #include "storage.h"
 #include "connect.h"
 #include "errors.h"
+#include "output.h"
 #include "subst.h"
+#include "goal.h"
 
 /*#define DEBUG_TYPES*/
 /*#define DEBUG_KINDS*/

@@ -8,8 +8,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: prelude.h,v $
- * $Revision: 1.43 $
- * $Date: 2003/03/03 06:31:04 $
+ * $Revision: 1.44 $
+ * $Date: 2003/03/09 23:53:07 $
  * ------------------------------------------------------------------------*/
 #ifndef __PRELUDE_H__
 #define __PRELUDE_H__
@@ -819,48 +819,6 @@ typedef void*    Pointer;
 #define bitArraySize(n)    ((n)/bitsPerWord + 1)
 #define placeInSet(n)      ((-(n)-1)>>wordShift)
 #define maskInSet(n)       (1<<((-(n)-1)&wordMask))
-
-/*---------------------------------------------------------------------------
- * Compiler output
- * Tweaking this lets us redirect prompts, error messages, etc - but has no
- * effect on output of Haskell programs (which should use hPutStr and friends).
- *-------------------------------------------------------------------------*/
-
-#if REDIRECT_OUTPUT
-
-extern Void   hugsPrintf            Args((const char *, ...));
-extern Void   hugsPutchar           Args((int));
-extern Void   hugsFlushStdout       Args((Void));
-extern Void   hugsEnableOutput      Args((Bool));
-extern String hugsClearOutputBuffer Args((Void));
-			    
-extern Void   hugsFFlush    	    Args((FILE*));
-extern Void   hugsFPrintf   	    Args((FILE*, const char*, ...));
-extern Void   hugsPutc      	    Args((int, FILE*));
-
-#define Printf         	     hugsPrintf
-#define Putchar        	     hugsPutchar
-#define FlushStdout    	     hugsFlushStdout
-#define EnableOutput   	     hugsEnableOutput
-#define ClearOutputBuffer    hugsClearOutputBuffer
-
-#define FFlush               hugsFFlush
-#define FPrintf              hugsFPrintf
-#define Putc                 hugsPutc
-			     
-#else			     
-			     
-#define Printf               printf
-#define Putchar              putchar
-#define FlushStdout()        fflush(stdout)
-#define EnableOutput(f)      doNothing()
-#define ClearOutputBuffer()  0
-
-#define FFlush               fflush
-#define FPrintf              fprintf
-#define Putc                 putc
-
-#endif
 
 /*-------------------------------------------------------------------------*/
 

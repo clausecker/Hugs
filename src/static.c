@@ -7,16 +7,20 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.145 $
- * $Date: 2003/03/07 00:42:21 $
+ * $Revision: 1.146 $
+ * $Date: 2003/03/09 23:53:08 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
 #include "storage.h"
 #include "connect.h"
+#include "machdep.h"
 #include "errors.h"
+#include "output.h"
 #include "subst.h"
 #include "module.h"
+#include "opts.h"
+#include "goal.h"
 
 /* --------------------------------------------------------------------------
  * local function prototypes:

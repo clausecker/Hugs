@@ -29,11 +29,13 @@ extern Void stopScripts         Args((Void));
 extern Void setScriptStableMark Args((Void));
 
 extern String getScriptName     Args((Script));
+extern String getScriptRealName Args((Script));
 extern Int    getScriptHwMark   Args((Void));
 extern Int    numLoadedScripts  Args((Void));
 
-extern Void addScriptName Args((String,Bool));
-extern Bool chase         Args((List));
+extern Void addScriptName       Args((String,Bool));
+extern Bool chase               Args((List));
+extern Void addScriptsFromArgs  Args((Int,String []));
 
 extern Void forgetScriptsFrom Args((Script));
 extern Void forgetAllScripts  Args((Void));
@@ -48,7 +50,16 @@ extern Void readScripts       Args((Int));
 Void loadProject       Args((String));
 Void clearProject      Args((Void));
 extern String currProject;
+extern Bool   projectLoaded;    /* TRUE => project file loaded     */
 
 extern Void script     Args((int));
+
+#if HUGS_FOR_WINDOWS
+extern Void setNumLoadedScripts Args((Script));
+extern Void setScriptHwMark     Args((Script));
+extern Void setScriptName       Args((Script,String));
+extern Void setScriptRealName   Args((Script,String));
+#endif
+
 
 #endif /* __SCRIPT_H__ */

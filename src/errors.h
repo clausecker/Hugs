@@ -7,14 +7,15 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: errors.h,v $
- * $Revision: 1.8 $
- * $Date: 2003/02/17 03:07:56 $
+ * $Revision: 1.9 $
+ * $Date: 2003/03/09 23:53:04 $
  * ------------------------------------------------------------------------*/
 #ifndef __ERRORS_H__
 #define __ERRORS_H__
 
-extern Void internal	 Args((String)) HUGS_noreturn;
-extern Void fatal	 Args((String)) HUGS_noreturn;
+extern Void internal	    Args((String)) HUGS_noreturn;
+extern Void fatal	    Args((String)) HUGS_noreturn;
+extern Void stopAnyPrinting Args((Void));
 
 #if HUGS_FOR_WINDOWS
 /* output to stderr uses RED color already */
@@ -51,18 +52,8 @@ extern sigProto(breakHandler);
 
 extern Bool breakOn      Args((Bool));		   /* in machdep.c	   */
 
-extern Void printExp     Args((FILE *,Cell));      /* in output.c          */
-extern Void printType    Args((FILE *,Cell));
-extern Void printContext Args((FILE *,List));
-extern Void printPred    Args((FILE *,Cell));
-extern Void printKind	 Args((FILE *,Kind));
-extern Void printKinds	 Args((FILE *,Kinds));
-extern Void printFD	 Args((FILE *,Pair));
-
-#if OBSERVATIONS
-#define ALLTAGS ""
-extern Void printObserve Args((String));
-#endif
+#include <setjmp.h>
+extern jmp_buf catch_error;          /* jump buffer for error trapping  */
 
 /*-------------------------------------------------------------------------*/
 

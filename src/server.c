@@ -1,8 +1,9 @@
 /* --------------------------------------------------------------------------
  * Implementation of the Hugs server API.
  *
- * The Hugs server allows you to write batch-mode programs that load
- * scripts and build/evaluate terms.
+ * The Hugs server allows you to programmatically load scripts and
+ * build/evaluate terms. Used by 'runhugs' to provide a batch-mode
+ * UI to the interpreter.
  *
  * The Hugs 98 system is Copyright (c) Mark P Jones, Alastair Reid, the
  * Yale Haskell Group, and the OGI School of Science & Engineering at OHSU,
@@ -10,23 +11,21 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: server.c,v $
- * $Revision: 1.31 $
- * $Date: 2003/03/07 00:52:12 $
+ * $Revision: 1.32 $
+ * $Date: 2003/03/09 23:53:08 $
  * ------------------------------------------------------------------------*/
-
-#define HUGS_SERVER
-#include "hugs.c"
+#include "prelude.h"
+#include "storage.h"
+#include "connect.h"
+#include "script.h"
+#include "machdep.h"
+#include "evaluator.h"
+#include "opts.h"
+#include "strutil.h"
+#include "errors.h"
 #include "server.h"
 
-/* These have non-local scope, as they're used when creating 
- * extended/delegated versions of the server API (cf. the server
- * interface provided by the .NET extensions.)
- */
-extern Void   setError        Args((String));
-extern Void   startEval       Args((Void));
-extern Bool   safeEval        Args((Cell));
-extern String ClearError      Args((Void));
-extern Cell   getTypeableDict Args((Type));
+#include <setjmp.h>
 
 static Void   setHugsAPI   Args((Void));
 static Bool   SetModule    Args((String));
@@ -75,33 +74,38 @@ static Void   FreeHVal        Args((HVal));
 static HugsServerAPI hugs;             /* virtual function table            */
 
 static Void setHugsAPI() {       /* initialise virtual function table */
-    hugs.clearError      = ClearError;
-    hugs.setHugsArgs     = setHugsArgs;
-    hugs.getNumScripts   = GetNumScripts;
-    hugs.reset           = Reset;
-    hugs.setOutputEnable = SetOutputEnable;
-    hugs.changeDir       = ChangeDir;
-    hugs.loadProject     = LoadProject;
-    hugs.loadFile        = LoadFile;
-    hugs.loadFromBuffer  = LoadStringF;
-    hugs.setOptions      = SetOptions;
-    hugs.getOptions      = GetOptions;
-    hugs.compileExpr     = CompileExpr;
-    hugs.garbageCollect  = GarbageCollect;
-    hugs.lookupName      = LookupName;
-    hugs.mkInt           = MkInt;
-    hugs.mkAddr          = MkAddr;
-    hugs.mkString        = MkString;
-    hugs.apply           = Apply;
-    hugs.evalInt         = EvalInt;
-    hugs.evalAddr        = EvalAddr;
-    hugs.evalString      = EvalString;
-    hugs.doIO            = DoIO;
-    hugs.doIO_Int        = DoIO_Int;
-    hugs.doIO_Addr       = DoIO_Addr;
-    hugs.popHVal         = PopHVal;
-    hugs.pushHVal        = PushHVal;
-    hugs.freeHVal        = FreeHVal;
+    static Bool api_inited = FALSE;
+    if (!api_inited) {
+      api_inited = TRUE;
+
+      hugs.clearError      = ClearError;
+      hugs.setHugsArgs     = setHugsArgs;
+      hugs.getNumScripts   = GetNumScripts;
+      hugs.reset           = Reset;
+      hugs.setOutputEnable = SetOutputEnable;
+      hugs.changeDir       = ChangeDir;
+      hugs.loadProject     = LoadProject;
+      hugs.loadFile        = LoadFile;
+      hugs.loadFromBuffer  = LoadStringF;
+      hugs.setOptions      = SetOptions;
+      hugs.getOptions      = GetOptions;
+      hugs.compileExpr     = CompileExpr;
+      hugs.garbageCollect  = GarbageCollect;
+      hugs.lookupName      = LookupName;
+      hugs.mkInt           = MkInt;
+      hugs.mkAddr          = MkAddr;
+      hugs.mkString        = MkString;
+      hugs.apply           = Apply;
+      hugs.evalInt         = EvalInt;
+      hugs.evalAddr        = EvalAddr;
+      hugs.evalString      = EvalString;
+      hugs.doIO            = DoIO;
+      hugs.doIO_Int        = DoIO_Int;
+      hugs.doIO_Addr       = DoIO_Addr;
+      hugs.popHVal         = PopHVal;
+      hugs.pushHVal        = PushHVal;
+      hugs.freeHVal        = FreeHVal;
+    }
 }
 
 /* --------------------------------------------------------------------------
@@ -203,31 +207,12 @@ String argv[]; {
       BEGIN_PROTECT			/* Too much text for protect()	   */
       Int i;
 
-      lastEdit      = 0;
-      setLastEdit((String)0,0);
-      initScripts();
-
-      hugsPath      = strCopy(HUGSPATH);
-      hugsSuffixes  = strCopy(HUGSSUFFIXES);
-#if HSCRIPT
-      hscriptSuffixes();
-#endif
+      startEvaluator();
 
       if (argc == -1) {
 	readOptions(argv[0],FALSE);
       } else {
-#if USE_REGISTRY
-	projectPath = readRegChildStrings(HKEY_LOCAL_MACHINE, ProjectRoot, "HUGSPATH", "");
-	readOptions(readRegString(HKEY_LOCAL_MACHINE,hugsRegRoot,"Options",""), TRUE);
-	readOptions(readRegString(HKEY_CURRENT_USER,hugsRegRoot,"Options",""),TRUE);
-#endif /* USE_REGISTRY */
-	readOptions(fromEnv("HUGSFLAGS",""),FALSE);
-	for (i=1; i<argc; ++i) {
-	  if (!readOptions2(argv[i])) {
-	    setError("Unrecognised option");
-	    return NULL;
-	  }
-	}
+	readOptionSettings();
       }
       EnableOutput(FALSE);
       loadPrelude();
@@ -249,13 +234,24 @@ String argv[]; {
    return &hugs;  /* error must have occurred */
 }
 
+/* Just give me the method table; initialisation is assumed to already have taken
+ * place. Used when external code needs to callback into Haskell.
+ */
+HugsServerAPI* getHugsAPI() {
+  setHugsAPI();
+  return &hugs;
+}
+
+/* --------------------------------------------------------------------------
+ * Shutting down:
+ * ------------------------------------------------------------------------*/
 DLLEXPORT(Void) shutdownHugsServer(hserv) /* server shutdown */
 HugsServerAPI* hserv; {
   /* The 'hserv' argument isn't actually used */
   clearStack();
   stopAnyPrinting();
   everybody(EXIT);
-  shutdownHugs();
+  stopEvaluator();
   return;
 }
 
@@ -270,10 +266,9 @@ HugsServerAPI* hserv; {
  * sof 2001 - interposing a Dynamic-typed layer sometimes gets in the way
  *            (missing Typeable instances, extra loading of modules), as
  *            has proven the case when using the HugsServerAPI by HaskellScript,
- *            Lambada, and mod_haskell. So, by defining NO_DYNAMIC_TYPES,
- *            you turn this feature off.
+ *            Lambada, and mod_haskell. By defining NO_DYNAMIC_TYPES,
+ *            you may turn this feature off.
  * ------------------------------------------------------------------------*/
-
 #ifndef NO_DYNAMIC_TYPES
 static Name  nameRunDyn;
 static Name  nameDynApp;
@@ -346,9 +341,6 @@ String fn;
 static Void LoadFile(fn)          /* load a module (from a file) into the system   */
 String fn;
 {
-  /*
-   * The meaning of load file 
-   */
     protect(
 	addScriptName(fn,TRUE);
 	readScripts(numLoadedScripts());
@@ -375,7 +367,6 @@ String opt; {
 static String GetOptions() {
   return strCopy(optionsToStr());
 }
-
 
 static Bool SetModule(m)
 String m; {

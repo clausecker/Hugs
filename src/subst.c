@@ -8,14 +8,16 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: subst.c,v $
- * $Revision: 1.26 $
- * $Date: 2003/01/22 19:15:23 $
+ * $Revision: 1.27 $
+ * $Date: 2003/03/09 23:53:09 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
 #include "storage.h"
 #include "connect.h"
 #include "errors.h"
+#include "output.h"
+#include "opts.h"
 #include "subst.h"
 
 /*#define DEBUG_TYPES*/

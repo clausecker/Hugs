@@ -27,7 +27,7 @@
 default		:: hugs.exe runhugs.exe ffihugs.exe hugsscript.dll
 
 CC		= cl /nologo
-CFLAGS          = -ML
+CFLAGS          = -ML -DMONTH_YEAR="\"Nov 2002\""
 #CFLAGS		= -ML -Zi -DMONTH_YEAR="\"Nov 2002\""
 # When debugging:
 #CFLAGS		= -ML -Zi
@@ -50,19 +50,22 @@ CP		= copy
 .SUFFIXES	:
 .SUFFIXES	: .c .h .obj
 HFILES		= prelude.h config.h options.h storage.h connect.h \
-		  errors.h command.h server.h HsFFI.h module.h machdep.h script.h
+		  errors.h command.h server.h HsFFI.h module.h machdep.h \
+		  script.h opts.h strutil.h evaluator.h goal.h observe.h
 CFILES		= hugs.c storage.c input.c static.c type.c subst.c \
 		  output.c compiler.c machine.c interp.c builtin.c \
-		  server.c ffi.c module.c machdep.c script.c
+		  server.c ffi.c module.c machdep.c script.c opts.c \
+		  strutil.c errors.c evaluator.c goal.c observe.c
 INCFILES	= parser.c preds.c bignums.c scc.c timer.c \
 		  printer.c iomonad.c interns.c stmonad.c array.c
 YFILES		= parser.y
 SOURCES		= $(HFILES) $(CFILES) $(INCFILES) $(YFILES) 
 OBJECTS		= storage.obj input.obj static.obj type.obj subst.obj \
 		  compiler.obj plugin.obj builtin.obj machine.obj output.obj \
-		  ffi.obj version.obj module.obj machdep.obj script.obj
-IOBJECTS	= hugs.obj hugs.res $(OBJECTS)
-PRELUDE		= config.h options.h prelude.h script.h
+		  ffi.obj version.obj module.obj machdep.obj script.obj \
+		  opts.obj strutil.obj errors.obj evaluator.obj goal.obj
+IOBJECTS	= hugs.obj server.obj observe.obj hugs.res $(OBJECTS)
+PRELUDE		= config.h options.h prelude.h script.h errors.h
 
 ################################################################
 # Hugs interpreter and standalone evaluator
@@ -164,28 +167,42 @@ parser.c	: parser.y
 # veryclean	::
 # 		  $(RM) parser.c
 
-server.obj	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h \
-		  command.h machdep.h timer.c hugs.c server.c server.h
-hugs.obj	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h \
-		  command.h machdep.h timer.c
-storage.obj	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h
-input.obj	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h \
-		  parser.c command.h module.h
-subst.obj	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h subst.h
-static.obj	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h subst.h \
-		  scc.c module.h
-type.obj	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h subst.h \
-		  preds.c scc.c	       
-output.obj	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h
-compiler.obj	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h 
-machine.obj	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h
-plugin.obj	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h
-builtin.obj	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h builtin.h \
-		  bignums.c printer.c iomonad.c interns.c stmonad.c array.c dirprim.c timeprim.c 
-ffi.obj		: $(PRELUDE) storage.h HsFFI.h connect.h errors.h
-module.obj	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h module.h
-machdep.obj	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h machdep.h
-script.obj	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h 
+server.obj	: $(PRELUDE) storage.h connect.h errors.h script.h \
+		  machdep.h evaluator.h opts.h strutil.h server.h
+hugs.obj	: $(PRELUDE) storage.h connect.h errors.h command.h \
+		  script.h opts.h strutil.h evaluator.h machdep.h \
+		  goal.h output.h timer.c 
+storage.obj	: $(PRELUDE) storage.h connect.h errors.h opts.h \
+		  machdep.h evaluator.h
+input.obj	: $(PRELUDE) storage.h connect.h errors.h command.h \
+		  module.h script.h opts.h goal.h machdep.h parser.c 
+subst.obj	: $(PRELUDE) storage.h connect.h errors.h output.h \
+                  opts.h subst.h
+static.obj	: $(PRELUDE) storage.h connect.h errors.h machdep.h \
+		  output.h subst.h module.h opts.h goal.h scc.c 
+type.obj	: $(PRELUDE) storage.h connect.h errors.h output.h \
+		  subst.h goal.h preds.c scc.c
+output.obj	: $(PRELUDE) storage.h connect.h errors.h output.h
+compiler.obj	: $(PRELUDE) storage.h connect.h errors.h goal.h
+machine.obj	: $(PRELUDE) storage.h connect.h errors.h
+plugin.obj	: $(PRELUDE) storage.h connect.h errors.h
+builtin.obj	: $(PRELUDE) storage.h connect.h errors.h machdep.h \
+		  builtin.h bignums.c printer.c iomonad.c interns.c \
+		  stmonad.c array.c dirprim.c timeprim.c
+ffi.obj		: $(PRELUDE) storage.h connect.h errors.h output.h
+module.obj	: $(PRELUDE) storage.h connect.h errors.h module.h
+machdep.obj	: $(PRELUDE) storage.h connect.h errors.h command.h \
+		  opts.h machdep.h
+script.obj	: $(PRELUDE) storage.h connect.h errors.h machdep.h \
+		  opts.h strutil.h script.h 
+strutil.obj	: $(PRELUDE) storage.h connect.h errors.h strutil.h
+errors.obj	: $(PRELUDE) storage.h connect.h errors.h output.h \
+		  opts.h goal.h evaluator.h
+goal.obj	: $(PRELUDE) storage.h machdep.h opts.h goal.h
+observe.obj	: $(PRELUDE) storage.h connect.h errors.h command.h \
+		  machdep.h builtin.h output.h observe.h
+evaluator.obj	: $(PRELUDE) storage.h connect.h errors.h script.h \
+		  output.h strutil.h opts.h machdep.h evaluator.h
 
 hugs.res	: msc\hugs.rc ..\icons\hugsicon.ico
 		rc /imsc /i..\icons /r /fo hugs.res msc\hugs.rc 

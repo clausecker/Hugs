@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.120 $
- * $Date: 2003/03/07 00:42:20 $
+ * $Revision: 1.121 $
+ * $Date: 2003/03/09 23:53:04 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -17,6 +17,12 @@
 #include "connect.h"
 #include "errors.h"
 #include "script.h"
+#include "opts.h"
+#include "strutil.h"
+#include "evaluator.h"
+#include "machdep.h"
+#include "goal.h"
+#include "output.h"
 #include <setjmp.h>
 #include <ctype.h>
 
@@ -31,95 +37,39 @@
 #include "winhugs\WinUtils.h"
 #endif
 
-#if !HASKELL_98_ONLY
-Bool haskell98 = TRUE;			/* TRUE => Haskell 98 compatibility*/
-#endif
-
-#if EXPLAIN_INSTANCE_RESOLUTION
-Bool showInstRes = FALSE;
-#endif
-#if MULTI_INST
-Bool multiInstRes = FALSE;
-#endif
-
-static Bool printTypeUseDefaults = FALSE;
-
 /* --------------------------------------------------------------------------
  * Local function prototypes:
  * ------------------------------------------------------------------------*/
 
-static Void   local loadPrelude       Args((Void));
-static Void   local promptForInput    Args((String));
-#if !defined(HUGS_SERVER)
-static Void   local initialize        Args((Int,String []));
 static Void   local interpreter       Args((Int,String []));
 static Void   local menu              Args((Void));
 static Void   local guidance          Args((Void));
-
 static Void   local forHelp           Args((Void));
-static Void   local set               Args((Void));
 static Void   local changeDir         Args((Void));
 static Void   local load              Args((Void));
 static Void   local project           Args((Void));
 static Void   local editor            Args((Void));
 static Void   local find              Args((Void));
-static Void   local runEditor         Args((Void));
 static Void   local setModule         Args((Void));
-static Module local findEvalModule    Args((Void));
-static Void   local evaluator         Args((Void));
 static Void   local showtype          Args((Void));
 static String local objToStr          Args((Module, Cell));
-static Void   local splitQualString   Args((String,String*,String*));
 static Void   local info              Args((Void));
 static Void   local printSyntax       Args((Name));
 static Void   local showInst          Args((Inst));
 static Void   local describe          Args((Text));
 static Void   local listNames         Args((Void));
-#endif /* !HUGS_SERVER */
-static Void   local stopAnyPrinting   Args((Void));
+static Void   local expandPath        Args((String,String,unsigned int));
+static Void   local browseit	      Args((Module,String,Bool));
+static Void   local browse	      Args((Void));
+static Void   local initialize        Args((Int, String []));
+
 #if HUGS_FOR_WINDOWS
 static Void   local autoReloadFiles   Args((Void));
 #endif
 
-static Void   local toggleSet         Args((Char,Bool));
-#if !defined(HUGS_SERVER)
-static Void   local togglesIn         Args((Bool));
-static Void   local optionInfo        Args((Void));
-#endif /* !HUGS_SERVER */
-#if HUGS_FOR_WINDOWS || USE_REGISTRY || defined(HUGS_SERVER)
-static String local optionsToStr      Args((Void));
-#endif
-static Void   local readOptions       Args((String,Bool));
-static Bool   local readOptions2      Args((String));
-static Bool   local processOption     Args((String));
-static Void   local setHeapSize       Args((String));
-static Int    local argToInt          Args((String));
-#if !defined(HUGS_SERVER)
-static Bool   local isOption          Args((String));
-static Void   local expandPath        Args((String,String,unsigned int));
-#endif /* !HUGS_SERVER */
-
-static Void   local failed            Args((Void));
-#if !defined(HUGS_SERVER)
-static Void   local browseit	      Args((Module,String,Bool));
-static Void   local browse	      Args((Void));
-#endif /* !HUGS_SERVER */
-static Void   local shutdownHugs      Args((Void));
-
-#if USE_PREFERENCES_FILE
-static Void    readPrefsFile          Args((FILE *));
-typedef char GVarname[2000];
-static GVarname hugsFlags = "";
-int  iniArgc;
-char iniArgv[10][33];
-#endif
-
-
 /* --------------------------------------------------------------------------
- * Machine dependent code for Hugs interpreter:
+ * Optional timer hooks:
  * ------------------------------------------------------------------------*/
-
-#include "machdep.h"
 #ifdef WANT_TIMER
 #include "timer.c"
 #endif
@@ -127,50 +77,78 @@ char iniArgv[10][33];
 /* --------------------------------------------------------------------------
  * Local data areas:
  * ------------------------------------------------------------------------*/
+static Text    evalModule = 0;  /* Name of module we eval exprs in */
 
-static Bool   printing     = FALSE;     /* TRUE => currently printing value*/
-static Bool   showStats    = FALSE;     /* TRUE => print stats after eval  */
-static Bool   addType      = FALSE;     /* TRUE => print type with value   */
-static Bool   useShow      = TRUE;      /* TRUE => use Text/show printer   */
-static Bool   displayIO    = FALSE;     /* TRUE => use printer for IO result*/
-static Bool   useDots      = RISCOS;    /* TRUE => use dots in progress    */
-#if HUGS_FOR_WINDOWS
-static Bool autoLoadFiles  = TRUE;	/* TRUE => reload files before eval*/
-static Bool InAutoReloadFiles = FALSE;	/* TRUE =>loading files before eval*/
+/* --------------------------------------------------------------------------
+ * UI interpreter initalization:
+ * ------------------------------------------------------------------------*/
+static Void local initialize(argc,argv)
+Int    argc;
+String argv[]; {
+    Script i;
+
+    startEvaluator();
+
+    setLastEdit((String)0,0);
+
+#if HUGS_FOR_WINDOWS || HAVE_WINDOWS_H
+#define DEFAULT_EDITOR "\\notepad.exe"
+    /*
+     * Check first to see if the user has explicitly defined
+     * an editor via the environment variable EDITOR..
+     */
+    hugsEdit      = strCopy(fromEnv("EDITOR",NULL));
+    if (hugsEdit == NULL) {
+      UINT rc;
+      int notePadLen = strlen(DEFAULT_EDITOR);
+      char* notePadLoc;
+      /*
+       * Nope, the default editor is used instead. In our case
+       * this is 'notepad', which we assume is always residing
+       * in the windows directory, so locate it first..
+       * (it would be somewhat odd for a user not to have that
+       * directory in his/her PATH, but the less we assume, the better.)
+       */
+      notePadLoc = 
+#ifdef HAVE_ALLOCA
+	  alloca
+#else
+          _alloca
+#endif
+                  (sizeof(char)*(MAX_PATH + notePadLen + 1));
+      rc = GetWindowsDirectory(notePadLoc, MAX_PATH);
+      if ( !(rc == 0 || rc > MAX_PATH) ) {
+	strcat(notePadLoc, DEFAULT_EDITOR);
+	hugsEdit = strCopy(notePadLoc);
+      }
+    }
+#elif __MWERKS__ && macintosh
+    hugsEdit      = NULL;
+#else
+    hugsEdit      = strCopy(fromEnv("EDITOR",NULL));
 #endif
 
-#if !defined(HUGS_SERVER)
-static Text   evalModule  = 0;          /* Name of module we eval exprs in */
-#endif /* !HUGS_SERVER */
-static String lastEdit   = 0;           /* Name of script to edit (if any) */
-static Int    lastLine   = 0;           /* Editor line number (if possible)*/
-static String prompt     = 0;           /* Prompt string                   */
-static Int    hpSize     = DEFAULTHEAP; /* Desired heap size               */
-String hugsEdit		 = 0;		/* String for editor command       */
-String hugsPath		 = 0;		/* String for file search path     */
-String projectPath	 = 0;		/* String for project search path  */
-String hugsSuffixes	 = 0;		/* Source filename suffixes        */
-Bool   preludeLoaded	 = FALSE;
+    readOptions("-p\"%s> \" -r$$",FALSE);
+    readOptionSettings();
+    processOptionVector(argc,argv);
 
-Bool   listScripts  = TRUE;    /* TRUE => list scripts after loading*/
-Bool   chaseImports = TRUE;    /* TRUE => chase imports on load   */
-Bool   quiet        = FALSE;   /* TRUE => don't show progress     */
-Bool   generateFFI  = FALSE;   /* TRUE => generate ffi code       */
-
-#if REDIRECT_OUTPUT
-static Bool disableOutput = FALSE;      /* redirect output to buffer?      */
+#if !HASKELL_98_ONLY
+    if (haskell98) {
+	Printf("Haskell 98 mode: Restart with command line option -98 to enable extensions\n\n");
+    } else {
+	Printf("Hugs mode: Restart with command line option +98 for Haskell 98 mode\n\n");
+    }
 #endif
 
-#if IPARAM
-Bool oldIParamSyntax = TRUE;
-#endif
+    /* Figure out what Prelude module we're using + hoist it in. */
+    loadPrelude();
+    
+    addScriptsFromArgs(argc,argv);
 
-Bool optImplicitImportRoot = TRUE;      
-   /* TRUE => directory of importing module added to search path
-    *         while resolving imports from that module.
-    */
+    evalModule = findText("");      /* evaluate wrt last module by default */
+    readScripts(0);
+}
 
-#if !defined(HUGS_SERVER)
 
 /* --------------------------------------------------------------------------
  * Printing the banner
@@ -239,718 +217,17 @@ char *argv[]; {
 
     return 0;
 }
-#endif
-
-/* --------------------------------------------------------------------------
- * Initialization, interpret command line args and read prelude:
- * ------------------------------------------------------------------------*/
- 
-static Void local loadPrelude() {  /* load in the Prelude module(s). */
-    String prelName;
-    String prelLocation;
-    Bool   listFlg;
-
-    /* Sigh, findMPathname() mutates its module/name arg, so 
-     * create a (temporary and short-lived) copy of the constant
-     * string.
-     */
-    prelName = strCopy(STD_PRELUDE_HUGS); 
-    if (!( prelLocation = findMPathname(NULL, prelName, hugsPath)) ) {
-	Printf("Prelude not found on current path: \"%s\"\n",
-	       hugsPath ? hugsPath : "");
-	fatal("Unable to load prelude");
-    }
-    addScriptName(prelLocation, FALSE);
-    free(prelName);
-    
-    /* add the H98 Prelude module to the stack */
-    addScriptName(findMPathname(NULL, STD_PRELUDE,hugsPath), FALSE);
-
-    everybody(INSTALL);
-
-    /* Hack to temporarily turn off 'listScripts' feature. */
-    listFlg = listScripts;
-    listScripts = FALSE;
-    readScripts(0);
-    listScripts = listFlg;
-
-    /* We record the number of scripts that loading the Prelude
-     * brought about, so that when the user comes to clear the module
-     * stack (e.g., ":l<ENTER>"), only modules later than the Prelude
-     * ones are scratched.
-     */
-    setScriptStableMark();
-}
-
-#if !defined(HUGS_SERVER)
-static Void local initialize(argc,argv)/* Interpreter initialization       */
-Int    argc;
-String argv[]; {
-    Script i;
-    String proj = 0;
-#if USE_PREFERENCES_FILE
-    FILE *f;
-    FileName hugsPrefsFile = "\0";
-#endif
-
-    setLastEdit((String)0,0);
-    lastEdit      = 0;
-    initScripts();
-
-#if HUGS_FOR_WINDOWS || HAVE_WINDOWS_H
-#define DEFAULT_EDITOR "\\notepad.exe"
-    /*
-     * Check first to see if the user has explicitly defined
-     * an editor via the environment variable EDITOR..
-     */
-    hugsEdit      = strCopy(fromEnv("EDITOR",NULL));
-    if (hugsEdit == NULL) {
-      UINT rc;
-      int notePadLen = strlen(DEFAULT_EDITOR);
-      char* notePadLoc;
-      /*
-       * Nope, the default editor is used instead. In our case
-       * this is 'notepad', which we assume is always residing
-       * in the windows directory, so locate it first..
-       * (it would be somewhat odd for a user not to have that
-       * directory in his/her PATH, but less we assume, the better.)
-       */
-      notePadLoc = 
-#ifdef HAVE_ALLOCA
-	  alloca
-#else
-          _alloca
-#endif
-                  (sizeof(char)*(MAX_PATH + notePadLen + 1));
-      rc = GetWindowsDirectory(notePadLoc, MAX_PATH);
-      if ( !(rc == 0 || rc > MAX_PATH) ) {
-	strcat(notePadLoc, DEFAULT_EDITOR);
-	hugsEdit = strCopy(notePadLoc);
-      }
-    }
-#elif __MWERKS__ && macintosh
-    hugsEdit      = NULL;
-#else
-    hugsEdit      = strCopy(fromEnv("EDITOR",NULL));
-#endif
-    hugsPath      = strCopy(HUGSPATH);
-    hugsSuffixes  = strCopy(HUGSSUFFIXES);
-#if HSCRIPT
-    hscriptSuffixes();
-#endif
-    readOptions("-p\"%s> \" -r$$",FALSE);
-#if USE_REGISTRY
-    projectPath   = readRegChildStrings(HKEY_LOCAL_MACHINE,ProjectRoot,
-				        "HUGSPATH", "");
-
-    readOptions(readRegString(HKEY_LOCAL_MACHINE,hugsRegRoot,"Options",""), TRUE);
-    if (!fromEnv("IGNORE_USER_REGISTRY",NULL)) {
-      /* If IGNORE_USER_REGISTRY exist as an env var, don't consult
-       * the user portion of the Registry. Emergency workaround if it has
-       * somehow become invalid.
-       */
-      readOptions(readRegString(HKEY_CURRENT_USER, hugsRegRoot,"Options",""), TRUE);
-    }
-#endif /* USE_REGISTRY */
-
-#if USE_PREFERENCES_FILE
-    if (f=fopen(PREFS_FILE_NAME,"r")) {
-           /* is preferences file in the {Current} folder? */
-	  readPrefsFile(f);
-	} else {
-          /* is preferences file in the {Hugs} folder? */
-        strcpy(hugsPrefsFile,macHugsDir);
-        strcat(hugsPrefsFile,":");
-        strcat(hugsPrefsFile,PREFS_FILE_NAME);
-        if (f=fopen(hugsPrefsFile,"r"))
-          readPrefsFile(f);
-	  } /* else: take default preferences */
-    readOptions(hugsFlags,FALSE);
-#else
-# if HUGS_FOR_WINDOWS
-    ReadGUIOptions();
-# endif
-    readOptions(fromEnv("HUGSFLAGS",""),FALSE);
-#endif
-
-    for (i=1; i<argc; ++i) {            /* process command line arguments  */
-	if (strcmp(argv[i],"+")==0 && i+1<argc) {
-	    if (proj) {
-		ERRMSG(0) "Multiple project filenames on command line"
-		EEND;
-	    } else {
-		proj = argv[++i];
-	    }
-	} else if ( argv[i] && argv[i][0] ) {
-	    /* Willfully ignore the bool returned by processOption();
-	     * non-options (i.e., scripts) will be handled later on.
-	     */
-	    processOption(argv[i]);
-	}
-    }
-
-#if !HASKELL_98_ONLY
-    if (haskell98) {
-	Printf("Haskell 98 mode: Restart with command line option -98 to enable extensions\n\n");
-    } else {
-	Printf("Hugs mode: Restart with command line option +98 for Haskell 98 mode\n\n");
-    }
-#endif
-
-    /* Figure out what Prelude module we're using + hoist it in. */
-    loadPrelude();
-    
-    /* Add the scripts given on the command-line. */
-#if USE_PREFERENCES_FILE
-    if (iniArgc > 0) {
-        /* load additional files found in the preferences file */
-        for (i=0; i<iniArgc; i++) {
-	    addScriptName(iniArgv[i],TRUE);
-        }
-    }
-#endif
-    for (i=1; i<argc; ++i) {
-      if (argv[i] && argv[i][0] && !isOption(argv[i])) {
-	    addScriptName(argv[i],TRUE);
-#if HUGS_FOR_WINDOWS
-	    SetWorkingDir(argv[i]);
-#endif
-      }
-    }
-
-    evalModule = findText("");      /* evaluate wrt last module by default */
-    if (proj) {
-	if ( getScriptHwMark() > 1 ) {
-	    FPrintf(stderr, "\nUsing project file, ignoring additional filenames\n");
-	    FFlush(stderr);
-	}
-	loadProject(strCopy(proj));
-    }
-    readScripts(0);
-}
-
-#endif /* !HUGS_SERVER */
-
 
 /* --------------------------------------------------------------------------
  * Shutdown interpreter.
  * ------------------------------------------------------------------------*/
-static Void shutdownHugs() {
+Void shutdownHugs() {
   /* Let go of dynamic storage */  
-  if (hugsPath)  free(hugsPath);
-  if (hugsEdit)  free(hugsEdit);
-  if (prompt)    free(prompt);
-  if (repeatStr) free(repeatStr);
-  if (lastEdit)  free(lastEdit);
+  if (hugsEdit)  { free(hugsEdit); prompt=0; }
+  if (prompt)    { free(prompt); prompt=0; }
+  if (repeatStr) { free(repeatStr); repeatStr=0; }
+  stopEvaluator();
 }
-
-#if USE_PREFERENCES_FILE
-static Void readPrefsFile(FILE *f)
-{ GVarname line  = "";
-  int      linep = 0;
-
-  char c;
-      
-  while ( (c=fgetc(f)) != EOF && c != '\n') {     /* read HUGSFLAGS          */
-    if ((c != '\t') && (c != '\r')) {             /* skip some control chars */
-      line[linep++] = c;
-      line[linep]   = '\0';
-    }
-  }
-  strcpy(hugsFlags,line);
-    
-  iniArgc = 0;
-  do  {                                  /* read input command line files   */
-    while ((c == '\n') || (c == '\t') || (c == ' '))  /* skip blank spaces  */
-      c=fgetc(f);    
-    if (c == '"') {                      /* filename found                  */
-      linep = 0;
-      iniArgv[iniArgc][0] = '\0';
-      while ((c=fgetc(f)) != EOF && c != '"') {
-        if (linep <= 32) {              /* filename limit on a mac 32 chars */
-          iniArgv[iniArgc][linep++] = c;
-          iniArgv[iniArgc][linep]   = '\0';
-        }
-      }
-      if (c == EOF) {
-        ERRMSG(0) "Incorrect name specification in preferences file"
-		EEND;
-      } else {
-		  iniArgc++;
-	    }
-    }
-  } while ( (c = fgetc(f)) != EOF );
-}
-#endif
-
-/* --------------------------------------------------------------------------
- * Command line options:
- * ------------------------------------------------------------------------*/
-
-struct options {                        /* command line option toggles     */
-    char   c;                           /* table defined in main app.      */
-#if !HASKELL_98_ONLY
-    int    h98;                         /* set in Haskell'98 mode?         */
-#endif
-    String description;
-    Bool   *flag;
-};
-extern struct options toggle[];
-
-#if HASKELL_98_ONLY
-#define Option(c,h98,description,flag) { c, description, flag }
-#else
-#define Option(c,h98,description,flag) { c, h98, description, flag }
-#endif
-
-static Void local toggleSet(c,state)    /* Set command line toggle         */
-Char c;
-Bool state; {
-    Int i;
-    for (i=0; toggle[i].c; ++i)
-	if (toggle[i].c == c) {
-	    *toggle[i].flag = state;
-	    return;
-	}
-    Printf("Warning: unknown toggle `%c'; ignoring.\n", c);
-}
-
-#if !defined(HUGS_SERVER)
-
-static Void local togglesIn(state)      /* Print current list of toggles in*/
-Bool state; {                           /* given state                     */
-    Int count = 0;
-    Int i;
-    for (i=0; toggle[i].c; ++i)
-#if HASKELL_98_ONLY
-	if (*toggle[i].flag == state) {
-#else
-	if (*toggle[i].flag == state && (!haskell98 || toggle[i].h98)) {
-#endif        
-	    if (count==0)
-		Putchar((char)(state ? '+' : '-'));
-	    Putchar(toggle[i].c);
-	    count++;
-	}
-    if (count>0)
-	Putchar(' ');
-}
-
-static Void local optionInfo() {        /* Print information about command */
-    static String fmts = "%-5s%s\n";    /* line settings                   */
-    static String fmtc = "%-5c%s\n";
-    Int    i;
-
-    Printf("TOGGLES: groups begin with +/- to turn options on/off resp.\n");
-    for (i=0; toggle[i].c; ++i) {
-#if !HASKELL_98_ONLY
-	if (!haskell98 || toggle[i].h98) {
-#endif
-	    Printf(fmtc,toggle[i].c,toggle[i].description);
-#if !HASKELL_98_ONLY
-	}
-#endif
-    }
-
-    Printf("\nOTHER OPTIONS: (leading + or - makes no difference)\n");
-    Printf(fmts,"hnum","Set heap size (cannot be changed within Hugs)");
-    Printf(fmts,"pstr","Set prompt string to str");
-    Printf(fmts,"rstr","Set repeat last expression string to str");
-    Printf(fmts,"Pstr","Set search path for modules to str");
-    Printf(fmts,"Sstr","Set list of source file suffixes to str");
-    Printf(fmts,"Estr","Use editor setting given by str");
-    Printf(fmts,"cnum","Set constraint cutoff limit");
-#if SUPPORT_PREPROCESSOR
-    Printf(fmts,"Fstr","Set preprocessor filter to str");
-#endif
-#if PROFILING
-    Printf(fmts,"dnum","Gather profiling statistics every <num> reductions\n");
-#endif
-
-    Printf("\nCurrent settings: ");
-    togglesIn(TRUE);
-    togglesIn(FALSE);
-    Printf("-h%d",heapSize);
-    Printf(" -p");
-    printString(prompt);
-    Printf(" -r");
-    printString(repeatStr);
-    Printf(" -c%d",cutoff);
-    Printf("\nSearch path     : -P");
-    printString(hugsPath);
-#if __MWERKS__ && macintosh
-    Printf("\n{Hugs}          : %s",hugsdir());
-    Printf("\n{Current}       : %s",currentDir());
-#endif
-    if (projectPath!=NULL) {
-	Printf("\nProject Path    : %s",projectPath);
-    }
-    Printf("\nSource suffixes : -S");
-    printString(hugsSuffixes);
-    Printf("\nEditor setting  : -E");
-    printString(hugsEdit);
-#if SUPPORT_PREPROCESSOR
-    Printf("\nPreprocessor    : -F");
-    printString(preprocessor);
-#endif
-#if PROFILING
-    Printf("\nProfile interval: -d%d", profiling ? profInterval : 0);
-#endif
-#if HASKELL_98_ONLY
-    Printf("\nCompatibility   : Haskell 98");
-#else
-    Printf("\nCompatibility   : %s", haskell98 ? "Haskell 98 (+98)"
-					       : "Hugs Extensions (-98)");
-#endif
-    Putchar('\n');
-}
-
-#endif /* !HUGS_SERVER */
-
-#if HUGS_FOR_WINDOWS || USE_REGISTRY || defined(HUGS_SERVER)
-
-#define PUTC(c)                         \
-    if (charsLeft > 1) {                \
-      *next++=(c);charsLeft--;          \
-    } else {                            \
-      *next='\0';                       \
-    }
-
-#define PUTS(s)                         \
-    do { Int len = strlen(s);           \
-         if ( charsLeft > len ) {       \
-            strcpy(next,s);             \
-            next+=len;                  \
-            charsLeft -= len;           \
-         } else {                       \
-            *next = '\0';               \
-	 }                              \
-    } while(0)
-
-#define PUTInt(optc,i)                  \
-    if ( charsLeft > 20 /*conservative*/ ) { \
-      sprintf(next,"-%c%d",optc,i);     \
-      next+=strlen(next);               \
-    } else {                            \
-      *next = '\0';                     \
-    }
-
-#define PUTStr(c,s)                     \
-    next=PUTStr_aux(next,&charsLeft,c,s)
-
-static String local PUTStr_aux Args((String,Int*,Char, String));
-
-static String local PUTStr_aux(next,chLeft,c,s)
-String next;
-Int*   chLeft;
-Char   c;
-String s; {
-    Int charsLeft = *chLeft;
-    if (s) { 
-	String t = 0;
-
-	if ( (Int)(strlen(s) + 10) > charsLeft ) {
-	    *next = '\0';
-	    /* optionsToStr() will not to break off immediately,
-	     * but soon enough. 
-	     */
-	    return next;
-	}
-
-	*next++ = '-';
-	*next++=c;
-	*next++='"';
-	charsLeft -= 3;
-	for(t=s; *t; ++t) {
-	    PUTS(unlexChar(*t,'"'));
-	}
-	next+=strlen(next);
-	PUTS("\" ");
-    }
-    *chLeft = charsLeft;
-    return next;
-}
-
-static String local optionsToStr() {          /* convert options to string */
-    static char buffer[2000];
-    String next = buffer;
-    Int charsLeft = 2000;
-
-    Int i;
-    for (i=0; toggle[i].c; ++i) {
-	PUTC(*toggle[i].flag ? '+' : '-');
-	PUTC(toggle[i].c);
-	PUTC(' ');
-    }
-#if !HASKELL_98_ONLY
-    PUTS(haskell98 ? "+98 " : "-98 ");
-#endif
-    PUTInt('h',hpSize);  PUTC(' ');
-    PUTStr('p',prompt);
-    PUTStr('r',repeatStr);
-    PUTStr('P',hugsPath);
-    PUTStr('S',hugsSuffixes);
-    PUTStr('E',hugsEdit);
-    PUTInt('c',cutoff);  PUTC(' ');
-#if SUPPORT_PREPROCESSOR
-    PUTStr('F',preprocessor);
-#endif
-#if PROFILING
-    PUTInt('d',profiling ? profInterval : 0);
-#endif
-    PUTC('\0');
-    return buffer;
-}
-
-
-#undef PUTC
-#undef PUTS
-#undef PUTInt
-#undef PUTStr
-
-#endif /* defined(HUGS_FOR_WINDOWS) || defined(HUGS_SERVER) */
-
-
-static Bool local readOptions2(options)         /* read options from string */
-String options; {
-    String s;
-    if (options) {
-	stringInput(options);
-	while ((s=readFilename())!=0) {
-	    if (*s && !processOption(s))
-		return FALSE;
-	}
-    }
-    return TRUE;
-}
-static Void local readOptions(options,freeUp)  /* read options from string */
-String options;
-Bool   freeUp; {
-    if (!readOptions2(options)) {
-        ERRMSG(0) "Option string must begin with `+' or `-'"
-	EEND;
-    }
-    if (options && freeUp) {
-	free(options);
-    }
-}
-
-#if !defined(HUGS_SERVER)
-static Bool local isOption(s)
-String s; {                     /* return TRUE if 's' looks like an option */
-  return ( s && (s[0] == '-' || s[0] == '+') );
-}
-#endif
-
-static Bool local processOption(s)      /* process string s for options,   */
-String s; {                             /* return FALSE if none found.     */
-    Bool state;
-
-    if (s[0]=='-')
-	state = FALSE;
-    else if (s[0]=='+')
-	state = TRUE;
-    else
-	return FALSE;
-
-    while (*++s)
-	switch (*s) {
-	    case 'p' : if (s[1]) {
-			   if (prompt) free(prompt);
-			   prompt = strCopy(s+1);
-		       }
-		       return TRUE;
-
-	    case 'r' : if (s[1]) {
-			   if (repeatStr) free(repeatStr);
-			   repeatStr = strCopy(s+1);
-		       }
-		       return TRUE;
-
-#if PROFILING
-	    case 'd' : {                /* random choice of letter - ADR   */
-			   Int i = argToInt(s+1);
-			   if (i > 0) {
-			       profiling = TRUE;
-			       profInterval = i;
-			   } else {
-			       profiling = FALSE;
-			       /* To keep the profiling test efficient(?)
-				* we dont actually disable the gathering
-				* of profiling statistics - we just gather
-				* them very infrequently. ADR
-				*/
-			       profInterval = MAXPOSINT;
-			   }
-		       }
-		       return TRUE;
-#endif
-
-	    case 'P' : {
-                           String prelLoc;
- 	                   String savedPath;
-			   
-			   savedPath = hugsPath;
-			   if (*(s+1) == '\0') {
-			     hugsPath = strCopy(HUGSPATH);
-			   } else {
-			     hugsPath  = substPath(s+1,hugsPath ? hugsPath : "");
-			   }
-			   prelLoc = findMPathname(NULL,STD_PRELUDE, hugsPath);
-			   /* prelLoc points to static storage, don't free. */
-			   if (!prelLoc) {
-			       Printf("ERROR: unable to locate Prelude along new path: \"%s\" - ignoring it.\n", hugsPath);
-			       if (hugsPath) free(hugsPath);
-			       hugsPath = savedPath;
-			   } else {
-			       if (savedPath) free(savedPath);
-			   }
-			   return TRUE;
-		       }
-
-	    case 'S' : {
-			   String saveSuffixes = hugsSuffixes;
-			   if (*(s+1) == '\0')
-			       hugsSuffixes = strCopy(HUGSSUFFIXES);
-			   else
-			       hugsSuffixes = substPath(s+1,hugsSuffixes);
-			   if ( !findMPathname(NULL,STD_PRELUDE,hugsPath) ) {
-			       Printf("ERROR: unable to locate Prelude with new suffix list: \"%s\" - ignoring it.\n", hugsSuffixes);
-			       free(hugsSuffixes);
-			       hugsSuffixes = saveSuffixes;
-			   } else {
-			       free(saveSuffixes);
-			   }
-			   return TRUE;
-		       }
-
-	    case 'E' : if (hugsEdit) free(hugsEdit);
-		       hugsEdit = strCopy(s+1);
-		       return TRUE;
-
-#if SUPPORT_PREPROCESSOR
-	    case 'F' : if (preprocessor) free(preprocessor);
-		       preprocessor = strCopy(s+1);
-		       return TRUE;
-#endif
-
-	    case 'L' : ffiSetFlags(strCopy(s+1));
-		       return TRUE;
-
-	    case 'h' : setHeapSize(s+1);
-		       return TRUE;
-
-	    case 'c' : {   Int cutcand = argToInt(s+1);
-			   if (cutcand>=1 && cutcand<=1024)
-			       cutoff = cutcand;
-		       }
-		       return TRUE;
-        default  :
-#if !HASKELL_98_ONLY
-	           if (strcmp("98",s)==0) {
-		       if (heapBuilt() && (state != haskell98)) {
-			   FPrintf(stderr,"Haskell 98 compatibility cannot be changed while the interpreter is running\n");
-			   FFlush(stderr);
-		       } else {
-			   haskell98 = state;
-		       }
-		       return TRUE;
-		   } else {
-#endif
-		       toggleSet(*s,state);
-#if !HASKELL_98_ONLY
-		   }
-#endif
-		   break;
-	}
-    return TRUE;
-}
-
-static Void local setHeapSize(s) 
-String s; {
-    if (s) {
-	hpSize = argToInt(s);
-	if (hpSize < MINIMUMHEAP)
-	    hpSize = MINIMUMHEAP;
-	else if (MAXIMUMHEAP && hpSize > MAXIMUMHEAP)
-	    hpSize = MAXIMUMHEAP;
-	if (heapBuilt() && hpSize != heapSize) {
-#define HEAP_RESIZE_MSG "Change to heap size will not take effect until you rerun Hugs"
-#if HUGS_FOR_WINDOWS
-            MessageBox(hWndMain, HEAP_RESIZE_MSG, appName, MB_ICONHAND | MB_OK);
-#endif            
-#if USE_REGISTRY
-	    FPrintf(stderr,HEAP_RESIZE_MSG "\n");
-#else
-	    FPrintf(stderr,"Cannot change heap size\n");
-#endif
-#undef HEAP_RESIZE_MSG
-            FFlush(stderr);
-	} else {
-	    heapSize = hpSize;
-	}
-    }
-}
-
-static Int local argToInt(s)            /* read integer from argument str  */
-String s; {
-    Int    n = 0;
-    String t = s;
-
-    if (*s=='\0' || !isascii(*s) || !isdigit(*s)) {
-	ERRMSG(0) "Missing integer in option setting \"%s\"", t
-	EEND;
-    }
-
-    do {
-	Int d = (*s++) - '0';
-	if (n > ((MAXPOSINT - d)/10)) {
-	    ERRMSG(0) "Option setting \"%s\" is too large", t
-	    EEND;
-	}
-	n     = 10*n + d;
-    } while (isascii(*s) && isdigit(*s));
-
-    if (*s=='K' || *s=='k') {
-	if (n > (MAXPOSINT/1000)) {
-	    ERRMSG(0) "Option setting \"%s\" is too large", t
-	    EEND;
-	}
-	n *= 1000;
-	s++;
-    }
-
-#if MAXPOSINT > 1000000                 /* waste of time on 16 bit systems */
-    if (*s=='M' || *s=='m') {
-	if (n > (MAXPOSINT/1000000)) {
-	    ERRMSG(0) "Option setting \"%s\" is too large", t
-	    EEND;
-	}
-	n *= 1000000;
-	s++;
-    }
-#endif
-
-#if MAXPOSINT > 1000000000
-    if (*s=='G' || *s=='g') {
-	if (n > (MAXPOSINT/1000000000)) {
-	    ERRMSG(0) "Option setting \"%s\" is too large", t
-	    EEND;
-	}
-	n *= 1000000000;
-	s++;
-    }
-#endif
-
-    if (*s!='\0') {
-	ERRMSG(0) "Unwanted characters after option setting \"%s\"", t
-	EEND;
-    }
-
-    return n;
-}
-
-#if !defined(HUGS_SERVER)
 
 /* --------------------------------------------------------------------------
  * Print Menu of list of commands:
@@ -1017,78 +294,6 @@ static Void local forHelp() {
     Printf("Type :? for help\n");
 }
 
-#endif /* !HUGS_SERVER */
-
-/* --------------------------------------------------------------------------
- * Setting of command line options:
- * ------------------------------------------------------------------------*/
-
-struct options toggle[] = {             /* List of command line toggles    */
-    Option('s', 1, "Print no. reductions/cells after eval", &showStats),
-    Option('t', 1, "Print type after evaluation",           &addType),
-    Option('g', 1, "Print no. cells recovered after gc",    &gcMessages),
-    Option('G', 0, "Generate FFI code for foreign import",  &generateFFI),
-    Option('l', 1, "Literate modules as default",           &literateScripts),
-    Option('e', 1, "Warn about errors in literate modules", &literateErrors),
-    Option('.', 1, "Print dots to show progress",           &useDots),
-    Option('q', 1, "Print nothing to show progress",        &quiet),
-    Option('Q', 1, "Qualify names when printing",           &useQualifiedNames),
-    Option('w', 1, "Always show which modules are loaded",  &listScripts),
-    Option('k', 1, "Show kind errors in full",              &kindExpert),
-    Option('o', 0, "Allow overlapping instances",           &allowOverlap),
-    Option('O', 0, "Allow unsafe overlapping instances",    &allowUnsafeOverlap),
-    Option('u', 1, "Use \"show\" to display results",       &useShow),
-    Option('I', 1, "Display results of IO programs",        &displayIO),
-    Option('i', 1, "Chase imports while loading modules",   &chaseImports),
-#if HUGS_FOR_WINDOWS
-    Option('A', 1, "Auto load files",		   	    &autoLoadFiles),
-#endif
-#if EXPLAIN_INSTANCE_RESOLUTION
-    Option('x', 1, "Explain instance resolution",           &showInstRes),
-#endif
-#if MULTI_INST
-    Option('m', 0, "Use multi instance resolution",         &multiInstRes),
-#endif
-#if DEBUG_CODE
-    Option('D', 1, "Debug: show generated G code",          &debugCode),
-#endif
-#if DEBUG_SHOWSC
-    Option('C', 1, "Debug: show generated SC code",         &debugSC),
-#endif
-#if OBSERVATIONS
-    Option('R', 1, "Enable root optimisation",              &rootOpt),
-#endif
-#if HERE_DOC
-    Option('H', 0, "Enable `here documents'",               &hereDocs),
-#endif
-    Option('T', 1, "Apply 'defaulting' when printing types", &printTypeUseDefaults),
-#if IPARAM
-    Option('W', 0, "Enable 'with' and 'dlet' implicit param binding forms", &oldIParamSyntax),
-#endif
-    Option('X', 1, "Implicitly add path of importing module to search path", &optImplicitImportRoot),
-    Option(0, 0, 0, 0)
-};
-
-#if !defined(HUGS_SERVER)
-
-static Void local set() {               /* change command line options from*/
-    String s;                           /* Hugs command line               */
-
-    if ((s=readFilename())!=0) {
-	do {
-	    if (!processOption(s)) {
-		ERRMSG(0) "Option string must begin with `+' or `-'"
-		EEND;
-	    }
-	} while ((s=readFilename())!=0);
-#if USE_REGISTRY
-	writeRegString("Options", optionsToStr());
-#endif
-    }
-    else
-	optionInfo();
-}
-
 /* --------------------------------------------------------------------------
  * Change directory command:
  * ------------------------------------------------------------------------*/
@@ -1144,13 +349,10 @@ static Void local printDir() {         /* print directory                */
 }
 #endif
 
-#endif /* !HUGS_SERVER */
-
 /* --------------------------------------------------------------------------
  * Commands for loading and removing script files:
  * ------------------------------------------------------------------------*/
 
-#if !defined(HUGS_SERVER)
 static Void local load() {           /* read filenames from command line   */
     String s;                        /* and add to list of scripts waiting */
 				     /* to be read                         */
@@ -1179,11 +381,6 @@ static Void local project() {          /* read list of script names from   */
     loadProject(s);
     readScripts(1);
 }
-
-#endif /* !HUGS_SERVER */
-
-
-#if !defined(HUGS_SERVER)
 
 /* --------------------------------------------------------------------------
  * Access to external editor:
@@ -1231,9 +428,11 @@ static Void local find() {              /* edit file containing definition */
     }
 }
 
-static Void local runEditor() {         /* run editor on script lastEdit   */
+Void runEditor() {         /* run editor on script lastEdit   */
     String fileToEdit;
-    
+    Int    lastLine;
+    String lastEdit = getLastEdit(&lastLine);
+
     if (lastEdit == NULL) {
       fileToEdit = fileOfModule(lastModule());
     } else {
@@ -1245,28 +444,9 @@ static Void local runEditor() {         /* run editor on script lastEdit   */
     }
 }
 
-#endif /* !HUGS_SERVER */
-
-Void setLastEdit(fname,line) /* keep name of last file to edit */
-String fname;
-Int    line; {
-    if (lastEdit) {
-      free(lastEdit);
-    }
-    lastEdit = strCopy(fname);
-    lastLine = line;
-#if HUGS_FOR_WINDOWS
-    /* Add file to Edit menu */
-    if (lastEdit)
-      AddFileToFileNamesMenu(&EditMenu, RealPath(lastEdit));
-#endif
-}
-
 /* --------------------------------------------------------------------------
  * Read and evaluate an expression:
  * ------------------------------------------------------------------------*/
-
-#if !defined(HUGS_SERVER)
 
 static Void local setModule(){/*set module in which to evaluate expressions*/
     String s = readFilename();
@@ -1288,185 +468,16 @@ static Void local setModule(){/*set module in which to evaluate expressions*/
     }
 }
 
-static Module local findEvalModule() { /*Module in which to eval expressions*/
+Module findEvalModule() { /*Module in which to eval expressions*/
     Module m = findModule(evalModule); 
     if (isNull(m))
 	m = lastModule();
     return m;
 }
 
-static Void local evaluator() {        /* evaluate expr and print value    */
-    Type  type, bd, t;
-    Kinds ks   = NIL;
-    Cell  temp = NIL;
-
-    setCurrModule(findEvalModule());
-    scriptFile = 0;
-    startNewScript(0);                 /* Enables recovery of storage      */
-				       /* allocated during evaluation      */
-    parseExp();
-    checkExp();
-    defaultDefns = evalDefaults;
-    type         = typeCheckExp(TRUE);
-    if (isPolyType(type)) {
-	ks = polySigOf(type);
-	bd = monotypeOf(type);
-    }
-    else
-	bd = type;
-
-    if (whatIs(bd)==QUAL) {
-	ERRMSG(0) "Unresolved overloading" ETHEN
-	ERRTEXT   "\n*** Type       : "    ETHEN ERRTYPE(type);
-	ERRTEXT   "\n*** Expression : "    ETHEN ERREXPR(inputExpr);
-	ERRTEXT   "\n"
-	EEND;
-    }
-  
-#if PROFILING
-    if (profiling)
-	profilerLog("profile.hp");
-    numReductions = 0;
-    garbageCollect();
-#endif
-
-#ifdef WANT_TIMER
-    updateTimers();
-#endif
-#if IO_MONAD
-    if ((t = getProgType(ks,type)) != 0) {
-        if (displayIO) {
-            Cell printer = namePrint;
-            if (useShow) {
-                Cell d = resolvePred(ks,ap(classShow,t));
-                if (isNull(d)) {
-                    printing = FALSE;
-                    ERRMSG(0) "Cannot find \"show\" function for IO result:" ETHEN
-                    ERRTEXT   "\n*** Expression : "   ETHEN ERREXPR(inputExpr);
-                    ERRTEXT   "\n*** Of type    : "   ETHEN ERRTYPE(type);
-                    ERRTEXT   "\n"
-                    EEND;
-                }
-                printer = ap(nameShowsPrec,d);
-            }
-            printer = ap(ap(nameFlip,ap(printer,mkInt(MIN_PREC))),nameNil);
-            printer = ap(ap(nameComp,namePutStr),printer);
-            inputExpr = ap(ap(nameIOBind,inputExpr),printer);
-	}
-    }
-    else
-#endif
-    {   Cell printer = namePrint;
-	if (useShow) {
-	    Cell d = resolvePred(ks,ap(classShow,bd));
-	    if (isNull(d)) {
-		printing = FALSE;
-		ERRMSG(0) "Cannot find \"show\" function for:" ETHEN
-		ERRTEXT   "\n*** Expression : "   ETHEN ERREXPR(inputExpr);
-		ERRTEXT   "\n*** Of type    : "   ETHEN ERRTYPE(type);
-		ERRTEXT   "\n"
-		EEND;
-	    }
-	    printer = ap(nameShowsPrec,d);
-	}
-	inputExpr = ap(ap(ap(printer,mkInt(MIN_PREC)),inputExpr),nameNil);
-	inputExpr = ap(namePutStr,inputExpr);
-    }
-    inputExpr = ap(nameIORun,inputExpr);
-    compileExp();                       
-    clearStack();
-    run(inputCode,sp);  /* Build graph for redex */
-#if DEBUG_CODE
-    if (debugCode) {
-	Printf("evaluator() builds: ");
-	printExp(stdout,top());
-	Putchar('\n');
-    }
-#endif
-    numCells      = 0;
-    numReductions = 0;
-    numGcs        = 0;
-    printing      = TRUE;
-#if OBSERVATIONS
-    appNum        = 0;
-    obsCount      = 0;
-    clearAllBreak();
-    clearObserve();
-#endif
-#if 1 /* Arguably not Haskell 1.4 compliant */
-    noechoTerminal();
-#endif
-    consGC = FALSE;
-    if (nonNull(type) && addType) {
-	onto(NIL);
-	pushed(0) = pushed(1);
-	pushed(1) = type;
-	if (nonNull(temp = evalWithNoError(pop()))) {
-	    abandon("Program execution",temp);
-	}
-	drop();
-	if (whnfHead == nameRight) {
-#if HUGS_FOR_WINDOWS
-	    INT svColor = SetForeColor(BLUE);
-#endif
-	    Printf(" :: ");
-	    printType(stdout,pop());
-#if HUGS_FOR_WINDOWS
-	    SetForeColor(svColor);
-#endif
-	}
-    }
-    else {
-	if (nonNull(temp = evalWithNoError(pop()))) {
-	    abandon("Program execution",temp);
-	}
-    }
-    stopAnyPrinting();
-}
-
-#endif /* !HUGS_SERVER */
-
-static Void local stopAnyPrinting() {  /* terminate printing of expression,*/
-    if (printing) {                    /* after successful termination or  */
-	printing = FALSE;              /* runtime error (e.g. interrupt)   */
-	Putchar('\n');
-	if (showStats) {
-#define plural(v)   v, (v==1?"":"s")
-#if HUGS_FOR_WINDOWS
-	    { INT svColor = SetForeColor(BLUE);
-#endif
-	    Printf("(%lu reduction%s, ",plural(numReductions));
-	    Printf("%lu cell%s",plural(numCells));
-	    if (numGcs>0)
-		Printf(", %u garbage collection%s",plural(numGcs));
-	    Printf(")\n");
-#if HUGS_FOR_WINDOWS
-	    SetForeColor(svColor); }
-#endif
-#undef plural
-	}
-#if OBSERVATIONS
-        printObserve(ALLTAGS);
-        if (obsCount) {
-            ERRMSG(0) "Internal: observation sanity counter > 0\n"
-	    EEND;
-        }
-        if (showStats){
-            Int n = countObserve();
-            if (n > 0)
-                Printf("%d observations recorded\n", n);
-        }
-#endif
-	FlushStdout();
-	garbageCollect();
-    }
-}
-
 /* --------------------------------------------------------------------------
  * Print type of input expression:
  * ------------------------------------------------------------------------*/
-
-#if !defined(HUGS_SERVER)
 
 static Void local showtype() {         /* print type of expression (if any)*/
     Cell type;
@@ -1626,43 +637,6 @@ Cell   c; {
     }
     return newVar;
 #endif
-}
-
-/* Given a string containing a possibly qualified name,
- * split it up into a module and a name portion.
- */
-static Void local splitQualString(nm, pMod, pName) 
-String nm;
-String* pMod;
-String* pName; {
-  String dot;
-
-  /* Find the last occurrence of '.' */
-  dot = strrchr(nm, '.');
-  
-  if (!dot) {
-    *pMod = NULL;
-    *pName = nm;
-  } else {
-    unsigned int nmLen;
-    unsigned int modLen;
-    unsigned int dotLen;
-
-    nmLen  = strlen(nm);
-    dotLen = strlen(dot);
-    modLen = (unsigned int)(nmLen - dotLen);
-
-    *pMod  = (String) malloc(sizeof(Char) * (modLen + 1));
-    *pName = (String) malloc(sizeof(Char) * (dotLen + 1));
-
-    /* The module portion consists of everything upto the last dot. */
-    strncpy(*pMod, nm, modLen);
-    (*pMod)[modLen] = '\0';
-    
-    /* Copy everything after the last '.' to the name string */
-    strcpy(*pName, dot+1);
-  }
-
 }
 
 static Void local info() {              /* describe objects                */
@@ -1948,8 +922,6 @@ static Void local listNames() {         /* list names matching optional pat*/
     Printf("\n(%d names listed)\n", count);
 }
 
-#endif /* !HUGS_SERVER */
-
 /* --------------------------------------------------------------------------
  * print a prompt and read a line of input:
  * ------------------------------------------------------------------------*/
@@ -1957,7 +929,7 @@ static Void local listNames() {         /* list names matching optional pat*/
 /* Size of (expanded) prompt buffer, should be more than enough.... */
 #define MAX_PROMPT_SIZE 1000
 
-static Void local promptForInput(moduleName)
+Void promptForInput(moduleName)
 String moduleName; {
     char promptBuffer[MAX_PROMPT_SIZE];
     char* fromPtr;
@@ -2009,106 +981,9 @@ static Void local autoReloadFiles() {
 }
 #endif
 
-#if USE_THREADS 
-static Void  local loopInBackground  Args((Void));
-static Void  local stopEvaluatorThread Args((Void));
-static DWORD local evaluatorThreadBody  Args((LPDWORD));
-static Void  local startEvaluatorThread Args((Void));
-
-static HANDLE  evaluatorThread=NULL;
-static DWORD   evaluatorThreadId;
-static Bool    evaluatorThreadRunning = FALSE;
-static jmp_buf goToEvaluator;
-
-static Void local stopEvaluatorThread(Void) {
-
-    if(evaluatorThreadRunning){
-
-      if(GetCurrentThreadId() != evaluatorThreadId) {
-       MessageBox(NULL, "stopEvaluatorThread executed by main thread !!!","Error", MB_OK);
-      }
-
-      evaluatorThreadRunning = FALSE;
-      SuspendThread(evaluatorThread);
-      /* stop here until resumed */
-      longjmp(goToEvaluator,1);
-    }
-}
-
-static DWORD local evaluatorThreadBody(LPDWORD notUsed) {
-
-    Int evaluatorNumber = setjmp(goToEvaluator);
-
-#if defined(_MSC_VER) && !defined(_MANAGED)
-    /* Under Win32 (when compiled with MSVC), we specially
-     * catch and handle SEH stack overflows.
-     */
-    __try {
-#endif
-    evaluator();
-    stopEvaluatorThread();
-
-#if defined(_MSC_VER) && !defined(_MANAGED)
-    } __except ( ((GetExceptionCode() == EXCEPTION_STACK_OVERFLOW) ? 
-		  EXCEPTION_EXECUTE_HANDLER : 
-		  EXCEPTION_CONTINUE_SEARCH) ) {
-	/* Closely based on sample code in Nov 1999 Dr GUI MSDN column */
-	char* stackPtr;
-	static SYSTEM_INFO si;
-	static MEMORY_BASIC_INFORMATION mi;
-	static DWORD protect;
- 
-      /* get at the current stack pointer */
-      _asm mov stackPtr, esp;
-
-      /* query for page size + VM info for the allocation chunk we're currently in. */
-      GetSystemInfo(&si);
-      VirtualQuery(stackPtr, &mi, sizeof(mi));
-
-      /* Abandon the C stack and, most importantly, re-insert
-         the page guard bit. Do this on the page above the
-	 current one, not the one where the exception was raised. */
-      stackPtr = (LPBYTE) (mi.BaseAddress) - si.dwPageSize;
-      if ( VirtualFree(mi.AllocationBase,
-		       (LPBYTE)stackPtr - (LPBYTE) mi.AllocationBase, 
-		       MEM_DECOMMIT) &&
-	   VirtualProtect(stackPtr, si.dwPageSize, 
-			  PAGE_GUARD | PAGE_READWRITE, &protect) ) {
-
-	  /* careful not to do a garbage collection here (as it may have caused the overflow). */
-          ERRTEXT "ERROR - C stack overflow"
-          /* EEND does a longjmp back to a sane state. */
-          EEND;
-      } else {
-	  fatal("C stack overflow; unable to recover.");
-      }
-    }
-#endif
-    /* not reached*/
-    return 0;
-}
-
-static Void local startEvaluatorThread(Void) {
-    if (!evaluatorThread)
-      evaluatorThread = CreateThread(NULL,
-                                   0,
-                                   (LPTHREAD_START_ROUTINE)evaluatorThreadBody,
-                                   NULL,
-                                   CREATE_SUSPENDED,
-                                   &evaluatorThreadId);
-    evaluatorThreadRunning = TRUE;
-    ResumeThread(evaluatorThread);
-}
-
-#endif /* USE_THREADS */
-
 /* --------------------------------------------------------------------------
  * main read-eval-print loop, with error trapping:
  * ------------------------------------------------------------------------*/
-
-static jmp_buf catch_error;             /* jump buffer for error trapping  */
-
-#if !defined(HUGS_SERVER)
 
 static Void local interpreter(argc,argv)/* main interpreter loop           */
 Int    argc;
@@ -2178,7 +1053,7 @@ String argv[]; {
                           startEvaluatorThread();
 			  loopInBackground();
 #else
-			  evaluator();
+			  evaluator(findEvalModule());
 #endif
 			  break;
 	    case TYPEOF : 
@@ -2203,7 +1078,7 @@ String argv[]; {
 			  break;
 	    case BADCMD : guidance();
 			  break;
-	    case SET    : set();
+	    case SET    : setOptions();
 			  break;
   	    case SYSTEM : if (shellEsc(readLine(),TRUE,TRUE))
 			      Printf("Warning: Shell escape terminated abnormally\n");
@@ -2276,480 +1151,6 @@ String argv[]; {
     }
 #endif
 }
-
-#endif /* !HUGS_SERVER */
-
-/* --------------------------------------------------------------------------
- * Display progress towards goal:
- * ------------------------------------------------------------------------*/
-
-static Target currTarget;
-static Bool   aiming = FALSE;
-static Int    currPos;
-static Int    maxPos;
-static Int    charCount;
-
-Void setGoal(what, t)                  /* Set goal for what to be t        */
-String what;
-Target t; {
-    if (quiet
-#if EXPLAIN_INSTANCE_RESOLUTION
-	      || showInstRes
-#endif
-			    ) return;
-    currTarget = (t?t:1);
-    aiming     = TRUE;
-    if (useDots) {
-	currPos = strlen(what);
-	maxPos  = getTerminalWidth() - 1;
-	Printf("%s",what);
-    }
-    else
-	for (charCount=0; *what; charCount++)
-	    Putchar(*what++);
-    FlushStdout();
-}
-
-Void soFar(t)                          /* Indicate progress towards goal   */
-Target t; {                            /* has now reached t                */
-    if (quiet
-#if EXPLAIN_INSTANCE_RESOLUTION
-	      || showInstRes
-#endif
-			    ) return;
-    if (useDots) {
-	Int newPos = (Int)((maxPos * ((long)t))/currTarget);
-
-	if (newPos>maxPos)
-	    newPos = maxPos;
-
-	if (newPos>currPos) {
-	    do
-		Putchar('.');
-	    while (newPos>++currPos);
-	    FlushStdout();
-	}
-	FlushStdout();
-    }
-}
-
-Void done() {                          /* Goal has now been achieved       */
-    if (quiet
-#if EXPLAIN_INSTANCE_RESOLUTION
-	      || showInstRes
-#endif
-			    ) return;
-    if (useDots) {
-	while (maxPos>currPos++)
-	    Putchar('.');
-	Putchar('\n');
-    }
-    else
-	for (; charCount>0; charCount--) {
-	    Putchar('\b');
-#if !(__MWERKS__ && macintosh)
-	    Putchar(' ');
-	    Putchar('\b');
-#endif
-	}
-    aiming = FALSE;
-    FlushStdout();
-}
-
-static Void local failed() {           /* Goal cannot be reached due to    */
-    if (aiming) {                      /* errors                           */
-	aiming = FALSE;
-	Putchar('\n');
-	FlushStdout();
-    }
-}
-
-/* --------------------------------------------------------------------------
- * Error handling:
- * ------------------------------------------------------------------------*/
-
-Void errHead(l)                        /* print start of error message     */
-Int l; {
-    failed();                          /* failed to reach target ...       */
-    stopAnyPrinting();
-    FPrintf(errorStream,"ERROR");
-
-    /*
-     * Encapsulating the filename portion inside of d-quotes makes it
-     * a tad easier for an Emacs-mode to decipher the location of the error.
-     * -- sof 9/01.
-     */
-    if (scriptFile) {
- 	FPrintf(errorStream," \"%s\"",scriptFile);
-	setLastEdit(scriptFile,l);
- 	if (l) FPrintf(errorStream,":%d",l);
-	scriptFile = 0;
-    }
-    FPrintf(errorStream," - ");
-    FFlush(errorStream);
-}
-
-Void errFail() {                        /* terminate error message and     */
-    Putc('\n',errorStream);             /* produce exception to return to  */
-    FFlush(errorStream);                /* main command loop               */
-#if USE_THREADS
-    stopEvaluatorThread();
-#endif /* USE_THREADS */
-    longjmp(catch_error,1);
-}
-
-Void errAbort() {                       /* altern. form of error handling  */
-    failed();                           /* used when suitable error message*/
-    stopAnyPrinting();                  /* has already been printed        */
-    errFail();
-}
-
-Void internal(msg)                      /* handle internal error           */
-String msg; {
-#if HUGS_FOR_WINDOWS
-    char buf[300];
-    wsprintf(buf,"INTERNAL ERROR: %s",msg);
-    MessageBox(hWndMain, buf, appName, MB_ICONHAND | MB_OK);
-#endif
-    failed();
-    stopAnyPrinting();
-    Printf("INTERNAL ERROR: %s\n",msg);
-    FlushStdout();
-#if USE_THREADS
-    stopEvaluatorThread();
-#endif /* USE_THREADS */
-    longjmp(catch_error,1);
-}
-
-Void fatal(msg)                         /* handle fatal error              */
-String msg; {
-#if HUGS_FOR_WINDOWS
-    char buf[300];
-    wsprintf(buf,"FATAL ERROR: %s",msg);
-    MessageBox(hWndMain, buf, appName, MB_ICONHAND | MB_OK);
-#endif
-    FlushStdout();
-    Printf("\nFATAL ERROR: %s\n",msg);
-    everybody(EXIT);
-    exit(1);
-}
-
-sigHandler(breakHandler) {              /* respond to break interrupt      */
-#if HUGS_FOR_WINDOWS
-#if USE_THREADS
-    MessageBox(hWndMain, "Interrupted!", appName, MB_ICONSTOP | MB_OK);
-#else
-    MessageBox(GetFocus(), "Interrupted!", appName, MB_ICONSTOP | MB_OK);
-#endif
-#endif
-#if HUGS_FOR_WINDOWS
-    FPrintf(errorStream,"{Interrupted!}\n");
-#else
-    Hilite();
-    Printf("{Interrupted!}\n");
-    Lolite();
-#endif
-    breakOn(TRUE);  /* reinstall signal handler - redundant on BSD systems */
-		    /* but essential on POSIX (and other?) systems         */
-    everybody(BREAK);
-    failed();
-    stopAnyPrinting();
-    FlushStdout();
-    clearerr(stdin);
-#if USE_THREADS
-    stopEvaluatorThread();
-#endif /* USE_THREADS */
-    longjmp(catch_error,1);
-    sigResume;/*NOTREACHED*/
-}
-
-/* --------------------------------------------------------------------------
- * Read value from environment variable or registry:
- * ------------------------------------------------------------------------*/
-
-String fromEnv(var,def)         /* return value of:                        */
-String var;                     /*     environment variable named by var   */
-String def; {                   /* or: default value given by def          */
-    String s = getenv(var);     
-    return (s ? s : def);
-}
-
-/* --------------------------------------------------------------------------
- * String manipulation routines:
- * ------------------------------------------------------------------------*/
-
-String strCopy(s)         /* make malloced copy of a string   */
-String s; {
-    if (s && *s) {
-	char *t, *r;
-	if ((t=(char *)malloc(strlen(s)+1))==0) {
-	    ERRMSG(0) "String storage space exhausted"
-	    EEND;
-	}
-	for (r=t; (*r++ = *s++)!=0; ) {
-	}
-	return t;
-    }
-    return NULL;
-}
-
-/* --------------------------------------------------------------------------
- * Compiler output
- * We can redirect compiler output (prompts, error messages, etc) by
- * tweaking these functions.
- * ------------------------------------------------------------------------*/
-
-#if REDIRECT_OUTPUT && !HUGS_FOR_WINDOWS
-
-#ifdef HAVE_STDARG_H
-#include <stdarg.h>
-#else
-#include <varargs.h>
-#endif
-
-/* ----------------------------------------------------------------------- */
-
-#define BufferSize 10000	      /* size of redirected output buffer  */
-
-typedef struct _HugsStream {
-    char buffer[BufferSize];          /* buffer for redirected output      */
-    Int  next;                        /* next space in buffer              */
-} HugsStream;
-
-static Void   local vBufferedPrintf  Args((HugsStream*, const char*, va_list));
-static Void   local bufferedPutchar  Args((HugsStream*, Char));
-static String local bufferClear      Args((HugsStream *stream));
-
-static Void local vBufferedPrintf(stream, fmt, ap)
-HugsStream* stream;
-const char* fmt;
-va_list     ap; {
-    Int spaceLeft = BufferSize - stream->next;
-    char* p = &stream->buffer[stream->next];
-    Int charsAdded = vsnprintf(p, spaceLeft, fmt, ap);
-    if (0 <= charsAdded && charsAdded < spaceLeft) 
-	stream->next += charsAdded;
-#if 1 /* we can either buffer the first n chars or buffer the last n chars */
-    else
-	stream->next = 0;
-#endif
-}
-
-static Void local bufferedPutchar(stream, c)
-HugsStream *stream;
-Char        c; {
-    if (BufferSize - stream->next >= 2) {
-	stream->buffer[stream->next++] = c;
-	stream->buffer[stream->next] = '\0';
-    }
-}    
-
-static String local bufferClear(stream)
-HugsStream *stream; {
-    if (stream->next == 0) {
-	return "";
-    } else {
-	stream->next = 0;
-	return stream->buffer;
-    }
-}
-
-/* ----------------------------------------------------------------------- */
-
-static HugsStream outputStream;
-/* ADR note: 
- * We rely on standard C semantics to initialise outputStream.next to 0.
- */
-
-Void hugsEnableOutput(f) 
-Bool f; {
-    disableOutput = !f;
-}
-
-String hugsClearOutputBuffer() {
-    return bufferClear(&outputStream);
-}
-
-#ifdef HAVE_STDARG_H
-Void hugsPrintf(const char *fmt, ...) {
-    va_list ap;                    /* pointer into argument list           */
-    va_start(ap, fmt);             /* make ap point to first arg after fmt */
-    if (!disableOutput) {
-	vprintf(fmt, ap);
-    } else {
-	vBufferedPrintf(&outputStream, fmt, ap);
-    }
-    va_end(ap);                    /* clean up                             */
-}
-#else
-Void hugsPrintf(fmt, va_alist) 
-const char *fmt;
-va_dcl {
-    va_list ap;                    /* pointer into argument list           */
-    va_start(ap);                  /* make ap point to first arg after fmt */
-    if (!disableOutput) {
-	vprintf(fmt, ap);
-    } else {
-	vBufferedPrintf(&outputStream, fmt, ap);
-    }
-    va_end(ap);                    /* clean up                             */
-}
-#endif
-
-Void hugsPutchar(c)
-int c; {
-    if (!disableOutput) {
-	putchar(c);
-    } else {
-	bufferedPutchar(&outputStream, c);
-    }
-}
-
-Void hugsFlushStdout() {
-    if (!disableOutput) {
-	fflush(stdout);
-    }
-}
-
-Void hugsFFlush(fp)
-FILE* fp; {
-    if (!disableOutput) {
-	fflush(fp);
-    }
-}
-
-#ifdef HAVE_STDARG_H
-Void hugsFPrintf(FILE *fp, const char* fmt, ...) {
-    va_list ap;             
-    va_start(ap, fmt);      
-    if (!disableOutput) {
-	vfprintf(fp, fmt, ap);
-    } else {
-	vBufferedPrintf(&outputStream, fmt, ap);
-    }
-    va_end(ap);             
-}
-#else
-Void hugsFPrintf(FILE *fp, const char* fmt, va_list)
-FILE* fp;
-const char* fmt;
-va_dcl {
-    va_list ap;             
-    va_start(ap);      
-    if (!disableOutput) {
-	vfprintf(fp, fmt, ap);
-    } else {
-	vBufferedPrintf(&outputStream, fmt, ap);
-    }
-    va_end(ap);             
-}
-#endif
-
-Void hugsPutc(c, fp)
-int   c;
-FILE* fp; {
-    if (!disableOutput) {
-	putc(c,fp);
-    } else {
-	bufferedPutchar(&outputStream, c);
-    }
-}
-    
-#endif /* REDIRECT_OUTPUT && !HUGS_FOR_WINDOWS */
-
-/* --------------------------------------------------------------------------
- * Break dialogue code
- * ------------------------------------------------------------------------*/
-#if OBSERVATIONS
-static struct cmd brkCmds[] =
-    { {"p",   BRK_DISPLAY}
-    , {"c",   BRK_CONTINUE}
-    , {"s",   BRK_SET}
-    , {"r",   BRK_RESET}
-    , {0,0}
-    };
-
-Void breakDialogue(s)
-String s;{
-    String arg;
-    Int n;
-    char cmdstr[80];
-    Command cmd;
-
-    normalTerminal();
-    do {
-	strcpy(cmdstr,"Break @ ");
-	promptForInput(strcat(cmdstr,s));
-	cmd = readCommand(brkCmds, (Char)0, (Char)'!');
-	switch (cmd){
-	    case BRK_DISPLAY:	
-	       			if ((arg=readFilename())!=0)
-				    printObserve(arg);
-				else
-				    printObserve(ALLTAGS);
-	    			break;
-	    case BRK_CONTINUE:	
-	    			if ((arg=readFilename())!=0){
-				    n = atoi(arg);
-				    if (n>0) n--;
-				    setBreakCount(s,n);
-				}
-	    			break;
-	    case BRK_SET:	if ((arg=readFilename())!=0)
-	    			    setBreakpt(arg,TRUE);
-				break;
-	    case BRK_RESET:	if ((arg=readFilename())==0)
-	    			    setBreakpt(s,FALSE);
-				else
-	    			    setBreakpt(arg,FALSE);
-				break;
-	}
-    } while (cmd!=BRK_CONTINUE);
-    noechoTerminal();
-}
-#endif
-
-/* --------------------------------------------------------------------------
- * Send message to each component of system:
- * ------------------------------------------------------------------------*/
-
-Void everybody(what)            /* send command `what' to each component of*/
-Int what; {                     /* system to respond as appropriate ...    */
-    machdep(what);              /* The order of calling each component is  */
-    storage(what);              /* important for the INSTALL command       */
-    substitution(what);
-    input(what);
-    staticAnalysis(what);
-    typeChecker(what);
-    compiler(what);
-    machine(what);
-    builtIn(what);
-    controlFuns(what);
-    plugins(what);
-    ffi(what);
-    script(what);
-}
-
-/* --------------------------------------------------------------------------
- * Hugs for Windows code (WinMain and related functions)
- * ------------------------------------------------------------------------*/
-
-#if HUGS_FOR_WINDOWS
-#include "winhugs\winhugs.c"
-#if USE_THREADS
-static Void local loopInBackground (Void) { 
-    MSG msg;
-
-    /* WaitForSingleObject(evaluatorThread, INFINITE); */
-    while ( evaluatorThreadRunning && GetMessage(&msg, NULL, 0, 0) ) {
-      if (!TranslateAccelerator(hWndMain, hAccelTable, &msg)) {
-         TranslateMessage(&msg);
-         DispatchMessage(&msg);
-      }
-    }
-}
-#endif /* USE_THREADS */
-#endif
 
 /*-------------------------------------------------------------------------*/
 

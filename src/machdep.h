@@ -15,6 +15,12 @@
 # include <time.h>
 #endif
 
+#if USE_REGISTRY
+# if HAVE_WINDOWS_H
+#include <windows.h>
+# endif
+#endif
+
 /* --------------------------------------------------------------------------
  * Find information about a file:
  * ------------------------------------------------------------------------*/
@@ -55,9 +61,20 @@ extern String readRegChildStrings Args((HKEY, String, String, String));
 
 extern String RealPath  Args((String));
 extern String substPath Args((String,String));
-
-#ifndef HUGS_SERVER
 extern Bool startEdit   Args((Int,String));
-#endif
+
+extern  Int    shellEsc		Args((String,Bool,Bool));
+extern  Int    getTerminalWidth Args((Void));
+extern  Void   normalTerminal	Args((Void));
+extern  Void   noechoTerminal	Args((Void));
+extern  Int    readTerminalChar Args((Void));
+extern  Void   gcStarted	Args((Void));
+extern  Void   gcScanning	Args((Void));
+extern  Void   gcRecovered	Args((Int));
+extern  Void   gcCStack		Args((Void));
+extern  Void   needPrims        Args((Int)); 
+
+extern  String fromEnv		Args((String,String));
+extern  Bool   initSystem       Args((Void));
 
 #endif /* __MACHDEP_H__ */

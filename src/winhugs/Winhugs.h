@@ -23,7 +23,6 @@ typedef struct {
 } FILENAMESMENU;
 
 
-static VOID      local  AddFileToFileNamesMenu        Args((FILENAMESMENU*, LPSTR));
 static VOID 	 local	DoAbout 	  	      Args((HWND, UINT, WPARAM, LPARAM));
 static VOID 	 local	DoBrowseClasses	  	      Args((HWND, UINT, WPARAM, LPARAM));
 static VOID 	 local	DoBrowseTycons	  	      Args((HWND, UINT, WPARAM, LPARAM));
@@ -54,13 +53,15 @@ static BOOL 	 local	InitInstance 	   	      Args((LPSTR, INT));
 static VOID 	 local  InitMenus		      Args((VOID));
 static VOID      local  OpenHtml		      Args((LPSTR));
 static VOID      local  OpenHtmlFromDocs	      Args((LPSTR));
-static VOID	 local	ReadGUIOptions		      Args((VOID));
-static VOID	 local	SaveGUIOptions	 	      Args((VOID));
 static VOID      local  SaveToRegistryFileNamesMenu   Args((FILENAMESMENU*, LPSTR));
 static VOID 	 local  SaveToRegistryWinPos 	      Args((VOID));
 static VOID 	 local 	SaveToRegistryWorkingDir      Args((VOID));
 static VOID 	 local  SaveToRegistryMenus	      Args((VOID));
 static VOID	 local  SetInterpreterCommand	      Args((LPCSTR, ...));
+
+extern VOID      AddFileToFileNamesMenu   Args((FILENAMESMENU*, LPSTR));
+extern VOID	 ReadGUIOptions		  Args((VOID));
+extern VOID      SaveGUIOptions           Args((VOID));
 
 extern 	HCURSOR 	GarbageCursor;
 extern	HCURSOR		SaveCursor;
@@ -68,11 +69,7 @@ extern	HCURSOR		SaveCursor;
 extern  FILENAMESMENU   FilesMenu, EditMenu;
 
 
- 
+extern Void loopInBackground  Args((Void));
+extern Void startEvaluatorThread Args((Void));
 
-
-
-
-
-
-
+extern Bool InAutoReloadFiles;

@@ -2,6 +2,12 @@
  * DllMain() for Hugsscript.dll
  */
 #include <windows.h>
+#define HUGS_SERVER
+#include "prelude.h"
+#include "storage.h"
+#include "connect.h"
+/* included to provide stub defn of some unsupported primops. */
+#include "observe.h"
 
 extern void setHugsModule(HMODULE);
 

@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: builtin.c,v $
- * $Revision: 1.50 $
- * $Date: 2003/03/03 06:31:02 $
+ * $Revision: 1.51 $
+ * $Date: 2003/03/09 23:53:02 $
  * ------------------------------------------------------------------------*/
 
 /* We include math.h before prelude.h because SunOS 4's cpp incorrectly
@@ -20,6 +20,7 @@
 #include "storage.h"
 #include "connect.h"
 #include "errors.h"
+#include "machdep.h"
 #include <ctype.h>
 #if HAVE_IO_H
 #include <io.h>
@@ -336,15 +337,14 @@ PROTO_PRIM(primRecEq);
 #endif
 
 #if OBSERVATIONS
-PROTO_PRIM(primObserve);
-PROTO_PRIM(primBkpt);
-PROTO_PRIM(primSetBkpt);
+EXT_PROTO_PRIM(primObserve);
+EXT_PROTO_PRIM(primBkpt);
+EXT_PROTO_PRIM(primSetBkpt);
 #endif
 
 PROTO_PRIM(primPtrEq);
 PROTO_PRIM(primPtrToInt);
 
-String evalName            Args((Cell));
 static Cell local followInd Args(( Cell ));
 
 /* --------------------------------------------------------------------------
@@ -1442,65 +1442,6 @@ FILE *fp; {                             /* and print it on fp              */
 
 #if HASKELL_ARRAYS
 #include "array.c"
-#endif
-
-/* --------------------------------------------------------------------------
- * Observations & breakpoints
- * ------------------------------------------------------------------------*/
-
-#if OBSERVATIONS
-#define MAXTAGLENGTH 80
-static char obsTag[MAXTAGLENGTH+1];
-
-primFun(primObserve) {			/* the observe primitive for       */
-    Cell exp, obsCell;			/* debugging purposes              */
-    int i=0;				/*  :: String -> a -> a            */
-    fflush(stdout);
-    eval(pop());
-    while (whnfHead==nameCons) {
-	eval(pop());
-	if (i<MAXTAGLENGTH) obsTag[i++]=charOf(whnfHead);
-	eval(pop());
-    }
-    obsTag[i]=0;
-    				/* create OBSERVE graph marker		   */
-    exp  = pop();
-    exp  = triple(OBSERVE,exp,0);
-    updateRoot(exp);
-    /* root is now an INDIRECT node which points to an OBSERVE node 	   */
-    /* next create observation list cell for the expression		   */
-    obsCell = addObsInstance(obsTag,stack(root),-1);
-    /* finally update the OBSERVE node to point to the ons. list cell  	   */
-    markedObs(snd(stack(root))) = obsCell;
-}
-
-primFun(primBkpt) {			/* check if break enabled          */
-    Int i=0;                /* initiate dialogue               */
-    fflush(stdout);
-    eval(pop());
-    while (whnfHead==nameCons) {
-	eval(pop());
-	if (i<MAXTAGLENGTH) obsTag[i++]=charOf(whnfHead);
-	eval(pop());
-    }
-    obsTag[i]=0;
-
-    if (breakNow(obsTag)) breakDialogue(obsTag);
-    updateRoot(pop());
-}
-
-#if !LAZY_ST
-#error primitive "setBkpt" unavailable as LAZY_ST not enabled 
-#else
-primFun(primSetBkpt) {			
-    String s = evalName(IOArg(2));
-    eval(IOArg(1));
-    checkBool();
-    setBreakpt(s, whnfHead == nameTrue);
-    IOReturn(nameUnit);
-}
-#endif
-
 #endif
 
 /* --------------------------------------------------------------------------

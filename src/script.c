@@ -9,10 +9,16 @@
  */
 #include "prelude.h"
 #include "storage.h"
-#include "machdep.h"
-#include "errors.h"
 #include "connect.h"
+#include "errors.h"
+#include "machdep.h"
+#include "opts.h"
+#include "strutil.h"
 #include "script.h"
+
+#if HUGS_FOR_WINDOWS
+#include "winhugs\WinHugs.h"
+#endif
 
 /* --------------------------------------------------------------------------
  * Local script state:
@@ -40,7 +46,8 @@ static Bool   needsImports;             /* set to TRUE if imports required */
        String scriptFile;               /* Name of current script (if any) */
 
        String currProject = 0;          /* Name of current project file    */
-static Bool   projectLoaded = FALSE;    /* TRUE => project file loaded     */
+
+Bool   projectLoaded = FALSE;    /* TRUE => project file loaded     */
 
 /* --------------------------------------------------------------------------
  * Local function prototypes:
@@ -79,7 +86,18 @@ Script s; {
   if ( s >=0 && s <= numScripts ) {
     return scriptName[s];
   } else {
-    ERRMSG(0) "Illegal script index %d (max: %d)", s, numScripts
+    ERRMSG(0) "getScriptName: Illegal script index %d (max: %d)", s, numScripts
+    EEND;
+  }
+  return NULL;
+}
+
+String getScriptRealName(s)  /* access the path of script at index 's' */
+Script s; {
+  if ( s >=0 && s <= numScripts ) {
+    return scriptReal[s];
+  } else {
+    ERRMSG(0) "getScriptRealName: Illegal script index %d (max: %d)", s, numScripts
     EEND;
   }
   return NULL;
@@ -92,6 +110,31 @@ Int getScriptHwMark() { /* return number of on the stack, loaded or not. */
 Int numLoadedScripts() { /* return number of currently loaded scripts */
   return numScripts;
 }
+
+#if HUGS_FOR_WINDOWS
+/* UI pokes around the script stack, give it access... */
+Void setNumLoadedScripts(s)
+Script s; {
+  numScripts=s;
+}
+
+Void setScriptHwMark(s)
+Script s; {
+  namesUpto = s;
+}
+
+Void setScriptName(s,scr)
+Script s;
+String scr; {
+  scriptName[s] = scr;
+}
+
+Void setScriptRealName(s,scr)
+Script s;
+String scr; {
+  scriptReal[s] = scr;
+}
+#endif
 
 /* --------------------------------------------------------------------------
  * Loading script files:
@@ -199,6 +242,37 @@ List imps; {
 	return needsImports;
     }
     return FALSE;
+}
+
+/* --------------------------------------------------------------------------
+ * Adding scripts found in an argument vector:
+ * ------------------------------------------------------------------------*/
+Void addScriptsFromArgs(argc,argv)
+Int argc;
+String argv[]; {
+    Int i;
+
+#if USE_PREFERENCES_FILE
+    extern Int     iniArgc;
+    extern String* iniArgv;
+
+    if (iniArgc > 0) {
+        /* load additional files found in the preferences file */
+        for (i=0; i<iniArgc; i++) {
+	    addScriptName(iniArgv[i],TRUE);
+        }
+    }
+#endif
+    for (i=1; i<argc; ++i) {
+      if (argv[i] && argv[i][0] && !isOption(argv[i])) {
+	    addScriptName(argv[i],TRUE);
+#if HUGS_FOR_WINDOWS
+	    SetWorkingDir(argv[i]);
+#endif
+      }
+    }
+
+
 }
 
 /* --------------------------------------------------------------------------

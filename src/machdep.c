@@ -11,16 +11,17 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.81 $
- * $Date: 2003/03/03 11:31:19 $
+ * $Revision: 1.82 $
+ * $Date: 2003/03/09 23:53:05 $
  * ------------------------------------------------------------------------*/
 #include <math.h>
 #include "prelude.h"
-#include "machdep.h"
 #include "storage.h"
-#include "command.h"
 #include "connect.h"
+#include "command.h"
 #include "errors.h"
+#include "opts.h"
+#include "machdep.h"
 
 #ifdef HAVE_SIGNAL_H
 # include <signal.h>
@@ -854,6 +855,16 @@ String sub; {
     return r;
 }
 
+/* --------------------------------------------------------------------------
+ * Read value from environment variable or registry:
+ * ------------------------------------------------------------------------*/
+
+String fromEnv(var,def)         /* return value of:                        */
+String var;                     /*     environment variable named by var   */
+String def; {                   /* or: default value given by def          */
+    String s = getenv(var);     
+    return (s ? s : def);
+}
 
 /* --------------------------------------------------------------------------
  * Get time/date stamp for inclusion in compiled files:

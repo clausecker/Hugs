@@ -7,14 +7,17 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: storage.c,v $
- * $Revision: 1.65 $
- * $Date: 2003/03/05 15:21:47 $
+ * $Revision: 1.66 $
+ * $Date: 2003/03/09 23:53:09 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
 #include "storage.h"
 #include "connect.h"
+#include "opts.h"
 #include "errors.h"
+#include "machdep.h"
+#include "evaluator.h" /* everybody() proto only */
 #include <setjmp.h>
 
 /*#define DEBUG_SHOWUSE*/

@@ -11,8 +11,6 @@
  * This file is included in "Winhugs.c"
  * ------------------------------------------------------------------------*/
 
-
-
 /* --------------------------------------------------------------------------
  * Browse dialog boxes:
  * ------------------------------------------------------------------------*/
@@ -305,7 +303,7 @@ LRESULT CALLBACK BrowseClassesDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM
 	      currClass = (Class) SendDlgItemMessage(hDlg, LB_CLASS ,LB_GETITEMDATA, SendDlgItemMessage(hDlg, LB_CLASS ,LB_GETCURSEL, 0, 0L), 0L);
 
 	      currClass = (Class) SendDlgItemMessage(hDlg, LB_CLASS ,LB_GETITEMDATA, SendDlgItemMessage(hDlg, LB_CLASS ,LB_GETCURSEL, 0, 0L), 0L);
-	      setLastEdit(scriptName[scriptThisClass(currClass)], cclass(currClass).line);
+	      setLastEdit(getScriptName(scriptThisClass(currClass)), cclass(currClass).line);
 	      runEditor();
 	      
 	      
@@ -323,7 +321,7 @@ LRESULT CALLBACK BrowseClassesDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM
 	      currInst = (Inst) SendDlgItemMessage(hDlg, LB_INSTANCES, LB_GETITEMDATA, SendDlgItemMessage(hDlg, LB_INSTANCES ,LB_GETCURSEL, 0, 0L), 0L);
 
 	      /* Find instance module */
-	      setLastEdit(scriptName[scriptThisInst(currInst)], inst(currInst).line);
+	      setLastEdit(getScriptName(scriptThisInst(currInst)), inst(currInst).line);
 	      runEditor();
 	      
 	    }
@@ -597,7 +595,7 @@ LRESULT CALLBACK BrowseNamesDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM l
 	      n = nth(theName, namesList);      
 
 	      if (!name(n).primDef) {
-		setLastEdit(scriptName[scriptThisName(n)], name(n).line);
+		setLastEdit(getScriptName(scriptThisName(n)), name(n).line);
 		runEditor();
 	      }
 	      else {
@@ -985,7 +983,7 @@ LRESULT CALLBACK BrowseTyconsDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM 
 	      tc = nth(TheTycon,tyconList);
 
 	      if (isTycon(tc) && tycon(tc).line) {
- 	        setLastEdit(scriptName[scriptThisTycon(tc)], tycon(tc).line);
+ 	        setLastEdit(getScriptName(scriptThisTycon(tc)), tycon(tc).line);
 	        runEditor();
 	      }
 	      else {
@@ -1004,7 +1002,7 @@ LRESULT CALLBACK BrowseTyconsDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM 
 	      currInst = (Inst) SendDlgItemMessage(hDlg, LB_TYCONSINST, LB_GETITEMDATA, SendDlgItemMessage(hDlg, LB_TYCONSINST ,LB_GETCURSEL, 0, 0L), 0L);
 
 	      /* Find instance module */
-	      setLastEdit(scriptName[scriptThisInst(currInst)], inst(currInst).line);
+	      setLastEdit(getScriptName(scriptThisInst(currInst)), inst(currInst).line);
 	      runEditor();
 	    }
 	    break;

@@ -9,14 +9,15 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: compiler.c,v $
- * $Revision: 1.15 $
- * $Date: 2003/02/12 02:16:24 $
+ * $Revision: 1.16 $
+ * $Date: 2003/03/09 23:53:02 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
 #include "storage.h"
 #include "connect.h"
 #include "errors.h"
+#include "goal.h"
 
 Addr inputCode;                        /* Addr of compiled code for expr   */
 static Name currentName;               /* Top level name being processed   */

@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: input.c,v $
- * $Revision: 1.61 $
- * $Date: 2003/03/05 15:21:45 $
+ * $Revision: 1.62 $
+ * $Date: 2003/03/09 23:53:05 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -18,11 +18,12 @@
 #include "errors.h"
 #include "module.h"
 #include "script.h"
+#include "opts.h"
+#include "goal.h"
+#include "machdep.h"
 #include <ctype.h>
-#if HAVE_GETDELIM_H
-#include "getdelim.h"
-#endif
-#if IS_WINDOWS
+
+#if HAVE_WINDOWS_H
 #include <windows.h>
 #undef IN
 #endif
@@ -622,7 +623,7 @@ static Void local skip() {              /* move forward one char in input  */
 		c1 = EOF;
 	    else {
 		c1 = nextConsoleChar();
-#if IS_WINDOWS && !HUGS_FOR_WINDOWS
+#if HAVE_WINDOWS_H && !HUGS_FOR_WINDOWS
 		Sleep(0);
 #endif
 		/* On Win32, hitting ctrl-C causes the next getchar to

@@ -7,14 +7,15 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: ffi.c,v $
- * $Revision: 1.25 $
- * $Date: 2003/03/03 06:31:02 $
+ * $Revision: 1.26 $
+ * $Date: 2003/03/09 23:53:04 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
 #include "storage.h"
 #include "connect.h"
 #include "errors.h"
+#include "output.h"
 
 /* --------------------------------------------------------------------------
  * Local function prototypes:
