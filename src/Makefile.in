@@ -27,7 +27,7 @@
 default		:: hugs@EXE@ runhugs@EXE@ libraries
 
 CC		= @CC@
-CFLAGS		= @CFLAGS@ @DEBUGFLAGS@ @MTCFLAGS@
+CFLAGS		= @CFLAGS@ @DEBUGFLAGS@
 OPTFLAGS	= @OPTFLAGS@
 
 LD		= @LD@

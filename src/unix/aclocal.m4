@@ -869,6 +869,10 @@ dnl and we don't want to be global namespace polluters.
   AC_LANG_RESTORE
 ])
 
+dnl External macros
+
+builtin([include],acx_pthread.m4)
+
 dnl Simplistic implementation of autoconf 2.50 macros for earlier versions
 
 ifndef([AC_HELP_STRING],
