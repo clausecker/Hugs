@@ -160,7 +160,7 @@ STYLE DS_MODALFRAME | DS_3DLOOK | DS_FIXEDSYS | WS_POPUP | WS_CAPTION |
 CAPTION "Options"
 FONT 8, "Ms Sans Serif"
 BEGIN
-    GROUPBOX        " Fl&ags: ",-1,5,5,302,110
+    GROUPBOX        " Fl&ags: ",-1,5,5,302,120
     CONTROL         "&s Print no. reductions/cells after eval",ID_OP,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,12,19,142,10
     CONTROL         "&t Print type after evaluation",ID_OP+1,"Button",
@@ -180,41 +180,43 @@ BEGIN
     CONTROL         "&q Print nothing to show progress",ID_OP+8,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,12,99,135,10
     CONTROL         "&Q Qualify names when printing",ID_OP+9,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,160,19,140,10
+                    BS_AUTOCHECKBOX | WS_TABSTOP,12,109,135,10
     CONTROL         "&w Always show which files loaded",ID_OP+10,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,160,29,140,10
+                    BS_AUTOCHECKBOX | WS_TABSTOP,160,19,140,10
     CONTROL         "&k Show kind errors in full",ID_OP+11,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,160,39,140,10
+                    BS_AUTOCHECKBOX | WS_TABSTOP,160,29,140,10
     CONTROL         "&o Allow overlapping instances",ID_OP+12,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,160,49,140,10
+                    BS_AUTOCHECKBOX | WS_TABSTOP,160,39,140,10
     CONTROL         "&u Use ""show"" to display results",ID_OP+13,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,160,49,140,10
+    CONTROL         "&I Display results of IO programs",ID_OP+14,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,160,59,140,10
-    CONTROL         "&i Chase imports while loading files",ID_OP+14,"Button",
+    CONTROL         "&i Chase imports while loading files",ID_OP+15,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,160,69,140,10
-    CONTROL         "&A Auto load files",ID_OP+15,"Button",
+    CONTROL         "&A Auto load files",ID_OP+16,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,160,79,140,10
-    CONTROL         "&m Use multi instance resolution ",ID_OP+16,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,160,89,140,10
     CONTROL         "&R Enable root optimisation",ID_OP+17,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,160,89,140,10
+    CONTROL         "&H Enable `here documents'",ID_OP+18,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,160,99,140,10
-    LTEXT           "Path:",-1,12,129,22,8
-    EDITTEXT        ID_PATH,37,127,183,12,ES_AUTOHSCROLL
-    LTEXT           "Preprocessor filter:",-1,12,143,62,8
-    EDITTEXT        ID_PREPROCESSOR,76,141,144,12,ES_AUTOHSCROLL
-    LTEXT           "Editor:",-1,12,157,25,8
-    EDITTEXT        ID_EDITOR,39,155,181,12,ES_AUTOHSCROLL
-    LTEXT           "Prompt string:",-1,12,171,47,8
-    EDITTEXT        ID_PROMPT,62,169,158,12
-    LTEXT           "Repeat last expression string:",-1,12,185,96,8
-    EDITTEXT        ID_LASTEXPR,111,183,109,12
-    LTEXT           "Set constraint cutoff limit:",-1,12,200,89,8
-    EDITTEXT        ID_CUTOFF,97,197,123,12
-    LTEXT           "Heap size:",-1,12,215,47,8
-    EDITTEXT        ID_HEAPSIZE,52,212,168,12
-    PUSHBUTTON      "Ok",IDOK,256,129,40,14
-    PUSHBUTTON      "Cancel",IDCANCEL,256,150,40,14
-    GROUPBOX        "",-1,5,118,227,112
-    LTEXT           "",ID_PLACEBITMAP,246,188,73,1
+    LTEXT           "Path:",-1,12,139,22,8
+    EDITTEXT        ID_PATH,37,137,183,12,ES_AUTOHSCROLL
+    LTEXT           "Preprocessor filter:",-1,12,153,62,8
+    EDITTEXT        ID_PREPROCESSOR,76,151,144,12,ES_AUTOHSCROLL
+    LTEXT           "Editor:",-1,12,167,25,8
+    EDITTEXT        ID_EDITOR,39,165,181,12,ES_AUTOHSCROLL
+    LTEXT           "Prompt string:",-1,12,181,47,8
+    EDITTEXT        ID_PROMPT,62,179,158,12
+    LTEXT           "Repeat last expression string:",-1,12,195,96,8
+    EDITTEXT        ID_LASTEXPR,111,193,109,12
+    LTEXT           "Set constraint cutoff limit:",-1,12,210,89,8
+    EDITTEXT        ID_CUTOFF,97,207,123,12
+    LTEXT           "Heap size:",-1,12,225,47,8
+    EDITTEXT        ID_HEAPSIZE,52,222,168,12
+    PUSHBUTTON      "Ok",IDOK,256,139,40,14
+    PUSHBUTTON      "Cancel",IDCANCEL,256,160,40,14
+    GROUPBOX        "",-1,5,128,227,112
+    LTEXT           "",ID_PLACEBITMAP,246,198,73,1
 END
 
 BROWSECLASSESDLGBOX DIALOG DISCARDABLE  65535, 18, 344, 220
