@@ -35,7 +35,7 @@ DLL_FLAGS	= /LD
 PIC_FLAGS	= 
 LIBS		=  kernel32.lib advapi32.lib
 
-YACC		= byacc
+YACC		= bison
 RM		= -del
 CP		= copy
 
@@ -120,9 +120,10 @@ compiler.obj	: compiler.c
 static.obj	: static.c
 		  $(CC) -c $(CFLAGS) static.c
 
-# parser.c	: parser.y
-# 		  -$(YACC) parser.y
-# 		  mv y.tab.c parser.c
+parser.c	: parser.y
+		  -$(YACC) parser.y
+		  mv parser.tab.c parser.c
+
 # veryclean	::
 # 		  $(RM) parser.c
 
