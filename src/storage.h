@@ -9,8 +9,8 @@
  * included in the distribution.
  *
  * $RCSfile: storage.h,v $
- * $Revision: 1.11 $
- * $Date: 2000/08/11 22:34:35 $
+ * $Revision: 1.12 $
+ * $Date: 2000/12/13 08:28:57 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -63,6 +63,7 @@ extern  Text	     inventDictText	Args((Void));
 extern  Bool	     inventedText	Args((Text));
 extern	String	     identToStr		Args((Cell));
 extern	Text	     fixLitText	 	Args((Text));
+extern	Text	     concatText		Args((String,String));
 
 /* --------------------------------------------------------------------------
  * Specification of syntax (i.e. default written form of application)
@@ -598,6 +599,7 @@ extern Name   newName	   Args((Text,Cell));
 extern Name   findName	   Args((Text));
 extern Name   addName	   Args((Name));
 extern Name   findQualName Args((Cell));
+extern Name   findQualFun  Args((Text,Text));
 extern Void   addPrim	   Args((Int,Name,String,Module,Type));
 extern Name   addPrimCfun  Args((Text,Int,Int,Cell));
 extern Int    sfunPos	   Args((Name,Name));
@@ -928,6 +930,56 @@ extern  Void freeStablePtr   Args((Int));
 typedef int     HugsStackPtr;
 typedef int     HugsStablePtr;
 typedef Pointer HugsForeign;
+
+typedef struct {
+
+  /* evaluate next argument */
+  int            (*getInt   )     Args(());  
+  unsigned int   (*getWord  )     Args(());
+  void*     	 (*getAddr  )     Args(());
+  float     	 (*getFloat )     Args(());
+  double    	 (*getDouble)     Args(());
+  char      	 (*getChar  )     Args(());
+  HugsForeign    (*getForeign)    Args(());
+  HugsStablePtr  (*getStablePtr)  Args(());
+
+  /* push part of result   */
+  void      	 (*putInt   )     Args((int));           
+  void      	 (*putWord  )     Args((unsigned int));
+  void      	 (*putAddr  )     Args((void*));
+  void      	 (*putFloat )     Args((double));
+  void      	 (*putDouble)     Args((double));
+  void      	 (*putChar  )     Args((char));
+  void      	 (*putForeign)    Args((HugsForeign, void (*)(HugsForeign)));
+  void      	 (*putStablePtr)  Args((HugsStablePtr));
+
+  /* return n values in IO monad or Id monad */
+  void      	 (*returnIO)      Args((HugsStackPtr, int));
+  void      	 (*returnId)      Args((HugsStackPtr, int));
+  int      	 (*runIO)         Args((int));
+
+  /* free a stable pointer */	    			 
+  void      	 (*freeStablePtr) Args((HugsStablePtr));
+
+  /* register the prim table */	    			 
+  void      	 (*registerPrims) Args((struct primInfo*));
+			   
+  /* garbage collect */
+  void		 (*garbageCollect) Args(());
+
+  /* API3 additions follow */
+  HugsStablePtr  (*lookupName)     Args((char*, char*));
+  void           (*ap)             Args((int));
+  void           (*getUnit)        Args(());
+  void*          (*mkThunk)        Args((void*, HugsStablePtr));
+  void           (*freeThunk)      Args((void*));
+  int     	 (*getBool)        Args(());
+  void      	 (*putBool)        Args((int));
+
+} HugsAPI3;
+
+extern  HugsAPI3* hugsAPI3     Args((Void));
+typedef Void (*InitModuleFun3) Args((HugsAPI3*));
 
 typedef struct {
 

@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: storage.c,v $
- * $Revision: 1.10 $
- * $Date: 2000/12/13 07:43:37 $
+ * $Revision: 1.11 $
+ * $Date: 2000/12/13 08:28:57 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -162,6 +162,21 @@ Text t; {
     return (findText(p));
 }
 #undef MAX_FIXLIT
+
+#define MAX_TEXTLEN 4000 /* cf. MAX_TOKEN in input.c */
+Text concatText(s1,s2)
+String s1;
+String s2; {
+    char s[MAX_TEXTLEN];
+
+    if (snprintf(s,MAX_TEXTLEN,"%s%s",s1,s2) == -1) {
+	ERRMSG(0) "Generated name '%s%s' exceeds limit of %d",
+                  s1, s2, MAX_TEXTLEN
+	EEND;
+    }
+    return findText(s);
+}    
+#undef MAX_TEXTLEN
 
 static Int local hash(s)                /* Simple hash function on strings */
 String s; {
@@ -551,6 +566,23 @@ Cell id; {				/* in name table		   */
 	default : internal("findQualName2");
     }
     return NIL;/*NOTUSED*/
+}
+
+Name findQualFun(m,v)                  /* Locate name in name table       */
+Text m;
+Text v; {
+    Module mod = findModule(m);
+    List ns;
+    if (isNull(mod)) {
+        return NIL;
+    }
+    for(ns=module(mod).names; nonNull(ns); ns=tl(ns)) {
+        Name n = hd(ns);
+        if (name(n).text == v) {
+            return n;
+        }
+    }
+    return NIL;
 }
 
 /* --------------------------------------------------------------------------
