@@ -1,0 +1,53 @@
+#!/bin/sh
+
+# Test the status within Hugs of each module in the hierarchical libraries.
+# This tests your installation, so you need to install first.
+
+packages='haskell98 base haskell-src'
+
+case $# in
+1)	;;
+*)	echo "usage: $0 <directory where libraries lives>"
+	exit 1 ;;
+esac
+
+srcdir=$1/libraries
+if [ ! -d $srcdir ]; then
+	echo "Can't find libraries in directory '$1'"
+	exit 1
+fi
+
+tmpfile=/tmp/libs.$$
+trap 'rm -f $tmpfile+ $tmpfile-; exit 0' 0 1 2 3 15
+
+HUGSFLAGS="-P{Hugs}/libraries -W"
+export HUGSFLAGS
+
+test_module() {
+	module=$1
+	hugs +98 $module </dev/null >$tmpfile+
+	hugs -98 $module </dev/null >$tmpfile-
+	if grep "ERROR \"$module\" - Unable to open file \"$module\"" $tmpfile- >/dev/null
+	then	echo "missing  $module"
+	elif grep ERROR $tmpfile- >/dev/null
+	then	echo "*ERROR*  $module"
+	elif grep ERROR $tmpfile+ >/dev/null
+	then	echo "hugs -98 $module"
+	else	echo "hugs +98 $module"
+	fi
+}
+
+cd $srcdir
+for package in $packages
+do	find $package -type f \( -name \*.hs  -o -name \*.lhs -o -name \*.y -o -name \*.ly -o -name \*.hsc \) |
+		sed 's:^[^/]*/::
+			s/\..*//
+			s:/:.:g' |
+		sort
+done | grep -v '^Prelude$' | grep -v '^[GN]HC' | grep -v '\.[a-z]' | (
+	cd /tmp
+	while read module
+	do
+		test_module $module
+	done
+)

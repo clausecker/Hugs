@@ -43,6 +43,10 @@ To run the test suite, in tests:
 	export HUGSFLAGS
 	sh testScript static tcheck rts ffi libs demos
 
+To check the status of each hierarchical module, run
+
+	src/unix/test_libraries <directory where libraries lives>
+
 More details:
 
 o libraries/Hugs contains some Hugs-only modules (e.g. Hugs.IO), mostly
