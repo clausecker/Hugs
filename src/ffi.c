@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: ffi.c,v $
- * $Revision: 1.8 $
- * $Date: 2002/06/15 01:12:33 $
+ * $Revision: 1.9 $
+ * $Date: 2002/06/17 16:29:14 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -64,6 +64,11 @@ String s; {
     used += l;
 }
 
+#ifdef _MSC_VER
+#define INSERT_QUOTE()   insert("\"")
+#else
+#define INSERT_QUOTE()   insert("'")
+#endif
 
 static Void local compileAndLink(fn,libs)
 String fn; 
@@ -91,6 +96,15 @@ List   libs; {
     }
 
     /* The basic command */
+#ifdef _MSC_VER
+    insert("cl /LD \"-I");
+    insert(hugsdir());
+    insert("/include\" \"");
+    insert(mkFFIFilename(i));
+    insert("\" -o \"");
+    insert(mkFFIFilename2(i));
+    insert("\" ");
+#else
     insert("cc -shared -I'");
     insert(hugsdir());
     insert("/include' '");
@@ -100,14 +114,16 @@ List   libs; {
     //    insert(notdir(mkFFIFilename2(scriptFile)));
     insert(mkFFIFilename2(i));
     insert("' ");
+#endif
 
     /* Add libraries */
     for(xs=libs; nonNull(xs); xs=tl(xs)) {
         Text t = textOf(hd(xs));
         if (!inventedText(t)) {
-            insert("'");
+            INSERT_QUOTE();
             insert(textToStr(t));
-            insert("' ");
+            INSERT_QUOTE();
+            insert(" ");
         }
     }
 
