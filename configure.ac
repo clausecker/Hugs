@@ -368,7 +368,9 @@ dnl Check for Unicode support, and select encoding
 dnl--------------------------------------------------------------------
 
 AC_CHECK_HEADERS(locale.h wchar.h)
-if test "${ac_cv_header_wchar_h+set}" = set; then
+if test "x$target_os" = "xmingw32"; then
+  wchar_t_is_unicode=yes	# actually UTF-16
+elif test "${ac_cv_header_wchar_h+set}" = set; then
   AC_MSG_CHECKING([whether wchar_t is ISO 10646 (Unicode)])
   AC_COMPILE_IFELSE([AC_LANG_PROGRAM(
     [[#include <wchar.h>
@@ -378,8 +380,6 @@ if test "${ac_cv_header_wchar_h+set}" = set; then
     [wchar_t_is_unicode=yes],
     [wchar_t_is_unicode=no])
   AC_MSG_RESULT([$wchar_t_is_unicode])
-elif test "x$target" = "xwindows"; then
-  wchar_t_is_unicode=yes	# actually UTF-16
 else
   wchar_t_is_unicode=no
 fi
@@ -782,15 +782,15 @@ dnl the configure script is called
 dnl
 dnl--------------------------------------------------------------------
 
-dnl When building a Windows script, $target will be set to "windows".
+dnl When building a Windows script, $target_os will be set to "mingw32".
 
-if test "x$target" = "xwindows"; then
+if test "x$target_os" = "xmingw32"; then
     DLL=".dll"          
     DLL_ENDING="-dll"   
     DEV_NULL="nul"
     HUGSPATH=".;{Hugs}\\\\libraries;{Hugs}\\\\packages\\\\*;{Hugs}\\\\oldlib;{Hugs}\\\\lib\\\\win32"
     HUGSSUFFIXES=".hs;.lhs"
-    MkInstall="src/MkNull.in"
+    MkInstall="src/MkInstal.in"
 elif test "x$target" = "xdos"; then
     # Just the same as for Windows but excludes win32 from Path
     DLL=".dll"          
@@ -868,7 +868,7 @@ dnl--------------------------------------------------------------------
 
 HUGS_FOR_WINDOWS=no
 if test "x$with_gui" = xyes; then
-  if test "x$target" = "xwindows"; then
+  if test "x$target_os" = "xmingw32"; then
     LDFLAGS="$LDFLAGS -W"
     WOBJECTS="win-text.obj"
     STRIP="brc32 hugs32.rc hugs.exe -w32"
