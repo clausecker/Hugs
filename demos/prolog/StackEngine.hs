@@ -58,7 +58,6 @@ theCut    :: Term
 theCut     = Struct "!" []
 
 cut                  :: Stack -> Stack
-cut (top:(s,gl,_):ss) = top:(s,gl,[]):ss
-cut ss                = ss
+cut ss                = []
 
 --- End of Engine.hs
