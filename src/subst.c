@@ -8,8 +8,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: subst.c,v $
- * $Revision: 1.23 $
- * $Date: 2002/05/15 18:11:23 $
+ * $Revision: 1.24 $
+ * $Date: 2002/07/26 00:06:16 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -61,6 +61,8 @@ static Bool local varToTypeBind		Args((Tyvar *,Type,Int));
 static Bool local inserter		Args((Type,Int,Type,Int));
 static Int  local remover		Args((Text,Type,Int));
 static Int  local tailVar		Args((Type,Int));
+#endif
+#if TREX || IO_MONAD
 static Void local expandSynFully	Args((Type *, Int *));
 #endif
 
@@ -1235,7 +1237,9 @@ Int  o; {
 	}
     }
 }
+#endif
 
+#if TREX || IO_MONAD
 static Void local expandSynFully(at,ao)	/* repeatedly expand synonyms	   */
 Type  *at;				/* original expression (*at,*ao)   */
 Int   *ao; {				/* expansion returned in (*at,*ao) */
