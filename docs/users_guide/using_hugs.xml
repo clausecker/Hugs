@@ -188,7 +188,7 @@ You can load these files by name, or by specifying a module name.
 </para>
 
 <para>
-Hugs maintains a notion of a <emphasis>current module</emphasis>,
+Hugs maintains a notion of a <firstterm>current module</firstterm>,
 initially the empty module <literal>Hugs.Base</literal>
 and normally indicated by the prompt.
 Expressions presented to Hugs are interpreted within the scope of the

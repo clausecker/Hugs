@@ -721,7 +721,7 @@ spotting general trends.
 <para>
 Print the number of cells recovered after each garbage collection
 (default: off).
-This can be useful for analysing the <emphasis>residency</emphasis> of an
+This can be useful for analysing the <firstterm>residency</firstterm> of an
 algorithm, the amount of memory is is actually using at each point in time.
 For example,
 <screen>
@@ -737,8 +737,8 @@ In contrast, with
 Hugs.Base> let xs = [1..60000] in sum xs `div` length xs
 {{Gc:237510}}{{Gc:213862}}{{Gc:190948}}{{Gc:170500}}{{Gc:152225}}
 {{Gc:135925}}{{Gc:121350}}{{Gc:108350}}{{Gc:96750}}{{Gc:86375}}
-{{Gc:77125}}{{Gc:68860}}{{Gc:61490}}{{Gc:72948}}{{Gc:97265}}{{Gc:129688}}
-{{Gc:172916}}{{Gc:230551}}30000
+{{Gc:77125}}{{Gc:68860}}{{Gc:61490}}{{Gc:72948}}{{Gc:97265}}
+{{Gc:129688}}{{Gc:172916}}{{Gc:230551}}30000
 </screen>
 we see that the amount reclaimed by each garbage collection is steadily
 falling until a certain point (because the original list is retained).

@@ -362,7 +362,7 @@ may be given the signature
 <programlisting>
 g :: (forall a. a -> a) -> (Bool, Char)
 </programlisting>
-This is called a <emphasis>rank 2</emphasis> type, because a function
+This is called a <firstterm>rank 2</firstterm> type, because a function
 argument is polymorphic, as indicated by the <literal>forall</literal>
 quantifier.
 </para>
@@ -623,9 +623,9 @@ has been replaced by the form presented below.
 documentation is due to Jeff Lewis.)</para>
 
 <para>
-A variable is called <emphasis>dynamically bound</emphasis> when it is
+A variable is called <firstterm>dynamically bound</firstterm> when it is
 bound by the calling context of a function and
-<emphasis>statically bound</emphasis> when bound by the callee's context.
+<firstterm>statically bound</firstterm> when bound by the callee's context.
 In Haskell, all variables are statically bound.
 Dynamic binding of variables is a notion that goes back to Lisp,
 but was later discarded in more modern incarnations, such as Scheme,
@@ -740,7 +740,7 @@ quite unambiguous, and fixes the type <literal>a</literal>.
 <title>Implicit-parameter bindings</title>
 
 <para>
-An implicit parameter is <emphasis>bound</emphasis> using the standard
+An implicit parameter is <firstterm>bound</firstterm> using the standard
 <literal>let</literal> or <literal>where</literal> binding forms.
 For example, we define the <function>min</function> function by binding
 <literal>cmp</literal>:
