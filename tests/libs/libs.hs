@@ -27,7 +27,6 @@ import MarshalArray
 import MarshalError
 import MarshalUtils
 import Memo
-import Merge
 import NumExts
 import Observe
 import Parallel
