@@ -1,9 +1,8 @@
-#include "HsFFI.h"
+#include "Storable_aux.h"
 
 #define DEFINE(T) \
 void write##T##OffPtr(Hs##T *arg1, HsInt arg2, Hs##T arg3) { arg1[arg2] = arg3; } \
 Hs##T read##T##OffPtr(Hs##T *arg1, HsInt arg2) { return arg1[arg2]; }
-
 
 DEFINE(Int       )
 DEFINE(Char      )
@@ -23,5 +22,4 @@ DEFINE(Word16    )
 DEFINE(Word32    )
 DEFINE(Word64    )
 
-
-
+#undef DEFINE
