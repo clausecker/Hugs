@@ -4,7 +4,7 @@ __   __ __  __  ____   ___      _________________________________________
 ||___|| ||__|| ||__||  __||     Copyright (c) 1994-1999
 ||---||         ___||           World Wide Web: http://haskell.org/hugs
 ||   ||                         Report bugs to: hugs-bugs@haskell.org
-||   || Version: February 2000  _________________________________________
+||   || Version: July 2000      _________________________________________
 
 ------------------------------------------------------------------------------
 
@@ -19,16 +19,9 @@ __   __ __  __  ____   ___      _________________________________________
    in the most recent version of the Haskell Library Report and with
    extension libraries that are compatible with GHC 3.0 and later.
 
-   This is purely a bug-fix release of Hugs98 Nov99. 
+   This is purely a bug-fix release of Hugs98 February 2000.
    It fixes the following problems:
-     - If you defined an instance which inherited a method via a
-       superclass, hugs would go into an infinite loop.  Fortunately,
-       most people weren't doing this (except Chris Okasaki...).
-     - There were a couple of holes in the implementation of implicit
-       parameters (`with' wasn't always being scoped properly,
-       sometimes capturing implicit parameters outside of its scope).
-     - Functional dependencies weren't being properly propogated in
-       some cases with derived instances (`instance P ... => Q ...').
+	...
  
    Hugs is best used as a Haskell program development system: it boasts
    extremely fast compilation, supports incremental compilation, and
@@ -47,7 +40,7 @@ __   __ __  __  ____   ___      _________________________________________
 ------------------------------------------------------------------------------
  The Hugs 98 system is Copyright (c) Mark P Jones, Alastair Reid, the
  Yale Haskell Group, and the Oregon Graduate Institute of Science and
- Technology, 1994-1999, All rights reserved.  It is distributed as
+ Technology, 1994-2000, All rights reserved.  It is distributed as
  free software under the license in the file "License", which is
  included in the distribution.
 ------------------------------------------------------------------------------
