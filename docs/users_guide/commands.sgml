@@ -362,7 +362,7 @@ List names that match any of the listed patterns
 and are defined in any of the currently loaded modules.
 Patterns resemble filename patterns:
 <literal>*</literal> matches any substring,
-<literal>?</literal> matches any chararacter,
+<literal>?</literal> matches any character,
 <literal>[</literal><replaceable>chars</replaceable><literal>]</literal>
 matches any of <replaceable>chars</replaceable>,
 with <replaceable>char</replaceable><literal>-</literal><replaceable>char</replaceable>

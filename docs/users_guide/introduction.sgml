@@ -333,7 +333,7 @@ sometimes capturing implicit parameters outside of its scope).
 </para></listitem>
 
 <listitem><para>
-Functional dependencies weren't being properly propogated in
+Functional dependencies weren't being properly propagated in
 some cases with derived instances
 (<quote><literal>instance P ... =&gt; Q ...</literal></quote>).
 </para></listitem>
@@ -492,7 +492,7 @@ Numerous bug fixes since the previous major release in Dec 2001.
 
 <para>
 There has been substantial internal restructuring.
-In addition to numerour bug fixes, user-visible changes include:
+In addition to numerous bug fixes, user-visible changes include:
 </para>
 
 <itemizedlist>

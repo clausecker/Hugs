@@ -22,7 +22,7 @@ The recursive do-notation (also known as mdo-notation) is implemented
 as described in:
 
     <citetitle pubwork=article>A recursive do for Haskell</citetitle>,
-    Levent Erkok and John Launchbury,
+    Levent Erk&ouml;k and John Launchbury,
     <citetitle pubwork=book>Haskell Workshop 2002</citetitle>,
     pages: 29&ndash;37. Pittsburgh, Pennsylvania.
 </para>
