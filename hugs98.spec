@@ -62,7 +62,6 @@ make -C docs DESTDIR=${RPM_BUILD_ROOT} install_man
 %doc docs/ffi-notes.txt
 %doc docs/libraries-notes.txt
 %doc docs/machugs-notes.txt
-%doc docs/packages.txt
 %doc docs/server.html
 %doc docs/server.tex
 %doc docs/winhugs-notes.txt
