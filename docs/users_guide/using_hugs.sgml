@@ -16,7 +16,7 @@ and may be started by (double) clicking on a file with a
 
 <para>
 Hugs takes options from the command line and elsewhere
-(see <xref linkend="options-list"/>),
+(see <xref linkend="options-list">),
 and then loads the Haskell <literal>Prelude</literal> module,
 as well as as any modules specified on the command line.
 </para>
@@ -68,7 +68,7 @@ Usually, the value is simply converted to a string
 </screen>
 The printing style can be changed with the
 <link linkend="option-use-show"><option>-u</option></link> option
-(see <xref linkend="options-evaluation"/>).
+(see <xref linkend="options-evaluation">).
 </para>
 
 <para>
@@ -84,7 +84,7 @@ the resulting IO action is performed:
 Usually the value produced by this action is ignored,
 but this can be changed with the
 <link linkend="option-display-io"><option>+I</option></link> option
-(see <xref linkend="options-evaluation"/>).
+(see <xref linkend="options-evaluation">).
 </para>
 
 <note>
@@ -130,7 +130,7 @@ Usually the defaulting rules (discussed above) are not applied to the type
 before printing,
 but this can be changed with the
 <link linkend="option-default-types"><option>+T</option></link> option
-(see <xref linkend="options-evaluation"/>).
+(see <xref linkend="options-evaluation">).
 </para>
 </listitem>
 </varlistentry>
@@ -145,7 +145,7 @@ but this can be changed with the
 <listitem>
 <para>
 Set command line options.
-See <xref linkend="options-list"/> for a list of available options.
+See <xref linkend="options-list"> for a list of available options.
 On Win32, the new option settings are saved to the registry,
 and so persist across Hugs sessions.
 To make settings persistent on other systems,
@@ -236,7 +236,7 @@ The search path may be changed using the
 <link linkend="option-search-path"><option>-P</option></link> option,
 while the set of suffixes tried may be changed using the
 <link linkend="option-suffixes"><option>-S</option></link> option
-(see <xref linkend="options-loading"/>).
+(see <xref linkend="options-loading">).
 The file found should contain a Haskell module called
 <replaceable>M</replaceable>.
 </para>
@@ -344,7 +344,7 @@ The <literal>:edit</literal> command starts an editor program to modify
 or view a Haskell module.
 Hugs suspends until the editor terminates,
 and then reloads the currently loaded modules.
-The <option>-E</option> option (see <xref linkend="options-editor"/>)
+The <option>-E</option> option (see <xref linkend="options-editor">)
 can be used to configure Hugs to your editor of choice.
 </para>
 

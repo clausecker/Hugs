@@ -5,7 +5,8 @@ DOCBOOK2PS   = @DOCBOOK2PS@
 
 ROOT	     = users_guide
 PARTS	     = $(ROOT).sgml haskell98.sgml hugs_ghc.sgml hugs_only.sgml \
-	       introduction.sgml license.sgml options.sgml using_hugs.sgml
+	       introduction.sgml license.sgml miscellaneous.sgml \
+	       options.sgml using_hugs.sgml
 # Options needed for non-SuSE $(DOCBOOK2HTML)
 HTML_OPTS    = --output $(ROOT) -V '%use-id-as-filename%'
 

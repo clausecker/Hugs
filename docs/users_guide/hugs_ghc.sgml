@@ -167,7 +167,7 @@ any type may be constrained by a class, as in
   g :: (C [a], D (a -> b)) => [a] -> b
 </programlisting>
 Classes are not limited to a single argument either
-(see <xref linkend="multi-param"/>).
+(see <xref linkend="multi-param">).
 </para>
 
 </sect2>
