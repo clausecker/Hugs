@@ -14,8 +14,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: iomonad.c,v $
- * $Revision: 1.53 $
- * $Date: 2003/10/01 15:55:18 $
+ * $Revision: 1.54 $
+ * $Date: 2003/10/10 22:54:33 $
  * ------------------------------------------------------------------------*/
  
 Name nameIORun;			        /* run IO code                     */
@@ -385,12 +385,12 @@ String loc; {
     
 #if !WANT_FIXED_SIZE_TABLES
     if (i >= (Int)MAX_HANDLES) {
-      unsigned long j;
+      int j;
       growDynTable(dynTabHandles);
       handles=(struct strHandle*)(dynTabHandles->data);
       num_handles = dynTabHandles->maxIdx;
       /* Nil out the new entries in the table */
-      for (j=dynTabHandles->idx; j < num_handles; j++) {
+      for (j=i; j < num_handles; j++) {
 	handles[j].hcell = NIL;
       }
     }
@@ -458,12 +458,12 @@ String loc; {
     
 #if !WANT_FIXED_SIZE_TABLES
     if (i >= (Int)MAX_HANDLES) {
-      unsigned long j;
+      int j;
       growDynTable(dynTabHandles);
       handles=(struct strHandle*)(dynTabHandles->data);
       num_handles = dynTabHandles->maxIdx;
       /* Nil out the new entries in the table */
-      for (j=dynTabHandles->idx; j < num_handles; j++) {
+      for (j=i; j < num_handles; j++) {
 	handles[j].hcell = NIL;
       }
     }
