@@ -73,7 +73,7 @@ Modifying the configure script
 If you're modifying Hugs or porting it to a new platform, you might
 need to extend the configure script.  The steps are:
 
-1) Get a recent copy of autoconf.  (We use version 2.10.)
+1) Get a recent copy of autoconf.  (We use version 2.13.)
 2) Read the autoconf documentation. 
    (If all you need to do is test whether /usr/include/sys/foo.h
    exists - you can probably figure it out without reading the docs.)
