@@ -25,8 +25,8 @@ ${PACKAGE}.tar.gz:
 	cd ${TARTMP}/hugs98/fptools/libraries/haskell-src/Language/Haskell; happy Parser.ly
 	# using `make parser.c' would be best, but by default yacc
 	# will be used, and yacc is, for some reason, incompatible
-	cp ${TARTMP}/hugs98/src/version.h /tmp/mktar
-	cd ${TARTMP}/hugs98/src; sed -e "s/MONTH_YEAR/${MONTH_YEAR}/" -e "s/YYYYMMDD/${YEAR_MONTH_DAY}/" < ${TARTMP}/version.h > ${TARTMP}/hugs98/src/version.h
+	cp ${TARTMP}/hugs98/src/version.h.in /tmp/mktar
+	cd ${TARTMP}/hugs98/src; sed -e "s/MONTH_YEAR/${MONTH_YEAR}/" -e "s/YYYYMMDD/${YEAR_MONTH_DAY}/" < ${TARTMP}/version.h.in > ${TARTMP}/hugs98/src/version.h.in
 	cd ${TARTMP}/hugs98/src; bison -y parser.y; mv y.tab.c parser.c
 	# Siggy deren't like these in distros
 	cd ${TARTMP}/hugs98; rm -rf tests
