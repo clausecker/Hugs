@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: preds.c,v $
- * $Revision: 1.15 $
- * $Date: 1999/10/22 22:11:14 $
+ * $Revision: 1.16 $
+ * $Date: 1999/11/15 22:57:01 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -296,9 +296,6 @@ Int  d; {
     if (d++ >= cutoff)
 	cutoffExceeded(pi,o,ps);
 
-    /* users of scEntail has better expect that unification
-       might happen... */
-    improve1(0,ps,pi,o);
     for (; nonNull(ps); ps=tl(ps)) {
 	Cell pi1 = hd(ps);
 	Cell ev  = scFind(thd3(pi1),fst3(pi1),intOf(snd3(pi1)),pi,o,d);
@@ -491,8 +488,13 @@ Int  d; {
 	    fputc('\n', stdout);
 	}
 #endif
+	/* would need to lift es to triples, so be lazy, and just
+	   use improve1 in the loop */
+	/* improve(0,ps,es); */
 	for (; nonNull(es); es=tl(es)) {
-	    Cell ev = entail(ps,hd(es),beta,d);
+	    Cell ev;
+	    improve1(0,ps,hd(es),beta);
+	    ev = entail(ps,hd(es),beta,d);
 	    if (nonNull(ev))
 		e = ap(e,ev);
 	    else
@@ -500,6 +502,17 @@ Int  d; {
 	}
 	return e;
     }
+#if EXPLAIN_INSTANCE_RESOLUTION
+      else {
+	if (showInstRes) {
+	    for (i = 0; i < d; i++)
+	      fputc(' ', stdout);
+	    fputs("No instance found for ", stdout);
+	    printPred(stdout, copyPred(pi, o));
+	    fputc('\n', stdout);
+	}
+    }
+#endif
     return NIL;
 #if TREX
     }

@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: type.c,v $
- * $Revision: 1.13 $
- * $Date: 1999/10/22 21:44:11 $
+ * $Revision: 1.14 $
+ * $Date: 1999/11/15 22:57:05 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1733,21 +1733,7 @@ List bs; {
 	enterPendingBtyvs();
 	for (; nonNull(alts); alts=tl(alts))
 	    typeAlt(extbind,fst(b),hd(alts),t,o,m);
-#if 0
-    Printf("before improve: ");
-    printContext(stdout,copyPreds(ps));
-    Printf(" ||- ");
-    printContext(stdout,copyPreds(preds));
-    Printf("\n");
-#endif
 	improve(line,ps,preds);
-#if 0
-    Printf("after improve: ");
-    printContext(stdout,copyPreds(ps));
-    Printf(" ||- ");
-    printContext(stdout,copyPreds(preds));
-    Printf("\n");
-#endif
 	leavePendingBtyvs();
 
 	if (nonNull(ps))		/* Add dict params, if necessary   */

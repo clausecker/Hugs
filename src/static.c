@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.14 $
- * $Date: 1999/11/06 01:29:09 $
+ * $Revision: 1.15 $
+ * $Date: 1999/11/15 22:57:01 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -60,6 +60,7 @@ static Type   local instantiateSyn	Args((Type,Type));
 static Void   local checkClassDefn	Args((Class));
 static Cell   local depPredExp		Args((Int,List,Cell));
 static Void   local checkMems		Args((Class,List,Cell));
+static Void   local checkMems2		Args((Class,Cell));
 static Void   local addMembers		Args((Class));
 static Name   local newMember		Args((Int,Int,Cell,Type,Class));
 static Name   local newDSel		Args((Class,Int));
@@ -1429,6 +1430,7 @@ List fds; {			       /* functional dependencies	   */
 	cclass(nw).members = ms;
 	cclass(nw).level   = 0;
 	cclass(nw).fds	   = fds;
+	cclass(nw).xfds	   = NIL;
 	classDefns	   = cons(nw,classDefns);
 	if (arity!=1)
 	    h98DoesntSupport(line,"multiple parameter classes");
@@ -1486,7 +1488,7 @@ Class c; {
 
 	/* Check for trivial dependency
 	 */
-	if (isNull(snd(fd))) {
+	if (isNull(vs)) {
 	    ERRMSG(cclass(c).line) "Functional dependency is trivial"
 	    EEND;
 	}
@@ -1546,6 +1548,78 @@ Class c; {
 
     cclass(c).kinds     = tcDeps;
     tcDeps              = NIL;
+}
+
+/* --------------------------------------------------------------------------
+ * Functional dependencies are inherited from superclasses.
+ * For example, if I've got the following classes:
+ *
+ * class C a b | a -> b
+ * class C [b] a => D a b
+ *
+ * then C will have the dependency ([a], [b]) as expected, and D will inherit
+ * the dependency ([b], [a]) from C.
+ * When doing pairwise improvement, we have to consider not just improving
+ * when we see a pair of Cs or a pair of Ds in the context, but when we've
+ * got a C and a D as well.  In this case, we only improve when the
+ * predicate in question matches the type skeleton in the relevant superclass
+ * constraint.  E.g., we improve the pair (C [Int] a, D b Int) (unifying
+ * a and b), but we don't improve the pair (C Int a, D b Int).
+ * To implement functional dependency inheritance, we calculate
+ * the closure of all functional dependencies, and store the result
+ * in an additional field `xfds' (extended functional dependencies).
+ * The `xfds' field is a list of functional dependency lists, annotated
+ * with a list of predicate skeletons constraining when improvement can
+ * happen against this dependency list.  For example, the xfds field
+ * for C above would be:
+ *     [([C a b], [([a], [b])])]
+ * and the xfds field for D would be:
+ *     [([C [b] a, D a b], [([b], [a])])]
+ * Self-improvement (of a C with a C, or a D with a D) is treated as a
+ * special case of an inherited dependency.
+ * ------------------------------------------------------------------------*/
+static List local inheritFundeps(c,pi,o)
+Class c;
+Cell pi;
+Int o; {
+    Int alpha = newKindedVars(cclass(c).kinds);
+    List scs = cclass(c).supers;
+    List xfds = NIL;
+    Cell this = NIL;
+    /* better not fail ;-) */
+    if (!matchPred(pi,o,cclass(c).head,alpha))
+	internal("inheritFundeps - predicate failed to match it's own head!");
+    this = copyPred(pi,o);
+    for (; nonNull(scs); scs=tl(scs)) {
+	Class s = getHead(hd(scs));
+	if (isClass(s)) {
+	    List sfds = inheritFundeps(s,hd(scs),alpha);
+	    for (; nonNull(sfds); sfds=tl(sfds)) {
+		Cell h = hd(sfds);
+		xfds = cons(pair(cons(this,fst(h)),snd(h)),xfds);
+	    }
+	}
+    }
+    if (nonNull(cclass(c).fds)) {
+	List fds = NIL, fs = cclass(c).fds;
+	for (; nonNull(fs); fs=tl(fs)) {
+	    fds = cons(pair(otvars(this,fst(hd(fs))),
+			    otvars(this,snd(hd(fs)))),fds);
+	}
+	xfds = cons(pair(cons(this,NIL),fds),xfds);
+    }
+    return xfds;
+}
+
+static Void local extendFundeps(c)
+Class c; {
+    Int alpha;
+    emptySubstitution();
+    alpha = newKindedVars(cclass(c).kinds);
+    cclass(c).xfds = inheritFundeps(c,cclass(c).head,alpha);
+
+    /* we can now check for ambiguity */
+    map1Proc(checkMems2,c,fst(cclass(c).members));
 }
 
 static Cell local depPredExp(line,tyvars,pred)
@@ -1643,10 +1717,19 @@ Cell  m; {
     thd3(m) = t;				/* Save type		   */
     take(cclass(c).arity,tyvars);		/* Delete extra type vars  */
 
+    h98CheckType(line,"member type",hd(vs),t);
+}
+
+static Void local checkMems2(c,m) /* check member function details   */
+Class c;
+Cell  m; {
+    Int  line = intOf(fst3(m));
+    List vs   = snd3(m);
+    Type t    = thd3(m);
+
     if (isAmbiguous(t)) {
 	ambigError(line,"class declaration",hd(vs),t);
     }
-    h98CheckType(line,"member type",hd(vs),t);
 }
 
 static Void local addMembers(c)		/* Add definitions of member funs  */
@@ -2196,7 +2279,9 @@ List vs; {
 			else
 			    return cons(t,vs);
 
-	case OFFSET   : internal("zonkTyvarsIn");
+	/* this case will lead to a type error --
+	   much better than reporting an internal error ;-) */
+	/* case OFFSET   : internal("zonkTyvarsIn"); */
 
 	default	      : return vs;
     }
@@ -2293,10 +2378,13 @@ List ps; {
 	Cell pi = hd(ps);
 	Cell c  = getHead(pi);
 	if (isClass(c)) {
-	    List fs = cclass(c).fds;
-	    for (; nonNull(fs); fs=tl(fs)) {
-		fds = cons(pair(otvars(pi,fst(hd(fs))),
-				otvars(pi,snd(hd(fs)))),fds);
+	    List xfs = cclass(c).xfds;
+	    for (; nonNull(xfs); xfs=tl(xfs)) {
+		List fs = snd(hd(xfs));
+		for (; nonNull(fs); fs=tl(fs)) {
+		    fds = cons(pair(otvars(pi,fst(hd(fs))),
+				    otvars(pi,snd(hd(fs)))),fds);
+		}
 	    }
 	}
 #if IPARAM
@@ -2317,10 +2405,13 @@ List ps; {
 	Cell c  = getHead(pi);
 	Int o = intOf(snd3(pi3));
 	if (isClass(c)) {
-	    List fs = cclass(c).fds;
-	    for (; nonNull(fs); fs=tl(fs)) {
-		fds = cons(pair(otvarsZonk(pi,fst(hd(fs)),o),
-				otvarsZonk(pi,snd(hd(fs)),o)),fds);
+	    List xfs = cclass(c).xfds;
+	    for (; nonNull(xfs); xfs=tl(xfs)) {
+		List fs = snd(hd(xfs));
+		for (; nonNull(fs); fs=tl(fs)) {
+		    fds = cons(pair(otvarsZonk(pi,fst(hd(fs)),o),
+				    otvarsZonk(pi,snd(hd(fs)),o)),fds);
+		}
 	    }
 	}
 #if IPARAM
@@ -2737,11 +2828,14 @@ Inst in; {
 	EEND;
     }
 
+    /* should this be over xfds? */
     if (nonNull(cclass(inst(in).c).fds)) {
         List fds = cclass(inst(in).c).fds;
         for (; nonNull(fds); fds=tl(fds)) {
             List as = otvars(inst(in).head, fst(hd(fds)));
             List bs = otvars(inst(in).head, snd(hd(fds)));
+	    List fs = calcFunDeps(inst(in).specifics);
+	    as = oclose(fs,as);
             if (!osubset(bs,as)) {
 		ERRMSG(inst(in).line)
 		   "Instance is more general than a dependency allows"
@@ -5895,6 +5989,7 @@ Void checkDefns() {			/* Top level static analysis	   */
     checkSynonyms(tyconDefns);		/* check synonym definitions	   */
     mapProc(checkClassDefn,classDefns);	/* process class definitions	   */
     mapProc(kindTCGroup,tcscc(tyconDefns,classDefns)); /* attach kinds	   */
+    mapProc(extendFundeps,classDefns);  /* finish class definitions	   */
     mapProc(addMembers,classDefns);	/* add definitions for member funs */
     mapProc(visitClass,classDefns);	/* check class hierarchy	   */
     linkPreludeCM();			/* Get prelude cfuns and mfuns	   */
