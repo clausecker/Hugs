@@ -12,8 +12,8 @@
  * included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.20 $
- * $Date: 2001/06/22 23:00:36 $
+ * $Revision: 1.21 $
+ * $Date: 2001/07/09 06:52:48 $
  * ------------------------------------------------------------------------*/
 
 #ifdef HAVE_SIGNAL_H
@@ -1916,10 +1916,10 @@ String  def;
       /* read next component of path */
       component = readRegString(baseKey, subKeyName, var, "");
       
-      if (!addedPath) {
+      if (addedPath) {
       	APPEND_STRING__(sepString);
-	addedPath = TRUE;
       }
+      addedPath = TRUE;
       
       APPEND_STRING__(component);
       free(component); /* readRegString() dynamically allocated it, so let go. */
