@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.14 $
- * $Date: 1999/10/22 21:44:09 $
+ * $Revision: 1.15 $
+ * $Date: 1999/10/25 16:29:35 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -87,7 +87,7 @@ static Void   local forgetScriptsFrom Args((Script));
 static Void   local setLastEdit       Args((String,Int));
 static Void   local failed            Args((Void));
 static String local strCopy           Args((String));
-static Void   local browseit	      Args((Module,String));
+static Void   local browseit	      Args((Module,String,Bool));
 static Void   local browse	      Args((Void));
 
 /* --------------------------------------------------------------------------
@@ -1174,16 +1174,19 @@ static Void local showtype() {         /* print type of expression (if any)*/
     Putchar('\n');
 }
 
-static Void local browseit(mod,t)
+static Void local browseit(mod,t,all)
 Module mod; 
-String t; {
+String t;
+Bool all; {
     if (nonNull(mod)) {
 	Cell cs;
-	Printf("module %s where\n",textToStr(module(mod).text));
+	if (nonNull(t))
+	    Printf("module %s where\n",textToStr(module(mod).text));
 	for (cs = module(mod).names; nonNull(cs); cs=tl(cs)) {
 	    Name nm = hd(cs);
-	    /* only look at things defined in this module */
-	    if (name(nm).mod == mod) {
+	    /* only look at things defined in this module,
+	       unless `all' flag is set */
+	    if (all || name(nm).mod == mod) {
 		/* unwanted artifacts, like lambda lifted values,
 		   are in the list of names, but have no types */
 		if (nonNull(name(nm).type)) {
@@ -1214,15 +1217,18 @@ String t; {
 static Void local browse() {            /* browse modules                  */
     Int    count = 0;                   /* or give menu of commands        */
     String s;
+    Bool all = FALSE;
 
     setCurrModule(findEvalModule());
     startNewScript(0);                  /* for recovery of storage         */
-    for (; (s=readFilename())!=0; count++) {
-	browseit(findModule(findText(s)),s);
-    }
-    if (count == 0) {
-	whatScripts();
-    }
+    for (; (s=readFilename())!=0; count++)
+	if (strcmp(s,"all") == 0) {
+	    all = TRUE;
+	    --count;
+	} else
+	    browseit(findModule(findText(s)),s,all);
+    if (count == 0)
+	browseit(findEvalModule(),NULL,all);
 }
 
 #if EXPLAIN_INSTANCE_RESOLUTION
