@@ -412,7 +412,7 @@ AC_SUBST(INSTALL_FFI)
 if test -d "$FPTOOLS" &&
    test -d "$FPTOOLS/hslibs" &&
    test -d "$FPTOOLS/libraries"
-then "Directory $FPTOOLS found"
+then echo "found directory $FPTOOLS"
 else
     echo "The argument to --with-fptools must be a directory containing a copy of"
     echo "hslibs and libraries from the Haskell CVS repository."
