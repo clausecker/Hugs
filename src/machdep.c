@@ -12,8 +12,8 @@
  * included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.35 $
- * $Date: 2001/12/14 18:00:49 $
+ * $Revision: 1.36 $
+ * $Date: 2002/01/17 07:26:27 $
  * ------------------------------------------------------------------------*/
 
 #ifdef HAVE_SIGNAL_H
@@ -257,6 +257,9 @@ static Void   local searchStr     Args((String));
 static Bool   local tryEndings    Args((String));
 static Bool   local find1	  Args((String, String, String));
 static Bool   local find2	  Args((String, String, String));
+#if DOS_FILENAMES
+static Bool   local isPathSep     Args((String));
+#endif
 
 #if __MWERKS__ && macintosh
 typedef char FileName[FILENAME_MAX + 1];
@@ -267,19 +270,23 @@ FileName macHugsDir; /* Directory where Hugs was found. */
 # define SLASH                   '\\'
 # define isSLASH(c)              ((c)=='\\' || (c)=='/')
 # define PATHSEP                 ';'
+# define isPATHSEP(x)            isPathSep(x)
 # define DLL_ENDING              ".dll"
 #elif MAC_FILENAMES
 # define SLASH                   ':'
 # define isSLASH(c)              ((c)==SLASH)
 # define PATHSEP                 ';'
+# define isPATHSEP(x)            (*(x) == PATHSEP)
 /* Mac PEF (Preferred Executable Format) file */
 # define DLL_ENDING              ".pef" 
 #else
 # define SLASH                   '/'
 # define isSLASH(c)              ((c)==SLASH)
 # define PATHSEP                 ':'
+# define isPATHSEP(x)            (*(x) == PATHSEP)
 # define DLL_ENDING              ".so"
 #endif
+
 
 static String local hugsdir() {     /* directory containing lib/Prelude.hs */
 #if HSCRIPT
@@ -446,7 +453,21 @@ String s; {
     return FALSE;
 }
 
+#if DOS_FILENAMES
+static Bool local isPathSep(sep)      /* does 'sep' mark the end of a valid path? */
+String sep; {
 
+  /* ';' is always a separator */
+  if (*sep == ';')
+    return TRUE;
+  if (*sep != ':') 
+    return FALSE;
+
+  /* ':' is a separator iff it doesn't appear as <x>:\ */
+  return (!(searchPos == 1 && sep[1] == SLASH));
+}
+
+#endif
 
 #if SEARCH_DIR
 
@@ -700,7 +721,7 @@ String path; {
 	    Bool recurse = FALSE;   /* DL: shall we recurse ? */
 	    searchReset(0);
 	    if (*pathpt) {
-		if (*pathpt!=PATHSEP) {
+		if (!isPATHSEP(pathpt)) {
 		    /* Pre-define one MPW-style "shell-variable" */
 		    if (strncmp(pathpt,"{Hugs}",6)==0) {
 			searchStr(hugsdir());
@@ -722,13 +743,13 @@ String path; {
 #endif
 		    do {
 			searchChr(*pathpt++);
-		    } while (*pathpt && *pathpt!=PATHSEP);
+		    } while (*pathpt && !isPATHSEP(pathpt));
 		    recurse = (pathpt[-1] == SLASH);
 		    if (!recurse) {
 			searchChr(SLASH);
 		    }
 		}
-		if (*pathpt==PATHSEP)
+		if (isPATHSEP(pathpt))
 		    pathpt++;
 		else
 		    more = FALSE;
@@ -770,7 +791,7 @@ String sub; {
 	EEND;
     }
     do {
-	if (*next == PATHSEP || *next == '\0') {
+	if (isPATHSEP(next) || *next == '\0') {
 	    if (!substituted && next == start) {
 		String s = sub;
 		for(; *s != '\0'; ++s) {
