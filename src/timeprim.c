@@ -137,10 +137,10 @@ primFun(primGetCalTime) { /* Int   -> Int -> IO (.....) */
   utcOff = tm->tm_gmtoff;
 # elif HAVE_TIMEZONE
 #  ifdef HAVE_ALTZONE
-  utcOff = (tm->tm_isdst ? altzone : timezone);
+  utcOff = (-(tm->tm_isdst ? altzone : timezone));
 #  else
-  /* Assume DST adjustment is 1 hour */
-  utcOff = (tm->tm_isdst ? (timezone - 3600) : timezone);
+  /* Assume DST adjustment is 1 hour. */
+  utcOff = -(tm->tm_isdst ? (timezone - 3600) : timezone);
 #  endif
 # else
   /* Again, complain louder? */
@@ -216,14 +216,15 @@ primFun(primMkTime) { /* Int{-year-}  -> Int{-month-} -> Int{-day-} ->
      offset, that is, the difference between toClockTime's UTC offset and
      the UTC offset returned by mktime().
   */
+  tz = -tz;
 # ifdef HAVE_TM_ZONE
-  tz -= tm.tm_gmtoff;
+  tz += tm.tm_gmtoff;
 # elif HAVE_TIMEZONE
 #  ifdef HAVE_ALTZONE
-  tz -= (tm.tm_isdst ? altzone : timezone);
+  tz += (-(tm.tm_isdst ? altzone : timezone));
 #  else
   /* Assume DST adjustment is 1 hour */
-  tz -= (tm.tm_isdst ? (timezone - 3600) : timezone);
+  tz += (- (tm.tm_isdst ? (timezone - 3600) : timezone));
 #  endif
 # else
   /* Unknown, assume nothing */
