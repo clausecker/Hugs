@@ -11,8 +11,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: server.c,v $
- * $Revision: 1.37 $
- * $Date: 2003/03/14 13:01:50 $
+ * $Revision: 1.38 $
+ * $Date: 2003/04/08 14:57:21 $
  * ------------------------------------------------------------------------*/
 #include "prelude.h"
 #include "storage.h"
@@ -218,7 +218,7 @@ String argv[]; {
       loadPrelude();
 
 #ifndef NO_DYNAMIC_TYPES
-      addScriptName("HugsDynamic",TRUE);
+      addScriptName("Hugs.Dynamic",TRUE);
 #endif
 
       readScripts(0);
@@ -272,21 +272,22 @@ HugsServerAPI* hserv; {
 #ifndef NO_DYNAMIC_TYPES
 static Name  nameRunDyn;
 static Name  nameDynApp;
-static Name  nameToDynamic;
-static Name  nameFromDynamic;
+static Name  nameToDyn;
+static Name  nameCoerceDynamic;
 static Class classTypeable;
 
 static Bool linkDynamic()
 {
     nameRunDyn        = findName(findText("runDyn"));
     nameDynApp        = findName(findText("dynApp"));
-    nameToDynamic     = findName(findText("toDynamic"));
-    nameFromDynamic   = findName(findText("fromDyn"));
+    nameToDyn         = findName(findText("toDyn"));
+    nameCoerceDynamic = findName(findText("coerceDynamic"));
     classTypeable     = findClass(findText("Typeable"));
 
     return (   nonNull(nameRunDyn        )
 	    && nonNull(nameDynApp        )
-	    && nonNull(nameToDynamic     )
+	    && nonNull(nameToDyn         )
+	    && nonNull(nameCoerceDynamic )
 	    && nonNull(classTypeable     ));
 }
 #endif
@@ -400,7 +401,7 @@ String e; {
 	    setError("compileExpr: can't create Typeable instance");
 	    return 0;
 	}
-	inputExpr = ap(ap(nameToDynamic,d),inputExpr);
+	inputExpr = ap(ap(nameToDyn,d),inputExpr);
 #endif
 	compileExp();
 	run(inputCode,sp);  /* Build graph for redex */
@@ -448,7 +449,7 @@ String m,v;
 	    setError("lookupName: can't create Typeable instance");
 	    return;
 	}
-	push(ap(ap(nameToDynamic,d),n));
+	push(ap(ap(nameToDyn,d),n));
 #else
 	push(n);
 #endif
@@ -460,7 +461,7 @@ Int i;
 {
 #ifndef NO_DYNAMIC_TYPES
     Cell d = getTypeableDict(typeInt);
-    protect(push(ap(ap(nameToDynamic,d),mkInt(i))));
+    protect(push(ap(ap(nameToDyn,d),mkInt(i))));
 #else
     protect(push(mkInt(i)));
 #endif
@@ -471,7 +472,7 @@ void* a;
 {
 #ifndef NO_DYNAMIC_TYPES
     Cell d = getTypeableDict(typeAddr);
-    protect(push(ap(ap(nameToDynamic,d),mkPtr(a))));
+    protect(push(ap(ap(nameToDyn,d),mkPtr(a))));
 #else
     protect(push(mkPtr(a)));
 #endif
@@ -493,7 +494,7 @@ String s;
 #ifndef NO_DYNAMIC_TYPES
 	r = pop();
 	d = getTypeableDict(typeString);
-	push(ap(ap(nameToDynamic,d),r));
+	push(ap(ap(nameToDyn,d),r));
 #endif
     END_PROTECT
 }
@@ -583,7 +584,7 @@ static Int EvalInt()            /* Evaluate a cell (:: Int)         */
 	startEval();
 #ifndef NO_DYNAMIC_TYPES
         d = getTypeableDict(typeInt);
-	safeEval(ap(ap(nameFromDynamic,d),pop()));
+	safeEval(ap(ap(nameCoerceDynamic,d),pop()));
 #else
 	safeEval(pop());
 #endif
@@ -600,7 +601,7 @@ static void* EvalAddr()          /* Evaluate a cell (:: Addr)         */
 	startEval();
 #ifndef NO_DYNAMIC_TYPES
         d = getTypeableDict(typeAddr);
-	safeEval(ap(ap(nameFromDynamic,d),pop()));
+	safeEval(ap(ap(nameCoerceDynamic,d),pop()));
 #else
 	safeEval(pop());
 #endif
@@ -624,7 +625,7 @@ static String EvalString()      /* Evaluate a cell (:: String)      */
 	/* Evaluate spine of list onto stack */
 #ifndef NO_DYNAMIC_TYPES
         d = getTypeableDict(typeString);
-	ok = tryEval(ap(ap(nameFromDynamic,d),pop()));
+	ok = tryEval(ap(ap(nameCoerceDynamic,d),pop()));
 #else
 	ok = tryEval(pop());
 #endif

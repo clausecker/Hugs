@@ -283,7 +283,6 @@ mkdir -p $compat
   libhugs AnsiScreen
      stub CVHAssert		Hugs.CVHAssert
      stub GenericPrint		Hugs.GenericPrint
-  libhugs HugsDynamic				# temporary measure
      stub HugsInternals		Hugs.Internals
   libhugs HugsLibs				# only useful for testing
      stub IOExtensions		Hugs.IOExts
