@@ -10,8 +10,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: parser.y,v $
- * $Revision: 1.34 $
- * $Date: 2002/07/16 05:05:13 $
+ * $Revision: 1.35 $
+ * $Date: 2002/10/21 02:18:57 $
  * ------------------------------------------------------------------------*/
 
 %{
@@ -1111,8 +1111,16 @@ static String local unexpected() {     /* find name for unexpected token   */
 	case TMODULE   : keyword("module");
 	case ALL       : keyword("forall");
 #if IPARAM
-	case DLET      : keyword("dlet");
-	case WITH      : keyword("with");
+	case DLET      : 
+	case WITH      : 
+	  if (oldIParamSyntax) {
+	      sprintf(buffer,
+		      "keyword \"%s\"; possible cause: -W option not used.)",
+		      (yychar == DLET ? "dlet" : "with"));
+	      return buffer;
+	  } else {
+	      keyword ((yychar == DLET) ? "dlet" : "with");
+	  }
 #endif
 #undef keyword
 
