@@ -151,6 +151,9 @@ To add a new test, you:
 5) Rerun hugs98/src/unix/configure to regenerate testScript from
    testScript.in
 
+   But before you do that, make very, very sure that you've changed
+   testScript.in and not just testScript or you will lose your changes.
+
 
 Enjoy!
 
