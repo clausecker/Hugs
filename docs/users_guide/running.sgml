@@ -230,6 +230,9 @@ A null entry in this list will be replaced by the previous search path;
 a null <replaceable>str</replaceable> means the default path.
 Any occurrences of <literal>{Hugs}</literal> in this string will be replaced
 by the Hugs library directory.
+An entry of the form
+<quote><replaceable>direectory</replaceable><literal>/*</literal></quote>
+means all the immediate subdirectories of <replaceable>direectory</replaceable>.
 The default value is
 <programlisting>
 {Hugs}/libraries:{Hugs}/oldlib

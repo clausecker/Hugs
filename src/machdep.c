@@ -2,8 +2,8 @@
  * Machine dependent code
  * RISCOS specific code provided by Bryan Scatergood, JBS
  * Macintosh specific code provided by Hans Aberg (haberg@matematik.su.se)
- * HaskellScript code and recursive directory search provided by
- *  Daan Leijen (leijen@fwi.uva.nl)
+ * HaskellScript code and recursive directory search (now just one level)
+ *  provided by Daan Leijen (leijen@fwi.uva.nl)
  *
  * The Hugs 98 system is Copyright (c) Mark P Jones, Alastair Reid, the
  * Yale Haskell Group, and the OGI School of Science & Engineering at OHSU,
@@ -11,8 +11,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.89 $
- * $Date: 2003/06/17 10:36:13 $
+ * $Revision: 1.90 $
+ * $Date: 2003/07/03 14:08:17 $
  * ------------------------------------------------------------------------*/
 #include "prelude.h"
 #include "storage.h"
@@ -22,6 +22,8 @@
 #include "strutil.h"
 #include "machdep.h"
 #include "evaluator.h" /* everybody() proto only */
+
+/*#define DEBUG_SEARCH*/
 
 #ifdef HAVE_SIGNAL_H
 # include <signal.h>
@@ -43,7 +45,9 @@
 #  include <stat.h>
 # endif
 #endif
-
+#ifdef HAVE_DIRENT_H
+#  include <dirent.h>
+#endif
 
 /* Windows/DOS include files */
 #ifdef HAVE_DOS_H
@@ -484,6 +488,9 @@ String s; {
 	    if (searchPos<FILENAME_MAX)
 		searchBuf[searchPos++] = *sp;
 	searchBuf[searchPos] = '\0';
+#ifdef DEBUG_SEARCH
+	Printf("trying '%s'\n", searchBuf);
+#endif
 	if (readable(searchBuf,TRUE))
 	    return TRUE;
 	if (*sp)
@@ -509,15 +516,14 @@ String sep; {
 
 #endif
 
-#if SEARCH_DIR
-
 /* scandir, June 98 Daan Leijen
-   searches the base directory and its direct subdirectories for a file
+   searches the direct subdirectories of a directory for a file
+   (excluding directories that start with a dot)
 
-   input: searchbuf contains SLASH terminated base directory
-	      argument s contains the (base) filename
+   input: searchbuf contains base directory (not SLASH terminated)
+	      argument name contains the module name
    output: TRUE: searchBuf contains the full filename
-		   FALSE: searchBuf is garbage, file not found
+	   FALSE: searchBuf is garbage, file not found
 */
 	  
 
@@ -530,12 +536,9 @@ String s;
     long handle;
     int  save;
     
+    searchChr(SLASH);
     save = searchPos;
-    /* is it in the current directory ? */
-    if (tryEndings(s)) return TRUE;
-
-    searchReset(save);
-    searchStr("*");
+    searchStr("*.*");
     
     /* initiate the search */
     handle = _findfirst( searchBuf, &findInfo );
@@ -550,6 +553,7 @@ String s;
 	    searchStr(findInfo.name);
 	    searchChr(SLASH);
 	    if (tryEndings(s)) {
+		_findclose( handle );
 		return TRUE;
 	    }
 	}
@@ -559,44 +563,36 @@ String s;
     return FALSE;
 }
 
-#elif defined(HAVE_FTW_H)
-
-#include <ftw.h>
-
-static char baseFile[FILENAME_MAX+1];
-static char basePath[FILENAME_MAX+1];
-static int  basePathLen;
-
-static int scanitem( const char* path, 
-		     const struct stat* statinfo, 
-		     int info )
-{
-    if (info == FTW_D) { /* is it a directory */
-	searchReset(0);
-	searchStr(path);
-	searchChr(SLASH);
-	if (tryEndings(baseFile)) {
-	    return 1;
-	}
-    }
-    return 0;
-}
+#elif defined(HAVE_DIRENT_H)
 
 static Bool scanSubDirs(s)
 String s;
 {
-    int r;
-    strcpy(baseFile,s);
-    strcpy(basePath,searchBuf);
-    basePathLen = strlen(basePath);
+    DIR *dir;
+    struct dirent *entry;
+    struct stat statb;
+    int save;
 
-    /* is it in the current directory ? */
-    if (tryEndings(s)) return TRUE;
-    
-    /* otherwise scan the subdirectories */
-    r = ftw( basePath, scanitem, 2 );
-    errno = 0;
-    return (r > 0);
+    if ((dir = opendir(searchBuf)) == NULL)
+	errno = 0;
+    else {
+	searchChr(SLASH);
+	save = searchPos;
+	while ((entry = readdir(dir)) != NULL)
+            if (entry->d_name[0] != '.') {
+		searchStr(entry->d_name);
+		if (stat(searchBuf, &statb)==0 && S_ISDIR(statb.st_mode)) {
+		    searchChr(SLASH);
+		    if (find2(s)) {
+			closedir(dir);
+			return TRUE;
+		    }
+		}
+		searchReset(save);
+	    }
+	closedir(dir);
+    }
+    return FALSE;
 }
 
 #elif __MWERKS__ && macintosh  /* Macintosh subscan */
@@ -660,8 +656,14 @@ String s;
 
     return FALSE;
 }
-#endif /* HAVE_WINDOWS_H || HAVE_FTW_H || (__MWERKS__ && macintosh) */
-#endif /* SEARCH_DIR */
+#else
+
+static Bool scanSubDirs(name)
+String name;
+{   return FALSE;
+}
+
+#endif /* HAVE_WINDOWS_H || HAVE_DIRENT_H || (__MWERKS__ && macintosh) */
 
 /* Variables that may be substituted in the path */
 
@@ -689,6 +691,9 @@ String findPathname(filename)   /* Look for a file, trying various extensions */
 String filename; {              /* Return ***input name*** if no file was found */
     searchReset(0);
     searchStr(filename);
+#ifdef DEBUG_SEARCH
+    Printf("trying '%s'\n", searchBuf);
+#endif
     if (!readable(searchBuf,TRUE) && !tryEndings(""))
 	searchStr("");
     return normPath(searchBuf);
@@ -739,52 +744,39 @@ String name; {
         return TRUE;
 
     searchReset(0);		/* Otherwise, we look along the HUGSPATH */
-    if (pathpt && *pathpt) {
-	Bool more = TRUE;
-	do {
-	    Bool recurse = FALSE;   /* DL: shall we recurse ? */
+    if (pathpt) {
+	while (*pathpt) {
 	    searchReset(0);
-	    if (*pathpt) {
-		if (!isPATHSEP(pathpt)) {
-		    /* allow initial MPW-style "shell-variables" */
-		    if (*pathpt=='{') { /* of the form {varname} */
-			int i, len;
+	    /* allow initial MPW-style "shell-variables" */
+	    if (*pathpt=='{') { /* of the form {varname} */
+		int i, len;
 
-			for (i = 0; shell_var[i].var_name!=NULL; i++) {
-			    len = strlen(shell_var[i].var_name);
-			    if (strncmp(pathpt+1,shell_var[i].var_name,len)==0
-				&& pathpt[len+1]=='}') {
-				searchStr((*shell_var[i].var_value)());
-				pathpt += len+2;
-				break;
-			    }
-			}
-		    }
-		    do {
-			searchChr(*pathpt++);
-		    } while (*pathpt && !isPATHSEP(pathpt));
-		    recurse = (pathpt[-1] == SLASH);
-		    if (!recurse) {
-			searchChr(SLASH);
+		for (i = 0; shell_var[i].var_name!=NULL; i++) {
+		    len = strlen(shell_var[i].var_name);
+		    if (strncmp(pathpt+1,shell_var[i].var_name,len)==0
+			&& pathpt[len+1]=='}') {
+			searchStr((*shell_var[i].var_value)());
+			pathpt += len+2;
+			break;
 		    }
 		}
-		if (isPATHSEP(pathpt))
-		    pathpt++;
-		else
-		    more = FALSE;
+	    }
+	    while (*pathpt && !isPATHSEP(pathpt))
+		searchChr(*pathpt++);
+	    /* If the path entry ends in SLASH '*', search immediate subdirs */
+	    if (searchPos >= 2 && pathpt[-2] == SLASH && pathpt[-1] == '*') {
+		searchPos -= 2;
+		searchBuf[searchPos] = '\0';
+		if (scanSubDirs(name))
+		    return TRUE;
 	    } else {
-		more = FALSE;
+		searchChr(SLASH);
+		if (find2(name))
+		    return TRUE;
 	    }
-#if SEARCH_DIR
-	    if (recurse ? scanSubDirs(name) : find2(name)) {
-		return TRUE;
-	    }
-#else   
-	    if (find2(name)) {
-		return TRUE;
-	    }
-#endif
-	} while (more);
+	    if (isPATHSEP(pathpt))
+		pathpt++;
+	}
     } 
     return FALSE;    
 }
