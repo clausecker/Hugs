@@ -12,7 +12,7 @@
  * windows. These windows support ANSI control.
  * ------------------------------------------------------------------------*/
 
-#include "..\Prelude.h"
+#include "prelude.h"
 
 #if HUGS_FOR_WINDOWS
 #define STRICT 1

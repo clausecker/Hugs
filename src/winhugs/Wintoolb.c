@@ -11,7 +11,7 @@
  * ------------------------------------------------------------------------*/
 
 
-#include "..\Prelude.h"
+#include "prelude.h"
 
 #if HUGS_FOR_WINDOWS
 #define STRICT 1
@@ -20,8 +20,6 @@
 #include "WinHint.h"
 #include "WinUtils.h"
 #include <malloc.h>
-
-
 
 /* --------------------------------------------------------------------------
  * Some defined values:

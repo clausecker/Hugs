@@ -11,16 +11,14 @@
  * ------------------------------------------------------------------------*/
 
 
-#include "..\Prelude.h"
+#include "prelude.h"
 
 #if HUGS_FOR_WINDOWS
 #define STRICT 1
 
-
 #include "WinUtils.h"
 #include <StdLib.h>
 #include <direct.h>
-
 
 /* Default colors used to map the DIB colors	*/
 /* to the current system colors:                */
