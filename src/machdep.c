@@ -11,8 +11,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.111 $
- * $Date: 2003/12/07 20:29:08 $
+ * $Revision: 1.112 $
+ * $Date: 2003/12/16 05:55:32 $
  * ------------------------------------------------------------------------*/
 #include "prelude.h"
 #include "storage.h"
@@ -2067,9 +2067,9 @@ void*  dll; {
     case 0 : 
         {
 	    APIVersionFun versionFun;
-	    dll = getDLL(mkDLLFilename(scriptFile));
 	    Int   version = 5;
 
+	    dll = getDLL(mkDLLFilename(scriptFile));
 	    versionFun = (APIVersionFun)getDLLSymbol(dll,API_VERSION_FUN);
 	    if (versionFun) {
 	      version = (*versionFun)();
