@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.64 $
- * $Date: 2002/04/16 21:06:03 $
+ * $Revision: 1.65 $
+ * $Date: 2002/04/17 14:23:46 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -557,7 +557,7 @@ Bool   isHidden; {
 			    ys=tl(ys);
 			}
 		    } else {
-		      subentities = cclass(c).members; //extractSigdecls(cclass(c).members);
+		      subentities = cclass(c).members;
 		    }
 		}
 		if (subentities != NIL && subentities != DOTDOT) {
@@ -782,14 +782,6 @@ Name n; {
      && name(n).mod != name(clash).mod ) {
       name(clash).clashes = cons(n,name(clash).clashes);
     }
-    /*
-	ERRMSG(0) "Entity \"%s\" imported from module \"%s\" already defined in module \"%s\"",
-		  textToStr(name(n).text), 
-		  textToStr(module(source).text),
-		  textToStr(module(name(clash).mod).text)
-	EEND;
-    }
-    */
 }
 
 static Void local importTycon(source,tc)
@@ -799,17 +791,23 @@ Tycon tc; {
     if (nonNull(clash) && clash!=tc
       /* See importName() comment. */
      && tycon(tc).mod != tycon(clash).mod ) {
+      tycon(clash).clashes = cons(tc,tycon(clash).clashes);
+      /*
 	ERRMSG(0) "Tycon \"%s\" imported from \"%s\" already defined in module \"%s\"",
 		  textToStr(tycon(tc).text),
 		  textToStr(module(source).text),
 		  textToStr(module(tycon(clash).mod).text)	
 	EEND;
+      */
     }
     if (nonNull(findClass(tycon(tc).text))) {
+      tycon(clash).clashes = cons(tc,tycon(clash).clashes);
+      /*
 	ERRMSG(0) "Import of type constructor \"%s\" clashes with class in module \"%s\"",
 		  textToStr(tycon(tc).text),
 		  textToStr(module(tycon(tc).mod).text)	
 	EEND;
+      */
     }
 }
 
@@ -820,17 +818,23 @@ Class c; {
     if (nonNull(clash) && clash!=c
       /* See importName() comment. */
      && cclass(c).mod != cclass(clash).mod ) {
+        cclass(clash).clashes = cons(c,cclass(clash).clashes);
+	/*
 	ERRMSG(0) "Class \"%s\" imported from \"%s\" already defined in module \"%s\"",
 		  textToStr(cclass(c).text),
 		  textToStr(module(source).text),
 		  textToStr(module(cclass(clash).mod).text)	
 	EEND;
+	*/
     }
     if (nonNull(findTycon(cclass(c).text))) {
+        cclass(clash).clashes = cons(c,cclass(clash).clashes);
+	/*      
 	ERRMSG(0) "Import of class \"%s\" clashes with type constructor in module \"%s\"",
 		  textToStr(cclass(c).text),
 		  textToStr(module(source).text)	
 	EEND;
+	*/
     }
 }
 
@@ -1065,13 +1069,26 @@ Cell lhs;				/* left hand side of definition	   */
 Cell rhs;				/* right hand side of definition   */
 Cell what; {				/* SYNONYM/DATATYPE/etc...	   */
     Text t = textOf(getHead(lhs));
+    Tycon tc = findTycon(t);
 
-    if (nonNull(findTycon(t))) {
+#if 0
+    if (nonNull(tc = findTycon(t))) {
 	ERRMSG(line) "Repeated definition of type constructor \"%s\"",
 		     textToStr(t)
 	EEND;
-    }
-    else if (nonNull(findClass(t))) {
+    } else
+#endif
+    if (nonNull(tc) && nonNull(tycon(tc).clashes)) {
+        List ls = tycon(tc).clashes;
+	ERRMSG(line) "Ambiguous type constructor occurrence \"%s\"", textToStr(t) ETHEN
+        ERRTEXT "\n*** Could refer to: " ETHEN
+       ERRTEXT "%s.%s ", textToStr(module(tycon(tc).mod).text), textToStr(tycon(tc).text) ETHEN
+	for(;nonNull(ls);ls=tl(ls)) {
+	  ERRTEXT "%s.%s", textToStr(module(tycon(hd(ls)).mod).text), textToStr(tycon(hd(ls)).text)
+	  ETHEN
+	}
+	ERRTEXT "\n" EEND;
+    } else if (nonNull(findClass(t))) {
 	ERRMSG(line) "\"%s\" used as both class and type constructor",
 		     textToStr(t)
 	EEND;
@@ -1337,10 +1354,15 @@ Cell  cd; {				/* definitions (w or w/o deriving) */
 	n = findName(textOf(con));	/* Allocate constructor fun name   */
 	if (isNull(n)) {
 	    n = newName(textOf(con),NIL);
+	} else if (name(n).defn!=PREDEFINED && name(n).mod == currentModule) {
+	  /* A local repeated definition */
+	  duplicateError(line,name(n).mod,name(n).text,"constructor function");
 	} else if (name(n).defn!=PREDEFINED) {
-	    duplicateError(line,name(n).mod,name(n).text,
-			   "constructor function");
+	  removeName(n);
+	  n            = newName(textOf(con),NIL);
+	  name(n).defn = PREDEFINED;
 	}
+
 	name(n).arity  = arity;		/* Save constructor fun details	   */
 	name(n).line   = line;
 	name(n).parent = t;
@@ -2159,12 +2181,15 @@ Class parent; {
 
     if (isNull(m)) {
 	m = newName(textOf(v),parent);
-    } else if (name(m).defn!=PREDEFINED) {
+    } else if (name(m).defn!=PREDEFINED && name(m).mod == currentModule) {
 	ERRMSG(l) "Repeated definition for member function \"%s.%s\"",
 	  textToStr(module(name(m).mod).text),textToStr(name(m).text)
 	EEND;
+    } else if (name(m).defn!=PREDEFINED) {
+	  removeName(m);
+	  m            = newName(textOf(v),parent);
+	  name(m).defn = PREDEFINED;
     }
-
     name(m).line   = l;
     name(m).arity  = 1;
     name(m).number = mfunNo(no);

@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: storage.c,v $
- * $Revision: 1.36 $
- * $Date: 2002/04/17 04:05:52 $
+ * $Revision: 1.37 $
+ * $Date: 2002/04/17 14:23:46 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -329,12 +329,13 @@ Text t; {
 	EEND;
     }
     tycon(tyconHw).text          = t;   /* clear new tycon record          */
-    tycon(tyconHw).kind          = NIL;
-    tycon(tyconHw).defn          = NIL;
-    tycon(tyconHw).what          = NIL;
     tycon(tyconHw).mod           = currentModule;
+    tycon(tyconHw).kind          = NIL;
+    tycon(tyconHw).what          = NIL;
+    tycon(tyconHw).defn          = NIL;
     module(currentModule).tycons = cons(tyconHw,module(currentModule).tycons);
     tycon(tyconHw).nextTyconHash = tyconHash[h];
+    tycon(tyconHw).clashes       = NIL;
     tyconHash[h]                 = tyconHw;
 
     return tyconHw++;
@@ -365,6 +366,7 @@ Tycon tc; {
     Text  t = tycon(tc).text;
     Int   h = tHash(t);
     tycon(tc).nextTyconHash = tyconHash[h];
+    tycon(tc).clashes       = NIL;
     tyconHash[h]            = tc;
 }
 
@@ -450,6 +452,24 @@ List   ts; {                            /* Null pattern matches every tycon*/
 	    if (nonNull(tycon(tc).kind))
 		ts = insertTycon(tc,ts);
     return ts;
+}
+
+/*
+ * Remove 'tc' from a module's 'tycons' list; used to implement 
+ * local overrides of imported decls.
+ */
+Void removeTycon(tc)
+Tycon tc; {
+  List ls    = module(currentModule).tycons;
+  List* prev = &(module(currentModule).tycons);
+    
+  for (;nonNull(ls);ls=tl(ls)) {
+    if (hd(ls) == tc) {
+      *prev = tl(ls);
+      break;
+    }
+    prev = &(tl(ls));
+  }
 }
 
 /* --------------------------------------------------------------------------
@@ -963,22 +983,23 @@ Text t; {
     }
 #endif
 
-    cclass(classHw).text      = t;
-    cclass(classHw).line      = 0;
-    cclass(classHw).arity     = 0;
-    cclass(classHw).tyvars    = NIL;
-    cclass(classHw).kinds     = NIL;
-    cclass(classHw).head      = NIL;
-    cclass(classHw).fds       = NIL;
-    cclass(classHw).xfds      = NIL;
-    cclass(classHw).dcon      = NIL;
-    cclass(classHw).supers    = NIL;
-    cclass(classHw).numSupers = 0;
-    cclass(classHw).dsels     = NIL;
-    cclass(classHw).members   = NIL;
+    cclass(classHw).text       = t;
+    cclass(classHw).line       = 0;
+    cclass(classHw).arity      = 0;
+    cclass(classHw).tyvars     = NIL;
+    cclass(classHw).kinds      = NIL;
+    cclass(classHw).head       = NIL;
+    cclass(classHw).fds        = NIL;
+    cclass(classHw).xfds       = NIL;
+    cclass(classHw).dcon       = NIL;
+    cclass(classHw).supers     = NIL;
+    cclass(classHw).numSupers  = 0;
+    cclass(classHw).dsels      = NIL;
+    cclass(classHw).members    = NIL;
     cclass(classHw).numMembers = 0;
-    cclass(classHw).defaults  = NIL;
-    cclass(classHw).instances = NIL;
+    cclass(classHw).defaults   = NIL;
+    cclass(classHw).instances  = NIL;
+    cclass(classHw).clashes    = NIL;
     classes=cons(classHw,classes);
     cclass(classHw).mod       = currentModule;
     module(currentModule).classes=cons(classHw,module(currentModule).classes);
@@ -3326,6 +3347,7 @@ Int what; {
 			   mark(tycon(i).defn);
 			   mark(tycon(i).kind);
 			   mark(tycon(i).what);
+			   mark(tycon(i).clashes);
 		       }
 		       end("Type constructors", tyconHw-TYCMIN);
 
@@ -3341,6 +3363,7 @@ Int what; {
 			   mark(cclass(i).members);
 			   mark(cclass(i).defaults);
 			   mark(cclass(i).instances);
+			   mark(cclass(i).clashes);
 		       }
 		       mark(classes);
 		       end("Classes", classHw-CLASSMIN);

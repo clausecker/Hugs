@@ -8,8 +8,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: storage.h,v $
- * $Revision: 1.32 $
- * $Date: 2002/04/16 21:06:03 $
+ * $Revision: 1.33 $
+ * $Date: 2002/04/17 14:23:46 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -613,6 +613,7 @@ struct strTycon {
     Cell  what;				/* DATATYPE/SYNONYM/RESTRICTSYN... */
     Cell  defn;
     Tycon nextTyconHash;
+    List clashes;
 };
 
 extern struct strTycon DECTABLE(tabTycon);
@@ -620,6 +621,7 @@ extern struct strTycon DECTABLE(tabTycon);
 extern Tycon newTycon	  Args((Text));
 extern Tycon findTycon	  Args((Text));
 extern Tycon addTycon	  Args((Tycon));
+extern Void  removeTycon  Args((Tycon));
 extern Tycon findQualTycon Args((Cell));
 extern Tycon addPrimTycon Args((Text,Kind,Int,Cell,Cell));
 
@@ -695,8 +697,8 @@ extern struct strName DECTABLE(tabName);
 
 extern Name   newName	    Args((Text,Cell));
 extern Name   findName	    Args((Text));
-extern Void   removeName    Args((Text));
 extern Name   addName	    Args((Name));
+extern Void   removeName    Args((Name));
 extern Name   findQualName  Args((Cell));
 extern List   findQualNames Args((Cell));
 extern Name   findQualFun   Args((Text,Text));
@@ -753,6 +755,7 @@ struct strClass {
     Int    numMembers;			/* length(members)		   */
     List   defaults;			/* :: [Name]			   */
     List   instances;			/* :: [Inst]			   */
+    List   clashes;                     /* Conflicting classes/tycons      */
 };
 
 #if WANT_FIXED_SIZE_TABLES
