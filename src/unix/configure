@@ -9104,7 +9104,7 @@ main()
     sym = NSLookupSymbolInModule(handle, SYMBOL1); 
     if (sym != 0) exit(SYM1_OK);
     
-    sym = NSLookupSymbolInModule(handle, SYMBOL1); 
+    sym = NSLookupSymbolInModule(handle, SYMBOL2); 
     if (sym != 0) exit(SYM2_OK);
     
     exit(CANTFIND);
@@ -9145,11 +9145,12 @@ EOF
 if { (eval echo configure:9146: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} 
 then 
   ./conftest 2>/dev/null
-  if test $? = 3; then
+  ac_result=$?
+  if test $ac_result = 3; then
     ac_cv_dll_flags="/LD"
     ac_cv_leading_underscore=no
   fi
-  if test $? = 4; then
+  if test $ac_result = 4; then
     ac_cv_dll_flags="/LD"
     ac_cv_leading_underscore=yes
   fi
@@ -9162,7 +9163,7 @@ fi
                 
 
 echo $ac_n "checking if '"-shared"' builds loadable libraries""... $ac_c" 1>&6
-echo "configure:9166: checking if '"-shared"' builds loadable libraries" >&5
+echo "configure:9167: checking if '"-shared"' builds loadable libraries" >&5
 if eval "test \"`echo '$''{'ac_cv_dll_flags'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -9177,7 +9178,7 @@ EOF
 
   ac_mkdll='${CC-cc} "-shared" conftest_dl.c -o conftest_dl.so 1>&5'
 
-  if { (eval echo configure:9181: \"$ac_mkdll\") 1>&5; (eval $ac_mkdll) 2>&5; } && test -s conftest_dl.so 
+  if { (eval echo configure:9182: \"$ac_mkdll\") 1>&5; (eval $ac_mkdll) 2>&5; } && test -s conftest_dl.so 
   then 
     cat > conftest.c << EOF
 #include "confdefs.h"
@@ -9258,7 +9259,7 @@ main()
     sym = NSLookupSymbolInModule(handle, SYMBOL1); 
     if (sym != 0) exit(SYM1_OK);
     
-    sym = NSLookupSymbolInModule(handle, SYMBOL1); 
+    sym = NSLookupSymbolInModule(handle, SYMBOL2); 
     if (sym != 0) exit(SYM2_OK);
     
     exit(CANTFIND);
@@ -9296,14 +9297,15 @@ main()
 EOF
 
 
-if { (eval echo configure:9300: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} 
+if { (eval echo configure:9301: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} 
 then 
   ./conftest 2>/dev/null
-  if test $? = 3; then
+  ac_result=$?
+  if test $ac_result = 3; then
     ac_cv_dll_flags="-shared"
     ac_cv_leading_underscore=no
   fi
-  if test $? = 4; then
+  if test $ac_result = 4; then
     ac_cv_dll_flags="-shared"
     ac_cv_leading_underscore=yes
   fi
@@ -9316,7 +9318,7 @@ fi
             
 
 echo $ac_n "checking if '"-bundle"' builds loadable libraries""... $ac_c" 1>&6
-echo "configure:9320: checking if '"-bundle"' builds loadable libraries" >&5
+echo "configure:9322: checking if '"-bundle"' builds loadable libraries" >&5
 if eval "test \"`echo '$''{'ac_cv_dll_flags'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -9331,7 +9333,7 @@ EOF
 
   ac_mkdll='${CC-cc} "-bundle" conftest_dl.c -o conftest_dl.so 1>&5'
 
-  if { (eval echo configure:9335: \"$ac_mkdll\") 1>&5; (eval $ac_mkdll) 2>&5; } && test -s conftest_dl.so 
+  if { (eval echo configure:9337: \"$ac_mkdll\") 1>&5; (eval $ac_mkdll) 2>&5; } && test -s conftest_dl.so 
   then 
     cat > conftest.c << EOF
 #include "confdefs.h"
@@ -9412,7 +9414,7 @@ main()
     sym = NSLookupSymbolInModule(handle, SYMBOL1); 
     if (sym != 0) exit(SYM1_OK);
     
-    sym = NSLookupSymbolInModule(handle, SYMBOL1); 
+    sym = NSLookupSymbolInModule(handle, SYMBOL2); 
     if (sym != 0) exit(SYM2_OK);
     
     exit(CANTFIND);
@@ -9450,14 +9452,15 @@ main()
 EOF
 
 
-if { (eval echo configure:9454: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} 
+if { (eval echo configure:9456: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} 
 then 
   ./conftest 2>/dev/null
-  if test $? = 3; then
+  ac_result=$?
+  if test $ac_result = 3; then
     ac_cv_dll_flags="-bundle"
     ac_cv_leading_underscore=no
   fi
-  if test $? = 4; then
+  if test $ac_result = 4; then
     ac_cv_dll_flags="-bundle"
     ac_cv_leading_underscore=yes
   fi
@@ -9470,7 +9473,7 @@ fi
         
 
 echo $ac_n "checking if '"-bundle -lc"' builds loadable libraries""... $ac_c" 1>&6
-echo "configure:9474: checking if '"-bundle -lc"' builds loadable libraries" >&5
+echo "configure:9477: checking if '"-bundle -lc"' builds loadable libraries" >&5
 if eval "test \"`echo '$''{'ac_cv_dll_flags'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -9485,7 +9488,7 @@ EOF
 
   ac_mkdll='${CC-cc} "-bundle -lc" conftest_dl.c -o conftest_dl.so 1>&5'
 
-  if { (eval echo configure:9489: \"$ac_mkdll\") 1>&5; (eval $ac_mkdll) 2>&5; } && test -s conftest_dl.so 
+  if { (eval echo configure:9492: \"$ac_mkdll\") 1>&5; (eval $ac_mkdll) 2>&5; } && test -s conftest_dl.so 
   then 
     cat > conftest.c << EOF
 #include "confdefs.h"
@@ -9566,7 +9569,7 @@ main()
     sym = NSLookupSymbolInModule(handle, SYMBOL1); 
     if (sym != 0) exit(SYM1_OK);
     
-    sym = NSLookupSymbolInModule(handle, SYMBOL1); 
+    sym = NSLookupSymbolInModule(handle, SYMBOL2); 
     if (sym != 0) exit(SYM2_OK);
     
     exit(CANTFIND);
@@ -9604,14 +9607,15 @@ main()
 EOF
 
 
-if { (eval echo configure:9608: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} 
+if { (eval echo configure:9611: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} 
 then 
   ./conftest 2>/dev/null
-  if test $? = 3; then
+  ac_result=$?
+  if test $ac_result = 3; then
     ac_cv_dll_flags="-bundle -lc"
     ac_cv_leading_underscore=no
   fi
-  if test $? = 4; then
+  if test $ac_result = 4; then
     ac_cv_dll_flags="-bundle -lc"
     ac_cv_leading_underscore=yes
   fi
@@ -9625,7 +9629,7 @@ fi
 
 
 echo $ac_n "checking if '"-r"' builds loadable libraries""... $ac_c" 1>&6
-echo "configure:9629: checking if '"-r"' builds loadable libraries" >&5
+echo "configure:9633: checking if '"-r"' builds loadable libraries" >&5
 if eval "test \"`echo '$''{'ac_cv_dll_flags'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -9640,7 +9644,7 @@ EOF
 
   ac_mkdll='${CC-cc} "-r" conftest_dl.c -o conftest_dl.so 1>&5'
 
-  if { (eval echo configure:9644: \"$ac_mkdll\") 1>&5; (eval $ac_mkdll) 2>&5; } && test -s conftest_dl.so 
+  if { (eval echo configure:9648: \"$ac_mkdll\") 1>&5; (eval $ac_mkdll) 2>&5; } && test -s conftest_dl.so 
   then 
     cat > conftest.c << EOF
 #include "confdefs.h"
@@ -9721,7 +9725,7 @@ main()
     sym = NSLookupSymbolInModule(handle, SYMBOL1); 
     if (sym != 0) exit(SYM1_OK);
     
-    sym = NSLookupSymbolInModule(handle, SYMBOL1); 
+    sym = NSLookupSymbolInModule(handle, SYMBOL2); 
     if (sym != 0) exit(SYM2_OK);
     
     exit(CANTFIND);
@@ -9759,14 +9763,15 @@ main()
 EOF
 
 
-if { (eval echo configure:9763: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} 
+if { (eval echo configure:9767: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} 
 then 
   ./conftest 2>/dev/null
-  if test $? = 3; then
+  ac_result=$?
+  if test $ac_result = 3; then
     ac_cv_dll_flags="-r"
     ac_cv_leading_underscore=no
   fi
-  if test $? = 4; then
+  if test $ac_result = 4; then
     ac_cv_dll_flags="-r"
     ac_cv_leading_underscore=yes
   fi

@@ -11,8 +11,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.56 $
- * $Date: 2002/07/05 05:21:26 $
+ * $Revision: 1.57 $
+ * $Date: 2002/07/09 21:18:35 $
  * ------------------------------------------------------------------------*/
 #include <math.h>
 
@@ -1952,7 +1952,7 @@ String dll; {
   return instance;
 }
 
-static void* local getDLLSymbol(dll,symbol)  /* lookup dll symbol */
+static void* local getDLLSymbol(instance,symbol)  /* lookup dll symbol */
 void* instance;
 String symbol; {
   void *sym;

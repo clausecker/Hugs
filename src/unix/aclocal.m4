@@ -543,7 +543,7 @@ main()
     sym = NSLookupSymbolInModule(handle, SYMBOL1); 
     if (sym != 0) exit(SYM1_OK);
     
-    sym = NSLookupSymbolInModule(handle, SYMBOL1); 
+    sym = NSLookupSymbolInModule(handle, SYMBOL2); 
     if (sym != 0) exit(SYM2_OK);
     
     exit(CANTFIND);
@@ -585,11 +585,12 @@ if AC_TRY_EVAL(ac_link) && test -s conftest${ac_exeext}
 then dnl compiling and linking loader succeeded
 
   ./conftest 2>/dev/null
-  if test $? = 3; then
+  ac_result=$?
+  if test $ac_result = 3; then
     ac_cv_dll_flags=$1
     ac_cv_leading_underscore=no
   fi
-  if test $? = 4; then
+  if test $ac_result = 4; then
     ac_cv_dll_flags=$1
     ac_cv_leading_underscore=yes
   fi
