@@ -19,8 +19,8 @@
  * included in the distribution.
  *
  * $RCSfile: iomonad.c,v $
- * $Revision: 1.7 $
- * $Date: 1999/09/20 23:13:06 $
+ * $Revision: 1.8 $
+ * $Date: 1999/10/18 19:15:02 $
  * ------------------------------------------------------------------------*/
  
 Name nameIORun;			        /* run IO code                     */
@@ -565,11 +565,8 @@ primFun(primHPutChar) {			/* print character on handle	   */
 primFun(primHPutStr) {			/* print string on handle	   */
     Int h;
     HandleArg(h,4);
-    drop();
-    push(primArg(4));			/* duplicate the handle before	   */
-					/* possible GC inside String eval  */
-    push(primArg(2));			/* and copy the String back onto   */
-					/* the top of the stack            */
+    push(primArg(3));
+    primArg(3) = NIL;
     if (handles[h].hmode&(HWRITE|HAPPEND)) {
 	blackHoleRoot();
 	eval(pop());
