@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: ffi.c,v $
- * $Revision: 1.26 $
- * $Date: 2003/03/09 23:53:04 $
+ * $Revision: 1.27 $
+ * $Date: 2003/03/12 16:30:47 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -67,12 +67,7 @@ String s; {
 	ffiFlags[l] = ' ';
 	strcpy(ffiFlags+l+1,s);
     } else {
-        ffiFlags=(char *)malloc(strlen(s)+1);
-	if (ffiFlags==0) {
-	    ERRMSG(0) "String storage space exhausted"
-	    EEND;
-	}
-	strcpy(ffiFlags,s);
+        ffiFlags = strCopy(s);
     }
 }
 
