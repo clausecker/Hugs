@@ -147,7 +147,7 @@ chmod 755 $BuildFFI
 #	(each of these goes in a separate hierarchy under {Hugs}/packages)
 
 core_packages='base haskell98 haskell-src network QuickCheck'
-extra_packages='fgl HaXml mtl parsec'
+extra_packages='fgl HaXml mtl parsec HUnit'
 
 #
 # ToDo: fix -- cygwin supports 'unix' only when no -mno-cygwin is given to gcc
