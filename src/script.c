@@ -32,6 +32,7 @@
 struct strScript {
     String fileName;			/* Script file name                */
     String realName;			/* Full path to canonical name     */
+    String parentName;                  /* Module that caused this one to load */
     Time lastChange;			/* Time of last change to script   */
     Bool postponed;			/* Indicates postponed load        */
     Bool chased;			/* Added by import chasing?        */
@@ -52,7 +53,7 @@ static Bool   needsImports;             /* set to TRUE if imports required */
 /* --------------------------------------------------------------------------
  * Local function prototypes:
  * ------------------------------------------------------------------------*/
-static Bool local addScript     Args((String,Long));
+static Bool local addScript     Args((String,String,Long));
 static Void local freeScript    Args((Int));
 
 /* --------------------------------------------------------------------------
@@ -147,24 +148,28 @@ String scr; {
  * Loading script files:
  * ------------------------------------------------------------------------*/
 
-Void addScriptName(s,sch)  /* Add script to list of scripts   */
-String s;                  /* to be read in ...               */
-Bool   sch; {              /* TRUE => requires pathname search*/
+Void addScriptName(p,s,sch)  /* Add script to list of scripts   */
+String p;                    /* */
+String s;                    /* to be read in ...               */
+Bool   sch; {                /* TRUE => requires pathname search*/
     if (namesUpto>=NUM_SCRIPTS) {
 	ERRMSG(0) "Too many module files (maximum of %d allowed)",
 		  NUM_SCRIPTS
 	EEND;
 	return;
     }
-    scriptTable[namesUpto].fileName = strCopy(sch ? findPathname(NULL,s) : s);
-    scriptTable[namesUpto].realName = strCopy(RealPath(scriptTable[namesUpto].fileName));
-    scriptTable[namesUpto].chased   = !sch;
+    scriptTable[namesUpto].fileName   = strCopy(sch ? findPathname(NULL,s) : s);
+    scriptTable[namesUpto].realName   = strCopy(RealPath(scriptTable[namesUpto].fileName));
+    scriptTable[namesUpto].parentName = p;
+    scriptTable[namesUpto].chased     = !sch;
     namesUpto++;
 }
 
-static Bool local addScript(fname,len)  /* read single script file */
-String fname;                           /* name of script file     */
-Long   len; {                           /* length of script file   */
+static Bool local addScript(pname,fname,len)  /* read single script file */
+String pname;                                 /* parent script name */
+String fname;                                 /* name of script file     */
+Long   len; {                                 /* length of script file   */
+  
 #if HUGS_FOR_WINDOWS         /* Set clock cursor while loading   */
     allowBreak();
     SetCursor(LoadCursor(NULL, IDC_WAIT));
@@ -177,11 +182,13 @@ Long   len; {                           /* length of script file   */
     setLastEdit(fname,0);
 
     needsImports = FALSE;
+    scriptFile = pname; /* set 'parent' as the context */
     if (!parseScript(fname,len)) {   /* process script file */
 	/* file or parse error, drop the script */ 
 	forgetAScript(numScripts);
 	errFail();
     }
+    scriptFile = fname; /* make sure we're reporting errors wrt the parsed module */
     if (needsImports) return FALSE;
     checkDefns();
     typeCheckDefns();
@@ -209,7 +216,7 @@ List imps; {
 	    needsImports           = TRUE;
 
 	    if (i>=namesUpto)       /* Name not found (i==namesUpto)   */
-		addScriptName(iname,FALSE);
+		addScriptName(origName,iname,FALSE);
 	    else if (scriptTable[i].postponed) {/* Check for recursive dependency */
 		ERRMSG(0)
 		  "Recursive import dependency between \"%s\" and \"%s\"",
@@ -244,13 +251,13 @@ String argv[]; {
     if (iniArgc > 0) {
         /* load additional files found in the preferences file */
         for (i=0; i<iniArgc; i++) {
-	    addScriptName(iniArgv[i],TRUE);
+	    addScriptName(NULL,iniArgv[i],TRUE);
         }
     }
 #endif
     for (i=1; i<argc; ++i) {
       if (argv[i] && argv[i][0] && !isOption(argv[i])) {
-	    addScriptName(argv[i],TRUE);
+	    addScriptName(NULL,argv[i],TRUE);
 #if HUGS_FOR_WINDOWS
 	    SetWorkingDir(argv[i]);
 #endif
@@ -323,7 +330,8 @@ Int n; {                   /* loading everything after and    */
 	if (numScripts>0)               /* no new script for prelude       */
 	    startNewScript(scriptTable[numScripts].fileName);
         generate_ffi = generateFFI && !scriptTable[numScripts].chased;
-	if (addScript(scriptTable[numScripts].fileName,fileSize))
+	if (addScript(scriptTable[numScripts].parentName,
+		      scriptTable[numScripts].fileName,fileSize))
 	    numScripts++;
 	else
 	    dropScriptsFrom(numScripts-1);

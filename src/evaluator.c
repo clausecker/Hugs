@@ -203,11 +203,11 @@ Void loadPrelude() {  /* load in the Prelude module(s). */
 	       hugsPath ? hugsPath : "");
 	fatal("Unable to load prelude");
     }
-    addScriptName(prelLocation, FALSE);
+    addScriptName(NULL, prelLocation, FALSE);
     free(prelName);
     
     /* add the H98 Prelude module to the stack */
-    addScriptName(findMPathname(NULL, STD_PRELUDE,hugsPath), FALSE);
+    addScriptName(NULL, findMPathname(NULL, STD_PRELUDE,hugsPath), FALSE);
 
     everybody(INSTALL);
 
