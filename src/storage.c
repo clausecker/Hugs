@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: storage.c,v $
- * $Revision: 1.32 $
- * $Date: 2002/04/11 23:20:22 $
+ * $Revision: 1.33 $
+ * $Date: 2002/04/16 16:02:58 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -332,10 +332,8 @@ Text t; {
     tycon(tyconHw).kind          = NIL;
     tycon(tyconHw).defn          = NIL;
     tycon(tyconHw).what          = NIL;
-#if !IGNORE_MODULES
     tycon(tyconHw).mod           = currentModule;
     module(currentModule).tycons = cons(tyconHw,module(currentModule).tycons);
-#endif
     tycon(tyconHw).nextTyconHash = tyconHash[h];
     tyconHash[h]                 = tyconHw;
 
@@ -356,9 +354,7 @@ Tycon tc; {
     Tycon oldtc = findTycon(tycon(tc).text);
     if (isNull(oldtc)) {
 	hashTycon(tc);
-#if !IGNORE_MODULES
 	module(currentModule).tycons=cons(tc,module(currentModule).tycons);
-#endif
 	return tc;
     } else
 	return oldtc;
@@ -380,9 +376,6 @@ Cell id; {
 	case CONOPCELL :
 	    return findTycon(textOf(id));
 	case QUALIDENT : {
-#if IGNORE_MODULES
-	    return findTycon(qtextOf(id));
-#else /* !IGNORE_MODULES */
 	    Text   t  = qtextOf(id);
 	    List   ms = findQualifiers(qmodOf(id));
 	    if (isNull(ms)) return NIL;
@@ -393,7 +386,7 @@ Cell id; {
 	      if (m == currentModule) {
 		es = module(m).tycons;
 	      } else {
-		es = module(m).exports;
+		es = getModuleImports(m);
 	      }
 	      for(; nonNull(es); es=tl(es)) {
 		Cell e = hd(es);
@@ -404,7 +397,6 @@ Cell id; {
 	      }
 	    }
 	    return NIL;
-#endif /* !IGNORE_MODULES */
 	}
 	default : internal("findQualTycon2");
     }
@@ -423,10 +415,8 @@ Cell defn; {
     tycon(tc).what  = what;
     tycon(tc).defn  = defn;
     tycon(tc).arity = ar;
-
-#if !IGNORE_MODULES
     tycon(tc).mod    = currentModule;
-#endif
+
     return tc;
 }
 
@@ -502,10 +492,9 @@ Cell parent; {
     name(nameHw).extFun       = 0;
     name(nameHw).primDef      = 0;
     name(nameHw).code         = 0;
-#if !IGNORE_MODULES
     name(nameHw).mod          = currentModule;
+    name(nameHw).clashes      = NIL;
     module(currentModule).names=cons(nameHw,module(currentModule).names);
-#endif
     name(nameHw).nextNameHash = nameHash[h];
     nameHash[h]               = nameHw;
     return nameHw++;
@@ -525,9 +514,7 @@ Name nm; {				/* no clash is caused		   */
     Name oldnm = findName(name(nm).text);
     if (isNull(oldnm)) {
 	hashName(nm);
-#if !IGNORE_MODULES
 	module(currentModule).names=cons(nm,module(currentModule).names);
-#endif
 	return nm;
     } else
 	return oldnm;
@@ -538,6 +525,7 @@ Name nm; {
     Text t		  = name(nm).text;
     Int  h		  = nHash(t);
     name(nm).nextNameHash = nameHash[h];
+    name(nm).clashes      = NIL;
     nameHash[h]           = nm;
 }
 
@@ -552,9 +540,6 @@ Cell id; {				/* in name table		   */
 	case CONOPCELL :
 	    return findName(textOf(id));
 	case QUALIDENT : {
-#if IGNORE_MODULES
-	    return findName(qtextOf(id));
-#else /* !IGNORE_MODULES */
 	    Text   t  = qtextOf(id);
 	    List  ms  = findQualifiers(qmodOf(id));
 	    if (isNull(ms)) return NIL;
@@ -565,7 +550,7 @@ Cell id; {				/* in name table		   */
 	      if (m == currentModule) {
 		es = module(m).names;
 	      } else {
-		es = module(m).exports;
+		es = getModuleImports(m);
 	      }
 	      for(; nonNull(es); es=tl(es)) {
 		Cell e = hd(es);
@@ -587,12 +572,65 @@ Cell id; {				/* in name table		   */
 	      }
 	    }
 	    return NIL;
-#endif /* !IGNORE_MODULES */
 	}
 	default : internal("findQualName2");
     }
     return NIL;/*NOTUSED*/
 }
+
+List findQualNames(id)			/* Locate (possibly qualified) names */
+Cell id; {				/* in name table		     */
+    if (!isPair(id))
+	internal("findQualName");
+    switch (fst(id)) {
+	case VARIDCELL :
+	case VAROPCELL :
+	case CONIDCELL :
+	case CONOPCELL :
+  	    return singleton(findName(textOf(id)));
+	case QUALIDENT : {
+	    Text   t  = qtextOf(id);
+	    List  ms  = findQualifiers(qmodOf(id));
+	    List res  = NIL;
+	    if (isNull(ms)) return NIL;
+	    while (nonNull(ms)) {
+	      Module m  = hd(ms);
+	      List   es = NIL;
+	      ms = tl(ms);
+	      if (m == currentModule) {
+		es = module(m).names;
+	      } else {
+		es = getModuleImports(m);
+	      }
+	      for(; nonNull(es); es=tl(es)) {
+		Cell e = hd(es);
+		if (isName(e) && name(e).text==t && !cellIsMember(e,res)) {
+		  res = cons(e,res);
+		} else if (isPair(e) && DOTDOT==snd(e)) {
+		    List subentities = NIL;
+		    Cell c = fst(e);
+		    if (isTycon(c)
+			&& (tycon(c).what==DATATYPE || tycon(c).what==NEWTYPE))
+			subentities = tycon(c).defn;
+		    else if (isClass(c))
+			subentities = cclass(c).members;
+		    for(; nonNull(subentities); subentities=tl(subentities)) {
+		      if (name(hd(subentities)).text == t 
+		          && !cellIsMember(hd(subentities),res) ) {
+			res=cons(hd(subentities),res);
+		      }
+		    }
+		}
+	      }
+	    }
+	    return res;
+	}
+	default : internal("findQualName2");
+    }
+    return NIL;/*NOTUSED*/
+}
+
+
 
 Name findQualFun(m,v)                  /* Locate name in name table       */
 Text m;
@@ -634,11 +672,7 @@ struct primInfo *info; {
 	/* It's going to break pretty soon anyway...*/
        return;
     } else {
-#if !IGNORE_MODULES
        new_entry->prim_module = currentModule;
-#else
-       new_entry->prim_module = 0;
-#endif
        new_entry->p_info      = info;
     }
     if (0 == firstPrimInfo)		/* first entry in queue		   */
@@ -660,10 +694,7 @@ Type   ty; {
     name(n).line	         = l;
     name(n).defn	         = NIL;
     name(n).type	         = ty;
-    
-#if !IGNORE_MODULES
     name(n).mod = mod;
-#endif
 
     /*
      * (mini) sigh - the primitives for the Prelude'ish modules
@@ -685,12 +716,8 @@ Type   ty; {
       info_def       = firstPrimInfo;
       lookInPrelude  = !lookInPrelude;
       for(; 0 != info_def; info_def=info_def->nextPrimInfoDef) {
-#if !IGNORE_MODULES
         if ( ( lookInPrelude && isPrelude(info_def->prim_module)) ||
 	     mod == info_def->prim_module ) {
-#else
-        if ( 1 ) {
-#endif
   	   struct primitive *prims = info_def->p_info->primFuns;
 	   Int i = 0;
 	   for (; prims[i].ref; ++i)
@@ -730,10 +757,7 @@ Cell type; {
     name(n).arity  = arity;
     name(n).number = cfunNo(no);
     name(n).type   = type;
-
-#if !IGNORE_MODULES
     name(n).mod   = currentModule;
-#endif
 
     return n;
 }
@@ -910,10 +934,8 @@ Text t; {
     cclass(classHw).defaults  = NIL;
     cclass(classHw).instances = NIL;
     classes=cons(classHw,classes);
-#if !IGNORE_MODULES
     cclass(classHw).mod       = currentModule;
     module(currentModule).classes=cons(classHw,module(currentModule).classes);
-#endif
 
 #if !WANT_FIXED_SIZE_TABLES
     dynTabClass->idx++;
@@ -942,9 +964,7 @@ Class c; {				/*  - if no clash caused	   */
     Class oldc = findClass(cclass(c).text);
     if (isNull(oldc)) {
 	classes=cons(c,classes);
-#if !IGNORE_MODULES
 	module(currentModule).classes=cons(c,module(currentModule).classes);
-#endif
 	return c;
     }
     else
@@ -956,9 +976,6 @@ Cell c; {				/* class in class list		   */
     if (!isQualIdent(c)) {
 	return findClass(textOf(c));
     } else {
-#if IGNORE_MODULES
-	return findClass(qtextOf(c));
-#else /* !IGNORE_MODULES */
 	Text   t  = qtextOf(c);
 	List   ms = findQualifiers(qmodOf(c));
 	if (isNull(ms)) return NIL;
@@ -969,7 +986,7 @@ Cell c; {				/* class in class list		   */
 	  if (m == currentModule) {
 	    es = module(m).classes;
 	  } else {
-	    es = module(m).exports;
+	    es = getModuleImports(m);
 	  }
 	  for (; nonNull(es); es=tl(es)) {
 	    Cell e = hd(es);
@@ -979,7 +996,6 @@ Cell c; {				/* class in class list		   */
 	      return fst(e);
 	  }
 	}
-#endif
     }
     return NIL;
 }
@@ -1273,9 +1289,8 @@ Int n; {
  *
  * ------------------------------------------------------------------------*/
 
-#if !IGNORE_MODULES
-static  Module   moduleHw;              /* next unused Module              */
-struct  Module   DEFTABLE(tabModule,NUM_MODULE); /* Module storage         */
+static  Module    moduleHw;              /* next unused Module              */
+struct  strModule DEFTABLE(tabModule,NUM_MODULE); /* Module storage         */
 Module  currentModule;                  /* Module currently being processed*/
 
 Bool isValidModule(m)                  /* is m a legitimate module id?     */
@@ -1290,12 +1305,13 @@ Text t; {
 	EEND;
     }
     module(moduleHw).text          = t; /* clear new module record         */
-    module(moduleHw).qualImports   = NIL;
-    module(moduleHw).exports       = NIL;
-    module(moduleHw).modImports    = NIL;
     module(moduleHw).tycons        = NIL;
     module(moduleHw).names         = NIL;
     module(moduleHw).classes       = NIL;
+    module(moduleHw).exports       = NIL;
+    module(moduleHw).modAliases    = NIL;
+    module(moduleHw).modImports    = NIL;
+    module(moduleHw).qualImports   = NIL;
     return moduleHw++;
 }
 
@@ -1322,17 +1338,17 @@ Cell c; {
 }
 
 /* Don't use - use findQualifiers() instead */
-Module findQualifier(t)    /* locate Module in import list   */
+Module findQualifier(t)    /* locate Module in alias list */
 Text t; {
     Module ms;
-    for (ms=module(currentModule).qualImports; nonNull(ms); ms=tl(ms)) {
-	if (textOf(fst(hd(ms)))==t)
-	    return snd(hd(ms));
+    for (ms=module(currentModule).modAliases; nonNull(ms); ms=tl(ms)) {
+      if ( textOf(fst(hd(ms))) == t ) {
+	return snd(hd(ms));
+      }
     }
-#if 1 /* mpj */
-    if (module(currentModule).text==t)
-	return currentModule;
-#endif
+    if (module(currentModule).text==t) {
+      return currentModule;
+    }
     return NIL;
 }
 
@@ -1341,18 +1357,23 @@ Text t; {
  * Notice that more than one module may map to the same local
  * alias.
  */
-List findQualifiers(t)   /* locate Modules in import list   */
+List findQualifiers(t)   /* locate Modules in alias list */
 Text t; {
     Module ms;
     List res = NIL;
-    for (ms=module(currentModule).qualImports; nonNull(ms); ms=tl(ms)) {
-      if (textOf(fst(hd(ms)))==t) {
-	res = cons(snd(hd(ms)), res);
+    
+    for (ms = module(currentModule).modAliases; nonNull(ms); ms=tl(ms)) {
+      if ( textOf(fst(hd(ms))) == t ) {
+	if (!cellIsMember(snd(hd(ms)),res)) {
+	  res = cons(snd(hd(ms)), res);
+	}
       }
     }
-    if (module(currentModule).text==t)
+   /* Legal? "module Foo where { import Bar as Foo; ... }" */
+   if (module(currentModule).text == t) {
       res = cons(currentModule,res);
-    return res;
+   }
+   return res;
 }
 
 
@@ -1370,7 +1391,18 @@ Module m; {
 	classes = module(m).classes;
     }
 }
-#endif /* !IGNORE_MODULES */
+
+List getModuleImports (m) /* In 'currentModule', look up imports from 'm'. */
+Module m; {
+  Module ms = module(currentModule).modImports;
+
+  for(;nonNull(ms); ms=tl(ms)) {
+      if (isPair(hd(ms)) && fst(hd(ms)) == m) {
+	return (snd(hd(ms)));
+      }
+  }
+  return NIL;
+}
 
 /* --------------------------------------------------------------------------
  * Script file storage:
@@ -1388,9 +1420,7 @@ typedef struct {                       /* record of storage state prior to */
     Text  nextNewText;
     Text  nextNewDText;
     Addr  addrHw;
-#if !IGNORE_MODULES
     Module moduleHw;
-#endif
     Tycon tyconHw;
     Name  nameHw;
     Class classHw;
@@ -1432,9 +1462,7 @@ String f; {                             /* of status for later restoration  */
 #ifdef DEBUG_SHOWUSE
     showUse("Text",   textHw,           NUM_TEXT);
     showUse("Addr",   addrHw,           NUM_ADDRS);
-#if !IGNORE_MODULES
     showUse("Module", moduleHw-MODMIN,  NUM_MODULE);
-#endif
     showUse("Tycon",  tyconHw-TYCMIN,   NUM_TYCON);
     showUse("Name",   nameHw-NAMEMIN,   NUM_NAME);
 #if WANT_FIXED_SIZE_TABLES
@@ -1454,9 +1482,7 @@ String f; {                             /* of status for later restoration  */
     scripts[scriptHw].nextNewText  = nextNewText;
     scripts[scriptHw].nextNewDText = nextNewDText;
     scripts[scriptHw].addrHw       = addrHw;
-#if !IGNORE_MODULES
     scripts[scriptHw].moduleHw     = moduleHw;
-#endif
     scripts[scriptHw].tyconHw      = tyconHw;
     scripts[scriptHw].nameHw       = nameHw;
     scripts[scriptHw].classHw      = classHw;
@@ -1475,7 +1501,6 @@ Bool isPreludeScript() {                /* Test whether this is the Prelude*/
     return (scriptHw==0);
 }
 
-#if !IGNORE_MODULES
 Bool moduleThisScript(m)                /* Test if given module is defined */
 Module m; {                             /* in current script file          */
     return scriptHw<1 || m>=scripts[scriptHw-1].moduleHw;
@@ -1484,7 +1509,6 @@ Module m; {                             /* in current script file          */
 Module lastModule() {              /* Return module in current script file */
     return (moduleHw>MODMIN ? moduleHw-1 : modulePrelude);
 }
-#endif /* !IGNORE_MODULES */
 
 #define scriptThis(nm,t,tag) \
         Script nm(x)                   \
@@ -1507,7 +1531,6 @@ Script s; {
     return (s==0) ? modulePrelude : scripts[s-1].moduleHw;
 }
 
-#if !IGNORE_MODULES
 String fileOfModule(m)
 Module m; {
     Script s;
@@ -1521,7 +1544,6 @@ Module m; {
     }
     return 0;
 }
-#endif
 
 Script scriptThisFile(f)
 Text f; {
@@ -1544,9 +1566,7 @@ Script sno; {                           /* to reading script sno           */
 	textHw       = scripts[sno].textHw;
 	nextNewText  = scripts[sno].nextNewText;
 	nextNewDText = scripts[sno].nextNewDText;
-#if !IGNORE_MODULES
 	moduleHw     = scripts[sno].moduleHw;
-#endif
 	addrHw       = scripts[sno].addrHw;
 	tyconHw      = scripts[sno].tyconHw;
 	nameHw       = scripts[sno].nameHw;
@@ -1565,21 +1585,6 @@ Script sno; {                           /* to reading script sno           */
 		textHash[i][j] = NOTEXT;
 	}
 
-#if IGNORE_MODULES
-	for (i=0; i<TYCONHSZ; ++i) {
-	    Tycon tc = tyconHash[i];
-	    while (nonNull(tc) && tc>=tyconHw)
-		tc = tycon(tc).nextTyconHash;
-	    tyconHash[i] = tc;
-	}
-
-	for (i=0; i<NAMEHSZ; ++i) {
-	    Name n = nameHash[i];
-	    while (nonNull(n) && n>=nameHw)
-		n = name(n).nextNameHash;
-	    nameHash[i] = n;
-	}
-#else /* !IGNORE_MODULES */
 	currentModule=NIL;
 	for (i=0; i<TYCONHSZ; ++i) {
 	    tyconHash[i] = NIL;
@@ -1587,7 +1592,6 @@ Script sno; {                           /* to reading script sno           */
 	for (i=0; i<NAMEHSZ; ++i) {
 	    nameHash[i] = NIL;
 	}
-#endif /* !IGNORE_MODULES */
 
 	for (i=CLASSMIN; i<classHw; i++) {
 	    List ins = cclass(i).instances;
@@ -3252,6 +3256,7 @@ Int what; {
 			   mark(name(i).parent);
 			   mark(name(i).defn);
 			   mark(name(i).type);
+			   mark(name(i).clashes);
 		       }
 		       end("Names", nameHw-NAMEMIN);
 #if OBSERVATIONS
@@ -3259,7 +3264,6 @@ Int what; {
                        for (i=OBSMIN; i<observeHw; ++i) mark(firstObs(observe(i).head));
                        end("Observations", observeHw=OBSMIN);
 #endif
-#if !IGNORE_MODULES
 		       start();
 		       for (i=MODMIN; i<moduleHw; ++i) {
 			   mark(module(i).tycons);
@@ -3267,10 +3271,10 @@ Int what; {
 			   mark(module(i).classes);
 			   mark(module(i).exports);
 			   mark(module(i).modImports);
+			   mark(module(i).modAliases);
 			   mark(module(i).qualImports);
 		       }
 		       end("Modules", moduleHw-MODMIN);
-#endif
 
 		       start();
 		       for (i=TYCMIN; i<tyconHw; ++i) {
@@ -3400,7 +3404,7 @@ Int what; {
 		       TABALLOC(tabName,   struct strName,   NUM_NAME)
 		       TABALLOC(tabClass,  struct strClass,  NUM_CLASSES)
 		       TABALLOC(cellStack, Cell,             NUM_STACK)
-		       TABALLOC(tabModule, struct Module,    NUM_SCRIPTS)
+		       TABALLOC(tabModule, struct strModule, NUM_SCRIPTS)
 #if TREX
 		       TABALLOC(tabExt,	   Text,	     NUM_EXT)
 #endif
@@ -3442,9 +3446,7 @@ Int what; {
                        breakptHw = BRKMIN;
 #endif
 
-#if !IGNORE_MODULES
 		       moduleHw = MODMIN;
-#endif
 
 		       tyconHw  = TYCMIN;
 		       for (i=0; i<TYCONHSZ; ++i)

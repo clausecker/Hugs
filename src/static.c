@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.60 $
- * $Date: 2002/04/11 23:20:21 $
+ * $Revision: 1.61 $
+ * $Date: 2002/04/16 16:02:56 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -22,7 +22,6 @@
  * ------------------------------------------------------------------------*/
 
 static Void   local kindError		Args((Int,Constr,Constr,String,Kind,Int));
-#if !IGNORE_MODULES
 static Void   local checkQualImport	Args((Pair));
 static Void   local checkUnqualImport	Args((Triple));
 
@@ -33,14 +32,17 @@ static List   local checkExportClass	Args((List,Text,Cell,Class));
 static List   local checkExport		Args((List,Text,Cell));
 static List   local checkImportEntity	Args((List,Module,Bool,Cell));
 static List   local resolveImportList	Args((Module,Cell,Bool));
-static Void   local checkImportList	Args((Pair));
+static Void   local checkImportList	Args((Bool,Pair));
+static Void   local checkQualImportList	Args((Pair));
+static Cell   local lookupImport        Args((Text,List));
+static Text   local findImportText      Args((Cell));
+static List   local mergeImportLists    Args((List,List));
 
 static Cell   local importEntity	Args((Module,Cell));
 static Void   local importName		Args((Module,Name));
 static Void   local importTycon		Args((Module,Tycon));
 static Void   local importClass		Args((Module,Class));
 static List   local checkExports	Args((List));
-#endif
 
 static Void   local checkTyconDefn	Args((Tycon));
 static Void   local depConstrs		Args((Tycon,List,Cell));
@@ -255,13 +257,7 @@ static Void   local allNoPrevDef	Args((Cell));
 static Void   local noPrevDef		Args((Int,Cell));
 static Bool   local odiff		Args((List,List));
 
-#if IGNORE_MODULES
-static Void   local duplicateErrorAux	Args((Int,Text,String));
-#define duplicateError(l,m,t,k) duplicateErrorAux(l,t,k)
-#else
-static Void   local duplicateErrorAux	Args((Int,Module,Text,String));
-#define duplicateError(l,m,t,k) duplicateErrorAux(l,m,t,k)
-#endif
+static Void   local duplicateError	Args((Int,Module,Text,String));
 static Void   local checkTypeIn		Args((Pair));
 
 /* --------------------------------------------------------------------------
@@ -341,7 +337,6 @@ Kind   extKind;				/* Kind of extension, *->row->row  */
 String reloadModule;
 #endif
 
-#if !IGNORE_MODULES
 Void startModule(nm)                             /* switch to a new module */
 Cell nm; {
     Module m;
@@ -364,17 +359,28 @@ List exps; {
     module(currentModule).exports = exps;
 }
 
-Void addQualImport(orig,new)         /* Add to qualified import list       */
-Cell orig;     /* Original name of module                                  */
-Cell new;  {   /* Name module is called within this module (or NIL)        */
+Void addQualImport(orig,new,entities) /* Add to qualified import list       */
+Cell orig;       /* Original name of module                                */
+Cell new;        /* Name module is called within this module (or NIL)      */
+List entities; { /* List of entity names */
+    /* Record the entities imported */
     module(currentModule).qualImports = 
-      cons(pair(isNull(new)?orig:new,orig),module(currentModule).qualImports);
+      cons(pair(orig,entities),module(currentModule).qualImports);
+    /* Record the module --> alias mapping */
+    module(currentModule).modAliases =  
+      cons(pair(isNull(new)?orig:new,orig), module(currentModule).modAliases);
 }
 
-Void addUnqualImport(mod,entities)     /* Add to unqualified import list   */
+Void addUnqualImport(mod,new,entities) /* An unqualified import            */
 Cell mod;         /* Name of module                                        */
+Cell new;         /* Local alias                                           */
 List entities;  { /* List of entity names                                  */
+    /* Add to unqualified import list */
     unqualImports = cons(pair(mod,entities),unqualImports);
+    /* Record the module --> alias mapping */
+    module(currentModule).modAliases =  
+      cons(pair(isNull(new)?mod:new,mod), module(currentModule).modAliases);
+    
 }
 
 static Void local checkQualImport(i)   /* Process qualified import         */
@@ -474,8 +480,9 @@ Cell   entity; { /* Entry from import/hiding list */
 		if (cclass(f).text == t) {
 		    if (!isIdent(entity)) {
 			if (DOTDOT == snd(entity)) {
-			    imports=cons(pair(f,cclass(f).members),imports);
-			    return dupOnto(cclass(f).members,imports);
+			  List sigs = cclass(f).members;
+			    imports=cons(pair(f,sigs),imports);
+			    return dupOnto(sigs,imports);
 			} else {
 			    List xs = NIL;
 			    xs = checkSubentities(xs, snd(entity), cclass(f).members,"member of class",t);
@@ -489,6 +496,10 @@ Cell   entity; { /* Entry from import/hiding list */
 	    }
 	} else if (isName(e)) {
 	    if (isIdent(entity) && name(e).text == t) {
+		imports = cons(e,imports);
+	    }
+	} else if (isTycon(e)) {
+	    if (isIdent(entity) && tycon(e).text == t) {
 		imports = cons(e,imports);
 	    }
 	} else {
@@ -513,9 +524,9 @@ Bool   isHidden; {
 	List es = module(m).exports;
 	for(; nonNull(es); es=tl(es)) {
 	    Cell e = hd(es);
-	    if (isName(e))
+	    if (isName(e)) {
 		imports = cons(e,imports);
-	    else {
+	    } else {
 		Cell c = fst(e);
 		List subentities = NIL;
 		if (isTycon(c)
@@ -546,7 +557,7 @@ Bool   isHidden; {
 			    ys=tl(ys);
 			}
 		    } else {
-			subentities = cclass(c).members;
+		      subentities = cclass(c).members; //extractSigdecls(cclass(c).members);
 		    }
 		}
 		if (subentities != NIL && subentities != DOTDOT) {
@@ -565,7 +576,79 @@ Bool   isHidden; {
     return imports;
 }
 
-static Void local checkImportList(importSpec) /*Import a module unqualified*/
+static Void local checkQualImportList(importSpec)
+Pair importSpec; {
+  /* checkQualImport() has verified that the module has already been loaded;
+   * just locate the Module for it here & update the qualImports.
+   */
+  Module m = findModid(fst(importSpec));
+  fst(importSpec) = m;
+
+  checkImportList(TRUE,importSpec);
+}
+
+static Cell local lookupImport(t,is)
+Text t;
+List is; {
+  List xs;
+  
+  for (xs=is;nonNull(xs);xs=tl(xs)) {
+    Cell e = hd(xs);
+    if (isPair(e)) {
+      Cell f= fst(e);
+      if ((isTycon(f) && tycon(f).text  == t) || 
+	  (isClass(f) && cclass(f).text == t)) {
+	return xs;
+      }
+    } else if (isName(e) && name(e).text == t) {
+      return xs;
+    }
+  }
+  return NIL;
+}
+
+static Text local findImportText(c)
+Cell c; {
+    if (isName(c))  return name(c).text;
+    if (isTycon(c)) return tycon(c).text;
+    if (isClass(c)) return cclass(c).text;
+    if (isIdent(c)) return textOf(c);
+    if (isPair(c))  return findImportText(fst(c));
+    internal("findImportText");
+    return NIL;
+}
+
+static List local mergeImportLists(ls1,ls2)
+List ls1;
+List ls2; {
+  Text t;
+  List xs;
+  List res = ls2;
+  Cell rs;
+
+  for (xs=ls1;nonNull(xs); xs=tl(xs)) {
+    t = findImportText(hd(xs));
+    if ((rs = lookupImport(t,ls2)) != NIL) {
+      /* found a match, now combine the two */
+      if (isIdent(hd(xs)) || !isPair(hd(xs))) {
+	/* just a name doesn't add any more info than what's
+	   already in the list; continue. */
+	;
+      } else if (isPair(hd(xs))) {
+	/* join the constructors/members, no elimination of dups. */
+	snd(hd(rs)) = dupOnto(snd(hd(xs)), snd(hd(rs)));
+      } else {
+	internal("mergeImportLists2");
+      }
+    } else {
+      res = cons(hd(xs),res);
+    }
+  }
+  return res;
+}
+
+static Void local checkImportList(isQual,importSpec) /*Import a module (un)qualified*/
+Bool isQual;
 Pair importSpec; {
     Module m       = fst(importSpec);
     Cell   impList = snd(importSpec);
@@ -576,7 +659,7 @@ Pair importSpec; {
     List   modImps = NIL; /* The effective import list */
     List   es = NIL;
 
-    if (moduleThisScript(m)) { 
+    if (!isQual && moduleThisScript(m)) { 
 	ERRMSG(0) "Module \"%s\" recursively imports itself",
 		  textToStr(module(m).text)
 	EEND;
@@ -596,20 +679,27 @@ Pair importSpec; {
 	  Cell e = hd(imports);
 
 	  /* If the import is a tycon/class, look for their name 
-	   * (not their pairing with their constructors/classes).
+	   * (not the pairing with their constructors/classes).
  	   */
 	  if (isPair(e)) {
 	      e = fst(e);
 	  }
 	  if (!cellIsMember(e,hidden)) {
+	    if (isQual) {
+	      modImps = cons(e,modImps);
+	    } else {
 	      modImps = cons(importEntity(m,e), modImps);
+	    }
 	  }
 	}
-    } else {
+    } else {  /* the more common case, no hidings. */
 	imports = resolveImportList(m, impList,FALSE);
-        for(; nonNull(imports); imports=tl(imports)) {
-	  if (nonNull(hd(imports))) 
-	      modImps = cons(importEntity(m,hd(imports)), modImps);
+	if (isQual) {
+	  modImps = imports;
+	} else {
+	  for(; nonNull(imports); imports=tl(imports)) {
+	    modImps = cons(importEntity(m,hd(imports)), modImps);
+	  }
 	}
     }
     /* To be able to handle re-exportation of modules, each module
@@ -623,7 +713,7 @@ Pair importSpec; {
      */
     for(es=module(currentModule).modImports;nonNull(es);es=tl(es)) {
       if (isPair(hd(es)) && fst(hd(es)) == m) {
-	snd(es) = appendOnto(modImps, snd(es));
+	snd(hd(es)) = mergeImportLists(modImps, snd(hd(es)));
 	break;
       }
     }
@@ -656,14 +746,23 @@ Cell e; {
 	}
     }
     switch (whatIs(ent)) {
-      case NAME  : importName(source,ent); 
+      case VARIDCELL  : 
+      case VAROPCELL  : 
+      case CONIDCELL  : 
+      case CONOPCELL  : 
+	           importName(source,snd(ent));
+	           return e;
+      case NAME  : 
+	           importName(source,ent); 
 	           return e;
       case TYCON : 
 	           importTycon(source,ent); 
 	           return pair(ent,cs);
       case CLASS : importClass(source,ent);
 	           return pair(ent,cs);
-      default: internal("importEntity");
+		   
+    default:   
+               internal("importEntity");
 	       return NIL;
     }
 }
@@ -673,7 +772,6 @@ Module source;
 Name n; {
     Name clash = addName(n);
     if (nonNull(clash) && clash!=n
-#if !IGNORE_MODULES
 	/* 'n' contains a name imported from another module's
 	 * export list. Due to module re-exportation, its 'home
 	 * module' (i.e., the module where 'n' was actually declared)
@@ -682,15 +780,16 @@ Name n; {
 	 * the home module of 'n' is different from that of 'clash'.
 	 */
      && name(n).mod != name(clash).mod ) {
-#else
-      ) {
-#endif
+      name(clash).clashes = cons(n,name(clash).clashes);
+    }
+    /*
 	ERRMSG(0) "Entity \"%s\" imported from module \"%s\" already defined in module \"%s\"",
 		  textToStr(name(n).text), 
 		  textToStr(module(source).text),
 		  textToStr(module(name(clash).mod).text)
 	EEND;
     }
+    */
 }
 
 static Void local importTycon(source,tc)
@@ -698,12 +797,8 @@ Module source;
 Tycon tc; {
     Tycon clash=addTycon(tc);
     if (nonNull(clash) && clash!=tc
-#if !IGNORE_MODULES
       /* See importName() comment. */
      && tycon(tc).mod != tycon(clash).mod ) {
-#else
-      ) {
-#endif
 	ERRMSG(0) "Tycon \"%s\" imported from \"%s\" already defined in module \"%s\"",
 		  textToStr(tycon(tc).text),
 		  textToStr(module(source).text),
@@ -723,12 +818,8 @@ Module source;
 Class c; {
     Class clash=addClass(c);
     if (nonNull(clash) && clash!=c
-#if !IGNORE_MODULES
       /* See importName() comment. */
      && cclass(c).mod != cclass(clash).mod ) {
-#else
-      ) {
-#endif
 	ERRMSG(0) "Class \"%s\" imported from \"%s\" already defined in module \"%s\"",
 		  textToStr(cclass(c).text),
 		  textToStr(module(source).text),
@@ -816,7 +907,7 @@ Cell e; {
 		    exports = cons(hd(xs),exports);
 	    }
 	} else {
-	    /* Re-exporting a module exorts all things imported 
+	    /* Re-exporting a module exports all things imported 
 	     * unqualified from it.  
 	     */
 	    List xs = NIL;
@@ -952,7 +1043,6 @@ List exports; {
 #endif
     return es;
 }
-#endif
 
 /* --------------------------------------------------------------------------
  * Static analysis of type declarations:
@@ -2072,8 +2162,8 @@ Class parent; {
     if (isNull(m)) {
 	m = newName(textOf(v),parent);
     } else if (name(m).defn!=PREDEFINED) {
-	ERRMSG(l) "Repeated definition for member function \"%s\"",
-		  textToStr(name(m).text)
+	ERRMSG(l) "Repeated definition for member function \"%s.%s\"",
+	  textToStr(module(name(m).mod).text),textToStr(name(m).text)
 	EEND;
     }
 
@@ -6913,12 +7003,22 @@ Cell e; {
 	ERRMSG(line) "Undefined variable \"%s\"", textToStr(t)
 	EEND;
     }
+    
+    if (nonNull(name(n).clashes)) {
+        List ls = name(n).clashes;
+	ERRMSG(line) "Ambiguous variable occurrence \"%s\"", textToStr(t) ETHEN
+        ERRTEXT "\n*** Could refer to: " ETHEN
+       ERRTEXT "%s.%s ", textToStr(module(name(n).mod).text), textToStr(name(n).text) ETHEN
+	for(;nonNull(ls);ls=tl(ls)) {
+	  ERRTEXT "%s.%s", textToStr(module(name(hd(ls)).mod).text), textToStr(name(hd(ls)).text)
+	  ETHEN
+	}
+	ERRTEXT "\n" EEND;
+    }
 
-#if !IGNORE_MODULES
     if (!moduleThisScript(name(n).mod)) {
 	return n;
     }
-#endif
     /* Later phases of the system cannot cope if we resolve references
      * to unprocessed objects too early.  This is the main reason that
      * we cannot cope with recursive modules at the moment.
@@ -6929,16 +7029,27 @@ Cell e; {
 static Cell local depQVar(line,e)/* register occurrence of qualified variable */
 Int line;
 Cell e; {
-    Name n = findQualName(e);
-    if (isNull(n)) {	                        /* check global definitions */
+    List ns = findQualNames(e);
+    Name n;
+    if (isNull(ns)) {	                        /* check global definitions */
 	ERRMSG(line) "Undefined qualified variable \"%s\"", identToStr(e)
 	EEND;
     }
-#if !IGNORE_MODULES
+    if (!isNull(tl(ns))) {
+        List ls = ns;
+	ERRMSG(line) "Ambiguous qualified variable occurrence \"%s\"", identToStr(e) ETHEN
+        ERRTEXT "\n*** Could refer to: " ETHEN
+	for(;nonNull(ls);ls=tl(ls)) {
+	  ERRTEXT "%s.%s ", textToStr(module(name(hd(ls)).mod).text), textToStr(name(hd(ls)).text)
+	  ETHEN
+	}
+	ERRTEXT "\n" EEND;
+    }
+
+    n = hd(ns);
     if (name(n).mod != currentModule) {
 	return n;
     }
-#endif
     if (fst(e) == VARIDCELL) {
 	e = mkVar(qtextOf(e));
     } else {
@@ -7229,31 +7340,22 @@ Void checkContext() {			/* Top level static check on Expr  */
 
 Void checkDefns() {			/* Top level static analysis	   */
     List tcs;
-#if !IGNORE_MODULES
     Module thisModule = lastModule();
-#endif
     staticAnalysis(RESET);
 
-#if !IGNORE_MODULES
     setCurrModule(thisModule);
 
     /* Resolve module references */
-    mapProc(checkQualImport,  module(thisModule).qualImports);
+    mapProc(checkQualImport,  module(thisModule).modAliases);
     mapProc(checkUnqualImport,unqualImports);
-    /* Add "import Prelude" if there`s no explicit import */
+    /* Add "import Prelude" if there's no explicit import */
     if (thisModule!=modulePrelude
 	&& isNull(cellAssoc(modulePrelude,unqualImports))
-	&& isNull(cellRevAssoc(modulePrelude,module(thisModule).qualImports))) {
-	unqualImports = cons(pair(modulePrelude,DOTDOT),unqualImports);
-    } else {
-	/* Every module (including the Prelude) implicitly contains 
-	 * "import qualified Prelude" 
-	 */
-	module(thisModule).qualImports=cons(pair(mkCon(textPrelude),modulePrelude),
-					    module(thisModule).qualImports);
+	&& isNull(cellRevAssoc(modulePrelude,module(thisModule).modAliases)) ) {
+	addUnqualImport(modulePrelude,mkCon(textPrelude),DOTDOT);
     }
-    mapProc(checkImportList, unqualImports);
-#endif
+    map1Proc(checkImportList, FALSE, unqualImports);
+    mapProc(checkQualImportList, module(thisModule).qualImports);
 
     /* Note: there's a lot of side-effecting going on here, so
        don't monkey about with the order of operations here unless
@@ -7317,18 +7419,11 @@ Void checkDefns() {			/* Top level static analysis	   */
         foreignLabels = NIL;
     }
 
-#if !IGNORE_MODULES
     /* Every top-level name has now been created - so we can build the     */
     /* export list.  Note that this has to happen before dependency        */
     /* analysis so that references to Prelude.foo will be resolved         */
     /* when compiling the prelude.                                         */
     module(thisModule).exports = checkExports(module(thisModule).exports);
-    /* A module's 'modImports' list is only used to construct a precise export
-     * list in the presence of module re-exportation. We've now finished
-     * computing the export list, so 'modImports' can then be stubbed out.
-     */
-    module(thisModule).modImports = NIL;
-#endif
 
     mapProc(checkTypeIn,typeInDefns);	/* check restricted synonym defns  */
 
@@ -7343,6 +7438,11 @@ Void checkDefns() {			/* Top level static analysis	   */
     /* ToDo: evalDefaults should match current evaluation module */
     evalDefaults = defaultDefns;	/* Set defaults for evaluator	   */
 
+    /* A module's 'modImports' list is only used to construct a precise export
+     * list in the presence of module re-exportation. We've now finished
+     * computing the export list, so 'modImports' can then be stubbed out.
+     */
+    module(thisModule).modImports = NIL;
     staticAnalysis(RESET);
 }
 
@@ -7381,17 +7481,7 @@ Cell v; {
     name(n).line = line;
 }
 
-#if IGNORE_MODULES
-static Void local duplicateErrorAux(line,t,kind) /* report duplicate defn */
-Int    line;
-Text   t;
-String kind; {
-    ERRMSG(line) "Definition of %s \"%s\" clashes with import", kind,
-		 textToStr(t)
-    EEND;
-}
-#else /* !IGNORE_MODULES */
-static Void local duplicateErrorAux(line,mod,t,kind)/* report duplicate defn */
+static Void local duplicateError(line,mod,t,kind)/* report duplicate defn */
 Int    line;
 Module mod;
 Text   t;
@@ -7406,7 +7496,6 @@ String kind; {
 	EEND;
     }
 }
-#endif /* !IGNORE_MODULES */
 
 static Void local checkTypeIn(cvs)	/* Check that vars in restricted   */
 Pair cvs; {				/* synonym are defined             */

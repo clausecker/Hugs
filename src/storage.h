@@ -8,8 +8,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: storage.h,v $
- * $Revision: 1.30 $
- * $Date: 2002/04/11 23:20:22 $
+ * $Revision: 1.31 $
+ * $Date: 2002/04/16 16:02:58 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -541,9 +541,6 @@ extern Void     setBreakCount   Args((String,Int));
 #define MODMIN        (OFFMIN+NUM_OFFSETS)
 #endif
 
-#if IGNORE_MODULES
-#define setCurrModule(m) doNothing()
-#else /* !IGNORE_MODULES */
 #define isModule(c)   (MODMIN<=(c) && (c)<TYCMIN)
 #define mkModule(n)   (MODMIN+(n))
 #define module(n)     tabModule[(n)-MODMIN]
@@ -558,7 +555,7 @@ extern Void     setBreakCount   Args((String,Int));
  * list is just a flat list of Texts (before static analysis) or
  * Tycons, Names and Classes (after static analysis).
  */
-struct Module {
+struct strModule {
     Text  text;
     /* Lists of top level objects (local defns + imports)                       */
     /* Invariant: a name/tycons only appears once (i.e., no dups) in this list. */
@@ -566,10 +563,15 @@ struct Module {
     List  names;
     List  classes;
     List  exports; /* [ Entity | (Entity, NIL|DOTDOT|[Entity]) ] */
+    /* (alias,modName) list of local aliases. Used both during compilation and when
+     * evaluating an expression in the context of the current module.
+     */
+    List  modAliases;
     /* List of qualified imports.  Used both during compilation and when
      * evaluating an expression in the context of the current module.
      */
-    List  qualImports;
+   List  qualImports; /* [ (modName{-Text-},[Entity]) ] */
+                      /* static.c:checkQualImport() modifies 'modName' to a Module */
     /* For each module imported, record the names that was
      * effectively imported, taking into consideration
      * import lists and 'hiding's. Used to handle re-exportation
@@ -582,16 +584,16 @@ struct Module {
 };
 
 extern Module currentModule;           /* Module currently being processed */
-extern struct Module DECTABLE(tabModule);
+extern struct strModule DECTABLE(tabModule);
 
 extern Bool   isValidModule Args((Module));
 extern Module newModule	    Args((Text));
 extern Module findModule    Args((Text));
 extern Module findModid     Args((Cell));
 extern Void   setCurrModule Args((Module));
+extern List   getModuleImports Args((Module));
 
 #define isPrelude(m) (m==modulePrelude)
-#endif /* !IGNORE_MODULES */
 
 /* --------------------------------------------------------------------------
  * Type constructor names:
@@ -605,9 +607,7 @@ extern Void   setCurrModule Args((Module));
 struct strTycon {
     Text  text;
     Int   line;
-#if !IGNORE_MODULES
     Module mod;                         /* module that defines it          */
-#endif
     Int   arity;
     Kind  kind;				/* kind (includes arity) of Tycon  */
     Cell  what;				/* DATATYPE/SYNONYM/RESTRICTSYN... */
@@ -643,9 +643,7 @@ extern Tycon addPrimTycon Args((Text,Kind,Int,Cell,Cell));
 struct strName {
     Text text;
     Int  line;
-#if !IGNORE_MODULES
     Module mod;                         /* module that defines it          */
-#endif
     Syntax syntax;
     Cell parent;                        /* enclosing object                */
 					/* :: Class | Instance | Name | NIL*/
@@ -661,6 +659,7 @@ struct strName {
 #if PROFILING
     Int  count;
 #endif
+    List clashes;
 };
 
 extern struct strName DECTABLE(tabName);
@@ -694,14 +693,15 @@ extern struct strName DECTABLE(tabName);
 #define mfunOf(n)	((-1)-name(n).number)
 #define mfunNo(i)	((-1)-(i))
 
-extern Name   newName	   Args((Text,Cell));
-extern Name   findName	   Args((Text));
-extern Name   addName	   Args((Name));
-extern Name   findQualName Args((Cell));
-extern Name   findQualFun  Args((Text,Text));
-extern Void   addPrim	   Args((Int,Name,String,Module,Type));
-extern Name   addPrimCfun  Args((Text,Int,Int,Cell));
-extern Int    sfunPos	   Args((Name,Name));
+extern Name   newName	    Args((Text,Cell));
+extern Name   findName	    Args((Text));
+extern Name   addName	    Args((Name));
+extern Name   findQualName  Args((Cell));
+extern List   findQualNames Args((Cell));
+extern Name   findQualFun   Args((Text,Text));
+extern Void   addPrim	    Args((Int,Name,String,Module,Type));
+extern Name   addPrimCfun   Args((Text,Int,Int,Cell));
+extern Int    sfunPos	    Args((Name,Name));
 
 /* --------------------------------------------------------------------------
  * Type class values:
@@ -736,9 +736,7 @@ struct strInst {
 struct strClass {
     Text   text;			/* Name of class		   */
     Int    line;			/* Line where declaration begins   */
-#if !IGNORE_MODULES
     Module mod;				/* module that declares it         */
-#endif
     Int    level;			/* Level in class hierarchy	   */
     Int    arity;			/* Number of arguments		   */
     List   tyvars;			/* Names of tyvars		   */
@@ -764,18 +762,16 @@ extern struct strClass    DYNDECTABLE(tabClass);
 extern struct strInst     DYNDECTABLE(tabInst);
 #endif
 
-extern Class newClass	    Args((Text));
-extern Class classMax	    Args((Void));
-extern Class findClass	    Args((Text));
-extern Class addClass	    Args((Class));
-extern Class findQualClass  Args((Cell));
-extern Inst  newInst	    Args((Void));
-extern Inst  findFirstInst  Args((Tycon));
-extern Inst  findNextInst   Args((Tycon,Inst));
-#if !IGNORE_MODULES
+extern Class  newClass	     Args((Text));
+extern Class  classMax	     Args((Void));
+extern Class  findClass	     Args((Text));
+extern Class  addClass	     Args((Class));
+extern Class  findQualClass  Args((Cell));
+extern Inst   newInst	     Args((Void));
+extern Inst   findFirstInst  Args((Tycon));
+extern Inst   findNextInst   Args((Tycon,Inst));
 extern Module findQualifier  Args((Text));
 extern List   findQualifiers Args((Text));
-#endif
 
 /* --------------------------------------------------------------------------
  * Character values:

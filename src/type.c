@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: type.c,v $
- * $Revision: 1.43 $
- * $Date: 2002/04/12 05:39:01 $
+ * $Revision: 1.44 $
+ * $Date: 2002/04/16 16:02:58 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -3044,10 +3044,8 @@ Int what; {
 
 		       dummyVar     = inventVar();
 
-#if !IGNORE_MODULES
 		       modulePrelude = newModule(textPrelude);
 		       setCurrModule(modulePrelude);
-#endif
 
 		       starToStar   = simpleKind(1);
 

@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: connect.h,v $
- * $Revision: 1.30 $
- * $Date: 2002/04/12 05:39:01 $
+ * $Revision: 1.31 $
+ * $Date: 2002/04/16 16:02:55 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -275,19 +275,11 @@ extern  Void   printString	Args((String));
 extern  Void   substitution	Args((Int));
 
 extern  Void   staticAnalysis   Args((Int));
-#if IGNORE_MODULES
-#define startModule(m)       doNothing()
-#define setExportList(l)     doNothing()
-#define setExports(l)        doNothing()
-#define addQualImport(m,as)  doNothing()
-#define addUnqualImport(m,l) doNothing()
-#else
 extern  Void   startModule      Args((Cell));
 extern  Void   setExportList    Args((List));
 extern  Void   setExports       Args((List));
-extern  Void   addQualImport    Args((Text,Text));
-extern  Void   addUnqualImport  Args((Text,List));
-#endif
+extern  Void   addQualImport    Args((Text,Text,List));
+extern  Void   addUnqualImport  Args((Text,Text,List));
 extern  Void   tyconDefn	Args((Int,Cell,Cell,Cell));
 extern  Void   setTypeIns	Args((List));
 extern  Void   clearTypeIns	Args((Void));

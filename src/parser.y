@@ -10,8 +10,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: parser.y,v $
- * $Revision: 1.30 $
- * $Date: 2002/04/11 23:20:20 $
+ * $Revision: 1.31 $
+ * $Date: 2002/04/16 16:02:56 $
  * ------------------------------------------------------------------------*/
 
 %{
@@ -29,11 +29,7 @@ extern String scriptFile;
 #define only(t)			 ap(ONLY,t)
 #define letrec(bs,e)		 (nonNull(bs) ? ap(LETREC,pair(bs,e)) : e)
 #define qualify(ps,t)		 (nonNull(ps) ? ap(QUAL,pair(ps,t)) : t)
-#if IGNORE_MODULES
-#define exportSelf()		 NIL
-#else
 #define exportSelf()		 singleton(ap(MODULEENT,mkCon(module(currentModule).text)))
-#endif
 #define yyerror(s)		 /* errors handled elsewhere */
 #define YYSTYPE			 Cell
 
@@ -220,18 +216,16 @@ chase	  : /* empty */			{if (chase(imps)) {
 					}
 	  ;
 /* Note that qualified import ignores the import list. */
-impDecl	  : IMPORT modid impspec	{addQualImport($2,$2);
-					 addUnqualImport($2,$3);
+impDecl	  : IMPORT modid impspec	{addUnqualImport($2,NIL,$3);
 					 $$ = gc3($2);}
 	  | IMPORT modid ASMOD modid impspec
-					{addQualImport($2,$4);
-					 addUnqualImport($2,$5);
+					{addUnqualImport($2,$4,$5);
 					 $$ = gc5($2);}
 	  | IMPORT QUALIFIED modid ASMOD modid impspec
-					{addQualImport($3,$5);
+					{addQualImport($3,$5,$6);
 					 $$ = gc6($3);}
 	  | IMPORT QUALIFIED modid impspec
-					{addQualImport($3,$3);
+					{addQualImport($3,$3,$4);
 					 $$ = gc4($3);}
 	  | IMPORT error		{syntaxError("import declaration");}
 	  ;

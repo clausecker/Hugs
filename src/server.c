@@ -10,8 +10,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: server.c,v $
- * $Revision: 1.13 $
- * $Date: 2002/04/11 23:20:21 $
+ * $Revision: 1.14 $
+ * $Date: 2002/04/16 16:02:56 $
  * ------------------------------------------------------------------------*/
 
 #define HUGS_SERVER
@@ -387,13 +387,11 @@ static String GetOptions() {
 
 static Bool SetModule(m)
 String m; {
-#if !IGNORE_MODULES
     Module mod   = findModule(findText(m));
     if (isNull(mod)) {
 	return FALSE;
     }
     setCurrModule(mod);
-#endif /* !IGNORE_MODULES */
     return TRUE;
 }
 

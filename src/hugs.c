@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.75 $
- * $Date: 2002/04/11 23:50:44 $
+ * $Revision: 1.76 $
+ * $Date: 2002/04/16 16:02:56 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -62,12 +62,8 @@ static Void   local editor            Args((Void));
 static Void   local find              Args((Void));
 static Bool   local startEdit         Args((Int,String));
 static Void   local runEditor         Args((Void));
-#if IGNORE_MODULES
-#define findEvalModule() doNothing()
-#else
 static Void   local setModule         Args((Void));
 static Module local findEvalModule    Args((Void));
-#endif
 static Void   local evaluator         Args((Void));
 static Void   local stopAnyPrinting   Args((Void));
 static Void   local showtype          Args((Void));
@@ -854,9 +850,7 @@ static struct cmd cmds[] = {
  {":reload", RELOAD}, {":gc",   COLLECT}, {":edit",    EDIT},
  {":quit",   QUIT},   {":set",  SET},     {":find",    FIND},
  {":names",  NAMES},  {":info", INFO},    {":project", PROJECT},
-#if !IGNORE_MODULES
  {":module",SETMODULE}, 
-#endif
  {":browse", BROWSE},
 #if EXPLAIN_INSTANCE_RESOLUTION
  {":xplain", XPLAIN},
@@ -879,9 +873,7 @@ static Void local menu() {
     Printf(":project <filename> use project file\n");
     Printf(":edit <filename>    edit file\n");
     Printf(":edit               edit last module\n");
-#if !IGNORE_MODULES
     Printf(":module <module>    set module for evaluating expressions\n");
-#endif
     Printf("<expr>              evaluate expression\n");
     Printf(":type <expr>        print type of expression\n");
     Printf(":?                  display this list of commands\n");
@@ -1442,7 +1434,6 @@ Int    line; {
  * Read and evaluate an expression:
  * ------------------------------------------------------------------------*/
 
-#if !IGNORE_MODULES
 static Void local setModule(){/*set module in which to evaluate expressions*/
     String s = readFilename();
     if (s!=0) {			/* Locate named module			   */
@@ -1469,7 +1460,6 @@ static Module local findEvalModule() { /*Module in which to eval expressions*/
 	m = lastModule();
     return m;
 }
-#endif
 
 static Void local evaluator() {        /* evaluate expr and print value    */
     Type  type, bd, t;
@@ -2252,11 +2242,7 @@ String argv[]; {
 	dropScriptsFrom(numScripts-1);  /* remove partially loaded scripts */
 					/* not counting prelude as a script*/
 
-#if IGNORE_MODULES
-	promptForInput("");
-#else
 	promptForInput(textToStr(module(findEvalModule()).text));
-#endif
 #if HUGS_FOR_WINDOWS
         InAutoReloadFiles = FALSE;
 #endif
@@ -2286,11 +2272,9 @@ String argv[]; {
 			  break;
 	    case PROJECT: project();
 			  break;
-#if !IGNORE_MODULES
 	    case SETMODULE :
 			  setModule();
 			  break;
-#endif
 	    case EVAL   : 
 #if HUGS_FOR_WINDOWS
 			  autoReloadFiles();
