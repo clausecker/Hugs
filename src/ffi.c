@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: ffi.c,v $
- * $Revision: 1.35 $
- * $Date: 2004/04/13 23:26:36 $
+ * $Revision: 1.36 $
+ * $Date: 2004/11/18 00:45:15 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -773,7 +773,7 @@ Type resultTy; {
  *     char extnm(int arg1, float arg2)
  *     {
  *         char  res1;
- *         hugs->putStablePtr(hugs_stable_for_extnm);
+ *         hugs->putStablePtr4(hugs_stable_for_extnm);
  *         hugs->putInt(arg1);                             
  *         hugs->putFloat(arg2);                             
  *         if (hugs->runIO(2)) {
@@ -805,7 +805,7 @@ Type resultTy; {
     ffiDeclare(line,resultTy,"res",1);
 
     /* Push function pointer and arguments */
-    fprintf(out,"    hugs->putStablePtr(hugs_stable_for_%s);\n", textToStr(e));
+    fprintf(out,"    hugs->putStablePtr4(hugs_stable_for_%s);\n", textToStr(e));
     ffiPutList(line,argTys,"arg");
 
     /* Make the call and check for uncaught exception */
