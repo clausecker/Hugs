@@ -10,8 +10,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: parser.y,v $
- * $Revision: 1.42 $
- * $Date: 2003/09/25 09:20:26 $
+ * $Revision: 1.43 $
+ * $Date: 2003/10/08 14:09:07 $
  * ------------------------------------------------------------------------*/
 
 %{
@@ -1001,7 +1001,7 @@ qop	  : qvarop			{$$ = $1;}
 
 /*- Tricks to force insertion of leading and closing braces ---------------*/
 
-begin	  : error			{yyerrok; goOffside(startColumn);}
+begin	  : /* empty */			{goOffside(startColumn);}
 	  ;
 					/* deal with trailing semicolon    */
 end	  : '}'				{$$ = $1;}
