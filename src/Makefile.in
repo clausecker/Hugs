@@ -63,25 +63,25 @@ hugsdir		= @hugsdir@
 
 .SUFFIXES	:
 .SUFFIXES	: .c .h @OBJ@
-HFILES		= HsFFI.h builtin.h command.h config.h connect.h errors.h \
-		  evaluator.h goal.h machdep.h module.h observe.h options.h \
-		  opts.h output.h prelude.h script.h server.h storage.h \
-		  strutil.h subst.h
+HFILES		= HsFFI.h builtin.h char.h command.h config.h connect.h \
+		  errors.h evaluator.h goal.h machdep.h module.h observe.h \
+		  options.h opts.h output.h prelude.h script.h server.h \
+		  storage.h strutil.h subst.h
 CFILES		= hugs.c runhugs.c server.c edit.c observe.c \
-		  builtin.c compiler.c errors.c evaluator.c \
-		  ffi.c goal.c input.c machdep.c machine.c \
-		  module.c opts.c output.c plugin.c script.c \
-		  static.c storage.c strutil.c subst.c \
-		  type.c version.c
+		  builtin.c char.c compiler.c errors.c \
+		  evaluator.c ffi.c goal.c input.c machdep.c \
+		  machine.c module.c opts.c output.c plugin.c \
+		  script.c static.c storage.c strutil.c \
+		  subst.c type.c version.c
 INCFILES	= array.c bignums.c dirprim.c interns.c iomonad.c \
 		  preds.c printer.c scc.c timeprim.c timer.c
 YFILES		= parser.y
 SOURCES		= $(HFILES) $(CFILES) $(INCFILES) $(YFILES) 
-OBJECTS		= builtin@OBJ@ compiler@OBJ@ errors@OBJ@ evaluator@OBJ@ \
-		  ffi@OBJ@ goal@OBJ@ input@OBJ@ machdep@OBJ@ machine@OBJ@ \
-		  module@OBJ@ opts@OBJ@ output@OBJ@ plugin@OBJ@ script@OBJ@ \
-		  static@OBJ@ storage@OBJ@ strutil@OBJ@ subst@OBJ@ \
-		  type@OBJ@ version@OBJ@
+OBJECTS		= builtin@OBJ@ char@OBJ@ compiler@OBJ@ errors@OBJ@ \
+		  evaluator@OBJ@ ffi@OBJ@ goal@OBJ@ input@OBJ@ machdep@OBJ@ \
+		  machine@OBJ@ module@OBJ@ opts@OBJ@ output@OBJ@ plugin@OBJ@ \
+		  script@OBJ@ static@OBJ@ storage@OBJ@ strutil@OBJ@ \
+		  subst@OBJ@ type@OBJ@ version@OBJ@
 IOBJECTS	= hugs@OBJ@ edit@OBJ@ observe@OBJ@ $(OBJECTS)
 PRELUDE		= config.h options.h prelude.h script.h
 

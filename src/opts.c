@@ -320,7 +320,7 @@ String s; {
 	*next++='"';
 	charsLeft -= 3;
 	for(t=s; *t; ++t) {
-	    PUTS(unlexChar(*t,'"'));
+	    PUTS(unlexChar(*(unsigned char *)t,'"'));
 	}
 	next+=strlen(next);
 	PUTS("\" ");

@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: connect.h,v $
- * $Revision: 1.79 $
- * $Date: 2003/10/28 11:49:52 $
+ * $Revision: 1.80 $
+ * $Date: 2003/11/14 00:14:39 $
  * ------------------------------------------------------------------------*/
 #ifndef __CONNECT_H__
 #define __CONNECT_H__
@@ -450,6 +450,8 @@ extern Bool   isWhnf           Args((Cell));
 extern Cell   getCaf           Args((Cell));
 extern Int    countObserve     Args((Void));
 #endif
+
+extern  Void   charOps          Args((Int));
 
 /*-------------------------------------------------------------------------*/
 

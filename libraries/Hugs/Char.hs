@@ -16,15 +16,15 @@ import Hugs.Prelude(
 -- i.e. '\0' to '\xff'.
 
 -- Character-testing operations (some others are in Hugs.Prelude)
-isAscii, isLatin1, isControl, isPrint :: Char -> Bool
+isAscii, isLatin1, isControl :: Char -> Bool
 
 isAscii c                =  c < '\x80'
 
-isLatin1 c               =  True	-- c <= '\xff'
- 
+isLatin1 c               =  c <= '\xff'
+
 isControl c              =  c < ' ' || c >= '\DEL' && c <= '\x9f'
- 
-isPrint c                =  not (isControl c)
+
+primitive isPrint        :: Char -> Bool
 
 -- Digit conversion operations
 intToDigit               :: Int -> Char
@@ -34,15 +34,8 @@ intToDigit i
   | otherwise            =  error "Char.intToDigit: not a digit"
 
 -- Case-changing operations
-toUpper                  :: Char -> Char
-toUpper '\xdf'           = '\xdf'	-- lower, but no upper in Latin-1
-toUpper '\xff'           = '\xff'	-- lower, but no upper in Latin-1
-toUpper c | isLower c    =  toEnum (fromEnum c - fromEnum 'a' + fromEnum 'A')
-          | otherwise    =  c
-
-toLower                  :: Char -> Char
-toLower c | isUpper c    =  toEnum (fromEnum c - fromEnum 'A' + fromEnum 'a')
-          | otherwise    =  c
+primitive toUpper        :: Char -> Char
+primitive toLower        :: Char -> Char
 
 -- Character code functions
 ord                      :: Char -> Int

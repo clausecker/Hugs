@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: builtin.h,v $
- * $Revision: 1.5 $
- * $Date: 2003/10/14 13:56:21 $
+ * $Revision: 1.6 $
+ * $Date: 2003/11/14 00:14:39 $
  * ------------------------------------------------------------------------*/
 #ifndef __BUILTIN_H__
 #define __BUILTIN_H__
@@ -479,6 +479,13 @@ extern Cell   mkIOError Args((Cell,Name,String,String,Cell));
     DoubleResult(r);                               \
 }
 
+/* e is a constant expression                     */
+#define CAFChar(nm,e)                              \
+  primCAF(nm) {                                    \
+      Char r = e;                                  \
+      push(mkChar(r));                             \
+  }
+
 #define CharArg(nm,offset)                         \
     eval(primArg(offset));                         \
     checkChar();                                   \
@@ -497,6 +504,30 @@ extern Cell   mkIOError Args((Cell,Name,String,String,Cell));
     CharArg(x,2);                                  \
     CharArg(y,1);                                  \
     BoolResult(e);                                 \
+}
+
+/* e is a predicate with free variable x          */
+#define Char2Bool(nm,e)                            \
+  primFun(nm) {                                    \
+    Char x;                                        \
+    CharArg(x,1);                                  \
+    BoolResult(e);                                 \
+}
+
+/* e is an expression with free variable x        */
+#define Char2Char(nm,e)                            \
+  primFun(nm) {                                    \
+    Char x;                                        \
+    CharArg(x,1);                                  \
+    CharResult(e);                                 \
+}
+
+/* e is an integer expression with free variable x */
+#define Char2Int(nm,e)                             \
+  primFun(nm) {                                    \
+    Char x;                                        \
+    CharArg(x,1);                                  \
+    IntResult(e);                                  \
 }
 
 /* e is a predicate with free variables x and y   */

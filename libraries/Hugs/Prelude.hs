@@ -543,9 +543,11 @@ instance Show Char where
 
 instance Bounded Char where
     minBound = '\0'
-    maxBound = '\255'
+    maxBound = primMaxChar
 
-isSpace, isUpper, isLower, isAlpha, isDigit, isAlphaNum :: Char -> Bool
+primitive primMaxChar :: Char
+
+isSpace, isAlpha, isDigit :: Char -> Bool
 
 isSpace c              =  c == ' '  ||
 			  c == '\t' ||
@@ -555,17 +557,13 @@ isSpace c              =  c == ' '  ||
 			  c == '\v' ||
 			  c == '\xa0'
 
-isUpper c              =  c >= 'A'    && c <= 'Z'    ||
-                          c >= '\xc0' && c <= '\xd6' ||
-                          c >= '\xd8' && c <= '\xde'
-
-isLower c              =  c >= 'a'   &&  c <= 'z'    ||
-                          c >= '\xdf' && c <= '\xf6' ||
-                          c >= '\xf8' && c <= '\xff'
+primitive isUpper      :: Char -> Bool
+primitive isLower      :: Char -> Bool
 
 isAlpha c              =  isUpper c  ||  isLower c
 isDigit c              =  c >= '0'   &&  c <= '9'
-isAlphaNum c           =  isAlpha c  ||  isDigit c
+
+primitive isAlphaNum   :: Char -> Bool
 
 -- Maybe type ---------------------------------------------------------------
 

@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: input.c,v $
- * $Revision: 1.74 $
- * $Date: 2003/11/13 12:54:31 $
+ * $Revision: 1.75 $
+ * $Date: 2003/11/14 00:14:39 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -21,6 +21,7 @@
 #include "opts.h"
 #include "goal.h"
 #include "machdep.h"
+#include "char.h"
 #include <ctype.h>
 
 #if HAVE_WINDOWS_H
@@ -63,7 +64,6 @@ String preprocessor  = 0;
  * Local function prototypes:
  * ------------------------------------------------------------------------*/
 
-static Void local initCharTab     Args((Void));
 static Bool local fileInput       Args((String,Long));
 static Bool local literateMode    Args((String));
 static Bool local linecmp         Args((String,String));
@@ -181,83 +181,6 @@ static Int hereState = START;
 #else
 #define FOPEN_MODE                "r"
 #endif
-
-/* --------------------------------------------------------------------------
- * Character set handling:
- *
- * Hugs follows Haskell 1.3 in assuming that input uses the ISO-8859-1
- * character set.  The following code provides methods for classifying
- * input characters according to the lexical structure specified by the
- * report.  Hugs should still accept older programs because ASCII is
- * essentially just a subset of the ISO character set.
- *
- * Notes: If you want to port Hugs to a machine that uses something
- * substantially different from the ISO character set, then you will need
- * to insert additional code to map between character sets.
- *
- * At some point, the following data structures may be exported in a .h
- * file to allow the information contained here to be picked up in the
- * implementation of LibChar is* primitives.
- *
- * Relies, implicitly but for this comment, on assumption that NUM_CHARS=256.
- * ------------------------------------------------------------------------*/
-
-static  Bool            charTabBuilt;
-static  unsigned char   ctable[NUM_CHARS];
-#define isIn(c,x)       (ctable[(unsigned char)(c)]&(x))
-#define isLatin1(c)     (0<=(c) && (c)<NUM_CHARS)
-
-#define DIGIT           0x01
-#define SMALL           0x02
-#define LARGE           0x04
-#define SYMBOL          0x08
-#define IDAFTER         0x10
-#define SPACE           0x20
-#define PRINT           0x40
-
-static Void local initCharTab() {       /* Initialize char decode table    */
-#define setRange(x,f,t) {Int i=f;   while (i<=t) ctable[i++] |=x;}
-#define setChar(x,c)	ctable[c] |= (x)
-#define setChars(x,s)   {char *p=s; while (*p)   ctable[(Int)*p++]|=x;}
-#define setCopy(x,c)    {Int i;                         \
-			 for (i=0; i<NUM_CHARS; ++i)    \
-			     if (isIn(i,c))             \
-				 ctable[i]|=x;          \
-			}
-
-    setRange(DIGIT,     '0','9');	/* ASCII decimal digits		   */
-
-    setRange(SMALL,     'a','z');	/* ASCII lower case letters	   */
-    setRange(SMALL,     223,246);	/* Latin-1 lower case letters	   */
-    setRange(SMALL,     248,255);	/* (omits division symbol, 247)	   */
-    setChar (SMALL,     '_');
-
-    setRange(LARGE,     'A','Z');	/* ASCII upper case letters	   */
-    setRange(LARGE,     192,214);	/* Latin-1 upper case letters	   */
-    setRange(LARGE,     216,222);	/* (omits multiplication, 215)	   */
-
-    setRange(SYMBOL,    161,191);	/* Symbol characters + ':'	   */
-    setRange(SYMBOL,    215,215);
-    setChar (SYMBOL,    247);
-    setChars(SYMBOL,    ":!#$%&*+./<=>?@\\^|-~");
-
-    setChar (IDAFTER,   '\'');		/* Characters in identifier	   */
-    setCopy (IDAFTER,   (DIGIT|SMALL|LARGE));
-
-    setChar (SPACE,     ' ');		/* ASCII space character	   */
-    setChar (SPACE,     160);		/* Latin-1 non breaking space	   */
-    setRange(SPACE,     9,13);		/* special whitespace: \t\n\v\f\r  */
-
-    setChars(PRINT,     "(),;[]_`{}");  /* Special characters		   */
-    setChars(PRINT,     " '\"");        /* Space and quotes		   */
-    setCopy (PRINT,     (DIGIT|SMALL|LARGE|SYMBOL));
-    
-    charTabBuilt = TRUE;
-#undef setRange
-#undef setChar
-#undef setChars
-#undef setCopy
-}
 
 /* --------------------------------------------------------------------------
  * Single character input routines:
@@ -1196,10 +1119,8 @@ String unlexChar(c,quote)              /* return string representation of  */
 Char c;                                /* character...                     */
 Char quote; {                          /* protect quote character          */
     static char buffer[12];	       					   
-									   
-    if (c<0)                           /* deal with sign extended chars..  */
-	c += NUM_CHARS;		       					   
-									   
+
+    assert(c >= 0);
     if (isLatin1(c) && isIn(c,PRINT)) {/* normal printable character       */
 	if (c==quote || c=='\\') {     /* look for quote of approp. kind   */
 	    buffer[0] = '\\';           
@@ -1235,7 +1156,7 @@ String s; {                            /* escapes if any parts need them   */
 	if (*t) {		       
 	    Putchar('"');	       
 	    for (t=s; *t; t++)	       
-		Printf("%s",unlexChar(*t,'"'));
+		Printf("%s",unlexChar(*(unsigned char *)t,'"'));
 	    Putchar('"');	       
 	}			       
 	else			       
@@ -1838,10 +1759,10 @@ loop:	    skip();                     /* Skip qualifying dot             */
 
 Bool isModuleId(s)
 String s; {
-    if (!isIn(*s,LARGE))
+    if (!isIn(*(unsigned char *)s,LARGE))
         return FALSE;
-    while (isIn(*s,LARGE)) {
-        while (isIn(*s,IDAFTER))
+    while (isIn(*(unsigned char *)s,LARGE)) {
+        while (isIn(*(unsigned char *)s,IDAFTER))
             s++;
         if (*s == '.')
             s++;
@@ -1860,7 +1781,7 @@ static Int local repeatLast() {         /* Obtain last expression entered  */
 Syntax defaultSyntax(t)			/* Find default syntax of var named*/
 Text t; {				/* by t ...			   */
     String s = textToStr(t);
-    return isIn(s[0],SYMBOL) ? DEF_OPSYNTAX : APPLIC;
+    return isIn(*(unsigned char *)s,SYMBOL) ? DEF_OPSYNTAX : APPLIC;
 }
 
 Syntax syntaxOf(n)			/* Find syntax for name		   */
@@ -1929,8 +1850,7 @@ Void parseContext() {                  /* Read a context to prove   */
 Void input(what)
 Int what; {
     switch (what) {
-	case INSTALL : initCharTab();
-		       textCase       = findText("case");
+	case INSTALL : textCase       = findText("case");
 		       textOfK        = findText("of");
 		       textData       = findText("data");
 		       textType       = findText("type");

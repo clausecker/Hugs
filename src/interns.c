@@ -11,8 +11,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: interns.c,v $
- * $Revision: 1.12 $
- * $Date: 2003/10/14 13:56:23 $
+ * $Revision: 1.13 $
+ * $Date: 2003/11/14 00:14:39 $
  * ------------------------------------------------------------------------*/
  
 /* --------------------------------------------------------------------------
@@ -338,7 +338,7 @@ primFun(primNameString) {              /* Get string of a name             */
       push(nameNil);
       while (--l >= 0) {
 	  Cell r = pop();  /* we take care to pop _before_ we push */
-	  push(ap(consChar(s[l]),r));
+	  push(ap(consChar(((unsigned char *)s)[l]),r));
       }
       updateRoot(pop());
   }      

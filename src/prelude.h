@@ -8,8 +8,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: prelude.h,v $
- * $Revision: 1.56 $
- * $Date: 2003/11/01 17:02:48 $
+ * $Revision: 1.57 $
+ * $Date: 2003/11/14 00:14:39 $
  * ------------------------------------------------------------------------*/
 #ifndef __PRELUDE_H__
 #define __PRELUDE_H__
@@ -753,7 +753,7 @@ typedef void*    Pointer;
 #endif
 #define NUM_TUPLES         100
 #define NUM_OFFSETS        1024
-#define NUM_CHARS          256
+#define NUM_LAT1_CHARS     256
 #if TREX
 #define NUM_EXT		   100
 #endif

@@ -8,8 +8,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: storage.h,v $
- * $Revision: 1.60 $
- * $Date: 2003/11/04 15:40:48 $
+ * $Revision: 1.61 $
+ * $Date: 2003/11/14 00:14:39 $
  * ------------------------------------------------------------------------*/
 #ifndef __STORAGE_H__
 #define __STORAGE_H__
@@ -920,20 +920,19 @@ extern Text   findModAlias   Args((Text));
  * ------------------------------------------------------------------------*/
 
 #define CHARMIN      (CLASSMIN+NUM_CLASSES)
-#define MAXCHARVAL   (NUM_CHARS-1)
 #define isChar(c)    (CHARMIN<=(c) && (c)<INTMIN)
 #if defined(_MANAGED) && defined(__cplusplus)
 #define charOf(c)    ((::Char)(c-CHARMIN))
 #else
 #define charOf(c)    ((Char)(c-CHARMIN))
 #endif
-#define mkChar(c)    ((Cell)(CHARMIN+(((unsigned)(c))%NUM_CHARS)))
+#define mkChar(c)    ((Cell)(CHARMIN+(((unsigned)(c))%NUM_LAT1_CHARS)))
 
 /* --------------------------------------------------------------------------
  * Small Integer values:
  * ------------------------------------------------------------------------*/
 
-#define INTMIN	     (CHARMIN+NUM_CHARS)
+#define INTMIN	     (CHARMIN+NUM_LAT1_CHARS)
 
 #if FAST_WHATIS
 

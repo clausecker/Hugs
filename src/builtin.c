@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: builtin.c,v $
- * $Revision: 1.69 $
- * $Date: 2003/11/13 20:58:32 $
+ * $Revision: 1.70 $
+ * $Date: 2003/11/14 00:14:39 $
  * ------------------------------------------------------------------------*/
 
 /* We include math.h before prelude.h because SunOS 4's cpp incorrectly
@@ -21,6 +21,7 @@
 #include "connect.h"
 #include "errors.h"
 #include "machdep.h"
+#include "char.h"
 #include <ctype.h>
 #if HAVE_IO_H
 #include <io.h>
@@ -323,6 +324,14 @@ PROTO_PRIM(primCmpFloat);
 PROTO_PRIM(primEqDouble);
 PROTO_PRIM(primCmpDouble);
 
+PROTO_PRIM(primMaxChar);
+PROTO_PRIM(primIsUpper);
+PROTO_PRIM(primIsLower);
+PROTO_PRIM(primIsAlphaNum);
+PROTO_PRIM(primIsPrint);
+PROTO_PRIM(primToUpper);
+PROTO_PRIM(primToLower);
+
 #if TREX
 PROTO_PRIM(primRecExt);
 PROTO_PRIM(primRecBrk);
@@ -527,6 +536,14 @@ static struct primitive builtinPrimTable[] = {
 
   {"strict",            2, primStrict},
   {"seq",               2, primSeq},
+
+  {"primMaxChar",	0, primMaxChar},
+  {"isUpper",		1, primIsUpper},
+  {"isLower",		1, primIsLower},
+  {"isAlphaNum",	1, primIsAlphaNum},
+  {"isPrint",		1, primIsPrint},
+  {"toUpper",		1, primToUpper},
+  {"toLower",		1, primToLower},
 
 #if TREX
   {"recExt",            3, primRecExt},
@@ -997,11 +1014,7 @@ primFun(primW32toW64) {
  * Coercion primitives:
  * ------------------------------------------------------------------------*/
 
-primFun(primCharToInt) {               /* Character to integer primitive   */
-    Char c;
-    CharArg(c,1);
-    IntResult(c);
-}
+Char2Int(primCharToInt,x)              /* Character to integer primitive   */
 
 primFun(primIntToChar) {               /* Integer to character primitive   */
     Int i;
@@ -1426,6 +1439,20 @@ FILE *fp; {                             /* and print it on fp              */
 #if HASKELL_ARRAYS
 #include "array.c"
 #endif
+
+/* --------------------------------------------------------------------------
+ * Char primitives:
+ * ------------------------------------------------------------------------*/
+
+CAFChar(primMaxChar,MAXCHARVAL)
+
+Char2Bool(primIsUpper,isUpper(x))
+Char2Bool(primIsLower,isLower(x))
+Char2Bool(primIsAlphaNum,isAlphaNum(x))
+Char2Bool(primIsPrint,isPrint(x))
+
+Char2Char(primToLower,toLower(x))
+Char2Char(primToUpper,toUpper(x))
 
 /* --------------------------------------------------------------------------
  * Extensible records: (Gaster and Jones, 1996)
@@ -2309,19 +2336,6 @@ void hs_free_stable_ptr(HsStablePtr x)
 }
 
 /* --------------------------------------------------------------------------
- * Build array of character conses:
- * ------------------------------------------------------------------------*/
-
-static Cell consCharArray[NUM_CHARS];
-
-Cell consChar(c)                        /* return application (:) c        */
-Char c; {
-    if (c<0)
-	c += NUM_CHARS;
-    return consCharArray[c];
-}
-
-/* --------------------------------------------------------------------------
  * Built-in control:
  * ------------------------------------------------------------------------*/
 
@@ -2334,16 +2348,8 @@ static struct primInfo builtinPrims = { builtinControl, builtinPrimTable, 0 };
 
 Void builtIn(what)
 Int what; {
-    Int i;
-
     switch (what) {
-	case MARK    : for (i=0; i<NUM_CHARS; ++i)
-			   mark(consCharArray[i]);
-		       break;
-
-	case INSTALL : for (i=0; i<NUM_CHARS; ++i) {
-			   consCharArray[i] = ap(nameCons,mkChar(i));
-		       }
+	case INSTALL : 
 		       registerPrims(&builtinPrims);
 		       registerPrims(&printerPrims);
 #if HASKELL_ARRAYS

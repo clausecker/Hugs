@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: machine.c,v $
- * $Revision: 1.18 $
- * $Date: 2003/10/14 13:56:23 $
+ * $Revision: 1.19 $
+ * $Date: 2003/11/14 00:14:39 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1622,14 +1622,14 @@ unw:switch (whatIs(n)) {
 static Void local evalString(n)        /* expand STRCELL at node n         */
 Cell n; {
     Text t = textOf(n);
-    Int  c = textToStr(t)[0];
+    Int  c = *(unsigned char *)textToStr(t);
     if (c==0) {
 	fst(n) = INDIRECT;
 	snd(n) = nameNil;
 	return;
     }
     else if (c=='\\') {
-	c = textToStr(++t)[0];
+	c = *(unsigned char *)textToStr(++t);
 	if (c!='\\')
 	    c = 0;
     }

@@ -8,8 +8,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: output.c,v $
- * $Revision: 1.32 $
- * $Date: 2003/11/13 12:55:57 $
+ * $Revision: 1.33 $
+ * $Date: 2003/11/14 00:14:39 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -764,7 +764,7 @@ Text t; {
 	  ERRMSG(0) "error in unlexStrConst" EEND;
 	}
 
-	ch = unlexChar(*s,'\"');
+	ch = unlexChar(*(unsigned char *)s,'\"');
 
 	if ((lastWasSO && *ch=='H') ||
 		(lastWasEsc && lastWasDigit && isascii(*ch) && isdigit(*ch)))

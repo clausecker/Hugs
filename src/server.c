@@ -11,8 +11,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: server.c,v $
- * $Revision: 1.40 $
- * $Date: 2003/10/14 13:56:25 $
+ * $Revision: 1.41 $
+ * $Date: 2003/11/14 00:14:39 $
  * ------------------------------------------------------------------------*/
 #include "prelude.h"
 #include "storage.h"
@@ -496,7 +496,7 @@ String s;
 	while (*t) ++t;
 	while (t-- != s) {
 	    Cell ss = pop();
-	    push(ap(consChar(*t),ss));
+	    push(ap(consChar(*(unsigned char *)t),ss));
 	}
 #ifndef NO_DYNAMIC_TYPES
 	r = pop();

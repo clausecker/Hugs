@@ -14,8 +14,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: iomonad.c,v $
- * $Revision: 1.64 $
- * $Date: 2003/11/04 15:40:47 $
+ * $Revision: 1.65 $
+ * $Date: 2003/11/14 00:14:39 $
  * ------------------------------------------------------------------------*/
  
 Name nameIORun;			        /* run IO code                     */
@@ -497,7 +497,7 @@ String s; {
     Int  l      = strlen(s);
     push(nameNil);
     while (--l >= 0) {
-	topfun(consChar(s[l]));
+	topfun(consChar(((unsigned char *)s)[l]));
     }
 }
 
@@ -866,7 +866,7 @@ primFun(primHreader) {			/* read String from a handle 	   */
     HandleArg(h,1);
     if (handles[h].hmode&HSEMICLOSED) {	/* read requires semi-closed handle*/
 	Int c = (h==HSTDIN ? readTerminalChar() : getc(handles[h].hfp));
-	if (c!=EOF && c>=0 && c<NUM_CHARS) {
+	if (c!=EOF && c>=0 && c<=MAXCHARVAL) {
 	    updapRoot(consChar(c),ap(nameHreader,primArg(1)));
 	    return;
 	}

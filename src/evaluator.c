@@ -241,6 +241,7 @@ Int what; {                     /* system to respond as appropriate ...    */
     typeChecker(what);
     compiler(what);
     machine(what);
+    charOps(what);
     builtIn(what);
     controlFuns(what);
     plugins(what);
