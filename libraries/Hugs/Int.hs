@@ -15,8 +15,9 @@ module Hugs.Int
 import Hugs.Prelude ( Int8, Int16, Int32, Int64 )
 import Hugs.Prelude ( Ix(..) )
 import Hugs.Prelude ( (%) )
-import Hugs.Prelude ( readDec, showInt )
+import Hugs.Prelude ( readDec )
 import Hugs.Prelude ( Num(fromInt), Integral(toInt) )
+import Hugs.Numeric ( showInt )
 import Hugs.Bits
 import Data.Bits
 

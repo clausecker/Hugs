@@ -15,8 +15,9 @@ import Data.Bits
 import Data.Int
 import Hugs.Prelude ( Ix(..) )
 import Hugs.Prelude ( (%) )
-import Hugs.Prelude ( readDec, showInt )
+import Hugs.Prelude ( readDec )
 import Hugs.Prelude ( Num(fromInt), Integral(toInt) )
+import Hugs.Numeric ( showInt )
 
 -----------------------------------------------------------------------------
 -- The "official" coercion functions
