@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: builtin.c,v $
- * $Revision: 1.24 $
- * $Date: 2002/06/14 14:41:10 $
+ * $Revision: 1.25 $
+ * $Date: 2002/06/17 16:27:45 $
  * ------------------------------------------------------------------------*/
 
 /* We include math.h before prelude.h because SunOS 4's cpp incorrectly
@@ -1945,6 +1945,7 @@ static HsFunPtr       getFunPtr      Args((void));
 static HsForeignPtr   getForeignPtr  Args((void));	      
 static HugsStablePtr  getStablePtr   Args((void));
 static HsStablePtr    getStablePtr4  Args((void));
+static HsFloat        getFloat4      Args((void));
 
 static void           putInt         Args((HsInt));
 static void           putWord        Args((HsWord));
@@ -1967,6 +1968,10 @@ static void           putWord64      Args((HsWord64));
 static void           putPtr         Args((HsPtr));
 static void           putFunPtr      Args((HsFunPtr));
 static void           putForeignPtr  Args((HsForeignPtr));
+static void           putFloat4      Args((HsFloat));
+
+static void           freeStablePtr4 Args((HsStablePtr));
+
 	      
 static void           returnIO       Args((HugsStackPtr, int));
 static void           returnId       Args((HugsStackPtr, int));
@@ -1996,6 +2001,7 @@ static HsFunPtr       getFunPtr()    { eval(pop()); checkPtr();   return ptrOf(w
 static HsForeignPtr   getForeignPtr() {
     ERRMSG(0) "getForeignPtr: not implemented in Hugs"
     EEND;
+    return 0;
 }
 
 static HugsStablePtr  getStablePtr() { 
@@ -2070,11 +2076,12 @@ HsStablePtr x; {
     if (x) freeStablePtr((HugsStablePtr)x);
 }
 
-static HsFloat        getFloat4      Args((void));
-static void           putFloat4      Args((HsFloat));
-
 static HsFloat        getFloat4()    { eval(pop()); checkFloat(); return whnfFloat; }
-static void putFloat4(x)       HsFloat       x; { push(mkFloat(x)); }
+
+static void putFloat4(x)
+HsFloat x; { 
+  push(mkFloat(x));
+}
 
 static void putForeignPtr(x)  
 HsForeignPtr x; {
