@@ -30,25 +30,19 @@ Last updated: 11/03/2003
     foo$ make fptools
     ..
 
-- preprocess the library sources for use by Hugs;
+- Compile up the Hugs sources and convert the library sources for
+  use by Hugs:
 
-    foo$ make pp-fptools HAPPY=/path/to/happy \
-                         FIND=/usr/bin/find \
-			 HSC2HS=/path/to/hsc2hs \
+    foo$ export hsc2hs=/path/to/hsc2hs happy=/path/to/happy
+    foo$ make EXTRA_CONFIGURE_OPTS=--build=i386-unknown-mingw32
 
-
-  FIND is set explicitly to avoid picking up the Microsoft's
-  'find' utility. There's no need to set HSC2HS or HAPPY
-  if 'hsc2hs' and 'happy' is available via your PATH setting.
-  
   'hsc2hs' comes with GHC
-  
+
   'happy' is the Happy parser generator available via
   http://haskell.org/happy/
 
-- Compile up the Hugs sources:
-
-    foo$ make EXTRA_CONFIGURE_OPTS=--build=i386-unknown-mingw32
+  There's no need to set hsc2hs or happy if 'hsc2hs' and 'happy'
+  are available via your PATH setting.
 
 - assuming that went OK, compile up some FFI stub libraries:
 

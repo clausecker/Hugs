@@ -27,8 +27,18 @@ RC_VERSION_SUBSTS = \
     -e "s/define MAJOR_RELEASE.*/define MAJOR_RELEASE ${MAJOR_RELEASE}/" \
     -e "s/VERSION_STRING MONTH_YEAR/VERSION_STRING \"${MON_YEAR} ${RC_STRING}\"/"
 
-# unless you've just unpacked, `make clean' first
 tar: ${PACKAGE}.tar.gz
+
+# Utilities needed to pre-process fptools. To override
+# these, set them on the command-line when invoking 'make':
+#
+#  foo$ make FIND=/usr/bin/find HAPPY=c:/happy/happy-1.15/bin/happy ...
+#
+# (You'll find 'hsc2hs' included in a GHC distribution.)
+#
+FIND=find
+HAPPY=happy
+HSC2HS=hsc2hs
 
 ${PACKAGE}.tar.gz:
 	-rm -rf ${TARTMP}
@@ -39,7 +49,6 @@ ${PACKAGE}.tar.gz:
 	# Unused, and the pathnames in there are too long for portable tar
 	cd ${TARTMP}/hugs98; rm -rf fptools/libraries/parsec/examples
 	# preprocess these, so the package can be built without happy & ghc
-	# changes here should be reflected also in Makefile (sorry)
 	$(FIND) ${TARTMP}/hugs98/fptools/libraries -name "*.ly" -o -name "*.y" |\
 		xargs -l $(HAPPY)
 ifneq "$(USING_AN_OLDER_HSC2HS)" "YES"
@@ -51,7 +60,6 @@ else
 	$(FIND) ${TARTMP}/hugs98/fptools/libraries -name "*_hsc_make.c" |\
 		xargs src/unix/hsc_kludge
 endif
-	@touch ${TARTMP}/hugs98/fptools/stamp-fptools
 	cp ${TARTMP}/hugs98/src/version.c ${TMP}/mktar
 	cd ${TARTMP}/hugs98/src; sed ${VERSION_SUBSTS} < ${TARTMP}/version.c > ${TARTMP}/hugs98/src/version.c
 	# using `make parser.c' would be best, but by default yacc
