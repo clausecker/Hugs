@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.83 $
- * $Date: 2002/05/23 14:55:09 $
+ * $Revision: 1.84 $
+ * $Date: 2002/06/13 22:56:42 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -42,7 +42,7 @@ Bool showInstRes = FALSE;
 Bool multiInstRes = FALSE;
 #endif
 
-static Bool   printMostGeneralType = FALSE;
+static Bool printTypeUseDefaults = FALSE;
 
 /* --------------------------------------------------------------------------
  * Local function prototypes:
@@ -1095,7 +1095,7 @@ struct options toggle[] = {             /* List of command line toggles    */
 #if !HASKELL_98_ONLY
              1,
 #endif
-            "Print most general type",  &printMostGeneralType},
+            "Apply 'defaulting' when printing types",  &printTypeUseDefaults},
 #if IPARAM
     {'W',
 # if !HASKELL_98_ONLY
@@ -1740,7 +1740,7 @@ static Void local showtype() {         /* print type of expression (if any)*/
     parseExp();
     checkExp();
     defaultDefns = evalDefaults;
-    type = typeCheckExp(!printMostGeneralType);
+    type = typeCheckExp(printTypeUseDefaults);
     printExp(stdout,inputExpr);
 #if HUGS_FOR_WINDOWS
     { INT svColor = SetForeColor(BLUE);
