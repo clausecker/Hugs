@@ -9,8 +9,8 @@
  * included in the distribution.
  *
  * $RCSfile: output.c,v $
- * $Revision: 1.5 $
- * $Date: 1999/09/13 15:06:12 $
+ * $Revision: 1.6 $
+ * $Date: 1999/09/22 16:34:10 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1334,7 +1334,7 @@ Pair  fd; {
 	    putChr(' ');
 	}
     }
-    putStr("->");
+    putStr(" -> ");
     for (us=snd(fd); nonNull(us); us=tl(us)) {
 	putTyVar(offsetOf(hd(us)));
 	if (nonNull(tl(us))) {
