@@ -117,7 +117,15 @@ cd `pwd`
 " >BuildFFI
 chmod 755 BuildFFI
 
-packages='base haskell98 haskell-src network parsec QuickCheck unix'
+packages='base haskell98 haskell-src network parsec QuickCheck'
+
+#
+# ToDo: fix -- cygwin supports 'unix' (but mingw + msvc doesn't.)
+#
+case `uname -a` in
+*CYGWIN*) ;;
+*)	packages='$packages unix';;
+esac
 
 # crude check whether HOpenGL was enabled in configure
 if grep '^#define HTYPE_GLBOOLEAN ' ../config.h >/dev/null
