@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.15 $
- * $Date: 1999/10/25 16:29:35 $
+ * $Revision: 1.16 $
+ * $Date: 1999/11/06 01:29:11 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1432,7 +1432,10 @@ Text t; {
 	    List ms = cclass(cl).members;
 	    Printf(" where");
 	    do {
-		Type t = monotypeOf(name(hd(ms)).type);
+		Type t = name(hd(ms)).type;
+                if (isPolyType(t)) {
+		    t = monotypeOf(t);
+		}
 		Printf("\n  ");
 		printExp(stdout,hd(ms));
 		Printf(" :: ");
