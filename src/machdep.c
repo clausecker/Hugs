@@ -11,8 +11,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.62 $
- * $Date: 2002/08/10 11:23:49 $
+ * $Revision: 1.63 $
+ * $Date: 2002/08/12 16:47:34 $
  * ------------------------------------------------------------------------*/
 #include <math.h>
 
@@ -2219,7 +2219,7 @@ String flags; {
     }
 
     /* printf("Executing '%s'\n",buffer); */
-    if (system(buffer) != 0) {
+    if (shellEsc(buffer,TRUE,TRUE) != 0) {
         ERRMSG(0) "Error while running compilation command '%s'", buffer
         EEND;
     }
