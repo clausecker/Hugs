@@ -14,6 +14,7 @@ RELEASE = 1
 TAG = HEAD
 HSLIBSTAG = HEAD
 LIBRARIESTAG = HEAD
+HSC2HSTAG = HEAD
 
 HSLIBSDIRS = concurrent data hssource lang net text util posix
 LIBRARIESDIRS = base haskell98 haskell-src mtl network parsec QuickCheck unix \
@@ -127,6 +128,6 @@ src/stamp-h.in: configure.ac aclocal.m4 fptools
 
 fptools:
 	-mkdir fptools
-	cvs -d `cat CVS/Root` get -r$(HSLIBSTAG) `for lib in $(HSLIBSDIRS); do echo fptools/hslibs/$$lib; done`
-	cvs -d `cat CVS/Root` get -r$(LIBRARIESTAG) fptools/config.sub fptools/config.guess fptools/install-sh `for lib in $(LIBRARIESDIRS); do echo fptools/libraries/$$lib; done`
-	cvs -d `cat CVS/Root` get fptools/ghc/utils/hsc2hs
+	cvs -d `cat CVS/Root` checkout -r $(HSLIBSTAG) `for lib in $(HSLIBSDIRS); do echo fptools/hslibs/$$lib; done`
+	cvs -d `cat CVS/Root` checkout -r $(LIBRARIESTAG) fptools/config.sub fptools/config.guess fptools/install-sh `for lib in $(LIBRARIESDIRS); do echo fptools/libraries/$$lib; done`
+	cvs -d `cat CVS/Root` checkout -r $(HSC2HSTAG) fptools/ghc/utils/hsc2hs
