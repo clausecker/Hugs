@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: runhugs.c,v $
- * $Revision: 1.17 $
- * $Date: 2003/04/01 13:01:06 $
+ * $Revision: 1.18 $
+ * $Date: 2003/04/06 23:42:30 $
  * ------------------------------------------------------------------------*/
 
 #include <stdio.h>
@@ -62,8 +62,10 @@ int main(argc,argv)
 int    argc;
 char* argv[]; {
     int    exitCode = 0;
+#if !defined(FFI_COMPILER)
     char** hugs_argv;
     int    hugs_argc;
+#endif
 
     if (!initSystem()) {
       fprintf(stderr,"%s: failed to initialize, exiting\n", (argv ? argv[0] : ""));
