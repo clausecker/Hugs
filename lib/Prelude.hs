@@ -61,7 +61,8 @@ module Prelude (
 --  module Ratio,
     Ratio, Rational, (%), numerator, denominator, approxRational,
 --  Non-standard exports
-    IO(..), IOResult(..), primExitWith, Addr,
+    IO(..), IOResult(..), primExitWith, Addr, basicIORun, IOFinished(..),
+    threadToIOResult,
 
     Bool(False, True),
     Maybe(Nothing, Just),
@@ -1604,31 +1605,66 @@ instance Monad IO where
 
 data Addr     -- builtin datatype of C pointers
 
-newtype IO a = IO ((IOError -> IOResult a) -> (a -> IOResult a) -> IOResult a)
-data IOResult a 
-  = Hugs_ExitWith Int
-  | Hugs_SuspendThread
-  | Hugs_Error    IOError
-  | Hugs_Return   a
+primitive unsafeCoerce "primUnsafeCoerce" :: a -> b
+
+data Obj = Obj
+
+toObj :: a -> Obj
+toObj   = unsafeCoerce
+
+fromObj :: Obj -> a
+fromObj = unsafeCoerce
+
+
+newtype IO a = IO ((IOError -> IOResult) -> (a -> IOResult) -> IOResult)
+data IOResult 
+  = Hugs_ExitWith    Int
+  | Hugs_Error       IOError
+  | Hugs_ForkThread  IOResult IOResult
+  | Hugs_DeadThread
+  | Hugs_YieldThread IOResult
+  | Hugs_Return      Obj
+
+data IOFinished a
+  = Finished_ExitWith Int
+  | Finished_Error    IOError
+  | Finished_Return   a
 
 hugsPutStr :: String -> IO ()
 hugsPutStr  = putStr
 
 hugsIORun  :: IO a -> Either Int a
-hugsIORun m = performIO (runAndShowError m)
+hugsIORun m = 
+  case basicIORun (runAndShowError m) of
+    Finished_ExitWith i -> Left i
+    Finished_Error    _ -> Left 1
+    Finished_Return   a -> Right a
  where
-  performIO       :: IO a -> Either Int a
-  performIO (IO m) = case m Hugs_Error Hugs_Return of
-	             Hugs_Return a   -> Right a
-		     Hugs_ExitWith e -> Left  e
-		     _               -> Left  1
-
   runAndShowError :: IO a -> IO a
   runAndShowError m =
     m `catch` \err -> do 
 	putChar '\n'
 	putStr (ioeGetErrorString err)
-	primExitWith 1 -- alternatively: (IO (\f s -> Hugs_SuspendThread))
+	primExitWith 1
+
+basicIORun :: IO a -> IOFinished a
+basicIORun (IO m) = loop [m Hugs_Error (Hugs_Return . toObj)]
+
+threadToIOResult :: IO a -> IOResult
+threadToIOResult (IO m) = m Hugs_Error (const Hugs_DeadThread)
+
+-- This is the queue of *runnable* threads.
+-- There may be blocked processes inside
+loop :: [IOResult] -> IOFinished a
+loop []                      = error "no more threads (deadlock?)"
+loop [Hugs_Return   a]       = Finished_Return (fromObj a)
+loop (Hugs_Return   a:r)     = loop (r ++ [Hugs_Return a])
+loop (Hugs_Error    e:_)     = Finished_Error  e
+loop (Hugs_ExitWith i:_)     = Finished_ExitWith i
+loop (Hugs_DeadThread:r)     = loop r
+loop (Hugs_ForkThread a b:r) = loop (a:b:r)
+loop (Hugs_YieldThread a:r)  = loop (r ++ [a])
+loop _                       = undefined
 
 primExitWith     :: Int -> IO a
 primExitWith c    = IO (\ f s -> Hugs_ExitWith c)

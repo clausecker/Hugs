@@ -40,7 +40,6 @@
 -----------------------------------------------------------------------------
 module ConcBase(
 	forkIO,
-	runOrBlockIO,
 	MVar,
 	newEmptyMVar, newMVar, takeMVar, putMVar,
 	swapMVar, readMVar, isEmptyMVar,
@@ -63,9 +62,6 @@ putMVar      :: MVar a -> a -> IO ()
 
 instance Eq (MVar a) where
   (==) = primEqMVar
-
--- Spawn a thread and wait for it to return or block
-runOrBlockIO :: IO a -> IO (IOResult a)
 
 swapMVar :: MVar a -> a -> IO a
 
@@ -91,38 +87,34 @@ readMVar mvar =
 -- Implementation
 ----------------------------------------------------------------
 
-suspend :: IO a
-suspend = IO (\f s -> Hugs_SuspendThread)
+kill :: IO a
+kill = IO (\f s -> Hugs_DeadThread)
 
 yield   :: IO ()
-yield    = suspend
+yield    = IO (\ f s -> Hugs_YieldThread (s ()))
 
--- The thread is scheduled immediately and runs with its own success/error
--- continuations.
-runOrBlockIO (IO m) = IO (\f s -> s $! (m Hugs_Error Hugs_Return))  
-
--- suspend current thread passing its continuation to m
-blockIO :: ((a -> IOResult a) -> IO a) -> IO a
+-- kill current thread passing its continuation to m
+blockIO :: ((a -> IOResult) -> IO b) -> IO a
 blockIO m = IO (\ f s -> 
-  case m s of { IO ms -> ms f (const Hugs_SuspendThread) }
+  case m s of { IO ms -> ms f (const Hugs_DeadThread) }
   )
 
--- continue the continuation, then go on
-continueIO :: IOResult a -> IO ()
-continueIO cc = IO (\ f s -> cc `seq` s ())
+-- add the continuation to the runnable list, and continue
+continueIO :: IOResult -> IO ()
+continueIO cc = IO (\ f s -> Hugs_ForkThread (s ()) cc)
 
 -- The thread is scheduled immediately and runs with its own success/error
 -- continuations.
-forkIO m = runOrBlockIO (m `catch` forkErrHandler) >> return ()
+forkIO m = continueIO (threadToIOResult (m `catch` forkErrHandler))
 
 forkErrHandler :: IOError -> IO a
 forkErrHandler e = do
     putStr "Uncaught error in forked process: \n  "
     putStr (ioeGetErrorString e)
     putStr "\n"           
-    suspend
+    kill
 
-newtype MVar a = MkMVar (IORef (Either a [a -> IOResult a]))
+newtype MVar a = MkMVar (IORef (Either a [a -> IOResult]))
 
 newEmptyMVar = fmap MkMVar (newIORef (Right []))
 
@@ -135,10 +127,7 @@ takeMVar (MkMVar v) =
     writeIORef v (Right []) >>
     return a
   Right cs ->
-    blockIO (\cc ->
-      writeIORef v (Right (cc:cs)) >>
-      suspend
-    )
+     blockIO (\cc -> writeIORef v (Right (cs ++ [cc])))
 
 putMVar (MkMVar v) a =
   readIORef v >>= \ state ->
@@ -150,8 +139,8 @@ putMVar (MkMVar v) a =
     return ()
   Right (c:cs) ->
     writeIORef v (Right cs) >>
-    continueIO (c a)       >> -- schedule the blocked process
-    return ()                 -- continue with this process
+    continueIO (c a)   -- schedule the blocked process
+                       -- and continue with this process
 
 primEqMVar   :: MVar a -> MVar a -> Bool
 MkMVar v1 `primEqMVar` MkMVar v2 = v1 == v2

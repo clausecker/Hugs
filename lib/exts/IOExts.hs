@@ -53,29 +53,28 @@ fixIO m = IO fixIO'
  where
   fixIO' fail succ =
     case r of
-    Hugs_Return a   -> succ a
-    Hugs_Error err  -> fail err
-    other           -> other
+    Finished_Return a   -> succ a
+    Finished_Error err  -> fail err
+    other               -> error "IOExts:fixIO: failed"
    where
-    r = case m a of { IO ma -> ma Hugs_Error Hugs_Return }
+    r = basicIORun (m a)
     a = case r   of 
-        Hugs_Return a  -> a
-        Hugs_Error err -> error "IOExts:fixIO: thread exited with error"
-        _              -> error "IOExts:fixIO: thread exited with no result"
+        Finished_Return a  -> a
+        _                  -> error "IOExts:fixIO: thread exited with error"
+
+primitive unsafeCoerce "primUnsafeCoerce" :: a -> b
 
 performIO :: IO a -> a
-performIO (IO m) = 
-  case m Hugs_Error Hugs_Return of
-  Hugs_Return a  -> a
-  Hugs_Error err -> error "IOExts.performIO: thread exited with error"
-  _              -> error "IOExts.performIO: thread exited with no result"
+performIO m = 
+  case basicIORun m of
+    Finished_Return a  -> a
+    _                  -> error "IOExts.performIO: thread exited with error"
 
 interleaveIO :: IO a -> IO a
-interleaveIO (IO m) = IO (\ f s -> 
-  s (case m Hugs_Error Hugs_Return of
-     Hugs_Return a  -> a
-     Hugs_Error err -> error "IOExts.interleaveIO: thread exited with error"
-     _              -> error "IOExts.interleaveIO: thread exited with no result"
+interleaveIO m = IO (\ f s -> 
+  s (case basicIORun m of
+       Finished_Return a  -> a
+       _                  -> error "IOExts.interleaveIO: thread exited with error"
      ))
 
 runAndShowError :: IO a -> IO a
