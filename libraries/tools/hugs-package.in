@@ -232,7 +232,7 @@ do
 
 		# Determine the list of headers used by the file
 		# bug: <foo.h> and "foo.h" will not be unified
-		header_list=$file.hdrs
+		header_list=$tmpdir/list.hdrs
 		(
 			for h in $c_includes
 			do	echo "\"$h\""
