@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: server.h,v $
- * $Revision: 1.10 $
- * $Date: 2003/03/09 23:53:08 $
+ * $Revision: 1.11 $
+ * $Date: 2003/03/20 00:11:50 $
  * ------------------------------------------------------------------------*/
 #include "HugsAPI.h"
 
@@ -26,5 +26,5 @@ extern char*  lastError;
 /* Get the API method table from the currently running interpreter.
  * => the interpreter / server is assumed to have already been initialized.
  */
-extern HugsServerAPI* getHugsAPI();
+extern HugsServerAPI* getHugsAPI Args((Void));
 /* ------------------------------------------------------------------------*/
