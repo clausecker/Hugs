@@ -21,7 +21,6 @@ module List (
 
     -- ... and what the Prelude exports
     --  List type: []((:), [])
-    (:),
     map, (++), concat, filter,
     head, last, tail, init, null, length, (!!),
     foldl, foldl1, scanl, scanl1, foldr, foldr1, scanr, scanr1,
