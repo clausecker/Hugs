@@ -36,8 +36,12 @@ Hugs as follows:
   #
   # Details on how to partially link files vary from one platform to
   # another.
-  cc -shared Test.c test.c -o Test.so                     # Most Unixen
-  cc -bundle -undefined suppress Test.c test.c -o Test.so # MacOS X
+
+  # Most Unixen:
+  cc -shared -I/usr/local/share/hugs/include Test.c test.c -o Test.so
+
+  # MacOS X:
+  cc -bundle -I/usr/local/share/hugs/include Test.c test.c -o Test.so
 
   # Run Hugs as normal - when Test.hs is loaded, it will load Test.so
   hugs Test.hs
