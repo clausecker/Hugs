@@ -10,8 +10,7 @@
 #
 # A HUGSPATH consisting of both of these should approximate the old libs,
 # and be fairly compatible with GHC.  If you're completely switched over,
-# delete the second one.  Be sure to use hugs -X with the new libraries,
-# or it will get very confused.
+# delete the second one.
 #
 # Usage:
 #
@@ -57,6 +56,8 @@ function cvt {
 			s/import Array/import Hugs.Array/
 			s/import Char/import Data.Char/
 			s/import Ratio/import Data.Ratio/
+			s/import Locale/import System.Locale/
+			s/import Time/import System.Time/
 			" $hugs_src/$3 >$dst/$new_stem$old_extension
 		;;
 	esac
