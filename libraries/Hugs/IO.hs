@@ -50,6 +50,8 @@ module Hugs.IO (
     -- Non-standard extensions 
     hugsIsEOF,              -- :: IO Bool
     hugsHIsEOF,             -- :: Handle  -> IO Bool
+    
+    openFd                  -- :: Int -> Bool -> IOMode -> Bool -> IO Handle
     ) where
 
 import Hugs.Prelude	( Handle )
@@ -185,3 +187,12 @@ hugsIsEOF             :: IO Bool
 hugsIsEOF              = hugsHIsEOF stdin
 
 -----------------------------------------------------------------------------
+
+--
+-- Creating a handle from a file descriptor/socket.
+--
+primitive openFd    :: Int    -- file descriptor
+		    -> Bool   -- True => it's a socket.
+		    -> IOMode -- what mode to open the handle in.
+		    -> Bool   -- binary?
+		    -> IO Handle
