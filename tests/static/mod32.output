@@ -1,2 +1,1 @@
-ERROR "static/mod32.hs" - Import of type constructor "Int" clashes with class in module "Prelude"
 Hugs:[Leaving Hugs]

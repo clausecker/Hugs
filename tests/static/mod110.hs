@@ -1,4 +1,4 @@
--- !!! Re-defining 
+-- !!! Re-defining Prelude class
 module M where
 
 import Prelude

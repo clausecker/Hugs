@@ -1,3 +1,4 @@
+-- !!! Redefining and using Prelude entities
 module F where
 
 sin :: Float -> Float
