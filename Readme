@@ -21,6 +21,7 @@ __   __ __  __  ____   ___      _________________________________________
    - The Double type is now double-precision on most architectures.
    - The -N, -i, -f, -W and -X options are gone, as is the :project command.
    - Integrated .NET support (on Windows).
+   - The beginnings of a User's Guide (still largely incomplete).
    - Numerous bug fixes since the previous major release in Nov 2002.
 
    The home page for Hugs is at http://haskell.org/hugs.
