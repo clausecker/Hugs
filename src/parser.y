@@ -11,8 +11,8 @@
  * included in the distribution.
  *
  * $RCSfile: parser.y,v $
- * $Revision: 1.24 $
- * $Date: 2001/12/04 19:13:14 $
+ * $Revision: 1.25 $
+ * $Date: 2001/12/09 23:24:19 $
  * ------------------------------------------------------------------------*/
 
 %{
@@ -173,6 +173,7 @@ modBody	  : topDecls			{$$ = $1;}
 
 expspec	  : /* empty */			{$$ = gc0(exportSelf());}
 	  | '(' ')'			{$$ = gc2(NIL);}
+	  | '(' ',' ')'			{$$ = gc3(NIL);}
 	  | '(' exports ')'		{$$ = gc3($2);}
 	  | '(' exports ',' ')'		{$$ = gc4($2);}
 	  ;
