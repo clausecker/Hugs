@@ -87,9 +87,7 @@ veryclean:
 check: all
 	cd tests && sh testScript | egrep -v '^--( |-----)'
 
-verbosecheck: fptools src/Makefile
-	cd src; $(MAKE) all
-	cd libraries; $(MAKE) all
+verbosecheck: all
 	cd tests && sh testScript
 
 # Building distributions
