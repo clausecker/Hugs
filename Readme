@@ -25,15 +25,15 @@ __   __ __  __  ____   ___      _________________________________________
    - Hugs is now delivered with most of the hslibs libraries installed
      in the lib/exts/ directory.
 
-   - A new command :regsave is availiable under Windows, which persists 
+   - A new command :regsave is available under Windows, which persists 
      the current settings to the Registry.
      
    - Hugs now falls back to using the default HUGSPATH on Windows
      systems, should the user-specified path in the Registry not 
      contain a valid Prelude.
 
-   - MacOS X is now one of the supported unix ports, with prebuilt 
-     binaries avaliable on the download page.
+   - MacOS X is now one of the supported unix ports, with pre-built 
+     binaries available on the download page.
 
    - Experimental support is provided for hierarchical module names, 
      where a module name A.B.C is mapped onto the file path 
