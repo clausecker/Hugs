@@ -42,7 +42,7 @@ module Hugs.ConcBase(
 	forkIO,
 	MVar,
 	newEmptyMVar, newMVar, takeMVar, tryTakeMVar, putMVar, tryPutMVar,
-	swapMVar, readMVar, isEmptyMVar,
+	isEmptyMVar,
         yield
 	) where
 
@@ -65,23 +65,7 @@ putMVar      :: MVar a -> a -> IO ()
 tryPutMVar   :: MVar a -> a -> IO Bool
 tryTakeMVar  :: MVar a -> IO (Maybe a)
 
-swapMVar    :: MVar a -> a -> IO a
-readMVar    :: MVar a -> IO a
 isEmptyMVar :: MVar a -> IO Bool
-
-----------------------------------------------------------------
--- Easy implementations (definable using the primitive operations)
-----------------------------------------------------------------
-
-swapMVar var new = do
-  old <- takeMVar var
-  putMVar var new
-  return old
-
-readMVar mvar = do
-  value <- takeMVar mvar
-  putMVar mvar value
-  return value
 
 ----------------------------------------------------------------
 -- Implementation
