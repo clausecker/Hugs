@@ -9,8 +9,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: compiler.c,v $
- * $Revision: 1.11 $
- * $Date: 2002/05/23 15:10:43 $
+ * $Revision: 1.12 $
+ * $Date: 2002/07/19 18:04:57 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1984,39 +1984,42 @@ Void compileDefns() {			/* compile script definitions	   */
     if (debugSC) {
       mod = currentModule;
       modName = textToStr(module(currentModule).text);
-      strcpy(name,modName);
-      strcpy(name + strlen(modName),".cor");
-      scfp = fopen(name,"w");
-      fprintf(scfp,"module %s;\n",modName);
-      dataCons = dupOnto(dataCons,module(currentModule).tycons);
-      dataCons = dupOnto(dataCons,module(currentModule).classes);
-      for (; nonNull(dataCons); dataCons=tl(dataCons)) {
-	Cell t = hd(dataCons);
-	switch(whatIs(t)) {
-	case TYCON:
-	  if (tycon(t).what == DATATYPE
-	      && nonNull(tycon(t).defn)
-	      && tycon(t).mod == mod) {
-	    fprintf(scfp,"data %s",
-		    textToStr(tycon(t).text));
-	    debugConstructors(scfp,tycon(t).defn);
-	    fprintf(scfp,";\n");
+      if (snprintf(name,sizeof(name)-1, "%s.cor", modName) < 0) {
+	  ERRMSG(0) "Module name (%s) too long", modName
+          EEND_NORET;
+      } else {
+	  name[sizeof(name)-1] = '\0';
+	  scfp = fopen(name,"w");
+	  fprintf(scfp,"module %s;\n",modName);
+	  dataCons = dupOnto(dataCons,module(currentModule).tycons);
+	  dataCons = dupOnto(dataCons,module(currentModule).classes);
+	  for (; nonNull(dataCons); dataCons=tl(dataCons)) {
+	      Cell t = hd(dataCons);
+	      switch(whatIs(t)) {
+	      case TYCON:
+		  if (tycon(t).what == DATATYPE
+		      && nonNull(tycon(t).defn)
+		      && tycon(t).mod == mod) {
+		      fprintf(scfp,"data %s",
+			      textToStr(tycon(t).text));
+		      debugConstructors(scfp,tycon(t).defn);
+		      fprintf(scfp,";\n");
+		  }
+		  break;
+	      case CLASS:
+		  if (cclass(t).mod == mod) {
+		      fprintf(scfp,"data %s = ",
+			      textToStr(cclass(t).text));
+		      debugConstructor(scfp,cclass(t).dcon);
+		      fprintf(scfp,";\n");
+		  }
+		  break;
+	      default:
+		  fprintf(scfp,"** unknown datacons **");
+	      }
 	  }
-	  break;
-	case CLASS:
-	  if (cclass(t).mod == mod) {
-	    fprintf(scfp,"data %s = ",
-		    textToStr(cclass(t).text));
-	    debugConstructor(scfp,cclass(t).dcon);
-	    fprintf(scfp,";\n");
-	  }
-	  break;
-	default:
-	  fprintf(scfp,"** unknown datacons **");
-	}
       }
     }
-
 #endif
 
     setGoal("Compiling",t);
