@@ -253,71 +253,31 @@ test_rts() {
   perl runstdtest $HUGS +q -pHugs: -s28 "-Orts/array2.hs" "-irts/array2.input" "-o1rts/array2.output"
   perl runstdtest $HUGS +q -pHugs: -s28 "-Orts/arrayEx.hs" "-irts/arrayEx.input" "-o1rts/arrayEx.output"
 
+  perl runstdtest $HUGS +q -pHugs: -s17 "-Orts/primexc.hs" "-irts/primexc.input" "-o1rts/primexc.output"
 
-  # Old test code from hugs +q -pHugs:0 - it will probably get resurrected at some stage
+  perl runstdtest $HUGS +q -pHugs: -s36 "-Orts/refs.hs" "-irts/refs.input" "-o1rts/refs.output"
+  perl runstdtest $HUGS +q -98 -pHugs: -s40 "-Orts/mutvars.hs" "-irts/mutvars.input" "-o1rts/mutvars.output"
+  perl runstdtest $HUGS +q -pHugs: -s23 "-Orts/ioerror1.hs" "-irts/ioerror1.input" "-o1rts/ioerror1.output"
+  perl runstdtest $HUGS +q -pHugs: -s17 "-Orts/ioerror2.hs" "-irts/ioerror2.input" "-o1rts/ioerror2.output"
+
+  perl runstdtest $HUGS +q -pHugs: -s51 "-Orts/mvar.hs" "-irts/mvar.input" "-o1rts/mvar.output"
+
+  # Old test code - it will probably get resurrected at some stage
   # 
-  # if TESTREFS
-  # if IO_REFS
-  #   perl runstdtest $HUGS +q -pHugs: "-O./refs.hs" "-i./refs.input" "-o1./refs.output"
-  # fi
-  # else
-  # echo "Not testing Refs"
-  # fi
-  # 
-  # if TESTPTREQ
-  # if IO_REFS
   #   perl runstdtest $HUGS +q -pHugs: "-O./ptrEq.hs" "-i./ptrEq.input" "-o1./ptrEq.output"
-  # fi
-  # else
-  # echo "Not testing Pointer equality"
-  # fi
-  # 
-  # if TESTMUTVARS
-  # if ST_MUTVARS
-  #   perl runstdtest $HUGS +q -pHugs: "-O./mutvars.hs" "-i./mutvars.input" "-o1./mutvars.output"
-  # fi
-  # else
-  # echo "Not testing MutVars"
-  # fi
-  # 
-  # if TESTIOERROR
-  # if !OLD_IOMONAD
-  #   perl runstdtest $HUGS +q -pHugs: "-O./ioerror1.hs" "-i./ioerror1.input" "-o1./ioerror1.output"
-  #   perl runstdtest $HUGS +q -pHugs: "-O./ioerror2.hs" "-i./ioerror2.input" "-o1./ioerror2.output"
-  # if IO_HANDLES
+
   # /* Create an unreadable file (its impossible to supply one in a tar file!) */
   # cat >./unreadable.tst <<EOF
-  # This file should be read+q -protected.
+  # This file should be read-protected.
   #   perl runstdtests/iohandle.hs attempts to write it.
   # EOF
   # CHMOD 200 "./unreadable.tst"
   #   perl runstdtest $HUGS +q -pHugs: "-O./iohandle.hs" "-i./iohandle.input" "-o1./iohandle.output"
   # RM "./unreadable.tst"
-  # fi
-  # fi /* !OLD_IOMONAD */
-  # else
-  # echo "Not testing IOError"
-  # fi /* TESTIOERROR */
-  # 
-  # if TESTCONCURRENCY
-  # if CONCURRENCY
-  #   perl runstdtest $HUGS +q -pHugs: "-O./mvar.hs" "-i./mvar.input" "-o1./mvar.output"
-  # fi
-  # else
-  # echo "Not testing concurrency"
-  # fi
-  # 
-  # if TESTGC
+
   #   perl runstdtest $HUGS +q -pHugs:          "-O./gc.hs" "-i./gc1.input" "-o1./gc1.output"
   #   perl runstdtest $HUGS +q -pHugs: -H200000" "-O./gc.hs" "-i./gc1.input" "-o1./gc1.output"
   #   perl runstdtest $HUGS +q -pHugs: -H100000" "-O./gc.hs" "-i./gc2.input" "-o1./gc2.output"
-  # else
-  # echo "Not testing GC"
-  # fi
-  # 
-  # else
-  # echo "Not testing runtime system"
-  # fi
 
 } # End of test_rts
 
@@ -340,6 +300,9 @@ test_libs() {
 --   --!!! Testing System
 --   --!!! Testing Int and Word
 --   --!!! Testing IOExts.fixIO
+--   --!!! Testing Addr arithmetic and shows
+--   --!!! Testing derived Concurrency primitives and producer-consumer code
+--   --!!! Testing interaction of exception handling with threads
 -- 
 -- On Windows, it may also produce output that looks like this:
 -- 
@@ -416,7 +379,9 @@ test_libs() {
   perl runstdtest $HUGS +q -pHugs: Complex -s16 "-ilibs/complex1.input" "-o1libs/complex1.output"
   perl runstdtest $HUGS +q -pHugs: Int     -s24 "-Olibs/intTest.hs" "-ilibs/intTest.input" "-o1libs/intTest.output"
   perl runstdtest $HUGS +q -pHugs: libs/FixIO.lhs -s37 "-ilibs/FixIO.input" "-o1libs/FixIO.output"
-  perl runstdtest $HUGS +q -pHugs: Addr.hs -s17 "-ilibs/Addr.input" "-o1libs/Addr.output"
+  perl runstdtest $HUGS +q -pHugs: libs/testAddr.hs -s20 "-ilibs/Addr.input" "-o1libs/Addr.output"
+  perl runstdtest $HUGS +q -pHugs: libs/prodcon.hs -s51 "-ilibs/prodcon.input" "-o1libs/prodcon.output"
+  perl runstdtest $HUGS +q -pHugs: libs/except1.hs -s53 "-ilibs/except1.input" "-o1libs/except1.output"
 
 } # End of test_libs
 

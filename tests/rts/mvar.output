@@ -1,0 +1,12 @@
+Hugs:a
+Program error: no more threads (deadlock?)
+
+Hugs:a
+Hugs:ab
+Hugs:
+Program error: putMVar {full MVar}
+
+Hugs:aa
+Hugs:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+Hugs:ab
+Hugs:[Leaving Hugs]

@@ -1,0 +1,84 @@
+Hugs:True
+
+Hugs:"Foo"
+"Bar"
+
+Hugs:
+User error: x
+Hugs:
+Program error: x
+
+Hugs:y
+
+Hugs:Hugs:b failed
+a worked
+b failed
+a worked
+y
+b worked
+a worked
+y
+
+Hugs:b failed
+a worked
+b worked
+a worked
+b failed
+a worked
+b worked
+a worked
+y
+b worked
+a worked
+b worked
+a worked
+y
+
+Hugs:Hugs:b failed
+a worked
+b failed
+a worked
+y
+b worked
+a worked
+y
+
+Hugs:b failed
+a worked
+b worked
+a worked
+b failed
+a worked
+b worked
+a worked
+y
+b worked
+a worked
+b worked
+a worked
+y
+
+Hugs:Hugs:
+Thread raised error: User error: x
+a worked
+
+Thread raised exception: x
+a worked
+y
+a worked
+y
+
+Hugs:
+Thread raised error: User error: x
+a worked
+a worked
+
+Thread raised exception: x
+a worked
+a worked
+y
+a worked
+a worked
+y
+
+Hugs:Hugs:[Leaving Hugs]

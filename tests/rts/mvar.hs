@@ -1,19 +1,25 @@
 --!!! Testing the MVar primitives
 
+-- Some of these tests are marked as non-deterministic.
+-- Tests involving these will "fail" if the scheduling order
+-- is changed.
+
 module TestMVar(test1,test2,test3,test4,test5,test6,test7,test8) where
+
+import Concurrent
 
 -- should print "a"
 test1 =
-  newMVar         >>= \ v ->
+  newEmptyMVar    >>= \ v ->
   putMVar v 'a'   >>
   takeMVar v      >>= \ x ->
   putChar x       >>
   takeMVar v      >>= \ x ->
   putChar x
 
--- Nondeterministic
+-- Nondeterministic - may deadlock
 test2 = 
-  newMVar         >>= \ v ->
+  newEmptyMVar    >>= \ v ->
   forkIO (p1 v)   >>
   get v           >>
   put v 'b'
@@ -24,15 +30,15 @@ test2 =
 
 -- should print "a"
 test3 = 
-  newMVar              >>= \ v ->
+  newEmptyMVar         >>= \ v ->
   forkIO (put v 'a')   >>
   get v
 
 -- should print "ab"   
 test4 = 
-  newMVar         >>= \ v1 ->
-  newMVar         >>= \ v2 ->
-  forkIO (p1 v1 v2)   >>
+  newEmptyMVar      >>= \ v1 ->
+  newEmptyMVar      >>= \ v2 ->
+  forkIO (p1 v1 v2) >>
   get v1          >>
   put v2 'b'
  where
@@ -42,16 +48,16 @@ test4 =
 
 -- should abort: primPutMVar: full MVar
 test5 = 
-  newMVar         >>= \ v ->
+  newEmptyMVar    >>= \ v ->
   put v 'a'       >>
   put v 'b'
 
 -- Tests blocking of two processes on the same variable.
 -- should print "aa"
 test6 = 
-  newMVar         			>>= \ ack ->
-  newMVar         			>>= \ a1 ->
-  newMVar         			>>= \ a2 ->
+  newEmptyMVar         			>>= \ ack ->
+  newEmptyMVar         			>>= \ a1 ->
+  newEmptyMVar         			>>= \ a2 ->
   forkIO (putMVar a1 () >> get ack)  	>>
   forkIO (putMVar a2 () >> get ack)  	>>
   takeMVar a2     			>> 
@@ -88,9 +94,9 @@ test8 =
 -- Tests blocking of two processes on the same variable.
 -- may print "ab" or "ba"
 test9 = 
-  newMVar         			>>= \ ack ->
-  newMVar         			>>= \ a1 ->
-  newMVar         			>>= \ a2 ->
+  newEmptyMVar         			>>= \ ack ->
+  newEmptyMVar         			>>= \ a1 ->
+  newEmptyMVar         			>>= \ a2 ->
   forkIO (putMVar a1 () >> get ack)  	>>
   forkIO (putMVar a2 () >> get ack)  	>>
   takeMVar a2     			>> 
