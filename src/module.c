@@ -1082,22 +1082,28 @@ Cell e; {
 			 */
 			Cell xs;
 			List dcons = NIL;
+			Module tcMod = tycon(nm).mod;
+			/* This requires going through all the import lists,
+			 * locating imports of the tycon & take the union of
+			 * all the constructors found to be in scope.
+			 */
 			for (xs = module(thisModule).modImports;nonNull(xs);xs=tl(xs)) {
-			    if (isPair(hd(xs)) && fst(hd(xs)) == tycon(nm).mod ) {
-				/* Found the effective import list for tycon's module */
-				List ns;
-				/* Find the entry for the 'nm' tycon.. */
-				for(ns = snd(snd(hd(xs))); nonNull(ns); ns=tl(ns)) {
-				    if ( isPair(hd(ns)) && 
-					 isTycon(fst(hd(ns))) &&
-					 fst(hd(ns)) == nm ) {
-				      dcons=snd(hd(ns));
-				      break;
-				    }
-				}
-				break;
+			  if ( isPair(hd(xs)) && isPair(snd(hd(xs))) ) {
+			    List ns;
+			    /* Find the entry for the 'nm' tycon.. */
+			    for (ns = snd(snd(hd(xs))); nonNull(ns); ns=tl(ns)) {
+			      if ( isPair(hd(ns))       && 
+				   isTycon(fst(hd(ns))) &&
+				   fst(hd(ns)) == nm    &&
+				   tycon(fst(hd(ns))).mod == tcMod ) {
+				      dcons=dupOnto(snd(hd(ns)),dcons);
+				      /* Assumption: a tycon may appear more than
+				         once in an import list;  */
+			      }
 			    }
+			  }
 			}
+			dcons = nubList(dcons);
 			exports=addEntity(nm,dcons,exports);
 			return exports;
 		    }
@@ -1122,28 +1128,34 @@ Cell e; {
 		    /* If we're re-exporting a class via (..),
 		     * only the metods in scope are exported. 
 		     */
-		    Cell xs;
-		    List meths = NIL;
-		    for (xs = module(thisModule).modImports;nonNull(xs);xs=tl(xs)) {
-			if (isPair(hd(xs)) && fst(hd(xs)) == cclass(nm).mod ) {
-			   /* Found the effective import list for the class' module */
-			    List ns;
-			    /* Locate the class.. */
-			    for(ns = snd(snd(hd(xs))); nonNull(ns); ns=tl(ns)) {
-				if ( isPair(hd(ns)) && 
-				     isClass(fst(hd(ns))) &&
-				     fst(hd(ns)) == nm) {
-				    meths=snd(hd(ns));
-				    break;
-				}
-			    }
-			    break;
+		  Cell xs;
+		  List meths = NIL;
+		  Module ccMod = tycon(nm).mod;
+		  /* This requires going through all the import lists,
+		   * locating imports of the class & take the union of
+		   * all the methods found to be in scope.
+		   */
+		  for (xs = module(thisModule).modImports;nonNull(xs);xs=tl(xs)) {
+		    if ( isPair(hd(xs)) && isPair(snd(hd(xs))) ) {
+		      List ns;
+		      /* Locate the class.. */
+		      for (ns = snd(snd(hd(xs))); nonNull(ns); ns=tl(ns)) {
+			if ( isPair(hd(ns))       && 
+			     isClass(fst(hd(ns))) &&
+			     fst(hd(ns)) == nm    &&
+			     tycon(fst(hd(ns))).mod == ccMod ) {
+			  meths=dupOnto(snd(hd(ns)),meths);
+			  /* Assumption: a class may appear more than
+			     once in an import list;  */
 			}
+		      }
 		    }
-		    /* Enter the (class,members) pair _and_ the individual 
-		       member names on to the exports list */
-		    exports=addEntity(nm,meths,exports);
-		    return exports;
+		  }
+		  meths = nubList(meths);
+		  /* Enter the (class,members) pair _and_ the individual 
+		     member names on to the exports list */
+		  exports=addEntity(nm,meths,exports);
+		  return exports;
 		}
 	    } else {
 	      List ps = NIL;
