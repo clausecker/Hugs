@@ -581,8 +581,8 @@ FP_CHECK_FUNC([GetModuleFileName],
   [@%:@include <windows.h>], [GetModuleFileName((HMODULE)0,(LPTSTR)0,0)])
 
 AC_CHECK_FUNCS([atan],
-  AC_DEFINE([FLOATS_SUPPORTED], [1],
-    [Define to 1 if floating point arithmetic is supported.])
+  [AC_DEFINE([FLOATS_SUPPORTED], [1],
+    [Define to 1 if floating point arithmetic is supported.])])
 
 AC_CHECK_FUNCS(strcasecmp _stricmp stricmp strcmpi)
 AC_CHECK_FUNCS(strcmp)
