@@ -11,8 +11,8 @@
  * included in the distribution.
  *
  * $RCSfile: parser.y,v $
- * $Revision: 1.26 $
- * $Date: 2001/12/11 23:20:24 $
+ * $Revision: 1.27 $
+ * $Date: 2001/12/13 18:58:36 $
  * ------------------------------------------------------------------------*/
 
 %{
@@ -484,6 +484,7 @@ polyType  : ALL varids '.' sigType	{$$ = gc4(ap(POLYTYPE,
 	  | bpolyType			{$$ = $1;}
 	  ;
 bpolyType : '(' polyType ')'		{$$ = gc3($2);}
+	  | '(' lcontext IMPLIES type ')' {$$ = gc5(qualify($2,$4));}
 	  ;
 varids	  : varids varid		{$$ = gc2(cons($2,$1));}
 	  | varid			{$$ = gc1(singleton($1));}
@@ -495,10 +496,11 @@ context	  : '(' ')'			{$$ = gc2(NIL);}
 	  | btype2			{$$ = gc1(singleton(checkPred($1)));}
 	  | '(' btype2 ')'		{$$ = gc3(singleton(checkPred($2)));}
 	  | '(' btypes2 ')'		{$$ = gc3(checkCtxt(rev($2)));}
-/*#if TREX*/
  	  | lacks			{$$ = gc1(singleton($1));}
  	  | '(' lacks1 ')'		{$$ = gc3(checkCtxt(rev($2)));}
  	  ;
+lcontext  : lacks			{$$ = gc1(singleton($1));}
+ 	  | '(' lacks1 ')'		{$$ = gc3(checkCtxt(rev($2)));}
 lacks	  : varid '\\' varid		{
 #if TREX
 					 $$ = gc3(ap(mkExt(textOf($3)),$1));
@@ -520,7 +522,6 @@ lacks1    : btypes2 ',' lacks		{$$ = gc3(cons($3,$1));}
 	  | btype2  ',' lacks		{$$ = gc3(cons($3,cons($1,NIL)));}
 	  | lacks			{$$ = gc1(singleton($1));}
 	  ;
-/*#endif*/
 
 type	  : type1			{$$ = $1;}
 	  | btype2			{$$ = $1;}
