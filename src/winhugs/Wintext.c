@@ -49,6 +49,8 @@ typedef struct TagTextWindowInfo {
   HACCEL   hAccelTable;			/* Accelerators to use in Window          */
   HGLOBAL  hBufferEd;			/* Edit buffer for edit capability        */
   HGLOBAL  hBufferEdPrev;           	/* Previous edit buffers   	          */
+  INT      BufferEdHistoryNext;         /* Slot of next available pos in (circular) history */
+  INT      BufferEdHistorySize;         /* Number of entries in history           */
   INT      IoInx;	                /* Points to last char read with WinGetc  */
   CHAR     AnsiStr[200];		/* Used to implement ANSI support	  */
   INT      AnsiPtr;
@@ -439,6 +441,8 @@ HWND CreateTextWindow(HINSTANCE hInstance, HWND hParent, INT Left, INT Top,
   twi->hAccelTable   	= hAccelTable;
   twi->hBufferEd     	= hBufferEd;
   twi->hBufferEdPrev 	= hBufferEdPrev;
+  twi->BufferEdHistoryNext = 0;
+  twi->BufferEdHistorySize = 0;
   twi->IoInx	      	= -1;
   twi->AnsiPtr	      	= 0;
   twi->InAnsi	      	= FALSE;
@@ -966,7 +970,6 @@ static INT DoChar (HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
   TEXTWINDOWINFO  *twi;
   ONE_BUFFER_KEY   far   *KeyboardBuffer;
   TCHAR		   CharCode;
-  UINT		   i;
 
   twi = (TEXTWINDOWINFO*) GetWindowLong(hWnd, 0);
   CharCode = (TCHAR) wParam;
@@ -1169,7 +1172,7 @@ static VOID MyScrollWindow(HWND hWnd, INT x, INT y)
 static VOID DoHScroll (HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
   TEXTWINDOWINFO  *twi;
-  UINT 		   SbMin, SbMax;
+  INT 		   SbMin, SbMax;
 
 
   twi = (TEXTWINDOWINFO*) GetWindowLong(hWnd, 0);
@@ -1233,7 +1236,7 @@ static VOID DoHScroll (HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 static VOID DoVScroll (HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
   TEXTWINDOWINFO  *twi;
-  UINT 		   SbMin, SbMax;
+  INT 		   SbMin, SbMax;
 
   twi = (TEXTWINDOWINFO*) GetWindowLong(hWnd, 0);
 
@@ -1756,7 +1759,7 @@ static BOOL DoCanCut (HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 static BOOL DoCanPaste (HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-  BOOL		 CanPaste;
+  BOOL CanPaste = FALSE;
 
   if (OpenClipboard(hWnd)) {
     CanPaste = IsClipboardFormatAvailable(CF_TEXT) ||
@@ -2680,7 +2683,8 @@ CHAR *WinGets(HWND hWnd, CHAR *s)
 {
  UINT   	 j, savex, savey;
  BOOL		 iscursor;
- INT 		 PreviousBuffer = -1, k;
+ INT 		 k;
+ INT             BufferPos;
  TCHAR 		 Key;
  TEXTWINDOWINFO *twi;
  EditorHistory   BufferEdPrev;
@@ -2690,6 +2694,7 @@ CHAR *WinGets(HWND hWnd, CHAR *s)
  twi = (TEXTWINDOWINFO*) GetWindowLong(hWnd, 0);
 
  BufferEdPrev = (EditorHistory)GlobalLock(twi->hBufferEdPrev);
+ BufferPos    = twi->BufferEdHistoryNext;
  iscursor = WinSetcursor(hWnd, TRUE);
  twi->InEdit = TRUE;
  twi->EdStr = (FPOINTER)s;
@@ -2715,23 +2720,27 @@ CHAR *WinGets(HWND hWnd, CHAR *s)
 
      switch (Key) {
 
-       case VK_UP:    if (PreviousBuffer+1 < NUM_EDIT_BUFFERS) {
-			PreviousBuffer++;
+     case VK_UP:       if ( twi->BufferEdHistorySize > 0 ) {
+			if (BufferPos == 0) {
+			    BufferPos = twi->BufferEdHistorySize-1;
+			} else {
+			    BufferPos = (BufferPos-1);
+			}
 			MoveCursor (hWnd, -twi->EdPos);
 			for (j=0; j<twi->EdLength; j++) WinPutchar(hWnd, ' ');
 			MoveCursor (hWnd, -(INT)twi->EdLength);
-			strcpy (s, (const CHAR *)&BufferEdPrev[PreviousBuffer][0]);
+			strcpy (s, (const CHAR *)&BufferEdPrev[BufferPos][0]);
 			twi->EdLength = strlen (s);
 			goto loop;
-		      }
+			}
 		      break;
 
-       case VK_DOWN:  if (PreviousBuffer > 0) {
-			PreviousBuffer--;
+     case VK_DOWN:    if ( twi->BufferEdHistorySize > 0 ) {
+			BufferPos = (BufferPos+1) % (twi->BufferEdHistorySize);
 			MoveCursor (hWnd, -twi->EdPos);
 			for (j=0; j<twi->EdLength; j++) WinPutchar(hWnd, ' ');
 			MoveCursor (hWnd, -(INT)twi->EdLength);
-			strcpy (s, (const CHAR *)&BufferEdPrev[PreviousBuffer][0]);
+			strcpy (s, (const CHAR *)&BufferEdPrev[BufferPos][0]);
 			twi->EdLength = strlen (s);
 			goto loop;
 		      }
@@ -2851,11 +2860,10 @@ CHAR *WinGets(HWND hWnd, CHAR *s)
 INT WinGetc (HWND hWnd, FILE *fp)
 {
 
-  INT		   i, ret;
+  INT		   ret;
   TEXTWINDOWINFO  *twi;
   FPOINTER	   BufferEd;
   EditorHistory    BufferEdPrev;
-
 
   /* Check if stdin */
   if (fp != stdin)
@@ -2870,11 +2878,10 @@ INT WinGetc (HWND hWnd, FILE *fp)
 
     /* If BufferEd is empty, don't add it to the history. */
     if ( BufferEd[0] != '\0' ) { 
-	/* ToDo: use a circular buffer for the history. */
-	for (i=NUM_EDIT_BUFFERS-1; i > 0; i--)
-	    strcpy ((CHAR *)&BufferEdPrev[i][0], (const CHAR *)&BufferEdPrev[i-1][0]);
-
-	strcpy ((CHAR *)&BufferEdPrev[0][0], (const CHAR *)BufferEd);
+	strcpy((char*)&BufferEdPrev[twi->BufferEdHistoryNext][0], (const char*)BufferEd);
+	twi->BufferEdHistoryNext = (twi->BufferEdHistoryNext + 1) % (NUM_EDIT_BUFFERS);
+	twi->BufferEdHistorySize = 
+	    (twi->BufferEdHistorySize == NUM_EDIT_BUFFERS ? NUM_EDIT_BUFFERS : (twi->BufferEdHistorySize+1));
 	strcpy ((CHAR *)BufferEd, "");
     }
     WinGets (hWnd, (CHAR *)BufferEd);
