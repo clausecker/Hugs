@@ -184,7 +184,7 @@ hslibs() {
 # Modules to convert
 
   cvt base Control/Arrow.hs
-# cvt base Control/Concurrent.hs	# Hugs lacks ThreadId
+  cvt base Control/Concurrent.hs
   cvt base Control/Concurrent/Chan.hs
   cvt base Control/Concurrent/MVar.hs
   cvt base Control/Concurrent/QSem.hs
@@ -382,11 +382,9 @@ mkdir -p $compat
   hslibs concurrent Chan.lhs
   hslibs concurrent Channel.lhs
   hslibs concurrent ChannelVar.lhs
-# hslibs concurrent Concurrent.lhs	# -> Control.Concurrent
- libexts Concurrent
+  hslibs concurrent Concurrent.lhs
   hslibs concurrent MVar.lhs
-# hslibs concurrent Merge.lhs
- libexts Merge				# deprecated Hugs lib
+# hslibs concurrent Merge.lhs		# needs pre-emptive concurrency
   hslibs concurrent Parallel.lhs
   hslibs concurrent QSem.lhs
   hslibs concurrent QSemN.lhs
