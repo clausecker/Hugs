@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: type.c,v $
- * $Revision: 1.25 $
- * $Date: 2000/08/15 22:12:13 $
+ * $Revision: 1.26 $
+ * $Date: 2000/12/13 07:55:34 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -176,6 +176,10 @@ static Bool   local equalTypes        Args((Type,Type));
 
 static Void   local typeDefnGroup     Args((List));
 static Pair   local typeSel	      Args((Name));
+
+static Name   local linkName          Args((String));
+static Tycon  local linkTycon         Args((String));
+static Class  local linkClass         Args((String));
 
 /* --------------------------------------------------------------------------
  * Frequently used type skeletons:
@@ -2911,78 +2915,72 @@ Int what; {
     }
 }
 
+static Name local linkName(s)
+String s; {
+    Name n = findName(findText(s));
+    if (nonNull(n)) return n;
+    ERRMSG(0) "Prelude does not define standard name \"%s\"", s
+    EEND;
+}
+
+static Tycon local linkTycon(s)
+String s; {
+    Tycon tc = findTycon(findText(s));
+    if (nonNull(tc)) return tc;
+    ERRMSG(0) "Prelude does not define standard type \"%s\"", s
+    EEND;
+}
+
+static Class local linkClass(s)
+String s; {
+    Class cc = findClass(findText(s));
+    if (nonNull(cc)) return cc;
+    ERRMSG(0) "Prelude does not define standard class \"%s\"", s
+    EEND;
+}
+
 Void linkPreludeTC() {			/* Hook to tycons and classes in   */
     if (isNull(typeBool)) {		/* prelude when first loaded	   */
 	Int i;
 
-	typeBool     = findTycon(findText("Bool"));
-	typeChar     = findTycon(findText("Char"));
-	typeString   = findTycon(findText("String"));
-	typeInt      = findTycon(findText("Int"));
-	typeInteger  = findTycon(findText("Integer"));
-	typeDouble   = findTycon(findText("Double"));
-	typeAddr     = findTycon(findText("Addr"));
-	typeMaybe    = findTycon(findText("Maybe"));
-	typeOrdering = findTycon(findText("Ordering"));
-	if (isNull(typeBool) || isNull(typeChar)   || isNull(typeString)  ||
-	    isNull(typeInt)  || isNull(typeDouble) || isNull(typeInteger) ||
-	    isNull(typeAddr) || isNull(typeMaybe)  || isNull(typeOrdering)) {
-	    ERRMSG(0) "Prelude does not define standard types"
-	    EEND;
-	}
+	typeBool     = linkTycon("Bool");
+	typeChar     = linkTycon("Char");
+	typeString   = linkTycon("String");
+	typeInt      = linkTycon("Int");
+	typeInteger  = linkTycon("Integer");
+	typeDouble   = linkTycon("Double");
+	typeAddr     = linkTycon("Addr");
+	typeMaybe    = linkTycon("Maybe");
+	typeOrdering = linkTycon("Ordering");
 	stdDefaults  = cons(typeInteger,cons(typeDouble,NIL));
 
-	classEq      = findClass(findText("Eq"));
-	classOrd     = findClass(findText("Ord"));
-	classIx      = findClass(findText("Ix"));
-	classEnum    = findClass(findText("Enum"));
-	classShow    = findClass(findText("Show"));
-	classRead    = findClass(findText("Read"));
+	classEq      = linkClass("Eq");
+	classOrd     = linkClass("Ord");
+	classIx      = linkClass("Ix");
+	classEnum    = linkClass("Enum");
+	classShow    = linkClass("Show");
+	classRead    = linkClass("Read");
 #if EVAL_INSTANCES
-	classEval    = findClass(findText("Eval"));
+	classEval    = linkClass("Eval");
 #endif
-	classBounded = findClass(findText("Bounded"));
-	if (isNull(classEq)   || isNull(classOrd) || isNull(classRead) ||
-	    isNull(classShow) || isNull(classIx)  || isNull(classEnum) ||
-#if EVAL_INSTANCES
-	    isNull(classEval) ||
-#endif
-	    isNull(classBounded)) {
-	    ERRMSG(0) "Prelude does not define standard classes"
-	    EEND;
-	}
+	classBounded = linkClass("Bounded");
 
-	classReal       = findClass(findText("Real"));
-	classIntegral   = findClass(findText("Integral"));
-	classRealFrac   = findClass(findText("RealFrac"));
-	classRealFloat  = findClass(findText("RealFloat"));
-	classFractional = findClass(findText("Fractional"));
-	classFloating   = findClass(findText("Floating"));
-	classNum        = findClass(findText("Num"));
-	if (isNull(classReal)       || isNull(classIntegral)  ||
-	    isNull(classRealFrac)   || isNull(classRealFloat) ||
-	    isNull(classFractional) || isNull(classFloating)  ||
-	    isNull(classNum)) {
-	    ERRMSG(0) "Prelude does not define numeric classes"
-	    EEND;
-	}
+	classReal       = linkClass("Real");
+	classIntegral   = linkClass("Integral");
+	classRealFrac   = linkClass("RealFrac");
+	classRealFloat  = linkClass("RealFloat");
+	classFractional = linkClass("Fractional");
+	classFloating   = linkClass("Floating");
+	classNum        = linkClass("Num");
 	predNum	        = ap(classNum,aVar);
 	predFractional  = ap(classFractional,aVar);
 	predIntegral    = ap(classIntegral,aVar);
 
-	classMonad  = findClass(findText("Monad"));
-	if (isNull(classMonad)) {
-	    ERRMSG(0) "Prelude does not define Monad class"
-	    EEND;
-	}
+	classMonad      = linkClass("Monad");
 	predMonad  = ap(classMonad,aVar);
 
 #if IO_MONAD
-	{   Type typeIO = findTycon(findText("IO"));
-	    if (isNull(typeIO)) {
-		ERRMSG(0) "Prelude does not define IO monad constructor"
-		EEND;
-	    }
+	{   Type typeIO = linkTycon("IO");
 	    typeProgIO = ap(typeIO,aVar);
 	}
 #endif
@@ -3030,62 +3028,39 @@ Void linkPreludeTC() {			/* Hook to tycons and classes in   */
 
 Void linkPreludeCM() {			/* Hook to cfuns and mfuns in	   */
     if (isNull(nameFalse)) {		/* prelude when first loaded	   */
-	nameFalse   = findName(findText("False"));
-	nameTrue    = findName(findText("True"));
-	nameJust    = findName(findText("Just"));
-	nameNothing = findName(findText("Nothing"));
-	nameLeft    = findName(findText("Left"));
-	nameRight   = findName(findText("Right"));
-	nameLT	    = findName(findText("LT"));
-	nameEQ	    = findName(findText("EQ"));
-	nameGT	    = findName(findText("GT"));
-	if (isNull(nameFalse) || isNull(nameTrue)    ||
-	    isNull(nameJust)  || isNull(nameNothing) ||
-	    isNull(nameLeft)  || isNull(nameRight)   ||
-	    isNull(nameLT)    || isNull(nameEQ)      || isNull(nameGT)) {
-	    ERRMSG(0) "Prelude does not define standard constructors"
-	    EEND;
-	}
+	nameFalse       = linkName("False");
+	nameTrue        = linkName("True");
+	nameJust        = linkName("Just");
+	nameNothing     = linkName("Nothing");
+	nameLeft        = linkName("Left");
+	nameRight       = linkName("Right");
+	nameLT	        = linkName("LT");
+	nameEQ	        = linkName("EQ");
+	nameGT	        = linkName("GT");
 
-	nameFromInt     = findName(findText("fromInt"));
-	nameFromInteger = findName(findText("fromInteger"));
-	nameFromDouble  = findName(findText("fromDouble"));
-	nameEq	        = findName(findText("=="));
-	nameCompare     = findName(findText("compare"));
-	nameLe	        = findName(findText("<="));
-	nameGt	        = findName(findText(">"));
-	nameShowsPrec   = findName(findText("showsPrec"));
-	nameReadsPrec   = findName(findText("readsPrec"));
-	nameIndex       = findName(findText("index"));
-	nameInRange     = findName(findText("inRange"));
-	nameRange       = findName(findText("range"));
-	nameMult        = findName(findText("*"));
-	namePlus        = findName(findText("+"));
-	nameMinBnd	= findName(findText("minBound"));
-	nameMaxBnd	= findName(findText("maxBound"));
+	nameFromInt     = linkName("fromInt");
+	nameFromInteger = linkName("fromInteger");
+	nameFromDouble  = linkName("fromDouble");
+	nameEq	        = linkName("==");
+	nameCompare     = linkName("compare");
+	nameLe	        = linkName("<=");
+	nameGt	        = linkName(">");
+	nameShowsPrec   = linkName("showsPrec");
+	nameReadsPrec   = linkName("readsPrec");
+	nameIndex       = linkName("index");
+	nameInRange     = linkName("inRange");
+	nameRange       = linkName("range");
+	nameMult        = linkName("*");
+	namePlus        = linkName("+");
+	nameMinBnd	= linkName("minBound");
+	nameMaxBnd	= linkName("maxBound");
 #if EVAL_INSTANCES
-	nameStrict	= findName(findText("strict"));
-	nameSeq		= findName(findText("seq"));
+	nameStrict	= linkName("strict");
+	nameSeq		= linkName("seq");
 #endif
-	nameReturn      = findName(findText("return"));
-	nameBind        = findName(findText(">>="));
-	nameMFail       = findName(findText("fail"));
-	if (isNull(nameFromInt)   || isNull(nameFromDouble)  ||
-	    isNull(nameEq)        || isNull(nameCompare)     ||
-	    isNull(nameLe)        || isNull(nameGt)	     ||
-	    isNull(nameShowsPrec) || isNull(nameReadsPrec)   ||
-	    isNull(nameIndex)     || isNull(nameInRange)     ||
-	    isNull(nameRange)	  || isNull(nameMult)	     ||
-	    isNull(namePlus)      || isNull(nameFromInteger) ||
-	    isNull(nameMinBnd)    || isNull(nameMaxBnd)      ||
-#if EVAL_INSTANCES
-	    isNull(nameStrict)    || isNull(nameSeq)         ||
-#endif
-	    isNull(nameReturn)	  || isNull(nameBind)	     ||
-	    isNull(nameMFail)) {
-	    ERRMSG(0) "Prelude does not define standard members"
-	    EEND;
-	}
+	nameReturn      = linkName("return");
+	nameBind        = linkName(">>=");
+	nameMFail       = linkName("fail");
     }
 }
 
