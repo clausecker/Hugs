@@ -1,0 +1,36 @@
+Type :? for help
+Hugs:Testing 5 Int arguments...
+True
+True
+True
+True
+True
+True
+True
+True
+True
+True
+Testing 6 Double arguments...
+True
+True
+True
+True
+True
+True
+True
+True
+True
+True
+Testing 11 mixed arguments...
+True
+True
+True
+True
+True
+True
+True
+True
+True
+True
+
+Hugs:[Leaving Hugs]
