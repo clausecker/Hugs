@@ -143,7 +143,7 @@ typedef struct {
   HsDouble       (*getDouble)      (void);
   HsChar         (*getChar)        (void);
   HugsForeign    (*getForeign)     (void);
-  HugsStablePtr  (*getStablePtr)   (void);
+  HugsStablePtr  (*getStablePtr)   (void); /* deprecated */
 
   /* push part of result   */
   void           (*putInt)         (HsInt);
@@ -153,7 +153,7 @@ typedef struct {
   void           (*putDouble)      (HsDouble);
   void           (*putChar)        (HsChar);
   void      	 (*putForeign)     (HugsForeign, void (*)(HugsForeign));
-  void           (*putStablePtr)   (HugsStablePtr);
+  void           (*putStablePtr)   (HugsStablePtr); /* deprecated */
 
   /* return n values in IO monad or Id monad */
   void      	 (*returnIO)       (HugsStackPtr, int);
@@ -161,7 +161,7 @@ typedef struct {
   int      	 (*runIO)          (int);
 
   /* free a stable pointer */	    			 
-  void      	 (*freeStablePtr)  (HugsStablePtr);
+  void      	 (*freeStablePtr)  (HugsStablePtr); /* deprecated */
 
   /* register the prim table */	    			 
   void      	 (*registerPrims)  (struct hugs_primInfo*);
@@ -203,9 +203,14 @@ typedef struct {
   void           (*putFunPtr)      (HsFunPtr);
   void           (*putForeignPtr)  (HsForeignPtr);
 
+  HugsStablePtr  (*makeStablePtr4) (void);
+  void           (*derefStablePtr4)(HugsStablePtr);
+
   void           (*putStablePtr4)  (HsStablePtr);
   HsStablePtr    (*getStablePtr4)  (void);
   void      	 (*freeStablePtr4) (HsStablePtr);
+
+  int      	 (*runId)          (int);
 
 } HugsAPI4;
 

@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: connect.h,v $
- * $Revision: 1.37 $
- * $Date: 2002/06/15 00:29:06 $
+ * $Revision: 1.38 $
+ * $Date: 2002/06/17 21:46:42 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -344,7 +344,7 @@ extern  Void   foreignHeader    Args((Void));
 extern  Void   foreignFooter    Args((List,List));
 extern  Void   implementForeignImport        Args((Int,Int,Text,Text,List,Bool,Type));
 extern  Void   implementForeignImportDynamic Args((Int,Int,Text,List,Bool,Type));
-extern  Void   implementForeignImportWrapper Args((Int,Int,Text,List,Type));
+extern  Void   implementForeignImportWrapper Args((Int,Int,Text,List,Bool,Type));
 extern  Void   implementForeignImportLabel   Args((Int,Int,Text,Text,Text,Type));
 extern  Void   implementForeignExport        Args((Int,Int,Text,List,Bool,Type));
 extern  Bool   generate_ffi;

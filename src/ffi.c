@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: ffi.c,v $
- * $Revision: 1.9 $
- * $Date: 2002/06/17 16:29:14 $
+ * $Revision: 1.10 $
+ * $Date: 2002/06/17 21:46:45 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -539,27 +539,52 @@ Type resultTy; {
     ffiCallFun(line,e,argTys,resultTy);
     fprintf(out,"    ");
     foreignPut(line,resultTy,"res",1);
+    if (isIO || nonNull(argTys)) {
+      fprintf(out,"    hugs->return%s(hugs_root,%d);\n", 
+              isIO?"IO":"Id",
+              resultTy==typeUnit ? 0 : 1);
+    }
     fprintf(out,"}\n");
 }
 
 /*
- * For dynamic exports, we also generate:
+ * For wrappers, we generate:
  *
- *     static void hugsprim_name(HugstackPtr);
+ * For example:
+ * 
+ *     foreign import "wrapper" name ::            (Int -> Float -> Char) 
+ *                                   -> IO (FunPtr (Int -> Float -> Char))
+ * ==>
+ *     
+ *     static HsChar wrapper(HugsStablePtr arg1, HsInt arg2, HsFloat arg3);
+ *     static HsChar wrapper(HugsStablePtr arg1, HsInt arg2, HsFloat arg3);
+ *     {
+ *         HsChar res1;
+ *         hugs->derefStablePtr4(arg1);                             
+ *         hugs->putInt(arg2);                             
+ *         hugs->putFloat(arg3);
+ *         if (hugs->runIO(2)) {
+ *             exit(hugs->getInt());
+ *         }
+ *         res1 = hugs->getChar();
+ *         return res1;
+ *     }
+ * 
+ *     static void hugsprim_name(HugsStackPtr hugs_root);
  *     static void hugsprim_name(HugsStackPtr hugs_root)
  *     {
- *         extern void extnm(void);
- *         HugsStablePtr arg1 = hugs->getStablePtr();    
- *         void* thunk = hugs->mkThunk(extnm,arg1);
+ *         HugsStablePtr arg1 = hugs->makeStablePtr4();    
+ *         void* thunk = hugs->mkThunk(&wrapper,arg1);
  *         hugs->putAddr(thunk);
  *         hugs->returnIO(hugs_root,1);
  *     }
  */
-Void implementForeignImportWrapper(line,id,e,argTys,resultTy)
+Void implementForeignImportWrapper(line,id,e,argTys,isIO,resultTy)
 Int  line;
 Int  id;
 Text e;
 List argTys;
+Bool isIO;
 Type resultTy; {
     /* Prototype for function we're generating */
     fprintf(out,"\nstatic ");
@@ -573,14 +598,14 @@ Type resultTy; {
     ffiDeclare(line,resultTy,"res",1);
 
     /* Push function pointer and arguments */
-    fprintf(out,"    hugs->putStablePtr(fun1);\n");
+    fprintf(out,"    hugs->derefStablePtr4(fun1);\n");
     ffiPutList(line,argTys,"arg");
 
     /* Make the call and check for uncaught exception */
     /* ToDo: I'm not sure that exiting from the Hugs session is the right 
      * response to the Haskell function calling System.exit.
      */
-    fprintf(out,"    if (hugs->runIO(%d)) {\n", length(argTys));
+    fprintf(out,"    if (hugs->run%s(%d)) {\n", isIO?"IO":"Id", length(argTys));
     fprintf(out,
             "        exit(hugs->getInt());\n"
             "    }\n"
@@ -596,7 +621,7 @@ Type resultTy; {
     ffiPrimHeader(e,id);
     fprintf(out,
             "{\n"
-            "    HugsStablePtr arg1 = hugs->getStablePtr();\n"
+            "    HugsStablePtr arg1 = hugs->makeStablePtr4();\n"
             "    void* thunk = hugs->mkThunk((HsFunPtr)%s,arg1);\n",
             textToStr(e)
             );

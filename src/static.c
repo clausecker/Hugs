@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.71 $
- * $Date: 2002/06/15 00:29:08 $
+ * $Revision: 1.72 $
+ * $Date: 2002/06/17 21:46:47 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -4906,12 +4906,13 @@ Name p; {
         }
 
         if (generate_ffi) {
-            name(p).arity = length(argTys) + (isIO ? 2 : 0);
+            name(p).arity = 1 + length(argTys) + (isIO ? 2 : 0);
             name(p).extFun = inventText();
             implementForeignImportDynamic(line,name(p).foreignId,name(p).extFun,argTys,isIO,t);
         }
 
     } else if (e = matchToken("wrapper",ext)) { /* thunk builder */  
+        Bool isIO = FALSE;
         Type ta = NIL;
 
         e = skipSpaces(e);
@@ -4928,10 +4929,25 @@ Name p; {
 
         /* ToDo: check that ta == t */
 
+        argTys = NIL;
+        while (getHead(t)==typeArrow && argCount==2) {
+            Type ta = fullExpand(arg(fun(t)));
+            Type tr = arg(t);
+            argTys = cons(ta,argTys);
+            t = tr;
+        }
+        argTys = rev(argTys);
+        /* argTys now holds the argument tys and t holds result type */
+
+        if (getHead(t) == typeIO && argCount==1) {
+            isIO = TRUE;
+            t = hd(getArgs(t));
+        }
+
         if (generate_ffi) {
             name(p).arity = 3;
             name(p).extFun = inventText();
-            implementForeignImportWrapper(line,name(p).foreignId,name(p).extFun,argTys,t);
+            implementForeignImportWrapper(line,name(p).foreignId,name(p).extFun,argTys,isIO,t);
         }
 
     } else { 
