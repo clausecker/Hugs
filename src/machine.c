@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: machine.c,v $
- * $Revision: 1.9 $
- * $Date: 2002/05/15 18:11:22 $
+ * $Revision: 1.10 $
+ * $Date: 2002/10/10 14:57:25 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1219,12 +1219,8 @@ List scs; {                             /* in incr order of strict comps.  */
 
 #if TREX
 Name nameInsFld;			/* Hooks to Trex library	   */
-Name nameShowRecRow;
+Name nameShowRecRow;                    /* static.c:trexLoad() binds them  */
 Name nameEqRecRow;
-
-Cell trexInsFld     = NIL;
-Cell trexShowRecRow = NIL;
-Cell trexEqRecRow   = NIL;
 
 Name implementRecShw(t,parent)		/* Build implementation for record */
 Text t; 				/* display function.		   */
@@ -1239,8 +1235,6 @@ Cell parent; {
     asRETURN();
     asEND();
     name(n).code    = startInstr;
-    nameInsFld      = findQualName(trexInsFld);
-    nameShowRecRow  = findQualName(trexShowRecRow);
     return n;
 }
 
@@ -1257,8 +1251,6 @@ Cell parent; {
     asRETURN();
     asEND();
     name(n).code   = startInstr;
-    nameInsFld     = findQualName(trexInsFld);
-    nameEqRecRow   = findQualName(trexEqRecRow);
     return n;
 }
 #endif
@@ -1883,23 +1875,9 @@ Int what; {
 			   fatal("Cannot allocate program memory");
 		       instrNone(iFAIL);
 		       noMatch = lastInstr;
-#if TREX
-		       trexInsFld
-			= mkQVar(findText("Trex"),findText("insertField"));
-		       trexShowRecRow
-			= mkQVar(findText("Trex"),findText("showRecRow"));
-		       trexEqRecRow
-			= mkQVar(findText("Trex"),findText("eqRecRow"));
-#endif
 		       break;
 
-	case MARK    :
-#if TREX
-		       mark(trexInsFld);
-		       mark(trexShowRecRow);
-		       mark(trexEqRecRow);
-#endif
-		       break;
+	case MARK    : break;
 
 #if GIMME_STACK_DUMPS
 	case RESET   : rootsp = (-1);

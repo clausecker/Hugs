@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.106 $
- * $Date: 2002/10/08 15:19:58 $
+ * $Revision: 1.107 $
+ * $Date: 2002/10/10 14:57:24 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -239,6 +239,8 @@ static Void   local depWith		Args((Int,Cell));
 static List   local depDwFlds		Args((Int,Cell,List));
 #endif
 #if TREX
+static Void   local trexUsed            Args((Void));
+static Void   local trexLoad            Args((Void));
 static Cell   local depRecord		Args((Int,Cell));
 #endif
 
@@ -2929,7 +2931,8 @@ Type type; {
 			  }
 
 #if TREX
-	case EXT	: h98DoesntSupport(line,"extensible records");
+	case EXT	: trexUsed();
+	                  h98DoesntSupport(line,"extensible records");
 #endif
 	case TYCON	:
 	case TUPLE	: break;
@@ -5564,6 +5567,7 @@ Cell p; {
 
 #if TREX
 	case EXT       : h98DoesntSupport(line,"extensible records");
+	                 trexUsed();
 			 if (args!=2) {
 			     ERRMSG(line) "Illegal record pattern"
 			     EEND;
@@ -6706,6 +6710,7 @@ Cell e; {
 	case RECSEL	: break;
 
 	case AP		: if (isAp(e) && isAp(fun(e)) && isExt(fun(fun(e)))) {
+	                      trexUsed();
 			      return depRecord(line,e);
 			  } else {
 			      Cell nx = e;
@@ -6913,7 +6918,7 @@ static Void local mdoLoad() {
 	if( !(classMonadRec = findQualClass(monadRecName)) &&
 	    !(classMonadRec = findClass(qtextOf(monadRecName))) ) {
 	    ERRMSG(0) "%s class not defined", fixClass ETHEN
-		ERRTEXT   "\n*** Possible cause: \"%s\" library not loaded", fixLib
+		ERRTEXT   "\n*** Possible cause: \"%s\" module not imported", fixLib
 		EEND;
 	}
 	
@@ -7814,6 +7819,64 @@ List fs;
 #endif
 
 #if TREX
+/* If Trex records are used in the source code, flag it.
+   trexLoad() uses this to determine whether or not to
+   bind to a couple of names in the Trex library (which
+   are used when generating 'show' code.)
+*/
+static trexLibNeeded = FALSE;
+
+static Void local trexUsed() {
+    trexLibNeeded = TRUE;
+}
+
+static Void local trexLoad() {
+    if (trexLibNeeded) {
+	String trexLib    = "Trex";
+    
+	/* Locate the module */
+	Module m          = findModule(findText(trexLib));
+	Text t            = module(m).text;
+	Text alias        = findModAlias(t);
+	/* The class and method name are qualified by the local alias, not
+	 * the (real) module name.
+	 */
+	Cell insFldName   = mkQVar(alias,findText("insertField"));
+	Cell showRecName  = mkQVar(alias,findText("showRecRow"));
+	Cell eqRecRowName = mkQVar(alias,findText("eqRecRow"));
+	
+	/* Reset this flag before signalling errors, so that we won't
+	 * inadvertently loop.
+	 */
+	trexLibNeeded = FALSE;
+
+	if( !(nameInsFld = findQualName(insFldName)) &&
+	    !(nameInsFld = findName(qtextOf(insFldName))) ) {
+	    ERRMSG(0) "Trex.insertField not defined" ETHEN
+		ERRTEXT   "\n*** Possible cause: \"Trex\" module not imported"
+		EEND;
+	}
+	
+	if( !(nameShowRecRow = findQualName(showRecName)) &&
+	    !(nameShowRecRow = findName(qtextOf(showRecName))) ) {
+	    ERRMSG(0) "Trex.showRecRow not defined" ETHEN
+		ERRTEXT   "\n*** Possible cause: \"Trex\" module not imported"
+		EEND;
+	}
+	
+	if( !(nameEqRecRow = findQualName(eqRecRowName)) &&
+	    !(nameEqRecRow = findName(qtextOf(eqRecRowName))) ) {
+	    ERRMSG(0) "Trex.eqRecRow not defined" ETHEN
+		ERRTEXT   "\n*** Possible cause: \"Trex\" module not imported"
+		EEND;
+	}
+    }
+    trexLibNeeded = FALSE;
+}
+#endif
+
+
+#if TREX
 static Cell local depRecord(line,e)	/* find dependents of record and   */
 Int  line;				/* sort fields into approp. order  */
 Cell e; {				/* to make construction and update */
@@ -8026,9 +8089,17 @@ Void checkDefns() {			/* Top level static analysis	   */
      * list in the presence of module re-exportation. We've now finished
      * computing the export list, so 'modImports' can now be stubbed out.
      *
+     * 10/02 refinement: hold on to the 'modImports' a little bit longer;
+     * until we switch to another module. This lets the user have access
+     * to the effective imports when eval/querying from the read-eval-print
+     * loop. However, once we switch to another module, the info is gone.
+     * (i.e., there's potential for confusion wrt. the :m command.)
+     *
+     * This is an approximation to simply holding on to a module's
+     * effective imports until it is unloaded. This isn't done due to the
+     * storage overhead imposed.
      */
     staticAnalysis(RESET);
-    module(thisModule).modImports = NIL;
 }
 
 static Void local addRSsigdecls(pr)	/* add sigdecls from TYPE ... IN ..*/
@@ -8204,6 +8275,9 @@ Int what; {
 	case RESET   : 
 #if MUDO
 	               mdoLoad();
+#endif
+#if TREX
+	               trexLoad();
 #endif
 	               cfunSfuns    = NIL;
 		       daSccs	    = NIL;
