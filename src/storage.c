@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: storage.c,v $
- * $Revision: 1.47 $
- * $Date: 2002/07/09 17:46:33 $
+ * $Revision: 1.48 $
+ * $Date: 2002/07/19 18:02:21 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -3407,6 +3407,9 @@ Int what; {
 	ptr = tmp;
       }
       
+#if !WANT_FIXED_SIZE_TABLES      
+      if (dynTabScripts) freeDynTable(dynTabScripts);
+#endif
     }
 }
 
@@ -3707,7 +3710,6 @@ Int what; {
 		       if (heapThd) free(heapThd);
 #endif
 #if !WANT_FIXED_SIZE_TABLES
-		       if (dynTabScripts) freeDynTable(dynTabScripts);
 		       if (dynTabClass)   freeDynTable(dynTabClass);
 		       if (dynTabInst)    freeDynTable(dynTabInst);
 		       if (dynTabHandles) freeDynTable(dynTabHandles);
