@@ -1547,7 +1547,68 @@ readFloat r    = [(fromRational ((n%1)*10^^(k-d)),t) | (n,d,s) <- readFix r,
 -- Monadic I/O: --------------------------------------------------------------
 
 --data IO a             -- builtin datatype of IO actions
-data IOError            -- builtin datatype of IO error codes
+
+-- data type describing IOErrors / exceptions.
+data IOError
+  = IOError
+      { ioe_kind        :: IOErrorKind    -- what kind of (std) error
+      , ioe_loc         :: String         -- location of the error
+      , ioe_description :: String         -- error-specific string
+      , ioe_fileName    :: (Maybe String) -- the resource involved.
+      } 
+
+data IOErrorKind
+  = IOError_UserError
+  | IOError_IllegalError
+  | IOError_PermDenied
+  | IOError_AlreadyExists
+  | IOError_AlreadyInUse
+  | IOError_DoesNotExist
+  | IOError_FullError
+  | IOError_EOF
+  | IOError_WriteError
+
+instance Show IOErrorKind where
+  show x = 
+    case x of
+     IOError_UserError      -> "User error"
+     IOError_IllegalError   -> "Illegal operation"
+     IOError_PermDenied     -> "Permission denied"
+     IOError_AlreadyExists  -> "Already exists"
+     IOError_AlreadyInUse   -> "Resource busy"
+     IOError_DoesNotExist   -> "Does not exist"
+     IOError_FullError      -> "Resource exhausted"
+     IOError_EOF            -> "End of file"
+     IOError_WriteError	    -> "Write error"
+      	
+{-
+  Strange looking, but these defns are used in IO without
+  exporting them from the Prelude (the interpreter makes the
+  connection between the two under-the-hood...saves having
+  to extend Prelude's export list in non-standard ways.
+-}
+ioeGetErrorString__ :: IOError -> String
+ioeGetErrorString__ ioe = 
+  case ioe_kind ioe of
+    IOError_UserError{} -> ioe_description ioe
+    x -> show x
+
+ioeGetFilename__ :: IOError -> Maybe String
+ioeGetFilename__ ioe = ioe_fileName ioe
+
+instance Show IOError where
+  showsPrec p (IOError kind loc descr mbFile) = 
+    showString "IO Error: " . showsPrec p kind . 
+    (case loc of
+       "" -> id
+       _  -> showString "\nAction: " . showString loc) .
+      (case descr of
+	 "" -> id
+	 _  -> showString "\nReason: " . showString descr) .
+      (case mbFile of
+	 Nothing -> id
+	 Just name -> showString "\nResource: " . showString name)
+
 type FilePath = String  -- file pathnames are represented by strings
 
 instance Show (IO a) where
@@ -1560,7 +1621,13 @@ primitive ioError      "lunitIO" :: IOError -> IO a
 primitive putChar		 :: Char -> IO ()
 primitive putStr		 :: String -> IO ()
 primitive getChar   		 :: IO Char
-primitive userError    		 :: String -> IOError
+
+userError :: String -> IOError
+userError str 
+ = IOError IOError_UserError 
+           ""
+	   str
+	   Nothing
 
 print     :: Show a => a -> IO ()
 print      = putStrLn . show
@@ -1673,7 +1740,7 @@ hugsIORun m =
   runAndShowError m =
     m `catch` \err -> do 
 	putChar '\n'
-	putStr (ioeGetErrorString err)
+	putStr (show err)
 	primExitWith 1
 
 basicIORun :: IO a -> IOFinished a
@@ -1716,11 +1783,6 @@ hugs_catch m f1 f2 s = case primCatchException (catch' m) of
 
 primExitWith     :: Int -> IO a
 primExitWith c    = IO (\ f s -> Hugs_ExitWith c)
-
-primitive ioeGetErrorString "primShowIOError" :: IOError -> String
-
-instance Show IOError where
-  showsPrec p x = showString (ioeGetErrorString x)
 
 primCompAux      :: Ord a => a -> a -> Ordering -> Ordering
 primCompAux x y o = case compare x y of EQ -> o; LT -> LT; GT -> GT

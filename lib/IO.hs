@@ -8,31 +8,74 @@
 -----------------------------------------------------------------------------
 
 module IO (
-    Handle, HandlePosn,
---  IOMode(ReadMode,WriteMode,AppendMode,ReadWriteMode),
-    IOMode(ReadMode,WriteMode,AppendMode),
+    Handle,          -- instances: Eq, Show.
+    HandlePosn,      -- instances: Eq, Show.
+    
+    IOMode(ReadMode,WriteMode,AppendMode,ReadWriteMode),
     BufferMode(NoBuffering,LineBuffering,BlockBuffering),
     SeekMode(AbsoluteSeek,RelativeSeek,SeekFromEnd),
-    stdin, stdout, stderr, 
-    openFile, hClose, 
---  hFileSize, hIsEOF, isEOF,
---  hSetBuffering, hGetBuffering, hFlush, 
-    hFlush, 
-    hGetPosn, hSetPosn, 
---  hSeek, hIsSeekable,
---  hReady, hGetChar, hLookAhead, hGetContents, 
-    hGetChar, hGetLine, hGetContents, 
-    hPutChar, hPutStr, hPutStrLn, hPrint,
-    hIsOpen, hIsClosed, hIsReadable, hIsWritable, 
-    isAlreadyExistsError, isDoesNotExistError, isAlreadyInUseError, 
-    isFullError, isEOFError,
-    isIllegalOperation, isPermissionError, isUserError, 
-    ioeGetErrorString, ioeGetHandle, ioeGetFileName,
-    try, bracket, bracket_,
+    
+    stdin, stdout, stderr,  -- :: Handle
+    openFile,		    -- :: FilePath -> IOMode -> IO Handle
+    hClose, 		    -- :: Handle -> IO ()
+
+    hFileSize,		    -- :: Handle -> IO Integer
+
+    hIsEOF,                 -- :: Handle -> IO Bool
+    isEOF,                  -- :: IO Bool
+
+    hSetBuffering,          -- :: Handle -> BufferMode -> IO ()
+    hGetBuffering,          -- :: Handle -> IO BufferMode
+
+    hFlush,                 -- :: Handle -> IO ()
+    hGetPosn,		    -- :: Handle -> IO HandlePosn
+    hSetPosn,               -- :: HandlePosn -> IO ()
+    hSeek,                  -- :: Handle -> SeekMode -> Integer -> IO ()
+
+    hLookAhead,             -- :: Handle -> IO Char
+
+    hWaitForInput,          -- :: Handle -> Int -> IO Bool
+    hReady,		    -- :: Handle -> IO Bool
+
+
+    hGetChar,               -- :: Handle -> IO Char
+    hGetLine,               -- :: Handle -> IO String
+    hGetContents,           -- :: Handle -> IO String
+
+    hPutChar,               -- :: Handle -> Char -> IO ()
+    hPutStr,                -- :: Handle -> String -> IO ()
+    hPutStrLn,              -- :: Handle -> String -> IO ()
+    hPrint,		    -- :: (Show a) => Handle -> a -> IO ()
+
+    hIsOpen,		    -- :: Handle -> IO Bool
+    hIsClosed,		    -- :: Handle -> IO Bool
+    hIsReadable,            -- :: Handle -> IO Bool
+    hIsWritable,            -- :: Handle -> IO Bool
+    hIsSeekable,            -- :: Handle -> IO Bool
+
+    isAlreadyExistsError,   -- :: IOError -> Bool
+    isDoesNotExistError,    -- :: IOError -> Bool
+    isAlreadyInUseError,    -- :: IOError -> Bool
+    isFullError,            -- :: IOError -> Bool
+    isEOFError,             -- :: IOError -> Bool
+    isIllegalOperation,     -- :: IOError -> Bool
+    isPermissionError,      -- :: IOError -> Bool
+    isUserError,            -- :: IOError -> Bool
+
+    ioeGetErrorString,      -- :: IOError -> String
+    ioeGetHandle,           -- :: IOError -> Maybe Handle
+    ioeGetFileName,         -- :: IOError -> Maybe FilePath
+
+    try,                    -- :: IO a -> IO (Either IOError a)
+    bracket,                -- :: IO a -> (a -> IO b) -> (a -> IO c) -> IO c
+    bracket_,               -- :: IO a -> (a -> IO b) -> IO c -> IO c
 
     -- Non-standard extensions 
-    hugsIsEOF, hugsHIsEOF,
-    hugsIsSearchErr, hugsIsNameErr, hugsIsWriteErr,
+    hugsIsEOF,              -- :: IO Bool
+    hugsHIsEOF,             -- :: Handle  -> IO Bool
+    hugsIsSearchErr,        -- :: IOError -> Bool
+    hugsIsNameErr,          -- :: IOError -> Bool
+    hugsIsWriteErr,         -- :: IOError -> Bool
 
     -- ... and what the Prelude exports
     IO,
@@ -47,10 +90,8 @@ import Ix(Ix)
 data Handle
 instance Eq Handle where (==) = primEqHandle
 primitive primEqHandle :: Handle -> Handle -> Bool
-newtype HandlePosn = HandlePosn Int deriving Eq
 
---data IOMode      =  ReadMode | WriteMode | AppendMode | ReadWriteMode
-data IOMode      = ReadMode | WriteMode | AppendMode
+data IOMode      =  ReadMode | WriteMode | AppendMode | ReadWriteMode
                     deriving (Eq, Ord, Ix, Bounded, Enum, Read, Show)
 data BufferMode  =  NoBuffering | LineBuffering 
                  |  BlockBuffering (Maybe Int)
@@ -63,22 +104,66 @@ primitive stdout      :: Handle
 primitive stderr      :: Handle
 primitive openFile    :: FilePath -> IOMode -> IO Handle
 primitive hClose      :: Handle -> IO ()
---Not yet implemented:
---hFileSize           :: Handle -> IO Integer
---hIsEOF              :: Handle -> IO Bool
---isEOF               :: IO Bool
---isEOF                = hIsEOF stdin
 
---hSetBuffering       :: Handle  -> BufferMode -> IO ()
---hGetBuffering       :: Handle  -> IO BufferMode
-primitive hFlush      :: Handle -> IO ()
-primitive hGetPosn    :: Handle -> IO HandlePosn
-primitive hSetPosn    :: HandlePosn -> IO () 
---hSeek               :: Handle -> SeekMode -> Integer -> IO () 
+primitive hFileSize   :: Handle -> IO Integer
 
---hWaitForInput	      :: Handle -> Int -> IO Bool
---hReady              :: Handle -> IO Bool 
---hReady h	       = hWaitForInput h 0
+primitive hIsEOF      :: Handle -> IO Bool
+
+isEOF               :: IO Bool
+isEOF                = hIsEOF stdin
+
+hSetBuffering       :: Handle  -> BufferMode -> IO ()
+hSetBuffering h bMode = 
+  case bMode of
+    NoBuffering   -> hSetBuff h 0 0
+    LineBuffering -> hSetBuff h 1 0
+    BlockBuffering (Just x) -> hSetBuff h 2 x
+    BlockBuffering _        -> hSetBuff h 2 0
+
+primitive hSetBuff  :: Handle -> Int -> Int -> IO ()
+
+hGetBuffering       :: Handle  -> IO BufferMode
+hGetBuffering h = do
+  (k, sz) <- hGetBuff h
+  case k of
+    1 -> return NoBuffering
+    2 -> return LineBuffering
+    3 -> return (BlockBuffering (Just sz))
+
+primitive hGetBuff  :: Handle -> IO (Int,Int)
+
+primitive hFlush       :: Handle -> IO ()
+
+
+data HandlePosn = HandlePosn Handle Int deriving Eq
+
+hGetPosn :: Handle -> IO HandlePosn
+hGetPosn h = do
+  p <- hGetPosnPrim h
+  return (HandlePosn h p)
+
+primitive hGetPosnPrim :: Handle -> IO Int
+
+hSetPosn :: HandlePosn -> IO ()
+hSetPosn (HandlePosn h p) = hSetPosnPrim h p
+
+primitive hSetPosnPrim  :: Handle -> Int -> IO () 
+
+hSeek :: Handle -> SeekMode -> Integer -> IO () 
+hSeek h sMode int 
+ | int >  fromIntegral (maxBound :: Int) ||
+   int <  fromIntegral (minBound :: Int) =
+   ioError (userError ("IO.hSeek: seek offset out of supported range"))
+ | otherwise = 
+   hSeekPrim h (fromEnum sMode) ((fromIntegral int)::Int)
+  
+primitive hSeekPrim :: Handle -> Int -> Int -> IO () 
+
+primitive hWaitForInput :: Handle -> Int -> IO Bool
+
+hReady              :: Handle -> IO Bool 
+hReady h	    = hWaitForInput h 0
+
 primitive hGetChar    :: Handle -> IO Char
 
 hGetLine              :: Handle -> IO String
@@ -87,10 +172,10 @@ hGetLine h             = do c <- hGetChar h
                               else do cs <- hGetLine h
                                       return (c:cs)
 
---hLookAhead          :: Handle -> IO Char
-primitive hGetContents:: Handle -> IO String
-primitive hPutChar    :: Handle -> Char -> IO ()
-primitive hPutStr     :: Handle -> String -> IO ()
+primitive hLookAhead    :: Handle -> IO Char
+primitive hGetContents  :: Handle -> IO String
+primitive hPutChar      :: Handle -> Char -> IO ()
+primitive hPutStr       :: Handle -> String -> IO ()
 
 hPutStrLn             :: Handle -> String -> IO ()
 hPutStrLn h s          = do { hPutStr h s; hPutChar h '\n' }
@@ -101,8 +186,8 @@ hPrint h               = hPutStrLn h . show
 primitive hIsOpen,    
    	  hIsClosed,  
    	  hIsReadable,
-   	  hIsWritable :: Handle -> IO Bool
---hIsSeekable         :: Handle -> IO Bool
+   	  hIsWritable,
+	  hIsSeekable :: Handle -> IO Bool
 
 primitive isIllegalOperation, 
 	  isAlreadyExistsError, 
@@ -113,7 +198,7 @@ primitive isIllegalOperation,
 	  isPermissionError,
           isUserError        :: IOError -> Bool
 
-primitive ioeGetErrorString "primShowIOError" :: IOError -> String
+primitive ioeGetErrorString :: IOError -> String
 primitive ioeGetHandle      :: IOError -> Maybe Handle
 primitive ioeGetFileName    :: IOError -> Maybe FilePath
 
@@ -142,14 +227,18 @@ bracket_ before after m = do
 -----------------------------------------------------------------------------
 -- Non-standard extensions 
 -- (likely to disappear when IO library is more complete)
+--
+-- keep them around for now.
 
 -- C library style test for EOF (doesn't obey Haskell semantics)
-primitive hugsHIsEOF "hIsEOF" :: Handle -> IO Bool
+primitive hugsHIsEOF "hugsHIsEOF" :: Handle -> IO Bool
 hugsIsEOF             :: IO Bool
 hugsIsEOF              = hugsHIsEOF stdin
 
-primitive hugsIsSearchErr :: IOError -> Bool
-primitive hugsIsNameErr   :: IOError -> Bool
-primitive hugsIsWriteErr  :: IOError -> Bool
+hugsIsNameErr  = isIllegalOperation
+hugsIsWriteErr = isAlreadyExistsError
+
+hugsIsSearchErr :: IOError -> Bool
+hugsIsSearchErr = isDoesNotExistError
 
 -----------------------------------------------------------------------------
