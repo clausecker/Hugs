@@ -9,8 +9,6 @@ Hs##T read##T##OffPtr(Hs##T *arg1, HsInt arg2);
 
 DECLARE(Int       )
 DECLARE(Char      )
-/* DECLARE(WideChar  ) */
-DECLARE(Word      )
 DECLARE(Ptr       )
 DECLARE(FunPtr    )
 DECLARE(Float     )

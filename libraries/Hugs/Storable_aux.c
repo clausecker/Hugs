@@ -6,8 +6,6 @@ Hs##T read##T##OffPtr(Hs##T *arg1, HsInt arg2) { return arg1[arg2]; }
 
 DEFINE(Int       )
 DEFINE(Char      )
-/* DEFINE(WideChar  ) */
-DEFINE(Word      )
 DEFINE(Ptr       )
 DEFINE(FunPtr    )
 DEFINE(Float     )
