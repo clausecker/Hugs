@@ -310,51 +310,51 @@ AC_CACHE_VAL(AC_CV_NAME,
 AC_TRY_RUN([#include <stdio.h>
 #include <stddef.h>
 
-#ifdef HAVE_SYS_TYPES_H
+#if HAVE_SYS_TYPES_H
 # include <sys/types.h>
 #endif
 
-#ifdef HAVE_UNISTD_H
+#if HAVE_UNISTD_H
 # include <unistd.h>
 #endif
 
-#ifdef HAVE_SYS_STAT_H
+#if HAVE_SYS_STAT_H
 # include <sys/stat.h>
 #endif
 
-#ifdef HAVE_FCNTL_H
+#if HAVE_FCNTL_H
 # include <fcntl.h>
 #endif
 
-#ifdef HAVE_SIGNAL_H
+#if HAVE_SIGNAL_H
 # include <signal.h>
 #endif
 
-#ifdef HAVE_TIME_H
+#if HAVE_TIME_H
 # include <time.h>
 #endif
 
-#ifdef HAVE_TERMIOS_H
+#if HAVE_TERMIOS_H
 # include <termios.h>
 #endif
 
-#ifdef HAVE_STRING_H
+#if HAVE_STRING_H
 # include <string.h>
 #endif
 
-#ifdef HAVE_CTYPE_H
+#if HAVE_CTYPE_H
 # include <ctype.h>
 #endif
 
-#ifdef HAVE_GL_GL_H
+#if HAVE_GL_GL_H
 # include <GL/gl.h>
 #endif
 
-#ifdef HAVE_OPENGL_GL_H
+#if HAVE_OPENGL_GL_H
 # include <OpenGL/gl.h>
 #endif
 
-#ifdef HAVE_SYS_RESOURCE_H
+#if HAVE_SYS_RESOURCE_H
 # include <sys/resource.h>
 #endif
 

@@ -11,7 +11,7 @@
 #define __MACHDEP_H__
 #include "prelude.h"
 
-#ifdef HAVE_TIME_H
+#if HAVE_TIME_H
 # include <time.h>
 #endif
 
@@ -59,7 +59,7 @@ extern String readRegChildStrings Args((HKEY, String, String, String));
 
 extern String RealPath  Args((String));
 extern String substPath Args((String,String));
-#ifndef HUGS_SERVER
+#if !HUGS_SERVER
 extern Bool startEdit   Args((Int,String));
 #endif
 

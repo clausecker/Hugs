@@ -14,7 +14,7 @@ EXT_PROTO_PRIM(primObserve);
 EXT_PROTO_PRIM(primBkpt);
 EXT_PROTO_PRIM(primSetBkpt);
 
-#ifdef HUGS_SERVER
+#if HUGS_SERVER
 /* Provide stubbed out primops in non-interactive modes. Tiresome. */
 #include "evaluator.h"
 #include "errors.h"

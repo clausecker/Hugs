@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: type.c,v $
- * $Revision: 1.74 $
- * $Date: 2003/10/14 13:56:25 $
+ * $Revision: 1.75 $
+ * $Date: 2003/11/01 17:02:50 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -419,7 +419,7 @@ static Int local newVarsBind(v)        /* make new assump for pattern var  */
 Cell v; {
     Int beta = newTyvars(1);
     addVarAssump(v,mkInt(beta));
-#ifdef DEBUG_TYPES
+#if DEBUG_TYPES
     Printf("variable, assume ");
     printExp(stdout,v);
     Printf(" :: _%d\n",beta);
@@ -436,7 +436,7 @@ Type type; {
     if (nonNull(type) && isPolyType(type))
 	ta = pair(POLYREC,pair(ta,type));
     hd(defnBounds) = cons(pair(v,ta), hd(defnBounds));
-#ifdef DEBUG_TYPES
+#if DEBUG_TYPES
     Printf("definition, assume ");
     printExp(stdout,v);
     Printf(" :: _%d\n",beta);
@@ -610,7 +610,7 @@ Int    o; {			      /* type inferred is (typeIs,typeOff) */
 
     clearMarks();		      /* types printed here are monotypes  */
 				      /* use marking to give sensible names*/
-#ifdef DEBUG_KINDS
+#if DEBUG_KINDS
 { List vs = genericVars;
   for (; nonNull(vs); vs=tl(vs)) {
      Int v = intOf(hd(vs));
@@ -691,7 +691,7 @@ Type dt, it; {
 #define OLD_PATTERN 2			/* pattern, involving bound vars   */
 static int tcMode = EXPRESSION;
 
-#ifdef DEBUG_TYPES
+#if DEBUG_TYPES
 static Cell local mytypeExpr	Args((Int,Cell));
 static Cell local typeExpr(l,e)
 Int l;
@@ -2081,7 +2081,7 @@ List bs; {
 	for (bs1=hd(bs); nonNull(bs1); bs1=tl(bs1))
 	    fst(snd(hd(bs1))) = NIL; 	/* reset imps type fields	   */
 
-#ifdef DEBUG_DEPENDS
+#if DEBUG_DEPENDS
     Printf("Binding group:");
     for (bs1=imps; nonNull(bs1); bs1=tl(bs1)) {
 	Printf(" [imp:");
@@ -2493,7 +2493,7 @@ Int    beta; {
     List qs;
     Type rt;
 
-#ifdef DEBUG_TYPES
+#if DEBUG_TYPES
     Printf("Type check member: ");
     printExp(stdout,mem);
     Printf(" :: ");
@@ -2514,7 +2514,7 @@ Int    beta; {
     qs = copyPreds(ps);
     rt = generalize(qs,liftRank2(t,o,m));
 
-#ifdef DEBUG_TYPES
+#if DEBUG_TYPES
     Printf("Required type is: ");
     printType(stdout,rt);
     Printf("\n");
@@ -2550,7 +2550,7 @@ Int    beta; {
     resetGenerics();			/* Make sure we're general enough  */
     ps = copyPreds(ps);
     t  = generalize(ps,liftRank2(t,o,m));
-#ifdef DEBUG_TYPES
+#if DEBUG_TYPES
     Printf("Inferred type is: ");
     printType(stdout,t);
     Printf("\n");
@@ -2712,7 +2712,7 @@ Type dt; {
 
     snd(ass) = genTest(l,v,ps,dt,aVar,intOf(defType(snd(ass))));
 
-#ifdef DEBUG_TYPES
+#if DEBUG_TYPES
     printExp(stdout,v);
     Printf(" :: ");
     printType(stdout,snd(ass));
@@ -2761,7 +2761,7 @@ Type t; {				/* with qualifying preds qs	   */
 	    k = ap(ka,k);
 	}
 	t = mkPolyType(k,t);
-#ifdef DEBUG_KINDS
+#if DEBUG_KINDS
     Printf("Generalized type: ");
     printType(stdout,t);
     Printf(" ::: ");
@@ -2957,7 +2957,7 @@ Name s; {				/* particular selector, s.	   */
     Int  o;
     Int  m;
 
-#ifdef DEBUG_SELS
+#if DEBUG_SELS
     Printf("Selector %s, cns=",textToStr(name(s).text));
     printExp(stdout,cns);
     Putchar('\n');
@@ -3046,7 +3046,7 @@ Name s; {				/* particular selector, s.	   */
     name(s).arity = 1 + length(preds);
     map1Proc(qualify,preds,alts);
 
-#ifdef DEBUG_SELS
+#if DEBUG_SELS
     Printf("Inferred arity = %d, type = ",name(s).arity);
     printType(stdout,name(s).type);
     Putchar('\n');

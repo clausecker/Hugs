@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.130 $
- * $Date: 2003/10/28 11:47:22 $
+ * $Revision: 1.131 $
+ * $Date: 2003/11/01 17:02:44 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -68,7 +68,7 @@ static Void   local autoReloadFiles   Args((Void));
 /* --------------------------------------------------------------------------
  * Optional timer hooks:
  * ------------------------------------------------------------------------*/
-#ifdef WANT_TIMER
+#if WANT_TIMER
 #include "timer.c"
 #endif
 
@@ -107,7 +107,7 @@ String argv[]; {
        * directory in his/her PATH, but the less we assume, the better.)
        */
       notePadLoc = 
-#ifdef HAVE_ALLOCA
+#if HAVE_ALLOCA
 	  alloca
 #else
           _alloca
@@ -959,7 +959,7 @@ String argv[]; {
 #endif
 
 	cmd = readCommand(cmds, (Char)':', (Char)'!');
-#ifdef WANT_TIMER
+#if WANT_TIMER
 	updateTimers();
 #endif
 	switch (cmd) {
@@ -1044,7 +1044,7 @@ String argv[]; {
               break;
 #endif
 	}
-#ifdef WANT_TIMER
+#if WANT_TIMER
 	updateTimers();
 	Printf("Elapsed time (ms): %ld (user), %ld (system)\n",
 	       millisecs(userElapsed), millisecs(systElapsed));

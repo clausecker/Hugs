@@ -11,8 +11,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.103 $
- * $Date: 2003/10/21 15:21:54 $
+ * $Revision: 1.104 $
+ * $Date: 2003/11/01 17:02:46 $
  * ------------------------------------------------------------------------*/
 #include "prelude.h"
 #include "storage.h"
@@ -25,13 +25,13 @@
 
 /*#define DEBUG_SEARCH*/
 
-#ifdef HAVE_SIGNAL_H
+#if HAVE_SIGNAL_H
 # include <signal.h>
 #endif
-#ifdef HAVE_SYS_TYPES_H
+#if HAVE_SYS_TYPES_H
 # include <sys/types.h>
 #else
-# ifdef HAVE_TYPES_H
+# if HAVE_TYPES_H
 #  include <types.h>
 # endif
 #endif
@@ -41,14 +41,14 @@
 #if HAVE_LIMITS_H
 # include <limits.h>
 #endif
-#ifdef HAVE_SYS_STAT_H
+#if HAVE_SYS_STAT_H
 # include <sys/stat.h>
 #else
-# ifdef HAVE_STAT_H
+# if HAVE_STAT_H
 #  include <stat.h>
 # endif
 #endif
-#ifdef HAVE_DIRENT_H
+#if HAVE_DIRENT_H
 #  include <dirent.h>
 #endif
 
@@ -66,19 +66,19 @@
 #endif
 
 /* Windows/DOS include files */
-#ifdef HAVE_DOS_H
+#if HAVE_DOS_H
 # include <dos.h>
 #endif
 #if defined(HAVE_CONIO_H) && ! HUGS_FOR_WINDOWS
 # include <conio.h>
 #endif
-#ifdef HAVE_IO_H
+#if HAVE_IO_H
 # include <io.h>
 #endif
-#ifdef HAVE_STD_H
+#if HAVE_STD_H
 # include <std.h>
 #endif
-#ifdef HAVE_WINDOWS_H
+#if HAVE_WINDOWS_H
 # include <windows.h>
 #endif
 
@@ -100,22 +100,22 @@ extern unsigned _stklen = 8000;         /* Allocate an 8k stack segment    */
 #endif
 
 /* Macintosh include files */
-#ifdef HAVE_CONSOLE_H
+#if HAVE_CONSOLE_H
 # include <console.h>
 #endif
-#ifdef HAVE_FILES_H
+#if HAVE_FILES_H
 # include <Files.h>
 #endif
-#ifdef HAVE_FCNTL_H
+#if HAVE_FCNTL_H
 # include <fcntl.h>
 #endif
-#ifdef HAVE_ERRNO_H
+#if HAVE_ERRNO_H
 # include <errno.h>
 #endif
-#ifdef HAVE_STDLIB_H
+#if HAVE_STDLIB_H
 # include <stdlib.h>
 #endif
-#ifdef HAVE_UNIX_H
+#if HAVE_UNIX_H
 #include <unix.h>
 #endif
 
@@ -514,7 +514,7 @@ String s; {
 	    if (searchPos<FILENAME_MAX)
 		searchBuf[searchPos++] = *sp;
 	searchBuf[searchPos] = '\0';
-#ifdef DEBUG_SEARCH
+#if DEBUG_SEARCH
 	Printf("trying '%s'\n", searchBuf);
 #endif
 	if (readable(searchBuf,TRUE))
@@ -553,7 +553,7 @@ String sep; {
 */
 	  
 
-#ifdef HAVE_WINDOWS_H
+#if HAVE_WINDOWS_H
 
 static Bool scanSubDirs(s)
 String s;
@@ -718,7 +718,7 @@ String findPathname(filename)   /* Look for a file, trying various extensions */
 String filename; {              /* Return ***input name*** if no file was found */
     searchReset(0);
     searchStr(filename);
-#ifdef DEBUG_SEARCH
+#if DEBUG_SEARCH
     Printf("trying '%s'\n", searchBuf);
 #endif
     if (!readable(searchBuf,TRUE) && !tryEndings(""))
@@ -1466,7 +1466,7 @@ int chdir(char *s) {                    /* RISCOS PRM p. 885    -- JBS     */
  * Floating point support:
  * ------------------------------------------------------------------------*/
 
-#ifdef FLOATS_SUPPORTED
+#if FLOATS_SUPPORTED
 #if BREAK_FLOATS
 static union {
     Float  flVal;
@@ -1667,7 +1667,7 @@ DoublePro fl; {
  * Int64-related operations:
  *-------------------------------------------------------------------------*/
 
-#ifdef PROVIDE_INT64
+#if PROVIDE_INT64
 Int part1Int64(i)
 HsInt64 i; {
     return (Int)(i >> 32);
@@ -2009,7 +2009,7 @@ String file; {
     return path;
 }
 
-#ifdef LEADING_UNDERSCORE
+#if LEADING_UNDERSCORE
 #  define INIT_MODULE_FUN  "_initModule"
 #  define API_VERSION_FUN  "_HugsAPIVersion"
 #else
@@ -2427,7 +2427,7 @@ Void machdep(what)                      /* Handle machine specific         */
 Int what; {                             /* initialisation etc..            */
     switch (what) {
 	case MARK    :
-#ifdef FLOATS_SUPPORTED
+#if FLOATS_SUPPORTED
 #if BREAK_FLOATS
 		       mark(bfTemp);
 #endif
@@ -2437,7 +2437,7 @@ Int what; {                             /* initialisation etc..            */
 	case INSTALL : installHandlers();
 		       break;
 	case RESET   :
-#ifdef FLOATS_SUPPORTED
+#if FLOATS_SUPPORTED
 #if BREAK_FLOATS
 		       bfTemp = NIL;
 #endif

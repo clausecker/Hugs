@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: storage.c,v $
- * $Revision: 1.78 $
- * $Date: 2003/11/01 14:40:39 $
+ * $Revision: 1.79 $
+ * $Date: 2003/11/01 17:02:50 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1168,7 +1168,7 @@ Inst newInst() {                       /* Add new instance to table        */
     return instHw++;
 }
 
-#ifdef DEBUG_DICTS
+#if DEBUG_DICTS
 extern Void printInst Args((Inst));
 
 Void printInst(in)
@@ -1628,7 +1628,7 @@ String f; {                             /* of status for later restoration  */
       scripts = (script*)(dynTabScripts->data);
     }
 #endif
-#ifdef DEBUG_SHOWUSE
+#if DEBUG_SHOWUSE
     showUse("Text",   textHw,           NUM_TEXT);
     showUse("Addr",   addrHw,           NUM_ADDRS);
     showUse("Module", moduleHw-MODMIN,  NUM_MODULE);

@@ -8,8 +8,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: prelude.h,v $
- * $Revision: 1.55 $
- * $Date: 2003/10/23 16:06:30 $
+ * $Revision: 1.56 $
+ * $Date: 2003/11/01 17:02:48 $
  * ------------------------------------------------------------------------*/
 #ifndef __PRELUDE_H__
 #define __PRELUDE_H__
@@ -21,7 +21,7 @@
 #if HAVE_STDLIB_H
 # include <stdlib.h>
 #endif
-#ifdef HAVE_SYS_TYPES_H
+#if HAVE_SYS_TYPES_H
 # include <sys/types.h>
 #endif
 #if HAVE_UNISTD_H
@@ -179,7 +179,7 @@
  * Platform-dependent settings:
  *-------------------------------------------------------------------------*/
 
-#ifdef HAVE_MACSYSTEM	/* Macintosh system() prototype. */
+#if HAVE_MACSYSTEM	/* Macintosh system() prototype. */
 int macsystem(char *filenames);
 #endif
 
@@ -347,7 +347,7 @@ extern  int     stricmp	   Args((const char *, const char*));
  * Printf-related operations:
  *-------------------------------------------------------------------------*/
 
-#ifdef HAVE_STDARG_H
+#if HAVE_STDARG_H
 #include <stdarg.h>
 #else
 #include <varargs.h>
@@ -471,14 +471,14 @@ extern  int  kbhit	Args((void));
  *-------------------------------------------------------------------------*/
 
 #if defined(HAVE_LIBM) || defined(_WIN32)
-#define FLOATS_SUPPORTED
+#define FLOATS_SUPPORTED 1
 #endif
 
 
 /* Can we fit floats into ints? */
 #define BREAK_FLOATS (SIZEOF_FLOAT > SIZEOF_INT)
 
-#ifdef  FLOATS_SUPPORTED
+#if  FLOATS_SUPPORTED
 
 #define FloatImpType	   float
 #define FloatPro	   double  /* type to use in prototypes		   */

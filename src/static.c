@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.157 $
- * $Date: 2003/10/14 13:56:25 $
+ * $Revision: 1.158 $
+ * $Date: 2003/11/01 17:02:48 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -2129,7 +2129,7 @@ Cell c; {
     Cell h = getHead(c);
     Int  n = argCount;
 
-#ifdef DEBUG_KINDS
+#if DEBUG_KINDS
     Printf("kindConstr: alpha=%d, m=%d, c=",alpha,m);
     printType(stdout,c);
     Printf("\n");
@@ -2292,7 +2292,7 @@ static Void local fixKinds() {		/* add kind annotations to types   */
 		break;
 	    }
 	}
-#ifdef DEBUG_KINDS
+#if DEBUG_KINDS
 	Printf("Type expression: ");
 	printType(stdout,snd(pr));
 	Printf(" :: ");
@@ -2383,7 +2383,7 @@ static Void local genTC(c)		/* generalise kind inferred for	   */
 Cell c; {				/* given tycon/class		   */
     if (isTycon(c)) {
 	tycon(c).kind = copyKindvar(intOf(tycon(c).kind));
-#ifdef DEBUG_KINDS
+#if DEBUG_KINDS
 	Printf("%s :: ",textToStr(tycon(c).text));
 	printKind(stdout,tycon(c).kind);
 	Putchar('\n');
@@ -2393,7 +2393,7 @@ Cell c; {				/* given tycon/class		   */
 	for (; nonNull(ks); ks=tl(ks)) {
 	    hd(ks) = copyKindvar(intOf(hd(ks)));
 	}
-#ifdef DEBUG_KINDS
+#if DEBUG_KINDS
 	Printf("%s :: ",textToStr(cclass(c).text));
 	printKinds(stdout,cclass(c).kinds);
 	Putchar('\n');
@@ -2697,7 +2697,7 @@ Int  freedom; {
     for (inst(in).kinds = NIL; 0<freedom--; ) {
 	inst(in).kinds = cons(copyKindvar(beta+freedom),inst(in).kinds);
     }
-#ifdef DEBUG_KINDS
+#if DEBUG_KINDS
     Printf("instance ");
     printPred(stdout,inst(in).head);
     Printf(" :: ");
@@ -2866,7 +2866,7 @@ Inst in; {				/* of derived instance context	   */
     }
     inst(in).numSpecifics = beta;
 
-#ifdef DEBUG_DERIVING
+#if DEBUG_DERIVING
     Printf("initDerInst: ");
     printPred(stdout,inst(in).head);
     Printf("\n");
@@ -2884,7 +2884,7 @@ Inst in; {				/* of the context for a derived	   */
     Int  its    = 1;
     Int  factor = 1+length(ps);
 
-#ifdef DEBUG_DERIVING
+#if DEBUG_DERIVING
     Printf("calcInstPreds: ");
     printPred(stdout,inst(in).head);
     Printf("\n");
@@ -3032,7 +3032,7 @@ Inst in; {				/* calculations			   */
     h98CheckCtxt(inst(in).line,"derived instance",FALSE,inst(in).specifics,in);
     inst(in).numSpecifics = length(inst(in).specifics);
 
-#ifdef DEBUG_DERIVING
+#if DEBUG_DERIVING
     Printf("Derived instance: ");
     printContext(stdout,inst(in).specifics);
     Printf(" ||- ");
@@ -6233,7 +6233,7 @@ List qs; {
       The following code prints it out nicely:
     ****************************************************************/
 
-#ifdef DEBUG_MDO_SEGMENTS
+#if DEBUG_MDO_SEGMENTS
 
 #define DBL(s,w)	printf(s); printList(w,50); printf("\n")
     printf("\nAfter SCC, The segments:\n");

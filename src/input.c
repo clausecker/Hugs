@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: input.c,v $
- * $Revision: 1.72 $
- * $Date: 2003/10/30 15:56:58 $
+ * $Revision: 1.73 $
+ * $Date: 2003/11/01 17:02:45 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -866,7 +866,7 @@ static Cell local readNumber() {        /* read numeric constant           */
     endToken();
 
     if (floatingPt) {
-#ifdef FLOATS_SUPPORTED
+#if FLOATS_SUPPORTED
 	return mkDouble(stringToDouble(tokenStr));
 #else
 	ERRMSG(row) "No floating point numbers in this implementation"

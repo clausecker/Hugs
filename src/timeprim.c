@@ -45,7 +45,7 @@ static struct primInfo timePrims = { timeControl, timePrimTable, 0 };
 
 primFun(primGetClockTime) { /* :: IO (Int,Int) */
 
-#ifdef HAVE_GETTIMEOFDAY
+#if HAVE_GETTIMEOFDAY
   struct timeval tv;
   int rc;
   
@@ -125,31 +125,31 @@ primFun(primGetCalTime) { /* Int   -> Int -> IO (.....) */
   }
   
   /* Warning - ugliness. */
-# ifdef HAVE_TM_ZONE
+#if HAVE_TM_ZONE
   zoneNm = (char*)tm->tm_zone;
-# elif HAVE_TZNAME || IS_WINDOWS
+#elif HAVE_TZNAME || IS_WINDOWS
   /* ToDo: fix autoconf macro AC_STRUCT_TIMEZONE so that it will recognise
    *       mingw's _tzname global. For now, force it.
    */
   zoneNm = (char*)(tm->tm_isdst ? tzname[1] : tzname[0]);
-# else
+#else
   /* Don't know how to get at the timezone name, complain louder? */
   zoneNm = NULL;
-# endif
+#endif
 
-# ifdef HAVE_TM_ZONE
+#if HAVE_TM_ZONE
   utcOff = tm->tm_gmtoff;
-# elif HAVE_TIMEZONE
-#  ifdef HAVE_ALTZONE
+#elif HAVE_TIMEZONE
+# if HAVE_ALTZONE
   utcOff = (-(tm->tm_isdst ? altzone : timezone));
-#  else
+# else
   /* Assume DST adjustment is 1 hour. */
   utcOff = -(tm->tm_isdst ? (timezone - 3600) : timezone);
-#  endif
-# else
+# endif
+#else
   /* Again, complain louder? */
   utcOff = 0;
-# endif
+#endif
 
   pushString(zoneNm);
   zoneStr = pop();
@@ -181,7 +181,7 @@ primFun(primGetCalTime) { /* Int   -> Int -> IO (.....) */
 primFun(primMkTime) { /* Int{-year-}  -> Int{-month-} -> Int{-day-} ->
                          Int{-hour-}  -> Int{-mins-}  -> Int{-sec-} ->
 			 Int{-tz offset-} -> IO Int{-secs since Epoch-} */
-#ifdef HAVE_MKTIME
+#if HAVE_MKTIME
   Int year, month, day;
   Int hour,min,sec;
   Int tz;
@@ -222,18 +222,18 @@ primFun(primMkTime) { /* Int{-year-}  -> Int{-month-} -> Int{-day-} ->
      the UTC offset returned by mktime().
   */
   tz = -tz;
-# ifdef HAVE_TM_ZONE
+#if HAVE_TM_ZONE
   tz += tm.tm_gmtoff;
-# elif HAVE_TIMEZONE
-#  ifdef HAVE_ALTZONE
+#elif HAVE_TIMEZONE
+# if HAVE_ALTZONE
   tz += (-(tm.tm_isdst ? altzone : timezone));
-#  else
+# else
   /* Assume DST adjustment is 1 hour */
   tz += (- (tm.tm_isdst ? (timezone - 3600) : timezone));
-#  endif
-# else
-  /* Unknown, assume nothing */
 # endif
+#else
+  /* Unknown, assume nothing */
+#endif
   
   IOReturn(mkInt(t+tz));
 #else

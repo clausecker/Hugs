@@ -92,7 +92,7 @@ Module m; {        /* evaluate expr and print value    */
     garbageCollect();
 #endif
 
-#ifdef WANT_TIMER
+#if WANT_TIMER
     updateTimers();
 #endif
 #if IO_MONAD

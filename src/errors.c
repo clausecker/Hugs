@@ -166,7 +166,7 @@ sigHandler(breakHandler) {              /* respond to break interrupt      */
 #if REDIRECT_OUTPUT && !HUGS_FOR_WINDOWS
 static Bool disableOutput = FALSE;      /* redirect output to buffer?      */
 
-#ifdef HAVE_STDARG_H
+#if HAVE_STDARG_H
 #include <stdarg.h>
 #else
 #include <varargs.h>
@@ -235,7 +235,7 @@ String hugsClearOutputBuffer() {
     return bufferClear(&outputStream);
 }
 
-#ifdef HAVE_STDARG_H
+#if HAVE_STDARG_H
 Void hugsPrintf(const char *fmt, ...) {
     va_list ap;                    /* pointer into argument list           */
     va_start(ap, fmt);             /* make ap point to first arg after fmt */
@@ -283,7 +283,7 @@ FILE* fp; {
     }
 }
 
-#ifdef HAVE_STDARG_H
+#if HAVE_STDARG_H
 Void hugsFPrintf(FILE *fp, const char* fmt, ...) {
     va_list ap;
     va_start(ap, fmt);

@@ -2,7 +2,7 @@
  * DllMain() for Hugsscript.dll
  */
 #include <windows.h>
-#define HUGS_SERVER
+#define HUGS_SERVER 1
 #include "prelude.h"
 #include "storage.h"
 #include "connect.h"

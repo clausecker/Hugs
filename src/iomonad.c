@@ -14,8 +14,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: iomonad.c,v $
- * $Revision: 1.62 $
- * $Date: 2003/11/01 14:40:38 $
+ * $Revision: 1.63 $
+ * $Date: 2003/11/01 17:02:45 $
  * ------------------------------------------------------------------------*/
  
 Name nameIORun;			        /* run IO code                     */
@@ -632,10 +632,10 @@ primFun(primGetEnv) {                 /* primGetEnv :: String -> IO String */
     }
 }
 
-#ifdef HAVE_SYS_TYPES_H
+#if HAVE_SYS_TYPES_H
 #include <sys/types.h>
 #endif
-#ifdef HAVE_SYS_WAIT_H
+#if HAVE_SYS_WAIT_H
 # include <sys/wait.h>
 #endif
 #ifndef WEXITSTATUS

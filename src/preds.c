@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: preds.c,v $
- * $Revision: 1.35 $
- * $Date: 2003/10/14 13:56:23 $
+ * $Revision: 1.36 $
+ * $Date: 2003/11/01 17:02:47 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -963,7 +963,7 @@ Bool interactive; {			/* constraints in preds		*/
     List qs        = preds;
     Bool defaulted = FALSE;
 
-#ifdef DEBUG_DEFAULTS
+#if DEBUG_DEFAULTS
     Printf("Attempt to resolve variables ");
     printExp(stdout,vs);
     Printf(" with context ");
@@ -982,7 +982,7 @@ Bool interactive; {			/* constraints in preds		*/
     for (; nonNull(pvs); pvs=tl(pvs)) {	/* now try defaults		*/
 	Int vn = intOf(hd(pvs));
 
-#ifdef DEBUG_DEFAULTS
+#if DEBUG_DEFAULTS
 	Printf("is var %d included in ",vn);
 	printExp(stdout,vs);
 	Printf("?\n");
@@ -990,7 +990,7 @@ Bool interactive; {			/* constraints in preds		*/
 
 	if (!intIsMember(vn,vs))
 	    defaulted |= resolveVar(vn,interactive);
-#ifdef DEBUG_DEFAULTS
+#if DEBUG_DEFAULTS
 	else
 	    Printf("Yes, so no ambiguity!\n");
 #endif
@@ -1018,7 +1018,7 @@ Bool interactive; {			/* by default in the context of */
      * appears only in predicates of the form (Class var).
      */
 
-#ifdef DEBUG_DEFAULTS
+#if DEBUG_DEFAULTS
     Printf("Trying to default variable %d\n",vn);
 #endif
 
@@ -1057,7 +1057,7 @@ Bool interactive; {			/* by default in the context of */
 
     if (aNumClass) {
 	List ds = defaultDefns;		/* N.B. guaranteed to be monotypes */
-#ifdef DEBUG_DEFAULTS
+#if DEBUG_DEFAULTS
 	Printf("Default conditions met, looking for type\n");
 #endif
 	for (; nonNull(ds); ds=tl(ds)) {
@@ -1066,7 +1066,7 @@ Bool interactive; {			/* by default in the context of */
 		cs1 = tl(cs1);
 	    if (isNull(cs1)) {
 		bindTv(vn,hd(ds),0);
-#ifdef DEBUG_DEFAULTS
+#if DEBUG_DEFAULTS
 		Printf("Default type for variable %d is ",vn);
 		printType(stdout,hd(ds));
 		Printf("\n");
@@ -1076,7 +1076,7 @@ Bool interactive; {			/* by default in the context of */
 	}
     }
 
-#ifdef DEBUG_DEFAULTS
+#if DEBUG_DEFAULTS
     Printf("No default permitted/found\n");
 #endif
     return FALSE;

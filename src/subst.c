@@ -8,8 +8,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: subst.c,v $
- * $Revision: 1.28 $
- * $Date: 2003/10/14 13:56:25 $
+ * $Revision: 1.29 $
+ * $Date: 2003/11/01 17:02:50 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -191,7 +191,7 @@ Int n; {				/* all of kind STAR		   */
 	tyvars[numTyvars-n].offs  = UNUSED_GENERIC;
 	tyvars[numTyvars-n].bound = NIL;
 	tyvars[numTyvars-n].kind  = STAR;
-#ifdef DEBUG_TYPES
+#if DEBUG_TYPES
 	Printf("new type variable: _%d ::: ",numTyvars-n);
 	printKind(stdout,tyvars[numTyvars-n].kind);
 	Putchar('\n');
@@ -208,7 +208,7 @@ Kind k; {				/* specified kinds		   */
 	tyvars[numTyvars].offs  = UNUSED_GENERIC;
 	tyvars[numTyvars].bound = NIL;
 	tyvars[numTyvars].kind  = fst(k);
-#ifdef DEBUG_TYPES
+#if DEBUG_TYPES
 	Printf("new type variable: _%d ::: ",numTyvars);
 	printKind(stdout,tyvars[numTyvars].kind);
 	Putchar('\n');
@@ -346,7 +346,7 @@ Int  o; {
     Tyvar *tyv = tyvar(vn);
     tyv->bound = t;
     tyv->offs  = o;
-#ifdef DEBUG_TYPES
+#if DEBUG_TYPES
     Printf("binding type variable: _%d to ",vn);
     printType(stdout,debugType(t,o));
     Putchar('\n');
@@ -590,7 +590,7 @@ Int  o; {
     return t;
 }
 
-#ifdef DEBUG_TYPES
+#if DEBUG_TYPES
 Type debugTyvar(vn)			/* expand type structure in full   */
 Int vn; {				/* detail			   */
     Tyvar *tyv = tyvar(vn);
@@ -901,7 +901,7 @@ Int  o; {
 	case EXT    : return extKind;
 #endif
     }
-#ifdef DEBUG_KINDS
+#if DEBUG_KINDS
     Printf("getKind c = %d, whatIs=%d\n",c,whatIs(c));
 #endif
     internal("getKind");
@@ -1006,7 +1006,7 @@ Tyvar *tyv1, *tyv2; {
 	}
 	tyv1->bound = aVar;
 	tyv1->offs  = tyvNum(tyv2);
-#ifdef DEBUG_TYPES
+#if DEBUG_TYPES
 	Printf("vv binding tyvar: _%d to _%d\n",tyvNum(tyv1),tyvNum(tyv2));
 #endif
     }
@@ -1032,7 +1032,7 @@ Int   o; {				/* have synonym as outermost constr*/
     else {
 	tyv->bound = t;
 	tyv->offs  = o;
-#ifdef DEBUG_TYPES
+#if DEBUG_TYPES
 	Printf("vt binding type variable: _%d to ",tyvNum(tyv));
 	printType(stdout,debugType(t,o));
 	Putchar('\n');
@@ -1079,7 +1079,7 @@ un: if (tyv1)
 	    Type h2 = getDerefHead(t2,o2);
 	    Int  a2 = argCount;
 
-#ifdef DEBUG_TYPES
+#if DEBUG_TYPES
 	    Printf("tt unifying types: ");
 	    printType(stdout,debugType(t1,o1));
 	    Printf(" with ");
@@ -1168,7 +1168,7 @@ Int  o1;				/* an EXT, into row (r,o)          */
 Type r;
 Int  o; {
     Text labt = extText(fun(fun(r1)));	/* Find the text of the label	   */
-#ifdef DEBUG_TYPES
+#if DEBUG_TYPES
     Printf("inserting ");
     printType(stdout,debugType(r1,o1));
     Printf(" into ");
@@ -1208,7 +1208,7 @@ Int  o; {
     Tyvar *tyv;
     Int    beta       = newTyvars(1);
     tyvar(beta)->kind = ROW;
-#ifdef DEBUG_TYPES
+#if DEBUG_TYPES
     Printf("removing %s from",textToStr(l));
     printType(stdout,debugType(r,o));
     Putchar('\n');
@@ -1790,7 +1790,7 @@ Tyvar *tyv1, *tyv2; {			  /* for kind variable bindings	   */
     if (tyv1!=tyv2) {
 	tyv1->bound = aVar;
 	tyv1->offs  = tyvNum(tyv2);
-#ifdef DEBUG_KINDS
+#if DEBUG_KINDS
 	Printf("vv binding kvar: _%d to _%d\n",tyvNum(tyv1),tyvNum(tyv2));
 #endif
     }
@@ -1804,7 +1804,7 @@ Int   o; {				/* have synonym as outermost constr*/
     if (doesntOccurIn(tyv,t,o)) {
 	tyv->bound = t;
 	tyv->offs  = o;
-#ifdef DEBUG_KINDS
+#if DEBUG_KINDS
 	Printf("vt binding kind variable: _%d to ",tyvNum(tyv));
 	printType(stdout,debugType(t,o));
 	Putchar('\n');
@@ -1832,7 +1832,7 @@ Int  o1,o2; {
 	if (kyv2)
 	    return kvarToTypeBind(kyv2,k1,o1);	    /* k2 variable, k1 not */
 	else {
-#ifdef DEBUG_KINDS
+#if DEBUG_KINDS
 	    Printf("unifying kinds: ");
 	    printType(stdout,debugType(k1,o1));
 	    Printf(" with ");

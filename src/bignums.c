@@ -7,13 +7,13 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: bignums.c,v $
- * $Revision: 1.13 $
- * $Date: 2003/10/14 13:56:20 $
+ * $Revision: 1.14 $
+ * $Date: 2003/11/01 17:02:44 $
  * ------------------------------------------------------------------------*/
 
 /*#define DEBUG_BIGNUMS*/
 
-#ifdef DEBUG_BIGNUMS
+#if DEBUG_BIGNUMS
 static Void local bigDump(List ds, Int n) {
     while (nonNull(ds) && 0<n--) {
 	Printf(":%04d",digitOf(hd(ds)));
@@ -703,7 +703,7 @@ List us, vs; {
 	 *   vs     = digits of vs with least significant digit first
 	 */
 
-#ifdef DEBUG_BIGNUMS
+#if DEBUG_BIGNUMS
 Printf("initial vs (n=%d, v1=%d, v2=%d): ",n,v1,v2);
 bigDump(vs,n);
 Putchar('\n');
@@ -735,7 +735,7 @@ Putchar('\n');
 	 *	  uj is actually zero.)
 	 */
 
-#ifdef DEBUG_BIGNUMS
+#if DEBUG_BIGNUMS
 Printf("initial us (uj=%d, uj1=%d, uj2=%d): ",uj,uj1,uj2);
 bigDump(us,n);
 Putchar('\n');
@@ -744,7 +744,7 @@ bigDump(ds,1000);
 Putchar('\n');
 #endif
 	sc = BIGBASE / (v1+1);
-#ifdef DEBUG_BIGNUMS
+#if DEBUG_BIGNUMS
 Printf("scaling factor %d\n",sc);
 #endif
 	if (sc!=1) {			/* Scale numerator and denominator */
@@ -774,7 +774,7 @@ Printf("scaling factor %d\n",sc);
 	    }				/* no carry here, guaranteed	   */
 	}
 
-#ifdef DEBUG_BIGNUMS
+#if DEBUG_BIGNUMS
 Printf("scaled vs (n=%d, v1=%d, v2=%d): ",n,v1,v2);
 bigDump(vs,n);
 Putchar('\n');
@@ -805,7 +805,7 @@ Putchar('\n');
 	    ds	   = us1;
 	    nd     = isNull(ds) ? 0 : digitOf(hd(ds));	/* next digit of ds*/
 
-#ifdef DEBUG_BIGNUMS
+#if DEBUG_BIGNUMS
 Printf("To divide us (uj=%d, uj1=%d, uj2=%d): ",uj,uj1,uj2);
 bigDump(us,n+1);
 Printf(" by vs (v1=%d, v2=%d): ",v1,v2);
@@ -832,7 +832,7 @@ Printf(", guess qhat=%d\n",qhat);
 	    } while (nonNull(vs1));
 
 	    if (digitOf(hd(us1))<c) {	/* maybe we overestimated qhat?	   */
-#ifdef DEBUG_BIGNUMS
+#if DEBUG_BIGNUMS
 Printf("overestimated qhat by one!\n");
 #endif
 		qhat--;			/* so reduce guess		   */
@@ -853,7 +853,7 @@ Printf("overestimated qhat by one!\n");
 		    vs1     = tl(vs1);
 		} while (nonNull(vs1));
 	    }
-#ifdef DEBUG_BIGNUMS
+#if DEBUG_BIGNUMS
 Printf("There remains (uj=%d, uj1=%d, uj2=%d): ",uj,uj1,uj2);
 bigDump(us,n);
 Putchar('\n');
@@ -865,7 +865,7 @@ Putchar('\n');
 	    allowBreak();
 	}
 
-#ifdef DEBUG_BIGNUMS
+#if DEBUG_BIGNUMS
 Printf("done quotient\n");
 #endif
 	/* Now we have the quotient digits (if any) with least significant

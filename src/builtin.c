@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: builtin.c,v $
- * $Revision: 1.67 $
- * $Date: 2003/10/15 05:15:39 $
+ * $Revision: 1.68 $
+ * $Date: 2003/11/01 17:02:44 $
  * ------------------------------------------------------------------------*/
 
 /* We include math.h before prelude.h because SunOS 4's cpp incorrectly
@@ -27,33 +27,33 @@
 #endif
 
 /* Header files needed to compile the IO primitives */
-#ifdef IO_MONAD
-#ifdef HAVE_SYS_TYPES_H
+#if IO_MONAD
+#if HAVE_SYS_TYPES_H
 # include <sys/types.h>
 #else
-# ifdef HAVE_TYPES_H
+# if HAVE_TYPES_H
 #  include <types.h>
 # endif
 #endif
-#ifdef HAVE_SYS_STAT_H
+#if HAVE_SYS_STAT_H
 # include <sys/stat.h>
 #else
-# ifdef HAVE_STAT_H
+# if HAVE_STAT_H
 #  include <stat.h>
 # endif
 #endif
 
-#ifdef HAVE_UNISTD_H
+#if HAVE_UNISTD_H
 #include <unistd.h>
 #endif
 
 #ifndef __MINGW32__
-# ifdef HAVE_SYS_TIMES_H
+# if HAVE_SYS_TIMES_H
 #  include <sys/times.h>
 # endif
 #endif
 
-#ifdef HAVE_SYS_TIME_H
+#if HAVE_SYS_TIME_H
 #include <sys/time.h>
 #endif
 
@@ -63,27 +63,27 @@
 # endif
 #endif
 
-#ifdef HAVE_ERRNO_H
+#if HAVE_ERRNO_H
 # include <errno.h>
 #endif
 
-#ifdef HAVE_SYS_TIMEB_H
+#if HAVE_SYS_TIMEB_H
 #include <sys/timeb.h>
 #endif
 
-#ifdef HAVE_WINDOWS_H
+#if HAVE_WINDOWS_H
 # include <windows.h>
 #endif
 
-#ifdef HAVE_DIRENT_H
+#if HAVE_DIRENT_H
 #include <dirent.h>
 #endif
 
-#ifdef HAVE_DIRECT_H
+#if HAVE_DIRECT_H
 #include <direct.h>
 #endif
 
-#ifdef HAVE_FCNTL_H
+#if HAVE_FCNTL_H
 #include <fcntl.h>
 #endif
 
@@ -260,7 +260,7 @@ PROTO_PRIM(primMulDouble);
 PROTO_PRIM(primDivDouble);
 PROTO_PRIM(primNegDouble);
 
-#ifdef FLOATS_SUPPORTED
+#if FLOATS_SUPPORTED
 PROTO_PRIM(primSinFloat);
 PROTO_PRIM(primCosFloat);
 PROTO_PRIM(primTanFloat);
@@ -457,7 +457,7 @@ static struct primitive builtinPrimTable[] = {
   {"primDivDouble",     2, primDivDouble},
   {"primNegDouble",     1, primNegDouble},
 
-#ifdef FLOATS_SUPPORTED
+#if FLOATS_SUPPORTED
   {"primSinFloat",      1, primSinFloat},
   {"primCosFloat",      1, primCosFloat},
   {"primTanFloat",      1, primTanFloat},
@@ -1124,7 +1124,7 @@ DoubleDouble2Double(primMulDouble,x*y)  /* Double multiplication primitive  */
 Double2Double(primNegDouble,-x)         /* Double negation primitive        */
 DoubleDouble2Double(primDivDouble,x/y)  /* Double division primitive  */
 
-#ifdef FLOATS_SUPPORTED
+#if FLOATS_SUPPORTED
 Float2Float(primSinFloat,sin(x))       /* Float sin (trig) primitive       */
 Float2Float(primCosFloat,cos(x))       /* Float cos (trig) primitive       */
 Float2Float(primTanFloat,tan(x))       /* Float tan (trig) primitive       */

@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: subst.h,v $
- * $Revision: 1.8 $
- * $Date: 2003/10/14 13:56:25 $
+ * $Revision: 1.9 $
+ * $Date: 2003/11/01 17:02:50 $
  * ------------------------------------------------------------------------*/
 #ifndef __SUBST_H__
 #define __SUBST_H__
@@ -82,7 +82,7 @@ extern Type  dropRank1		Args((Type,Int,Int));
 extern Void  liftRank2Args	Args((List,Int,Int));
 extern Type  liftRank2		Args((Type,Int,Int));
 extern Type  liftRank1		Args((Type,Int,Int));
-#ifdef DEBUG_TYPES
+#if DEBUG_TYPES
 extern Type  debugTyvar		Args((Int));
 extern Type  debugType		Args((Type,Int));
 #endif
