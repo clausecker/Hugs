@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: machine.c,v $
- * $Revision: 1.5 $
- * $Date: 2001/01/31 02:52:13 $
+ * $Revision: 1.6 $
+ * $Date: 2001/02/14 00:25:26 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -18,6 +18,9 @@
 #include "errors.h"
 #include <setjmp.h>
 
+#if OBSERVATIONS
+Bool   rootOpt       = TRUE;		/* TRUE => enable root optimisation*/
+#endif
 #if DEBUG_CODE
 Bool   debugCode     = FALSE;		/* TRUE => print G-code to screen  */
 #endif
@@ -1080,15 +1083,30 @@ Bool  str; {
 	return;				/* pretty small.		   */
     }
 #endif
+#if OBSERVATIONS
+    if (!rootOpt){
+        rp = 0;
+        nr = 0;
+        while (isAp(e)){
+            build(arg(e),co);
+	    e = fun(e);
+	    nr++;
+        }
+    }
+    else {
+#endif
     nonRoots = 0;
     analyseAp(e);
     nr = nonRoots;
     rp = rootPortion;
 
     for (i=0; i<nr; ++i) {
-	build(arg(e),co);
-	e = fun(e);
+        build(arg(e),co);
+        e = fun(e);
     }
+#if OBSERVATIONS
+    }
+#endif
 
 #if TREX
     if (isExt(e))
@@ -1825,6 +1843,9 @@ StackPtr root; {
     while (isPair(errorRedex) && fst(errorRedex)==INDIRECT)
 	errorRedex = snd(errorRedex);
 
+#if OBSERVATIONS
+    obsCount=0;
+#endif
 #ifdef EMBEDDED
     longjmp(*evalError,1);
 #else
@@ -1870,6 +1891,11 @@ Int what; {
 #if GIMME_STACK_DUMPS
 	case RESET   : rootsp = (-1);
 		       break;
+#endif
+
+#if OBSERVATIONS
+	case BREAK   : obsCount = 0;
+	               break;
 #endif
     }
 }

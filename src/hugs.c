@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.33 $
- * $Date: 2001/02/10 01:20:47 $
+ * $Revision: 1.34 $
+ * $Date: 2001/02/14 00:25:26 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -890,6 +890,13 @@ struct options toggle[] = {             /* List of command line toggles    */
 #endif
           "Debug: show generated SC code",         &debugSC},
 #endif
+#if OBSERVATIONS
+    {'R',
+#if !HASKELL_98_ONLY
+          1,
+#endif
+          "Enable root optimisation",         &rootOpt},
+#endif
     {0,   
 #if !HASKELL_98_ONLY
           0,
@@ -1358,7 +1365,9 @@ static Void local evaluator() {        /* evaluate expr and print value    */
     printing      = TRUE;
 #if OBSERVATIONS
     appNum        = 0;
+    obsCount      = 0;
     clearAllBreak();
+    clearObserve();
 #endif
 #if 1 /* Arguably not Haskell 1.4 compliant */
     noechoTerminal();
@@ -1411,16 +1420,14 @@ static Void local stopAnyPrinting() {  /* terminate printing of expression,*/
 #if OBSERVATIONS
         printObserve(ALLTAGS);
         if (obsCount) {
-            Printf("Internal: observation sanity counter > 0\n");
-            Printf("Please report problem to rwatson@usq.edu.au\n");
+            ERRMSG(0) "Internal: observation sanity counter > 0\n"
+	    EEND;
         }
         if (showStats){
             Int n = countObserve();
             if (n > 0)
                 Printf("%d observations recorded\n", n);
         }
-	obsCount = 0;
-        clearObserve();
 #endif
 	FlushStdout();
 	garbageCollect();

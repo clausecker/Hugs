@@ -9,8 +9,8 @@
  * included in the distribution.
  *
  * $RCSfile: output.c,v $
- * $Revision: 1.14 $
- * $Date: 2001/02/10 01:20:47 $
+ * $Revision: 1.15 $
+ * $Date: 2001/02/14 00:25:26 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -20,7 +20,7 @@
 #include <ctype.h>
 
 #if OBSERVATIONS
-#define DEPTH_LIMIT     125
+#define DEPTH_LIMIT     150
 #else
 #define DEPTH_LIMIT     15
 #endif
@@ -65,6 +65,8 @@ static Void local putKinds	 Args((Kinds));
 #if OBSERVATIONS
 static Bool local printObsList   Args((Cell,Int,Bool));
 static Void local printArg       Args((FILE *,Cell));
+static Bool local isCharCell	 Args((Cell));
+static Bool local getCellChar    Args((Cell));
 #endif
 
 /* --------------------------------------------------------------------------
@@ -124,6 +126,7 @@ Int n; {
  * ------------------------------------------------------------------------*/
 
 static Int putDepth = 0;               /* limits depth of printing DBG     */
+static Bool inString= 0;	       /* is char string being put?        */
 
 static Void local put(d,e)             /* print expression e in context of */
 Int  d;                                /* operator of precedence d         */
@@ -142,7 +145,7 @@ Cell e; {
         Cell caf;
 
         if (!isWhnf(e)) {
-            putStr("_");
+            if (inString) putStr("..."); else putStr("_");
             putDepth--;
             return;
         }
@@ -171,6 +174,9 @@ Cell e; {
 			  break;
 
 	case NAME       : 
+#if OBSERVATIONS
+			  if (inString) break;
+#endif
 	                  putModule(name(e).mod);
 	                  unlexVar(name(e).text);
 			  break;
@@ -552,6 +558,34 @@ Cell e; {
     }
 }
 
+#if OBSERVATIONS
+static Bool local isCharCell(e)
+Cell e; {
+    while(1)
+        switch(whatIs(e)) {
+	    case CHARCELL	: return 1;
+	    case INDIRECT	: e = snd(e);
+	    			  break;
+	    case OBSERVE	: e = markedExpr(e);
+	    			  break;
+	    default		: return 0;
+	}
+}
+
+static Bool local getCellChar(e)
+Cell e; {
+    while(1)
+        switch(whatIs(e)) {
+	    case CHARCELL	: return charOf(e);
+	    case INDIRECT	: e = snd(e);
+	    			  break;
+	    case OBSERVE	: e = markedExpr(e);
+	    			  break;
+	    default		: ERRMSG(0) "error in getCellChar" EEND;
+	}
+}
+#endif
+
 static Void local putOverInfix(args,t,sy,e)
 Int    args;                           /* infix applied to >= 3 arguments  */
 Text   t;
@@ -574,13 +608,33 @@ Cell   e, f; {                          /* Left and right operands         */
     Syntax a = assocOf(sy);
     Int    p = precOf(sy);
 
-    OPEN(d>p);
-    put((a==LEFT_ASS ? p : 1+p), e);
-    putChr(' ');
-    unlexOp(t);
-    putChr(' ');
+#if OBSERVATIONS
+    Bool charString = strcmp(textToStr(t),":")==0 && isCharCell(e);
+    if (charString){
+        /* special processing for character lists 			   */
+        if (!inString) { putChr('"'); 
+	                 inString=1;
+		       }
+	putStr(unlexChar(getCellChar(e),'"'));
+    }
+    else {
+#endif
+        OPEN(d>p);
+        put((a==LEFT_ASS ? p : 1+p), e);
+        putChr(' ');
+        unlexOp(t);
+        putChr(' ');
+#if OBSERVATIONS
+    }
+#endif
     put((a==RIGHT_ASS ? p : 1+p), f);
-    CLOSE(d>p);
+#if OBSERVATIONS
+    if (inString) { putChr('"'); 
+                    inString=0;
+		  }
+    if (!charString)
+#endif
+        CLOSE(d>p);
 }
 
 static Void local putSimpleAp(e,n)      /* print application e0 e1 ... en  */

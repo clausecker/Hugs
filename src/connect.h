@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: connect.h,v $
- * $Revision: 1.17 $
- * $Date: 2001/01/31 02:52:13 $
+ * $Revision: 1.18 $
+ * $Date: 2001/02/14 00:25:26 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -432,8 +432,9 @@ extern  Void restoreInputState	Args((Void));
 #define argNum(n)       (n)%NUMARGS
 #define seqNum(n)       (n)/NUMARGS
 extern Bool   printingObservations;     /* TRUE => print observed exprs    */
+extern Bool   rootOpt;                  /* TRUE => enable root optimisation*/
 extern Int    appNum;                   /* for counting applications       */
-extern Int    obsCount;
+extern Int    obsCount;			/* sanity counter for observations */
 extern Void   breakDialogue    Args((String));
 extern Bool   isWhnf           Args((Cell));
 extern Cell   getCaf           Args((Cell));
