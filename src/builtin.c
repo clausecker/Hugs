@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: builtin.c,v $
- * $Revision: 1.11 $
- * $Date: 2001/04/02 04:05:13 $
+ * $Revision: 1.12 $
+ * $Date: 2001/04/02 04:24:13 $
  * ------------------------------------------------------------------------*/
 
 /* We include math.h before prelude.h because SunOS 4's cpp incorrectly
@@ -926,7 +926,7 @@ primFun(primCatchException) {	       /* Error catching primitive         */
             err = arg(err);
         } else {
             err = ap(HUGSOBJECT, err);
-        }
+        } 
 	updapRoot(nameLeft, err);
     }
     failOnError = fOE;
