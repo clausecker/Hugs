@@ -34,9 +34,9 @@ CFLAGS          = -MD $(VERSTR)
 OPTFLAGS	= -O2
 
 LD		= ld
-LDFLAGS    	= 
+LDFLAGS    	=
 # When debugging:
-#LDFLAGS	= -Zi
+#LDFLAGS	= -Zi -MDd
 DLL_FLAGS	= /LD
 PIC_FLAGS	= 
 LIBS		=  kernel32.lib advapi32.lib
@@ -166,6 +166,7 @@ clean		::
 		  $(RM) hugs.exe
 		  $(RM) runhugs.exe
 		  $(RM) ffihugs.exe
+		  $(RM) echodate.exe
 		  $(RM) *.o
 		  $(RM) *.O
 		  $(RM) *.obj
@@ -289,7 +290,13 @@ subst.$(OBJEXT): subst.c prelude.h config.h platform.h options.h storage.h \
   HsFFI.h connect.h errors.h output.h opts.h subst.h
 type.$(OBJEXT): type.c prelude.h config.h platform.h options.h storage.h HsFFI.h \
   connect.h errors.h output.h subst.h goal.h opts.h preds.c scc.c
-version.$(OBJEXT): version.c prelude.h config.h platform.h options.h
+version.$(OBJEXT): today version.c prelude.h config.h platform.h options.h
+
+today: echodate.exe
+	$(PWD)/echodate.exe > echodate.h
+
+echodate.exe: msc/echodate.c
+	$(CC) $(LDFLAGS) msc/echodate.c -o $@
 
 ################################################################
 # End of generated object dependencies (Don't change or delete this line)
