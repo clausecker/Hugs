@@ -20,6 +20,7 @@ module Word
 	) where
 import Bits
 import Int
+import Numeric ( readDec, showInt )
 
 -----------------------------------------------------------------------------
 -- The "official" coercion functions
