@@ -1118,7 +1118,7 @@ LRESULT CALLBACK OptionsDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
       SetDlgItemText(hDlg, ID_LASTEXPR,     (LPCSTR) repeatStr);
       SetDlgItemText(hDlg, ID_PATH,	    (LPCSTR) hugsPath);
       SetDlgItemText(hDlg, ID_EDITOR,	    (LPCSTR) hugsEdit);
-#if USE_PREPROCESSOR  && (defined(HAVE_POPEN) || defined(HAVE__POPEN))
+#if SUPPORT_PREPROCESSOR
       SetDlgItemText(hDlg, ID_PREPROCESSOR, (LPCSTR) preprocessor);
 #endif
       sprintf(Buffer, "%d", cutoff);
@@ -1208,7 +1208,7 @@ LRESULT CALLBACK OptionsDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 	  if (hugsEdit) free(hugsEdit);
 	  hugsEdit = strCopy(Buffer);
 
-#if USE_PREPROCESSOR  && (defined(HAVE_POPEN) || defined(HAVE__POPEN))
+#if SUPPORT_PREPROCESSOR
 	  GetDlgItemText(hDlg, ID_PREPROCESSOR, (LPSTR) Buffer, 1024);
 	  if (preprocessor) free(preprocessor);
 	  preprocessor = strCopy(Buffer);
