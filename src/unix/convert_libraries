@@ -227,7 +227,7 @@ hslibs() {
   cvt base Control/Concurrent/QSem.hs
   cvt base Control/Concurrent/QSemN.hs
   cvt base Control/Concurrent/SampleVar.hs
-nocvt base Control/Exception.hs		exts/Exception.hs	# Hugs special
+  cvt base Control/Exception.hs
   cvt base Control/Monad.hs
   cvt base Control/Monad/Cont.hs
   cvt base Control/Monad/Error.hs
@@ -487,7 +487,8 @@ mkdir -p $compat
 # hslibs lang DiffArray.hs		# -> Data.Array.Diff
 # hslibs lang DirectoryExts.hs
   hslibs lang Dynamic.hs
-  hslibs lang Exception.hs
+# hslibs lang Exception.hs
+  stub Exception	Hugs.Exception Control.Exception
 # hslibs lang ForeignObj.lhs		# deprecated
  libexts ForeignObj			# uses Hugs primitives
 # hslibs lang Generics.hs		# GHC-specific

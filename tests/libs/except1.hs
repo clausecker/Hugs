@@ -26,7 +26,7 @@ t1 = do
 -- Experiment to check if yielding a thread preserves the exception handler
 t2 :: IO ()
 t2 = do
-  tryAllIO (yield >> print "Foo" >> lose2 "foo")
+  try (yield >> print "Foo" >> lose2 "foo")
   print "Bar"
 
 try2 :: IO a -> IO (Either HugsException a)
@@ -37,7 +37,7 @@ lose2 x = error x
 
 test :: String -> IO () -> IO ()
 test x m = do
-  y <- tryAllIO m
+  y <- try m
 --  y <- try2 m
   either (\ _ -> putStrLn (x ++ " failed"))
          (\ _ -> putStrLn (x ++ " worked"))
