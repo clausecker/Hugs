@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.92 $
- * $Date: 2002/09/13 15:08:07 $
+ * $Revision: 1.93 $
+ * $Date: 2002/09/30 04:44:29 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -35,10 +35,10 @@
 Bool haskell98 = TRUE;			/* TRUE => Haskell 98 compatibility*/
 #endif
 
-Bool newPrelude = FALSE;  
  /* TRUE => have Prelude re-export Prelude impl module so as to 
   *         only export what Haskell 98 mandates.
   */
+Bool newLibraries = FALSE;  
 
 #if EXPLAIN_INSTANCE_RESOLUTION
 Bool showInstRes = FALSE;
@@ -56,7 +56,7 @@ static Bool printTypeUseDefaults = FALSE;
 #if !defined(HUGS_SERVER)
 static Void   local initialize        Args((Int,String []));
 #endif /* !HUGS_SERVER */
-static Void   local initializePrelude Args((Void));
+static Void   local loadPrelude       Args((Void));
 static Void   local promptForInput    Args((String));
 #if !defined(HUGS_SERVER)
 static Void   local interpreter       Args((Int,String []));
@@ -105,6 +105,7 @@ static String local optionsToStr      Args((Void));
 #endif
 static Void   local readOptions       Args((String,Bool));
 static Bool   local readOptions2      Args((String));
+static Bool   local isOption          Args((String));
 static Bool   local processOption     Args((String));
 static Void   local setHeapSize       Args((String));
 static Int    local argToInt          Args((String));
@@ -118,7 +119,7 @@ static Void   local addScriptName     Args((String,Bool));
 static Bool   local addScript         Args((String,Long));
 static Void   local forgetScriptsFrom Args((Script));
 static Void   local forgetAllScripts  Args((Void));
-static Void   local forgetAScript     Args((Script,Bool));
+static Void   local forgetAScript     Args((Script));
 static Void   local setLastEdit       Args((String,Int));
 static Void   local failed            Args((Void));
 static String local strCopy           Args((String));
@@ -172,6 +173,8 @@ static Bool   postponed[NUM_SCRIPTS];   /* Indicates postponed load        */
 static Bool   chased[NUM_SCRIPTS];      /* Added by import chasing?        */
 static Int    numScripts;               /* Number of scripts loaded        */
 static Int    namesUpto;                /* Number of script names set      */
+static Int    scriptsStable;            /* Number of (Prelude) scripts     */
+                                        /* considered stable */
 static Bool   needsImports;             /* set to TRUE if imports required */
        String scriptFile;               /* Name of current script (if any) */
 
@@ -282,33 +285,27 @@ char *argv[]; {
  * Initialization, interpret command line args and read prelude:
  * ------------------------------------------------------------------------*/
  
-static Void local initializePrelude() { 
-/* add the Prelude modules to to-be-loaded-scripts stack */
+static Void local loadPrelude() {  /* load in the Prelude module(s). */
     String prelName;
     String prelLocation;
+    Bool   listFlg;
+
     /* Figure out whether we're using the 'new' Prelude
-     * or not -- if STD_PRELUDE_IMPL is reachable via the search
-     * path, we are.
+     * or not -- if STD_PRELUDE_HUGS is reachable via the
+     * search path, we are.
      */
 
-    /* sigh, findMPathname() mutates its module/name arg*/
+    /* Sigh, findMPathname() mutates its module/name arg, so 
+     * create a (temporary and short-lived) copy of the constant
+     * string.
+     */
     prelName = strCopy(STD_PRELUDE_HUGS); 
     if ( ( prelLocation = findMPathname(NULL, prelName, hugsPath)) ) {
-      newPrelude = TRUE;
+      newLibraries = TRUE;
       scriptName[0] = strCopy(prelLocation);
-      /* Hackily add 'Prelude' onto the script stack. */
-      scriptName[1] = strCopy (findPathname(NULL,STD_PRELUDE));
-      scriptReal[1] = strCopy(RealPath(scriptName[1]));
-      chased[1]     = FALSE;
     } else {
-      newPrelude = FALSE;
+      newLibraries = FALSE;
       scriptName[0] = strCopy(findMPathname(NULL, STD_PRELUDE,hugsPath));
-      /* Using the old Prelude, so the room we tentatively 
-         made available on the script stack needs to be 
-	 taken back. */
-      scriptName[1] = 0;
-      scriptReal[1] = 0;
-      forgetAScript(1,FALSE);
     }
     free(prelName);
 
@@ -318,6 +315,27 @@ static Void local initializePrelude() {
 	fatal("Unable to load prelude");
     }
     scriptReal[0] = strCopy(RealPath(scriptName[0]));
+    chased[0] = FALSE;
+    
+    if (newLibraries) {
+      /* add the H98 Prelude module to the stack */
+      addScriptName(findMPathname(NULL, STD_PRELUDE,hugsPath), FALSE);
+    }
+
+    everybody(INSTALL);
+
+    /* Hack to temporarily turn off 'listScripts' feature. */
+    listFlg = listScripts;
+    listScripts = FALSE;
+    readScripts(0);
+    listScripts = listFlg;
+
+    /* We record the number of scripts that loading the Prelude
+     * brought about, so that when the user comes to clear the module
+     * stack (e.g., ":l<ENTER>"), only modules later than the Prelude
+     * ones are scratched.
+     */
+    scriptsStable = namesUpto;
 }
 
 #if !defined(HUGS_SERVER)
@@ -335,7 +353,7 @@ String argv[]; {
     lastEdit      = 0;
     scriptFile    = 0;
     numScripts    = 0;
-    namesUpto     = 2;
+    namesUpto     = 1;
 
 #if HUGS_FOR_WINDOWS || HAVE_WINDOWS_H
 #define DEFAULT_EDITOR "\\notepad.exe"
@@ -400,12 +418,6 @@ String argv[]; {
           readPrefsFile(f);
 	  } /* else: take default preferences */
     readOptions(hugsFlags,FALSE);
-    if (iniArgc > 0) {
-        /* load additional files found in the preferences file */
-        for (i=0; i<iniArgc; i++) {
-	    addScriptName(iniArgv[i],TRUE);
-        }
-    }
 #else
 # if HUGS_FOR_WINDOWS
     ReadGUIOptions();
@@ -421,17 +433,13 @@ String argv[]; {
 	    } else {
 		proj = argv[++i];
 	    }
-	} else if (argv[i] && argv[i][0]/* workaround for /bin/sh silliness*/
-		 && !processOption(argv[i])) {
-	    addScriptName(argv[i],TRUE);
-#if HUGS_FOR_WINDOWS
-	    SetWorkingDir(argv[i]);
-#endif
+	} else if ( argv[i] && argv[i][0] ) {
+	    /* Willfully ignore the bool returned by processOption();
+	     * non-options (i.e., scripts) will be handled later on.
+	     */
+	    processOption(argv[i]);
 	}
     }
-
-    /* Set up the Prelude modules */
-    initializePrelude();
 
 #if !HASKELL_98_ONLY
     if (haskell98) {
@@ -441,7 +449,27 @@ String argv[]; {
     }
 #endif
 
-    everybody(INSTALL);
+    /* Figure out what Prelude module we're using + hoist it in. */
+    loadPrelude();
+    
+    /* Add the scripts given on the command-line. */
+#if USE_PREFERENCES_FILE
+    if (iniArgc > 0) {
+        /* load additional files found in the preferences file */
+        for (i=0; i<iniArgc; i++) {
+	    addScriptName(iniArgv[i],TRUE);
+        }
+    }
+#endif
+    for (i=1; i<argc; ++i) {
+      if (argv[i] && argv[i][0] && !isOption(argv[i])) {
+	    addScriptName(argv[i],TRUE);
+#if HUGS_FOR_WINDOWS
+	    SetWorkingDir(argv[i]);
+#endif
+      }
+    }
+
     evalModule = findText("");      /* evaluate wrt last module by default */
     if (proj) {
 	if (namesUpto>1) {
@@ -758,6 +786,11 @@ Bool   freeUp; {
     if (options && freeUp) {
 	free(options);
     }
+}
+
+static Bool local isOption(s)
+String s; {                     /* return TRUE if 's' looks like an option */
+  return ( s && (s[0] == '-' || s[0] == '+') );
 }
 
 static Bool local processOption(s)      /* process string s for options,   */
@@ -1328,7 +1361,7 @@ Long   len; {                           /* length of script file   */
     needsImports = FALSE;
     if (!parseScript(fname,len)) {   /* process script file */
 	/* file or parse error, drop the script */ 
-	forgetAScript(numScripts,TRUE);
+	forgetAScript(numScripts);
 	errFail();
     }
     if (needsImports) return FALSE;
@@ -1404,7 +1437,7 @@ Script scno; {
     for (i=scno; i<namesUpto; ++i)
 	if (scriptName[i])
 	    free(scriptName[i]);
-    dropScriptsFrom(scno-1); /* don't count prelude as script  */
+    dropScriptsFrom(scno); /* don't count prelude as script  */
     namesUpto = scno;
     if (numScripts>namesUpto)
 	numScripts = scno;
@@ -1414,12 +1447,11 @@ static Void local forgetAllScripts() {
   /* Drop all but the stable scripts; i.e., the
    * Prelude and (possibly) it's implementation module(s).
    */
-  forgetScriptsFrom( (newPrelude && namesUpto > 1) ? 2 : 1);
+  forgetScriptsFrom( scriptsStable ); 
 }
 
-static Void local forgetAScript(scno,dropScr) /* remove a script from system */
-Script scno;
-Bool   dropScr; {
+static Void local forgetAScript(scno) /* remove a script from system */
+Script scno; {
     Script i;
     
     if (scno > namesUpto)
@@ -1437,9 +1469,7 @@ Bool   dropScr; {
         postponed[i-1]  = postponed[i];
         chased[i-1]     = chased[i];
     }
-    if (dropScr) {
-      dropAScript(scno);
-    }
+    dropAScript(scno);
     namesUpto--;
 }
 

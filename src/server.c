@@ -10,8 +10,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: server.c,v $
- * $Revision: 1.20 $
- * $Date: 2002/09/13 15:08:07 $
+ * $Revision: 1.21 $
+ * $Date: 2002/09/30 04:44:29 $
  * ------------------------------------------------------------------------*/
 
 #define HUGS_SERVER
@@ -26,8 +26,8 @@ static Void   setHugsAPI   Args((Void));
 static Void   startEval    Args((Void));
 static Bool   SetModule    Args((String));
 #ifndef NO_DYNAMIC_TYPES
-static Bool   linkDynamic  Args((Void));
-static Cell   getDictFor   Args((Class,Type));
+static Bool   linkDynamic     Args((Void));
+static Cell   getTypeableDict Args((Type));
 #endif
 
 /* --------------------------------------------------------------------------
@@ -204,7 +204,7 @@ String argv[]; {
       setLastEdit((String)0,0);
       scriptFile    = 0;		/* Name of current script (if any) */
       numScripts    = 0;		/* Number of scripts loaded	   */
-      namesUpto     = 2;		/* Number of script names set	   */
+      namesUpto     = 1;		/* Number of script names set	   */
       hugsPath      = strCopy(HUGSPATH);
       hugsSuffixes  = strCopy(HUGSSUFFIXES);
 #if HSCRIPT
@@ -227,8 +227,7 @@ String argv[]; {
 	  }
 	}
       }
-      initializePrelude();
-      everybody(INSTALL);
+      loadPrelude();
 
 #ifndef NO_DYNAMIC_TYPES
       addScriptName("HugsDynamic",TRUE);
@@ -408,7 +407,7 @@ String e; {
 	defaultDefns = evalDefaults;
 	type         = typeCheckExp(TRUE);
 #ifndef NO_DYNAMIC_TYPES
-	d = getDictFor(classTypeable,type);
+	d = getTypeableDict(type);
 	if (isNull(d)) {
 	    setError("compileExpr: can't create Typeable instance");
 	    return 0;
@@ -456,7 +455,7 @@ String m,v;
 	    return;
 	}
 #ifndef NO_DYNAMIC_TYPES
-	d = getDictFor(classTypeable,name(n).type);
+	d = getTypeableDict(name(n).type);
 	if (isNull(d)) {
 	    setError("lookupName: can't create Typeable instance");
 	    return;
@@ -472,7 +471,7 @@ static Void MkInt(i)              /* Push an Int onto the stack      */
 Int i;
 {
 #ifndef NO_DYNAMIC_TYPES
-    Cell d = getDictFor(classTypeable,typeInt);
+    Cell d = getTypeableDict(typeInt);
     protect(push(ap(ap(nameToDynamic,d),mkInt(i))));
 #else
     protect(push(mkInt(i)));
@@ -483,7 +482,7 @@ static Void MkAddr(a)              /* Push an Addr onto the stack      */
 void* a;
 {
 #ifndef NO_DYNAMIC_TYPES
-    Cell d = getDictFor(classTypeable, typeAddr);
+    Cell d = getTypeableDict(typeAddr);
     protect(push(ap(ap(nameToDynamic,d),mkPtr(a))));
 #else
     protect(push(mkPtr(a)));
@@ -505,7 +504,7 @@ String s;
 	}
 #ifndef NO_DYNAMIC_TYPES
 	r = pop();
-	d = getDictFor(classTypeable, typeString);
+	d = getTypeableDict(typeString);
 	push(ap(ap(nameToDynamic,d),r));
 #endif
     END_PROTECT
@@ -591,7 +590,7 @@ static Int EvalInt()            /* Evaluate a cell (:: Int)         */
     BEGIN_PROTECT
 	startEval();
 #ifndef NO_DYNAMIC_TYPES
-        d = getDictFor(classTypeable, typeInt);
+        d = getTypeableDict(typeInt);
 	safeEval(ap(ap(nameFromDynamic,d),pop()));
 #else
 	safeEval(pop());
@@ -608,7 +607,7 @@ static void* EvalAddr()          /* Evaluate a cell (:: Addr)         */
     BEGIN_PROTECT
 	startEval();
 #ifndef NO_DYNAMIC_TYPES
-        d = getDictFor(classTypeable, typeAddr);
+        d = getTypeableDict(typeAddr);
 	safeEval(ap(ap(nameFromDynamic,d),pop()));
 #else
 	safeEval(pop());
@@ -632,7 +631,7 @@ static String EvalString()      /* Evaluate a cell (:: String)      */
 
 	/* Evaluate spine of list onto stack */
 #ifndef NO_DYNAMIC_TYPES
-        d = getDictFor(classTypeable, typeString);
+        d = getTypeableDict(typeString);
 	ok = tryEval(ap(ap(nameFromDynamic,d),pop()));
 #else
 	ok = tryEval(pop());
@@ -686,7 +685,7 @@ static Int DoIO()        /* Evaluate a cell (:: IO ()) return exit status */
 	StackPtr oldsp = sp;
 	startEval();
 #ifndef NO_DYNAMIC_TYPES
-	ok = safeEval(ap(nameIORun,ap(nameRunDyn,pop())));
+	ok = safeEval(ap(nameIORun,ap(nameRunDyn, pop())));
 #else
 	ok = safeEval(ap(nameIORun,pop()));
 #endif
@@ -835,9 +834,9 @@ HVal   hval;
  * Testing for class membership:
  * ------------------------------------------------------------------------*/
 
-static Cell getDictFor(c,t) /* Find a dictionary for instance t of c, or   */
-Class c;                    /* NIL if none found                           */
-Type  t; {
+static Cell getTypeableDict(t) /* Find a Typeable dictionary for instance t, */
+Type  t; {                     /* or NIL if none found                       */
+    Class c = classTypeable;
     Kinds ks = NIL;
     if (isPolyType(t)) {
 	ks = polySigOf(t);

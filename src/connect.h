@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: connect.h,v $
- * $Revision: 1.46 $
- * $Date: 2002/09/13 15:08:05 $
+ * $Revision: 1.47 $
+ * $Date: 2002/09/30 04:44:29 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -18,7 +18,7 @@
 extern Bool   haskell98;		/* TRUE => Haskell 98 compatibility*/
 extern Module modulePrelude;
 extern Module moduleUserPrelude;
-extern Bool   newPrelude;
+extern Bool   newLibraries;
 
 /* --------------------------------------------------------------------------
  * Primitive constructor functions 

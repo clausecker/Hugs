@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: input.c,v $
- * $Revision: 1.51 $
- * $Date: 2002/09/09 14:45:02 $
+ * $Revision: 1.52 $
+ * $Date: 2002/09/30 04:44:29 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1945,7 +1945,7 @@ Int what; {
 		       textDot	      = findText(".");
 		       textImplies    = findText("=>");
 		       textPrelude    = 
-		          findText( ( newPrelude ? STD_PRELUDE_HUGS : STD_PRELUDE ) );
+		          findText( ( newLibraries ? STD_PRELUDE_HUGS : STD_PRELUDE ) );
 		       textUserPrelude= findText(STD_PRELUDE);
 		       textNum        = findText("Num");
 		       textModule     = findText("module");

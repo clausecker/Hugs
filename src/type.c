@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: type.c,v $
- * $Revision: 1.52 $
- * $Date: 2002/09/08 06:14:43 $
+ * $Revision: 1.53 $
+ * $Date: 2002/09/30 04:44:30 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -110,7 +110,7 @@ Name nameStrict,  nameSeq;		/* Members of class Eval	   */
 
 #if    IO_MONAD
 Type   typeIO;			        /* For the IO monad, IO 	   */
-Type   typeProgIO;			/* For the IO monad, IO ()	   */
+Type   typeProgIO;			/* For the IO monad, IO a	   */
 
 Name   nameIOError, nameUserErr;	/* loosely coupled IOError cfuns   */
 Name   namePermDenied;
@@ -3100,7 +3100,7 @@ Int what; {
 		       dummyVar     = inventVar();
 
 		       modulePrelude = newModule(textPrelude);
-		       moduleUserPrelude = ( newPrelude ? 0 : modulePrelude);
+		       moduleUserPrelude = ( newLibraries ? 0 : modulePrelude);
 		       setCurrModule(modulePrelude);
 
 		       starToStar   = simpleKind(1);
