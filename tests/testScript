@@ -68,9 +68,9 @@ test_static() {
   perl runstdtest $HUGS $STDOPTS "-Ostatic/mod39.hs"  "-o1static/mod39.output"
 
   perl runstdtest $HUGS $STDOPTS "-Ostatic/mod40.hs"  "-o1static/mod40.output"
-  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod41.hs"  "-o1static/mod41.output"
-  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod42.hs"  "-o1static/mod42.output"
-  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod43.hs"  "-o1static/mod43.output"
+  perl runstdtest $HUGS +98 $STDOPTS "-Ostatic/mod41.hs"  "-o1static/mod41.output"
+  perl runstdtest $HUGS +98 $STDOPTS "-Ostatic/mod42.hs"  "-o1static/mod42.output"
+  perl runstdtest $HUGS +98 $STDOPTS "-Ostatic/mod43.hs"  "-o1static/mod43.output"
   perl runstdtest $HUGS $STDOPTS "-Ostatic/mod44.hs"  "-o1static/mod44.output"
   perl runstdtest $HUGS $STDOPTS "-Ostatic/mod45.hs"  "-o1static/mod45.output"
   perl runstdtest $HUGS $STDOPTS "-Ostatic/mod46.hs"  "-o1static/mod46.output"
