@@ -19,8 +19,8 @@
  * included in the distribution.
  *
  * $RCSfile: iomonad.c,v $
- * $Revision: 1.22 $
- * $Date: 2002/02/23 15:27:05 $
+ * $Revision: 1.23 $
+ * $Date: 2002/03/01 20:34:08 $
  * ------------------------------------------------------------------------*/
  
 Name nameIORun;			        /* run IO code                     */
@@ -1368,7 +1368,6 @@ Bool     append; 		 /* an output file	    */
 Bool     binary;
 String   loc; {
     String s    = evalName(IOArg(2));		/* Eval and check filename */
-    Cell hnd    = 0;
     FILE* wfp;
 
     if (!s) {

@@ -9,8 +9,8 @@
  * included in the distribution.
  *
  * $RCSfile: subst.c,v $
- * $Revision: 1.20 $
- * $Date: 2001/12/20 20:38:51 $
+ * $Revision: 1.21 $
+ * $Date: 2002/03/01 20:34:10 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1588,9 +1588,9 @@ Int above; {
     Bool improved = FALSE;
     List xfds     = cclass(c).xfds;
     for (; nonNull(xfds); xfds=tl(xfds)) {
-	Cell xfd = hd(xfds);
-	Cell hs  = fst(xfd);
-	Int alpha;
+	Cell xfd  = hd(xfds);
+	Cell hs   = fst(xfd);
+	Int alpha = (-1);
 	for (; nonNull(hs); hs=tl(hs)) {
 	    Cell h  = hd(hs);
 	    Class d = getHead(h);

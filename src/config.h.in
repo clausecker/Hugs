@@ -380,9 +380,6 @@
 /* Define if you have the <windows.h> header file.  */
 #undef HAVE_WINDOWS_H
 
-/* Define if you have the editline library (-leditline).  */
-#undef HAVE_LIBEDITLINE
-
 /* Define if you have the dl library (-ldl).  */
 #undef HAVE_LIBDL
 

@@ -12,8 +12,8 @@
  * included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.38 $
- * $Date: 2002/01/22 19:04:52 $
+ * $Revision: 1.39 $
+ * $Date: 2002/03/01 20:34:09 $
  * ------------------------------------------------------------------------*/
 #include <math.h>
 
@@ -1447,7 +1447,6 @@ Bool   useShell; {
 # if HAVE_MACSYSTEM
     return macsystem(cmd);
 # else
-    Int rc;
 #  if HAVE_BIN_SH
     if (cmd[0]=='\0') {
 	cmd = fromEnv("SHELL","/bin/sh");

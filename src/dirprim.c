@@ -428,11 +428,11 @@ primFun(primSetPermissions) { /* FilePath -> Bool -> Bool -> Bool -> Bool -> IO 
 #undef SET_CHMOD_FLAG
 
 primFun(primGetDirContents) { /* FilePath -> IO [FilePath] */
-  int rc;
 #ifdef _MSC_VER
   /* The MS CRT doesn't provide opendir()/readdir(), but uses
      the 'std' MS find first/next/close group of functions for
      iterating over the contents of a directory. */
+  int rc;
   long dirHandle;
   struct _finddata_t fData;
   char buffer[FILENAME_MAX+20];
@@ -521,7 +521,7 @@ primFun(primGetDirContents) { /* FilePath -> IO [FilePath] */
      'forgot' to reset 'errno', do it ourselves. */
   errno = 0;
 
-  while (pDir = readdir(dir)) {
+  while ( (pDir = readdir(dir)) ) {
     pushString(pDir->d_name);
     ls = ap2(nameCons, pop(), ls);
   }

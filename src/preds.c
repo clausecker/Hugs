@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: preds.c,v $
- * $Revision: 1.29 $
- * $Date: 2001/12/31 23:09:35 $
+ * $Revision: 1.30 $
+ * $Date: 2002/03/01 20:34:09 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -52,7 +52,9 @@ static Void   local normPreds	      Args((Int));
 static Bool   local resolveDefs	      Args((List));
 static Bool   local resolveVar	      Args((Int));
 static Class  local classConstraining Args((Int,Cell,Int));
+#if MULTI_INST
 static Bool   local instComp_         Args((Inst,Inst));
+#endif
 
 /* --------------------------------------------------------------------------
  * Predicate assignments:

@@ -9,8 +9,8 @@
  * included in the distribution.
  *
  * $RCSfile: output.c,v $
- * $Revision: 1.24 $
- * $Date: 2001/12/13 06:05:27 $
+ * $Revision: 1.25 $
+ * $Date: 2002/03/01 20:34:09 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -459,9 +459,9 @@ Cell e; {                               /* ignoring dict aps               */
 static Void local putAp(d,e)            /* print application (args>=1)     */
 Int  d;
 Cell e; {
-    Cell   h;
-    Text   t;
-    Syntax sy;
+    Cell   h    = NIL;
+    Text   t    = NIL;
+    Syntax sy   = NIL;
     Int    args = 0;
 
     for (h=e; isAp(h); h=fun(h))        /* find head of expression, looking*/
@@ -1513,15 +1513,17 @@ Cell header;
     Int seq, n=0;
     Cell j;
 
-    for (j=firstObs(header); j!=header; j=nextObs(j)){
+    for (j=firstObs(header); j!=header; j=nextObs(j)) {
         seq  = intOf(seqObs(j));
-        if (seq < 0)            /* non-functional value            */
+        if (seq < 0) {          /* non-functional value            */
             n++;    
-        else if (seq!=0)                /* a function observation  */
-            if (whatIs(exprObs(j)) == OBSERVEHEAD)
-                n += countObsList(exprObs(j));
-            else
-                n++;
+        } else if (seq!=0) {    /* a function observation  */
+	   if (whatIs(exprObs(j)) == OBSERVEHEAD) {
+	       n += countObsList(exprObs(j));
+           } else {
+	       n++;
+	   }
+	}
     }
     return n;
 }
@@ -1576,8 +1578,8 @@ Cell header;
 Int  indent;
 Bool funPrint; 
 {
-    Cell j, resultExp;
-    Int seq, appN, argN;
+    Cell j, resultExp = 0;
+    Int seq=0, appN, argN;
     Bool firstApp = 1;
 
     for (j=firstObs(header); j!=header; j=nextObs(j)){

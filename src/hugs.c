@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.67 $
- * $Date: 2002/02/28 03:42:45 $
+ * $Revision: 1.68 $
+ * $Date: 2002/03/01 20:34:08 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -86,7 +86,9 @@ static Void   local autoReloadFiles   Args((Void));
 static Void   local toggleSet         Args((Char,Bool));
 static Void   local togglesIn         Args((Bool));
 static Void   local optionInfo        Args((Void));
+#if HUGS_FOR_WINDOWS || defined(HUGS_SERVER)
 static String local optionsToStr      Args((Void));
+#endif
 static Void   local readOptions       Args((String,Bool));
 static Bool   local readOptions2      Args((String));
 static Bool   local processOption     Args((String));
@@ -177,7 +179,7 @@ static Bool disableOutput = FALSE;      /* redirect output to buffer?      */
  * Hugs entry point:
  * ------------------------------------------------------------------------*/
 
-#ifndef NO_MAIN /* we omit main when building the "Hugs server" */
+#ifndef HUGS_SERVER /* we omit main when building the "Hugs server" */
  
 Main main Args((Int, String []));       /* now every func has a prototype  */
 
@@ -240,7 +242,7 @@ char *argv[]; {
     MainDone();
 }
 
-#endif
+#endif /* HUGS_SERVER */
 
 /* --------------------------------------------------------------------------
  * Initialization, interpret command line args and read prelude:
@@ -528,6 +530,8 @@ static Void local optionInfo() {        /* Print information about command */
     Putchar('\n');
 }
 
+#if HUGS_FOR_WINDOWS || defined(HUGS_SERVER)
+
 #define PUTC(c)                         \
     if (charsLeft > 1) {                \
       *next++=(c);charsLeft--;          \
@@ -615,6 +619,9 @@ static String local optionsToStr() {          /* convert options to string */
 #undef PUTS
 #undef PUTInt
 #undef PUTStr
+
+#endif /* defined(HUGS_FOR_WINDOWS) || defined(HUGS_SERVER) */
+
 
 static Bool local readOptions2(options)         /* read options from string */
 String options; {
@@ -1816,7 +1823,6 @@ static Void local info() {              /* describe objects                */
     for (; (s=readFilename())!=0; count++) {
          String mod=NULL;
 	 String nm=NULL;
-	 Text t = NIL;
 	 
 	 /* In the event of a qualified name, decompose it. */
 	 splitQualString(s, &mod,&nm);

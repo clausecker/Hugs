@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: runhugs.c,v $
- * $Revision: 1.7 $
- * $Date: 2002/01/24 07:37:54 $
+ * $Revision: 1.8 $
+ * $Date: 2002/03/01 20:34:09 $
  * ------------------------------------------------------------------------*/
 
 #include <stdio.h>
@@ -17,6 +17,10 @@
 #include "config.h"
 #include "options.h"
 #include "server.h"
+
+/* In case the server API couldn't
+   be initialised, look at 'lastError'. */
+extern char* lastError;
 
 #if defined(_MSC_VER) && !defined(_MANAGED)
 #include <windows.h>
@@ -48,7 +52,7 @@ int    argc;
 char* argv[]; {
     hugs = initHugsServer(argc,argv);
     if (NULL == hugs) {
-	fprintf(stderr,"runhugs: Unable to initialise Hugs\n");
+	fprintf(stderr,"runhugs: Unable to initialise Hugs (%s)\n", lastError);
 	fflush(stderr);
 	exit(1);
     }

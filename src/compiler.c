@@ -10,8 +10,8 @@
  * included in the distribution.
  *
  * $RCSfile: compiler.c,v $
- * $Revision: 1.7 $
- * $Date: 2001/05/30 03:15:37 $
+ * $Revision: 1.8 $
+ * $Date: 2002/03/01 20:34:07 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -21,7 +21,9 @@
 
 Addr inputCode;                        /* Addr of compiled code for expr   */
 static Name currentName;               /* Top level name being processed   */
+#if DEBUG_SHOWSC
 static FILE *scfp;		       /* super combinator file pointer    */
+#endif
 
 /* --------------------------------------------------------------------------
  * Local function prototypes:
@@ -1128,7 +1130,7 @@ Text t; {
 
     for (xs=sc; nonNull(xs); xs=tl(xs)) {
 	Cell x = hd(xs);
-	if (t==textOf(fst(x)))
+	if (t==textOf(fst(x))) {
 	    if (isOffset(snd(x))) {                  /* local variable ... */
 		if (snd(x)<=freeBegin && !cellIsMember(snd(x),freeVars))
 		    freeVars = cons(snd(x),freeVars);
@@ -1139,6 +1141,7 @@ Text t; {
 		    freeFuns = cons(snd(x),freeFuns);
 		return fst3(snd(x));
 	    }
+	}
     }
 
     if (isNull(n=findName(t)))         /* Lookup global name - the only way*/
