@@ -1,6 +1,5 @@
 ROOT := ${subst /src/unix,,${shell pwd}}
 OPTS =  \
-	--with-readline \
 #	--disable-large-banner
 GNULIBS = 
 
