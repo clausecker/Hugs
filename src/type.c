@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: type.c,v $
- * $Revision: 1.16 $
- * $Date: 1999/12/21 21:45:24 $
+ * $Revision: 1.17 $
+ * $Date: 1999/12/21 21:59:32 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1944,8 +1944,11 @@ Inst in; {				/* member functions for instance in*/
     Int  beta    = newKindedVars(inst(in).kinds);
     List params  = makePredAss(inst(in).specifics,beta);
     Cell d       = inventDictVar();
+    /*
     List evids   = cons(triple(inst(in).head,mkInt(beta),d),
 			appendOnto(dupList(params),supers));
+    */
+    List evids   = dupList(params);
 
     List imps    = inst(in).implements;
     Cell l	 = mkInt(inst(in).line);
