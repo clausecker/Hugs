@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: type.c,v $
- * $Revision: 1.59 $
- * $Date: 2002/12/10 00:00:37 $
+ * $Revision: 1.60 $
+ * $Date: 2002/12/10 11:07:25 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -114,8 +114,6 @@ Name   nameIOError, nameUserErr;	/* loosely coupled IOError cfuns   */
 Name   namePermDenied;
 Name   nameAlreadyExists, nameAlreadyInUse, nameDoesNotExist, nameIsFull;
 Name   nameIllegal;
-Name   nameGetErrorString;
-Name   nameGetFilename;
 #endif
 #if    IO_HANDLES
 Name   nameWriteErr, nameEOFErr;
@@ -3335,11 +3333,6 @@ Void linkPreludeCM() {			/* Hook to cfuns and mfuns in	   */
 }
 
 Void linkPreludeFuns() {		/* Hook to cfuns and mfuns in	   */
-#ifdef IO_MONAD
-    if (isNull(nameGetErrorString)) {	/* prelude when first loaded	   */
-	nameGetErrorString = linkName("ioeGetErrorString__");
-	nameGetFilename    = linkName("ioeGetFilename__");
-    }
-#endif
+					/* prelude when first loaded	   */
 }
 /*-------------------------------------------------------------------------*/

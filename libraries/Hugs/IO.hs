@@ -72,7 +72,7 @@ module Hugs.IO (
     hugsIsWriteErr,         -- :: IOError -> Bool
     ) where
 
-import Data.Ix(Ix)
+import Hugs.Prelude
 
 data Handle
 instance Eq Handle where (==) = primEqHandle
@@ -189,7 +189,7 @@ primitive hIsOpen,
    	  hIsWritable,
 	  hIsSeekable :: Handle -> IO Bool
 
-primitive isIllegalOperation, 
+isIllegalOperation, 
 	  isAlreadyExistsError, 
 	  isDoesNotExistError, 
           isAlreadyInUseError,   
@@ -198,9 +198,24 @@ primitive isIllegalOperation,
 	  isPermissionError,
           isUserError        :: IOError -> Bool
 
-primitive ioeGetErrorString :: IOError -> String
+isIllegalOperation   ioe = ioe_kind ioe == IOError_IllegalError
+isAlreadyExistsError ioe = ioe_kind ioe == IOError_AlreadyExists
+isDoesNotExistError  ioe = ioe_kind ioe == IOError_DoesNotExist
+isAlreadyInUseError  ioe = ioe_kind ioe == IOError_AlreadyInUse
+isFullError          ioe = ioe_kind ioe == IOError_FullError
+isEOFError           ioe = ioe_kind ioe == IOError_EOF
+isPermissionError    ioe = ioe_kind ioe == IOError_PermDenied
+isUserError          ioe = ioe_kind ioe == IOError_UserError
+
+ioeGetErrorString :: IOError -> String
+ioeGetErrorString ioe
+ | isUserError ioe = ioe_description ioe
+ | otherwise       = show (ioe_kind ioe)
+
 primitive ioeGetHandle      :: IOError -> Maybe Handle
-primitive ioeGetFileName    :: IOError -> Maybe FilePath
+
+ioeGetFileName    :: IOError -> Maybe FilePath
+ioeGetFileName ioe = ioe_fileName ioe
 
 try       :: IO a -> IO (Either IOError a)
 try p      = catch (p >>= (return . Right)) (return . Left)

@@ -18,8 +18,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: iomonad.c,v $
- * $Revision: 1.35 $
- * $Date: 2002/10/31 01:44:25 $
+ * $Revision: 1.36 $
+ * $Date: 2002/12/10 11:07:25 $
  * ------------------------------------------------------------------------*/
  
 Name nameIORun;			        /* run IO code                     */
@@ -136,18 +136,7 @@ PROTO_PRIM(primReadBinaryFile);
 PROTO_PRIM(primWriteBinaryFile);
 PROTO_PRIM(primAppendBinaryFile);
 
-PROTO_PRIM(primIsIllegal);
-PROTO_PRIM(primIsEOFError);
-PROTO_PRIM(primIsAlreadyExist);
-PROTO_PRIM(primIsAlreadyInUse);
-PROTO_PRIM(primIsDoesNotExist);
-PROTO_PRIM(primIsFull);
-PROTO_PRIM(primIsUserErr);
-PROTO_PRIM(primIsPermDenied);
-
-PROTO_PRIM(primGetErrorString);
 PROTO_PRIM(primGetHandle);
-PROTO_PRIM(primGetFileName);
 #endif
 
 #if IO_REFS
@@ -213,8 +202,6 @@ static struct primitive iomonadPrimTable[] = {
   {"putChar",		3, primPutChar},
   {"putStr",		3, primPutStr},
 
-  {"isUserError",	1, primIsUserErr},
-
 #if IO_HANDLES
   {"hGetChar",		3, primHGetChar},
   {"hPutChar",		4, primHPutChar},
@@ -251,16 +238,7 @@ static struct primitive iomonadPrimTable[] = {
   {"readBinaryFile",	3, primReadBinaryFile},
   {"writeBinaryFile",	4, primWriteBinaryFile},
   {"appendBinaryFile",	4, primAppendBinaryFile},
-  {"isAlreadyExistsError", 1, primIsAlreadyExist},
-  {"isDoesNotExistError",  1, primIsDoesNotExist},
-  {"isAlreadyInUseError",  1, primIsAlreadyInUse},
-  {"isFullError",	   1, primIsFull},
-  {"isEOFError",	   1, primIsEOFError},
-  {"isIllegalOperation",   1, primIsIllegal},
-  {"isPermissionError",	   1, primIsPermDenied},
-  {"ioeGetErrorString",	   1, primGetErrorString},
   {"ioeGetHandle",	   1, primGetHandle},
-  {"ioeGetFileName",	   1, primGetFileName},
 #endif
 
 #if IO_REFS
@@ -548,62 +526,6 @@ Bool  isFile;
 #else
   return "";
 #endif
-}
-
-primFun(primIsUserErr) {		/* :: IOError -> Bool        	   */
-    eval(primArg(1));
-    eval(primArg(5));
-    checkCon();
-    BoolResult(whnfHead==nameUserErr);
-}
-
-primFun(primIsDoesNotExist) {		/* :: IOError -> Bool		   */
-    eval(primArg(1));   /* unwinds the IOError dcon, pushing the args onto the stack */
-    eval(primArg(5));   /* select the error 'kind' and evaluate it */
-    checkCon();
-    BoolResult(whnfHead==nameDoesNotExist);
-}
-
-primFun(primIsAlreadyExist) {		/* :: IOError -> Bool		   */
-    eval(primArg(1));
-    eval(primArg(5));
-    checkCon();
-    BoolResult(whnfHead== nameAlreadyExists);
-}
-
-primFun(primIsAlreadyInUse) {		/* :: IOError -> Bool		   */
-    eval(primArg(1));
-    eval(primArg(5));
-    checkCon();
-    BoolResult(whnfHead== nameAlreadyInUse);
-}
-
-primFun(primIsFull) {		/* :: IOError -> Bool		   */
-    eval(primArg(1));
-    eval(primArg(5));
-    checkCon();
-    BoolResult(whnfHead== nameIsFull);
-}
-
-primFun(primIsPermDenied) {		/* :: IOError -> Bool		   */
-    eval(primArg(1));
-    eval(primArg(5));
-    checkCon();
-    BoolResult(whnfHead==namePermDenied);
-}
-
-primFun(primIsIllegal) {		/* :: IOError -> Bool	   */
-    eval(primArg(1));
-    eval(primArg(5));
-    checkCon();
-    BoolResult(whnfHead==nameIllegal);
-}
-
-primFun(primIsEOFError) {		/* :: IOError -> Bool	   */
-    eval(primArg(1));
-    eval(primArg(5));
-    checkCon();
-    BoolResult(whnfHead==nameEOFErr);
 }
 
 /* --------------------------------------------------------------------------
@@ -1435,18 +1357,10 @@ String   loc; {
     }
 }
 
-primFun(primGetErrorString) {		/* :: IOError -> String	   */
-  updateRoot(ap(nameGetErrorString,primArg(1)));
-}
-
 primFun(primGetHandle) {		/* :: IOError -> Maybe Handle	   */
     eval(primArg(1));
     /* insert tests here */
     updateRoot(nameNothing);
-}
-
-primFun(primGetFileName) {		/* :: IOError -> Maybe FilePath	   */
-  updateRoot(ap(nameGetFilename,primArg(1)));
 }
 
 primFun(primHWaitForInput) { /* Check whether a character can be read

@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: connect.h,v $
- * $Revision: 1.55 $
- * $Date: 2002/12/10 00:00:37 $
+ * $Revision: 1.56 $
+ * $Date: 2002/12/10 11:07:24 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -99,7 +99,6 @@ extern Name   nameIOError, nameUserErr; /* primitives required for IOError */
 extern Name   namePermDenied;
 extern Name   nameAlreadyExists, nameAlreadyInUse, nameDoesNotExist, nameIsFull;
 extern Name   nameIllegal;
-extern Name   nameGetFilename, nameGetErrorString;
 #endif
 
 #if IO_HANDLES

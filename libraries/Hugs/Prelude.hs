@@ -58,6 +58,7 @@ module Hugs.Prelude (
     Ratio((:%)), (%), numerator, denominator,
 --  Non-standard exports
     IO(..), IOResult(..), primExitWith, 
+    IOError(..), IOErrorKind(..),
     FunPtr, Ptr, Addr,
     Word, StablePtr, ForeignObj, ForeignPtr,
     Int8, Int16, Int32, Int64,
@@ -1587,21 +1588,6 @@ instance Show IOErrorKind where
      IOError_FullError      -> "Resource exhausted"
      IOError_EOF            -> "End of file"
      IOError_WriteError	    -> "Write error"
-      	
-{-
-  Strange looking, but these defns are used in IO without
-  exporting them from the Prelude (the interpreter makes the
-  connection between the two under-the-hood...saves having
-  to extend Prelude's export list in non-standard ways.
--}
-ioeGetErrorString__ :: IOError -> String
-ioeGetErrorString__ ioe = 
-  case ioe_kind ioe of
-    IOError_UserError{} -> ioe_description ioe
-    x -> show x
-
-ioeGetFilename__ :: IOError -> Maybe String
-ioeGetFilename__ ioe = ioe_fileName ioe
 
 instance Show IOError where
   showsPrec p (IOError kind loc descr mbFile) = 
@@ -1625,9 +1611,6 @@ primitive ioError      "lunitIO" :: IOError -> IO a
 primitive putChar		 :: Char -> IO ()
 primitive putStr		 :: String -> IO ()
 primitive getChar   		 :: IO Char
-
--- needed locally.
-primitive isEOFError :: IOError -> Bool
 
 userError :: String -> IOError
 userError str 
@@ -1654,7 +1637,7 @@ getLine  = do
   where
    getRest = do
      c <- catch getChar
-                (\ ex -> if isEOFError ex then 
+                (\ ex -> if ioe_kind ex == IOError_EOF then 
 			    return '\n'
 			 else
 			    ioError ex)
