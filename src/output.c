@@ -9,8 +9,8 @@
  * included in the distribution.
  *
  * $RCSfile: output.c,v $
- * $Revision: 1.19 $
- * $Date: 2001/05/30 03:15:37 $
+ * $Revision: 1.20 $
+ * $Date: 2001/07/11 18:59:20 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -746,8 +746,17 @@ Text t; {
 
     putChr('\"');
     for (; *s; s++) {
-	String ch = unlexChar(*s,'\"');
+      String ch;
 	Char   c  = ' ';
+
+        if (*s == '\\')
+	  s++;
+
+        if (!*s) {
+	  ERRMSG(0) "error in unlexStrConst" EEND;
+	}
+
+	ch = unlexChar(*s,'\"');
 
 	if ((lastWasSO && *ch=='H') ||
 		(lastWasEsc && lastWasDigit && isascii(*ch) && isdigit(*ch)))
