@@ -52,7 +52,7 @@ primFun(primGetClockTime) { /* :: IO (Int,Int) */
   rc = gettimeofday(&tv,NULL);
   
   if (rc == -1)
-    throwErrno("Time.getClockTime", TRUE, NULL);
+    throwErrno("Time.getClockTime", TRUE, NO_HANDLE, NULL);
   IOReturn(ap(ap(mkTuple(2), mkInt(tv.tv_sec)),mkInt(tv.tv_usec)));
 #elif HAVE_FTIME
   struct timeb tb;
@@ -65,14 +65,14 @@ primFun(primGetClockTime) { /* :: IO (Int,Int) */
 # endif
   
   if (rc == -1)
-    throwErrno("Time.getClockTime", TRUE, NULL);
+    throwErrno("Time.getClockTime", TRUE, NO_HANDLE, NULL);
 
   IOReturn(ap(ap(mkTuple(2),mkInt(tb.time)),mkInt(tb.millitm * 1000)));
 #elif HAVE_TIME
   time_t t = time(NULL);
   
   if (t == (time_t)-1)
-    throwErrno("Time.getClockTime", TRUE, NULL);
+    throwErrno("Time.getClockTime", TRUE, NO_HANDLE, NULL);
   IOReturn(ap(ap(mkTuple(2),mkInt(t)),mkInt(0)));
 #else
   IOFail(mkIOError(NULL,
@@ -195,7 +195,7 @@ primFun(primMkTime) { /* Int{-year-}  -> Int{-month-} -> Int{-day-} ->
   t = mktime(&tm);
   
   if (t ==(time_t)-1)
-    throwErrno("Time.toClockTime", TRUE, NULL);
+    throwErrno("Time.toClockTime", TRUE, NO_HANDLE, NULL);
 
   /* mktime() assumes that the given time was local, but we might have
      been passed an UTC cal. time, so we now have to add the UTC

@@ -14,8 +14,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: iomonad.c,v $
- * $Revision: 1.90 $
- * $Date: 2004/11/14 01:05:49 $
+ * $Revision: 1.91 $
+ * $Date: 2004/11/14 11:02:39 $
  * ------------------------------------------------------------------------*/
  
 Name nameIORun;			        /* run IO code                     */
@@ -30,7 +30,7 @@ static Cell hugsProgName;		/* value of getProgName            */
 static Cell hugsArgs;			/* value of getArgs                */
 
 #if IO_HANDLES
-static Void   local throwErrno     Args((String,Bool,Cell *));
+static Void   local throwErrno     Args((String,Bool,Int,Cell *));
 static String local toIOErrorDescr Args((int,Bool));
 static Name   local toIOError      Args((int));
 static Int    local newHandle      Args((Cell *,String));
@@ -470,7 +470,7 @@ String loc; {
     if (hmode==HREADWRITE && handles[i].hfp==NULL) /* try to create it */
 	handles[i].hfp = fopen(s, binary ? "wb+" : "w+");
     if (!handles[i].hfp)
-	throwErrno(loc, TRUE, sCell);
+	throwErrno(loc, TRUE, NO_HANDLE, sCell);
 
     handles[i].hmode = hmode;
     handles[i].hbufMode = HUNKNOWN_BUFFERING;
@@ -503,7 +503,7 @@ String loc; {
 			 NULL));
     }
     if (!(handles[i].hfp=fdopen(fd,stmode)))
-	throwErrno(loc, TRUE, NULL);
+	throwErrno(loc, TRUE, NO_HANDLE, NULL);
 
     handles[i].hmode = hmode;
     handles[i].hbufMode = HANDLE_NOTBUFFERED;
@@ -531,7 +531,7 @@ static Char local hGetChar(Int h, String fname) {
     c = FGetChar(handles[h].hfp);
 #endif
     if (c==EOF && !feof(handles[h].hfp))
-	throwErrno(fname, TRUE, NULL);
+	throwErrno(fname, TRUE, h, NULL);
 #if CHAR_ENCODING
     else if (c==BAD_CHAR) {
 	IOFail(mkIOError(&handles[h].hcell,
@@ -648,9 +648,9 @@ Cell   *mbF;	/* a FilePath or NULL */
  * IO Errors (more defined for file ops)
  * ------------------------------------------------------------------------*/
 
-static Void local throwErrno(String fname, Bool isFile, Cell *mbF)
+static Void local throwErrno(String fname, Bool isFile, Int h, Cell *mbF)
 {
-    IOFail(mkIOError(NULL,
+    IOFail(mkIOError(h == NO_HANDLE ? NULL : &handles[h].hcell,
 		     toIOError(errno),
 		     fname,
 		     toIOErrorDescr(errno, isFile),
@@ -910,7 +910,7 @@ primFun(primHPutChar) {			/* print character on handle	   */
 #endif
 
     if ( retval == EOF )
-	throwErrno("IO.hPutChar", TRUE, NULL);
+	throwErrno("IO.hPutChar", TRUE, h, NULL);
     IOReturn(nameUnit);
 }
 
@@ -1220,7 +1220,7 @@ primFun(primHSeek) {	/* Seek to new file posn */
 
     checkOpen(h, "IO.hSeek");
     if (fseek(handles[h].hfp,off,sMode) != 0)
-	throwErrno("IO.hSeek", TRUE, NULL);
+	throwErrno("IO.hSeek", TRUE, h, NULL);
 
     setRWState(h, RW_NEUTRAL);
 
@@ -1305,7 +1305,7 @@ primFun(primHSetBuffering) {	/* Change a Handle's buffering */
     /* Let setvbuf() allocate the buffer for us. */
     rc = setvbuf(handles[h].hfp, NULL, ty, sz);
     if (rc != 0)
-	throwErrno("IO.hSetBuffering", TRUE, NULL);
+	throwErrno("IO.hSetBuffering", TRUE, h, NULL);
 #if HAVE_ISATTY
     if ((handles[h].hmode&(HWRITE|HAPPEND|HREADWRITE)) &&
 	isatty(fileno(handles[h].hfp)))
@@ -1500,7 +1500,7 @@ primFun(primHPutBuf) {			/* write binary data from a buffer   */
     while (size > 0) {
 	size -= (Int)fwrite(buf, 1, size, handles[h].hfp);
 	if (errno < 0)
-	    throwErrno("System.IO.hPutBuf", TRUE, NULL);
+	    throwErrno("System.IO.hPutBuf", TRUE, h, NULL);
     }
 
     IOReturn(nameUnit);
@@ -1536,7 +1536,7 @@ primFun(primHGetBuf) {			/* read binary data into a buffer   */
 
     numRead = (Int)fread(buf, 1, size, handles[h].hfp);
     if (numRead < size && ferror(handles[h].hfp))
-	throwErrno("System.IO.hGutBuf", TRUE, NULL);
+	throwErrno("System.IO.hGetBuf", TRUE, h, NULL);
     IOReturn(mkInt(numRead));
 }
 
@@ -1581,7 +1581,7 @@ String   loc; {
 
     stmode = modeString(hmode,binary);
     if  ( (wfp = fopen(s,stmode)) == NULL )
-	throwErrno("loc", TRUE, NULL);
+	throwErrno("loc", TRUE, NO_HANDLE, IOArg(2));
 
     blackHoleRoot();
     drop();
