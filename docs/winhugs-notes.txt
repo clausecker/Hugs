@@ -1,4 +1,5 @@
-
+Hugs 98 for Windows
+===================
 
 Winhugs saves its configuration in Windows registry under the key
 
@@ -18,12 +19,6 @@ The program expects the following entries inside the docs dir:
 
 You can download the corresponding files from haskell.org and hugs page.
 
-
-Enjoy
-
-Pepe Gallardo
-
-http://www.lcc.uma.es/~pepeg
-
+Please report bugs to hugs-bugs@haskell.org.
 
 
