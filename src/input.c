@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: input.c,v $
- * $Revision: 1.47 $
- * $Date: 2002/07/19 22:13:48 $
+ * $Revision: 1.48 $
+ * $Date: 2002/08/04 19:36:55 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -408,7 +408,9 @@ static Bool local fileInput(nm,len)     /* prepare to input characters from*/
 String nm;                              /* named file (specified length is */
 Long   len; {                           /* used to set target for reading) */
 #if SUPPORT_PREPROCESSOR
-    if (preprocessor) {
+    if (!readable(nm,FALSE)) { /* file not there */
+	inputStream = NULL;
+    } else if (preprocessor) {
 	Int reallen = strlen(preprocessor) + 1 + strlen(nm) + 1;
 	char *cmd = malloc(reallen+1);
 	if (cmd == NULL) {
