@@ -11,8 +11,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.117 $
- * $Date: 2004/07/22 22:40:53 $
+ * $Revision: 1.118 $
+ * $Date: 2004/10/01 10:28:44 $
  * ------------------------------------------------------------------------*/
 #include "prelude.h"
 #include "storage.h"
@@ -1768,14 +1768,10 @@ Int c1, c2; {
  * Printf-related operations:
  *-------------------------------------------------------------------------*/
 
-#if !defined(HAVE_VSNPRINTF)
-int vsnprintf(char* buffer, int count, const char* fmt, va_list ap);
-int vsnprintf(buffer, count, fmt, ap)
-char*       buffer;
-int         count;
-const char* fmt;
-va_list     ap; {
-#if defined(HAVE__VSNPRINTF)
+#if !HAVE_VSNPRINTF
+int vsnprintf(char* buffer, size_t count, const char* fmt, va_list ap);
+int vsnprintf(char* buffer, size_t count, const char* fmt, va_list ap) {
+#if HAVE__VSNPRINTF
     return _vsnprintf(buffer, count, fmt, ap);
 #else
     return 0;
@@ -1783,10 +1779,10 @@ va_list     ap; {
 }
 #endif /* HAVE_VSNPRINTF */
 
-#if !defined(HAVE_SNPRINTF) && !defined(HAVE__SNPRINTF)
-int snprintf(char* buffer, int count, const char* fmt, ...);
-int snprintf(char* buffer, int count, const char* fmt, ...) {
-#if defined(HAVE__VSNPRINTF)
+#if !HAVE_SNPRINTF && !HAVE__SNPRINTF
+int snprintf(char* buffer, size_t count, const char* fmt, ...);
+int snprintf(char* buffer, size_t count, const char* fmt, ...) {
+#if HAVE_VSNPRINTF || HAVE__VSNPRINTF
     int r;
     va_list ap;                    /* pointer into argument list           */
     va_start(ap, fmt);             /* make ap point to first arg after fmt */

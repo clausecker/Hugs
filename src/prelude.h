@@ -8,8 +8,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: prelude.h,v $
- * $Revision: 1.69 $
- * $Date: 2004/06/28 15:43:22 $
+ * $Revision: 1.70 $
+ * $Date: 2004/10/01 10:28:44 $
  * ------------------------------------------------------------------------*/
 #ifndef __PRELUDE_H__
 #define __PRELUDE_H__
@@ -363,24 +363,22 @@ extern  int     stricmp	   Args((const char *, const char*));
 #include <varargs.h>
 #endif
 
-#if !defined(HAVE_SNPRINTF)
-# if __MWERKS__ && macintosh
+#if !HAVE_SNPRINTF
+# if HAVE__SNPRINTF
+#  define snprintf _snprintf
+# elif __MWERKS__ && macintosh
 extern int snprintf  Args((char*, unsigned long, const char*, va_list));
 # else
-extern int snprintf   Args((char*, int, const char*, ...));
+extern int snprintf   Args((char*, size_t, const char*, ...));
 # endif
 #endif
 
-#if !defined(HAVE_VSNPRINTF)
+#if !HAVE_VSNPRINTF
 # if __MWERKS__ && macintosh
 extern int vsnprintf  Args((char*, unsigned long, const char*, va_list));
 # else
-extern int vsnprintf  Args((char*, int, const char*, va_list));
+extern int vsnprintf  Args((char*, size_t, const char*, va_list));
 # endif
-#endif
-
-#if !defined(HAVE_SNPRINTF) && defined(HAVE__SNPRINTF)
-#define snprintf _snprintf
 #endif
 
 /*---------------------------------------------------------------------------
