@@ -70,15 +70,19 @@ stdNext (StdGen s1 s2) = (z', StdGen s1'' s2'')
 
 stdSplit            :: StdGen -> (StdGen, StdGen)
 stdSplit std@(StdGen s1 s2)
-		     = (std, StdGen new_s1 new_s2)
-		       where
-			-- simple in the extreme..
-			new_s1 | s1 == 2147483562 = 1
-			       | otherwise	  = s1 + 1
+                     = (left, right)
+                       where
+                        -- no statistical foundation for this!
+                        left    = StdGen new_s1 t2
+                        right   = StdGen t1 new_s2
 
-			new_s2 | s2 == 1	  = 2147483398
-			       | otherwise	  = s2 - 1
+                        new_s1 | s1 == 2147483562 = 1
+                               | otherwise        = s1 + 1
 
+                        new_s2 | s2 == 1          = 2147483398
+                               | otherwise        = s2 - 1
+
+                        StdGen t1 t2 = snd (next std)
 
 -- A standard instance of RandomGen: -----------------------------------------
 
