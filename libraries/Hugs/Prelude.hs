@@ -67,6 +67,7 @@ module Hugs.Prelude (
     basicIORun, blockIO, IOFinished(..),
     threadToIOResult,
     HugsException, catchHugsException, primThrowException,
+    hugsReturn,
 
     Bool(False, True),
     Maybe(Nothing, Just),
@@ -1747,10 +1748,13 @@ instance Show HugsException where showsPrec _ x r = primShowException x ++ r
 
 catchHugsException :: IO a -> (HugsException -> IO a) -> IO a
 catchHugsException (IO m) k = IO $ \ f s ->
-  Hugs_Catch (m Hugs_Error (Hugs_Return . toObj))
+  Hugs_Catch (m Hugs_Error hugsReturn)
              (\ e -> case (k e) of { IO k' -> k' f s })
              f
              (s . fromObj)
+
+hugsReturn :: a -> IOResult
+hugsReturn x = Hugs_Return (toObj x)
 
 -- reify current thread, execute 'm <thread>' and switch to next thread
 blockIO :: ((a -> IOResult) -> IO ()) -> IO a
@@ -1773,7 +1777,7 @@ hugsIORun m =
 	primExitWith 1
 
 basicIORun :: IO a -> IOFinished a
-basicIORun (IO m) = loop [m Hugs_Error (Hugs_Return . toObj)]
+basicIORun (IO m) = loop [m Hugs_Error hugsReturn]
 
 
 threadToIOResult :: IO a -> IOResult

@@ -11,7 +11,6 @@
 -- 3) We don't support an arbitrary throw.
 --    It just isn't possible to throw an IOError from outside the
 --    IO monad.  You can throw a HugsException or you can use throwIO.
--- 4) We don't support evaluate properly.
 
 module Hugs.Exception(
         Exception(..),
@@ -33,6 +32,8 @@ module Hugs.Exception(
 	-- Throwing exceptions
 
 	throwIO,		-- :: Exception -> IO a
+
+	evaluate,		-- :: a -> IO a
 
 	-- Async exception control
 
@@ -66,6 +67,9 @@ throwIO (HugsException exn) = primThrowException exn
 catchException :: IO a -> (Exception -> IO a) -> IO a
 catchException m k = do
   (m `catchHugsException` (k . HugsException)) `Prelude.catch` (k . IOException)
+
+evaluate :: a -> IO a
+evaluate x = IO (\ f s -> x `seq` hugsReturn x)
 
 ----------------------------------------------------------------
 -- dummy implementations of block and unblock
