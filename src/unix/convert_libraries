@@ -53,7 +53,7 @@ function cvt {
 	dstdir=`dirname $dst/$2`
 	mkdir -p $dstdir
 
-	$cpp -I$src/$1/include $src/$1/$2 | cat -s >$dst/$2
+	$cpp -I. -I.. -I$src/$1/include $src/$1/$2 | cat -s >$dst/$2
  
 }
 
@@ -113,6 +113,7 @@ function nocvt {
 		s/import CTypes/import Foreign.C.Types/
 		s/import Marshal/import Foreign.Marshal./
 		s/import Exception/import Control.Exception/
+		s/import Storable/import Foreign.Storable/
 		" $hugs_src/$3 >$dst/$new_stem$old_extension
 }
 
@@ -262,10 +263,10 @@ nocvt base Control/Exception.hs		exts/Exception.hs	# Hugs special
   cvt base Debug/Trace.hs
   cvt base Foreign.hs
 # cvt base Foreign/C.hs
-# cvt base Foreign/C/Error.hs
-nocvt base Foreign/C/String.hs		exts/CString.hs	# placeholder
-nocvt base Foreign/C/Types.hs		exts/CTypes.hs	# placeholder
-dummy base Foreign/C/TypesISO.hs	Foreign.C.Types	# kludge
+  cvt base Foreign/C/Error.hs
+  cvt base Foreign/C/String.hs		
+  cvt base Foreign/C/Types.hs
+  cvt base Foreign/C/TypesISO.hs
 dummy base Foreign/ForeignPtr.hs
   cvt base Foreign/Marshal/Alloc.hs
   cvt base Foreign/Marshal/Array.hs
@@ -273,9 +274,10 @@ dummy base Foreign/ForeignPtr.hs
   cvt base Foreign/Marshal/Utils.hs
 nocvt base Foreign/Ptr.hs		exts/Ptr.hs	# not quite right
   cvt base Foreign/StablePtr.hs
-nocvt base Foreign/Storable.hs		exts/Storable.hs # placeholder
+  cvt base Foreign/Storable.lhs		
   cvt base Numeric.hs
 nocvt base Prelude.hs			Prelude.hs	# Hugs special
+nocvt base HugsStorable.hs              exts/HugsStorable.hs
 nocvt base System/CPUTime.hsc		CPUTime.hs	# Hugs primitives
   cvt base System/Cmd.hs
   cvt base System/Console/GetOpt.hs
@@ -412,9 +414,9 @@ hugslibs Addr
 # hslibs lang CError.hs			# -> Foreign.C.Error
 # hslibs lang CForeign.hs		# -> Foreign.C
 # hslibs lang CString.hs		# deprecated
-  stub CString		Foreign.C.String
-  hslibs lang CTypes.hs
-  hslibs lang CTypesISO.hs
+#  stub CString		Foreign.C.String
+#  hslibs lang CTypes.hs
+#  hslibs lang CTypesISO.hs
 # hslibs lang DiffArray.hs		# -> Data.Array.Diff
 # hslibs lang DirectoryExts.hs
   hslibs lang Dynamic.hs
@@ -449,7 +451,6 @@ hugslibs ForeignObj			# uses Hugs primitives
   hslibs lang Stable.hs
   hslibs lang StableName.hs
   hslibs lang StablePtr.hs
-  hslibs lang Storable.hs
 # hslibs lang StorableArray.hs		# -> Data.Array.Storable
 # hslibs lang SystemExts.lhs		# GHC-specific
 # hslibs lang TimeExts.lhs

@@ -66,7 +66,7 @@ install_notes	::
 		$(INSTALL_DATA) ../Credits $(hugsdir)
 
 install_ffi	:: install
-		./hugs +q -w Storable     +G +L"Storable_aux.c" < /dev/null
+		./hugs +q -w HugsStorable +G +L"Storable_aux.c" < /dev/null
 		./hugs +q -w MarshalAlloc +G  < /dev/null
 		./hugs +q -w MarshalUtils +G  < /dev/null
 
@@ -76,10 +76,13 @@ install_libraries ::
 BUILD_FFI = ./hugs -P'{Hugs}/libraries' +q +G -w
 
 install_libraries_ffi :: install_libraries
-		$(INSTALL_DATA) ../lib/exts/Storable_aux.[ch] $(hugsdir)/libraries/Foreign
-		$(BUILD_FFI) Foreign.Storable +L"Storable_aux.c" < /dev/null
+		$(INSTALL_DATA) ../lib/exts/Storable_aux.[ch] $(hugsdir)/libraries
+		$(BUILD_FFI) HugsStorable +L"Storable_aux.c" < /dev/null
 		$(BUILD_FFI) Foreign.Marshal.Alloc < /dev/null
 		$(BUILD_FFI) Foreign.Marshal.Utils < /dev/null
+		$(INSTALL_DATA) ../../libraries/base/cbits/errno.c $(hugsdir)/libraries/Foreign/C
+		$(INSTALL_DATA) ../../libraries/base/include/*.h $(hugsdir)/libraries/Foreign/C
+		$(INSTALL_DATA) ./config.h $(hugsdir)/libraries/Foreign/C
+		$(BUILD_FFI) Foreign.C.Error  +L"errno.c" < /dev/null
 		$(RM) $(hugsdir)/libraries/Foreign/*.[ch]
 		$(RM) $(hugsdir)/libraries/Foreign/Marshal/*.[ch]
-
