@@ -1829,7 +1829,7 @@ loop (Hugs_DeadThread:r)     = loop r
 loop (Hugs_ForkThread a b:r) = loop (a:b:r)
 loop (Hugs_YieldThread a:r)  = loop (r ++ [a])
 loop (Hugs_BlockThread a b:r)= loop (b a : r)
-loop _                       = undefined
+loop _                       = error "Fatal error in Hugs scheduler"
 
 hugs_catch :: IOResult -> (HugsException -> IOResult) -> (IOError -> IOResult) -> (Obj -> IOResult) -> IOResult
 hugs_catch m f1 f2 s = case primCatchException (catch' m) of
