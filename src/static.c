@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.111 $
- * $Date: 2002/10/23 15:03:03 $
+ * $Revision: 1.112 $
+ * $Date: 2002/10/23 22:19:35 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -204,6 +204,7 @@ static Void   local clearScope		Args((Void));
 static Void   local withinScope		Args((List));
 static Void   local leaveScope		Args((Void));
 static Void   local saveSyntax		Args((Cell,Cell));
+static Void   local dropNameClash	Args((Cell));
 #if IPARAM
 static Bool   local checkIBindings      Args((Int,List));
 #endif
@@ -6485,6 +6486,7 @@ static Void local leaveScope() {	/* Leave scope of last withinScope */
 	Cell b = hd(bs);
 	if (isVar(fst(b))) {		/* Variable binding		   */
 	    Cell a = fst(snd(b));
+	    dropNameClash(fst(b));
 	    if (isPair(a)) {
 		if (toplevel) {
 		    saveSyntax(fst(b),snd(a));
@@ -6496,6 +6498,7 @@ static Void local leaveScope() {	/* Leave scope of last withinScope */
 	    List as = fst(snd(b));
 	    while (nonNull(vs) && nonNull(as)) {
 		if (isPair(hd(as))) {
+		    dropNameClash(hd(vs));
 		    if (toplevel) {
 			saveSyntax(hd(vs),snd(hd(as)));
 		    }
@@ -6509,6 +6512,15 @@ static Void local leaveScope() {	/* Leave scope of last withinScope */
     bounds   = tl(bounds);
     bindings = tl(bindings);
     depends  = tl(depends);
+}
+
+static Void local dropNameClash(v)
+Cell v;
+{
+    Name n = findName(textOf(v));
+    if ( !isNull(n) && nonNull(name(n).clashes) ) {
+	name(n).clashes = tl(name(n).clashes);
+    }
 }
 
 static Void local saveSyntax(v,sy)	/* Save syntax of top-level var	   */
@@ -7564,7 +7576,7 @@ Bool check; {
 #if MUDO
 	    mdepends = cons(n,mdepends);
 #endif
-	    return (check ? checkNameAmbig(line,t,n) : n);
+	    return (n);
 	}
 
 	n = findBinding(t,hd(bindings1)); /* look for t in var bindings    */
@@ -7575,9 +7587,6 @@ Bool check; {
 #if MUDO
 	    mdepends = cons(isVar(fst(n)) ? fst(n) : e,mdepends);
 #endif
-	    if (check) {
-		checkNameAmbig(line,t, isVar(fst(n)) ? fst(n) : e);
-	    }
 	    return (isVar(fst(n)) ? fst(n) : e);
 	}
 
@@ -7590,6 +7599,7 @@ Bool check; {
 	ERRMSG(line) "Undefined variable \"%s\"", textToStr(t)
 	EEND;
     }
+    /* Check whether there's no ambiguity about which global entity */
     if (check) {
 	checkNameAmbig(line,t,n);
     }
