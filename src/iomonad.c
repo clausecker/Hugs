@@ -14,8 +14,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: iomonad.c,v $
- * $Revision: 1.92 $
- * $Date: 2004/11/14 13:53:34 $
+ * $Revision: 1.93 $
+ * $Date: 2004/11/21 00:40:29 $
  * ------------------------------------------------------------------------*/
  
 Name nameIORun;			        /* run IO code                     */
@@ -1751,9 +1751,9 @@ primFun(primMakeSP) {			/* a -> IO (StablePtr a)	   */
     HugsStablePtr sp = mkStablePtr(IOArg(1));
     if (sp == 0) {
         IOFail(mkIOError(NULL,
-			 nameIllegal,
+			 nameIsFull,
 			 "Foreign.makeStablePtr",
-		         "illegal operation",
+		         "too many StablePtrs",
 			 NULL));
     }
     IOReturn(mkInt(sp));
