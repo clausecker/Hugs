@@ -165,7 +165,7 @@ test_static() {
   perl runstdtest $HUGS $STDOPTS "-Ostatic/mod130.hs"  "-o1static/mod130.output"
   perl runstdtest $HUGS $STDOPTS "-Ostatic/mod131.hs"  "-o1static/Loaded.output"
   perl runstdtest $HUGS $STDOPTS "-Ostatic/mod132.hs"  "-o1static/mod132.output"
-
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod133.hs"  "-o1static/mod133.output" "-istatic/mod133.input"
   # Check opaque import/export of tycons
   perl runstdtest $HUGS $STDOPTS "-Ostatic/T2.hs"  "-o1static/T2.output"
   # Check transparent import of type synonyms
