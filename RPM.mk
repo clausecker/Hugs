@@ -17,8 +17,6 @@ endif
 
 PACKAGE=${NAME}-${VERSION}
 
-CVSROOT = ${shell cat CVS/Root}
-
 # Starting with Red Hat 8.0, the build functionality was removed from rpm, so
 # one has to use rpmbuild instead. SuSE didn't follow this change, so there is
 # no rpmbuild on SuSE and rpm still does the job. I like such changes...
@@ -62,29 +60,33 @@ HSC2HS=hsc2hs
 ${PACKAGE}.tar.gz:
 	-rm -rf ${TARTMP}
 	-mkdir -p ${TARTMP}
-	cd ${TARTMP}; cvs -d ${CVSROOT} export -r${TAG} hugs98
-	cd ${TARTMP}/hugs98; cvs -d ${CVSROOT} export -r${HSLIBSTAG} $(addprefix fptools/hslibs/,${HSLIBSDIRS})
-	cd ${TARTMP}/hugs98; cvs -d ${CVSROOT} export -r${LIBRARIESTAG} $(addprefix fptools/libraries/,${LIBRARIESDIRS})
-	# Unused, and the pathnames in there are too long for portable tar
+# Note: The following line will not work correctly for "make -C blah".
+	CVSROOT=`cat CVS/Root`; export CVSROOT; \
+	  cd ${TARTMP}; \
+	  cvs export -r ${TAG} hugs98; \
+	  cd hugs98; \
+	  cvs export -r ${HSLIBSTAG} `for lib in $(HSLIBSDIRS); do echo fptools/hslibs/$$lib; done`; \
+	  cvs export -r ${LIBRARIESTAG} `for lib in $(LIBRARIESDIRS); do echo fptools/libraries/$$lib; done`
+# Unused, and the pathnames in there are too long for portable tar
 	cd ${TARTMP}/hugs98; rm -rf fptools/libraries/parsec/examples
-	# preprocess these, so the package can be built without happy & ghc
-	$(FIND) ${TARTMP}/hugs98/fptools/libraries -name "*.ly" -o -name "*.y" |\
+# preprocess these, so the package can be built without happy & ghc
+	$(FIND) ${TARTMP}/hugs98/fptools/libraries -name "*.ly" -o -name "*.y" | \
 		xargs -l $(HAPPY)
-ifneq "$(USING_AN_OLDER_HSC2HS)" "YES"
-	$(FIND) ${TARTMP}/hugs98/fptools/libraries -name "*.hsc" |\
-		xargs -l $(HSC2HS) --no-compile --template=template-hsc.h
-else
-	$(FIND) ${TARTMP}/hugs98/fptools/libraries -name "*.hsc" |\
-		xargs -l $(HSC2HS) --no-compile
-	$(FIND) ${TARTMP}/hugs98/fptools/libraries -name "*_hsc_make.c" |\
-		xargs src/unix/hsc_kludge
-endif
+	if test x"$(USING_AN_OLDER_HSC2HS)" != x"YES"; then \
+	  $(FIND) ${TARTMP}/hugs98/fptools/libraries -name "*.hsc" | \
+	    xargs -l $(HSC2HS) --no-compile --template=template-hsc.h; \
+	else \
+	  $(FIND) ${TARTMP}/hugs98/fptools/libraries -name "*.hsc" | \
+	    xargs -l $(HSC2HS) --no-compile; \
+	  $(FIND) ${TARTMP}/hugs98/fptools/libraries -name "*_hsc_make.c" | \
+	    xargs src/unix/hsc_kludge; \
+	fi
 	cp ${TARTMP}/hugs98/src/version.c ${TMP}/mktar
 	cd ${TARTMP}/hugs98/src; sed ${VERSION_SUBSTS} < ${TARTMP}/version.c > ${TARTMP}/hugs98/src/version.c
-	# using `make parser.c' would be best, but by default yacc
-	# will be used, and yacc is, for some reason, incompatible
+# using `make parser.c' would be best, but by default yacc
+# will be used, and yacc is, for some reason, incompatible
 	cd ${TARTMP}/hugs98/src; bison -y parser.y; mv y.tab.c parser.c
-	# Siggy deren't like these in distros
+# Siggy deren't like these in distros
 	cd ${TARTMP}/hugs98; rm -rf tests
 	cd ${TARTMP}/hugs98; autoconf # ; autoheader
 	mv ${TARTMP}/hugs98 ${TARTMP}/${PACKAGE}
