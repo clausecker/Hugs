@@ -18,25 +18,40 @@ Mark gave up the maintainership of Hugs in January 2000.
 <para>
 Hugs 98 still aims to be a fairly lightweight, portable implementation,
 and now adheres closely to Haskell 98.
+It also supports several extensions shared with other Haskell implementations:
+<itemizedlist>
+
+<listitem>
+<para>
+Hugs supports standardized extensions (addenda) to Haskell 98,
+for interfacing to foreign languages and structuring the module space.
+</para>
+</listitem>
+
+<listitem>
+<para>
 With the appropriate options (see <xref linkend="options-language">),
 it is also possible to turn on a number of language extensions,
 most of which are also supported by the
 <ulink url="http://www.haskell.org/ghc/">Glasgow Haskell Compiler</ulink> (GHC),
 though some are specific to Hugs.
 </para>
+</listitem>
 
+<listitem>
 <para>
 Hugs comes with a large collection of libraries,
 also shared with other Haskell implementations,
 and described in <ulink url="http://www.haskell.org/ghc/docs/latest/html/libraries.html">separate documentation</ulink>.
 </para>
+</listitem>
 
-<para>
+</itemizedlist>
 Though these features make Hugs highly compatible with other implementations,
 it is primarily intended as interpreter and programming environment
 for developing Haskell programs.
-If your application involves large programs, or speed is critical,
-you may strike Hugs's limitations, and may wish to move to a Haskell compiler.
+If your application involves large programs or speed is critical,
+you may strike Hugs's limitations, and may wish to try a Haskell compiler.
 </para>
 
 <sect1 id="other">

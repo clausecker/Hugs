@@ -84,34 +84,40 @@ Legal expressions like <literal>(a+b+)</literal>) and
 <varlistentry>
 <term>Slight relaxation of polymorphic recursion</term>
 <listitem><para>
-Hugs uses a more refined dependency analysis than that specified by Haskell 98,
-and as a result accepts a slightly more general form of polymorphic recursion.
-(It could be argued that this is a bug in Haskell 98.)
-Consider the following declarations:
+Hugs's treatment of polymorphic recursion is less restrictive than Haskell 98
+when the functions involved are mutually recursive.
+Consider the following example:
 <programlisting>
-  f  :: Eq a => a -> Bool
-  f x = x==x || g True || g 'a'
-  g y = y==y || f True || f 'b'
+  data BalancedTree a = Zero a | Succ (BalancedTree (a,a))
+
+  zig :: BalancedTree a -> a
+  zig (Zero a) = a
+  zig (Succ t) = fst (zag t)
+
+  zag (Zero a) = a
+  zag (Succ t) = snd (zig t)
 </programlisting>
-In Haskell 98, the bindings of <literal>f</literal> and <literal>g</literal>
-are interdependent, and thus constitute a single binding group.
+As with many operations on non-regular (or nested) types,
+<literal>zig</literal> and <literal>zag</literal>
+need to be polymorphic in the element type.
+In Haskell 98, the bindings of the two functions are interdependent,
+and thus constitute a single binding group.
 When type inference is performed on this group,
-<literal>f</literal> may be used at different types,
+<literal>zig</literal> may be used at different types,
 because it has a user-supplied polymorphic signature.
-However, <literal>g</literal> may not, and the example is rejected,
-unless we add an explicit type signature for <literal>g</literal>.
+However, <literal>zag</literal> may not, and the example is rejected,
+unless we add an explicit type signature for <literal>zag</literal>.
+(It could be argued that this is a bug in Haskell 98.)
 </para>
 
 <para>
-In Hugs, the binding of <literal>f</literal> depends on that of
-<literal>g</literal>, but not vice versa.
-(The binding of <literal>g</literal> is considered to depend only on
-the explicit signature of <literal>f</literal>.)
-Using the user-supplied signature for <literal>f</literal>,
-the type of <literal>g</literal> is inferred as
-<literal>forall a. Ord a => a -> Bool</literal>.
-Using this type, the type of <literal>f</literal> is inferred as
-<literal>forall a. Eq a => a -> Bool</literal>, which matches its signature.
+In Hugs, the binding of <literal>zig</literal> depends on that of
+<literal>zag</literal>, but not vice versa.
+(The binding of <literal>zag</literal> is considered to depend only on
+the explicit signature of <literal>zig</literal>.)
+It is possible to infer a polymorphic type for <literal>zag</literal>,
+and from that for <literal>zig</literal>.
+This type matches the declared signature, so Hugs accepts this example.
 </para></listitem>
 </varlistentry>
 
