@@ -8,8 +8,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: prelude.h,v $
- * $Revision: 1.54 $
- * $Date: 2003/10/14 13:56:24 $
+ * $Revision: 1.55 $
+ * $Date: 2003/10/23 16:06:30 $
  * ------------------------------------------------------------------------*/
 #ifndef __PRELUDE_H__
 #define __PRELUDE_H__
@@ -784,7 +784,7 @@ typedef void*    Pointer;
 #define NUM_TYCON          Pick(60,     160,        800)
 #define NUM_NAME           Pick(1000,   2000,       16000)
 #define NUM_CLASSES        Pick(30,     240,        480)
-#define NUM_INSTS          Pick(200,    300,        1000)
+#define NUM_INSTS          Pick(200,    300,        2000)
 #define NUM_TEXT           Pick(12000,  20000,      320000)
 #define NUM_TEXTH	   Pick(1,      10,         10)
 #define NUM_TYVARS         Pick(800,    2000,       4000)
