@@ -192,11 +192,6 @@ AC_ARG_WITH(pthreads,
       better if Hugs leaves them for your debugger to catch rather than
       trapping them and "panicing".])])
 
-AC_ARG_WITH(fptools,
-  AC_HELP_STRING([--with-fptools=<dir>],
-                 [location of fptools directory to get libraries from]),
-  [FPTOOLS="$withval"], [FPTOOLS=fptools])
-
 AC_ARG_ENABLE(ffi,
   AC_HELP_STRING([--enable-ffi],
                  [include modules that use the FFI]),
@@ -209,26 +204,6 @@ AC_ARG_ENABLE(unicode-chars,
   AC_DEFINE([UNICODE_CHARS], [1],
     [Define to 1 to make the Haskell Char type range over Unicode.]),
   [enable_unicode_chars=no])
-
-# make FPTOOLS an absolute path (for MkInstal's sake)
-FPTOOLS=`cd $FPTOOLS; pwd`
-
-dnl win32: Canonicalize FPTOOLS. 
-case $host_os in
-  cygwin*|mingw*) 
-     # Check to see if cygpath exists. If so, use it.
-     cygpath -w a >/dev/null 2>&1 && FPTOOLS=`cygpath -w $FPTOOLS | sed -e 's@\\\\@/@g'`;;
-esac
-
-AC_MSG_CHECKING([for hslibs and libraries in $FPTOOLS])
-if test -d "$FPTOOLS/hslibs" && test -d "$FPTOOLS/libraries"; then
-  AC_MSG_RESULT([looks ok])
-else
-  AC_MSG_RESULT([failed])
-  AC_MSG_ERROR([The argument to --with-fptools must be a directory
-containing copies of hslibs and libraries from the Haskell CVS repository.])
-fi
-AC_SUBST([FPTOOLS])
 
 dnl--------------------------------------------------------------------
 dnl

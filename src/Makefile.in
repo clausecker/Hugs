@@ -12,7 +12,7 @@
 #
 # <default>:   	  make hugs@EXEEXT@ and runhugs@EXEEXT@
 # libraries:	  generate libraries from fptools raw sources
-#		  (located in $(FPTOOLS))
+#		  (located in ../fptools)
 # install:	  make and install programs/libraries
 # hugs@EXEEXT@:	  make minimal working system
 # runhugs@EXEEXT@: make batch-mode version of Hugs
@@ -41,8 +41,6 @@ RM		= @RM@
 CP		= @CP@
 EXEEXT		= @EXEEXT@
 OBJEXT		= @OBJEXT@
-
-FPTOOLS		= @FPTOOLS@
 
 BUILD_DIR	= ../hugsdir
 
@@ -130,7 +128,7 @@ $(LIBRARIES)	: runhugs@EXEEXT@ ffihugs@EXEEXT@ ../libraries/Hugs/*.* $(CONVERTER
 		  $(CP) $(TOOLS) $(BUILD_DIR)/tools
 		  mkdir -p $(BUILD_DIR)/libraries/Hugs
 		  $(CP) ../libraries/Hugs/*.* $(BUILD_DIR)/libraries/Hugs
-		  cd ..; src/unix/convert_libraries $(FPTOOLS) hugsdir
+		  cd ..; src/unix/convert_libraries fptools hugsdir
 
 $(INCLUDES)	: $(HEADERS)
 		  mkdir -p $(BUILD_DIR)/include
@@ -288,7 +286,7 @@ verbosecheck	: hugs@EXEEXT@ libraries
 		  cd ../tests; sh testScript
 
 LibStatus	: hugs@EXEEXT@ libraries
-		  (cd ..; src/unix/test_libraries $(FPTOOLS)) >$@
+		  (cd ..; src/unix/test_libraries fptools) >$@
 
 @MkInstall@
 
