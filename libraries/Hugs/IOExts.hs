@@ -33,6 +33,7 @@ module Hugs.IOExts
 
 import Hugs.Prelude
 import Hugs.IO( IOMode(..), Handle, openFile )
+import Hugs.IORef
 import Hugs.System ( getArgs )
 
 -----------------------------------------------------------------------------
@@ -51,10 +52,11 @@ primitive unsafePtrEq    :: a -> a -> Bool
 primitive unsafePtrToInt :: a -> Int
 
 fixIO :: (a -> IO a) -> IO a
-fixIO m = IO (\ s -> r `seq` s a)
-   where
-    r = basicIORun (m a)
-    a = valueOf r
+fixIO f = do
+	r <- newIORef (throw NonTermination)
+	x <- f (unsafePerformIO (readIORef r))
+	writeIORef r x
+	return x
 
 primitive unsafeCoerce "primUnsafeCoerce" :: a -> b
 
