@@ -8,8 +8,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: storage.h,v $
- * $Revision: 1.40 $
- * $Date: 2002/07/06 10:52:00 $
+ * $Revision: 1.41 $
+ * $Date: 2002/08/03 17:06:58 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -637,6 +637,7 @@ extern Tycon findQualTycon Args((Cell));
 extern Tycon addPrimTycon Args((Text,Kind,Int,Cell,Cell));
 
 #define isSynonym(h)	(isTycon(h) && tycon(h).what==SYNONYM)
+#define isNewtype(h)	(isTycon(h) && tycon(h).what==NEWTYPE)
 #define isQualType(t)	(isPair(t) && fst(t)==QUAL)
 #define mkPolyType(n,t)	pair(POLYTYPE,pair(n,t))
 #define isPolyType(t)	(isPair(t) && fst(t)==POLYTYPE)
