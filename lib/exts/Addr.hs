@@ -26,6 +26,8 @@ primitive addrToInt     :: Addr -> Int
 
 primitive ptrToAddr    "primUnsafeCoerce" :: Ptr a -> Addr
 primitive addrToPtr    "primUnsafeCoerce" :: Addr -> Ptr a
+primitive funPtrToAddr "primUnsafeCoerce" :: FunPtr a -> Addr
+primitive addrToFunPtr "primUnsafeCoerce" :: Addr -> FunPtr a
 
 
 -----------------------------------------------------------------------------
