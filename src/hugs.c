@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.56 $
- * $Date: 2001/12/20 20:38:49 $
+ * $Revision: 1.57 $
+ * $Date: 2002/01/08 00:30:55 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -86,9 +86,7 @@ static Void   local autoReloadFiles   Args((Void));
 static Void   local toggleSet         Args((Char,Bool));
 static Void   local togglesIn         Args((Bool));
 static Void   local optionInfo        Args((Void));
-#if USE_REGISTRY || HUGS_FOR_WINDOWS
 static String local optionsToStr      Args((Void));
-#endif
 static Void   local readOptions       Args((String,Bool));
 static Bool   local processOption     Args((String));
 static Void   local setHeapSize       Args((String));
@@ -1353,8 +1351,10 @@ static Void local runEditor() {         /* run editor on script lastEdit   */
     } else {
       fileToEdit = lastEdit;
     }
-    if (startEdit(lastLine,fileToEdit))   /* at line lastLine                */
+    if (startEdit(lastLine,fileToEdit)) { /* at line lastLine              */
+        /* reload entire module stack bar the Prelude. */
 	readScripts(1);
+    }
 }
 
 static Void local setLastEdit(fname,line)/* keep name of last file to edit */
@@ -1780,6 +1780,7 @@ static Void local info() {              /* describe objects                */
     for (; (s=readFilename())!=0; count++) {
          String mod=NULL;
 	 String nm=NULL;
+	 Text t = NIL;
 	 
 	 /* In the event of a qualified name, decompose it. */
 	 splitQualString(s, &mod,&nm);
@@ -1790,12 +1791,15 @@ static Void local info() {              /* describe objects                */
 	     setCurrModule(homeMod);
 	   } else {
 	     Printf("Unknown module `%s'\n",mod);
+	     /* With the module unknown, don't check the name. */
+	     goto cleanup;
 	   }
 	 }
 	 describe(findText(nm));
 
-	 if (!mod) { free(mod); mod = NULL; }
-	 if (!nm)  { free(nm);  nm  = NULL; }
+cleanup:
+	 if (mod) { free(mod); mod = NULL; }
+	 if (nm)  { free(nm);  nm  = NULL; }
     }
     if (count == 0) {
 	whatScripts();
