@@ -2,10 +2,10 @@
 # somewhat redhat specific (and rpm version 3 specific - i.e. RedHat 6.0
 # or greater).
 
-NAME=$(shell egrep ^Name: hugs98.spec  | colrm 1 14)
-VERSION=$(shell egrep ^Version: hugs98.spec  | colrm 1 14)
+NAME=$(shell egrep '^%define name' hugs98.spec | colrm 1 19)
+VERSION=$(shell egrep '^%define version' hugs98.spec | colrm 1 19)
 RELEASE=${NAME}-${VERSION}
-PATCHLEVEL=$(shell egrep ^Release: hugs98.spec  | colrm 1 14)
+PATCHLEVEL=$(shell egrep '^%define release' hugs98.spec | colrm 1 19)
 
 # TAG=Dec2001
 # HSLIBSTAG=hugs-Dec2001

@@ -1,26 +1,27 @@
+%define name       hugs98
 %define version    Apr2002
-%define patchlevel 1
-%define prefix     /usr
+%define release    1
 
 Vendor:       Galois Connections, Portland, Oregon.
-Name:         hugs98
+Name:         %{name}
 Version:      %{version}
+Release:      %{release}
 License:      BSDish
-Release:      %{patchlevel}
 Group:        Development/Languages/Haskell
 Packager:     jeff@galois.com
 URL:          http://www.haskell.org/hugs
-Source:       http://cvs.haskell.org/Hugs/downloads/hugs98-%{version}.tar.gz
+Source0:      %{name}-%{version}.tar.gz
+BuildRoot:    %{_tmppath}/%{name}-buildroot
+Prefix:       %{_prefix}
 Provides:     haskell
 Requires:     readline
-BuildRoot:    /tmp/hugs98
-Summary:      A Haskell Interpreter
 
+Summary:      A Haskell Interpreter
 %description
 Hugs 98 is an interpreter for Haskell, a lazy functional programming language.
 
 %prep
-%setup -n hugs98
+%setup -n %{name}-%{version}
 
 %build
 cd src/unix
@@ -34,19 +35,20 @@ make prefix=$RPM_BUILD_ROOT%{prefix} install
 gzip -f -9 $RPM_BUILD_ROOT%{prefix}/man/man1/hugs.1
 
 %files
-%attr(-, root, root) %doc License
-%attr(-, root, root) %doc Readme
-%attr(-, root, root) %doc Credits
-%attr(-, root, root) %doc docs/server.html
-%attr(-, root, root) %doc docs/observe-notes.txt
-%attr(-, root, root) %doc docs/mdo-notes.txt
-%attr(-, root, root) %doc docs/ffi-notes.txt
-%attr(-, root, root) %doc docs/zipcomp-notes.txt
-%attr(-, root, root) %doc docs/winhugs-notes.txt
-%attr(-, root, root) %doc docs/machugs-notes.txt
-%attr(-, root, root) %{prefix}/man/man1/hugs.1.gz
-%attr(-, root, root) %{prefix}/bin/hugs
-%attr(-, root, root) %{prefix}/bin/runhugs
-%attr(-, root, root) %{prefix}/share/hugs/demos
-%attr(-, root, root) %{prefix}/share/hugs/lib
-%attr(-, root, root) %{prefix}/share/hugs/include
+%defattr(-,root,root)
+%doc License
+%doc Readme
+%doc Credits
+%doc docs/server.html
+%doc docs/observe-notes.txt
+%doc docs/mdo-notes.txt
+%doc docs/ffi-notes.txt
+%doc docs/zipcomp-notes.txt
+%doc docs/winhugs-notes.txt
+%doc docs/machugs-notes.txt
+%{prefix}/man/man1/hugs.1.gz
+%{prefix}/bin/hugs
+%{prefix}/bin/runhugs
+%{prefix}/share/hugs/demos
+%{prefix}/share/hugs/lib
+%{prefix}/share/hugs/include
