@@ -118,8 +118,11 @@ cd `pwd`
 chmod 755 BuildFFI
 
 packages='base haskell98 haskell-src network parsec QuickCheck unix'
-test -d $1/libraries/OpenGL && packages="$packages OpenGL"
-test -d $1/libraries/GLUT   && packages="$packages GLUT"
+
+# crude check whether HOpenGL was enabled in configure
+if grep '^#define HTYPE_GLBOOLEAN ' ../config.h >/dev/null
+then	packages="$packages OpenGL GLUT"
+fi
 
 # if grep '^#define X_DISPLAY_MISSING' ../config.h >/dev/null
 # then	:
@@ -128,7 +131,7 @@ test -d $1/libraries/GLUT   && packages="$packages GLUT"
 
 for package in $packages
 do
-	sh hugs-package -o BuildFFI $1/libraries/$package
+	sh hugs-package -o BuildFFI $src/$package
 done
 
 # Compatibility with lib/exts:
