@@ -11,8 +11,8 @@
  * included in the distribution.
  *
  * $RCSfile: stmonad.c,v $
- * $Revision: 1.4 $
- * $Date: 2001/12/13 07:28:02 $
+ * $Revision: 1.5 $
+ * $Date: 2002/01/04 11:00:01 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -81,11 +81,13 @@ primFun(primSTtoIO) {			/* Embed state transformer in IO   */
 #endif
 
 primFun(primSTFix) {			/* ST monad encapsulate		   */
-    Cell r = ap(primArg(2),NIL);        /*  :: (a -> ST s a) -> ST s a	   */
-    push(ap(r,primArg(1)));
-    snd(r) = ap(nameFst,top());
-    push(r);
-    updateRoot(top());
+  Cell r = ap(primArg(2),NIL);          /*  :: (a -> ST s a) -> ST s a	   */
+  Cell s = 0;
+  push(r);
+  s = ap(top(),primArg(1));
+  push(s);
+  snd(pushed(1)) = ap(nameFst,top());
+  updateRoot(top());
 }
 
 primFun(primSTReturn) {		        /* ST monad return		   */
