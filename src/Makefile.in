@@ -74,7 +74,7 @@ OBJECTS		= builtin@OBJ@ compiler@OBJ@ errors@OBJ@ evaluator@OBJ@ \
 IOBJECTS	= hugs@OBJ@ server@OBJ@ observe@OBJ@ $(OBJECTS)
 PRELUDE		= config.h options.h prelude.h script.h
 
-HEADERS		= ../include/GreenCard.h HsFFI.h
+HEADERS		= HsFFI.h
 
 ################################################################
 # Hugs interpreter and standalone evaluator

@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: storage.c,v $
- * $Revision: 1.68 $
- * $Date: 2003/03/13 04:10:36 $
+ * $Revision: 1.69 $
+ * $Date: 2003/03/14 11:59:37 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -3371,82 +3371,6 @@ Int i; {
 
 #undef SPT
 #endif /* GC_STABLEPTRS */
-
-/* --------------------------------------------------------------------------
- * plugin support
- * ------------------------------------------------------------------------*/
-
-/*---------------------------------------------------------------------------
- * GreenCard entry points
- *
- * GreenCard generated code accesses Hugs data structures and functions 
- * (only) via these functions (which are stored in the virtual function
- * table hugsAPI1.
- *-------------------------------------------------------------------------*/
-
-static Cell  makeTuple      Args((Int));
-static Cell  makeInt        Args((Int));
-static Cell  makeChar       Args((Char));
-static Char  CharOf         Args((Cell));
-static Cell  makeFloat      Args((FloatPro));
-static Void* derefMallocPtr Args((Cell));
-static Cell* Fst            Args((Cell));
-static Cell* Snd            Args((Cell));
-
-static Cell  makeTuple(n)      Int      n; { return mkTuple(n); }
-static Cell  makeInt(n)        Int      n; { return mkInt(n); }
-static Cell  makeChar(n)       Char     n; { return mkChar(n); }
-static Char  CharOf(n)         Cell     n; { return charOf(n); }
-static Cell  makeFloat(n)      FloatPro n; { return mkFloat(n); }
-static Void* derefMallocPtr(n) Cell     n; { return derefMP(n); }
-static Cell* Fst(n)            Cell     n; { return (Cell*)&fst(n); }
-static Cell* Snd(n)            Cell     n; { return (Cell*)&snd(n); }
-
-HugsAPI1* hugsAPI1() {
-    static HugsAPI1 api;
-    static Bool initialised = FALSE;
-    if (!initialised) {
-	api.nameTrue        = nameTrue;
-	api.nameFalse       = nameFalse;
-	api.nameNil         = nameNil;
-	api.nameCons        = nameCons;
-	api.nameJust        = nameJust;
-	api.nameNothing     = nameNothing;
-	api.nameLeft        = nameLeft;
-	api.nameRight       = nameRight;
-	api.nameUnit        = nameUnit;
-	api.nameIORun       = nameIORun;
-	api.makeInt         = makeInt;
-	api.makeChar        = makeChar;
-	api.CharOf          = CharOf;
-	api.makeFloat       = makeFloat;
-	api.makeTuple       = makeTuple;
-	api.pair            = pair;
-	api.mkMallocPtr     = mkMallocPtr;
-	api.derefMallocPtr  = derefMallocPtr;
-	api.mkStablePtr     = mkStablePtr;
-	api.derefStablePtr  = derefStablePtr;
-	api.freeStablePtr   = freeStablePtr;
-	api.eval            = eval;
-	api.evalWithNoError = evalWithNoError;
-	api.evalFails       = evalFails;
-	api.whnfArgs        = &whnfArgs;
-	api.whnfHead        = &whnfHead;
-	api.whnfInt         = &whnfInt;
-	api.whnfFloat       = &whnfFloat;
-	api.garbageCollect  = garbageCollect;
-	api.stackOverflow   = hugsStackOverflow;
-	api.internal        = internal;
-	api.registerPrims   = registerPrims;
-	api.addPrimCfun     = addPrimCfun;
-	api.inventText      = inventText;
-	api.Fst             = Fst;
-	api.Snd             = Snd;
-	api.cellStack       = cellStack;
-	api.sp              = &sp;
-    }
-    return &api;
-}
 
 /* --------------------------------------------------------------------------
  * storage control:

@@ -8,8 +8,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: storage.h,v $
- * $Revision: 1.53 $
- * $Date: 2003/03/03 06:31:06 $
+ * $Revision: 1.54 $
+ * $Date: 2003/03/14 11:59:37 $
  * ------------------------------------------------------------------------*/
 #ifndef __STORAGE_H__
 #define __STORAGE_H__
@@ -1208,157 +1208,14 @@ extern List liveWeakPtrs;
 #endif /* GC_WEAKPTRS */
 
 /* --------------------------------------------------------------------------
- * Plugins
+ * Foreign Function Interface
  * ------------------------------------------------------------------------*/
-
-/* This is an exact copy of the declaration found in GreenCard.h */
 
 #include "HsFFI.h"
 
 extern Int              part1Int64      Args((HsInt64));
 extern Int              part2Int64      Args((HsInt64));
 extern HsInt64          int64FromParts  Args((Int,Int));
-
-typedef struct {
-
-  /* evaluate next argument */
-  int            (*getInt   )     Args(());
-  unsigned int   (*getWord  )     Args(());
-  void*     	 (*getAddr  )     Args(());
-  float     	 (*getFloat )     Args(());
-  double    	 (*getDouble)     Args(());
-  char      	 (*getChar  )     Args(());
-  HugsForeign    (*getForeign)    Args(());
-  HugsStablePtr  (*getStablePtr)  Args(());
-
-  /* push part of result   */
-  void      	 (*putInt   )     Args((int));
-  void      	 (*putWord  )     Args((unsigned int));
-  void      	 (*putAddr  )     Args((void*));
-  void      	 (*putFloat )     Args((double));
-  void      	 (*putDouble)     Args((double));
-  void      	 (*putChar  )     Args((char));
-  void      	 (*putForeign)    Args((HugsForeign, void (*)(HugsForeign)));
-  void      	 (*putStablePtr)  Args((HugsStablePtr));
-
-  /* return n values in IO monad or Id monad */
-  void      	 (*returnIO)      Args((HugsStackPtr, int));
-  void      	 (*returnId)      Args((HugsStackPtr, int));
-  int      	 (*runIO)         Args((int));
-
-  /* free a stable pointer */
-  void      	 (*freeStablePtr) Args((HugsStablePtr));
-
-  /* register the prim table */
-  void      	 (*registerPrims) Args((struct primInfo*));
-
-  /* garbage collect */
-  void		 (*garbageCollect) Args(());
-
-  /* API3 additions follow */
-  HugsStablePtr  (*lookupName)     Args((char*, char*));
-  void           (*ap)             Args((int));
-  void           (*getUnit)        Args(());
-  void*          (*mkThunk)        Args((void (*)(void), HugsStablePtr));
-  void           (*freeThunk)      Args((void*));
-  int     	 (*getBool)        Args(());
-  void      	 (*putBool)        Args((int));
-
-} HugsAPI3;
-
-extern  HugsAPI3* hugsAPI3     Args((Void));
-typedef Void (*InitModuleFun3) Args((HugsAPI3*));
-
-typedef struct {
-
-  /* evaluate next argument */
-  int            (*getInt   )     Args(());
-  unsigned int   (*getWord  )     Args(());
-  void*     	 (*getAddr  )     Args(());
-  float     	 (*getFloat )     Args(());
-  double    	 (*getDouble)     Args(());
-  char      	 (*getChar  )     Args(());
-  HugsForeign    (*getForeign)    Args(());
-  HugsStablePtr  (*getStablePtr)  Args(());
-
-  /* push part of result   */
-  void      	 (*putInt   )     Args((int));
-  void      	 (*putWord  )     Args((unsigned int));
-  void      	 (*putAddr  )     Args((void*));
-  void      	 (*putFloat )     Args((double));
-  void      	 (*putDouble)     Args((double));
-  void      	 (*putChar  )     Args((char));
-  void      	 (*putForeign)    Args((HugsForeign, void (*)(HugsForeign)));
-  void      	 (*putStablePtr)  Args((HugsStablePtr));
-
-  /* return n values in IO monad or Id monad */
-  void      	 (*returnIO)      Args((HugsStackPtr, int));
-  void      	 (*returnId)      Args((HugsStackPtr, int));
-  int      	 (*runIO)         Args((int));
-
-  /* free a stable pointer */
-  void      	 (*freeStablePtr) Args((HugsStablePtr));
-
-  /* register the prim table */
-  void      	 (*registerPrims) Args((struct primInfo*));
-
-  /* garbage collect */
-  void		 (*garbageCollect) Args(());
-
-} HugsAPI2;
-
-extern  HugsAPI2* hugsAPI2     Args((Void));
-typedef Void (*InitModuleFun2) Args((HugsAPI2*));
-
-typedef struct {
-  Name  nameTrue, nameFalse;
-  Name  nameNil,  nameCons;
-  Name  nameJust, nameNothing;
-  Name  nameLeft, nameRight;
-  Name  nameUnit;
-  Name  nameIORun;
-
-  Cell  (*makeInt)         Args((Int));
-
-  Cell  (*makeChar)        Args((Char));
-  Char  (*CharOf)          Args((Cell));
-
-  Cell  (*makeFloat)       Args((FloatPro));
-  Cell  (*makeTuple)       Args((Int));
-  Pair  (*pair)            Args((Cell,Cell));
-
-  Cell  (*mkMallocPtr)     Args((Void *, CFinalizer));
-  Void *(*derefMallocPtr)  Args((Cell));
-
-  Int   (*mkStablePtr)     Args((Cell));
-  Cell  (*derefStablePtr)  Args((Int));
-  Void  (*freeStablePtr)   Args((Int));
-
-  Void  (*eval)            Args((Cell));
-  Cell  (*evalWithNoError) Args((Cell));
-  Void  (*evalFails)       Args((StackPtr));
-  Int   *whnfArgs;
-  Cell  *whnfHead;
-  Int   *whnfInt;
-  Float *whnfFloat;
-
-  Void  (*garbageCollect)  Args(());
-  Void  (*stackOverflow)   Args(());
-  Void  (*internal)        Args((String)) HUGS_noreturn;
-
-  Void  (*registerPrims)   Args((struct primInfo*));
-  Name  (*addPrimCfun)     Args((Text,Int,Int,Cell));
-  Text  (*inventText)      Args(());
-
-  Cell *(*Fst)             Args((Cell));
-  Cell *(*Snd)             Args((Cell));
-
-  Cell  *cellStack;
-  StackPtr *sp;
-} HugsAPI1;
-
-extern  HugsAPI1* hugsAPI1     Args((Void));
-typedef Void (*InitModuleFun1) Args((HugsAPI1*));
 
 /* --------------------------------------------------------------------------
  * Stable pointers

@@ -11,8 +11,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.83 $
- * $Date: 2003/03/10 14:57:22 $
+ * $Revision: 1.84 $
+ * $Date: 2003/03/14 11:59:37 $
  * ------------------------------------------------------------------------*/
 #include <math.h>
 #include "prelude.h"
@@ -2163,54 +2163,12 @@ Int  version; {
     if (havePlugin(textToStr(module(currentModule).text))) {
 	return;
     }
-    /* Version 1-4: the Haskell module specifies what module to expect
+    /* Version 4-5: the Haskell module specifies what module to expect
      *              (via a needPrims_hugs decl).
      *
      * Version 0:   the extension DLL specifies the API version it assumes.
      */
     switch (version) { 
-    case 1 : 
-	{ 
-	    InitModuleFun1 initModule;
-	    void* dll = getDLL(mkDLLFilename(scriptFile));
-	    initModule = (InitModuleFun1)getDLLSymbol(dll,INIT_MODULE_FUN);
-	    if (initModule) {
-	        Bool flg = setOldDLLFlag(TRUE);
-		(*initModule)(hugsAPI1()); 
-		setScriptPrims(setPrimInfoDll(dll));
-		setOldDLLFlag(flg);
-		return;
-	    }
-	    break;
-	}
-    case 2 : 
-	{ 
-	    InitModuleFun2 initModule;
-	    void* dll = getDLL(mkDLLFilename(scriptFile));
-	    initModule = (InitModuleFun2)getDLLSymbol(dll,INIT_MODULE_FUN);
-	    if (initModule) {
-	        Bool flg = setOldDLLFlag(TRUE);
-		(*initModule)(hugsAPI2()); 
-		setScriptPrims(setPrimInfoDll(dll));
-		setOldDLLFlag(flg);
-		return;
-	    }
-	    break;
-	}
-    case 3 : 
-	{ 
-	    InitModuleFun3 initModule;
-	    void* dll = getDLL(mkDLLFilename(scriptFile));
-	    initModule = (InitModuleFun3)getDLLSymbol(dll,INIT_MODULE_FUN);
-	    if (initModule) {
-	        Bool flg = setOldDLLFlag(TRUE);
-		(*initModule)(hugsAPI3()); 
-		setScriptPrims(setPrimInfoDll(dll));
-		setOldDLLFlag(flg);
-		return;
-	    }
-	    break;
-	}
     case 4 : 
 	{ 
 	    InitModuleFun4 initModule;
@@ -2254,11 +2212,11 @@ Int  version; {
 	}
     default: 
 	{
-	    ERRMSG(0) "This version of Hugs does not support GreenCard version %d\n", version
+	    ERRMSG(0) "This version of Hugs does not support FFI version %d\n", version
 	    EEND;
 	}
     }
-    ERRMSG(0) "Unable to load GreenCard primitives\n"
+    ERRMSG(0) "Unable to load FFI primitives\n"
     EEND;
 }
 

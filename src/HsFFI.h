@@ -141,6 +141,7 @@ struct hugs_primInfo {
 typedef struct {
 
   /* evaluate next argument */
+  HsBool         (*getBool)        (void);
   HsInt          (*getInt)         (void);
   HsWord         (*getWord)        (void);
   HsAddr    	 (*getAddr)        (void);
@@ -148,42 +149,7 @@ typedef struct {
   HsDouble       (*getDouble)      (void);
   HsChar         (*getChar)        (void);
   HugsForeign    (*getForeign)     (void);
-  HugsStablePtr  (*getStablePtr)   (void); /* deprecated */
-
-  /* push part of result   */
-  void           (*putInt)         (HsInt);
-  void      	 (*putWord)        (HsWord);
-  void      	 (*putAddr)        (HsAddr);
-  void           (*putFloat)       (HsFloat);
-  void           (*putDouble)      (HsDouble);
-  void           (*putChar)        (HsChar);
-  void      	 (*putForeign)     (HugsForeign, void (*)(HugsForeign));
-  void           (*putStablePtr)   (HugsStablePtr); /* deprecated */
-
-  /* return n values in IO monad or Id monad */
-  void      	 (*returnIO)       (HugsStackPtr, int);
-  void      	 (*returnId)       (HugsStackPtr, int);
-  int      	 (*runIO)          (int);
-
-  /* free a stable pointer */	    			 
-  void      	 (*freeStablePtr)  (HugsStablePtr); /* deprecated */
-
-  /* register the prim table */	    			 
-  void      	 (*registerPrims)  (struct hugs_primInfo*);
-			   
-  /* garbage collect */
-  void		 (*garbageCollect) (void);
-
-  /* API3 additions follow */
-  HugsStablePtr  (*lookupName)     (char*, char*);
-  void           (*ap)             (int);
-  void           (*getUnit)        (void);
-  void*          (*mkThunk)        (HsFunPtr, HugsStablePtr);
-  void           (*freeThunk)      (void*);
-  HsBool         (*getBool)        (void);
-  void           (*putBool)        (HsBool);
-
-  /* API4 additions follow */
+  HsStablePtr    (*getStablePtr4)  (void);
   HsInt8         (*getInt8)        (void);
   HsInt16        (*getInt16)       (void);
   HsInt32        (*getInt32)       (void);
@@ -196,6 +162,15 @@ typedef struct {
   HsFunPtr       (*getFunPtr)      (void);
   HsForeignPtr   (*getForeignPtr)  (void);
 
+  /* push result   */
+  void           (*putBool)        (HsBool);
+  void           (*putInt)         (HsInt);
+  void      	 (*putWord)        (HsWord);
+  void      	 (*putAddr)        (HsAddr);
+  void           (*putFloat)       (HsFloat);
+  void           (*putDouble)      (HsDouble);
+  void           (*putChar)        (HsChar);
+  void      	 (*putForeign)     (HugsForeign, void (*)(HugsForeign));
   void           (*putInt8)        (HsInt8);
   void           (*putInt16)       (HsInt16);
   void           (*putInt32)       (HsInt32);
@@ -207,15 +182,26 @@ typedef struct {
   void           (*putPtr)         (HsPtr);
   void           (*putFunPtr)      (HsFunPtr);
   void           (*putForeignPtr)  (HsForeignPtr);
+  void           (*putStablePtr4)  (HsStablePtr);
+
+  /* return in IO monad or Id monad */
+  void      	 (*returnIO)       (HugsStackPtr, int);
+  int      	 (*runIO)          (int);
+  void           (*returnId)       (HugsStackPtr, int);
+  int            (*runId)          (int);
+
+  /* register the prim table */	    			 
+  void      	 (*registerPrims)  (struct hugs_primInfo*);
+			   
+  HugsStablePtr  (*lookupName)     (char*, char*);
+  void           (*ap)             (int);
+  void           (*getUnit)        (void);
+  void*          (*mkThunk)        (HsFunPtr, HugsStablePtr);
+  void           (*freeThunk)      (void*);
 
   HugsStablePtr  (*makeStablePtr4) (void);
   void           (*derefStablePtr4)(HugsStablePtr);
-
-  void           (*putStablePtr4)  (HsStablePtr);
-  HsStablePtr    (*getStablePtr4)  (void);
   void      	 (*freeStablePtr4) (HsStablePtr);
-
-  int      	 (*runId)          (int);
 } HugsAPI4;
 
 typedef HugsAPI4 HugsAPI5;

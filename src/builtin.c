@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: builtin.c,v $
- * $Revision: 1.51 $
- * $Date: 2003/03/09 23:53:02 $
+ * $Revision: 1.52 $
+ * $Date: 2003/03/14 11:59:37 $
  * ------------------------------------------------------------------------*/
 
 /* We include math.h before prelude.h because SunOS 4's cpp incorrectly
@@ -1643,7 +1643,6 @@ static HsWord64       getWord64      Args((void));
 static HsPtr          getPtr         Args((void));
 static HsFunPtr       getFunPtr      Args((void));
 static HsForeignPtr   getForeignPtr  Args((void));	      
-static HugsStablePtr  getStablePtr   Args((void));
 static HsStablePtr    getStablePtr4  Args((void));
 static HsFloat        getFloat4      Args((void));
 static HsDouble       getDouble4     Args((void));
@@ -1655,7 +1654,6 @@ static void           putFloat       Args((double));
 static void           putDouble      Args((double));
 static void           putChar        Args((HsChar));
 static void           putForeign     Args((HugsForeign, void (*)(void *)));
-static void           putStablePtr   Args((HugsStablePtr));
 static void           putStablePtr4  Args((HsStablePtr));
 static void           putBool        Args((HsBool));
 static void           putInt8        Args((HsInt8));
@@ -1676,7 +1674,6 @@ static void           freeStablePtr4 Args((HsStablePtr));
 
 	      
 static void           returnIO       Args((HugsStackPtr, int));
-static void           returnId       Args((HugsStackPtr, int));
 static int            runIO          Args((int));
 static void           apMany         Args((int));
 
@@ -2128,128 +2125,19 @@ primFun(primFreeHFunPtr) {		/*  :: FunPtr a -> IO ()           */
     IOReturn(nameUnit);
 }
 
-HugsAPI2* hugsAPI2() { /* build virtual function table */
-    static HugsAPI2 api;
-    static Bool initialised = FALSE;
-    if (!initialised) {
-
-	api.getInt        = getInt;
-	api.getWord       = getWord;
-	api.getAddr       = getAddr;
-	api.getFloat      = getFloat;
-	api.getDouble     = getDouble;
-	api.getChar       = getChar;
-	api.getForeign    = getForeign;
-	api.getStablePtr  = getStablePtr;
-	      
-	api.putInt        = putInt;
-	api.putWord       = putWord;
-	api.putAddr       = putAddr;
-	api.putFloat      = putFloat;
-	api.putDouble     = putDouble;
-	api.putChar       = putChar;
-	api.putForeign    = putForeign;
-	api.putStablePtr  = putStablePtr;
-			  
-	api.returnIO      = returnIO;
-	api.returnId      = returnId;
-	api.runIO         = runIO;
-
-	api.freeStablePtr = freeStablePtr;
-
-	api.registerPrims = registerPrims;
-
-	api.garbageCollect= garbageCollect;
-    }
-    return &api;
-}
-
-HugsAPI3* hugsAPI3() { /* build virtual function table */
-    static HugsAPI3 api;
-    static Bool initialised = FALSE;
-    if (!initialised) {
-
-	api.getInt        = getInt;
-	api.getWord       = getWord;
-	api.getAddr       = getAddr;
-	api.getFloat      = getFloat;
-	api.getDouble     = getDouble;
-	api.getChar       = getChar;
-	api.getForeign    = getForeign;
-	api.getStablePtr  = getStablePtr;
-	      
-	api.putInt        = putInt;
-	api.putWord       = putWord;
-	api.putAddr       = putAddr;
-	api.putFloat      = putFloat;
-	api.putDouble     = putDouble;
-	api.putChar       = putChar;
-	api.putForeign    = putForeign;
-	api.putStablePtr  = putStablePtr;
-			  
-	api.returnIO      = returnIO;
-	api.returnId      = returnId;
-	api.runIO         = runIO;
-
-	api.freeStablePtr = freeStablePtr;
-
-	api.registerPrims = registerPrims;
-
-	api.garbageCollect= garbageCollect;
-
-        api.lookupName    = lookupName;
-        api.ap            = apMany;
-        api.getUnit       = getUnit;
-        api.mkThunk       = mkThunk;
-        api.freeThunk     = freeHaskellFunctionPtr;
-	api.getBool       = getBool;
-	api.putBool       = putBool;
-
-    }
-    return &api;
-}
-
 HugsAPI4* hugsAPI4() { /* build virtual function table */
     static HugsAPI4 api;
     static Bool initialised = FALSE;
     if (!initialised) {
 
-	api.getInt        = getInt;
+	api.getBool       = getBool;
+      	api.getInt        = getInt;
 	api.getWord       = getWord;
 	api.getAddr       = getAddr;
 	api.getFloat      = getFloat4;
 	api.getDouble     = getDouble4;
 	api.getChar       = getChar;
 	api.getForeign    = getForeign;
-	api.getStablePtr  = getStablePtr;
-	      
-	api.putInt        = putInt;
-	api.putWord       = putWord;
-	api.putAddr       = putAddr;
-	api.putFloat      = putFloat4;
-	api.putDouble     = putDouble4;
-	api.putChar       = putChar;
-	api.putForeign    = putForeign;
-	api.putStablePtr  = putStablePtr;
-			  
-	api.returnIO      = returnIO;
-	api.returnId      = returnId;
-	api.runIO         = runIO;
-
-	api.freeStablePtr = freeStablePtr;
-
-	api.registerPrims = registerPrims;
-
-	api.garbageCollect= garbageCollect;
-
-        api.lookupName    = lookupName;
-        api.ap            = apMany;
-        api.getUnit       = getUnit;
-        api.mkThunk       = mkThunk;
-        api.freeThunk     = freeHaskellFunctionPtr;
-	api.getBool       = getBool;
-	api.putBool       = putBool;
-
         api.getInt8       = getInt8;
         api.getInt16      = getInt16;
         api.getInt32      = getInt32;
@@ -2261,7 +2149,16 @@ HugsAPI4* hugsAPI4() { /* build virtual function table */
         api.getPtr        = getPtr;
         api.getFunPtr     = getFunPtr;
         api.getForeignPtr = getForeignPtr;
+	api.getStablePtr4 = getStablePtr4;
 
+	api.putBool       = putBool;
+	api.putInt        = putInt;
+	api.putWord       = putWord;
+	api.putAddr       = putAddr;
+	api.putFloat      = putFloat4;
+	api.putDouble     = putDouble4;
+	api.putChar       = putChar;
+	api.putForeign    = putForeign;
         api.putInt8       = putInt8;
         api.putInt16      = putInt16;
         api.putInt32      = putInt32;
@@ -2273,14 +2170,24 @@ HugsAPI4* hugsAPI4() { /* build virtual function table */
         api.putPtr        = putPtr;
         api.putFunPtr     = putFunPtr;
         api.putForeignPtr = putForeignPtr;
+	api.putStablePtr4 = putStablePtr4;
+			  
+	api.returnIO      = returnIO;
+	api.runIO         = runIO;
+        api.returnId      = returnId;
+        api.runId         = runId;
+
+	api.registerPrims = registerPrims;
+
+        api.lookupName    = lookupName;
+        api.ap            = apMany;
+        api.getUnit       = getUnit;
+        api.mkThunk       = mkThunk;
+        api.freeThunk     = freeHaskellFunctionPtr;
 
 	api.makeStablePtr4 = getStablePtr;
 	api.derefStablePtr4= putStablePtr;
-	api.runId          = runId;
-
-	api.getStablePtr4 = getStablePtr4;
-	api.putStablePtr4 = putStablePtr4;
-	api.freeStablePtr4= freeStablePtr4;
+	api.freeStablePtr4 = freeStablePtr4;
     }
     return &api;
 }
