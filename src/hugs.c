@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.71 $
- * $Date: 2002/03/06 15:32:07 $
+ * $Revision: 1.72 $
+ * $Date: 2002/03/21 18:34:58 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -109,6 +109,7 @@ static Void   local browse	          Args((Void));
 
 static Bool   printMostGeneralType = TRUE;
 
+
 #if USE_PREFERENCES_FILE
 static Void    readPrefsFile          Args((FILE *));
 typedef char GVarname[2000];
@@ -173,6 +174,10 @@ Bool   preludeLoaded	 = FALSE;
 
 #if REDIRECT_OUTPUT
 static Bool disableOutput = FALSE;      /* redirect output to buffer?      */
+#endif
+
+#if IPARAM
+Bool oldIParamSyntax = TRUE;
 #endif
 
 /* --------------------------------------------------------------------------
@@ -1037,9 +1042,9 @@ struct options toggle[] = {             /* List of command line toggles    */
 #endif
 #if HERE_DOC
     {'H',
-#if !HASKELL_98_ONLY
+# if !HASKELL_98_ONLY
              0,
-#endif
+# endif
 	     "Enable `here documents'",       &hereDocs},
 #endif
     {'T', 
@@ -1047,6 +1052,13 @@ struct options toggle[] = {             /* List of command line toggles    */
              1,
 #endif
             "Print most general type",  &printMostGeneralType},
+#if IPARAM
+    {'W',
+# if !HASKELL_98_ONLY
+             0,
+# endif
+	     "Enable 'with' and 'dlet' implicit param binding forms", &oldIParamSyntax},
+#endif
     {0,   
 #if !HASKELL_98_ONLY
           0,

@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: input.c,v $
- * $Revision: 1.38 $
- * $Date: 2002/03/01 19:54:51 $
+ * $Revision: 1.39 $
+ * $Date: 2002/03/21 18:34:59 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1738,8 +1738,8 @@ loop:	    skip();                     /* Skip qualifying dot             */
 #if !HASKELL_98_ONLY
 	if (it==textAll && !haskell98) return ALL;
 #if IPARAM
-	if (it==textWith && !haskell98) lookAhead(WITH);
-	if (it==textDlet && !haskell98) lookAhead(DLET);
+	if (it==textWith && !haskell98 && oldIParamSyntax) lookAhead(WITH);
+	if (it==textDlet && !haskell98 && oldIParamSyntax) lookAhead(DLET);
 #endif
 
 #if MUDO

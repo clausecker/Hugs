@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: connect.h,v $
- * $Revision: 1.27 $
- * $Date: 2002/02/24 04:36:28 $
+ * $Revision: 1.28 $
+ * $Date: 2002/03/21 18:34:58 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -208,7 +208,9 @@ extern Bool  multiInstRes;              /* TRUE => use multi inst resolution */
 #endif
 extern Bool  useQualifiedNames;         /* TRUE => qualify names when printing types and terms */
 extern Bool  hereDocs;                  /* TRUE => enable `here documents' */
-
+#if IPARAM
+extern Bool  oldIParamSyntax;           /* TRUE => support 'dlet' and 'with' binding forms */
+#endif
 
 extern Int   cutoff;			/* Constraint Cutoff depth	   */
 

@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.54 $
- * $Date: 2002/03/19 10:55:09 $
+ * $Revision: 1.55 $
+ * $Date: 2002/03/21 18:34:59 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -196,12 +196,16 @@ static Void   local clearScope		Args((Void));
 static Void   local withinScope		Args((List));
 static Void   local leaveScope		Args((Void));
 static Void   local saveSyntax		Args((Cell,Cell));
+#if IPARAM
+static Bool   local checkIBindings      Args((Int,List));
+#endif
 
 static Void   local depBinding		Args((Cell));
 static Void   local depDefaults		Args((Class));
 static Void   local depInsts		Args((Inst));
 static Void   local depClassBindings	Args((List));
 static Void   local depAlt		Args((Cell));
+static Cell   local depLetRec		Args((Bool,Int,Cell));
 static Void   local depRhs		Args((Cell));
 static Void   local depGuard		Args((Cell));
 static Cell   local depExpr		Args((Int,Cell));
@@ -5940,6 +5944,40 @@ Cell sy; {
     }
 }
 
+#if IPARAM
+static Bool local checkIBindings(line,bs)
+Int line;
+List bs; {
+    List xs = bs;
+    Bool hasIParam = FALSE;
+    Bool oldFlg = FALSE;
+    
+    if (isNull(xs)) {
+	return FALSE;
+    }
+    
+    if (isPair(hd(xs)) && isPair(fst(hd(xs))) && fst(fst(hd(xs))) == IPVAR) {
+	hasIParam = TRUE;
+    }
+    xs = tl(xs);
+    
+    while (nonNull(xs)) {
+	oldFlg = hasIParam;
+	hasIParam = 
+	    isPair(hd(xs))      && 
+	    isPair(fst(hd(xs))) && 
+	    (fst(fst(hd(xs))) == IPVAR);
+
+	if ( oldFlg != hasIParam ) {
+		ERRMSG(line) "Not legal to mix implicit parameter bindings with other bindings."
+		EEND;
+	}
+	xs = tl(xs);
+    }
+    return hasIParam;
+}
+#endif
+
 /* --------------------------------------------------------------------------
  * As a side effect of the dependency analysis we also make the following
  * checks:
@@ -6004,6 +6042,38 @@ List bs; {                             /* bindings, possibly containing    */
     }
 }
 
+static Cell local depLetRec(isRhs,line,e) /* dependency analysis on a letrec    */
+Bool isRhs;
+Int  line;
+Cell e; {                                 /* expr, containing a set of bindings */
+#if IPARAM
+    Bool isIP = checkIBindings(line,fst(snd(e))); 
+                                          /* check that i-param binders aren't */
+	                                  /* mixed with 'normal' ones. */
+    if ( isIP ) {
+	snd(snd(e)) = depExpr(line,snd(snd(e)));
+	fst(snd(e)) = depDwFlds(line,e,fst(snd(e)));
+	/* Turn it into a WITHEXP */
+	return pair(WITHEXP,pair(snd(snd(e)),fst(snd(e))));
+    } else {
+#endif
+
+    fst(snd(e)) = eqnsToBindings(fst(snd(e)),NIL,NIL,NIL);
+    withinScope(fst(snd(e)));
+    fst(snd(e)) = dependencyAnal(fst(snd(e)));
+    hd(depends) = fst(snd(e));
+    if (isRhs) {
+	depRhs(snd(snd(e)));
+    } else {
+	snd(snd(e)) = depExpr(line,snd(snd(e)));
+    }
+    leaveScope();
+    return e;
+#if IPARAM
+    }
+#endif
+}
+
 static Void local depAlt(a)		/* Find dependents of alternative  */
 Cell a; {
     List obvs = saveBvars();		/* Save list of bound variables	   */
@@ -6020,13 +6090,8 @@ Cell r; {
 	case GUARDED : mapProc(depGuard,snd(r));
 		       break;
 
-	case LETREC  : fst(snd(r)) = eqnsToBindings(fst(snd(r)),NIL,NIL,NIL);
-		       withinScope(fst(snd(r)));
-		       fst(snd(r)) = dependencyAnal(fst(snd(r)));
-		       hd(depends) = fst(snd(r));
-		       depRhs(snd(snd(r)));
-		       leaveScope();
-		       break;
+        case LETREC  : r = depLetRec(TRUE, rhsLine(snd(snd(r))),r);
+	               break;
 
 	case RSIGN   : snd(snd(r)) = checkPatType(rhsLine(fst(snd(r))),
 						  "result",
@@ -6106,13 +6171,8 @@ Cell e; {
 	case FINLIST	: map1Over(depExpr,line,snd(e));
 			  break;
 
-	case LETREC	: fst(snd(e)) = eqnsToBindings(fst(snd(e)),NIL,NIL,NIL);
-			  withinScope(fst(snd(e)));
-			  fst(snd(e)) = dependencyAnal(fst(snd(e)));
-			  hd(depends) = fst(snd(e));
-			  snd(snd(e)) = depExpr(line,snd(snd(e)));
-			  leaveScope();
-			  break;
+        case LETREC	: e = depLetRec(FALSE,line,e);
+	                  break;
 
 	case LAMBDA	: depAlt(snd(e));
 			  break;
@@ -6207,12 +6267,24 @@ List qs; {
 			    }
 			    break;
 
-	    case QWHERE   : snd(q)      = eqnsToBindings(snd(q),NIL,NIL,NIL);
-			    withinScope(snd(q));
-			    snd(q)      = dependencyAnal(snd(q));
-			    hd(depends) = snd(q);
-			    depComp(l,e,qs1);
-			    leaveScope();
+	    case QWHERE   : 
+#if IPARAM
+		if ( checkIBindings(l,snd(q)) ) {
+		    /* It is unclear what the meaning of this is (by people in-the-know),
+		     * so outlaw it for now. */
+		   ERRMSG(l) "Currently illegal to to bind implicit parameters using comprehension/do-level lets"
+	   	   EEND;
+		} else {
+#endif
+		    snd(q)      = eqnsToBindings(snd(q),NIL,NIL,NIL);
+		    withinScope(snd(q));
+		    snd(q)      = dependencyAnal(snd(q));
+		    hd(depends) = snd(q);
+		    depComp(l,e,qs1);
+		    leaveScope();
+#if IPARAM
+		}
+#endif
 			    break;
 
 	    case DOQUAL	  : /* fall-thru */

@@ -11,8 +11,8 @@
  * included in the distribution.
  *
  * $RCSfile: parser.y,v $
- * $Revision: 1.28 $
- * $Date: 2002/03/19 18:37:48 $
+ * $Revision: 1.29 $
+ * $Date: 2002/03/21 18:34:59 $
  * ------------------------------------------------------------------------*/
 
 %{
@@ -122,7 +122,7 @@ static Void   local noMDo	 Args((String));
 %%
 /*- Top level script/module structure -------------------------------------*/
 
-start	  : EXPR exp wherePart		{inputExpr = letrec($3,$2); sp-=2;}
+start	  : EXPR exp lwherePart		{inputExpr = letrec($3,$2); sp-=2;}
 	  | CONTEXT context		{inputContext = $2;	    sp-=1;}
 	  | SCRIPT topModule		{valDefns  = $2;	    sp-=1;}
 	  | error			{syntaxError("input");}
@@ -654,6 +654,33 @@ gddef	  : '|' exp0 '=' exp		{$$ = gc4(pair($3,pair($2,$4)));}
 wherePart : /* empty */			{$$ = gc0(NIL);}
 	  | WHERE decls			{$$ = gc2($2);}
 	  ;
+/* lwherePart and ldecls permit the binding of both 'normal' 
+ * and implicit parameter bindings.
+ */
+lwherePart : /* empty */		{$$ = gc0(NIL);}
+	  | WHERE ldecls		{$$ = gc2($2);}
+	  ;
+
+ldecls	  : '{' ldecls0 end		{$$ = gc3($2);}
+	  | '{' ldecls1 end		{$$ = gc3($2);}
+
+ldecls0	  : /* empty */			{$$ = gc0(NIL);}
+	  | ldecls0 ';'			{$$ = gc2($1);}
+	  | ldecls1 ';'			{$$ = gc2($1);}
+	  ;
+
+ldecls1	  : ldecls0 ldecl		{$$ = gc2(cons($2,$1));}
+	  ;
+ldecl	  : IPVARID '=' exp		{
+#if IPARAM
+				         $$ = gc3(pair($1,$3));
+#else
+					 noIP("a binding");
+#endif
+					}
+	  | IPVARID error		{syntaxError("a binding");}
+          | decl 			{$$ = $1;} 
+	  ;
 
 /*- Patterns: -------------------------------------------------------------*/
 
@@ -802,7 +829,7 @@ exp10a	  : CASEXP exp OF '{' alts end	{$$ = gc6(ap(CASE,pair($2,rev($5))));}
 exp10b	  : '\\' pats ARROW exp		{$$ = gc4(ap(LAMBDA,      
 						     pair(rev($2),
 							  pair($3,$4))));}
-	  | LET decls IN exp		{$$ = gc4(letrec($2,$4));}
+	  | LET ldecls IN exp		{$$ = gc4(letrec($2,$4));}
 	  | IF exp THEN exp ELSE exp	{$$ = gc6(ap(COND,triple($2,$4,$6)));}
 	  | DLET dbinds IN exp		{
 #if IPARAM
@@ -889,7 +916,7 @@ stmts1    : stmts1 ';' stmt		{$$ = gc3(cons($3,$1));}
 	  | stmt			{$$ = gc1(cons($1,NIL));}
 	  ;
 stmt      : exp_err FROM exp		{$$ = gc3(ap(FROMQUAL,pair($1,$3)));}
-	  | LET decls			{$$ = gc2(ap(QWHERE,$2));}
+	  | LET ldecls			{$$ = gc2(ap(QWHERE,$2));}
 /*	  | IF exp			{$$ = gc2(ap(BOOLQUAL,$2));}*/
 	  | exp_err			{$$ = gc1(ap(DOQUAL,$1));}
 	  ;
@@ -948,7 +975,7 @@ quals	  : quals ',' qual		{$$ = gc3(cons($3,$1));}
 	  ;
 qual	  : exp FROM exp		{$$ = gc3(ap(FROMQUAL,pair($1,$3)));}
 	  | exp				{$$ = gc1(ap(BOOLQUAL,$1));}
-	  | LET decls			{$$ = gc2(ap(QWHERE,$2));}
+	  | LET ldecls			{$$ = gc2(ap(QWHERE,$2));}
 	  ;
 
 /*- Identifiers and symbols: ----------------------------------------------*/
