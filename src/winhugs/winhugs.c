@@ -150,20 +150,6 @@ static	HFONT		hDialogFont = NULL;	/* Font to use in Dialogs		*/
 
 
 /* --------------------------------------------------------------------------
- * Other MS-DOS functions emulation:
- * ------------------------------------------------------------------------*/
-
-INT WinSystem(CHAR *s)
-{
- CHAR Buffer[2048];
-
- wsprintf(Buffer, "COMMAND.COM /C %s", s);
- WinExec(Buffer, SW_SHOW);
- return 0;
-}
-
-
-/* --------------------------------------------------------------------------
  * Responses to messages:
  * ------------------------------------------------------------------------*/
 
@@ -1972,4 +1958,3 @@ static LPSTR local ExpandFileName(LPSTR what)
   }
   return Expanded;
 }
-
