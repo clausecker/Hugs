@@ -389,6 +389,7 @@ mkdir -p $compat
 hugslibs MonadRec	# new libs have Fix, but Rec is used by mdo
 hugslibs Memo		# hslibs module is different
 hugslibs Observe	# hslibs module is different
+hugslibs Quote		# only hugs explicitly supports here docs
     stub HugsStorable	Hugs.Storable
 
 # Stuff from hslibs (many of these are stubs)
