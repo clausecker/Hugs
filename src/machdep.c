@@ -12,8 +12,8 @@
  * included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.37 $
- * $Date: 2002/01/21 04:43:17 $
+ * $Revision: 1.38 $
+ * $Date: 2002/01/22 19:04:52 $
  * ------------------------------------------------------------------------*/
 #include <math.h>
 
@@ -1433,7 +1433,7 @@ String nm; {                            /* or just line may be zero        */
       return FALSE;
     }
     free(editorCmd);
-    return TRUE;
+    return syncEdit;
 }
 
 Int
