@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: connect.h,v $
- * $Revision: 1.20 $
- * $Date: 2001/06/08 23:33:13 $
+ * $Revision: 1.21 $
+ * $Date: 2001/06/14 21:28:52 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -247,6 +247,7 @@ extern  Bool   chase		Args((List));
 
 extern  Void   storage          Args((Int));
 
+extern  Bool   startsQual       Args((Char));
 extern  Void   input            Args((Int));
 extern  Void   consoleInput     Args((String));
 extern  Void   projInput	Args((String));

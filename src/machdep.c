@@ -12,8 +12,8 @@
  * included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.16 $
- * $Date: 2001/06/08 23:26:25 $
+ * $Revision: 1.17 $
+ * $Date: 2001/06/14 21:28:52 $
  * ------------------------------------------------------------------------*/
 
 #ifdef HAVE_SIGNAL_H
@@ -419,10 +419,33 @@ String s; {
     searchBuf[searchPos] = '\0';
 }
 
+/*
+ * N.B Conversion from modid to filename syntax is done here instead of higher 
+ * up in the call chain, as there seems to be no simple principle that explains 
+ * when a string is intended as a module name or as the name of a file.  Maybe 
+ * the option to use filenames in import and load commands should be nuked
+ * altogether?
+ */
+
 static Bool local tryEndings(s) /* Try each of the listed endings          */
 String s; {
-    Int i = 0;
+    Int save = searchPos;
+    Int i = 0, j;
     searchStr(s);
+    
+    for (j = save; searchBuf[j]; j++)
+        if (searchBuf[j] == '.' && !startsQual(searchBuf[j+1]))
+            break;	/* s can't be a modid, break */
+            
+    /* If s is a filename, don't try anything fancy */
+    if (searchBuf[j])
+        return readable(searchBuf);
+    
+    /* End of s reached, and s still seems to be a valid modid     */
+    for (j = save; searchBuf[j]; j++)
+        if (searchBuf[j] == '.')
+            searchBuf[j] = SLASH;
+    
     for (; endings[i]; ++i) {
 	Int save = searchPos;
 	searchStr(endings[i]);
@@ -430,7 +453,11 @@ String s; {
 	    return TRUE;
 	searchReset(save);
     }
-    return FALSE;
+    
+    /* One last attempt: try using s as a plain filename */
+    searchReset(save);
+    searchStr(s);
+    return readable(searchBuf);
 }
 
 
@@ -610,6 +637,7 @@ String nm;			/* used as the first prefix in the search. */
 String path; {
     String pathpt = path;
 
+#if 0
     searchReset(0);
     if (along) {                /* Was a path for an existing file given?  */
 	Int last = (-1);
@@ -623,6 +651,7 @@ String path; {
     }
     if (tryEndings(nm))
 	return normPath(searchBuf);
+#endif
 
     if (pathpt && *pathpt) {    /* Otherwise, we look along the HUGSPATH   */
 	Bool more = TRUE;

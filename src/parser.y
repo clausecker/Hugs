@@ -11,8 +11,8 @@
  * included in the distribution.
  *
  * $RCSfile: parser.y,v $
- * $Revision: 1.17 $
- * $Date: 2001/06/01 00:32:32 $
+ * $Revision: 1.18 $
+ * $Date: 2001/06/14 21:28:52 $
  * ------------------------------------------------------------------------*/
 
 %{
@@ -147,9 +147,9 @@ topModule : startMain begin modBody end {
 startMain : /* empty */			{startModule(conMain); 
 					 $$ = gc0(NIL);}
 	  ;
-modname	  : CONID			{startModule($1); $$ = gc1(NIL);}
+modname	  : qconid			{startModule(mkCon(mkNestedQual($1))); $$ = gc1(NIL);}
 	  ;
-modid	  : CONID			{$$ = $1;}
+modid	  : qconid			{$$ = mkCon(mkNestedQual($1));}
 	  | STRINGLIT			{ String modName = findPathname(scriptFile,textToStr(textOf($1)));
 					  if (modName) { /* fillin pathname if known */
 					      $$ = mkStr(findText(modName));

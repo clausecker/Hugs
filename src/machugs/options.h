@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: options.h,v $
- * $Revision: 1.1 $
- * $Date: 2001/02/14 12:08:58 $
+ * $Revision: 1.2 $
+ * $Date: 2001/06/14 21:28:52 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -69,7 +69,7 @@
 /* Define if you want path entries ending in / to be recursively
  * searched for Haskell code.
  */
-#define SEARCH_DIR 1   /* Not ready yet! */
+#define SEARCH_DIR 0   /* Not ready yet! */
 
 /* Define if a command line editor is available and should be used. 
  * There are two choices of command line editor that can be used with Hugs:

@@ -9,8 +9,8 @@
  * included in the distribution.
  *
  * $RCSfile: storage.h,v $
- * $Revision: 1.19 $
- * $Date: 2001/06/08 23:33:13 $
+ * $Revision: 1.20 $
+ * $Date: 2001/06/14 21:28:52 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -238,6 +238,7 @@ extern	Cell	     whatIs    Args((Cell));
 #define mkQCon(m,t)	ap(QUALIDENT,pair(mkCon(m),mkCon(t)))
 #define mkQVarOp(m,t)	ap(QUALIDENT,pair(mkCon(m),mkVarop(t)))
 #define mkQConOp(m,t)	ap(QUALIDENT,pair(mkCon(m),mkConop(t)))
+#define mkNestedQual(c) findText(identToStr(c))	/* fragile...              */
 #define intValOf(c)	(snd(c))
 #define inventVar()	mkVar(inventText())
 #define mkDictVar(t)	ap(DICTVAR,t)

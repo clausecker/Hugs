@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: input.c,v $
- * $Revision: 1.25 $
- * $Date: 2001/03/21 23:01:01 $
+ * $Revision: 1.26 $
+ * $Date: 2001/06/14 21:28:52 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -296,6 +296,11 @@ static  Int lastLine;                  /* records type of last line read:  */
 
 #define BEGINCODE "\\begin{code}"
 #define ENDCODE   "\\end{code}"
+
+Bool startsQual(c)
+Char c; {
+    return isIn(c,LARGE);
+}
 
 #if HAVE_GETDELIM_H
 static char *lineBuffer = NULL;   /* getline() does the initial allocation */
@@ -1542,7 +1547,7 @@ static Int local yylex() {             /* Read next input token ...        */
 	Text it = readIdent();          /* No keyword begins with LARGE ...*/
 	if (c0=='.' && isIn(c1,(SMALL|LARGE|SYMBOL))) {
 	    Text it2 = NIL;
-	    skip();                     /* Skip qualifying dot             */
+loop:	    skip();                     /* Skip qualifying dot             */
 	    if (isIn(c0,SYMBOL)) { /* Qualified operator */
 		it2 = readOperator();
 		if (opType==CONOP) {
@@ -1556,6 +1561,10 @@ static Int local yylex() {             /* Read next input token ...        */
 		it2 = readIdent();
 		if (identType==CONID) {
 		    top() = yylval = mkQCon(it,it2);
+                    if (c0=='.' && isIn(c0,(SMALL|LARGE|SYMBOL))) {
+                        it = mkNestedQual(yylval);
+                        goto loop;
+                    }
 		    return QCONID;
 		} else {
 		    top() = yylval = mkQVar(it,it2);
