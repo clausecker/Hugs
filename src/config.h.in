@@ -1,54 +1,18 @@
-/* ../config.h.in.  Generated automatically from configure.in by autoheader 2.13.  */
+/* ../config.h.in.  Generated from configure.in by autoheader.  */
+/* acconfig.h
 
-/* Define if using alloca.c.  */
-#undef C_ALLOCA
+   Descriptive text for the C preprocessor macros that
+   the Hugs configuration script can define.
+   The current version may not use all of them; autoheader copies the ones
+   your configure.in uses into your configuration header file templates.
 
-/* Define to empty if the keyword does not work.  */
-#undef const
+   The entries are in sort -df order: alphabetical, case insensitive,
+   ignoring punctuation (such as underscores).  Although this order
+   can split up related entries, it makes it easier to check whether
+   a given entry is in the file.
 
-/* Define to one of _getb67, GETB67, getb67 for Cray-2 and Cray-YMP systems.
-   This function is required for alloca.c support on those systems.  */
-#undef CRAY_STACKSEG_END
-
-/* Define if you have alloca, as a function or macro.  */
-#undef HAVE_ALLOCA
-
-/* Define if you have <alloca.h> and it should be used (not on Ultrix).  */
-#undef HAVE_ALLOCA_H
-
-/* Define if you have <sys/wait.h> that is POSIX.1 compatible.  */
-#undef HAVE_SYS_WAIT_H
-
-/* Define if your struct tm has tm_zone.  */
-#undef HAVE_TM_ZONE
-
-/* Define if you don't have tm_zone but do have the external array
-   tzname.  */
-#undef HAVE_TZNAME
-
-/* Define as the return type of signal handlers (int or void).  */
-#undef RETSIGTYPE
-
-/* If using the C implementation of alloca, define if you know the
-   direction of stack growth for your system; otherwise it will be
-   automatically deduced at run-time.
- STACK_DIRECTION > 0 => grows toward higher addresses
- STACK_DIRECTION < 0 => grows toward lower addresses
- STACK_DIRECTION = 0 => direction of growth unknown
- */
-#undef STACK_DIRECTION
-
-/* Define if you have the ANSI C header files.  */
-#undef STDC_HEADERS
-
-/* Define if you can safely include both <sys/time.h> and <time.h>.  */
-#undef TIME_WITH_SYS_TIME
-
-/* Define if your <sys/time.h> declares struct tm.  */
-#undef TM_IN_SYS_TIME
-
-/* Define if the X Window System is missing or not being used.  */
-#undef X_DISPLAY_MISSING
+   Leave the following blank line there!!  Autoheader needs it.  */
+
 
 /* Include platform-specific defines */
 #include "platform.h"
@@ -78,45 +42,6 @@
  *   WANT_TIMER
  *   HASKELL_98_ONLY
  */
-
-/* Define to alignment constraint on chars */
-#undef ALIGNMENT_CHAR
-
-/* Define to alignment constraint on doubles */
-#undef ALIGNMENT_DOUBLE
-
-/* Define to alignment constraint on floats */
-#undef ALIGNMENT_FLOAT
-
-/* Define to alignment constraint on ints */
-#undef ALIGNMENT_INT
-
-/* Define to alignment constraint on longs */
-#undef ALIGNMENT_LONG
-
-/* Define to alignment constraint on long longs */
-#undef ALIGNMENT_LONG_LONG
-
-/* Define to alignment constraint on shorts */
-#undef ALIGNMENT_SHORT
-
-/* Define to alignment constraint on unsigned chars */
-#undef ALIGNMENT_UNSIGNED_CHAR
-
-/* Define to alignment constraint on unsigned ints */
-#undef ALIGNMENT_UNSIGNED_INT
-
-/* Define to alignment constraint on unsigned longs */
-#undef ALIGNMENT_UNSIGNED_LONG
-
-/* Define to alignment constraint on unsigned long longs */
-#undef ALIGNMENT_UNSIGNED_LONG_LONG
-
-/* Define to alignment constraint on unsigned shorts */
-#undef ALIGNMENT_UNSIGNED_SHORT
-
-/* Define to alignment constraint on void pointers */
-#undef ALIGNMENT_VOID_P
 
 /* C compiler invocation use to build a dynamically loadable library.
  * Typical value: "gcc -shared"
@@ -190,386 +115,720 @@
 /* Define if we want to use Apple's OpenGL for the Quartz Display System on Mac OS X (instead of X11) */   
 #undef USE_QUARTZ_OPENGL
 
-/* The number of bytes in a char.  */
-#undef SIZEOF_CHAR
+
+/* Leave that blank line there!!  Autoheader needs it.
+   If you're adding to this file, keep in mind:
+   The entries are in sort -df order: alphabetical, case insensitive,
+   ignoring punctuation (such as underscores).  */
 
-/* The number of bytes in a double.  */
-#undef SIZEOF_DOUBLE
+
+/* autoheader doesn't grok AC_CHECK_LIB_NOWARN so we have to add them
+   manually.  */
 
-/* The number of bytes in a float.  */
-#undef SIZEOF_FLOAT
 
-/* The number of bytes in a int.  */
-#undef SIZEOF_INT
+/* The alignment of a `char'. */
+#undef ALIGNMENT_CHAR
 
-/* The number of bytes in a int*.  */
-#undef SIZEOF_INTP
+/* The alignment of a `double'. */
+#undef ALIGNMENT_DOUBLE
 
-/* The number of bytes in a long.  */
-#undef SIZEOF_LONG
+/* The alignment of a `float'. */
+#undef ALIGNMENT_FLOAT
 
-/* The number of bytes in a long long.  */
-#undef SIZEOF_LONG_LONG
+/* The alignment of a `int'. */
+#undef ALIGNMENT_INT
 
-/* The number of bytes in a short.  */
-#undef SIZEOF_SHORT
+/* The alignment of a `long'. */
+#undef ALIGNMENT_LONG
 
-/* The number of bytes in a unsigned char.  */
-#undef SIZEOF_UNSIGNED_CHAR
+/* The alignment of a `long long'. */
+#undef ALIGNMENT_LONG_LONG
 
-/* The number of bytes in a unsigned int.  */
-#undef SIZEOF_UNSIGNED_INT
+/* The alignment of a `short'. */
+#undef ALIGNMENT_SHORT
 
-/* The number of bytes in a unsigned long.  */
-#undef SIZEOF_UNSIGNED_LONG
+/* The alignment of a `unsigned char'. */
+#undef ALIGNMENT_UNSIGNED_CHAR
 
-/* The number of bytes in a unsigned long long.  */
-#undef SIZEOF_UNSIGNED_LONG_LONG
+/* The alignment of a `unsigned int'. */
+#undef ALIGNMENT_UNSIGNED_INT
 
-/* The number of bytes in a unsigned short.  */
-#undef SIZEOF_UNSIGNED_SHORT
+/* The alignment of a `unsigned long'. */
+#undef ALIGNMENT_UNSIGNED_LONG
 
-/* The number of bytes in a void *.  */
-#undef SIZEOF_VOID_P
+/* The alignment of a `unsigned long long'. */
+#undef ALIGNMENT_UNSIGNED_LONG_LONG
 
-/* Define if you have the PBHSetVolSync function.  */
-#undef HAVE_PBHSETVOLSYNC
+/* The alignment of a `unsigned short'. */
+#undef ALIGNMENT_UNSIGNED_SHORT
 
-/* Define if you have the _fullpath function.  */
-#undef HAVE__FULLPATH
+/* The alignment of a `void *'. */
+#undef ALIGNMENT_VOID_P
 
-/* Define if you have the _pclose function.  */
-#undef HAVE__PCLOSE
+/* Define to 1 to use a Char encoding determined by the locale. */
+#undef CHAR_ENCODING_LOCALE
 
-/* Define if you have the _popen function.  */
-#undef HAVE__POPEN
+/* Define to 1 to use the UTF-8 Char encoding. */
+#undef CHAR_ENCODING_UTF8
 
-/* Define if you have the _snprintf function.  */
-#undef HAVE__SNPRINTF
+/* The value of E2BIG. */
+#undef CONST_E2BIG
 
-/* Define if you have the _stricmp function.  */
-#undef HAVE__STRICMP
+/* The value of EACCES. */
+#undef CONST_EACCES
 
-/* Define if you have the _vsnprintf function.  */
-#undef HAVE__VSNPRINTF
+/* The value of EADDRINUSE. */
+#undef CONST_EADDRINUSE
 
-/* Define if you have the canonicalize_file_name function.  */
-#undef HAVE_CANONICALIZE_FILE_NAME
+/* The value of EADDRNOTAVAIL. */
+#undef CONST_EADDRNOTAVAIL
 
-/* Define if you have the dup function.  */
-#undef HAVE_DUP
+/* The value of EADV. */
+#undef CONST_EADV
 
-/* Define if you have the farcalloc function.  */
-#undef HAVE_FARCALLOC
+/* The value of EAFNOSUPPORT. */
+#undef CONST_EAFNOSUPPORT
 
-/* Define if you have the fgetpos function.  */
-#undef HAVE_FGETPOS
+/* The value of EAGAIN. */
+#undef CONST_EAGAIN
 
-/* Define if you have the fseek function.  */
-#undef HAVE_FSEEK
+/* The value of EALREADY. */
+#undef CONST_EALREADY
 
-/* Define if you have the fsetpos function.  */
-#undef HAVE_FSETPOS
+/* The value of EBADF. */
+#undef CONST_EBADF
 
-/* Define if you have the fstat function.  */
-#undef HAVE_FSTAT
+/* The value of EBADMSG. */
+#undef CONST_EBADMSG
 
-/* Define if you have the ftell function.  */
-#undef HAVE_FTELL
+/* The value of EBADRPC. */
+#undef CONST_EBADRPC
 
-/* Define if you have the ftime function.  */
-#undef HAVE_FTIME
+/* The value of EBUSY. */
+#undef CONST_EBUSY
 
-/* Define if you have the getclock function.  */
-#undef HAVE_GETCLOCK
+/* The value of ECHILD. */
+#undef CONST_ECHILD
 
-/* Define if you have the getrusage function.  */
-#undef HAVE_GETRUSAGE
+/* The value of ECOMM. */
+#undef CONST_ECOMM
 
-/* Define if you have the gettimeofday function.  */
-#undef HAVE_GETTIMEOFDAY
+/* The value of ECONNABORTED. */
+#undef CONST_ECONNABORTED
 
-/* Define if you have the gmtime function.  */
-#undef HAVE_GMTIME
+/* The value of ECONNREFUSED. */
+#undef CONST_ECONNREFUSED
 
-/* Define if you have the isatty function.  */
-#undef HAVE_ISATTY
+/* The value of ECONNRESET. */
+#undef CONST_ECONNRESET
 
-/* Define if you have the localtime function.  */
-#undef HAVE_LOCALTIME
+/* The value of EDEADLK. */
+#undef CONST_EDEADLK
 
-/* Define if you have the lstat function.  */
-#undef HAVE_LSTAT
+/* The value of EDESTADDRREQ. */
+#undef CONST_EDESTADDRREQ
 
-/* Define if you have the macsystem function.  */
-#undef HAVE_MACSYSTEM
+/* The value of EDIRTY. */
+#undef CONST_EDIRTY
 
-/* Define if you have the mktime function.  */
-#undef HAVE_MKTIME
+/* The value of EDOM. */
+#undef CONST_EDOM
 
-/* Define if you have the pclose function.  */
-#undef HAVE_PCLOSE
+/* The value of EDQUOT. */
+#undef CONST_EDQUOT
 
-/* Define if you have the poly function.  */
-#undef HAVE_POLY
+/* The value of EEXIST. */
+#undef CONST_EEXIST
 
-/* Define if you have the popen function.  */
-#undef HAVE_POPEN
+/* The value of EFAULT. */
+#undef CONST_EFAULT
 
-/* Define if you have the readdir_r function.  */
-#undef HAVE_READDIR_R
+/* The value of EFBIG. */
+#undef CONST_EFBIG
 
-/* Define if you have the realpath function.  */
-#undef HAVE_REALPATH
+/* The value of EFTYPE. */
+#undef CONST_EFTYPE
 
-/* Define if you have the rindex function.  */
-#undef HAVE_RINDEX
+/* The value of EHOSTDOWN. */
+#undef CONST_EHOSTDOWN
 
-/* Define if you have the select function.  */
-#undef HAVE_SELECT
+/* The value of EHOSTUNREACH. */
+#undef CONST_EHOSTUNREACH
 
-/* Define if you have the setenv function.  */
-#undef HAVE_SETENV
+/* The value of EIDRM. */
+#undef CONST_EIDRM
 
-/* Define if you have the sigpoll function.  */
-#undef HAVE_SIGPOLL
+/* The value of EILSEQ. */
+#undef CONST_EILSEQ
 
-/* Define if you have the sigprocmask function.  */
-#undef HAVE_SIGPROCMASK
+/* The value of EINPROGRESS. */
+#undef CONST_EINPROGRESS
 
-/* Define if you have the snprintf function.  */
-#undef HAVE_SNPRINTF
+/* The value of EINTR. */
+#undef CONST_EINTR
 
-/* Define if you have the stime function.  */
-#undef HAVE_STIME
+/* The value of EINVAL. */
+#undef CONST_EINVAL
 
-/* Define if you have the strcasecmp function.  */
-#undef HAVE_STRCASECMP
+/* The value of EIO. */
+#undef CONST_EIO
 
-/* Define if you have the strcmp function.  */
-#undef HAVE_STRCMP
+/* The value of EISCONN. */
+#undef CONST_EISCONN
 
-/* Define if you have the strcmpi function.  */
-#undef HAVE_STRCMPI
+/* The value of EISDIR. */
+#undef CONST_EISDIR
 
-/* Define if you have the stricmp function.  */
-#undef HAVE_STRICMP
+/* The value of ELOOP. */
+#undef CONST_ELOOP
 
-/* Define if you have the strrchr function.  */
-#undef HAVE_STRRCHR
+/* The value of EMFILE. */
+#undef CONST_EMFILE
 
-/* Define if you have the time function.  */
-#undef HAVE_TIME
+/* The value of EMLINK. */
+#undef CONST_EMLINK
 
-/* Define if you have the times function.  */
-#undef HAVE_TIMES
+/* The value of EMSGSIZE. */
+#undef CONST_EMSGSIZE
 
-/* Define if you have the unsetenv function.  */
-#undef HAVE_UNSETENV
+/* The value of EMULTIHOP. */
+#undef CONST_EMULTIHOP
 
-/* Define if you have the valloc function.  */
-#undef HAVE_VALLOC
+/* The value of ENAMETOOLONG. */
+#undef CONST_ENAMETOOLONG
 
-/* Define if you have the vsnprintf function.  */
-#undef HAVE_VSNPRINTF
+/* The value of ENETDOWN. */
+#undef CONST_ENETDOWN
 
-/* Define if you have the <Files.h> header file.  */
-#undef HAVE_FILES_H
+/* The value of ENETRESET. */
+#undef CONST_ENETRESET
 
-/* Define if you have the <GL/gl.h> header file.  */
-#undef HAVE_GL_GL_H
+/* The value of ENETUNREACH. */
+#undef CONST_ENETUNREACH
 
-/* Define if you have the <OpenGL/gl.h> header file.  */
-#undef HAVE_OPENGL_GL_H
+/* The value of ENFILE. */
+#undef CONST_ENFILE
 
-/* Define if you have the <arpa/inet.h> header file.  */
+/* The value of ENOBUFS. */
+#undef CONST_ENOBUFS
+
+/* The value of ENODATA. */
+#undef CONST_ENODATA
+
+/* The value of ENODEV. */
+#undef CONST_ENODEV
+
+/* The value of ENOENT. */
+#undef CONST_ENOENT
+
+/* The value of ENOEXEC. */
+#undef CONST_ENOEXEC
+
+/* The value of ENOLCK. */
+#undef CONST_ENOLCK
+
+/* The value of ENOLINK. */
+#undef CONST_ENOLINK
+
+/* The value of ENOMEM. */
+#undef CONST_ENOMEM
+
+/* The value of ENOMSG. */
+#undef CONST_ENOMSG
+
+/* The value of ENONET. */
+#undef CONST_ENONET
+
+/* The value of ENOPROTOOPT. */
+#undef CONST_ENOPROTOOPT
+
+/* The value of ENOSPC. */
+#undef CONST_ENOSPC
+
+/* The value of ENOSR. */
+#undef CONST_ENOSR
+
+/* The value of ENOSTR. */
+#undef CONST_ENOSTR
+
+/* The value of ENOSYS. */
+#undef CONST_ENOSYS
+
+/* The value of ENOTBLK. */
+#undef CONST_ENOTBLK
+
+/* The value of ENOTCONN. */
+#undef CONST_ENOTCONN
+
+/* The value of ENOTDIR. */
+#undef CONST_ENOTDIR
+
+/* The value of ENOTEMPTY. */
+#undef CONST_ENOTEMPTY
+
+/* The value of ENOTSOCK. */
+#undef CONST_ENOTSOCK
+
+/* The value of ENOTTY. */
+#undef CONST_ENOTTY
+
+/* The value of ENXIO. */
+#undef CONST_ENXIO
+
+/* The value of EOPNOTSUPP. */
+#undef CONST_EOPNOTSUPP
+
+/* The value of EPERM. */
+#undef CONST_EPERM
+
+/* The value of EPFNOSUPPORT. */
+#undef CONST_EPFNOSUPPORT
+
+/* The value of EPIPE. */
+#undef CONST_EPIPE
+
+/* The value of EPROCLIM. */
+#undef CONST_EPROCLIM
+
+/* The value of EPROCUNAVAIL. */
+#undef CONST_EPROCUNAVAIL
+
+/* The value of EPROGMISMATCH. */
+#undef CONST_EPROGMISMATCH
+
+/* The value of EPROGUNAVAIL. */
+#undef CONST_EPROGUNAVAIL
+
+/* The value of EPROTO. */
+#undef CONST_EPROTO
+
+/* The value of EPROTONOSUPPORT. */
+#undef CONST_EPROTONOSUPPORT
+
+/* The value of EPROTOTYPE. */
+#undef CONST_EPROTOTYPE
+
+/* The value of ERANGE. */
+#undef CONST_ERANGE
+
+/* The value of EREMCHG. */
+#undef CONST_EREMCHG
+
+/* The value of EREMOTE. */
+#undef CONST_EREMOTE
+
+/* The value of EROFS. */
+#undef CONST_EROFS
+
+/* The value of ERPCMISMATCH. */
+#undef CONST_ERPCMISMATCH
+
+/* The value of ERREMOTE. */
+#undef CONST_ERREMOTE
+
+/* The value of ESHUTDOWN. */
+#undef CONST_ESHUTDOWN
+
+/* The value of ESOCKTNOSUPPORT. */
+#undef CONST_ESOCKTNOSUPPORT
+
+/* The value of ESPIPE. */
+#undef CONST_ESPIPE
+
+/* The value of ESRCH. */
+#undef CONST_ESRCH
+
+/* The value of ESRMNT. */
+#undef CONST_ESRMNT
+
+/* The value of ESTALE. */
+#undef CONST_ESTALE
+
+/* The value of ETIME. */
+#undef CONST_ETIME
+
+/* The value of ETIMEDOUT. */
+#undef CONST_ETIMEDOUT
+
+/* The value of ETOOMANYREFS. */
+#undef CONST_ETOOMANYREFS
+
+/* The value of ETXTBSY. */
+#undef CONST_ETXTBSY
+
+/* The value of EUSERS. */
+#undef CONST_EUSERS
+
+/* The value of EWOULDBLOCK. */
+#undef CONST_EWOULDBLOCK
+
+/* The value of EXDEV. */
+#undef CONST_EXDEV
+
+/* The value of O_BINARY. */
+#undef CONST_O_BINARY
+
+/* Define to one of `_getb67', `GETB67', `getb67' for Cray-2 and Cray-YMP
+   systems. This function is required for `alloca.c' support on those systems.
+   */
+#undef CRAY_STACKSEG_END
+
+/* Define to 1 if using `alloca.c'. */
+#undef C_ALLOCA
+
+/* Define to 1 if you have `alloca', as a function or macro. */
+#undef HAVE_ALLOCA
+
+/* Define to 1 if you have <alloca.h> and it should be used (not on Ultrix).
+   */
+#undef HAVE_ALLOCA_H
+
+/* Define to 1 if you have the <arpa/inet.h> header file. */
 #undef HAVE_ARPA_INET_H
 
-/* Define if you have the <assert.h> header file.  */
+/* Define to 1 if you have the <assert.h> header file. */
 #undef HAVE_ASSERT_H
 
-/* Define if you have the <conio.h> header file.  */
+/* Define to 1 if you have the `canonicalize_file_name' function. */
+#undef HAVE_CANONICALIZE_FILE_NAME
+
+/* Define to 1 if you have the <conio.h> header file. */
 #undef HAVE_CONIO_H
 
-/* Define if you have the <console.h> header file.  */
+/* Define to 1 if you have the <console.h> header file. */
 #undef HAVE_CONSOLE_H
 
-/* Define if you have the <ctype.h> header file.  */
+/* Define to 1 if you have the <ctype.h> header file. */
 #undef HAVE_CTYPE_H
 
-/* Define if you have the <direct.h> header file.  */
+/* Define to 1 if you have the <direct.h> header file. */
 #undef HAVE_DIRECT_H
 
-/* Define if you have the <dirent.h> header file.  */
+/* Define to 1 if you have the <dirent.h> header file. */
 #undef HAVE_DIRENT_H
 
-/* Define if you have the <dl.h> header file.  */
-#undef HAVE_DL_H
-
-/* Define if you have the <dlfcn.h> header file.  */
+/* Define to 1 if you have the <dlfcn.h> header file. */
 #undef HAVE_DLFCN_H
 
-/* Define if you have the <dos.h> header file.  */
+/* Define to 1 if you have the <dl.h> header file. */
+#undef HAVE_DL_H
+
+/* Define to 1 if you have the <dos.h> header file. */
 #undef HAVE_DOS_H
 
-/* Define if you have the <errno.h> header file.  */
+/* Define to 1 if you have the `dup' function. */
+#undef HAVE_DUP
+
+/* Define to 1 if you have the <errno.h> header file. */
 #undef HAVE_ERRNO_H
 
-/* Define if you have the <fcntl.h> header file.  */
+/* Define to 1 if you have the `farcalloc' function. */
+#undef HAVE_FARCALLOC
+
+/* Define to 1 if you have the <fcntl.h> header file. */
 #undef HAVE_FCNTL_H
 
-/* Define if you have the <float.h> header file.  */
+/* Define to 1 if you have the `fgetpos' function. */
+#undef HAVE_FGETPOS
+
+/* Define to 1 if you have the <Files.h> header file. */
+#undef HAVE_FILES_H
+
+/* Define to 1 if you have the <float.h> header file. */
 #undef HAVE_FLOAT_H
 
-/* Define if you have the <ftw.h> header file.  */
+/* Define to 1 if you have the `fseek' function. */
+#undef HAVE_FSEEK
+
+/* Define to 1 if you have the `fsetpos' function. */
+#undef HAVE_FSETPOS
+
+/* Define to 1 if you have the `fstat' function. */
+#undef HAVE_FSTAT
+
+/* Define to 1 if you have the `ftell' function. */
+#undef HAVE_FTELL
+
+/* Define to 1 if you have the `ftime' function. */
+#undef HAVE_FTIME
+
+/* Define to 1 if you have the <ftw.h> header file. */
 #undef HAVE_FTW_H
 
-/* Define if you have the <grp.h> header file.  */
+/* Define to 1 if you have the `getclock' function. */
+#undef HAVE_GETCLOCK
+
+/* Define to 1 if you have the `getrusage' function. */
+#undef HAVE_GETRUSAGE
+
+/* Define to 1 if you have the `gettimeofday' function. */
+#undef HAVE_GETTIMEOFDAY
+
+/* Define to 1 if you have the <GL/gl.h> header file. */
+#undef HAVE_GL_GL_H
+
+/* Define to 1 if you have the `gmtime' function. */
+#undef HAVE_GMTIME
+
+/* Define to 1 if you have the <grp.h> header file. */
 #undef HAVE_GRP_H
 
-/* Define if you have the <io.h> header file.  */
+/* Define to 1 if you have the <inttypes.h> header file. */
+#undef HAVE_INTTYPES_H
+
+/* Define to 1 if you have the <io.h> header file. */
 #undef HAVE_IO_H
 
-/* Define if you have the <limits.h> header file.  */
+/* Define to 1 if you have the `isatty' function. */
+#undef HAVE_ISATTY
+
+/* Define to 1 if you have the <limits.h> header file. */
 #undef HAVE_LIMITS_H
 
-/* Define if you have the <mach-o/dyld.h> header file.  */
+/* Define to 1 if you have the <locale.h> header file. */
+#undef HAVE_LOCALE_H
+
+/* Define to 1 if you have the `localtime' function. */
+#undef HAVE_LOCALTIME
+
+/* Define to 1 if you have the `lstat' function. */
+#undef HAVE_LSTAT
+
+/* Define to 1 if you have the <mach-o/dyld.h> header file. */
 #undef HAVE_MACH_O_DYLD_H
 
-/* Define if you have the <netdb.h> header file.  */
+/* Define to 1 if you have the `macsystem' function. */
+#undef HAVE_MACSYSTEM
+
+/* Define to 1 if you have the <memory.h> header file. */
+#undef HAVE_MEMORY_H
+
+/* Define to 1 if you have the `mktime' function. */
+#undef HAVE_MKTIME
+
+/* Define to 1 if you have the <netdb.h> header file. */
 #undef HAVE_NETDB_H
 
-/* Define if you have the <netinet/in.h> header file.  */
+/* Define to 1 if you have the <netinet/in.h> header file. */
 #undef HAVE_NETINET_IN_H
 
-/* Define if you have the <netinet/tcp.h> header file.  */
+/* Define to 1 if you have the <netinet/tcp.h> header file. */
 #undef HAVE_NETINET_TCP_H
 
-/* Define if you have the <nlist.h> header file.  */
+/* Define to 1 if you have the <nlist.h> header file. */
 #undef HAVE_NLIST_H
 
-/* Define if you have the <pascal.h> header file.  */
+/* Define to 1 if you have the <OpenGL/gl.h> header file. */
+#undef HAVE_OPENGL_GL_H
+
+/* Define to 1 if you have the <pascal.h> header file. */
 #undef HAVE_PASCAL_H
 
-/* Define if you have the <pwd.h> header file.  */
+/* Define to 1 if you have the `PBHSetVolSync' function. */
+#undef HAVE_PBHSETVOLSYNC
+
+/* Define to 1 if you have the `pclose' function. */
+#undef HAVE_PCLOSE
+
+/* Define to 1 if you have the `poly' function. */
+#undef HAVE_POLY
+
+/* Define to 1 if you have the `popen' function. */
+#undef HAVE_POPEN
+
+/* Define if you have POSIX threads libraries and header files. */
+#undef HAVE_PTHREAD
+
+/* Define to 1 if you have the <pwd.h> header file. */
 #undef HAVE_PWD_H
 
-/* Define if you have the <regex.h> header file.  */
+/* Define to 1 if you have the `readdir_r' function. */
+#undef HAVE_READDIR_R
+
+/* Define to 1 if you have the `realpath' function. */
+#undef HAVE_REALPATH
+
+/* Define to 1 if you have the <regex.h> header file. */
 #undef HAVE_REGEX_H
 
-/* Define if you have the <sgtty.h> header file.  */
+/* Define to 1 if you have the `rindex' function. */
+#undef HAVE_RINDEX
+
+/* Define to 1 if you have the `select' function. */
+#undef HAVE_SELECT
+
+/* Define to 1 if you have the `setenv' function. */
+#undef HAVE_SETENV
+
+/* Define to 1 if you have the <sgtty.h> header file. */
 #undef HAVE_SGTTY_H
 
-/* Define if you have the <signal.h> header file.  */
+/* Define to 1 if you have the <signal.h> header file. */
 #undef HAVE_SIGNAL_H
 
-/* Define if you have the <stat.h> header file.  */
+/* Define to 1 if you have the sigpoll function. */
+#undef HAVE_SIGPOLL
+
+/* Define to 1 if you have the `sigprocmask' function. */
+#undef HAVE_SIGPROCMASK
+
+/* Define to 1 if you have the `snprintf' function. */
+#undef HAVE_SNPRINTF
+
+/* Define to 1 if you have the <stat.h> header file. */
 #undef HAVE_STAT_H
 
-/* Define if you have the <std.h> header file.  */
-#undef HAVE_STD_H
-
-/* Define if you have the <stdarg.h> header file.  */
+/* Define to 1 if you have the <stdarg.h> header file. */
 #undef HAVE_STDARG_H
 
-/* Define if you have the <stdlib.h> header file.  */
+/* Define to 1 if you have the <stdint.h> header file. */
+#undef HAVE_STDINT_H
+
+/* Define to 1 if you have the <stdlib.h> header file. */
 #undef HAVE_STDLIB_H
 
-/* Define if you have the <string.h> header file.  */
+/* Define to 1 if you have the <std.h> header file. */
+#undef HAVE_STD_H
+
+/* Define to 1 if you have the `stime' function. */
+#undef HAVE_STIME
+
+/* Define to 1 if you have the `strcasecmp' function. */
+#undef HAVE_STRCASECMP
+
+/* Define to 1 if you have the `strcmp' function. */
+#undef HAVE_STRCMP
+
+/* Define to 1 if you have the `strcmpi' function. */
+#undef HAVE_STRCMPI
+
+/* Define to 1 if you have the `stricmp' function. */
+#undef HAVE_STRICMP
+
+/* Define to 1 if you have the <strings.h> header file. */
+#undef HAVE_STRINGS_H
+
+/* Define to 1 if you have the <string.h> header file. */
 #undef HAVE_STRING_H
 
-/* Define if you have the <sys/ioctl.h> header file.  */
+/* Define to 1 if you have the `strrchr' function. */
+#undef HAVE_STRRCHR
+
+/* Define to 1 if `tm_zone' is member of `struct tm'. */
+#undef HAVE_STRUCT_TM_TM_ZONE
+
+/* Define to 1 if you have the <sys/ioctl.h> header file. */
 #undef HAVE_SYS_IOCTL_H
 
-/* Define if you have the <sys/param.h> header file.  */
+/* Define to 1 if you have the <sys/param.h> header file. */
 #undef HAVE_SYS_PARAM_H
 
-/* Define if you have the <sys/resource.h> header file.  */
+/* Define to 1 if you have the <sys/resource.h> header file. */
 #undef HAVE_SYS_RESOURCE_H
 
-/* Define if you have the <sys/socket.h> header file.  */
+/* Define to 1 if you have the <sys/socket.h> header file. */
 #undef HAVE_SYS_SOCKET_H
 
-/* Define if you have the <sys/stat.h> header file.  */
+/* Define to 1 if you have the <sys/stat.h> header file. */
 #undef HAVE_SYS_STAT_H
 
-/* Define if you have the <sys/time.h> header file.  */
-#undef HAVE_SYS_TIME_H
-
-/* Define if you have the <sys/timeb.h> header file.  */
+/* Define to 1 if you have the <sys/timeb.h> header file. */
 #undef HAVE_SYS_TIMEB_H
 
-/* Define if you have the <sys/timers.h> header file.  */
+/* Define to 1 if you have the <sys/timers.h> header file. */
 #undef HAVE_SYS_TIMERS_H
 
-/* Define if you have the <sys/times.h> header file.  */
+/* Define to 1 if you have the <sys/times.h> header file. */
 #undef HAVE_SYS_TIMES_H
 
-/* Define if you have the <sys/types.h> header file.  */
+/* Define to 1 if you have the <sys/time.h> header file. */
+#undef HAVE_SYS_TIME_H
+
+/* Define to 1 if you have the <sys/types.h> header file. */
 #undef HAVE_SYS_TYPES_H
 
-/* Define if you have the <sys/uio.h> header file.  */
+/* Define to 1 if you have the <sys/uio.h> header file. */
 #undef HAVE_SYS_UIO_H
 
-/* Define if you have the <sys/un.h> header file.  */
+/* Define to 1 if you have the <sys/un.h> header file. */
 #undef HAVE_SYS_UN_H
 
-/* Define if you have the <sys/utsname.h> header file.  */
+/* Define to 1 if you have the <sys/utsname.h> header file. */
 #undef HAVE_SYS_UTSNAME_H
 
-/* Define if you have the <termio.h> header file.  */
-#undef HAVE_TERMIO_H
+/* Define to 1 if you have <sys/wait.h> that is POSIX.1 compatible. */
+#undef HAVE_SYS_WAIT_H
 
-/* Define if you have the <termios.h> header file.  */
+/* Define to 1 if you have the <termios.h> header file. */
 #undef HAVE_TERMIOS_H
 
-/* Define if you have the <time.h> header file.  */
+/* Define to 1 if you have the <termio.h> header file. */
+#undef HAVE_TERMIO_H
+
+/* Define to 1 if you have the `time' function. */
+#undef HAVE_TIME
+
+/* Define to 1 if you have the `times' function. */
+#undef HAVE_TIMES
+
+/* Define to 1 if you have the <time.h> header file. */
 #undef HAVE_TIME_H
 
-/* Define if you have the <unistd.h> header file.  */
+/* Define to 1 if your `struct tm' has `tm_zone'. Deprecated, use
+   `HAVE_STRUCT_TM_TM_ZONE' instead. */
+#undef HAVE_TM_ZONE
+
+/* Define to 1 if you don't have `tm_zone' but do have the external array
+   `tzname'. */
+#undef HAVE_TZNAME
+
+/* Define to 1 if you have the <unistd.h> header file. */
 #undef HAVE_UNISTD_H
 
-/* Define if you have the <utime.h> header file.  */
+/* Define to 1 if you have the `unsetenv' function. */
+#undef HAVE_UNSETENV
+
+/* Define to 1 if you have the <utime.h> header file. */
 #undef HAVE_UTIME_H
 
-/* Define if you have the <values.h> header file.  */
+/* Define to 1 if you have the `valloc' function. */
+#undef HAVE_VALLOC
+
+/* Define to 1 if you have the <values.h> header file. */
 #undef HAVE_VALUES_H
 
-/* Define if you have the <vfork.h> header file.  */
+/* Define to 1 if you have the <vfork.h> header file. */
 #undef HAVE_VFORK_H
 
-/* Define if you have the <windows.h> header file.  */
+/* Define to 1 if you have the `vsnprintf' function. */
+#undef HAVE_VSNPRINTF
+
+/* Define to 1 if you have the <wchar.h> header file. */
+#undef HAVE_WCHAR_H
+
+/* Define to 1 if you have the <windows.h> header file. */
 #undef HAVE_WINDOWS_H
 
-/* Define if you have the <winsock.h> header file.  */
+/* Define to 1 if you have the <winsock.h> header file. */
 #undef HAVE_WINSOCK_H
 
-/* Define if netinet/in.h defines the in_addr type.  */
-#undef HAVE_IN_ADDR_T
+/* Define to 1 if you have the `_fullpath' function. */
+#undef HAVE__FULLPATH
 
-/* Define if you have the dl library (-ldl).  */
-#undef HAVE_LIBDL
+/* Define to 1 if you have the `_pclose' function. */
+#undef HAVE__PCLOSE
 
-/* Define if you have the dld library (-ldld).  */
-#undef HAVE_LIBDLD
+/* Define to 1 if you have the `_popen' function. */
+#undef HAVE__POPEN
 
-/* Define if you have the m library (-lm).  */
-#undef HAVE_LIBM
+/* Define to 1 if you have the `_snprintf' function. */
+#undef HAVE__SNPRINTF
 
-/* Define if you have the editline library (-leditline).  */
-#undef HAVE_LIBREADLINE
+/* Define to 1 if you have the `_stricmp' function. */
+#undef HAVE__STRICMP
 
-/* Define if struct msghdr contains msg_accrights field */
-#undef HAVE_STRUCT_MSGHDR_MSG_ACCRIGHTS
- 
-/* Define if struct msghdr contains msg_control field */
-#undef HAVE_STRUCT_MSGHDR_MSG_CONTROL
-
-/* Host cpu architecture */
-#undef HOST_ARCH
-
-/* Host operating system */
-#undef HOST_OS
+/* Define to 1 if you have the `_vsnprintf' function. */
+#undef HAVE__VSNPRINTF
 
 /* Define to Haskell type for cc_t */
 #undef HTYPE_CC_T
@@ -583,7 +842,7 @@
 /* Define to Haskell type for dev_t */
 #undef HTYPE_DEV_T
 
-/* Define to Haskell type for signed double */
+/* Define to Haskell type for double */
 #undef HTYPE_DOUBLE
 
 /* Define to Haskell type for float */
@@ -603,7 +862,7 @@
 
 /* Define to Haskell type for GLclampd */
 #undef HTYPE_GLCLAMPD
- 
+
 /* Define to Haskell type for GLclampf */
 #undef HTYPE_GLCLAMPF
 
@@ -634,11 +893,11 @@
 /* Define to Haskell type for GLushort */
 #undef HTYPE_GLUSHORT
 
-/* Define to Haskell type for int */
-#undef HTYPE_INT
-
 /* Define to Haskell type for ino_t */
 #undef HTYPE_INO_T
+
+/* Define to Haskell type for int */
+#undef HTYPE_INT
 
 /* Define to Haskell type for long */
 #undef HTYPE_LONG
@@ -667,11 +926,11 @@
 /* Define to Haskell type for short */
 #undef HTYPE_SHORT
 
-/* Define to Haskell type for sig_atomic_t */
-#undef HTYPE_SIG_ATOMIC_T
-
 /* Define to Haskell type for signed char */
 #undef HTYPE_SIGNED_CHAR
+
+/* Define to Haskell type for sig_atomic_t */
+#undef HTYPE_SIG_ATOMIC_T
 
 /* Define to Haskell type for size_t */
 #undef HTYPE_SIZE_T
@@ -682,11 +941,11 @@
 /* Define to Haskell type for ssize_t */
 #undef HTYPE_SSIZE_T
 
-/* Define to Haskell type for time_t */
-#undef HTYPE_TIME_T
-
 /* Define to Haskell type for tcflag_t */
 #undef HTYPE_TCFLAG_T
+
+/* Define to Haskell type for time_t */
+#undef HTYPE_TIME_T
 
 /* Define to Haskell type for uid_t */
 #undef HTYPE_UID_T
@@ -709,299 +968,119 @@
 /* Define to Haskell type for wchar_t */
 #undef HTYPE_WCHAR_T
 
-/* The value of E2BIG.  */
-#undef CONST_E2BIG
+/* Define to the address where bug reports for this package should be sent. */
+#undef PACKAGE_BUGREPORT
 
-/* The value of EACCES.  */
-#undef CONST_EACCES
+/* Define to the full name of this package. */
+#undef PACKAGE_NAME
 
-/* The value of EADDRINUSE.  */
-#undef CONST_EADDRINUSE
+/* Define to the full name and version of this package. */
+#undef PACKAGE_STRING
 
-/* The value of EADDRNOTAVAIL.  */
-#undef CONST_EADDRNOTAVAIL
+/* Define to the one symbol short name of this package. */
+#undef PACKAGE_TARNAME
 
-/* The value of EADV.  */
-#undef CONST_EADV
+/* Define to the version of this package. */
+#undef PACKAGE_VERSION
 
-/* The value of EAFNOSUPPORT.  */
-#undef CONST_EAFNOSUPPORT
+/* Define to the necessary symbol if this constant uses a non-standard name on
+   your system. */
+#undef PTHREAD_CREATE_JOINABLE
 
-/* The value of EAGAIN.  */
-#undef CONST_EAGAIN
+/* Define as the return type of signal handlers (`int' or `void'). */
+#undef RETSIGTYPE
 
-/* The value of EALREADY.  */
-#undef CONST_EALREADY
+/* The size of a `char', as computed by sizeof. */
+#undef SIZEOF_CHAR
 
-/* The value of EBADF.  */
-#undef CONST_EBADF
+/* The size of a `double', as computed by sizeof. */
+#undef SIZEOF_DOUBLE
 
-/* The value of EBADMSG.  */
-#undef CONST_EBADMSG
+/* The size of a `float', as computed by sizeof. */
+#undef SIZEOF_FLOAT
 
-/* The value of EBADRPC.  */
-#undef CONST_EBADRPC
+/* The size of a `int', as computed by sizeof. */
+#undef SIZEOF_INT
 
-/* The value of EBUSY.  */
-#undef CONST_EBUSY
+/* The size of a `int*', as computed by sizeof. */
+#undef SIZEOF_INTP
 
-/* The value of ECHILD.  */
-#undef CONST_ECHILD
+/* The size of a `long', as computed by sizeof. */
+#undef SIZEOF_LONG
 
-/* The value of ECOMM.  */
-#undef CONST_ECOMM
+/* The size of a `long long', as computed by sizeof. */
+#undef SIZEOF_LONG_LONG
 
-/* The value of ECONNABORTED.  */
-#undef CONST_ECONNABORTED
+/* The size of a `short', as computed by sizeof. */
+#undef SIZEOF_SHORT
 
-/* The value of ECONNREFUSED.  */
-#undef CONST_ECONNREFUSED
+/* The size of a `unsigned char', as computed by sizeof. */
+#undef SIZEOF_UNSIGNED_CHAR
 
-/* The value of ECONNRESET.  */
-#undef CONST_ECONNRESET
+/* The size of a `unsigned int', as computed by sizeof. */
+#undef SIZEOF_UNSIGNED_INT
 
-/* The value of EDEADLK.  */
-#undef CONST_EDEADLK
+/* The size of a `unsigned long', as computed by sizeof. */
+#undef SIZEOF_UNSIGNED_LONG
 
-/* The value of EDESTADDRREQ.  */
-#undef CONST_EDESTADDRREQ
+/* The size of a `unsigned long long', as computed by sizeof. */
+#undef SIZEOF_UNSIGNED_LONG_LONG
 
-/* The value of EDIRTY.  */
-#undef CONST_EDIRTY
+/* The size of a `unsigned short', as computed by sizeof. */
+#undef SIZEOF_UNSIGNED_SHORT
 
-/* The value of EDOM.  */
-#undef CONST_EDOM
+/* The size of a `void *', as computed by sizeof. */
+#undef SIZEOF_VOID_P
 
-/* The value of EDQUOT.  */
-#undef CONST_EDQUOT
+/* If using the C implementation of alloca, define if you know the
+   direction of stack growth for your system; otherwise it will be
+   automatically deduced at run-time.
+        STACK_DIRECTION > 0 => grows toward higher addresses
+        STACK_DIRECTION < 0 => grows toward lower addresses
+        STACK_DIRECTION = 0 => direction of growth unknown */
+#undef STACK_DIRECTION
 
-/* The value of EEXIST.  */
-#undef CONST_EEXIST
+/* Define to 1 if you have the ANSI C header files. */
+#undef STDC_HEADERS
 
-/* The value of EFAULT.  */
-#undef CONST_EFAULT
+/* Define to 1 if you can safely include both <sys/time.h> and <time.h>. */
+#undef TIME_WITH_SYS_TIME
 
-/* The value of EFBIG.  */
-#undef CONST_EFBIG
+/* Define to 1 if your <sys/time.h> declares `struct tm'. */
+#undef TM_IN_SYS_TIME
 
-/* The value of EFTYPE.  */
-#undef CONST_EFTYPE
+/* Define to 1 to make the Haskell Char type range over Unicode. */
+#undef UNICODE_CHARS
 
-/* The value of EHOSTDOWN.  */
-#undef CONST_EHOSTDOWN
+/* Define to 1 if the X Window System is missing or not being used. */
+#undef X_DISPLAY_MISSING
 
-/* The value of EHOSTUNREACH.  */
-#undef CONST_EHOSTUNREACH
+/* Define to empty if `const' does not conform to ANSI C. */
+#undef const
 
-/* The value of EIDRM.  */
-#undef CONST_EIDRM
+/* Define if netinet/in.h defines the in_addr type.  */
+#undef HAVE_IN_ADDR_T
 
-/* The value of EILSEQ.  */
-#undef CONST_EILSEQ
+/* Define if you have the dl library (-ldl).  */
+#undef HAVE_LIBDL
 
-/* The value of EINPROGRESS.  */
-#undef CONST_EINPROGRESS
+/* Define if you have the dld library (-ldld).  */
+#undef HAVE_LIBDLD
 
-/* The value of EINTR.  */
-#undef CONST_EINTR
+/* Define if you have the m library (-lm).  */
+#undef HAVE_LIBM
 
-/* The value of EINVAL.  */
-#undef CONST_EINVAL
+/* Define if you have the editline library (-leditline).  */
+#undef HAVE_LIBREADLINE
 
-/* The value of EIO.  */
-#undef CONST_EIO
+/* Define if struct msghdr contains msg_accrights field */
+#undef HAVE_STRUCT_MSGHDR_MSG_ACCRIGHTS
+ 
+/* Define if struct msghdr contains msg_control field */
+#undef HAVE_STRUCT_MSGHDR_MSG_CONTROL
 
-/* The value of EISCONN.  */
-#undef CONST_EISCONN
+/* Host cpu architecture */
+#undef HOST_ARCH
 
-/* The value of EISDIR.  */
-#undef CONST_EISDIR
-
-/* The value of ELOOP.  */
-#undef CONST_ELOOP
-
-/* The value of EMFILE.  */
-#undef CONST_EMFILE
-
-/* The value of EMLINK.  */
-#undef CONST_EMLINK
-
-/* The value of EMSGSIZE.  */
-#undef CONST_EMSGSIZE
-
-/* The value of EMULTIHOP.  */
-#undef CONST_EMULTIHOP
-
-/* The value of ENAMETOOLONG.  */
-#undef CONST_ENAMETOOLONG
-
-/* The value of ENETDOWN.  */
-#undef CONST_ENETDOWN
-
-/* The value of ENETRESET.  */
-#undef CONST_ENETRESET
-
-/* The value of ENETUNREACH.  */
-#undef CONST_ENETUNREACH
-
-/* The value of ENFILE.  */
-#undef CONST_ENFILE
-
-/* The value of ENOBUFS.  */
-#undef CONST_ENOBUFS
-
-/* The value of ENODATA.  */
-#undef CONST_ENODATA
-
-/* The value of ENODEV.  */
-#undef CONST_ENODEV
-
-/* The value of ENOENT.  */
-#undef CONST_ENOENT
-
-/* The value of ENOEXEC.  */
-#undef CONST_ENOEXEC
-
-/* The value of ENOLCK.  */
-#undef CONST_ENOLCK
-
-/* The value of ENOLINK.  */
-#undef CONST_ENOLINK
-
-/* The value of ENOMEM.  */
-#undef CONST_ENOMEM
-
-/* The value of ENOMSG.  */
-#undef CONST_ENOMSG
-
-/* The value of ENONET.  */
-#undef CONST_ENONET
-
-/* The value of ENOPROTOOPT.  */
-#undef CONST_ENOPROTOOPT
-
-/* The value of ENOSPC.  */
-#undef CONST_ENOSPC
-
-/* The value of ENOSR.  */
-#undef CONST_ENOSR
-
-/* The value of ENOSTR.  */
-#undef CONST_ENOSTR
-
-/* The value of ENOSYS.  */
-#undef CONST_ENOSYS
-
-/* The value of ENOTBLK.  */
-#undef CONST_ENOTBLK
-
-/* The value of ENOTCONN.  */
-#undef CONST_ENOTCONN
-
-/* The value of ENOTDIR.  */
-#undef CONST_ENOTDIR
-
-/* The value of ENOTEMPTY.  */
-#undef CONST_ENOTEMPTY
-
-/* The value of ENOTSOCK.  */
-#undef CONST_ENOTSOCK
-
-/* The value of ENOTTY.  */
-#undef CONST_ENOTTY
-
-/* The value of ENXIO.  */
-#undef CONST_ENXIO
-
-/* The value of EOPNOTSUPP.  */
-#undef CONST_EOPNOTSUPP
-
-/* The value of EPERM.  */
-#undef CONST_EPERM
-
-/* The value of EPFNOSUPPORT.  */
-#undef CONST_EPFNOSUPPORT
-
-/* The value of EPIPE.  */
-#undef CONST_EPIPE
-
-/* The value of EPROCLIM.  */
-#undef CONST_EPROCLIM
-
-/* The value of EPROCUNAVAIL.  */
-#undef CONST_EPROCUNAVAIL
-
-/* The value of EPROGMISMATCH.  */
-#undef CONST_EPROGMISMATCH
-
-/* The value of EPROGUNAVAIL.  */
-#undef CONST_EPROGUNAVAIL
-
-/* The value of EPROTO.  */
-#undef CONST_EPROTO
-
-/* The value of EPROTONOSUPPORT.  */
-#undef CONST_EPROTONOSUPPORT
-
-/* The value of EPROTOTYPE.  */
-#undef CONST_EPROTOTYPE
-
-/* The value of ERANGE.  */
-#undef CONST_ERANGE
-
-/* The value of EREMCHG.  */
-#undef CONST_EREMCHG
-
-/* The value of EREMOTE.  */
-#undef CONST_EREMOTE
-
-/* The value of EROFS.  */
-#undef CONST_EROFS
-
-/* The value of ERPCMISMATCH.  */
-#undef CONST_ERPCMISMATCH
-
-/* The value of ERREMOTE.  */
-#undef CONST_ERREMOTE
-
-/* The value of ESHUTDOWN.  */
-#undef CONST_ESHUTDOWN
-
-/* The value of ESOCKTNOSUPPORT.  */
-#undef CONST_ESOCKTNOSUPPORT
-
-/* The value of ESPIPE.  */
-#undef CONST_ESPIPE
-
-/* The value of ESRCH.  */
-#undef CONST_ESRCH
-
-/* The value of ESRMNT.  */
-#undef CONST_ESRMNT
-
-/* The value of ESTALE.  */
-#undef CONST_ESTALE
-
-/* The value of ETIME.  */
-#undef CONST_ETIME
-
-/* The value of ETIMEDOUT.  */
-#undef CONST_ETIMEDOUT
-
-/* The value of ETOOMANYREFS.  */
-#undef CONST_ETOOMANYREFS
-
-/* The value of ETXTBSY.  */
-#undef CONST_ETXTBSY
-
-/* The value of EUSERS.  */
-#undef CONST_EUSERS
-
-/* The value of EWOULDBLOCK.  */
-#undef CONST_EWOULDBLOCK
-
-/* The value of EXDEV.  */
-#undef CONST_EXDEV
-
-/* The value of O_BINARY.  */
-#undef CONST_O_BINARY
+/* Host operating system */
+#undef HOST_OS
