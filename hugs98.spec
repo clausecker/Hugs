@@ -52,6 +52,7 @@ make
 %install
 rm -rf ${RPM_BUILD_ROOT}
 make DESTDIR=${RPM_BUILD_ROOT} INSTALL_DOCS=NO install
+make -C docs DESTDIR=${RPM_BUILD_ROOT} install_man
 
 %files
 %defattr(-,root,root)
