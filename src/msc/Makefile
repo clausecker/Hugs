@@ -145,7 +145,7 @@ compiler.obj	: $(PRELUDE) storage.h connect.h errors.h
 machine.obj	: $(PRELUDE) storage.h connect.h errors.h
 plugin.obj	: $(PRELUDE) storage.h connect.h errors.h
 builtin.obj	: $(PRELUDE) storage.h connect.h errors.h \
-		  bignums.c printer.c iomonad.c interns.c stmonad.c array.c
+		  bignums.c printer.c iomonad.c interns.c stmonad.c array.c dirprim.c timeprim.c
 
 ################################################################
 # Regression tests (none supplied)
