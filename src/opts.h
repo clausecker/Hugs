@@ -115,4 +115,20 @@ extern Bool   printing;                 /* TRUE => currently printing value*/
  *    into scope.
  */
 
+/*
+ * Representing toggles -- exposed here so that UIs (such as winhugs/) can 
+ * work off the toggle[] array when putting together an 'Options' dialog.
+ *
+ */
+struct options {                        /* command line option toggles     */
+    char   c;                           /* table defined in main app.      */
+#if !HASKELL_98_ONLY
+    int    h98;                         /* set in Haskell'98 mode?         */
+#endif
+    String description;
+    Bool   *flag;
+};
+
+extern struct options toggle[];
+
 #endif /* __OPTS_H__ */
