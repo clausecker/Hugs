@@ -2,9 +2,10 @@ module Hugs.Char (
     isAscii, isLatin1, isControl, isPrint, isSpace, isUpper, isLower,
     isAlpha, isDigit, isOctDigit, isHexDigit, isAlphaNum,
     intToDigit,
-    toUpper, toLower,
+    toUpper, toLower, toTitle,
     ord, chr,
-    readLitChar, showLitChar, lexLitChar
+    readLitChar, showLitChar, lexLitChar,
+    primUniGenCat
     ) where
 
 import Hugs.Prelude(
@@ -36,6 +37,7 @@ intToDigit i
 -- Case-changing operations
 primitive toUpper        :: Char -> Char
 primitive toLower        :: Char -> Char
+primitive toTitle        :: Char -> Char
 
 -- Character code functions
 ord                      :: Char -> Int
@@ -43,3 +45,6 @@ ord                      =  fromEnum
 
 chr                      :: Int  -> Char
 chr                      =  toEnum
+
+-- Unicode character classification
+primitive primUniGenCat  :: Char -> Int
