@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.129 $
- * $Date: 2003/10/16 00:16:47 $
+ * $Revision: 1.130 $
+ * $Date: 2003/10/28 11:47:22 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -21,7 +21,6 @@
 #include "strutil.h"
 #include "evaluator.h"
 #include "machdep.h"
-#include "goal.h"
 #include "output.h"
 #include "module.h"
 #include <setjmp.h>

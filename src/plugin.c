@@ -7,14 +7,13 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: plugin.c,v $
- * $Revision: 1.9 $
- * $Date: 2003/10/16 03:17:55 $
+ * $Revision: 1.10 $
+ * $Date: 2003/10/28 11:47:22 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
 #include "storage.h"
 #include "connect.h"
-#include "errors.h"
 
 /* This file is often compiled with a command-line argument such as
  *   '-DPLUGINS={"Xlib",initXlib},'
