@@ -38,6 +38,7 @@ YACC		= @YACC@
 RM		= @RM@
 CP		= @CP@
 EXE		= @EXE@
+OBJ		= @OBJ@
 
 FPTOOLS		= @FPTOOLS@
 
@@ -91,15 +92,13 @@ version@OBJ@	: version.c $(SOURCES)
 		      -c $(CFLAGS) $(OPTFLAGS) $<
 
 SERVER_OBJECTS	= server@OBJ@ $(OBJECTS) 
-runhugs@OBJ@	: $(PRELUDE) runhugs.c builtin.h observe.h server.h
 runhugs@EXE@	: runhugs@OBJ@ $(SERVER_OBJECTS)
 		  $(CC) $(LDFLAGS) runhugs@OBJ@ $(SERVER_OBJECTS) $(LIBS) -o runhugs@EXE@
 
-ffihugs@OBJ@	: $(PRELUDE) runhugs.c server.h
 ffihugs@EXE@	: ffihugs@OBJ@ $(SERVER_OBJECTS)
 		  $(CC) $(LDFLAGS) ffihugs@OBJ@ $(SERVER_OBJECTS) $(LIBS) -o ffihugs@EXE@
 
-ffihugs@OBJ@	: runhugs.c
+ffihugs@OBJ@	: runhugs@OBJ@
 		  $(CC) -c $(CFLAGS) $(OPTFLAGS) -DFFI_COMPILER runhugs.c -o ffihugs@OBJ@
 
 ################################################################
@@ -192,7 +191,7 @@ TAGS		::
 		  etags *.[ych]
 
 ################################################################
-# Dependencies
+# C and Yacc rules
 ################################################################
 
 .c@OBJ@	:
@@ -213,44 +212,33 @@ parser.c	: parser.y
 # veryclean	::
 # 		  $(RM) parser.c
 
-server@OBJ@	: $(PRELUDE) storage.h connect.h errors.h script.h \
-		  machdep.h evaluator.h opts.h strutil.h server.h
-hugs@OBJ@	: $(PRELUDE) storage.h connect.h errors.h command.h \
-		  script.h opts.h strutil.h evaluator.h machdep.h \
-		  goal.h output.h timer.c 
-storage@OBJ@	: $(PRELUDE) storage.h connect.h errors.h opts.h \
-		  machdep.h evaluator.h strutil.h
-input@OBJ@	: $(PRELUDE) storage.h connect.h errors.h command.h \
-		  module.h script.h opts.h goal.h machdep.h parser.c 
-subst@OBJ@	: $(PRELUDE) storage.h connect.h errors.h output.h \
-                  opts.h subst.h
-static@OBJ@	: $(PRELUDE) storage.h connect.h errors.h machdep.h \
-		  output.h subst.h module.h opts.h goal.h scc.c 
-type@OBJ@	: $(PRELUDE) storage.h connect.h errors.h output.h \
-		  subst.h goal.h preds.c scc.c
-output@OBJ@	: $(PRELUDE) storage.h connect.h errors.h output.h
-compiler@OBJ@	: $(PRELUDE) storage.h connect.h errors.h goal.h
-machine@OBJ@	: $(PRELUDE) storage.h connect.h errors.h
-plugin@OBJ@	: $(PRELUDE) storage.h connect.h errors.h
-builtin@OBJ@	: $(PRELUDE) storage.h connect.h errors.h machdep.h \
-		  builtin.h bignums.c printer.c iomonad.c interns.c \
-		  stmonad.c array.c dirprim.c timeprim.c
-ffi@OBJ@	: $(PRELUDE) storage.h connect.h errors.h output.h strutil.h
-module@OBJ@	: $(PRELUDE) storage.h connect.h errors.h module.h
-machdep@OBJ@	: $(PRELUDE) storage.h connect.h errors.h command.h \
-		  opts.h machdep.h strutil.h
-script@OBJ@	: $(PRELUDE) storage.h connect.h errors.h machdep.h \
-		  opts.h strutil.h script.h 
-strutil@OBJ@	: $(PRELUDE) storage.h connect.h errors.h strutil.h
-errors@OBJ@	: $(PRELUDE) storage.h connect.h errors.h output.h \
-		  opts.h goal.h evaluator.h
-goal@OBJ@	: $(PRELUDE) storage.h machdep.h opts.h goal.h
-opts@OBJ@	: $(PRELUDE) storage.h connect.h errors.h machdep.h \
-		  strutil.h opts.h
-observe@OBJ@	: $(PRELUDE) storage.h connect.h errors.h command.h \
-		  machdep.h builtin.h output.h observe.h
-evaluator@OBJ@	: $(PRELUDE) storage.h connect.h errors.h script.h \
-		  output.h strutil.h opts.h machdep.h evaluator.h
+################################################################
+# Generating object dependencies (requires gcc)
+################################################################
+
+MAKEFILES = Makefile dotnet/Makefile msc/Makefile winhugs/Makefile
+
+depend: $(SOURCES)
+	gcc -MM $(CFILES) | sed 's/\.o:/$$(OBJ):/' >TMP
+	if cmp -s TMP MkDepend.in; then : ; else \
+		$(CP) TMP MkDepend.in; \
+		for mfile in $(MAKEFILES);\
+		do	(echo '/^# Object dependencies/+++,/^# End of object dependencies/---d';\
+			 echo '-r MkDepend.in';\
+			 echo w) | ed - $$mfile; \
+		done;\
+	fi
+	rm TMP
+
+################################################################
+# Object dependencies (Don't change or delete this line)
+################################################################
+
+@MkDepend@
+
+################################################################
+# End of object dependencies (Don't change or delete this line)
+################################################################
 
 ################################################################
 # Regression tests (Unix only)

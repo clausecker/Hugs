@@ -720,6 +720,8 @@ AC_SUBST_DEF(DEV_NULL,"/dev/null")
 AC_SUBST_DEF(RM,"/bin/rm -f")
 AC_SUBST_DEF(CP,"/bin/cp")
 AC_SUBST_FILE(MkInstall)  
+MkDepend=../MkDepend.in
+AC_SUBST_FILE(MkDepend)  
 
 AC_DEFINE_UNQUOTED(HUGSPATH,"${HUGSPATH}")
 

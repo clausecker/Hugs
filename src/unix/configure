@@ -10578,6 +10578,8 @@ CP=${CP="/bin/cp"}
 
 
   
+MkDepend=../MkDepend.in
+  
 
 cat >> confdefs.h <<EOF
 #define HUGSPATH "${HUGSPATH}"
@@ -10807,6 +10809,8 @@ s%@RM@%$RM%g
 s%@CP@%$CP%g
 /@MkInstall@/r $MkInstall
 s%@MkInstall@%%g
+/@MkDepend@/r $MkDepend
+s%@MkDepend@%%g
 s%@WOBJECTS@%$WOBJECTS%g
 s%@RC_FILES@%$RC_FILES%g
 s%@STRIP@%$STRIP%g

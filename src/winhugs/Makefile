@@ -40,7 +40,7 @@ LIBS		= kernel32.lib user32.lib gdi32.lib comdlg32.lib shell32.lib advapi32.lib
 YACC		= bison
 RM		= -del
 CP		= copy
-
+OBJ		= .obj
 
 
 .SUFFIXES	:
@@ -82,7 +82,6 @@ winhugs.exe	: $(IOBJECTS)  winhugs.res
 
 
 SERVER_OBJECTS	= server.obj $(OBJECTS) 
-runhugs.obj	: $(PRELUDE) hugs.c machdep.h timer.c runhugs.c
 runhugs.exe	: runhugs.obj $(SERVER_OBJECTS)
 		  $(CC) $(LDFLAGS) runhugs.obj $(SERVER_OBJECTS) $(LIBS) -o runhugs.exe
 
@@ -139,7 +138,7 @@ TAGS		::
 		  etags *.[ych]
 
 ################################################################
-# Dependencies
+# C and Yacc rules
 ################################################################
 
 .c.obj	:
@@ -157,45 +156,6 @@ static.obj	: static.c
 # 		  mv y.tab.c parser.c
 # veryclean	::
 # 		  $(RM) parser.c
-
-server.obj	: $(PRELUDE) storage.h connect.h errors.h script.h \
-		  machdep.h evaluator.h opts.h strutil.h server.h
-hugs.obj	: $(PRELUDE) storage.h connect.h errors.h command.h \
-		  script.h opts.h strutil.h evaluator.h machdep.h \
-		  goal.h output.h timer.c 
-storage.obj	: $(PRELUDE) storage.h connect.h errors.h opts.h \
-		  machdep.h evaluator.h strutil.h
-input.obj	: $(PRELUDE) storage.h connect.h errors.h command.h \
-		  module.h script.h opts.h goal.h machdep.h parser.c 
-subst.obj	: $(PRELUDE) storage.h connect.h errors.h output.h \
-                  opts.h subst.h
-static.obj	: $(PRELUDE) storage.h connect.h errors.h machdep.h \
-		  output.h subst.h module.h opts.h goal.h scc.c 
-type.obj	: $(PRELUDE) storage.h connect.h errors.h output.h \
-		  subst.h goal.h preds.c scc.c
-output.obj	: $(PRELUDE) storage.h connect.h errors.h output.h
-compiler.obj	: $(PRELUDE) storage.h connect.h errors.h goal.h
-machine.obj	: $(PRELUDE) storage.h connect.h errors.h
-plugin.obj	: $(PRELUDE) storage.h connect.h errors.h
-builtin.obj	: $(PRELUDE) storage.h connect.h errors.h machdep.h \
-		  builtin.h bignums.c printer.c iomonad.c interns.c \
-		  stmonad.c array.c dirprim.c timeprim.c
-ffi.obj		: $(PRELUDE) storage.h connect.h errors.h output.h strutil.h
-module.obj	: $(PRELUDE) storage.h connect.h errors.h module.h
-machdep.obj	: $(PRELUDE) storage.h connect.h errors.h command.h \
-		  opts.h machdep.h strutil.h
-script.obj	: $(PRELUDE) storage.h connect.h errors.h machdep.h \
-		  opts.h strutil.h script.h 
-strutil.obj	: $(PRELUDE) storage.h connect.h errors.h strutil.h
-errors.obj	: $(PRELUDE) storage.h connect.h errors.h output.h \
-		  opts.h goal.h evaluator.h
-goal.obj	: $(PRELUDE) storage.h machdep.h opts.h goal.h
-opts.obj	: $(PRELUDE) storage.h connect.h errors.h machdep.h \
-		  strutil.h opts.h
-observe.obj	: $(PRELUDE) storage.h connect.h errors.h command.h \
-		  machdep.h builtin.h output.h observe.h
-evaluator.obj	: $(PRELUDE) storage.h connect.h errors.h script.h \
-		  output.h strutil.h opts.h machdep.h evaluator.h
 
 #dependencies for these files are incomplete
 
@@ -222,6 +182,69 @@ winhugs.obj    : $(PRELUDE) "winhugs\winhugs.c"
 
 winhugs.res     : "winhugs\winhugs.rc"
                   $(RC) -fowinhugs.res "winhugs\winhugs.rc"
+
+################################################################
+# Object dependencies (Don't change or delete this line)
+################################################################
+
+hugs$(OBJ): hugs.c prelude.h config.h options.h storage.h HsFFI.h \
+ command.h connect.h errors.h script.h opts.h strutil.h evaluator.h \
+ machdep.h goal.h output.h
+runhugs$(OBJ): runhugs.c prelude.h config.h options.h storage.h HsFFI.h \
+ connect.h machdep.h observe.h builtin.h evaluator.h errors.h server.h \
+ HugsAPI.h
+server$(OBJ): server.c prelude.h config.h options.h storage.h HsFFI.h \
+ connect.h script.h machdep.h evaluator.h opts.h strutil.h errors.h \
+ server.h HugsAPI.h
+builtin$(OBJ): builtin.c prelude.h config.h options.h storage.h HsFFI.h \
+ connect.h errors.h machdep.h builtin.h bignums.c printer.c iomonad.c \
+ timeprim.c dirprim.c stmonad.c array.c
+compiler$(OBJ): compiler.c prelude.h config.h options.h storage.h HsFFI.h \
+ connect.h errors.h goal.h
+errors$(OBJ): errors.c prelude.h config.h options.h storage.h HsFFI.h \
+ connect.h errors.h output.h opts.h goal.h evaluator.h
+evaluator$(OBJ): evaluator.c prelude.h config.h options.h storage.h \
+ HsFFI.h connect.h errors.h script.h output.h strutil.h opts.h \
+ machdep.h evaluator.h
+ffi$(OBJ): ffi.c prelude.h config.h options.h storage.h HsFFI.h connect.h \
+ errors.h output.h strutil.h
+goal$(OBJ): goal.c prelude.h config.h options.h storage.h HsFFI.h \
+ connect.h machdep.h opts.h goal.h
+input$(OBJ): input.c prelude.h config.h options.h storage.h HsFFI.h \
+ connect.h command.h errors.h module.h script.h opts.h goal.h \
+ machdep.h parser.c
+machdep$(OBJ): machdep.c prelude.h config.h options.h storage.h HsFFI.h \
+ connect.h command.h errors.h opts.h strutil.h machdep.h
+machine$(OBJ): machine.c prelude.h config.h options.h storage.h HsFFI.h \
+ connect.h errors.h
+module$(OBJ): module.c prelude.h config.h options.h storage.h HsFFI.h \
+ connect.h errors.h module.h
+observe$(OBJ): observe.c prelude.h config.h options.h storage.h HsFFI.h \
+ connect.h command.h errors.h machdep.h builtin.h output.h observe.h
+opts$(OBJ): opts.c prelude.h config.h options.h storage.h HsFFI.h \
+ connect.h errors.h machdep.h strutil.h opts.h
+output$(OBJ): output.c prelude.h config.h options.h storage.h HsFFI.h \
+ connect.h errors.h output.h
+plugin$(OBJ): plugin.c prelude.h config.h options.h storage.h HsFFI.h \
+ connect.h errors.h
+script$(OBJ): script.c prelude.h config.h options.h storage.h HsFFI.h \
+ connect.h errors.h machdep.h opts.h strutil.h script.h
+static$(OBJ): static.c prelude.h config.h options.h storage.h HsFFI.h \
+ connect.h machdep.h errors.h output.h subst.h module.h opts.h goal.h \
+ scc.c
+storage$(OBJ): storage.c prelude.h config.h options.h storage.h HsFFI.h \
+ connect.h opts.h errors.h machdep.h evaluator.h strutil.h
+strutil$(OBJ): strutil.c prelude.h config.h options.h storage.h HsFFI.h \
+ connect.h errors.h strutil.h
+subst$(OBJ): subst.c prelude.h config.h options.h storage.h HsFFI.h \
+ connect.h errors.h output.h opts.h subst.h
+type$(OBJ): type.c prelude.h config.h options.h storage.h HsFFI.h \
+ connect.h errors.h output.h subst.h goal.h preds.c scc.c
+version$(OBJ): version.c prelude.h config.h options.h
+
+################################################################
+# End of object dependencies (Don't change or delete this line)
+################################################################
 
 ################################################################
 # Regression tests (Unix only).  Run "make install" first
