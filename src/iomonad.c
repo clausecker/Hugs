@@ -14,8 +14,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: iomonad.c,v $
- * $Revision: 1.55 $
- * $Date: 2003/10/13 23:12:24 $
+ * $Revision: 1.56 $
+ * $Date: 2003/10/14 09:18:36 $
  * ------------------------------------------------------------------------*/
  
 Name nameIORun;			        /* run IO code                     */
@@ -687,48 +687,31 @@ primFun(primArgv) {                     /* primArgv :: Int -> IO String    */
 
 primFun(primGetCh) {			/* Get character from stdin wo/echo*/
     Int c = readTerminalChar();
-    if (c!=EOF) {
-      IOReturn(mkChar(c));
-    } else {
-      IOFail(mkIOError(handles[HSTDIN].hcell,
-		       nameEOFErr,
-		       "IOExtensions.getCh",
-		       "end of file",
-		       NIL));
+    if (c==EOF) {
+	IOFail(mkIOError(handles[HSTDIN].hcell,
+			 nameEOFErr,
+			 "IOExtensions.getCh",
+			 "end of file",
+			 NIL));
     }
+    IOReturn(mkChar(c));
 }
 
-#if __MWERKS__ && macintosh
-primFun(primGetChar) {			 /* Metrowerks console has no NO_ECHO mode. */
-    Int c = readTerminalChar();
-    if (c!=EOF) {
-      IOReturn(mkChar(c));
-    } else {
-      IOFail(mkIOError(handles[HSTDIN].hcell,
-		       nameEOFErr,
-		       "Prelude.getChar",
-		       "end of file",
-		       NIL));
-    }
-}
-#else
 primFun(primGetChar) {			/* Get character from stdin w/ echo*/
     Int c = readTerminalChar();
-    if (c != EOF) {
-      putchar(c);
-      fflush(stdout);
+    if (c==EOF) {
+	IOFail(mkIOError(handles[HSTDIN].hcell,
+			 nameEOFErr,
+			 "Prelude.getChar",
+			 "end of file",
+			 NIL));
     }
-    if (c!=EOF) {
-      IOReturn(mkChar(c));
-    } else {
-      IOFail(mkIOError(handles[HSTDIN].hcell,
-		       nameEOFErr,
-		       "Prelude.getChar",
-		       "end of file",
-		       NIL));
-    }
-}
+#if !(__MWERKS__ && macintosh)	/* Metrowerks console has no NO_ECHO mode. */
+    putchar(c);
+    fflush(stdout);
 #endif
+    IOReturn(mkChar(c));
+}
 
 primFun(primPutChar) {			/* print character on stdout	   */
     eval(pop());
