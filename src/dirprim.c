@@ -105,13 +105,8 @@ primFun(primCreateDirectory) { /* create a directory, :: String -> IO ()   */
 #else
    rc = mkdir(s,0777);
 #endif
-   if (rc != 0) {
-      IOFail(mkIOError(NULL,
-		       toIOError(errno),
-		       "Directory.createDirectory",
-		       toIOErrorDescr(errno,FALSE),
-		       &IOArg(1)));
-   }
+   if (rc != 0)
+      throwErrno("Directory.createDirectory", FALSE, &IOArg(1));
   IOReturn(nameUnit);
 }
 
@@ -129,13 +124,8 @@ primFun(primRemoveDirectory) { /* remove a directory	   */
   
    rc = rmdir(s);
 
-   if (rc != 0) {
-     IOFail(mkIOError(NULL,
-		      toIOError(errno),
-		      "Directory.removeDirectory",
-		      toIOErrorDescr(errno,FALSE),
-		      &IOArg(1)));
-   }
+   if (rc != 0)
+      throwErrno("Directory.removeDirectory", FALSE, &IOArg(1));
   IOReturn(nameUnit);
 }
 
@@ -153,13 +143,8 @@ primFun(primRemoveFile) { /* remove a file	   */
   
    rc = unlink(s);
 
-   if (rc != 0) {
-     IOFail(mkIOError(NULL,
-		      toIOError(errno),
-		      "Directory.removeFile",
-		      toIOErrorDescr(errno,TRUE),
-		      &IOArg(1)));
-   }
+  if (rc != 0)
+    throwErrno("Directory.removeFile", TRUE, &IOArg(1));
   IOReturn(nameUnit);
 }
 
@@ -206,13 +191,8 @@ primFun(primRenameDirectory) { /* rename a directory	   */
 
   FREE_STRING(to);
 
-  if (rc != 0) {
-     IOFail(mkIOError(NULL,
-		      toIOError(errno),
-		      "Directory.renameDirectory",
-		      toIOErrorDescr(errno,FALSE),
-		      &IOArg(1)));
-  }
+  if (rc != 0)
+    throwErrno("Directory.renameDirectory", FALSE, &IOArg(1));
   IOReturn(nameUnit);
 }
 
@@ -265,29 +245,18 @@ primFun(primRenameFile) { /* rename a file	   */
   
   FREE_STRING(to);
 
-  if (rc != 0) {
-    IOFail(mkIOError(NULL,
-		     toIOError(errno),
-		     "Directory.renameFile",
-		     toIOErrorDescr(errno,TRUE),
-		     &IOArg(1)));
-  }
+  if (rc != 0)
+    throwErrno("Directory.renameFile", TRUE, &IOArg(1));
   IOReturn(nameUnit);
 }
 
 
 primFun(primGetDirectory) { /* IO String - get current directory. */
   char buffer[FILENAME_MAX+1];
-  if ((char*)(getcwd(buffer,FILENAME_MAX)) != (char*)NULL) {    
-    pushString(buffer);
-    IOReturn(pop());
-  } else {
-    IOFail(mkIOError(NULL,
-		     toIOError(errno),
-		     "Directory.getCurrentDirectory",
-		     toIOErrorDescr(errno,FALSE),
-		     &IOArg(1)));
-  }
+  if ((char*)(getcwd(buffer,FILENAME_MAX)) == (char*)NULL)
+    throwErrno("Directory.getCurrentDirectory", FALSE, NULL);
+  pushString(buffer);
+  IOReturn(pop());
 }
 
 primFun(primSetDirectory) { /* String -> IO () - set current directory. */
@@ -304,13 +273,8 @@ primFun(primSetDirectory) { /* String -> IO () - set current directory. */
   
    rc = chdir(s);
 
-   if (rc != 0) {
-     IOFail(mkIOError(NULL,
-		      toIOError(errno),
-		      "Directory.setCurrentDirectory",
-		      toIOErrorDescr(errno,FALSE),
-		      &IOArg(1)));
-   }
+   if (rc != 0)
+      throwErrno("Directory.setCurrentDirectory", FALSE, &IOArg(1));
    IOReturn(nameUnit);
 }
 
@@ -329,11 +293,7 @@ primFun(primFileExist) { /* FilePath -> IO Bool - check to see if file exists. *
   
   rc = stat(s, &st);
   
-  if (rc < 0) {
-    IOReturn(nameFalse);
-  } else {
-    IOBoolResult(!S_ISDIR(st.st_mode) );
-  }
+  IOBoolResult(rc == 0 && !S_ISDIR(st.st_mode) );
 }
 
 primFun(primDirExist) { /* FilePath -> IO Bool - check to see if directory exists. */
@@ -396,19 +356,13 @@ primFun(primGetPermissions) { /* FilePath -> IO (Bool,Bool,Bool,Bool) */
   isX = access(s, X_OK);
   rc = stat(s, &st);
   
-  if (rc != 0) {
-    IOFail(mkIOError(NULL,
-		     toIOError(errno),
-		     "Directory.getPermissions",
-		     toIOErrorDescr(errno,TRUE),
-		     &IOArg(1)));
-  } else {
-    IOReturn(ap(ap(ap(ap( mkTuple(4),
-			  ToBool(isR == 0)),
-		      ToBool(isW == 0)),
-		   ToBool(isX == 0 && !S_ISDIR(st.st_mode))),
-		ToBool(isX == 0 && S_ISDIR(st.st_mode))));
-  }
+  if (rc != 0)
+    throwErrno("Directory.getPermissions", FALSE, &IOArg(1));
+  IOReturn(ap(ap(ap(ap( mkTuple(4),
+			ToBool(isR == 0)),
+		    ToBool(isW == 0)),
+		 ToBool(isX == 0 && !S_ISDIR(st.st_mode))),
+	      ToBool(isX == 0 && S_ISDIR(st.st_mode))));
 #endif
 }
 
@@ -478,15 +432,9 @@ primFun(primSetPermissions) { /* FilePath -> Bool -> Bool -> Bool -> Bool -> IO 
 	       SET_CHMOD_FLAG(w, WRITE_FLAG) |
 	       SET_CHMOD_FLAG(e||s, EXEC_FLAG));
 	     
-  if (rc != 0) {
-    IOFail(mkIOError(NULL,
-		     toIOError(errno),
-		     "Directory.setPermissions",
-		     toIOErrorDescr(errno,TRUE),
-		     &IOArg(5)));
-  } else {
-    IOReturn(nameUnit);
-  }
+  if (rc != 0)
+    throwErrno("Directory.setPermissions", TRUE, &IOArg(5));
+  IOReturn(nameUnit);
   
 #endif
 }
@@ -527,11 +475,13 @@ primFun(primGetDirContents) { /* FilePath -> IO [FilePath] */
   }
   
   /* First, check whether the directory exists... */
-  if ( (stat(fName, &st) < 0) || !S_ISDIR(st.st_mode) ) {
+  if (stat(fName, &st) < 0)
+    throwErrno("Directory.getDirectoryContents", FALSE, &IOArg(1));
+  if (!S_ISDIR(st.st_mode)) {
     IOFail(mkIOError(NULL,
-		     toIOError(errno),
+		     nameIllegal,
 		     "Directory.getDirectoryContents",
-		     toIOErrorDescr(errno,FALSE),
+		     "not a directory",
 		     &IOArg(1)));
   }
   
@@ -555,23 +505,13 @@ primFun(primGetDirContents) { /* FilePath -> IO [FilePath] */
     ls = ap2(nameCons, pop(), ls);
     rc = _findnext(dirHandle, &fData);
   }
-  if (errno != ENOENT) {
-    IOFail(mkIOError(NULL,
-		     toIOError(errno),
-		     "Directory.getDirectoryContents",
-		     toIOErrorDescr(errno,FALSE),
-		     &IOArg(1)));
-  }
+  if (errno != ENOENT)
+    throwErrno("Directory.getDirectoryContents", FALSE, &IOArg(1));
 
   /* Close and release resources */
   rc = _findclose(dirHandle);
-  if (rc == -1 && errno != ENOENT) {
-    IOFail(mkIOError(NULL,
-		     toIOError(errno),
-		     "Directory.getDirectoryContents",
-		     toIOErrorDescr(errno,FALSE),
-		     &IOArg(1)));
-  }
+  if (rc == -1 && errno != ENOENT)
+    throwErrno("Directory.getDirectoryContents", FALSE, &IOArg(1));
   IOReturn(ls);
 #elif HAVE_DIRENT_H
   /* opendir() / readdir() implementation. */
@@ -590,14 +530,9 @@ primFun(primGetDirContents) { /* FilePath -> IO [FilePath] */
   
   dir = opendir(fName);
   
-  if (dir == NULL) {
-    IOFail(mkIOError(NULL,
-		     toIOError(errno),
-		     "Directory.getDirectoryContents",
-		     toIOErrorDescr(errno,FALSE),
-		     &IOArg(1)));
-  }
-  
+  if (dir == NULL)
+    throwErrno("Directory.getDirectoryContents", FALSE, &IOArg(1));
+
   ls = nameNil;
   
   /* To ensure that the test below doesn't
@@ -617,11 +552,8 @@ primFun(primGetDirContents) { /* FilePath -> IO [FilePath] */
       ) {
     int rc = errno;
     closedir(dir);
-    IOFail(mkIOError(NULL,
-		     toIOError(rc),
-		     "Directory.getDirectoryContents",
-		     toIOErrorDescr(rc,FALSE),
-		     &IOArg(1)));
+    errno = rc;
+    throwErrno("Directory.getDirectoryContents", FALSE, &IOArg(1));
   }
 
   closedir(dir);
@@ -652,13 +584,7 @@ primFun(primGetModTime) { /* FilePath -> IO Int{-time_t-} - get the mod. time of
   
   rc = stat(s, &st);
   
-  if (rc < 0) {
-    IOFail(mkIOError(NULL,
-		     toIOError(errno),
-		     "Directory.getModificationTime",
-		     toIOErrorDescr(errno,TRUE),
-		     &IOArg(1)));
-  } else {
-    IOReturn(mkInt(st.st_mtime));
-  }
+  if (rc < 0)
+    throwErrno("Directory.getModificationTime", TRUE, &IOArg(1));
+  IOReturn(mkInt(st.st_mtime));
 }
