@@ -1360,7 +1360,7 @@ showParen b p = if b then showChar '(' . p . showChar ')' else p
 
 showField    :: Show a => String -> a -> ShowS
 showField m@(c:_) v
-  | isAlpha c = showString m . showString " = " . shows v
+  | isAlpha c || c == '_' = showString m . showString " = " . shows v
   | otherwise = showChar '(' . showString m . showString ") = " . shows v
 
 readParen    :: Bool -> ReadS a -> ReadS a
@@ -1377,7 +1377,7 @@ readField m s0 = [ r | (t,  s1) <- readFieldName m s0,
 
 readFieldName :: String -> ReadS String
 readFieldName m@(c:_) s0
-  | isAlpha c = [ (f,s1) | (f,s1) <- lex s0, f == m ]
+  | isAlpha c || c == '_' = [ (f,s1) | (f,s1) <- lex s0, f == m ]
   | otherwise = [ (f,s3) | ("(",s1) <- lex s0,
 			   (f,s2)   <- lex s1, f == m,
 			   (")",s3) <- lex s2 ]
