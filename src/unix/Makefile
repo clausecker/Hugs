@@ -9,5 +9,5 @@ config: configure
 	LIBS=${GNULIBS} hugsdir=${ROOT} ./configure ${OPTS} --datadir=${ROOT}
 
 configure: configure.in
-	autoconf
-	autoheader
+	-autoconf
+	-autoheader
