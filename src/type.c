@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: type.c,v $
- * $Revision: 1.35 $
- * $Date: 2001/08/07 23:29:59 $
+ * $Revision: 1.36 $
+ * $Date: 2001/09/12 19:22:33 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1390,7 +1390,7 @@ List qss; {
     zpat = mkTuple(length(qss));
     zexp = findQualName(mkQVar(findText("List"),zipName(length(qss))));
     if (isNull(zexp))
-	zexp = mkVar(zipName(length(qss)));
+        zexp = findQualName(mkQVar(findText("Prelude"),zipName(length(qss))));
     for (pss=qss, ass=rev(gatheredAss);nonNull(pss);pss=tl(pss), ass=tl(ass)) {
 	List ps = tupleUp(getPats(hd(ass)));
 	zpat = ap(zpat, ps);
