@@ -103,7 +103,7 @@ ffihugs@OBJ@	: runhugs.c
 
 libraries	:: $(LIBRARIES) @FFI_LIBRARIES@
 
-$(LIBRARIES)	:
+$(LIBRARIES)	: ../libraries/Hugs/*.* unix/convert_libraries
 		  mkdir -p $(BUILD_DIR)/libraries/Hugs
 		  $(CP) ../libraries/Hugs/*.* $(BUILD_DIR)/libraries/Hugs
 		  cd unix; ./convert_libraries $(FPTOOLS) ../../hugsdir
