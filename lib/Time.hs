@@ -70,8 +70,8 @@ import Locale
 import IOExts
 
 data ClockTime 
-  = ClockTime Integer  -- secs
-  	      Integer  -- micro (10^-6) secs [0, 999999]
+  = TOD Integer  -- secs
+  	Integer  -- micro (10^-6) secs [0, 999999]
     deriving ( Eq, Ord )
 
 
@@ -128,7 +128,7 @@ noTimeDiff=TimeDiff 0 0 0
 getClockTime :: IO ClockTime
 getClockTime = do
   (s,micros) <- getClockTimePrim 
-  return (ClockTime (fromIntegral s) (fromIntegral micros))
+  return (TOD (fromIntegral s) (fromIntegral micros))
 
 primitive getClockTimePrim :: IO (Int,Int)
 
@@ -139,7 +139,7 @@ toClockTime (CalendarTime yr mon mday
   s <- toClockTimePrim (yr-1900) (fromEnum mon) mday
   		       hour min sec
 		       tz (if isdst then 1 else 0)
-  return (ClockTime (fromIntegral s) 0)
+  return (TOD (fromIntegral s) 0)
 
 primitive toClockTimePrim :: Int -> Int -> Int
 			  -> Int -> Int -> Int
@@ -152,7 +152,7 @@ toCalendarTime :: ClockTime -> IO CalendarTime
 toCalendarTime = toCalTime False
 
 toCalTime :: Bool -> ClockTime -> IO CalendarTime
-toCalTime toUTC (ClockTime s msecs)
+toCalTime toUTC (TOD s msecs)
   | (s > fromIntegral (maxBound :: Int)) || 
     (s < fromIntegral (minBound :: Int))
   = error ((if toUTC then "toUTCTime: " else "toCalendarTime: ") ++
@@ -182,7 +182,7 @@ instance Show ClockTime where
 
 addToClockTime :: TimeDiff -> ClockTime -> ClockTime
 addToClockTime (TimeDiff year mon day hour min sec psec)
-	       (ClockTime csecs msecs) = 
+	       (TOD csecs msecs) = 
 	let
 	  (r_yr, r_mon) = mon `quotRem` 12
 	  
@@ -200,12 +200,12 @@ addToClockTime (TimeDiff year mon day hour min sec psec)
 	    | otherwise    = (toEnum new_mon, 0)
 
 	  year' = ctYear cal + year + r_yr + yr_diff
-	  cal = toUTCTime(ClockTime (csecs + secOff) msecs')
+	  cal = toUTCTime(TOD (csecs + secOff) msecs')
 	in
 	toClockTime cal{ctMonth=month', ctYear=year'}
 
 diffClockTimes :: ClockTime -> ClockTime -> TimeDiff
-diffClockTimes (ClockTime s1 ms1) (ClockTime s2 ms2) = 
+diffClockTimes (TOD s1 ms1) (TOD s2 ms2) = 
 	noTimeDiff{ tdSec=fromIntegral(s1-s2)
 		  , tdPicosec= 1000 * 1000 * fromIntegral(ms1-ms2)
 		  }
@@ -246,7 +246,7 @@ formatCalendarTime l fmt ct@(CalendarTime year mon day hour min sec sdec
         decode 'T' = doFmt "%H:%M:%S"
         decode 't' = "\t"
         decode 'S' = show2 sec
-        decode 's' = show (case toClockTime ct of { (ClockTime s _) -> s })
+        decode 's' = show (case toClockTime ct of { (TOD s _) -> s })
         decode 'U' = show2 ((yday + 7 - fromEnum wday) `div` 7)
         decode 'u' = show (let n = fromEnum wday in 
                            if n == 0 then 7 else n)
