@@ -36,6 +36,7 @@ ${PACKAGE}.tar.gz:
 	cd ${TARTMP}/hugs98; cvs -d ${CVSROOT} export -r${HSLIBSTAG} $(addprefix fptools/hslibs/,${HSLIBSDIRS})
 	cd ${TARTMP}/hugs98; cvs -d ${CVSROOT} export -r${LIBRARIESTAG} $(addprefix fptools/libraries/,${LIBRARIESDIRS})
 	# preprocess these, so the package can be built without happy & ghc
+	# changes here should be reflected also in Makefile (sorry)
 	find ${TARTMP}/hugs98/fptools/libraries -name "*.ly" -o -name "*.y" |\
 		xargs -l happy
 	find ${TARTMP}/hugs98/fptools/libraries -name "*.hsc" |\
