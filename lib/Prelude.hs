@@ -54,12 +54,10 @@ module Prelude (
     ord, chr,
     readLitChar, showLitChar, lexLitChar,
 --  module Numeric
-    showSigned, showInt,
-    readSigned, readInt,
-    readDec, readOct, readHex, readSigned,
-    readFloat, lexDigits, 
+    readFloat,
 --  module Ratio,
     Ratio, Rational, (%), numerator, denominator, approxRational,
+
 --  Non-standard exports
     IO(..), IOResult(..), primExitWith, Addr, Word, StablePtr, ForeignObj,
     basicIORun, blockIO, IOFinished(..),
@@ -1511,14 +1509,6 @@ readInt radix isDig digToInt s =
     [(foldl1 (\n d -> n * radix + d) (map (fromIntegral . digToInt) ds), r)
 	| (ds,r) <- nonnull isDig s ]
 
--- showInt is used for positive numbers only
-showInt    :: Integral a => a -> ShowS
-showInt n r | n < 0 = error "Numeric.showInt: can't show negative numbers"
-            | otherwise =
-              let (n',d) = quotRem n 10
-		  r'     = toEnum (fromEnum '0' + fromIntegral d) : r
-	      in  if n' == 0 then r' else showInt n' r'
-
 readSigned:: Real a => ReadS a -> ReadS a
 readSigned readPos = readParen False read'
 		     where read' r  = read'' r ++
@@ -1527,17 +1517,16 @@ readSigned readPos = readParen False read'
 			   read'' r = [(n,s)  | (str,s) <- lex r,
 						(n,"")  <- readPos str]
 
-showSigned    :: Real a => (a -> ShowS) -> Int -> a -> ShowS
-showSigned showPos p x = if x < 0 then showParen (p > 6)
-						 (showChar '-' . showPos (-x))
-				  else showPos x
-
+-- This floating point reader uses a less restrictive syntax for floating
+-- point than the Haskell lexer.  The `.' is optional.
 readFloat     :: RealFloat a => ReadS a
 readFloat r    = [(fromRational ((n%1)*10^^(k-d)),t) | (n,d,s) <- readFix r,
-						       (k,t)   <- readExp s]
+						       (k,t)   <- readExp s] ++
+                 [ (0/0, t) | ("NaN",t)      <- lex r] ++
+                 [ (1/0, t) | ("Infinity",t) <- lex r]
 		 where readFix r = [(read (ds++ds'), length ds', t)
-					| (ds, s) <- lexDigits r
-                                        , (ds',t) <- lexFrac s   ]
+					| (ds, d) <- lexDigits r
+                                        , (ds',t) <- lexFrac d   ]
 
                        lexFrac ('.':s) = lexDigits s
 		       lexFrac s       = [("",s)]
