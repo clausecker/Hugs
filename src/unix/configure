@@ -1459,7 +1459,8 @@ BuildArch=$build_cpu
 # Check whether --enable-path-canonicalization or --disable-path-canonicalization was given.
 if test "${enable_path_canonicalization+set}" = set; then
   enableval="$enable_path_canonicalization"
-  cat >>confdefs.h <<\_ACEOF
+
+cat >>confdefs.h <<\_ACEOF
 #define PATH_CANONICALIZATION 1
 _ACEOF
 
@@ -1469,7 +1470,8 @@ fi;
 # Check whether --with-preprocessor or --without-preprocessor was given.
 if test "${with_preprocessor+set}" = set; then
   withval="$with_preprocessor"
-  cat >>confdefs.h <<\_ACEOF
+
+cat >>confdefs.h <<\_ACEOF
 #define USE_PREPROCESSOR 1
 _ACEOF
 
@@ -1484,7 +1486,8 @@ fi;
 # Check whether --enable-profiling or --disable-profiling was given.
 if test "${enable_profiling+set}" = set; then
   enableval="$enable_profiling"
-  cat >>confdefs.h <<\_ACEOF
+
+cat >>confdefs.h <<\_ACEOF
 #define PROFILING 1
 _ACEOF
 
@@ -1493,7 +1496,8 @@ fi;
 # Check whether --enable-stack-dumps or --disable-stack-dumps was given.
 if test "${enable_stack_dumps+set}" = set; then
   enableval="$enable_stack_dumps"
-  cat >>confdefs.h <<\_ACEOF
+
+cat >>confdefs.h <<\_ACEOF
 #define GIMME_STACK_DUMPS 1
 _ACEOF
 
@@ -1509,7 +1513,8 @@ fi;
 # Check whether --enable-large-banner or --disable-large-banner was given.
 if test "${enable_large_banner+set}" = set; then
   enableval="$enable_large_banner"
-  cat >>confdefs.h <<\_ACEOF
+
+cat >>confdefs.h <<\_ACEOF
 #define SMALL_BANNER 1
 _ACEOF
 
@@ -1525,10 +1530,13 @@ fi;
 # Check whether --enable-internal-prims or --disable-internal-prims was given.
 if test "${enable_internal_prims+set}" = set; then
   enableval="$enable_internal_prims"
-  cat >>confdefs.h <<\_ACEOF
+
+cat >>confdefs.h <<\_ACEOF
 #define INTERNAL_PRIMS 1
 _ACEOF
- cat >>confdefs.h <<\_ACEOF
+
+
+cat >>confdefs.h <<\_ACEOF
 #define BYTECODE_PRIMS 1
 _ACEOF
 
@@ -1537,10 +1545,13 @@ fi;
 # Check whether --enable-debug or --disable-debug was given.
 if test "${enable_debug+set}" = set; then
   enableval="$enable_debug"
-  cat >>confdefs.h <<\_ACEOF
+
+cat >>confdefs.h <<\_ACEOF
 #define DEBUG_CODE 1
 _ACEOF
- cat >>confdefs.h <<\_ACEOF
+
+
+cat >>confdefs.h <<\_ACEOF
 #define DEBUG_PRINTER 1
 _ACEOF
 
@@ -1549,7 +1560,8 @@ fi;
 # Check whether --enable-tag-checks or --disable-tag-checks was given.
 if test "${enable_tag_checks+set}" = set; then
   enableval="$enable_tag_checks"
-  cat >>confdefs.h <<\_ACEOF
+
+cat >>confdefs.h <<\_ACEOF
 #define CHECK_TAGS 1
 _ACEOF
 
@@ -1564,7 +1576,8 @@ fi;
 # Check whether --enable-only98 or --disable-only98 was given.
 if test "${enable_only98+set}" = set; then
   enableval="$enable_only98"
-  cat >>confdefs.h <<\_ACEOF
+
+cat >>confdefs.h <<\_ACEOF
 #define HASKELL_98_ONLY 1
 _ACEOF
 
@@ -1574,7 +1587,8 @@ fi;
 # Check whether --with-pthreads or --without-pthreads was given.
 if test "${with_pthreads+set}" = set; then
   withval="$with_pthreads"
-  cat >>confdefs.h <<\_ACEOF
+
+cat >>confdefs.h <<\_ACEOF
 #define DONT_PANIC 1
 _ACEOF
 
@@ -4022,7 +4036,7 @@ else
 ac_save_LIBS="$LIBS"
 LIBS="";
 cat > conftest.$ac_ext <<EOF
-#line 4025 "configure"
+#line 4039 "configure"
 #include "confdefs.h"
 main() { extern char dlopen(); dlopen();; exit(0); }
 int t() { return 0; }
@@ -4065,7 +4079,7 @@ else
 ac_save_LIBS="$LIBS"
 LIBS="-ldl";
 cat > conftest.$ac_ext <<EOF
-#line 4068 "configure"
+#line 4082 "configure"
 #include "confdefs.h"
 main() { extern char dlopen(); dlopen();; exit(0); }
 int t() { return 0; }
@@ -4120,7 +4134,7 @@ else
 ac_save_LIBS="$LIBS"
 LIBS="";
 cat > conftest.$ac_ext <<EOF
-#line 4123 "configure"
+#line 4137 "configure"
 #include "confdefs.h"
 main() { extern char shl_load(); shl_load();; exit(0); }
 int t() { return 0; }
@@ -4163,7 +4177,7 @@ else
 ac_save_LIBS="$LIBS"
 LIBS="-ldld";
 cat > conftest.$ac_ext <<EOF
-#line 4166 "configure"
+#line 4180 "configure"
 #include "confdefs.h"
 main() { extern char shl_load(); shl_load();; exit(0); }
 int t() { return 0; }
@@ -4218,7 +4232,7 @@ else
 ac_save_LIBS="$LIBS"
 LIBS="";
 cat > conftest.$ac_ext <<EOF
-#line 4221 "configure"
+#line 4235 "configure"
 #include "confdefs.h"
 main() { extern char atan(); atan();; exit(0); }
 int t() { return 0; }
@@ -4261,7 +4275,7 @@ else
 ac_save_LIBS="$LIBS"
 LIBS="-lm";
 cat > conftest.$ac_ext <<EOF
-#line 4264 "configure"
+#line 4278 "configure"
 #include "confdefs.h"
 main() { extern char atan(); atan();; exit(0); }
 int t() { return 0; }
@@ -19871,7 +19885,7 @@ unset fptools_check_cconst_result
 ac_save_LIBS="$LIBS"
 LIBS=;
 cat > conftest.$ac_ext <<EOF
-#line 19874 "configure"
+#line 19888 "configure"
 #include "confdefs.h"
 
 #if HAVE_WINDOWS_H
@@ -19912,7 +19926,7 @@ fi
 ac_save_LIBS="$LIBS"
 LIBS=;
 cat > conftest.$ac_ext <<EOF
-#line 19915 "configure"
+#line 19929 "configure"
 #include "confdefs.h"
 
 #if HAVE_WINDOWS_H
@@ -23743,13 +23757,9 @@ fi
 
 if test $HaveLibTermcap = YES && test $HaveLibReadline = YES ; then
     LIBS="-l$LibReadline $LIBS"
-    cat >>confdefs.h <<\_ACEOF
-#define USE_READLINE 1
-_ACEOF
 
-else
-    cat >>confdefs.h <<\_ACEOF
-#define USE_READLINE 0
+cat >>confdefs.h <<\_ACEOF
+#define USE_READLINE 1
 _ACEOF
 
 fi
@@ -23763,18 +23773,13 @@ echo "$as_me: WARNING: hp2ps (heap profile display program) not available
     fi
 fi
 
+WANT_TIMER=0
 if test "$enable_timer" = yes; then
     if test "$ac_cv_header_time_h" = yes; then
-        cat >>confdefs.h <<\_ACEOF
-#define WANT_TIMER 1
-_ACEOF
-
+        WANT_TIMER=1
     elif test "$ac_cv_header_sys_time_h" = yes &&
 	 test "$ac_cv_header_sys_resource_h" = yes; then
-        cat >>confdefs.h <<\_ACEOF
-#define WANT_TIMER 1
-_ACEOF
-
+        WANT_TIMER=1
     else
         { echo "$as_me:$LINENO: WARNING: neither <time.h> nor (<sys/time.h> and <sys/resource.h>) is available
 (ignoring --enable-timer)" >&5
@@ -23782,6 +23787,11 @@ echo "$as_me: WARNING: neither <time.h> nor (<sys/time.h> and <sys/resource.h>) 
 (ignoring --enable-timer)" >&2;}
     fi
 fi
+
+cat >>confdefs.h <<_ACEOF
+#define WANT_TIMER $WANT_TIMER
+_ACEOF
+
 
 GCC_LINT_FLAGS="-Wall \
   -Wpointer-arith -Wbad-function-cast -Wcast-qual \
@@ -25247,20 +25257,23 @@ _ACEOF
 
 
 if test "$ac_cv_sizeof_int" -eq "2"; then
-    cat >>confdefs.h <<\_ACEOF
+
+cat >>confdefs.h <<\_ACEOF
 #define SMALL_HUGS 1
 _ACEOF
 
 else
             if test 0 -eq 1; then
         echo "building regular hugs"
-        cat >>confdefs.h <<\_ACEOF
+
+cat >>confdefs.h <<\_ACEOF
 #define REGULAR_HUGS 1
 _ACEOF
 
     else
         echo "building large hugs"
-        cat >>confdefs.h <<\_ACEOF
+
+cat >>confdefs.h <<\_ACEOF
 #define LARGE_HUGS 1
 _ACEOF
 
@@ -26476,6 +26489,7 @@ else
 fi
 
 
+
 cat >>confdefs.h <<_ACEOF
 #define HUGSSUFFIXES "$HUGSSUFFIXES"
 _ACEOF
@@ -26494,6 +26508,7 @@ test "x$prefix"      = xNONE && prefix=$ac_default_prefix
 test "x$exec_prefix" = xNONE && exec_prefix='${prefix}'
 
 HUGSDIR=`sh -c "prefix=$prefix; exec_prefix=$exec_prefix; libdir=$libdir; datadir=$datadir; echo $hugsdir"`
+
 cat >>confdefs.h <<_ACEOF
 #define HUGSDIR "$HUGSDIR"
 _ACEOF
@@ -26535,30 +26550,26 @@ CP=${CP="/bin/cp"}
 MkDepend=../MkDepend.in
 
 
+
 cat >>confdefs.h <<_ACEOF
 #define HUGSPATH "${HUGSPATH}"
 _ACEOF
 
 
 
+HUGS_FOR_WINDOWS=0
 if test "x$with_gui" = xyes; then
   if test "x$target" = "xwindows"; then
     LDFLAGS="$LDFLAGS -W"
     WOBJECTS="win-text.obj"
     STRIP="brc32 hugs32.rc hugs.exe -w32"
     RC_FILES="hugs32.rc"
-    cat >>confdefs.h <<\_ACEOF
-#define HUGS_FOR_WINDOWS 1
-_ACEOF
-
+    HUGS_FOR_WINDOWS=1
   elif test "x$target" = "xdos"; then
     WOBJECTS="win-text.obj"
     STRIP="brc hugs16.rc hugs.exe"
     RC_FILES="hugs16.rc"
-    cat >>confdefs.h <<\_ACEOF
-#define HUGS_FOR_WINDOWS 1
-_ACEOF
-
+    HUGS_FOR_WINDOWS=1
   else
     { echo "$as_me:$LINENO: WARNING: not building Hugs GUI because this isn't a DOS machine
     " >&5
@@ -26566,6 +26577,11 @@ echo "$as_me: WARNING: not building Hugs GUI because this isn't a DOS machine
     " >&2;}
   fi
 fi
+
+cat >>confdefs.h <<_ACEOF
+#define HUGS_FOR_WINDOWS $HUGS_FOR_WINDOWS
+_ACEOF
+
 
 WOBJECTS=${WOBJECTS=""}
 
