@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: input.c,v $
- * $Revision: 1.63 $
- * $Date: 2003/03/10 14:57:22 $
+ * $Revision: 1.64 $
+ * $Date: 2003/03/13 15:38:28 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1902,6 +1902,10 @@ String nm;
 Long   len; {                          /* Used to set a target for reading */
     input(RESET);
     if (fileInput(nm,len)) {
+       /* File successfully located, change 'scriptFile' so that error messages
+        * are reported relative to this file.
+        */
+        scriptFile = nm;
 	parseInput(SCRIPT);
 	return TRUE;
     }

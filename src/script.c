@@ -165,8 +165,6 @@ Bool   sch; {              /* TRUE => requires pathname search*/
 static Bool local addScript(fname,len)  /* read single script file */
 String fname;                           /* name of script file     */
 Long   len; {                           /* length of script file   */
-    scriptFile = fname;
-
 #if HUGS_FOR_WINDOWS         /* Set clock cursor while loading   */
     allowBreak();
     SetCursor(LoadCursor(NULL, IDC_WAIT));
