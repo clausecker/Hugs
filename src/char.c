@@ -153,57 +153,52 @@ Void initCharTab() {			/* Initialize char decode table    */
     charTabBuilt = TRUE;
 }
 
+/* --------------------------------------------------------------------------
+ * Char primitives.
+ * ------------------------------------------------------------------------*/
+
 #if UNICODE_CHARS
 
 #define	UPPER_MASK	((1<<GENCAT_Lu)|(1<<GENCAT_Lt)|(1<<GENCAT_Lm))
 
-Bool isLower(c)
-Char c; {
+Bool isLower(Char c) {
     return isLatin1(c) ? isLowerLat1(c) :
 	    get_properties(c)->category==GENCAT_Ll;
 }
 
-Bool isUpper(c)
-Char c; {
+Bool isUpper(Char c) {
     return isLatin1(c) ? isUpperLat1(c) :
 	    ((1<<get_properties(c)->category)&UPPER_MASK)!=0;
 }
 
-Bool isAlphaNum(c)
-Char c; {
+Bool isAlphaNum(Char c) {
     return isLatin1(c) ? isAlphaNumLat1(c) :
 	    get_properties(c)->category<=GENCAT_No;
 }
 
-Bool isPrint(c)
-Char c; {
+Bool isPrint(Char c) {
     return isLatin1(c) ? isAlphaNumLat1(c) :
 	    get_properties(c)->category<=GENCAT_Zs;
 }
 
-Char toUpper(c)
-Char c; {
+Char toUpper(Char c) {
     return c + get_properties(c)->upper_offset;
 }
 
-Char toLower(c)
-Char c; {
+Char toLower(Char c) {
     return c + get_properties(c)->lower_offset;
 }
 
-Char toTitle(c)
-Char c; {
+Char toTitle(Char c) {
     return c + get_properties(c)->title_offset;
 }
 
-Int uni_gencat(c)
-Char c; {
+Int uni_gencat(Char c) {
     return get_properties(c)->category;
 }
 
 /* binary search of the properties table */
-static const struct CharProperties * local get_properties(c)
-Char c; {
+static const struct CharProperties * local get_properties(Char c) {
     Int lo, hi, mid;
     lo = 0;
     hi = NUM_BLOCKS-1;
@@ -224,16 +219,14 @@ Char c; {
 
 #else
 
-Char toUpper(c)
-Char c; {
+Char toUpper(Char c) {
     /* two lowercase letters have no Latin-1 uppercase counterpart */
     if (isLower(c) && c!=0xdf && c!=0xff)
 	return c - 'a' + 'A';
     return c;
 }
 
-Char toLower(c)
-Char c; {
+Char toLower(Char c) {
     if (isUpper(c))
 	return c - 'A' + 'a';
     return c;
