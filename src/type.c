@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: type.c,v $
- * $Revision: 1.18 $
- * $Date: 2000/03/04 00:58:51 $
+ * $Revision: 1.19 $
+ * $Date: 2000/05/26 17:38:52 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1215,6 +1215,7 @@ List qs; {
 
 	    case FROMQUAL : {   Int beta = newTyvars(1);
 				saveVarsAss();
+				enterPendingBtyvs();
 				spCheck(l,snd(snd(q)),NIL,genQual,m,beta);
 				enterSkolVars();
 				fst(snd(q))
@@ -1222,7 +1223,7 @@ List qs; {
 				shouldBe(l,fst(snd(q)),NIL,genQual,aVar,beta);
 				typeComp(l,m,e,qs1);
 				restoreVarsAss();
-				doneBtyvs(l);
+			        leavePendingBtyvs();
 				leaveSkolVars(l,typeIs,typeOff,0);
 			    }
 			    break;

@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: storage.c,v $
- * $Revision: 1.6 $
- * $Date: 1999/11/15 22:57:03 $
+ * $Revision: 1.7 $
+ * $Date: 2000/05/26 17:38:52 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -2017,6 +2017,20 @@ Int  depth; {
 	      print(snd(snd(c)),depth-1);
 	      Putchar(')');
 	      break;
+	  case BIGLAM:
+	      Printf("BigLam(");
+	      printList(fst(snd(c)),depth-1);
+	      Putchar(',');
+	      print(snd(snd(c)),depth-1);
+	      Putchar(')');
+	      break;
+	  case ESIGN:
+	      Printf("ESign(");
+	      print(fst(snd(c)),depth-1);
+	      Putchar(',');
+	      print(snd(snd(c)),depth-1);
+	      Putchar(')');
+	      break;
 	  default :
 	      if (isBoxTag(tag)) {
 		  Printf("Tag(%d)=%d", c, tag);
@@ -2034,6 +2048,30 @@ Int  depth; {
 	}
     }
     FlushStdout();
+}
+
+Void printList Args((List, Int));
+Void printList(l, depth)
+List l;
+Int  depth; {
+    Int tag;
+    Cell n;
+    Putchar('[');
+    if ((tag = whatIs(l)) != NIL)
+	for (; ; l=n) {
+	    if (tag == AP) {
+		print(fst(l), depth-1);
+		n = snd(l);
+		tag = whatIs(n);
+		if (tag == NIL)
+		    break;
+		Putchar(',');
+	    } else {
+		Printf("NotAList!\n");
+		break;
+	    }
+	}
+    Putchar(']');
 }
 #endif
 
