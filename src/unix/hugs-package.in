@@ -82,22 +82,73 @@ tmpdir=/tmp/cvt.$$
 
 [ -d $tmpdir ] && rm -r $tmpdir
 
-extract_includes() {
-	sed -n 's/^{-# OPTIONS -\(#include .*\) #-}/\1/p' $*
-}
+# Convert a module using the FFI from conventional to standard form:
+# - change the calling convention CALLCONV to ccall on Unix, stdcall on Win32
+# - collect all the header files included by the module, if necessary
+#   produce a new header that includes them, and ensure all the foreign
+#   import declarations in the file refer to a header.
 
 hack_foreign() {
-	sed '	/^[ 	]*foreign[	 ]/ {
+	file=$1
+
+	# Determine the list of headers used by the file
+	# bug: <foo.h> and "foo.h" will not be unified
+	header_list=$file.hdrs
+	(
+		for h in $c_includes
+		do	echo "\"$h\""
+		done
+
+		sed -n 's/[ 	][ 	]*/ /g
+			s/^>* *{-# OPTIONS -#include \(.*\) #-}/\1/p
+			/^>* *foreign import / {
+				s/[^"]*"\([a-zA-Z0-9_][a-zA-Z0-9_]*\.h\).*/"\1"/p
+				s/[^"]*"[^"]* \([a-zA-Z0-9_][a-zA-Z0-9_]*\.h\).*/"\1"/p
+			}' $file
+	) | sort -u >$header_list
+
+	# If necessary, generate our own header file
+	case `wc -l <$header_list | sed 's/ *//'` in
+	0)	header= ;;
+	1)	header=`sed 's/["<>]//g' $header_list` ;;
+	*)
+		if grep '^>*[ 	]*foreign' $file | egrep -v 'export|"(dynamic|wrapper)|\.h' | grep . >/dev/null
+		then
+			full_header=`echo $file | sed 's/\.[^.]*$/_inc.h/'`
+			header=`basename $full_header`
+			HEADER=`echo $header | tr a-z. A-Z_`
+			(
+				echo "#ifndef $HEADER"
+				echo "#define $HEADER"
+				sed 's/^/#include /' $header_list
+				echo "#endif"
+			) >$full_header
+		else
+			header=
+		fi ;;
+	esac
+
+	# Hack the original module
+	# (but leave explicitly specified headers alone)
+	tmpfile=$file.new
+	sed '	/^>* *{-# OPTIONS /d
+		/^>*[ 	]*foreign[	 ]/ {
 			s/CALLCONV/'"$CALLCONV"'/
 			/export/ b end
-			/"dynamic/ b end
-			/"wrapper/ b end
-			s/"\([^ ]*\)"/"'"$1"' \1"/
-			s/"static \([^ ]*\)"/"static '"$1"' \1"/
-			s/"static"/"static '"$1"'"/
-			/"/ ! s/\([a-z][a-zA-Z0-9_]*\)[ 	]*::/"'"$1"' \1" &/
+			/"dynamic[ "]/ b end
+			/"wrapper[ "]/ b end
+			/"[^"]*\.h[^"]*"/ b end
+			/"static[ "]/ {
+				s:"static:"static '"$header"':
+				b end
+			}
+			s:":"'"$header"' :
+			/"/ !s/[a-z][a-zA-Z0-9_]*[ 	]*::/"'"$header"'" &/
 			: end
-		}'
+		}' $file >$tmpfile
+	cp $tmpfile $file
+
+	rm -r $tmpfile $header_list
 }
 
 # Get the value of a variable from the package Makefile
@@ -160,28 +211,15 @@ do	echo "Converting $modname"
 	# (But don't take .hs if .hsc is present.)
 
 	if [ -f ${stem}_hsc_make.c ]; then
-		# with hacks to extract the -#include directives and
-		# to substitute CALLCONV in Network.Socket (ugh)
-		header="${basename}_aux.h"
-
 		# don't run hsc2hs if its output is already present
 		hsc_make="${target_stem}_hsc_make"
 		$cc $cpp_flags $includes -o "$hsc_make" "${stem}_hsc_make.c"
-		$hsc_make | hack_foreign $header >$target_stem.hs
+		$hsc_make >$target_stem.hs
 		rm "$hsc_make"
-
-		extract_includes $target_stem.hs >"$dstdir/$header"
 	elif [ -f $stem.hsc ]; then
-		# with hacks to extract the -#include directives and
-		# to substitute CALLCONV in Network.Socket (ugh)
-		header="${basename}_aux.h"
-
-		copy="$target_stem.hsc"
-		hack_foreign $header <$stem.hsc >$copy
-		$hsc2hs --cc="$cc" $cpp_flags $includes "$copy"
-		rm "$copy"
-
-		extract_includes $target_stem.hs >"$dstdir/$header"
+		cp "$stem.hsc" "$target_stem.hsc"
+		$hsc2hs --cc="$cc" $cpp_flags $includes "$target_stem.hsc"
+		rm "$target_stem.hsc"
 	elif [ -f $stem.gc ]; then
 		abs_src_dir=`cd $source_dir; pwd`
 		(
@@ -189,18 +227,7 @@ do	echo "Converting $modname"
 			$greencard -t ffi -i $abs_src_dir $modname.gc
 		)
 	elif [ -f $stem.hs ]; then
-		# MEGA hack for HOpenGL stuff. Perhaps it would be a good
-		# idea to mangle *every* file with hack_foreign, using
-		# info from the package field c_includes somehow, but this
-		# doesn't work yet.
-		case $modname in
-		Graphics/Rendering/OpenGL*)
-			$cpp $cpp_flags $includes $stem.hs | cat -s | hack_foreign "HsOpenGL.h" >$target_stem.hs ;;
-		Graphics/UI/GLUT*)
-			$cpp $cpp_flags $includes $stem.hs | cat -s | hack_foreign "HsGLUT.h" >$target_stem.hs ;;
-		*)
-			$cpp $cpp_flags $includes $stem.hs | cat -s >$target_stem.hs ;;
-		esac
+		$cpp $cpp_flags $includes $stem.hs | cat -s >$target_stem.hs
 	elif [ -f $stem.lhs ]; then
 		$cpp $cpp_flags $includes $stem.lhs | cat -s >$target_stem.lhs
 	elif [ -f $stem.y ]; then
@@ -253,9 +280,11 @@ get_pkg_field="$runhugs $HUGSDIR/tools/get_pkg_field"
 
 extra_libraries=
 extra_ld_opts=
+c_includes=
 if [ -f "$conf" ]
 then	extra_libraries=`$get_pkg_field extra_libraries $conf | sed 's/HS[^ ]*_cbits *//'`
 	extra_ld_opts=`$get_pkg_field extra_ld_opts $conf`
+	c_includes=`$get_pkg_field c_includes $conf`
 fi
 
 while read modname
@@ -273,6 +302,8 @@ do
 
 	if grep '^>*[ 	]*foreign[ 	][ 	]*[ei][mx]port' $filename >/dev/null
 	then
+		hack_foreign $filename
+
 		cmd="$ffihugs +G -98 -P$target_dir:"
 		for flag in -I$dstdir -I$target_dir $includes
 		do	cmd="$cmd +L$flag"
