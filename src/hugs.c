@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.96 $
- * $Date: 2002/10/07 23:41:05 $
+ * $Revision: 1.97 $
+ * $Date: 2002/10/08 14:54:35 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -2542,7 +2542,8 @@ String argv[]; {
 	   VirtualProtect(stackPtr, si.dwPageSize, 
 			  PAGE_GUARD | PAGE_READWRITE, &protect) ) {
 
-	  FPrintf(errorStream, "ERROR - C stack overflow; restarting.\n"); FFlush(errorStream);
+	  ERRMSG(0) "C stack overflow"
+          EEND;
 	  /* ..and jump back out again. */
 	  longjmp(catch_error,1);
       } else {
