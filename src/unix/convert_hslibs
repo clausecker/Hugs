@@ -33,22 +33,22 @@ function cvt {
 
 }
 
-cvt concurrent CVar.lhs
-cvt concurrent Chan.lhs
-cvt concurrent Channel.lhs
-cvt concurrent ChannelVar.lhs
-cvt concurrent Concurrent.lhs
-cvt concurrent MVar.lhs
-cvt concurrent Merge.lhs
-cvt concurrent Parallel.lhs
-cvt concurrent QSem.lhs
-cvt concurrent QSemN.lhs
-cvt concurrent SampleVar.lhs
-cvt concurrent Semaphore.lhs
+#cvt concurrent CVar.lhs
+#cvt concurrent Chan.lhs
+#cvt concurrent Channel.lhs
+#cvt concurrent ChannelVar.lhs
+#cvt concurrent Concurrent.lhs
+#cvt concurrent MVar.lhs
+#cvt concurrent Merge.lhs
+#cvt concurrent Parallel.lhs
+#cvt concurrent QSem.lhs
+#cvt concurrent QSemN.lhs
+#cvt concurrent SampleVar.lhs
+#cvt concurrent Semaphore.lhs
 # cvt concurrent Strategies.lhs
 
-cvt data FiniteMap.lhs      
-cvt data Set.lhs
+#cvt data FiniteMap.lhs      
+#cvt data Set.lhs
 
 cp $src/data/edison/COPYRIGHT $dst/COPYRIGHT.edison
 cvt data/edison/Assoc Assoc.hs
@@ -92,11 +92,15 @@ cvt data/edison EdisonPrelude.hs
 # cvt hssource HsPretty.hs
 # cvt hssource HsSyn.lhs
 
-cvt lang ShowFunctions.lhs
+# No longer useable; use or own.
+#cvt lang ShowFunctions.lhs
+
 cvt lang NumExts.lhs
 # it'd be really good to have this but it looks like a lot of work
 # cvt lang GlaExts.lhs
-cvt lang IORef.lhs
+
+# No longer useable; use or own.
+#cvt lang IORef.lhs
 
 # Hugs already has versions of the following - check export lists
 # cvt lang Addr.lhs
@@ -142,18 +146,18 @@ cvt lang IORef.lhs
 # cvt lang TimeExts.lhs
 # cvt lang Weak.lhs
 
-cvt lang/monads MonadCont.lhs
-cvt lang/monads MonadEither.lhs
-cvt lang/monads MonadError.lhs
-cvt lang/monads MonadFix.lhs
-cvt lang/monads MonadIdentity.lhs
-cvt lang/monads MonadList.lhs
-cvt lang/monads MonadRWS.lhs
-cvt lang/monads MonadReader.lhs
-cvt lang/monads MonadState.lhs
-cvt lang/monads MonadTrans.lhs
-cvt lang/monads MonadWriter.lhs
-cvt lang/monads Monoid.lhs
+#cvt lang/monads MonadCont.lhs
+#cvt lang/monads MonadEither.lhs
+#cvt lang/monads MonadError.lhs
+#cvt lang/monads MonadFix.lhs
+#cvt lang/monads MonadIdentity.lhs
+#cvt lang/monads MonadList.lhs
+#cvt lang/monads MonadRWS.lhs
+#cvt lang/monads MonadReader.lhs
+#cvt lang/monads MonadState.lhs
+#cvt lang/monads MonadTrans.lhs
+#cvt lang/monads MonadWriter.lhs
+#cvt lang/monads Monoid.lhs
 
 # needs converted from ccall to ffi
 # cvt net BSD.lhs
@@ -195,8 +199,8 @@ cvt text/HaXml/lib XmlPP.hs
 cvt text/HaXml/lib XmlParse.hs
 cvt text/HaXml/lib XmlTypes.hs
 
-cvt text/html Html.lhs
-cvt text/html HtmlBlockTable.lhs
+#cvt text/html Html.lhs
+#cvt text/html HtmlBlockTable.lhs
 
 cvt text/parsec Parsec.hs
 cvt text/parsec ParsecChar.hs
@@ -241,10 +245,10 @@ cvt util GetOpt.lhs
 # cvt util Unique.lhs
 
 # quickcheck - required by edison
-cvt util/check QuickCheck.hs
+# cvt util/check QuickCheck.hs
 # Relies on preemptive concurrency: cvt util/check QuickCheckBatch.hs
-cvt util/check QuickCheckPoly.hs
-cvt util/check QuickCheckUtils.hs
+# cvt util/check QuickCheckPoly.hs
+# cvt util/check QuickCheckUtils.hs
 
 exit 0
 
