@@ -64,3 +64,24 @@ The default is -N, but you're encouraged to move towards using +N and
 the new libraries.  This will in most cases not imply any changes to old
 code.  However, you might well wish to use the new, longer module names
 in new code.
+
+Set list of filename suffixes: -S
+---------------------------------
+
+Normally, when you import a module Foo, Hugs looks for files Foo.hs
+and Foo.lhs in each directory in you search path.  With this option,
+you can change this list, in a similar way to the -P option for the
+search path.  By default, the suffix list is ".hs:.lhs", which gives
+the behaviour just described.  (NB: the ":" is the Unix separator.
+Windows or Macs use ";" instead.)  If you use -S:.xhs then the suffix
+list becomes ".hs:.lhs:.xhs", so Hugs will look for Foo.hs, Foo.lhs
+and Foo.xhs.
+
+The interpreter won't let you change the suffix list if that would
+prevent it from reading the Prelude, i.e. you must include ".hs".
+Note also that the interpreter knows that files ending in ".lhs"
+are literate scripts; no other suffix is treated that way.
+
+This option can be useful in conjunction with the preprocessor option
+(-F).  The preprocessor can examine the filename to decide what to
+do with the file.
