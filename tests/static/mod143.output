@@ -1,4 +1,3 @@
-ERROR "static/mod143.hs" - Ambiguous export of entity "Foo"
-*** Could refer to: M.Foo Mod143_A.Foo 
-
+ERROR "static/mod143.hs" - Duplicate export of entity "Foo"
+*** Could refer to M.Foo or Mod143_A.Foo
 Hugs:[Leaving Hugs]
