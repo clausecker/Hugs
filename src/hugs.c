@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.119 $
- * $Date: 2003/03/05 15:21:45 $
+ * $Revision: 1.120 $
+ * $Date: 2003/03/07 00:42:20 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -436,7 +436,6 @@ String argv[]; {
  * Shutdown interpreter.
  * ------------------------------------------------------------------------*/
 static Void shutdownHugs() {
-  int i;
   /* Let go of dynamic storage */  
   if (hugsPath)  free(hugsPath);
   if (hugsEdit)  free(hugsEdit);

@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.144 $
- * $Date: 2003/03/03 06:31:04 $
+ * $Revision: 1.145 $
+ * $Date: 2003/03/07 00:42:21 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -4549,9 +4549,11 @@ Name p; {
     ERRMSG(line) "foreign import & must have type 'Ptr a' or 'FunPtr a'"
     EEND;
 
+#ifdef DOTNET
   no_dnet_label:
     ERRMSG(line) "foreign import & with 'dotnet' calling convention not supported."
     EEND;
+#endif
 }
 
 static Void local checkForeignExport(p)       /* Check foreign export      */
