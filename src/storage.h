@@ -8,8 +8,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: storage.h,v $
- * $Revision: 1.42 $
- * $Date: 2002/09/05 14:38:19 $
+ * $Revision: 1.43 $
+ * $Date: 2002/09/15 16:44:37 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -589,8 +589,12 @@ struct strModule {
      * imported in module B, then the presence of 'module A' in
      * the export list of B, means that S should be re-exported
      * from B, not all of A.
+     *
+     * The bool in the second pair is used to optimise the handling
+     * of a module that's only imported once, but constrained by
+     * a 'hiding'.
      */
-    List  modImports; /* :: [ (modName{-Module-},[Entity]) ] */
+    List  modImports; /* :: [ (modName{-Module-},(Bool,[Entity])) ] */
 };
 
 

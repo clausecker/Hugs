@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.97 $
- * $Date: 2002/09/13 05:30:50 $
+ * $Revision: 1.98 $
+ * $Date: 2002/09/15 16:44:37 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -39,6 +39,8 @@ static List   local augmentEntity       Args((Bool,Cell,Cell,List));
 static List   local addEntity           Args((Cell,Cell,List));
 static List   local addEntityPair       Args((Cell,List));
 static List   local mergeImportLists    Args((List,List));
+static List   local getIEOrphans        Args((List));
+static List   local fixupIEList         Args((List));
 
 static Cell   local importEntity	Args((Module,Cell));
 static Void   local importName		Args((Module,Name));
@@ -449,6 +451,142 @@ Text   textParent; {
     return imports;
 }
 
+#if 0
+/* debugging code - dumping IE lists */
+static Void showIEEntity Args((Cell));
+static Void showIEList   Args((List,char));
+
+static Void
+showIEEntity(e)
+Cell e; {
+  if (isName(e)) {
+    fprintf(stderr, "%s", textToStr(name(e).text));
+  } else if (isClass(e)) {
+    fprintf(stderr, "%s", textToStr(cclass(e).text));
+  } else if (isTycon(e)) {
+    fprintf(stderr, "%s", textToStr(tycon(e).text));
+  } else if (isPair(e)) {
+    showIEEntity(fst(e));
+    fprintf(stderr, "(");
+    showIEList(snd(e),' ');
+    fprintf(stderr, ")");
+  } else {
+    fprintf(stderr, "showIEEntity: unknown entity kind %d\n", whatIs(e));
+    fflush(stderr);
+  }
+}
+
+static Void
+showIEList(ieList,sep)
+List ieList;
+char sep; {
+  List xs = ieList;
+  for(;nonNull(xs);xs=tl(xs)) {
+    showIEEntity(hd(xs));
+    if (tl(xs) != NIL) {
+      fputc(sep, stderr);
+    }
+  }
+}
+#endif
+
+static List
+getIEOrphans(ieList)
+List ieList; {
+  List orphans = NIL;
+  List xs;
+  
+  for(xs=ieList;nonNull(xs);xs=tl(xs)) {
+    Cell e = hd(xs);
+    if ( isName(e) ) {
+      if (isClass(name(e).parent)) {
+	/* a lone member */
+	orphans = cons(pair(name(e).parent, singleton(e)), orphans);
+      } else if (isTycon(name(e).parent) && !findTycon(name(e).text)) {
+	/* a lone data constructor (can only appear in a hiding list.) */
+	orphans = cons(pair(name(e).parent, singleton(e)), orphans);
+      } else if (name(e).number == SELNAME) {
+	/* a field name */
+	Cell p = name(e).parent;      /* the data constructor */
+	Cell t = name(p).parent;      /* the type constructor */
+	orphans = cons(pair(t,singleton(e)), orphans);
+      }
+    }
+  }
+  return orphans;
+}
+
+
+/*
+ * fixupIEList() traverses an import/export list, adjusting
+ * the list in the following ways:
+ *
+ *  1. 'orphan'/subordinate names are joined up with their
+ *     parents. An orphan E is either a class member, field
+ *     name or a data constructor (in 'hiding' lists *only*)
+ *     that's imported/exported without referring to its
+ *     parent P -- E appears in an import/export list rather
+ *     than P(E). If P is appearing elsewhere in the
+ *     import/export list, float E inside of P.
+ *
+ *  2. the dcons/members/field subordinate names of a type/class
+ *     are added to the import/export list, so as to ease later
+ *     lookup of these names.
+ *
+ * ToDo: remove duplicates from the resulting list also; it's
+ *       harmless for there to be any, but may lead to confusion
+ *       later on.
+ * 
+ */
+static List
+fixupIEList(ieList)
+List ieList; {
+  List orphans = NIL;
+  List xs = ieList;
+
+  orphans = getIEOrphans(ieList);
+  
+  if (nonNull(orphans)) {
+#if 0
+    /* Debugging - show the orphan list */
+    fprintf(stderr, "Orphan list:\n"); fflush(stderr);
+    showIEList(orphans,'\n'); fflush(stderr);
+#endif
+    /* Transformation 1 (we're actually being a bit sloppy here
+       and not removing the orphan from the IE list if it
+       can be floated inside its parent.) */
+    for(xs=orphans; nonNull(xs);xs=tl(xs)) {
+      ieList = augmentEntity(FALSE,fst(hd(xs)),snd(hd(xs)),ieList);
+    }
+  }
+  
+  /* Transformation 2 - augment the IE list with the subordinate
+   * names.
+   */
+  for(xs=ieList;nonNull(xs);xs=tl(xs)) {
+    Cell e = hd(xs);
+    if (isPair(e)) {
+      if (snd(e) == DOTDOT) {
+	if (isTycon(fst(e))) {
+	  Int kind = tycon(fst(e)).what;
+	  if (kind == DATATYPE || kind == NEWTYPE) {
+	    ieList=dupOnto(tycon(fst(e)).defn,ieList);
+	  }
+	} else if (isClass(fst(e))) {
+	  ieList=dupOnto(cclass(fst(e)).members,ieList);
+	} else {
+	  fprintf(stderr, "fixupIEList: Unknown parent entity %d\n", whatIs(fst(e)));
+	  fflush(stderr);
+	}
+      } else if (snd(e) != NIL) {
+	ieList = dupOnto(snd(e),ieList);
+      }
+    }
+  }
+
+  return ieList;
+}          
+
 static List local checkImportEntity(imports,exporter,isHidden,entity)
 List   imports; /* Accumulated list of things to import */
 Module exporter;
@@ -490,14 +628,12 @@ Cell   entity; { /* Entry from import/hiding list */
 				    dcons = snd(e);
 				}
 				imports=addEntity(f,dcons,imports);
-				imports=dupOnto(dcons,imports);
 			    } else if ( NIL == subEntities) {
 				imports=addEntity(f,NIL,imports);
 			    } else {
 				List xs = NIL;
 				xs = checkSubentities(xs, subEntities, tycon(f).defn,"constructor of type",t);
 				imports=addEntity(f,xs,imports);
-				imports=dupOnto(xs,imports);
 			    }
 			    break;
 			case SYNONYM:
@@ -546,14 +682,13 @@ Cell   entity; { /* Entry from import/hiding list */
 				sigs = snd(e);
 			    }
 			    imports=addEntity(f,sigs,imports);
-			    return dupOnto(sigs,imports);
+			    return imports;
 			} else if ( NIL == subEntities) {
 			    imports=addEntity(f,NIL,imports);
 			} else {
 			    List xs = NIL;
 			    xs = checkSubentities(xs, subEntities, cclass(f).members,"member of class",t);
 			    imports=addEntity(f,xs,imports);
-			    imports=dupOnto(xs,imports);
 			}
 		    }
 		    if (!lookForDataCon) break;
@@ -564,18 +699,7 @@ Cell   entity; { /* Entry from import/hiding list */
 	} else if (isName(e)) {
 	    if (isId && name(e).text == t) {
 		impFound = TRUE;
-		/* If the name is a method or field name, record it
-		   as being imported via its parent. */
-		if (isClass(name(e).parent)) {
-		    imports = addEntity(name(e).parent, singleton(e),imports);
-		} else if (name(e).number == SELNAME) {
-		    /* a field name */
-		    Cell p = name(e).parent;      /* the data constructor */
-		    Cell t = name(p).parent;      /* the type constructor */
-		    imports = addEntity(t, singleton(e), imports);
-		} else {
-		    imports = cons(e,imports);
-		}
+		imports=cons(e,imports);
 		if (!lookForDataCon) break;
 	    }
 	} else if (isTycon(e)) {
@@ -608,42 +732,39 @@ Bool   isHidden; {
 	    Cell e = hd(es);
 	    if (isName(e)) {
 		imports = cons(e,imports);
-	    } else {
-		Cell c = fst(e);
-		List subentities = NIL;
-		if ( isClass(c) || 
-		     (isTycon(c)
-		       && (tycon(c).what == DATATYPE ||
-			   tycon(c).what == NEWTYPE)) ) {
-		    if (snd(e) != DOTDOT) {
-			List ys = snd(e);
-			Name sub;
-			while (nonNull(ys)) {
-			    if (isPair(hd(ys))) {
-				if (nonNull(sub = findQualName(hd(ys)))) {
-				  subentities = cons (sub,subentities);
-				}
-			    } else {
-				subentities = cons(hd(ys),subentities);
-			    }
-			    ys=tl(ys);
-			}
-		    } else {
-			if (isClass(c)) {
-			    subentities = cclass(c).members;
-			} else {
-			    subentities = tycon(c).defn;
-			}
-		    }
-		}
-		imports = addEntity(c,subentities,imports);
-		if (DOTDOT == snd(e)) {
-		    imports = dupOnto(subentities,imports);
-		}
-	    }
-	}
+            } else {
+                Cell c = fst(e);
+                List subentities = NIL;
+                if ( isClass(c) || 
+                     (isTycon(c)
+                       && (tycon(c).what == DATATYPE ||
+                           tycon(c).what == NEWTYPE)) ) {
+                    if (snd(e) != DOTDOT) {
+                        List ys = snd(e);
+                        Name sub;
+                        while (nonNull(ys)) {
+                            if (isPair(hd(ys))) {
+                                if (nonNull(sub = findQualName(hd(ys)))) {
+                                  subentities = cons (sub,subentities);
+                                }
+                            } else {
+                                subentities = cons(hd(ys),subentities);
+                            }
+                            ys=tl(ys);
+                        }
+                    } else {
+                        if (isClass(c)) {
+                            subentities = cclass(c).members;
+                        } else {
+                            subentities = tycon(c).defn;
+                        }
+                    }
+                }
+                imports = addEntity(c,subentities,imports);
+            }
+        }
     } else {
-	map2Accum(checkImportEntity,imports,m,isHidden,impList);
+        map2Accum(checkImportEntity,imports,m,isHidden,impList);
     }
     return imports;
 }
@@ -667,14 +788,14 @@ List is; {
     return addEntity(fst(e),snd(e), is);
   } else if (isName(e)) {
       if (isClass(name(e).parent)) {
-	return addEntity(name(e).parent, singleton(e),is);
+        return addEntity(name(e).parent, singleton(e),is);
       } else if (isTycon(name(e).parent) && !findTycon(name(e).text)) {
-	return addEntity(name(e).parent, singleton(e),is);
+        return addEntity(name(e).parent, singleton(e),is);
       } else if (name(e).number == SELNAME) {
-	/* a field name */
-	Cell p = name(e).parent;      /* the data constructor */
-	Cell t = name(p).parent;      /* the type constructor */
-	return addEntity(t, singleton(e), is);
+        /* a field name */
+        Cell p = name(e).parent;      /* the data constructor */
+        Cell t = name(p).parent;      /* the type constructor */
+        return addEntity(t, singleton(e), is);
       }
   }
   return addEntity(e,NIL,is);
@@ -690,26 +811,26 @@ List is; {
     
     if (!ms) {
       if (!addNew) {
-	return is;
+        return is;
       } else {
-	if (isName(e) && ls == NIL) {
-	   return cons(e,is);
-	} else {
-	    return cons(pair(e,ls),is);
-	}
+        if (isName(e) && ls == NIL) {
+           return cons(e,is);
+        } else {
+            return cons(pair(e,ls),is);
+        }
       }
     } else {
-	/* concat the two lists, i.e., no removal of duplicates. */
-	if (!isPair(hd(ms)) && ls != NIL) {
-	    hd(ms) = pair(e,ls);
-	} else if (ls == NIL || snd(hd(ms)) == DOTDOT) {
-	    ;
-	} else if (ls == DOTDOT || snd(hd(ms)) == NIL) {
-	    snd(hd(ms)) = ls;
-	} else {
-	    snd(hd(ms)) = dupOnto(ls,snd(hd(ms)));
-	}
-	return is;
+        /* concat the two lists, i.e., no removal of duplicates. */
+        if (!isPair(hd(ms)) && ls != NIL) {
+            hd(ms) = pair(e,ls);
+        } else if (ls == NIL || snd(hd(ms)) == DOTDOT) {
+            ;
+        } else if (ls == DOTDOT || snd(hd(ms)) == NIL) {
+            snd(hd(ms)) = ls;
+        } else {
+            snd(hd(ms)) = dupOnto(ls,snd(hd(ms)));
+        }
+        return is;
     }
 }
 
@@ -724,10 +845,10 @@ static Cell local entityIsMember(x,xs) /* Test for membership of specific  */
 Cell x;                                /* entity x in import/export list xs  */
 List xs; {
     for (; nonNull(xs); xs=tl(xs)) {
-	if (x == hd(xs))
-	    return xs;
-	if (isPair (hd(xs)) && x==fst(hd(xs)))
-	    return xs;
+        if (x == hd(xs))
+            return xs;
+        if (isPair (hd(xs)) && x==fst(hd(xs)))
+            return xs;
     }
     return NIL;
 }
@@ -754,40 +875,78 @@ Pair importSpec; {
 
     List   modImps = NIL; /* The effective import list */
     List   es = NIL;
+    Bool   isHidden = (isPair(impList) && HIDDEN == fst(impList));
 
     if (!isQual && moduleThisScript(m)) { 
-	ERRMSG(0) "Module \"%s\" recursively imports itself",
-		  textToStr(module(m).text)
-	EEND;
+        ERRMSG(0) "Module \"%s\" recursively imports itself",
+                  textToStr(module(m).text)
+        EEND;
     }
-    if (isPair(impList) && HIDDEN == fst(impList)) {
-	/* Somewhat inefficient - but obviously correct:
-	 * imports = importsOf("module Foo") `setDifference` hidden;
+    if ( isHidden ) {
+        List orphans;
+        /* Somewhat inefficient - but obviously correct:
+         * imports = importsOf("module Foo") `setDifference` hidden;
 	 */
-	hidden  = resolveImportList(m, snd(impList),TRUE);
+        hidden  = fixupIEList(resolveImportList(m, snd(impList),TRUE));
 	imports = resolveImportList(m, DOTDOT,FALSE);
+	
+	/* Get the lone method/field/dcons that appear in the hiding list. */
+	orphans = getIEOrphans(hidden);
+	
+	/* remove them from their parents in the import list. */
+	for (;nonNull(orphans);orphans=tl(orphans)) {
+	  /* the 'hd.snd' is the orphan entity, 'fst' is its parent. */
+	  
+	  /* Locate and remove the sub-entity. */
+	  Cell ls = entityIsMember(fst(hd(orphans)), imports);
+	  if (ls && isPair(hd(ls))) {
+	    snd(hd(ls)) = removeCell(hd(snd(hd(orphans))), snd(hd(ls)));
+	  }
+	}
 
-	/* The loop over the 'imports' list happens in both
-	 * branches, but, for efficiency reasons only, we
-	 * don't float it outwards.
+	/* With the orphans in the 'hiding' list accounted for,
+	 * compute the effective import list by traversing over the
+	 * entire import list, checking whether any of the entities
+	 * do appear in the hiding list.
 	 */
 	for(; nonNull(imports); imports=tl(imports)) {
 	  Cell e = hd(imports);
+	  Cell subs = NIL;
 
-	  /* If the import is a tycon/class, look for their name 
-	   * (not the pairing with their constructors/classes).
- 	   */
 	  if (isPair(e)) {
-	      e = fst(e);
-	  }
-	  if (!entityIsMember(e,hidden)) {
-	    if (isQual) {
-	      modImps = addEntity(e,NIL,modImps);
-	    } else {
-	      modImps = addEntityPair(importEntity(m,e), modImps);
+	    /* A tycon/class */
+	    Cell tc   = fst(e);
+	    Cell subs = snd(e);
+	    List ms = entityIsMember(tc,hidden);
+	    
+	    if (!ms) {
+	      /* not in the hiding list, add it to effective import list. */
+	      if (isQual) {
+		modImps = cons(pair(tc,subs),modImps);
+	      } else {
+		modImps = cons(importEntity(m,e), modImps);
+	      }
+	    } else if isPair(hd(ms)) {
+		/* The parent tycon/class is hidden, but perhaps
+		   not all of its subentities. */
+		List hiddenSubs = snd(hd(ms));
+		for(;nonNull(subs);subs=tl(subs)) {
+		  if (!entityIsMember(hd(subs),hiddenSubs)) {
+		    modImps = cons(hd(subs), modImps);
+		  }
+		}
+	    }
+	  } else {
+	    if (!entityIsMember(e,hidden)) {
+	      if (isQual) {
+		modImps = cons(pair(e,NIL),modImps);
+	      } else {
+		modImps = cons(importEntity(m,e), modImps);
+	      }
 	    }
 	  }
 	}
+	
     } else {  /* the more common case, no hidings. */
 	imports = resolveImportList(m, impList,FALSE);
 	if (isQual) {
@@ -809,13 +968,15 @@ Pair importSpec; {
      */
     for(es=module(currentModule).modImports;nonNull(es);es=tl(es)) {
       if (isPair(hd(es)) && fst(hd(es)) == m) {
-	snd(hd(es)) = mergeImportLists(modImps, snd(hd(es)));
+	fst(snd(hd(es))) = FALSE; /* => perform fixup at the end. */
+	snd(snd(hd(es))) = mergeImportLists(modImps, snd(snd(hd(es))));
 	break;
       }
     }
     if (isNull(es)) {
       /* Module not already present, add it. */
-      module(currentModule).modImports = cons(pair(m,modImps),module(currentModule).modImports);
+      module(currentModule).modImports = 
+	 cons(pair(m,pair(isHidden,modImps)),module(currentModule).modImports);
     }
 }
 
@@ -856,6 +1017,7 @@ Cell e; {
 	           return pair(ent,cs);
 		   
     default:   
+      fprintf(stderr, "%d\n", whatIs(ent)); fflush(stderr);
                internal("importEntity");
 	       return NIL;
     }
@@ -940,26 +1102,15 @@ Cell  spec; {
     }
 }
 
-static List local checkExport(acc,mt,e) /* Process entry in export list*/
-List acc;
+static List local checkExport(exports,mt,e) /* Process entry in export list*/
+List exports;
 Text mt; 
 Cell e; {
-    List exports = fst(acc);
-    List delayedExports = snd(acc);
-
     if (isIdent(e)) {
 	Cell export = NIL;
 	Bool expFound = FALSE;
 
 	if (nonNull(export=findQualName(e))) {
-	    /* Check to see whether the exported name N belongs to a class
-	     * or a data con (i.e., a field name), named P. If so, add the
-	     * name to the export list, but put P(N) on a list of delayed
-	     * exports. These delayed exports are then processed after
-	     * the entire export list has been traversed -- see checkExports()
-	     * comment for details of why.
-	     */
-
 	    /* Data constructors cannot appear in export lists,
 	     * so flag an error if they do.
 	     *
@@ -973,19 +1124,6 @@ Cell e; {
 		ERRMSG(0) "Illegal export of a lone data constructor \"%s\"",
 		          textToStr(name(export).text)
 	        EEND;
-	    }
-	    if (isClass(name(export).parent)) {
-	      delayedExports=cons(pair(mkCon(cclass(name(export).parent).text),
-				      mkVar(name(export).text)),
-				  delayedExports);
-	    }
-	    if ( isName(export) && name(export).number == SELNAME ) {
-		/* a field name */
-		Cell p = name(export).parent; /* the data constructor */
-		Cell t = name(p).parent;      /* the type constructor */
-		delayedExports=cons(pair(mkCon(tycon(t).text),
-					 mkVar(name(export).text)),
-				    delayedExports);
 	    }
 	    expFound = TRUE;
 	    exports=cons(export,exports);
@@ -1005,7 +1143,7 @@ Cell e; {
 		      textToStr(mt)
 	    EEND;
 	}
-	return pair(exports,delayedExports);
+	return exports;
     } else if (MODULEENT == fst(e)) {
 	Module m = findModid(snd(e));
 	/* Re-exporting a module we didn't import isn't allowed. */
@@ -1038,7 +1176,7 @@ Cell e; {
 
 	    for(xs=module(currentModule).modImports;nonNull(xs);xs=tl(xs)) {
 	      if (isPair(hd(xs)) && fst(hd(xs)) == m) {
-		exports = dupOnto(snd(hd(xs)),exports);
+		exports = dupOnto(snd(snd(hd(xs))),exports);
 		break;
 	      }
 	    }
@@ -1046,7 +1184,7 @@ Cell e; {
 	      exports = dupOnto(module(m).exports,exports);
 	    }
 	}
-	return pair(exports, delayedExports);
+	return exports;
     } else {
 	Cell ident = fst(e); /* class name or type name */
 	Cell parts = snd(e); /* members or constructors */
@@ -1061,13 +1199,13 @@ Cell e; {
 		    EEND;
 		}
 		exports = addEntity(nm,DOTDOT,exports);
-		return pair(exports, delayedExports);
+		return exports;
 	    case RESTRICTSYN:	
 		ERRMSG(0) "Transparent export of restricted type synonym \"%s\" in export list of module \"%s\"",
 			  identToStr(ident),
 			  textToStr(mt)
 		EEND;
-		return acc; /* Not reached */
+		return exports; /* Not reached */
 	    case NEWTYPE:
 	    case DATATYPE:
 		/* ToDo: the traversal code here is near identical to
@@ -1076,7 +1214,7 @@ Cell e; {
 		    Module thisModule = lastModule();
 		    if ( tycon(nm).mod == thisModule ) {
 		      exports = addEntity(nm,DOTDOT,exports);
-		      return pair(exports, delayedExports);
+		      return exports;
 		    } else {
 			/* If we're re-exporting a tycon via (..),
 			 * only the constructors in scope are exported. 
@@ -1088,7 +1226,7 @@ Cell e; {
 				/* Found the effective import list for tycon's module */
 				List ns;
 				/* Find the entry for the 'nm' tycon.. */
-				for(ns = snd(hd(xs)); nonNull(ns); ns=tl(ns)) {
+				for(ns = snd(snd(hd(xs))); nonNull(ns); ns=tl(ns)) {
 				    if ( isPair(hd(ns)) && 
 					 isTycon(fst(hd(ns))) &&
 					 fst(hd(ns)) == nm ) {
@@ -1104,8 +1242,7 @@ Cell e; {
 			    }
 			}
 			exports=addEntity(nm,exps,exports);
-			exports= dupOnto(exps,exports);
-			return pair(exports, delayedExports);
+			return exports;
 		    }
 		} else {
 		  List ps = NIL;
@@ -1113,8 +1250,7 @@ Cell e; {
 					"constructor of type",
 					tycon(nm).text);
 		  exports = addEntity(nm,ps,exports);
-		  exports = dupOnto(ps,exports);
-		  return pair(exports, delayedExports);
+		  return exports;
 		}
 	    default:
 		internal("checkExport1");
@@ -1124,7 +1260,7 @@ Cell e; {
 		Module thisModule = lastModule();
 		if ( cclass(nm).mod == thisModule ) {
 		  exports = addEntity(nm,DOTDOT,exports);
- 		  return pair(exports, delayedExports);
+ 		  return exports;
 		} else {
 		    /* If we're re-exporting a class via (..),
 		     * only the metods in scope are exported. 
@@ -1136,7 +1272,7 @@ Cell e; {
 			   /* Found the effective import list for the class' module */
 			    List ns;
 			    /* Locate the class.. */
-			    for(ns = snd(hd(xs)); nonNull(ns); ns=tl(ns)) {
+			    for(ns = snd(snd(hd(xs))); nonNull(ns); ns=tl(ns)) {
 				if ( isPair(hd(ns)) && 
 				     isClass(fst(hd(ns))) &&
 				     fst(hd(ns)) == nm) {
@@ -1154,16 +1290,14 @@ Cell e; {
 		    /* Enter the (class,members) pair _and_ the individual 
 		       member names on to the exports list */
 		    exports=addEntity(nm,exps,exports);
-		    exports=dupOnto(exps,exports);
-		    return pair(exports, delayedExports);
+		    return exports;
 		}
 	    } else {
 	      List ps = NIL;
 	      ps = checkSubentities(ps,parts,cclass(nm).members,
 				    "member of class",cclass(nm).text);
 	      exports=addEntity(nm,ps,exports);
-	      exports=dupOnto(ps,exports);
-	      return pair(exports, delayedExports);
+	      return exports;
 	    }
 	} else {
 	    ERRMSG(0) "Explicit export list given for non-class/datatype \"%s\" in export list of module \"%s\"",
@@ -1172,7 +1306,7 @@ Cell e; {
 	    EEND;
 	}
     }
-    return acc;/*NOTUSED*/
+    return exports; /*NOTUSED*/
 }
 
 static List local checkExports(exports)
@@ -1180,32 +1314,21 @@ List exports; {
     Module m  = lastModule();
     Text   mt = module(m).text;
     List   es = NIL;             /* [Entity | (Entity,DOTDOT|NIL|[Entity])] */
-    List   delayedExports = NIL; /* [(TyCon/Class,fieldName/methodName)] */
-    Cell   res = pair(es,delayedExports);
 
     /* To properly handle methods and field names that are exported 
-     * separately from their class/type, we initially collect all of
-     * them up in a list, paired together with their parent class/type. 
-     * This list is then traversed, adding the method/field name to the
-     * entry for its parent class/type, but _only if_ that class/type
-     * is already exported, i.e., just exporting a method _does not_
-     * cause its class to implicitly be added to the export list.
+     * separately from their class/type ('orphans'), we construct the effective
+     * export list in two passes. First, we resolve and collect up
+     * all the entities, be they orphans or not. Secondly, we fix up
+     * this list, attempting to join up the each 'orphan' with its
+     * parent, but only if that parent (class/tycon) is also exported.
+     * i.e., just exporting a method _does not_ cause its class to
+     * implicitly be added to the export list.
      *
      * This only applies to methods and field names; data constructors
      * cannot be exported on their own.
      */
-    map1Accum(checkExport,res,mt,exports);
-    es = fst(res);
-    
-    /* tack on the member/field orphan entities */
-    for(delayedExports=snd(res);
-	nonNull(delayedExports);
-	delayedExports=tl(delayedExports)) {
-      es = augmentEntity(FALSE,
-			 fst(hd(delayedExports)),
-			 singleton(snd(hd(delayedExports))),
-			 es);
-    }
+    map1Accum(checkExport,es,mt,exports);
+    es = fixupIEList(es);
 
 #if DEBUG_MODULES
     for(xs=es; nonNull(xs); xs=tl(xs)) {
@@ -7734,6 +7857,7 @@ Void checkContext() {			/* Top level static check on Expr  */
 
 Void checkDefns() {			/* Top level static analysis	   */
     List tcs;
+    List xs;
     Module thisModule = lastModule();
     staticAnalysis(RESET);
 
@@ -7750,6 +7874,13 @@ Void checkDefns() {			/* Top level static analysis	   */
     }
     map1Proc(checkImportList, FALSE, unqualImports);
     mapProc(checkQualImportList, module(thisModule).qualImports);
+
+    /* And,  finally, fix-up the effective import lists. */
+    for(xs=module(currentModule).modImports;nonNull(xs);xs=tl(xs)) {
+      if ( isPair(hd(xs)) && !fst(snd(hd(xs))) ) {
+        snd(snd(hd(xs))) = fixupIEList(snd(snd(hd(xs))));
+      }
+    }
 
     /* Note: there's a lot of side-effecting going on here, so
        don't monkey about with the order of operations here unless
