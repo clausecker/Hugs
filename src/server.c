@@ -11,8 +11,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: server.c,v $
- * $Revision: 1.36 $
- * $Date: 2003/03/13 17:57:30 $
+ * $Revision: 1.37 $
+ * $Date: 2003/03/14 13:01:50 $
  * ------------------------------------------------------------------------*/
 #include "prelude.h"
 #include "storage.h"
@@ -218,7 +218,7 @@ String argv[]; {
       loadPrelude();
 
 #ifndef NO_DYNAMIC_TYPES
-      addScriptName(NULL, "HugsDynamic",TRUE);
+      addScriptName("HugsDynamic",TRUE);
 #endif
 
       readScripts(0);
@@ -337,7 +337,7 @@ static Void LoadFile(fn)          /* load a module (from a file) into the system
 String fn;
 {
     protect(
-	addScriptName(fn,fn,TRUE);
+	addScriptName(fn,TRUE);
 	readScripts(numLoadedScripts());
 	everybody(RESET);
 	);
@@ -347,7 +347,7 @@ static Void LoadStringF(mod)      /* load a module (from a string) into the syst
 String mod;
 {
     protect(
-	addScriptName(NULL,mod,TRUE);
+	addScriptName(mod,TRUE);
 	readScripts(numLoadedScripts());
 	everybody(RESET);
 	);

@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.124 $
- * $Date: 2003/03/13 17:57:30 $
+ * $Revision: 1.125 $
+ * $Date: 2003/03/14 13:01:49 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -352,7 +352,7 @@ static Void local load() {           /* read filenames from command line   */
     String s;                        /* and add to list of scripts waiting */
 				     /* to be read                         */
     while ((s=readFilename())!=0)
-	addScriptName(NULL,s,TRUE);
+	addScriptName(s,TRUE);
     readScripts(1);
 }
 

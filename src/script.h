@@ -32,7 +32,7 @@ extern String getScriptRealName Args((Script));
 extern Int    getScriptHwMark   Args((Void));
 extern Int    numLoadedScripts  Args((Void));
 
-extern Void addScriptName       Args((String,String,Bool));
+extern Void addScriptName       Args((String,Bool));
 extern Bool chase               Args((List));
 extern Void addScriptsFromArgs  Args((Int,String []));
 
