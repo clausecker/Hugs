@@ -385,9 +385,6 @@ test_libs() {
   perl runstdtest $HUGS $STDOPTS Maybe   "-o1libs/Loaded.output"
   perl runstdtest $HUGS $STDOPTS Monad   "-o1libs/Loaded.output"
   perl runstdtest $HUGS $STDOPTS Numeric "-o1libs/Loaded.output"
-# Did I miss Quote being added to the library report???
-# And how come it requires -98 if it's standard??
-  perl runstdtest $HUGS $STDOPTS -98 Quote "-o1libs/Loaded.output"
   perl runstdtest $HUGS $STDOPTS Random    "-o1libs/Loaded.output"
   perl runstdtest $HUGS $STDOPTS Ratio     "-o1libs/Loaded.output"
   perl runstdtest $HUGS $STDOPTS System    "-o1libs/Loaded.output"
@@ -420,9 +417,10 @@ test_libs() {
 
   echo "-- !!! Performing static tests on Hugs libraries"
   perl runstdtest $HUGS $STDOPTS -98 HugsLibs "-o1libs/HugsLibs.output"
+  perl runstdtest $HUGS $STDOPTS -98 Quote "-o1libs/Loaded.output"
 
   echo "-- !!! Performing static tests on the hslibs libraries"
-  perl runstdtest $HUGS $STDOPTS -98 -W ../lib/exts/*.hs ../lib/exts/*.lhs "-o1libs/Loaded.output"
+  perl runstdtest $HUGS $STDOPTS -98 -W `ls ../lib/exts/*.hs ../lib/exts/*.lhs | cut -d/ -f4 | cut -d. -f1` "-o1libs/Loaded.output"
 
 
   echo "-- !!! Performing dynamic tests on libraries"
