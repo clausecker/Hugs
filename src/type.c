@@ -7,8 +7,8 @@
  * in the distribution for details.
  *
  * $RCSfile: type.c,v $
- * $Revision: 1.1 $
- * $Date: 1999/06/07 23:53:38 $
+ * $Revision: 1.2 $
+ * $Date: 1999/07/28 18:48:24 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1018,6 +1018,7 @@ Bool   addEvid; {			/* TRUE => add \ev -> ...	   */
 
     preds = NIL;
     check(l,e,NIL,wh,t,o);
+    improve(l,preds);
 
     clearMarks();
     mapProc(markAssumList,defnBounds);
@@ -1226,6 +1227,7 @@ Cell e; {
     tyvar(beta)->kind = starToStar;
 #if !MONAD_COMPS
     bindTv(beta,typeList,0);
+    m = nameListMonad;
 #endif
 
     typeComp(l,mon,snd(e),snd(snd(e)));
@@ -1496,6 +1498,7 @@ List bs; {
     preds = NIL;			/* Type check the bindings	   */
     mapProc(restrictedBindAss,bs);
     mapProc(typeBind,bs);
+    improve(line,preds);
     normPreds(line);
     elimTauts();
     preds = revOnto(preds,savePreds);
@@ -1662,6 +1665,7 @@ List bs; {
 
 	preds = NIL;
 	mapProc(typeBind,hd(imps));
+	improve(line,preds);
 
 	clearMarks();
 	mapProc(markAssumList,tl(defnBounds));
@@ -1714,6 +1718,7 @@ List bs; {
 	enterPendingBtyvs();
 	for (; nonNull(alts); alts=tl(alts))
 	    typeAlt(extbind,fst(b),hd(alts),t,o,m);
+	improve(line,preds);
 	leavePendingBtyvs();
 #if IPARAM
 	matchupIPs(ps,preds);
@@ -2070,6 +2075,7 @@ Int    beta; {
 	typeAlt(wh,mem,hd(alts),t,o,m);
 	qualify(tl(ps),hd(alts));	/* Add any extra dict params	   */
     }
+    improve(line,preds);
     leavePendingBtyvs();
 
     evids = appendOnto(dupList(tl(ps)),	/* Build full complement of dicts  */
@@ -2355,6 +2361,7 @@ Bool useDefs; {				/* using defaults if reqd	   */
     type      = typeIs;
     beta      = typeOff;
     clearMarks();
+    improve(0,preds);
     normPreds(0);
     elimTauts();
     preds     = scSimplify(preds);

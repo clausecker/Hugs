@@ -7,13 +7,13 @@
 
 /* Define this as a string (of exactly 13 characters) uniquely identifying the 
  * current version.
- * Major releases from Nottingham/Yale are of the form "<month> <year>"
- * Minor releases from Nottingham/Yale are of the form "Version YYMMDD"
+ * Major releases are of the form "<month> <year>"
+ * Minor releases are of the form "Version YYMMDD"
  * Anyone else should use a different format to avoid confusion.    
  */
 #if MAJOR_RELEASE
-#define HUGS_VERSION "May 1999     "
+#define HUGS_VERSION "July 1999    "
 #else
-#define HUGS_VERSION "990525 Beta  "
+#define HUGS_VERSION "990727 Beta  "
 #endif
 

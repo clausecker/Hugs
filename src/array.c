@@ -7,8 +7,8 @@
  * in the distribution for details.
  *
  * $RCSfile: array.c,v $
- * $Revision: 1.1 $
- * $Date: 1999/06/07 23:53:37 $
+ * $Revision: 1.2 $
+ * $Date: 1999/07/28 18:48:11 $
  * ------------------------------------------------------------------------*/
 
 static Name nameEltUndef;		/* undefined element in array	   */
@@ -372,7 +372,7 @@ primFun(primSTArrEq) {		        /* :: MutArr s a b                 */
 #if IO_MONAD
 primFun(primIONewArr) {			/* :: (a,a)			   */
     declArr;				/*    -> Int			   */
-    aNewSet(5,4,primArg(2));		/*	 -> b			   */
+    aNewSet(5,4,primArg(3));		/*	 -> b			   */
     aRetForIO();			/*	    -> IO (IOArray a b)	   */
 }
 

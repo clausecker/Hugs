@@ -7,8 +7,8 @@
  * in the distribution for details.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.1 $
- * $Date: 1999/06/07 23:53:38 $
+ * $Revision: 1.2 $
+ * $Date: 1999/07/28 18:48:20 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -57,7 +57,7 @@ static Void   local checkBanged		Args((Name,Kinds,List,Type));
 static Type   local instantiateSyn	Args((Type,Type));
 
 static Void   local checkClassDefn	Args((Class));
-static Void   local depPredExp		Args((Int,List,Cell));
+static Cell   local depPredExp		Args((Int,List,Cell));
 static Void   local checkMems		Args((Class,List,Cell));
 static Void   local addMembers		Args((Class));
 static Name   local newMember		Args((Int,Int,Cell,Type,Class));
@@ -80,6 +80,9 @@ static Type   local depTypeExp		Args((Int,List,Type));
 static Type   local depTypeVar		Args((Int,List,Text));
 static List   local checkQuantVars	Args((Int,List,List,Cell));
 static List   local offsetTyvarsIn	Args((Type,List));
+static List   local otvars		Args((Cell,List));
+static Bool   local osubset		Args((List,List));
+static List   local oclose		Args((List,List));
 static Void   local kindConstr		Args((Int,Int,Int,Constr));
 static Kind   local kindAtom		Args((Int,Constr));
 static Void   local kindPred		Args((Int,Int,Int,Cell));
@@ -883,7 +886,7 @@ Cell  cd; {				/* definitions (w or w/o deriving) */
     if (whatIs(cs)==QUAL) {		/* allow for possible context	   */
 	ctxt = fst(snd(cs));
 	cs   = snd(snd(cs));
-	map2Proc(depPredExp,line,tyvars,ctxt);
+	map2Over(depPredExp,line,tyvars,ctxt);
 	h98CheckCtxt(line,"context",TRUE,ctxt,NIL);
     }
 
@@ -919,7 +922,7 @@ Cell  cd; {				/* definitions (w or w/o deriving) */
 			textToStr(textOf(hd(us)))
 		    EEND;
 		}
-	    map2Proc(depPredExp,line,sig,lps);
+	    map2Over(depPredExp,line,sig,lps);
 	    con     = snd(snd(con));
 	    arity   = length(lps);
 	}
@@ -1396,10 +1399,11 @@ Type env; {				/* values for OFFSET type vars	   */
  *   stages of static analysis.
  * ------------------------------------------------------------------------*/
 
-Void classDefn(line,head,ms)	       /* process new class definition	   */
+Void classDefn(line,head,ms,fds)       /* process new class definition	   */
 Int  line;			       /* definition line number	   */
 Cell head;			       /* class header :: ([Supers],Class) */
-List ms; {			       /* class definition body		   */
+List ms;			       /* class definition body		   */
+List fds; {			       /* functional dependencies	   */
     Text ct    = textOf(getHead(snd(head)));
     Int  arity = argCount;
 
@@ -1419,6 +1423,7 @@ List ms; {			       /* class definition body		   */
 	cclass(nw).supers  = fst(head);
 	cclass(nw).members = ms;
 	cclass(nw).level   = 0;
+	cclass(nw).fds	   = fds;
 	classDefns	   = cons(nw,classDefns);
 	if (arity!=1)
 	    h98DoesntSupport(line,"multiple parameter classes");
@@ -1452,7 +1457,6 @@ List ms; {			       /* class definition body		   */
 static Void local checkClassDefn(c)    /* validate class definition	   */
 Class c; {
     List tyvars = NIL;
-    Int  args   = cclass(c).arity - 1;
     Cell temp   = cclass(c).head;
     List fs     = NIL;
     List ss     = NIL;
@@ -1471,14 +1475,62 @@ Class c; {
 	tyvars = cons(arg(temp),tyvars);
     }
 
-    for (temp=cclass(c).head; args>0; temp=fun(temp), args--) {
-	arg(temp) = mkOffset(args);
+    for (fs=cclass(c).fds; nonNull(fs); fs=tl(fs)) {
+	Pair fd = hd(fs);
+	List vs = snd(fd);
+
+	/* Check for trivial dependency
+	 */
+	if (isNull(snd(fd))) {
+	    ERRMSG(cclass(c).line) "Functional dependency is trivial"
+	    EEND;
+	}
+
+	/* Check for duplicated vars on right hand side, and for vars on
+	 * right that also appear on the left:
+	 */
+	for (vs=snd(fd); nonNull(vs); vs=tl(vs)) {
+	    if (varIsMember(textOf(hd(vs)),fst(fd))) {
+		ERRMSG(cclass(c).line)
+		    "Trivial dependency for variable \"%s\"",
+		    textToStr(textOf(hd(vs)))
+		EEND;
+	    }
+	    if (varIsMember(textOf(hd(vs)),tl(vs))) {
+		ERRMSG(cclass(c).line)
+		    "Repeated variable \"%s\" in functional dependency",
+		    textToStr(textOf(hd(vs)))
+		EEND;
+	    }
+	    hd(vs) = depTypeVar(cclass(c).line,tyvars,textOf(hd(vs)));
+	}
+
+	/* Check for duplicated vars on left hand side:
+	 */
+	for (vs=fst(fd); nonNull(vs); vs=tl(vs)) {
+	    if (varIsMember(textOf(hd(vs)),tl(vs))) {
+		ERRMSG(cclass(c).line)
+		    "Repeated variable \"%s\" in functional dependency",
+		    textToStr(textOf(hd(vs)))
+		EEND;
+	    }
+	    hd(vs) = depTypeVar(cclass(c).line,tyvars,textOf(hd(vs)));
+	}
     }
-    arg(temp) = mkOffset(0);
-    fun(temp) = c;
+
+    if (cclass(c).arity==0) {
+	cclass(c).head = c;
+    } else {
+	Int args = cclass(c).arity - 1;
+	for (temp=cclass(c).head; args>0; temp=fun(temp), args--) {
+	    arg(temp) = mkOffset(args);
+	}
+	arg(temp) = mkOffset(0);
+	fun(temp) = c;
+    }
 
     tcDeps	        = NIL;		/* find dependents		   */
-    map2Proc(depPredExp,cclass(c).line,tyvars,cclass(c).supers);
+    map2Over(depPredExp,cclass(c).line,tyvars,cclass(c).supers);
     h98CheckCtxt(cclass(c).line,"class definition",FALSE,cclass(c).supers,NIL);
     cclass(c).numSupers = length(cclass(c).supers);
     cclass(c).defaults  = extractBindings(cclass(c).members);	/* defaults*/
@@ -1491,20 +1543,24 @@ Class c; {
     tcDeps              = NIL;
 }
 
-static Void local depPredExp(line,tyvars,pred)
+static Cell local depPredExp(line,tyvars,pred)
 Int  line;
 List tyvars;
 Cell pred; {
-    Int  args = 1;			/* parser guarantees >=1 args	   */
-    Cell h    = fun(pred);
+    Int  args = 0;
+    Cell prev = NIL;
+    Cell h    = pred;
     for (; isAp(h); args++) {
-	arg(pred) = depTypeExp(line,tyvars,arg(pred));
-	pred      = h;
-	h         = fun(pred);
+	arg(h) = depTypeExp(line,tyvars,arg(h));
+	prev   = h;
+	h      = fun(h);
     }
-    arg(pred) = depTypeExp(line,tyvars,arg(pred));
-    if (args!=1)
+
+    if (args==0) {
+	h98DoesntSupport(line,"tag classes");
+    } else if (args!=1) {
 	h98DoesntSupport(line,"multiple parameter classes");
+    }
 
     if (isQCon(h)) {			/* standard class constraint	   */
 	Class c = findQualClass(h);
@@ -1512,7 +1568,11 @@ Cell pred; {
 	    ERRMSG(line) "Undefined class \"%s\"", identToStr(h)
 	    EEND;
 	}
-	fun(pred) = c;
+	if (isNull(prev)) {
+	    pred = c;
+	} else {
+	    fun(prev) = c;
+	}
 	if (args!=cclass(c).arity) {
 	    ERRMSG(line) "Wrong number of arguments for class \"%s\"",
 			textToStr(cclass(c).text)
@@ -1537,6 +1597,7 @@ Cell pred; {
     {
 	internal("depPredExp");
     }
+    return pred;
 }
 
 static Void local checkMems(c,tyvars,m)	/* check member function details   */
@@ -1552,7 +1613,7 @@ Cell  m; {
     tyvars    = typeVarsIn(t,NIL,tyvars);/* Look for extra type vars.	   */
 
     if (whatIs(t)==QUAL) {		/* Overloaded member signatures?   */
-	map2Proc(depPredExp,line,tyvars,fst(snd(t)));
+	map2Over(depPredExp,line,tyvars,fst(snd(t)));
     } else {
 	t = ap(QUAL,pair(NIL,t));
     }
@@ -1563,7 +1624,9 @@ Cell  m; {
     for (tvs=tyvars; nonNull(tvs); tvs=tl(tvs)){/* Quantify		   */
 	sig = ap(NIL,sig);
     }
-    t       = mkPolyType(sig,t);
+    if (nonNull(sig)) {
+	t = mkPolyType(sig,t);
+    }
     thd3(m) = t;				/* Save type		   */
     take(cclass(c).arity,tyvars);		/* Delete extra type vars  */
 
@@ -1861,7 +1924,7 @@ Type   type; {
     List sunk = unkindTypes;
 
     if (whatIs(type)==QUAL) {
-	map2Proc(depPredExp,line,tvs,fst(snd(type)));
+	map2Over(depPredExp,line,tvs,fst(snd(type)));
 	snd(snd(type)) = depTopType(line,tvs,snd(snd(type)));
 
 	if (isAmbiguous(type)) {
@@ -1937,7 +2000,7 @@ Type t; {
 	}
 
 	if (whatIs(t)==QUAL) {
-	    map2Proc(depPredExp,l,tvs,fst(snd(t)));
+	    map2Over(depPredExp,l,tvs,fst(snd(t)));
 	    snd(snd(t)) = depTypeExp(l,tvs,snd(snd(t)));
 	    if (isAmbiguous(t)) {
 		ambigError(l,"type component",NIL,t);
@@ -2084,34 +2147,83 @@ List vs; {
     }
 }
 
+static List local otvars(pi,os)		/* os is a list of offsets that	   */
+Cell pi;				/* refer to the arguments of pi;   */
+List os; {				/* find list of offsets in those   */
+    List us = NIL;			/* positions			   */
+    for (; nonNull(os); os=tl(os)) {
+	us = offsetTyvarsIn(nthArg(offsetOf(hd(os)),pi),us);
+    }
+    return us;
+}
+
+static Bool local osubset(us,vs)	/* Determine whether us is subset  */
+List us, vs; {				/* of vs			   */
+    while (nonNull(us) && cellIsMember(hd(us),vs)) {
+	us = tl(us);
+    }
+    return isNull(us);
+}
+
+static List local oclose(fds,vs)	/* Compute closure of vs wrt to fds*/
+List fds;
+List vs; {
+    Bool changed = TRUE;
+    while (changed) {
+	List fds1 = NIL;
+	changed = FALSE;
+        while (nonNull(fds)) {
+	    Cell fd   = hd(fds);
+	    List next = tl(fds);
+	    if (osubset(fst(fd),vs)) {	/* Test if fd applies		   */
+		List os = snd(fd);
+		for (; nonNull(os); os=tl(os)) {
+		    if (!cellIsMember(hd(os),vs)) {
+			vs      = cons(hd(os),vs);
+			changed = TRUE;
+		    }
+		}
+	    } else {			/* Didn't apply this time, so keep */
+		tl(fds) = fds1;
+		fds1    = fds;
+	    }
+	    fds = next;
+	}
+	fds = fds1;
+    }
+    return vs;
+}
+
 Bool isAmbiguous(type)			/* Determine whether type is	   */
 Type type; {				/* ambiguous 			   */
     if (isPolyType(type)) {
 	type = monotypeOf(type);
     }
     if (whatIs(type)==QUAL) {		/* only qualified types can be	   */
-	List tvps, tvts;		/* ambiguous	   */
+	List ps   = fst(snd(type));	/* ambiguous			   */
+	List tvps = offsetTyvarsIn(ps,NIL);
+	List tvts = offsetTyvarsIn(snd(snd(type)),NIL);
+    	List fds  = NIL;
+
+	for (; nonNull(ps); ps=tl(ps)) {/* Calc functional dependencies	   */
+	    Cell pi = hd(ps);
+	    Cell c  = getHead(pi);
+	    if (isClass(c)) {
+		List fs = cclass(c).fds;
+		for (; nonNull(fs); fs=tl(fs)) {
+		    fds = cons(pair(otvars(pi,fst(hd(fs))),
+				    otvars(pi,snd(hd(fs)))),fds);
+		}
+	    }
 #if IPARAM
-        List ctx = fst(snd(type));
-	List c, css = NIL, ips = NIL;
-	/* split out IPs from regular predicates, and count
-	   their vars as vars in the body of the type */
-	for (c = ctx; nonNull(c); c = tl(c))
-	    if (isIP(fun(hd(c))))
-		ips = cons(hd(c), ips);
-	    else
-		css = cons(hd(c), css);
-	tvps = offsetTyvarsIn(css,NIL);
-	tvts = offsetTyvarsIn(ips,NIL);
-	tvts = offsetTyvarsIn(snd(snd(type)),tvts);
-#else
-	tvps = offsetTyvarsIn(fst(snd(type)),NIL);
-	tvts = offsetTyvarsIn(snd(snd(type)),NIL);
+	    else if (isIP(c)) {
+		fds = cons(pair(NIL,offsetTyvarsIn(arg(pi),NIL)),fds);
+	    }
 #endif
-	while (nonNull(tvps) && cellIsMember(hd(tvps),tvts)) {
-	    tvps = tl(tvps);
 	}
-	return nonNull(tvps);
+
+	tvts = oclose(fds,tvts);	/* Close tvts under fds		   */
+	return !osubset(tvps,tvts);
     }
     return FALSE;
 }
@@ -2254,14 +2366,14 @@ Int  alpha;
 Int  m;
 Cell pi; {
 #if TREX
-    if (isExt(fun(pi))) {
+    if (isAp(pi) && isExt(fun(pi))) {
 	static String lackspred = "lacks predicate";
 	checkKind(l,alpha,m,arg(pi),NIL,lackspred,ROW,0);
 	return;
     }
 #endif
 #if IPARAM
-    if (whatIs(fun(pi)) == IPCELL) {
+    if (isAp(pi) && whatIs(fun(pi)) == IPCELL) {
 	static String ippred = "iparam predicate";
 	checkKind(l,alpha,m,arg(pi),NIL,ippred,STAR,0);
 	return;
@@ -2345,10 +2457,10 @@ Cell c; {
 	Int n    = cclass(c).arity;
 	Int beta = newKindvars(n);
 	cclass(c).kinds = NIL;
-	do {
+	while (n>0) {
 	    n--;
 	    cclass(c).kinds = pair(mkInt(beta+n),cclass(c).kinds);
-	} while (n>0);
+	}
     }
 }
 
@@ -2484,7 +2596,7 @@ Inst in; {
 	}
     }
 
-    depPredExp(line,tyvars,inst(in).head);
+    inst(in).head = depPredExp(line,tyvars,inst(in).head);
 
     if (haskell98) {
 	Type h = getHead(arg(inst(in).head));
@@ -2494,7 +2606,7 @@ Inst in; {
 	}
     }
 
-    map2Proc(depPredExp,line,tyvars,inst(in).specifics);
+    map2Over(depPredExp,line,tyvars,inst(in).specifics);
     h98CheckCtxt(line,"instance definition",FALSE,inst(in).specifics,NIL);
     inst(in).numSpecifics = length(inst(in).specifics);
     inst(in).c            = getHead(inst(in).head);
@@ -2537,6 +2649,47 @@ Inst in; {
     Class c    = inst(in).c;
     List  ins  = cclass(c).instances;
     List  prev = NIL;
+
+    substitution(RESET);
+    if (nonNull(cclass(c).fds)) {	/* Check for conflicts with fds	   */
+	List ins1 = cclass(c).instances;
+	for (; nonNull(ins1); ins1=tl(ins1)) {
+	    List fds = cclass(c).fds;
+	    for (; nonNull(fds); fds=tl(fds)) {
+		Int  alpha = newKindedVars(inst(in).kinds);
+		Int  beta  = newKindedVars(inst(hd(ins1)).kinds);
+		List as    = fst(hd(fds));
+		Bool same  = TRUE;
+		for (; same && nonNull(as); as=tl(as)) {
+		    Int n = offsetOf(hd(as));
+		    same &= unify(nthArg(n,inst(in).head),alpha,
+				  nthArg(n,inst(hd(ins1)).head),beta);
+		}
+		if (isNull(as) && same) {
+		    for (as=snd(hd(fds)); same && nonNull(as); as=tl(as)) {
+			Int n = offsetOf(hd(as));
+			same &= sameType(nthArg(n,inst(in).head),alpha,
+					 nthArg(n,inst(hd(ins1)).head),beta);
+		    }
+		    if (!same) {
+			ERRMSG(inst(in).line)
+			   "Instances are not consistent with dependencies"
+			ETHEN
+			ERRTEXT "\n*** This instance    : "
+			ETHEN ERRPRED(inst(in).head);
+			ERRTEXT "\n*** Conflicts with   : "
+			ETHEN ERRPRED(inst(hd(ins)).head);
+			ERRTEXT "\n*** For class        : "
+			ETHEN ERRPRED(cclass(c).head);
+			ERRTEXT "\n*** Under dependency : "
+			ETHEN ERRFD(hd(fds));
+			ERRTEXT "\n"
+			EEND;
+		    }
+		}
+	    }
+	}
+    }
 
     substitution(RESET);
     while (nonNull(ins)) {		/* Look for overlap w/ other insts */

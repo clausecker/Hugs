@@ -2,8 +2,8 @@ dnl ################################################################
 dnl Process this file with autoconf to produce a configure script.
 dnl
 dnl $RCSfile: configure.in,v $
-dnl $Revision: 1.1 $
-dnl $Date: 1999/06/07 23:53:39 $
+dnl $Revision: 1.2 $
+dnl $Date: 1999/07/28 18:48:33 $
 dnl ################################################################
 
 AC_INIT(../hugs.c)

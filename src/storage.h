@@ -8,8 +8,8 @@
  * in the distribution for details.
  *
  * $RCSfile: storage.h,v $
- * $Revision: 1.1 $
- * $Date: 1999/06/07 23:53:38 $
+ * $Revision: 1.2 $
+ * $Date: 1999/07/28 18:48:23 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -630,6 +630,7 @@ struct strClass {
     Int    arity;			/* Number of arguments		   */
     Kinds  kinds;			/* Kinds of constructors in class  */
     Cell   head;			/* Head of class		   */
+    List   fds;				/* Functional Dependencies	   */
     Name   dcon;			/* Dictionary constructor function */
     List   supers;			/* :: [Pred]			   */
     Int    numSupers;			/* length(supers)		   */

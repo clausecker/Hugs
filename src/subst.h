@@ -7,8 +7,8 @@
  * in the distribution for details.
  *
  * $RCSfile: subst.h,v $
- * $Revision: 1.1 $
- * $Date: 1999/06/07 23:53:38 $
+ * $Revision: 1.2 $
+ * $Date: 1999/07/28 18:48:24 $
  * ------------------------------------------------------------------------*/
 
 
@@ -107,6 +107,12 @@ extern Bool  matchPred		Args((Cell,Int,Cell,Int));
 extern Bool  unifyPred		Args((Cell,Int,Cell,Int));
 extern Inst  findInstFor	Args((Cell,Int));
 
+extern Void  improve		Args((Int,List));
+extern Bool  pairImprove	Args((Int,Class,Cell,Int,Cell,Int));
+extern Bool  instImprove	Args((Int,Cell,Int));
+
 extern Bool  sameSchemes	Args((Type,Type));
+extern Bool  sameType		Args((Type,Int,Type,Int));
+extern Bool  matchType		Args((Type,Int,Type,Int));
 
 /*-------------------------------------------------------------------------*/

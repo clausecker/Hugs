@@ -7,8 +7,8 @@
  * in the distribution for details.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.1 $
- * $Date: 1999/06/07 23:53:37 $
+ * $Revision: 1.2 $
+ * $Date: 1999/07/28 18:48:14 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1311,6 +1311,15 @@ Text t; {
 	    Printf(" => ");
 	}
 	printPred(stdout,cclass(cl).head);
+	if (nonNull(cclass(cl).fds)) {
+	    List   fds = cclass(cl).fds;
+	    String pre = " | ";
+	    for (; nonNull(fds); fds=tl(fds)) {
+		Printf(pre);
+		printFD(stdout,hd(fds));
+		pre = ", ";
+	    }
+	}
 	if (nonNull(cclass(cl).members)) {
 	    List ms = cclass(cl).members;
 	    Printf(" where");

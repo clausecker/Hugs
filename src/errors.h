@@ -7,8 +7,8 @@
  * in the distribution for details.
  *
  * $RCSfile: errors.h,v $
- * $Revision: 1.1 $
- * $Date: 1999/06/07 23:53:37 $
+ * $Revision: 1.2 $
+ * $Date: 1999/07/28 18:48:14 $
  * ------------------------------------------------------------------------*/
 
 extern Void internal	 Args((String)) HUGS_noreturn;
@@ -34,6 +34,7 @@ extern Void fatal	 Args((String)) HUGS_noreturn;
 #define ERRPRED(pi)      Hilite(); printPred(errorStream,pi); Lolite()
 #define ERRKIND(k)	 Hilite(); printKind(errorStream,k); Lolite()
 #define ERRKINDS(ks)	 Hilite(); printKinds(errorStream,ks); Lolite()
+#define ERRFD(fd)	 Hilite(); printFD(errorStream,fd); Lolite()
 
 extern Void errHead      Args((Int));		   /* in main.c		   */
 extern Void errFail	 Args((Void)) HUGS_noreturn;
@@ -49,5 +50,6 @@ extern Void printContext Args((FILE *,List));
 extern Void printPred    Args((FILE *,Cell));
 extern Void printKind	 Args((FILE *,Kind));
 extern Void printKinds	 Args((FILE *,Kinds));
+extern Void printFD	 Args((FILE *,Pair));
 
 /*-------------------------------------------------------------------------*/

@@ -7,8 +7,8 @@
  * in the distribution for details.
  *
  * $RCSfile: preds.c,v $
- * $Revision: 1.1 $
- * $Date: 1999/06/07 23:53:37 $
+ * $Revision: 1.2 $
+ * $Date: 1999/07/28 18:48:19 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -568,7 +568,9 @@ List sps; {				/* preds that contain no generics. */
     for (preds=scSimplify(preds); nonNull(preds); ) {
 	Cell pi = hd(preds);
 	Cell nx = tl(preds);
-	if (anyGenerics(fst3(pi),intOf(snd3(pi))) || isIP(fun(fst3(pi)))) {
+	if (anyGenerics(fst3(pi),intOf(snd3(pi)))
+	    || !isAp(fst3(pi))
+	    || isIP(fun(fst3(pi)))) {
 	    tl(preds) = qs;				/* Retain predicate*/
 	    qs	      = preds;
 	}
@@ -595,7 +597,7 @@ List sps; {				/* context ps.  sps = savePreds.   */
 
 	if (nonNull(ev))		/* Discharge if ps ||- (pi,o)	   */
 	    overEvid(thd3(hd(p)),ev);
-	else if (!anyGenerics(pi,o) && !isIP(fun(pi))) {
+	else if (!isAp(pi) || (!anyGenerics(pi,o) && !isIP(fun(pi)))) {
 	    tl(p) = sps;		/* Defer if no generics and no IP  */
 	    sps   = p;
 	}

@@ -8,8 +8,8 @@
  * in the distribution for details.
  *
  * $RCSfile: output.c,v $
- * $Revision: 1.1 $
- * $Date: 1999/06/07 23:53:37 $
+ * $Revision: 1.2 $
+ * $Date: 1999/07/28 18:48:17 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1319,6 +1319,26 @@ FILE  *fp;
 Kinds ks; {
     outputStream = fp;
     putKinds(ks);
+}
+
+Void printFD(fp,fd)			/* print functional dependency	   */
+FILE* fp;
+Pair  fd; {
+    List us;
+    outputStream = fp;
+    for (us=fst(fd); nonNull(us); us=tl(us)) {
+        putTyVar(offsetOf(hd(us)));
+	if (nonNull(tl(us))) {
+	    putChr(' ');
+	}
+    }
+    putStr("->");
+    for (us=snd(fd); nonNull(us); us=tl(us)) {
+	putTyVar(offsetOf(hd(us)));
+	if (nonNull(tl(us))) {
+	    putChr(' ');
+	}
+    }
 }
 
 /*-------------------------------------------------------------------------*/

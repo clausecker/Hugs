@@ -10,8 +10,8 @@
  * in the distribution for details.
  *
  * $RCSfile: parser.y,v $
- * $Revision: 1.1 $
- * $Date: 1999/06/07 23:53:37 $
+ * $Revision: 1.2 $
+ * $Date: 1999/07/28 18:48:18 $
  * ------------------------------------------------------------------------*/
 
 %{
@@ -368,7 +368,7 @@ prim	  : var STRINGLIT		{$$ = gc2(pair($1,$2));}
 
 /*- Class declarations: ---------------------------------------------------*/
 
-topDecl	  : TCLASS crule wherePart	{classDefn(intOf($1),$2,$3); sp-=3;}
+topDecl	  : TCLASS crule fds wherePart	{classDefn(intOf($1),$2,$4,$3); sp-=4;}
 	  | TINSTANCE irule wherePart	{instDefn(intOf($1),$2,$3);  sp-=3;}
 	  | DEFAULT '(' dtypes ')'	{defaultDefn(intOf($1),$3);  sp-=4;}
 	  | TCLASS error		{syntaxError("class declaration");}
@@ -386,6 +386,19 @@ dtypes	  : /* empty */			{$$ = gc0(NIL);}
 	  ;
 dtypes1	  : dtypes1 ',' type		{$$ = gc3(cons($3,$1));}
 	  | type			{$$ = gc1(cons($1,NIL));}
+	  ;
+fds	  : /* empty */			{$$ = gc0(NIL);}
+	  | '|' fds1			{h98DoesntSupport(row,"dependent parameters");
+					 $$ = gc2(rev($2));}
+	  ;
+fds1	  : fds1 ',' fd			{$$ = gc3(cons($3,$1));}
+	  | fd				{$$ = gc1(cons($1,NIL));}
+	  | 
+	  ;
+fd	  : varids0 ARROW varids0	{$$ = gc3(pair(rev($1),rev($3)));}
+	  ;
+varids0   : /* empty */			{$$ = gc0(NIL);}
+	  | varids0 varid		{$$ = gc2(cons($2,$1));}
 	  ;
 
 /*- Type expressions: -----------------------------------------------------*/
@@ -1117,7 +1130,7 @@ Cell c; {				/* constraint			   */
     if (isIP(cn))
 	return c;
 #endif
-    if (!isQCon(cn) || argCount==0)
+    if (!isQCon(cn) /*|| argCount==0*/)
 	syntaxError("class expression");
     return c;
 }

@@ -7,8 +7,8 @@
  * in the distribution for details.
  *
  * $RCSfile: scc.c,v $
- * $Revision: 1.1 $
- * $Date: 1999/06/07 23:53:37 $
+ * $Revision: 1.2 $
+ * $Date: 1999/07/28 18:48:19 $
  * ------------------------------------------------------------------------*/
 
 #ifndef SCC_C

@@ -7,8 +7,8 @@
  * in the distribution for details.
  *
  * $RCSfile: connect.h,v $
- * $Revision: 1.1 $
- * $Date: 1999/06/07 23:53:37 $
+ * $Revision: 1.2 $
+ * $Date: 1999/07/28 18:48:13 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -253,7 +253,7 @@ extern  Void   clearTypeIns	Args((Void));
 extern  Type   fullExpand	Args((Type));
 extern  Bool   isAmbiguous	Args((Type));
 extern  Void   ambigError	Args((Int,String,Cell,Type));
-extern  Void   classDefn	Args((Int,Cell,Cell));
+extern  Void   classDefn	Args((Int,Cell,List,List));
 extern  Void   instDefn		Args((Int,Cell,Cell));
 extern  Void   addTupInst	Args((Class,Int));
 #if EVAL_INSTANCES
