@@ -70,7 +70,6 @@ module Hugs.Prelude (
     basicIORun, blockIO, IOFinished(..),
     threadToIOResult,
     catchException, throw,
-    hugsReturn,
     Dynamic(..), TypeRep(..), TyCon(..), Obj,
 
     Bool(False, True),
