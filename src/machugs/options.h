@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: options.h,v $
- * $Revision: 1.2 $
- * $Date: 2001/06/14 21:28:52 $
+ * $Revision: 1.3 $
+ * $Date: 2001/12/06 17:12:14 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -28,7 +28,7 @@
  * for HUGSFLAGS in the registry (Win32 only).  In all cases, use a 
  * string of the form -P"...".  
  */
-#define HUGSPATH "{Hugs}:lib:;{Current}:"
+#define HUGSPATH "{Hugs}:lib:;{Hugs}:lib:hugs:;{Hugs}:lib:exts:;{Current}:"
 
 /* The directory name which is substituted for the string "{Hugs}"
  * in a path variable.  This normally points to where the Hugs libraries
