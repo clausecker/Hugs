@@ -237,6 +237,7 @@ hslibs() {
   cvt base Data/Either.hs
   cvt base Data/FiniteMap.hs
 # cvt base Data/Generics.hs		# GHC-specific
+  cvt base Data/Graph.hs
   cvt base Data/IORef.hs
   cvt base Data/Int.hs
   cvt base Data/Ix.hs
@@ -248,6 +249,7 @@ hslibs() {
   cvt base Data/STRef/Lazy.hs
   cvt base Data/STRef/Strict.hs
   cvt base Data/Set.hs
+  cvt base Data/Tree.hs
   cvt base Data/Tuple.hs
   cvt base Data/Unique.hs
   cvt base Data/Word.hs
