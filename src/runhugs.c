@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: runhugs.c,v $
- * $Revision: 1.4 $
- * $Date: 2001/02/17 04:05:50 $
+ * $Revision: 1.5 $
+ * $Date: 2001/07/02 15:38:26 $
  * ------------------------------------------------------------------------*/
 
 #include <stdio.h>
@@ -26,6 +26,7 @@ extern int  main      Args((int, char**));
 static void check     Args((void));
 static void loadHugs  Args((int, char**));
 
+extern void           shutdownHugsServer Args((HugsServerAPI*));
 extern HugsServerAPI* initHugsServer Args((int,char**));
 static HugsServerAPI* hugs = 0;
 
@@ -106,7 +107,9 @@ char* argv[]; {
     hugs->pushHVal(hugs->compileExpr("Main","main >> return ()"));
     exitCode = hugs->doIO();
     check();
-
+    
+    shutdownHugsServer(hugs);
+    
     exit(exitCode);
     return 0;/*NOTUSED*/
 }

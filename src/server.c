@@ -11,8 +11,8 @@
  * included in the distribution.
  *
  * $RCSfile: server.c,v $
- * $Revision: 1.4 $
- * $Date: 2001/06/08 23:26:25 $
+ * $Revision: 1.5 $
+ * $Date: 2001/07/02 15:38:26 $
  * ------------------------------------------------------------------------*/
 
 #define NO_MAIN
@@ -21,6 +21,7 @@
 #include "server.h"
 
 DLLEXPORT(HugsServerAPI*) initHugsServer Args((Int, String[]));
+DLLEXPORT(Void) shutdownHugsServer Args((HugsServerAPI*));
 
 static Void   setError     Args((String));
 static Void   setHugsAPI   Args((Void));
@@ -213,6 +214,14 @@ String argv[]; {
 	}
     END_PROTECT
     return &hugs;  /* error must have occurred */
+}
+
+DLLEXPORT(Void) shutdownHugsServer(hserv) /* server shutdown */
+HugsServerAPI* hserv; {
+  /* The 'hserv' argument isn't actually used */
+  clearStack();
+  stopAnyPrinting();
+  return;
 }
 
 /* --------------------------------------------------------------------------
