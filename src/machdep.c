@@ -6,14 +6,13 @@
  *  Daan Leijen (leijen@fwi.uva.nl)
  *
  * The Hugs 98 system is Copyright (c) Mark P Jones, Alastair Reid, the
- * Yale Haskell Group, and the Oregon Graduate Institute of Science and
- * Technology, 1994-1999, All rights reserved.  It is distributed as
- * free software under the license in the file "License", which is
- * included in the distribution.
+ * Yale Haskell Group, and the OGI School of Science & Engineering at OHSU,
+ * 1994-2002, All rights reserved.  It is distributed as free software under
+ * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.41 $
- * $Date: 2002/04/04 06:45:55 $
+ * $Revision: 1.42 $
+ * $Date: 2002/04/11 23:20:18 $
  * ------------------------------------------------------------------------*/
 #include <math.h>
 

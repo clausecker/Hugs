@@ -2,14 +2,13 @@
  * Functions for manipulating Haskell Integers (bignums).
  *
  * The Hugs 98 system is Copyright (c) Mark P Jones, Alastair Reid, the
- * Yale Haskell Group, and the Oregon Graduate Institute of Science and
- * Technology, 1994-1999, All rights reserved.  It is distributed as
- * free software under the license in the file "License", which is
- * included in the distribution.
+ * Yale Haskell Group, and the OGI School of Science & Engineering at OHSU,
+ * 1994-2002, All rights reserved.  It is distributed as free software under
+ * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: bignums.c,v $
- * $Revision: 1.4 $
- * $Date: 2001/06/08 23:33:12 $
+ * $Revision: 1.5 $
+ * $Date: 2002/04/11 23:20:18 $
  * ------------------------------------------------------------------------*/
 
 /*#define DEBUG_BIGNUMS*/

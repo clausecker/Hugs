@@ -1,9 +1,9 @@
 /* --------------------------------------------------------------------------
  * WinToolB.c:	José Enrique Gallardo Ruiz, Feb 1999
  *
- * Hugs for Windows is Copyright (c) José Enrique Gallardo, Mark P Jones,
- * Alastair Reid, the Yale Haskell Group, and the Oregon Graduate Institute
- * of Science and Technology, 1994-1999, All rights reserved.  It is
+ * The Hugs 98 system is Copyright (c) José Enrique Gallardo, Mark P Jones,
+ * Alastair Reid, the Yale Haskell Group, and the OGI School of
+ * Science & Engineering at OHSU, 1994-2002, All rights reserved.  It is
  * distributed as free software under the license in the file "License",
  * which is included in the distribution.
  *

@@ -5,14 +5,13 @@
  *   type ST s a = State s -> (a, State s)
  *
  * The Hugs 98 system is Copyright (c) Mark P Jones, Alastair Reid, the
- * Yale Haskell Group, and the Oregon Graduate Institute of Science and
- * Technology, 1994-1999, All rights reserved.  It is distributed as
- * free software under the license in the file "License", which is
- * included in the distribution.
+ * Yale Haskell Group, and the OGI School of Science & Engineering at OHSU,
+ * 1994-2002, All rights reserved.  It is distributed as free software under
+ * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: stmonad.c,v $
- * $Revision: 1.5 $
- * $Date: 2002/01/04 11:00:01 $
+ * $Revision: 1.6 $
+ * $Date: 2002/04/11 23:20:22 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
