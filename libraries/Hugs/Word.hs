@@ -359,20 +359,6 @@ instance Integral Word64 where
 -----------------------------------------------------------------------------
 
 -----------------------------------------------------------------------------
--- Enumeration code: copied from Prelude
------------------------------------------------------------------------------
-
-numericEnumFrom        :: Real a => a -> [a]
-numericEnumFromThen    :: Real a => a -> a -> [a]
-numericEnumFromTo      :: Real a => a -> a -> [a]
-numericEnumFromThenTo  :: Real a => a -> a -> a -> [a]
-numericEnumFrom n            = n : (numericEnumFrom $! (n+1))
-numericEnumFromThen n m      = iterate ((m-n)+) n
-numericEnumFromTo n m        = takeWhile (<= m) (numericEnumFrom n)
-numericEnumFromThenTo n n' m = takeWhile (if n' >= n then (<= m) else (>= m))
-                                         (numericEnumFromThen n n')
-
------------------------------------------------------------------------------
 -- Coercions - used to make the instance declarations more uniform
 -----------------------------------------------------------------------------
 
