@@ -14,8 +14,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: iomonad.c,v $
- * $Revision: 1.61 $
- * $Date: 2003/10/21 14:58:45 $
+ * $Revision: 1.62 $
+ * $Date: 2003/11/01 14:40:38 $
  * ------------------------------------------------------------------------*/
  
 Name nameIORun;			        /* run IO code                     */
@@ -375,12 +375,12 @@ String loc; {
 	    ;                                   /* and try again ...       */
 #if !WANT_FIXED_SIZE_TABLES
 	if (i >= (Int)MAX_HANDLES) {
-	    int j;
+	    Int j;
 	    growDynTable(dynTabHandles);
 	    handles = (struct strHandle*)(dynTabHandles->data);
 	    num_handles = dynTabHandles->maxIdx;
 	    /* Nil out the new entries in the table */
-	    for (j=i; j < num_handles; j++) {
+	    for (j=i; j < (Int)num_handles; j++) {
 		handles[j].hcell = NIL;
 	    }
 	}
@@ -1002,7 +1002,6 @@ primFun(primOpenFd) {			/* open handle to file descriptor. */
 /* Extract the file descriptor from a Handle, discarding the Handle */
 primFun(primHandleToFd) {
     Int h;
-    Int fd;
     HandleArg(h,1+IOArity);
     if (IS_STANDARD_HANDLE(h) || handles[h].hmode==HCLOSED) {
         IOFail(mkIOError(NIL,
@@ -1012,11 +1011,13 @@ primFun(primHandleToFd) {
 			 NIL));
     }
 #if HAVE_DUP
-    fd = dup(fileno(handles[h].hfp));
-    fclose(handles[h].hfp);
-    handles[h].hfp   = 0;
-    handles[h].hmode = HCLOSED;
-    IOReturn(mkInt(fd));
+    {
+        Int fd = dup(fileno(handles[h].hfp));
+        fclose(handles[h].hfp);
+        handles[h].hfp   = 0;
+        handles[h].hmode = HCLOSED;
+        IOReturn(mkInt(fd));
+    }
 #else
     IOFail(mkIOError(handles[h].hcell,
 		     nameIllegal,

@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: storage.c,v $
- * $Revision: 1.77 $
- * $Date: 2003/10/14 13:56:25 $
+ * $Revision: 1.78 $
+ * $Date: 2003/11/01 14:40:39 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1060,7 +1060,7 @@ Text t; {
 	EEND;
     }
 #else
-    if (classHw-CLASSMIN >= dynTabClass->maxIdx) {
+    if (classHw-CLASSMIN >= (Int)(dynTabClass->maxIdx)) {
       growDynTable(dynTabClass);
       tabClass = (struct strClass*)(dynTabClass->data);
     }
@@ -1154,7 +1154,7 @@ Inst newInst() {                       /* Add new instance to table        */
 	EEND;
     }
 #else
-    if (instHw-INSTMIN >= dynTabInst->maxIdx) {
+    if (instHw-INSTMIN >= (Int)(dynTabInst->maxIdx)) {
         growDynTable(dynTabInst);
 	tabInst = (struct strInst*)(dynTabInst->data);
     }
@@ -1623,7 +1623,7 @@ String f; {                             /* of status for later restoration  */
 	EEND;
     }
 #else
-    if (scriptHw >= dynTabScripts->maxIdx) {
+    if (scriptHw >= (Int)(dynTabScripts->maxIdx)) {
       growDynTable(dynTabScripts);
       scripts = (script*)(dynTabScripts->data);
     }
