@@ -10,8 +10,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: stmonad.c,v $
- * $Revision: 1.6 $
- * $Date: 2002/04/11 23:20:22 $
+ * $Revision: 1.7 $
+ * $Date: 2002/05/10 15:20:10 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -28,6 +28,7 @@ Int what; {
 }
 
 PROTO_PRIM(primSTRun);
+PROTO_PRIM(primUnsafeSTRun);
 #if IO_MONAD
 PROTO_PRIM(primSTtoIO);
 #endif
@@ -45,6 +46,7 @@ PROTO_PRIM(primSTHash);
 
 static struct primitive stmonadPrimTable[] = {
   {"runST",		1, primSTRun},
+  {"unsafeRunST",	1, primUnsafeSTRun},
 #if IO_MONAD
   {"primSTtoIO",	3, primSTtoIO},
 #endif
@@ -69,6 +71,11 @@ static struct primInfo stmonadPrims = { stmonadControl, stmonadPrimTable, 0 };
 primFun(primSTRun) {			/* ST monad encapsulate		   */
     updapRoot(nameFst,			/*  :: (forall s. ST s a) -> a	   */
 	      ap(primArg(1),nameUnit));
+}
+
+/* ST s a -> s -> (a, s) */
+primFun(primUnsafeSTRun) {
+    updapRoot(primArg(2),nameUnit);
 }
 
 #if IO_MONAD
