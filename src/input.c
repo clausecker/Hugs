@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: input.c,v $
- * $Revision: 1.21 $
- * $Date: 2001/01/31 02:52:13 $
+ * $Revision: 1.22 $
+ * $Date: 2001/02/01 00:03:33 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -908,7 +908,7 @@ static Void local readHereString() {       /* read fragment of here doc    */
 		EEND;
 	    }
 	}
-	saveTokenChar(c0);
+	saveStrChr(c0);
 	skip();
     }
     if (c0==EOF) {
