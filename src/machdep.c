@@ -12,8 +12,8 @@
  * included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.23 $
- * $Date: 2001/08/10 00:59:30 $
+ * $Revision: 1.24 $
+ * $Date: 2001/08/14 00:32:28 $
  * ------------------------------------------------------------------------*/
 
 #ifdef HAVE_SIGNAL_H
@@ -1448,7 +1448,10 @@ FloatPro fl; {                               /* point values print out in  */
     sprintf(buffer1,FloatFMT,fl);
     while (buffer1[i] && strchr("eE.",buffer1[i])==0)
 	buffer2[j++] = buffer1[i++];
-    if (buffer1[i]!='.') {
+    if (buffer1[i]=='\0') {
+        sprintf(buffer1,"%.1f",fl);
+        i = j = 0;
+    } else if (buffer1[i]!='.') {
 	buffer2[j++] = '.';
 	buffer2[j++] = '0';
     }
