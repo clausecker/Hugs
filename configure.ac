@@ -360,7 +360,7 @@ fi
 
 dnl ** check for POSIX regex
 HavePosixRegex=NO
-AC_CHECK_HEADERS(regex.h,[AC_CHECK_FUNC(regcomp, [HavePosixRegex=YES])])
+AC_CHECK_HEADERS(regex.h,[AC_CHECK_FUNCS(regcomp, [HavePosixRegex=YES])])
 AC_SUBST(HavePosixRegex)
 
 dnl check for OpenGL include files
