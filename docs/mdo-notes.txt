@@ -41,7 +41,10 @@ up to date information on recursive-monadic-bindings.
 
 Historical note: The old implementation of the mdo-notation (and most
 of the existing documents) used the name "MonadRec" for the class and 
-the corresponding library. This name is no longer supported.
+the corresponding library. Hugs continues to support this name
+in the "old-libraries" style (i.e., with the option -N). However, this 
+name is now deprecated, programmers should use the name "MonadFix", and
+the hierarchical library structure.
 
 ------------------------------------------------------------------------------
 [EL00] Levent Erkök and John Launchbury. Recursive Monadic Bindings. In the
