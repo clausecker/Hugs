@@ -51,14 +51,11 @@ testing, though the compatibility stubs will be kept for a while.
 
 To use the new setup, set HUGSFLAGS to
 
-	-W -P{Hugs}/libraries:{Hugs}/oldlib
+	+N -W -P
 
 (The -W option disables the old syntax for implicit parameters using
-"with" and "dlet" -- some modules use "with" as an identifier.)  Do not
-add {Hugs}/lib or {Hugs}/lib/exts to this path -- Hugs will become very
-confused by multiple versions of the same modules.  (NB: don't add a
-leading or trailing colon to the above -P option, as that will add the new
-directories to the old ones.)  Some modules also require the -98 option.
+"with" and "dlet" -- some modules use "with" as an identifier.)Some
+modules also require the -98 option.
 
 More details on the new setup:
 
