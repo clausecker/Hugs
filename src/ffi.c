@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: ffi.c,v $
- * $Revision: 1.27 $
- * $Date: 2003/03/12 16:30:47 $
+ * $Revision: 1.28 $
+ * $Date: 2003/03/13 04:19:32 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -16,6 +16,7 @@
 #include "connect.h"
 #include "errors.h"
 #include "output.h"
+#include "strutil.h"
 
 /* --------------------------------------------------------------------------
  * Local function prototypes:

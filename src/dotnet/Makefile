@@ -225,7 +225,7 @@ plugin.obj	: $(PRELUDE) storage.h connect.h errors.h
 builtin.obj	: $(PRELUDE) storage.h connect.h errors.h machdep.h \
 		  builtin.h bignums.c printer.c iomonad.c interns.c \
 		  stmonad.c array.c dirprim.c timeprim.c
-ffi.obj		: $(PRELUDE) storage.h connect.h errors.h output.h
+ffi.obj		: $(PRELUDE) storage.h connect.h errors.h output.h strutil.h
 module.obj	: $(PRELUDE) storage.h connect.h errors.h module.h
 machdep.obj	: $(PRELUDE) storage.h connect.h errors.h command.h \
 		  opts.h machdep.h

@@ -258,7 +258,7 @@ plugin@OBJ@	: $(PRELUDE) storage.h connect.h errors.h
 builtin@OBJ@	: $(PRELUDE) storage.h connect.h errors.h machdep.h \
 		  builtin.h bignums.c printer.c iomonad.c interns.c \
 		  stmonad.c array.c dirprim.c timeprim.c
-ffi@OBJ@	: $(PRELUDE) storage.h connect.h errors.h output.h
+ffi@OBJ@	: $(PRELUDE) storage.h connect.h errors.h output.h strutil.h
 module@OBJ@	: $(PRELUDE) storage.h connect.h errors.h module.h
 machdep@OBJ@	: $(PRELUDE) storage.h connect.h errors.h command.h \
 		  opts.h machdep.h
