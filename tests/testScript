@@ -7,7 +7,7 @@ HUGSDIR=../hugsdir
 HUGSFLAGS=
 export HUGS HUGSDIR HUGSFLAGS
 
-STDOPTS='+X +q -w -pHugs: -s10'
+STDOPTS='+q -w -pHugs: -s10'
 
 test_static() {
   echo "\
