@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: storage.c,v $
- * $Revision: 1.35 $
- * $Date: 2002/04/16 21:06:02 $
+ * $Revision: 1.36 $
+ * $Date: 2002/04/17 04:05:52 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -623,17 +623,25 @@ Cell id; {				/* in name table		     */
 	      Module m  = hd(ms);
 	      List   es = NIL;
 	      ms = tl(ms);
+	      /* For each module with alias 'aliasMod', get at
+	       * what 'currentModule' imports from it.
+	       */
 	      if (m == currentModule) {
 		es = module(m).names;
 		fromHome = TRUE;
 	      } else {
 		es = getModuleImports(m);
+		fromHome = FALSE;
 	      }
+	      /* Chase down list looking for _unqual_ entity. */
 	      for(; nonNull(es); es=tl(es)) {
 		Cell e = hd(es);
 		if (isName(e) && name(e).text==t 
 		    && !cellIsMember(e,res)) {
 		    if (fromHome && name(e).mod != currentModule) {
+		      /* If we're processing local names, only interested in
+		       * names that were actually declared there.
+		       */
 			continue;
 		    }
 		    res = cons(e,res);
