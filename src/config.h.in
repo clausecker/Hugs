@@ -319,6 +319,9 @@
 /* Define if you have the select function.  */
 #undef HAVE_SELECT
 
+/* Define if you have the setenv function.  */
+#undef HAVE_SETENV
+
 /* Define if you have the sigprocmask function.  */
 #undef HAVE_SIGPROCMASK
 
@@ -348,6 +351,9 @@
 
 /* Define if you have the times function.  */
 #undef HAVE_TIMES
+
+/* Define if you have the unsetenv function.  */
+#undef HAVE_UNSETENV
 
 /* Define if you have the valloc function.  */
 #undef HAVE_VALLOC
