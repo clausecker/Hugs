@@ -18,7 +18,7 @@
 
 cpp_flags='-D__HUGS__'
 
-cpp=${cpp-gcc -P -E -traditional -xc}
+: ${cpp='gcc -P -E -traditional -xc'}
 
 case $# in
 2)	;;
@@ -119,12 +119,10 @@ chmod 755 BuildFFI
 
 packages='base haskell98 haskell-src network unix'
 
-. ./params
-
-case "$X_LIBS" in
-'')	;;
-*)	packages="$packages X11 HGL" ;;
-esac
+if grep '^#define X_DISPLAY_MISSING' ../config.h >/dev/null
+then	:
+else	packages="$packages X11 HGL"
+fi
 
 for package in $packages
 do

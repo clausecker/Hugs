@@ -17,10 +17,11 @@ usage="$0 <source-directory> <target-directory>"
 cpp_flags='-D__HUGS__'
 
 cc=${CC-gcc}
-: ${cpp=gcc -P -E -traditional -xc}
+: ${cpp='gcc -P -E -traditional -xc'}
 : ${hsc2hs=hsc2hs}
 : ${greencard=green-card}
-: ${ffihugs=`dirname $0`/../ffihugs}
+: ${ffihugs=../ffihugs}
+: ${runhugs=../runhugs}
 
 case `uname -a` in
 *CYGWIN*) platform=Win32 ;;
@@ -180,8 +181,8 @@ fi
 extra_libraries=
 extra_ld_opts=
 if [ -f "$conf" ]
-then	extra_libraries=`../runhugs ../../tools/get_libraries $conf`
-	extra_ld_opts=`../runhugs ../../tools/get_ld_options $conf`
+then	extra_libraries=`$runhugs ../../tools/get_libraries $conf`
+	extra_ld_opts=`$runhugs ../../tools/get_ld_options $conf`
 fi
 
 script=`dirname $0`/BuildFFI
