@@ -47,7 +47,7 @@ module Hugs.ConcBase(
 	) where
 
 import Hugs.Prelude(
-	IOResult(..), threadToIOResult,
+	IO(..), IOResult(..), threadToIOResult,
 	HugsException, catchHugsException, blockIO)
 import Hugs.IO(IOMode, Handle, ioeGetErrorString) -- for binary file ops
 import Hugs.IORef
