@@ -415,7 +415,7 @@ EOF
 
     cat > conftest.c << EOF
 #include "confdefs.h"
-#if HAVE_PROTOTYPES       /* To enable use of prototypes whenever possible */
+#if PROTOTYPES       /* To enable use of prototypes whenever possible */
 #define Args(x) x
 #else
 #define Args(x) ()
