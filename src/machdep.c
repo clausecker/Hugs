@@ -11,8 +11,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.75 $
- * $Date: 2003/02/01 06:36:52 $
+ * $Revision: 1.76 $
+ * $Date: 2003/02/04 05:07:50 $
  * ------------------------------------------------------------------------*/
 #include <math.h>
 
@@ -2083,9 +2083,11 @@ String file; {
 }
 
 #ifdef LEADING_UNDERSCORE
-#  define INIT_MODULE_FUN "_initModule"
+#  define INIT_MODULE_FUN  "_initModule"
+#  define API_VERSION_FUN  "_HugsAPIVersion"
 #else
-#  define INIT_MODULE_FUN "initModule"
+#  define INIT_MODULE_FUN  "initModule"
+#  define API_VERSION_FUN  "HugsAPIVersion"
 #endif
 
 Void needPrims(version)   /* Load dll containing prims for current module */
@@ -2093,7 +2095,11 @@ Int  version; {
     if (havePlugin(textToStr(module(currentModule).text))) {
 	return;
     }
-    /* Sigh! The sooner we drop support for version 1 the better */
+    /* Version 1-4: the Haskell module specifies what module to expect
+     *              (via a needPrims_hugs decl).
+     *
+     * Version 0:   the extension DLL specifies the API version it assumes.
+     */
     switch (version) { 
     case 1 : 
 	{ 
@@ -2138,19 +2144,45 @@ Int  version; {
 	    break;
 	}
     case 4 : 
-    case 5 : 
 	{ 
 	    InitModuleFun4 initModule;
 	    void* dll = getDLL(mkDLLFilename(scriptFile));
 	    initModule = (InitModuleFun4)getDLLSymbol(dll,INIT_MODULE_FUN);
 	    if (initModule) {
-	        Bool flg = setOldDLLFlag((version == 4));
+	        Bool flg = setOldDLLFlag(TRUE);
 		(*initModule)(hugsAPI4()); 
 		setScriptPrims(setPrimInfoDll(dll));
 		setOldDLLFlag(flg);
 		return;
 	    }
 	    break;
+	}
+    case 5 : 
+	{ 
+	    InitModuleFun5 initModule;
+	    void* dll = getDLL(mkDLLFilename(scriptFile));
+	    initModule = (InitModuleFun5)getDLLSymbol(dll,INIT_MODULE_FUN);
+	    if (initModule) {
+	        Bool flg = setOldDLLFlag(FALSE);
+		(*initModule)(hugsAPI5()); 
+		setScriptPrims(setPrimInfoDll(dll));
+		setOldDLLFlag(flg);
+		return;
+	    }
+	    break;
+	}
+    case 0 : 
+        {
+	    APIVersionFun versionFun;
+	    void* dll     = getDLL(mkDLLFilename(scriptFile));
+	    Int   version = 4;
+
+	    versionFun = (APIVersionFun)getDLLSymbol(dll,API_VERSION_FUN);
+	    if (versionFun) {
+	      version = (*versionFun)();
+	    } 
+	    needPrims(version);
+	    return;
 	}
     default: 
 	{

@@ -135,6 +135,9 @@ struct hugs_primInfo {
 #define hugs_primInfo primInfo
 #endif
 
+/* API Version number */
+#define HUGS_API_VERSION 5
+
 typedef struct {
 
   /* evaluate next argument */
@@ -215,6 +218,19 @@ typedef struct {
   int      	 (*runId)          (int);
 } HugsAPI4;
 
+typedef HugsAPI4 HugsAPI5;
+
+/* Note: the change in going from version 4 to 5 is that
+   with 5 (and later), the DLLs specify the HugsAPI version
+   assumed by the DLL primitives. The HugsAPI method table
+   is identical to 4's.
+*/
+
+extern  HugsAPI5* hugsAPI5     (void);
+typedef void (*InitModuleFun5) (HugsAPI5*);
+typedef int  (*APIVersionFun)  (void);
+
+/* For convenience, keep these around.. */
 extern  HugsAPI4* hugsAPI4     (void);
 typedef void (*InitModuleFun4) (HugsAPI4*);
 

@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: ffi.c,v $
- * $Revision: 1.23 $
- * $Date: 2003/01/03 17:00:36 $
+ * $Revision: 1.24 $
+ * $Date: 2003/02/04 05:07:50 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -85,7 +85,7 @@ String fn; {
     out = f;
     fprintf(out,"/* Machine generated file, do not modify */\n");
     fprintf(out,"#include \"HsFFI.h\"\n");
-    fprintf(out,"static HugsAPI4 *hugs = 0;\n");
+    fprintf(out,"static HugsAPI5 *hugs = 0;\n");
 }
 
 Void foreignFooter(fn,mn,is,es)
@@ -171,11 +171,13 @@ List es; {
            "#ifdef __cplusplus\n"
            "extern \"C\" {\n"
            "#endif\n"
-           "DLLEXPORT(void) initModule(HugsAPI4 *);\n"
-           "DLLEXPORT(void) initModule(HugsAPI4 *hugsAPI) {\n"
+	   "DLLEXPORT(int)  HugsAPIVersion();\n"
+	   "DLLEXPORT(int)  HugsAPIVersion() {return (%d);}\n"
+           "DLLEXPORT(void) initModule(HugsAPI5 *);\n"
+           "DLLEXPORT(void) initModule(HugsAPI5 *hugsAPI) {\n"
            "    hugs = hugsAPI;\n"
            "    hugs->registerPrims(&hugs_prims);\n"
-           );
+           ,HUGS_API_VERSION);
     fprintf(out,
            "}\n"
            "#ifdef __cplusplus\n"

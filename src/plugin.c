@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: plugin.c,v $
- * $Revision: 1.6 $
- * $Date: 2003/01/03 16:03:44 $
+ * $Revision: 1.7 $
+ * $Date: 2003/02/04 05:07:50 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -41,7 +41,7 @@ String mod; {                       /* (called when each module is loaded) */
     Int i;
     for(i=0; pluginList[i].nm; ++i) {
 	if (0 == strcmp(mod, pluginList[i].nm)) {
-	    (*pluginList[i].initModule)(hugsAPI4());
+	    (*pluginList[i].initModule)(hugsAPI5());
 	    return TRUE;
 	}
     }
