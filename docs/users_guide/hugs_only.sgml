@@ -1,148 +1,84 @@
-<chapter id="extensions">
-<title>Non-standard language extensions</title>
+<chapter id="hugs-only">
+<title>Hugs-specific language extensions</title>
 
-<para>Several experimental features are enabled with the <option>-98</option>
-option.
-Most are described in
-<ulink url="http://cvs.haskell.org/Hugs/pages/hugsman/exts.html">Section 7 of the <citetitle pubwork=article>Hugs 98 User Manual</citetitle></ulink>.
+<para>These experimental features are unique to Hugs.
+Except of the debugging primitives,
+they require the <option>-98</option> option.
+</para>
+
+<sect1 id="trex">
+<title>Typed extensible records</title>
+
+<para>
+See
+<ulink url="http://cvs.haskell.org/Hugs/pages/hugsman/exts.html#sect7.2">Section 7.2 of the <citetitle pubwork=article>Hugs 98 User Manual</citetitle></ulink>.
 </para>
 
 <para>
-Most of these extensions are also supported by
-<ulink url="http://www.haskell.org/ghc/">GHC</ulink>,
-the principal exception being TRex (typed extensible records).
-GHC provides some of these extensions in a more general form.
-</para>
-
-<sect1 id="recursive-do">
-<title>Recursive do-notation</title>
-
-<para>
-The recursive do-notation (also known as mdo-notation) is implemented
-as described in:
-
-    <citetitle pubwork=article>A recursive do for Haskell</citetitle>,
-    Levent Erkok and John Launchbury,
-    <citetitle pubwork=book>Haskell Workshop 2002</citetitle>,
-    pages: 29&ndash;37. Pittsburgh, Pennsylvania.
-</para>
-
-<para>
-The do-notation of Haskell does not allow recursive bindings, that is,
-the variables bound in a do-expression are visible only in the textually
-following code block. Compare this to a let-expression, where bound
-variables are visible in the entire binding group. It turns out that
-several applications can benefit from recursive bindings in the do-notation,
-and this extension provides the necessary syntactic support.
-</para>
-
-<para>
-Here is a simple (yet contrived) example:
-<programlisting>
-  import Control.Monad.Fix
-
-  justOnes = mdo xs <- Just (1:xs)
-                 return xs
-</programlisting>
-As you can guess <literal>justOnes</literal> will evaluate to
-<literal>Just [1,1,1,...</literal>
-</para>
-
-<para>
-The <literal>Control.Monad.Fix</literal> module introduces
-the <literal>MonadFix</literal> class, defined as
-<programlisting>
-  class Monad m => MonadFix m where
-      mfix :: (a -> m a) -> m a
-</programlisting>
-The function <literal>mfix</literal> dictates how the required recursion
-operation should be performed.
-If recursive bindings are required for a monad, then that
-monad must be declared an instance of the <literal>MonadFix</literal> class.
-For details, see the above mentioned reference.
-</para>
-
-<para>
-The <literal>Control.Monad.Fix</literal> module also defines instances of
-<literal>MonadFix</literal> for <literal>List</literal>,
-<literal>Maybe</literal> and <literal>IO</literal>.
-Furthermore, several other monad modules provide instances of the
-<literal>MonadFix</literal> class, including
-the <literal>Control.Monad.ST</literal> and
-<literal>Control.Monad.ST.Lazy</literal>
-modules for Haskell's internal state monad (strict and lazy, respectively).
-</para>
-
-<para>
-There are three important points in using the recursive-do notation:
-<itemizedlist>
-<listitem><para>
-The recursive version of the do-notation uses
-the keyword <literal>mdo</literal> (rather than <literal>do</literal>).
-</para></listitem>
-
-<listitem><para>
-You should <quote><literal>import Control.Monad.Fix</literal></quote>.
-</para></listitem>
-
-<listitem><para>
-Hugs should be started with the flag <option>-98</option>.
-</para></listitem>
-</itemizedlist>
-The web page: <quote><ulink url="http://www.cse.ogi.edu/PacSoft/projects/rmb">http://www.cse.ogi.edu/PacSoft/projects/rmb</ulink></quote>
-contains up to date information on recursive monadic bindings.
-</para>
-
-<para>
-Historical note: The old implementation of the mdo-notation (and most
-of the existing documents) used the name <literal>MonadRec</literal>
-for the class and the corresponding library.
+To use equality and <literal>show</literal> on extensible records,
+a module must import <literal>Hugs.Trex</literal>.
 </para>
 
 </sect1>
 
-<sect1 id="zip-comprehension">
-<title>Parallel list comprehensions (a.k.a. zip-comprehensions)</title>
+<sect1 id="restricted-synonyms">
+<title>Restricted type synonyms</title>
 
 <para>
-Parallel list comprehensions are a natural extension to list comprehensions.
-List comprehensions can be thought of as a nice syntax for writing maps and
-filters.
-Parallel comprehensions extend this to include the <literal>zipWith</literal>
-family.
+Restricted type synonyms are a mechanism for defining abstract datatypes
+(now largely replaced by the Haskell 98 module system).
+See
+<ulink url="http://cvs.haskell.org/Hugs/pages/hugsman/exts.html#sect7.3.5">Section 7.3.5 of the <citetitle pubwork=article>Hugs 98 User Manual</citetitle></ulink>
+for details.
 </para>
 
-<para>
-A parallel list comprehension has multiple independent branches of qualifier
-lists, each separated by a <quote><literal>|</literal></quote> symbol.
-For example, the following zips together two lists:
-<programlisting>
-   [ (x, y) | x <- xs | y <- ys ]
-</programlisting>
-The behavior of parallel list comprehensions follows that
-of <literal>zip</literal>, in that
-the resulting list will have the same length as the shortest branch.
-</para>
+</sect1>
+
+<sect1 id="here-documents">
+<title>Here documents</title>
 
 <para>
-We can define parallel list comprehensions by translation to regular
-comprehensions.
-Given a parallel comprehension of the form:
+These expressions
+(named after similar things in Unix shells)
+are another way of writing string literals, often useful for large strings.
+Everything from <literal>``</literal> to <literal>''</literal>
+(including newlines and backslashes, but not <literal>$</literal> characters)
+is treated as literal text, and layout is ignored.
+The exception is the <literal>$</literal> character,
+so that you can embed the value of the variable <replaceable>var</replaceable>
+in the string by writing
+<literal>$(</literal><replaceable>var</replaceable><literal>)</literal>.
+To get a literal <literal>$</literal> character,
+write <literal>$$</literal> &mdash;
+single <literal>$</literal> characters are not allowed.
+</para>
+<para>
+When the
+<link linkend="option-here-documents"><option>+H</option></link> option
+is given, the following
 <programlisting>
-   [ e | p1 <- e11, p2 <- e12, ...
-       | q1 <- e21, q2 <- e22, ...
-       ...
-   ]
+  letter name = ``Dear $(name),
+Here are some characters: \ ' ` ".
+To learn more, send $$10 to the address below.''
 </programlisting>
-This will be translated to:
+is equivalent the Haskell 98 declaration
 <programlisting>
-   [ e | ((p1,p2), (q1,q2), ...) <- zipN [(p1,p2) | p1 <- e11, p2 <- e12, ...]
-                                         [(q1,q2) | q1 <- e21, q2 <- e22, ...]
-                                         ...
-   ]
+  letter name = "Dear " ++ quote name ++ ",\n\
+                \Here are some characters: \\ ' ` \".\n\
+                \To learn more, send $10 to the address below."
 </programlisting>
-where <quote><replaceable>zipN</replaceable></quote>
-is the appropriate zip for the given number of branches.
+The function
+<programlisting>
+  class Quote where
+      quote :: a -> String
+</programlisting>
+(basically no change for <literal>String</literal> and <literal>Char</literal>,
+and <literal>show</literal> for everything else)
+comes from the <literal>Hugs.Quote</literal> module,
+which also defines several common instances,
+and should be imported if you use the
+<literal>$(</literal><replaceable>var</replaceable><literal>)</literal> form.
+(This module also requires the <option>-98</option> option.)
 </para>
 
 </sect1>
@@ -252,7 +188,7 @@ a consequence of the Hugs implementation. These are described below.
 
 <para>
 Modules that use HugsHood combinators must import the module
-<literal>Observe</literal>.
+<literal>Hugs.Observe</literal>.
 Its only role is to provide the necessary primitive definitions, namely:
 <programlisting>
   primitive observe :: String -> a -> a
@@ -355,7 +291,7 @@ using <literal>setBkpt</literal> before a breakpoint dialogue can be triggered.
 <para>
 Here is a very simple program using the three combinators.
 <programlisting>
-  import Observe
+  import Hugs.Observe
 
   prog n = do { setBkpt "fib" True; putStr $ show (observe "fun" f n) }
   f 0 = 1

@@ -4,62 +4,17 @@
 <para>
 In <option>+98</option> mode, Hugs supports
 <ulink url="http://www.haskell.org/definition/">Haskell 98</ulink>
-with extensions that are standardized between Hugs
-and the Haskell compilers
-<ulink url="http://www.haskell.org/ghc/">GHC</ulink> and
-<ulink url="http://www.cs.york.ac.uk/fp/nhc98/">Nhc</ulink>.
+and some standardized extensions
+(described by addenda to the Haskell 98 report).
 <para>
-
-<sect1 id="addenda">
-<title>Addenda to Haskell 98</title>
-
-<sect2 id="ffi">
-<title>Haskell Foreign Function Interface</title>
-
-<para>
-The Haskell Foreign Function Interface, as described in the
-<ulink url="http://www.cse.unsw.edu.au/~chak/haskell/ffi/">FFI addendum</ulink>
-is implemented except for the following limitations:
-</para>
-<itemizedlist>
-<listitem><para>
-Only the <literal>ccall</literal> calling convention is supported.
-All others are flagged as errors.
-</para></listitem>
-
-<listitem><para>
-<literal>foreign export</literal> is not implemented.
-</para></listitem>
-
-<listitem><para>
-<literal>foreign import wrapper</literal> are only implemented for the
-x86, PowerPC and Sparc architectures and has been most thoroughly tested on
-Windows and Linux using gcc.
-</para></listitem>
-</itemizedlist>
-<para>
-Modules containing <literal>foreign</literal> declarations must be compiled
-with <command>ffihugs</command> before use (see <xref linkend="ffihugs">).
-</para>
-
-</sect2>
-
-<sect2 id="long-names">
-<title>Extended module names</title>
-
-<para>
-Module names may contain dots, e.g. <literal>System.IO.Error</literal>,
-to support a hierarchical module namespace.
-When searching for the corresponding source file,
-Hugs replaces the dots with slashes.
-</para>
-
-</sect2>
-
-</sect1>
 
 <sect1 id="bugs-haskell98">
 <title>Haskell 98 non-compliance</title>
+
+<para>
+Hugs deviates from Haskell 98 in a few minor ways,
+listed here corresponding to the relevant sections of the Report.
+</para>
 
 <sect2 id="bugs-lexical">
 <title>Lexical structure</title>
@@ -91,13 +46,13 @@ because it doesn't look far enough ahead.
 </sect2>
 
 <sect2 id="bugs-syntax">
-<title>Syntax</title>
+<title>Expressions</title>
 
 <variablelist>
 
 <varlistentry>
 <term>Interaction of fixities with the
-<literal>let</literal>/<literal>lambda</literal> meta-rule</term>
+<literal>let</literal>/lambda meta-rule</term>
 <listitem><para>
 Hugs doesn't use the fixity of operators until after parsing, and so
 fails to accept legal (but wierd) Haskell 98 expressions like
@@ -122,7 +77,7 @@ Legal expressions like <literal>(a+b+)</literal>) and
 </sect2>
 
 <sect2 id="bugs-types">
-<title>Type system</title>
+<title>Declarations and bindings</title>
 
 <variablelist>
 
@@ -215,7 +170,7 @@ Then type inference on <literal>len2</literal> fails.
 </sect2>
 
 <sect2 id="bugs-modules">
-<title>Module system</title>
+<title>Modules</title>
 
 <variablelist>
 
@@ -244,7 +199,7 @@ in a module <literal>Hugs.Prelude</literal> that these modules import.
 </sect2>
 
 <sect2 id="bugs-primitives">
-<title>Primitive types</title>
+<title>Predefined types and classes</title>
 
 <variablelist>
 
@@ -295,11 +250,67 @@ In Haskell 98, all tuple types are instances of
 <literal>Read</literal>, and <literal>Show</literal>
 if all their component types are.
 Hugs defines these instances only for tuple types of size 5 or less
-(3 in the small Hugs configuration).
+(3 or less in the small Hugs configuration).
 </para></listitem>
 </varlistentry>
 
 </variablelist>
+
+</sect2>
+
+</sect1>
+
+<sect1 id="addenda">
+<title>Addenda to Haskell 98</title>
+
+<para>
+These addenda describe extensions that have been standardized
+across haskell implementations.
+</para>
+
+<sect2 id="ffi">
+<title>Foreign Function Interface</title>
+
+<para>
+The Haskell Foreign Function Interface, as described in the
+<ulink url="http://www.cse.unsw.edu.au/~chak/haskell/ffi/">FFI addendum</ulink>
+is implemented except for the following limitations:
+</para>
+<itemizedlist>
+<listitem><para>
+Only the <literal>ccall</literal> calling convention is supported.
+All others are flagged as errors.
+</para></listitem>
+
+<listitem><para>
+<literal>foreign export</literal> is not implemented.
+</para></listitem>
+
+<listitem><para>
+<literal>foreign import wrapper</literal> are only implemented for the
+x86, PowerPC and Sparc architectures and has been most thoroughly tested on
+Windows and Linux using gcc.
+</para></listitem>
+</itemizedlist>
+<para>
+Modules containing <literal>foreign</literal> declarations must be compiled
+with <command>ffihugs</command> before use (see <xref linkend="ffihugs">).
+</para>
+
+</sect2>
+
+<sect2 id="hierarchical-libraries">
+<title>Hierarchical Namespace Extension</title>
+
+<para>
+The
+<ulink url="http://www.haskell.org/hierarchical-modules/">Haskell Hierarchical Namespace Extension</ulink>
+allows dots in module names, e.g. <literal>System.IO.Error</literal>,
+creating a hierarchical module namespace.
+Hugs has supported this since the December 2001 release.
+When searching for the source file corresponding to a hierarchical name,
+Hugs replaces the dots with slashes.
+</para>
 
 </sect2>
 

@@ -11,6 +11,48 @@
 </cmdsynopsis>
 
 <para>
+The behaviour of Hugs may be modified by options.
+These are initially set to default values,
+and then read from the following sources in order:
+<orderedlist>
+<listitem>
+<para>
+(Windows only) the registry under the <literal>HKEY_LOCAL_MACHINE</literal> key.
+</para>
+</listitem>
+
+<listitem>
+<para>
+(Windows only) the registry under the <literal>HKEY_CURRENT_USER</literal> key.
+This step is skipped if the environment variable
+<literal>IGNORE_USER_REGISTRY</literal> is set,
+providing an emergency workaround if the settings are invalid.
+</para>
+</listitem>
+
+<listitem>
+<para>
+(Hugs for Windows only)
+the GUI settings.
+</para>
+</listitem>
+
+<listitem>
+<para>
+The environment variable <literal>HUGSFLAGS</literal>, if set.
+</para>
+</listitem>
+
+<listitem>
+<para>
+The Hugs command line.
+</para>
+</listitem>
+
+</orderedlist>
+</para>
+
+<para>
 See <ulink url="http://cvs.haskell.org/Hugs/pages/hugsman/started.html">Section 4 of the <citetitle pubwork=article>Hugs 98 User Manual</citetitle></ulink>.
 </para>
 
@@ -53,8 +95,8 @@ the choice making no difference.
 Accept only Haskell 98.
 This is on by default, and cannot be changed within Hugs.
 Turning this off enables several special Hugs extensions,
-which are described in <xref linkend="extensions"> and
-the <citetitle pubwork=article>Hugs 98 User Manual</citetitle>.
+which are described in <xref linkend="hugs-ghc">, <xref linkend="hugs-only">
+and the <citetitle pubwork=article>Hugs 98 User Manual</citetitle>.
 </para>
 </listitem>
 </varlistentry>
@@ -83,43 +125,9 @@ Allow unsafe overlapping instances (a Hugs extension; default: off)
 <para>
 Support <emphasis>here documents</emphasis>
 (named after similar things in Unix shells),
-another way of writing string literals, often useful for large strings.
-Everything from <literal>``</literal> to <literal>''</literal>
-(including newlines and backslashes, but not <literal>$</literal> characters)
-is treated as literal text, and layout is ignored.
-The exception is the <literal>$</literal> character,
-so that you can embed the value of the variable <replaceable>var</replaceable>
-in the string by writing
-<literal>$(</literal><replaceable>var</replaceable><literal>)</literal>.
-To get a literal <literal>$</literal> character,
-write <literal>$$</literal> &mdash;
-single <literal>$</literal> characters are not allowed.
-</para>
-<para>
+another way of writing large string literals
+(see <xref linkend="here-documents">).
 This extension is turned off by default.
-When <option>+H</option> is given, the following
-<programlisting>
-  letter name = ``Dear $(name),
-Here are some characters: \ ' ` ".
-To learn more, send $$10 to the address below.''
-</programlisting>
-is equivalent the Haskell 98 declaration
-<programlisting>
-  letter name = "Dear " ++ quote name ++ ",\n\
-                \Here are some characters: \\ ' ` \".\n\
-                \To learn more, send $10 to the address below."
-</programlisting>
-The function
-<programlisting>
-  class Quote where
-      quote :: a -> String
-</programlisting>
-(basically no change for <literal>String</literal> and <literal>Char</literal>,
-and <literal>show</literal> for everything else)
-comes from the Quote module, which also defines several common instances,
-and should be imported if you use the
-<literal>$(</literal><replaceable>var</replaceable><literal>)</literal> form.
-(This module also requires the <option>-98</option> option.)
 </para>
 </listitem>
 </varlistentry>
@@ -523,7 +531,7 @@ However the built-in printer prints the whole value, with embedded exceptions:
   Prelude> [1, 2 + error "foo", 3]
   [1,{error "foo"},3]
 </screen>
-Sometimes a component could be one of two or more exceptions,
+Sometimes a component could produce one of two or more exceptions,
 but the built-in printer shows only one of them:
 <screen>
   Prelude> 1 + error "foo" + error "bar"

@@ -1,0 +1,284 @@
+<chapter id="hugs-ghc">
+<title>Language extensions supported by Hugs and GHC</title>
+
+<para>These experimental features are enabled with the <option>-98</option>
+option.
+Most are described in
+<ulink url="http://cvs.haskell.org/Hugs/pages/hugsman/exts.html">Section 7 of the <citetitle pubwork=article>Hugs 98 User Manual</citetitle></ulink>.
+Those described in this chapter are also supported by
+<ulink url="http://www.haskell.org/ghc/">GHC</ulink>
+with appropriate options,
+though in some cases the GHC versions are more general
+</para>
+
+<sect1 id="syntax-extensions">
+<title>Syntactic extensions</title>
+
+<sect2 id="recursive-do">
+<title>Recursive do-notation</title>
+
+<para>
+The recursive do-notation (also known as mdo-notation) is implemented
+as described in:
+
+    <citetitle pubwork=article>A recursive do for Haskell</citetitle>,
+    Levent Erkok and John Launchbury,
+    <citetitle pubwork=book>Haskell Workshop 2002</citetitle>,
+    pages: 29&ndash;37. Pittsburgh, Pennsylvania.
+</para>
+
+<para>
+The do-notation of Haskell does not allow recursive bindings, that is,
+the variables bound in a do-expression are visible only in the textually
+following code block. Compare this to a let-expression, where bound
+variables are visible in the entire binding group. It turns out that
+several applications can benefit from recursive bindings in the do-notation,
+and this extension provides the necessary syntactic support.
+</para>
+
+<para>
+Here is a simple (yet contrived) example:
+<programlisting>
+  import Control.Monad.Fix
+
+  justOnes = mdo xs <- Just (1:xs)
+                 return xs
+</programlisting>
+As you can guess <literal>justOnes</literal> will evaluate to
+<literal>Just [1,1,1,...</literal>
+</para>
+
+<para>
+The <literal>Control.Monad.Fix</literal> module introduces
+the <literal>MonadFix</literal> class, defined as
+<programlisting>
+  class Monad m => MonadFix m where
+      mfix :: (a -> m a) -> m a
+</programlisting>
+The function <literal>mfix</literal> dictates how the required recursion
+operation should be performed.
+If recursive bindings are required for a monad, then that
+monad must be declared an instance of the <literal>MonadFix</literal> class.
+For details, see the above mentioned reference.
+</para>
+
+<para>
+The <literal>Control.Monad.Fix</literal> module also defines instances of
+<literal>MonadFix</literal> for <literal>List</literal>,
+<literal>Maybe</literal> and <literal>IO</literal>.
+Furthermore, several other monad modules provide instances of the
+<literal>MonadFix</literal> class, including
+the <literal>Control.Monad.ST</literal> and
+<literal>Control.Monad.ST.Lazy</literal>
+modules for Haskell's internal state monad (strict and lazy, respectively).
+</para>
+
+<para>
+There are three important points in using the recursive-do notation:
+<itemizedlist>
+<listitem><para>
+The recursive version of the do-notation uses
+the keyword <literal>mdo</literal> (rather than <literal>do</literal>).
+</para></listitem>
+
+<listitem><para>
+You should <quote><literal>import Control.Monad.Fix</literal></quote>.
+</para></listitem>
+
+<listitem><para>
+Hugs should be started with the flag <option>-98</option>.
+</para></listitem>
+</itemizedlist>
+The web page: <quote><ulink url="http://www.cse.ogi.edu/PacSoft/projects/rmb">http://www.cse.ogi.edu/PacSoft/projects/rmb</ulink></quote>
+contains up to date information on recursive monadic bindings.
+</para>
+
+<para>
+Historical note: The old implementation of the mdo-notation (and most
+of the existing documents) used the name <literal>MonadRec</literal>
+for the class and the corresponding library.
+</para>
+
+</sect2>
+
+<sect2 id="zip-comprehension">
+<title>Parallel list comprehensions (a.k.a. zip-comprehensions)</title>
+
+<para>
+Parallel list comprehensions are a natural extension to list comprehensions.
+List comprehensions can be thought of as a nice syntax for writing maps and
+filters.
+Parallel comprehensions extend this to include the <literal>zipWith</literal>
+family.
+</para>
+
+<para>
+A parallel list comprehension has multiple independent branches of qualifier
+lists, each separated by a <quote><literal>|</literal></quote> symbol.
+For example, the following zips together two lists:
+<programlisting>
+   [ (x, y) | x <- xs | y <- ys ]
+</programlisting>
+The behavior of parallel list comprehensions follows that
+of <literal>zip</literal>, in that
+the resulting list will have the same length as the shortest branch.
+</para>
+
+<para>
+We can define parallel list comprehensions by translation to regular
+comprehensions.
+Given a parallel comprehension of the form:
+<programlisting>
+   [ e | p1 <- e11, p2 <- e12, ...
+       | q1 <- e21, q2 <- e22, ...
+       ...
+   ]
+</programlisting>
+This will be translated to:
+<programlisting>
+   [ e | ((p1,p2), (q1,q2), ...) <- zipN [(p1,p2) | p1 <- e11, p2 <- e12, ...]
+                                         [(q1,q2) | q1 <- e21, q2 <- e22, ...]
+                                         ...
+   ]
+</programlisting>
+where <quote><replaceable>zipN</replaceable></quote>
+is the appropriate zip for the given number of branches.
+</para>
+
+</sect2>
+
+</sect1>
+
+<sect1 id="class-extensions">
+<title>Type class extensions</title>
+
+<sect2 id="flexible-contexts">
+<title>More flexible contexts</title>
+
+<para>to be written</para>
+
+</sect2>
+
+<sect2 id="flexible-instances">
+<title>More flexible instance declarations</title>
+
+<para>to be written</para>
+
+</sect2>
+
+<sect2 id="overlapping-instances">
+<title>Overlapping instances</title>
+
+<para>
+These are enabled in Hugs with the
+<link linkend="option-overlapping"><option>+o</option></link> option.
+</para>
+
+</sect2>
+
+<sect2 id="multi-param">
+<title>Multiple parameter type classes</title>
+
+<para>
+In Haskell 98, type classes have a single parameter;
+they may be thought of as sets of types.
+In Hugs, they may have one or more parameters,
+corresponding to relations between types, e.g.
+<programlisting>
+  class Isomorphic a b where
+    from :: a -> b
+    to :: b -> a
+</programlisting>
+</para>
+
+</sect2>
+
+<sect2 id="functional-dependencies">
+<title>Functional dependencies</title>
+
+<para>
+Multiple parameter type classes often lead to ambiguity.
+Functional dependencies (inspired by relational databases)
+provide a partial solution,
+and were introduced in 
+<citetitle pubwork=article>Type Classes with Functional Dependencies</citetitle>,
+Mark P. Jones, In
+<citetitle pubwork=book>Proceedings of the 9th European Symposium on Programming</citetitle>, LNCS vol. 1782, Springer 2000.
+</para>
+
+<para>
+Functional dependencies are introduced by a vertical bar:
+<programlisting>
+  class MyClass a b c | a -> b where
+</programlisting>
+This says that the <literal>b</literal> parameter is determined by the
+<literal>a</literal> parameter;
+there cannot be two instances of <literal>MyClass</literal> with the same
+first parameter and different second parameters.
+The type inference system then uses this information to resolve many
+ambiguities.
+You can have several dependencies:
+<programlisting>
+  class MyClass a b c | a -> b, a -> c where
+</programlisting>
+This example could also be written
+<programlisting>
+  class MyClass a b c | a -> b c where
+</programlisting>
+Similarly more than one type parameter may appear to the left of the arrow:
+<programlisting>
+  class MyClass a b c | a b -> c where
+</programlisting>
+This says that the <literal>c</literal> parameter is determined by the
+<literal>a</literal> and <literal>b</literal> parameters together;
+there cannot be two instances of <literal>MyClass</literal> with the same
+first parameter and second parameters, but different third parameters.
+</para>
+
+</sect2>
+
+</sect1>
+
+<sect1 id="quantified-types">
+<title>Quantified types</title>
+
+<sect2 id="rank-2-types">
+<title>Rank 2 types</title>
+
+<para>to be written
+(GHC supports arbitrary rank polymorphism.)
+</para>
+
+</sect2>
+
+<sect2 id="polymorphic-components">
+<title>Polymorphic components</title>
+
+<para>to be written</para>
+
+</sect2>
+
+<sect2 id="existential-quantification">
+<title>Existential quantification</title>
+
+<para>to be written</para>
+
+</sect2>
+
+</sect1>
+
+<sect1 id="type-annotations">
+<title>Type annotations in patterns</title>
+
+<para>to be written</para>
+
+</sect1>
+
+<sect1 id="implicit-parameters">
+<title>Implicit parameters</title>
+
+<para>to be written</para>
+
+</sect1>
+
+</chapter>

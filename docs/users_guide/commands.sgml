@@ -403,6 +403,7 @@ Print Hugs version.
 <listitem>
 <para>
 Shell escape.
+If the <replaceable>command</replaceable> is omitted, run a shell.
 </para>
 </listitem>
 </varlistentry>
@@ -417,6 +418,9 @@ Shell escape.
 <listitem>
 <para>
 Change the working directory of Hugs to <replaceable>dir</replaceable>.
+If <replaceable>dir</replaceable> begins with
+<quote><literal>~/</literal></quote>,
+the <quote><literal>~</literal></quote> is replaced by your home directory.
 </para>
 </listitem>
 </varlistentry>

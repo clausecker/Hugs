@@ -1,6 +1,6 @@
 ROOT	= users_guide
-PARTS	= $(ROOT).sgml commands.sgml extensions.sgml haskell98.sgml \
-	  introduction.sgml license.sgml running.sgml
+PARTS	= $(ROOT).sgml commands.sgml haskell98.sgml hugs_ghc.sgml \
+	  hugs_only.sgml introduction.sgml license.sgml running.sgml
 HTML_OPTS = -V '%use-id-as-filename%'
 
 HTML	= $(ROOT)/index.html

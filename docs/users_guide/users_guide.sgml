@@ -1,7 +1,8 @@
 <!DOCTYPE BOOK PUBLIC "-//OASIS//DTD DocBook V3.1//EN" [
 <!ENTITY commands       SYSTEM "commands.sgml">
-<!ENTITY extensions     SYSTEM "extensions.sgml">
 <!ENTITY haskell98      SYSTEM "haskell98.sgml">
+<!ENTITY hugs-ghc       SYSTEM "hugs_ghc.sgml">
+<!ENTITY hugs-only      SYSTEM "hugs_only.sgml">
 <!ENTITY introduction   SYSTEM "introduction.sgml">
 <!ENTITY license        SYSTEM "license.sgml">
 <!ENTITY running        SYSTEM "running.sgml">
@@ -9,7 +10,7 @@
   
 <book id="users-guide">
 <bookInfo>
-<title>The Hugs User's Guide</title>
+<title>The Hugs 98 User's Guide</title>
 </bookInfo>
 
 &license;
@@ -17,6 +18,7 @@
 &running;
 &commands;
 &haskell98;
-&extensions;
+&hugs-ghc;
+&hugs-only;
 
 </book>
