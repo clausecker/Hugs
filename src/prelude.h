@@ -8,8 +8,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: prelude.h,v $
- * $Revision: 1.65 $
- * $Date: 2004/01/31 13:07:50 $
+ * $Revision: 1.66 $
+ * $Date: 2004/02/04 17:53:38 $
  * ------------------------------------------------------------------------*/
 #ifndef __PRELUDE_H__
 #define __PRELUDE_H__
@@ -240,7 +240,7 @@ extern HWND		hWndMain;	/* main window handle		   */
  *  dynamic linking declarations
  *-------------------------------------------------------------------------*/
 
-#if HAVE_PROTOTYPES       /* To enable use of prototypes whenever possible */
+#if PROTOTYPES		  /* To enable use of prototypes whenever possible */
 #define Args(x) x
 #else
 #define Args(x) ()

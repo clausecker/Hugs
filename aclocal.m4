@@ -113,25 +113,6 @@ fi
 AC_SUBST(CONTEXT_DIFF)
 ])
 
-dnl check for prototypes
-dnl
-AC_DEFUN([AC_C_PROTOTYPES],
-[AC_CACHE_CHECK([prototypes], ac_cv_prototypes,
-[AC_TRY_COMPILE([
-void foo(int);
-void foo(i)
-int i; { 
-return;
-}
-],
-[int i;], 
-ac_cv_prototypes=yes,
-ac_cv_prototypes=no)])
-if test "$ac_cv_prototypes" = yes; then
-AC_DEFINE(HAVE_PROTOTYPES, [1], [Define to 1 if compiler supports prototypes.])
-fi
-])
-
 dnl check for gcc's "labels as values" feature
 AC_DEFUN(AC_C_LABELS_AS_VALUES,
 [AC_CACHE_CHECK([labels as values], ac_cv_labels_as_values,

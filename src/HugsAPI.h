@@ -7,15 +7,15 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: HugsAPI.h,v $
- * $Revision: 1.2 $
- * $Date: 2003/10/14 13:56:20 $
+ * $Revision: 1.3 $
+ * $Date: 2004/02/04 17:53:38 $
  * ------------------------------------------------------------------------*/
 #ifndef __HUGSAPI_H__
 #define __HUGSAPI_H__
 
 
 #ifndef Args
-# if HAVE_PROTOTYPES
+# if PROTOTYPES
 #  define Args(x) x
 # else
 #  define Args(x) ()

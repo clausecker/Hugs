@@ -97,7 +97,7 @@
 #define HAVE_LABELS_AS_VALUES 1
 
 /* Define if compiler supports prototypes. */
-#define HAVE_PROTOTYPES 1
+#define PROTOTYPES 1
 
 /* Define if you have the WinExec function.  */
 #define HAVE_WINEXEC 0

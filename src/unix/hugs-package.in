@@ -340,7 +340,7 @@ do
 		hack_foreign $filename
 
 		cmd="$ffihugs +G -98 -P$target_dir:"
-		for flag in -I$dstdir -I$target_dir $includes
+		for flag in -I$dstdir -I$source_dir/include
 		do	cmd="$cmd +L$flag"
 		done
 		for file in ${stem}_stub_ffi.c ${stem}_hsc.c

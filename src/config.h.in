@@ -600,9 +600,6 @@
 /* Define to 1 if you have the `popen' function. */
 #undef HAVE_POPEN
 
-/* Define to 1 if compiler supports prototypes. */
-#undef HAVE_PROTOTYPES
-
 /* Define if you have POSIX threads libraries and header files. */
 #undef HAVE_PTHREAD
 
@@ -1030,6 +1027,9 @@
 /* Define to 1 if heap profiling should be used. */
 #undef PROFILING
 
+/* Define to 1 if the C compiler supports function prototypes. */
+#undef PROTOTYPES
+
 /* Define to the necessary symbol if this constant uses a non-standard name on
    your system. */
 #undef PTHREAD_CREATE_JOINABLE
@@ -1140,6 +1140,9 @@
 
 /* Define to 1 if the X Window System is missing or not being used. */
 #undef X_DISPLAY_MISSING
+
+/* Define like PROTOTYPES; this can be used by system headers. */
+#undef __PROTOTYPES
 
 /* Define to empty if `const' does not conform to ANSI C. */
 #undef const
