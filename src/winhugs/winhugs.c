@@ -1586,7 +1586,7 @@ static VOID local GetFromRegistryFileNamesMenu (FILENAMESMENU* fnm, LPSTR Sectio
   for (i=0;;i++) {
     wsprintf(Entry, "%s File%d", Section, i);
 
-    Buffer=readRegString(HKEY_CURRENT_USER,HugsRoot,Entry, "");
+    Buffer=readRegString(HKEY_CURRENT_USER,hugsRegRoot,Entry, "");
 	
     if (Buffer[0])
       AddFileToFileNamesMenu(fnm, Buffer);
@@ -1629,7 +1629,7 @@ static VOID local GetFromRegistryDocPath(CHAR *realPath)
 
   CHAR	       regPath[2*_MAX_PATH]; 
 
-  strcpy(regPath, readRegString(HKEY_CURRENT_USER,HugsRoot,RKEY_DOCPATH, DEFAULT_DOC_DIR));
+  strcpy(regPath, readRegString(HKEY_CURRENT_USER,hugsRegRoot,RKEY_DOCPATH, DEFAULT_DOC_DIR));
 
   /* Expand "{Hugs}" */
   StrReplace("{Hugs}", hugsdir(), regPath, realPath);
@@ -1637,14 +1637,14 @@ static VOID local GetFromRegistryDocPath(CHAR *realPath)
 
 static VOID local GetFromRegistryFont(CHAR *FontName, INT *FontSize, INT* FontWeight)
 {
-  strcpy(FontName, readRegString(HKEY_CURRENT_USER,HugsRoot,RKEY_SCREENFONTNAME, DEFAULT_FONT));
+  strcpy(FontName, readRegString(HKEY_CURRENT_USER,hugsRegRoot,RKEY_SCREENFONTNAME, DEFAULT_FONT));
   *FontSize = readRegInt(RKEY_SCREENFONTSIZE, DEFAULT_FONT_SIZE);
   *FontWeight = readRegInt(RKEY_SCREENFONTWEIGHT, DEFAULT_FONT_WEIGHT);
 }
 
 static VOID local GetFromRegistryDialogFont(CHAR *FontName, INT *FontSize)
 {
-  strcpy(FontName, readRegString(HKEY_CURRENT_USER,HugsRoot,RKEY_DIALOGSFONTNAME, DEFAULT_DIALOGFONT));
+  strcpy(FontName, readRegString(HKEY_CURRENT_USER,hugsRegRoot,RKEY_DIALOGSFONTNAME, DEFAULT_DIALOGFONT));
   *FontSize = readRegInt(RKEY_DIALOGSFONTSIZE, DEFAULT_DIALOGFONT_SIZE);
 }
 
@@ -1668,7 +1668,7 @@ static VOID local GetFromRegistryScreenPosition(INT *X, INT *Y)
 static VOID local ReadGUIOptions(VOID)
 {
   /* Get last working dir and set it */
-  SetWorkingDir(readRegString(HKEY_CURRENT_USER,HugsRoot,RKEY_LASTPATH, ".\\"));
+  SetWorkingDir(readRegString(HKEY_CURRENT_USER,hugsRegRoot,RKEY_LASTPATH, ".\\"));
 
   /* load menus */
   GetFromRegistryFileNamesMenu(&FilesMenu, RKEY_FILESMENU);
@@ -1678,7 +1678,7 @@ static VOID local ReadGUIOptions(VOID)
 
 static VOID local SaveGUIOptions(VOID)
 {
-  writeRegString(RKEY_DOCPATH, readRegString(HKEY_CURRENT_USER,HugsRoot,RKEY_DOCPATH, DEFAULT_DOC_DIR));
+  writeRegString(RKEY_DOCPATH, readRegString(HKEY_CURRENT_USER,hugsRegRoot,RKEY_DOCPATH, DEFAULT_DOC_DIR));
 
   writeRegString("Options", optionsToStr());
 
