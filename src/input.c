@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: input.c,v $
- * $Revision: 1.43 $
- * $Date: 2002/06/14 14:41:10 $
+ * $Revision: 1.44 $
+ * $Date: 2002/07/18 23:51:39 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -264,6 +264,8 @@ static Void local initCharTab() {       /* Initialize char decode table    */
 #define SCRIPTFILE 2                   /* - script file                    */
 #define PROJFILE   3                   /* - project file                   */
 #define STRING     4                   /* - string buffer?                 */
+#define NOKEYBOARD 5                   /* - standard input, but not a tty  */
+
 
 static Int    reading   = NOTHING;
 
@@ -322,6 +324,12 @@ String prompt; {                       /* standard in (i.e. console/kbd)   */
     hereState   = START;
 #endif
 
+#ifdef HAVE_ISATTY
+    if (!isatty(fileno(stdin))) { /* not reading from a tty:         */
+	reading = NOKEYBOARD;     /* don't prompt or try readline    */
+	return;
+    }
+#endif
 #if USE_READLINE
     /* Paranoid freeing code supplied by Sverker Nilsson (sverker@opq.se) 
      * avoids accidentally freeing currentLine twice. 
@@ -407,9 +415,13 @@ Long   len; {                           /* used to set target for reading) */
 	    EEND_NORET;
 	    return FALSE;
 	}
-	strcpy(cmd,preprocessor);
-	strcat(cmd," ");
-	strcat(cmd,nm);
+	if (snprintf(cmd,sizeof(cmd)-1, "%s %s", preprocessor, nm) < 0) {
+	    ERRMSG(0) "Unable to allocate memory for filter command."
+	    EEND_NORET;
+	    return FALSE;
+	} else {
+	    cmd[sizeof(cmd)-1] = '\0';
+	}
 	inputStream = popen(cmd,"r");
 	free(cmd);
     } else {
@@ -607,8 +619,9 @@ static Void local skip() {              /* move forward one char in input  */
 		    c1 = ' ';
 		}
 	    }
-	} 
-	else if (reading==STRING) {
+	} else if (reading==NOKEYBOARD) {
+	    c1 = c0=='\n' ? EOF : getc(stdin);
+	} else if (reading==STRING) {
 	    c1 = (unsigned char) *nextStringChar++;
 	    if (c1 == '\0')
 		c1 = EOF;
