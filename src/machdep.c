@@ -11,8 +11,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.95 $
- * $Date: 2003/07/24 09:27:36 $
+ * $Revision: 1.96 $
+ * $Date: 2003/09/25 15:25:30 $
  * ------------------------------------------------------------------------*/
 #include "prelude.h"
 #include "storage.h"
@@ -1075,6 +1075,22 @@ typedef  struct termio   TermParams;
 			 tp.c_cc[VTIME] = 0;
 
 #endif
+
+/* HACK: make System.Posix.Internals happy */
+static void *saved_termios[3] = {NULL,NULL,NULL};
+
+void* __hscore_get_saved_termios(int fd)
+{
+  return (0 <= fd && fd < sizeof(saved_termios) / sizeof(*saved_termios)) ?
+    saved_termios[fd] : NULL;
+}
+
+void __hscore_set_saved_termios(int fd, void* ts)
+{
+  if (0 <= fd && fd < sizeof(saved_termios) / sizeof(*saved_termios)) {
+    saved_termios[fd] = ts;
+  }
+}
 
 static Bool messedWithTerminal = FALSE;
 static TermParams originalSettings;
