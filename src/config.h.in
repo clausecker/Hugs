@@ -364,6 +364,9 @@
 /* Define if you have the <Files.h> header file.  */
 #undef HAVE_FILES_H
 
+/* Define if you have the <GL/gl.h> header file.  */
+#undef HAVE_GL_GL_H
+
 /* Define if you have the <arpa/inet.h> header file.  */
 #undef HAVE_ARPA_INET_H
 
