@@ -8,8 +8,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: storage.h,v $
- * $Revision: 1.39 $
- * $Date: 2002/07/05 05:21:26 $
+ * $Revision: 1.40 $
+ * $Date: 2002/07/06 10:52:00 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -127,7 +127,6 @@ extern  Void registerPrims Args((struct primInfo*));
 extern  Void controlFuns   Args((Int)); /* Call all control functions in   */
 					/* prim list.                      */
 extern  struct primInfoDef* setPrimInfoDll Args((void*));
-extern  Void                freePrimInfo   Args((void*));
 
 /* --------------------------------------------------------------------------
  * Program code storage: for holding compiled function defns etc...

@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: ffi.c,v $
- * $Revision: 1.16 $
- * $Date: 2002/07/01 00:44:48 $
+ * $Revision: 1.17 $
+ * $Date: 2002/07/06 10:52:00 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -133,7 +133,7 @@ String fn; {
         insert(ffiFlags);
     }
 
-    printf("Executing '%s'\n",buffer);
+    /* printf("Executing '%s'\n",buffer); */
     if (system(buffer) != 0) {
         ERRMSG(0) "Error while running compilation command '%s'", buffer
         EEND;

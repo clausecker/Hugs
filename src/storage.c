@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: storage.c,v $
- * $Revision: 1.45 $
- * $Date: 2002/07/05 05:21:26 $
+ * $Revision: 1.46 $
+ * $Date: 2002/07/06 10:52:00 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -753,6 +753,8 @@ struct primInfoDef {
     struct primInfoDef* nextPrimInfoDef; /* subsumes nextPrimInfo (ToDo: nuke it) */
 };
 
+static Void local freePrimInfo Args((struct primInfoDef*));
+
 static struct primInfoDef *firstPrimInfo = 0; /* queue of primInfo structures */
 static struct primInfoDef *lastPrimInfo  = 0;
 
@@ -788,7 +790,7 @@ void* dll; {
   return lastPrimInfo;
 }
 
-Void freePrimInfo(p)
+static Void local freePrimInfo(p)
 struct primInfoDef* p; {
   struct primInfoDef* info = firstPrimInfo;
   struct primInfoDef* prev = 0;
