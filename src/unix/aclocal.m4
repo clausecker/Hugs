@@ -207,6 +207,66 @@ AC_DEFINE(HAVE_LABELS_AS_VALUES)
 fi
 ])
 
+dnl ** check for leading underscores in symbol names
+dnl 
+dnl Test for determining whether symbol names have a leading
+dnl underscore.
+dnl 
+dnl We assume that they _haven't_ if anything goes wrong.
+dnl
+dnl Some nlist implementations seem to try to be compatible by ignoring
+dnl a leading underscore sometimes (eg. FreeBSD).  We therefore have
+dnl to work around this by checking for *no* leading underscore first.
+dnl Sigh.  --SDM
+dnl
+AC_DEFUN(FPTOOLS_UNDERSCORE,
+[AC_CHECK_LIB(elf, nlist, LIBS="-lelf $LIBS")dnl
+AC_CACHE_CHECK([leading underscore in symbol names], fptools_cv_lead_uscore,
+
+dnl
+dnl Hack!: nlist() under Digital UNIX insist on there being an _,
+dnl but symbol table listings shows none. What is going on here?!?
+dnl
+dnl Another hack: cygwin doesn't come with nlist.h , so we hardwire
+dnl the underscoredness of that "platform"
+changequote(<<, >>)dnl
+<<
+case $HostPlatform in
+alpha-dec-osf*) fptools_cv_lead_uscore='no';;
+*cygwin32) fptools_cv_lead_uscore='yes';;
+*mingw32) fptools_cv_lead_uscore='yes';;
+*) >>
+changequote([, ])dnl
+AC_TRY_RUN([#ifdef HAVE_NLIST_H
+#include <nlist.h>
+changequote(<<, >>)dnl
+<<
+struct nlist xYzzY1[] = {{"xYzzY1", 0},{0}};
+struct nlist xYzzY2[] = {{"_xYzzY2", 0},{0}};
+#endif
+
+main(argc, argv)
+int argc;
+char **argv;
+{
+#ifdef HAVE_NLIST_H
+    if(nlist(argv[0], xYzzY1) == 0 && xYzzY1[0].n_value != 0)
+        exit(1);
+    if(nlist(argv[0], xYzzY2) == 0 && xYzzY2[0].n_value != 0)
+        exit(0);>>
+changequote([, ])dnl
+#endif
+    exit(1);
+}], fptools_cv_lead_uscore=yes, fptools_cv_lead_uscore=no, fptools_cv_lead_uscore=NO)
+;;
+esac);
+LeadingUnderscore=`echo $fptools_cv_lead_uscore | sed 'y/yesno/YESNO/'`
+AC_SUBST(LeadingUnderscore)
+case $LeadingUnderscore in
+YES) AC_DEFINE(LEADING_UNDERSCORE);;
+esac
+])
+
 dnl *** Is altzone available? ***
 dnl 
 dnl (copied from the fptools/ configure script)

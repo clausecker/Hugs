@@ -292,29 +292,7 @@ fi
 
 
 dnl ** check for leading underscores in symbol names
-# We assume that they _aren't_ there if anything goes wrong.
-#
-echo checking for a leading underscore in symbol names
-AC_TRY_RUN(
-[#ifdef HAVE_NLIST_H
-#include <nlist.h>
-struct nlist xYzzY[] = {{"_xYzzY", 0},{0}};
-#endif
-
-main(argc, argv)
-int argc;
-char **argv;
-{
-#ifdef HAVE_NLIST_H
-    if(nlist(argv[0], xYzzY) == 0 && xYzzY[0].n_value != 0)
-        exit(0);
-#endif
-    exit(1);
-}], LEADING_UNDERSCORE='YES', LEADING_UNDERSCORE='NO', LEADING_UNDERSCORE='NO')
-test -n "$verbose" && echo "    setting LEADING_UNDERSCORE to $LEADING_UNDERSCORE"
-if test "$LEADING_UNDERSCORE" = "YES"; then
-AC_DEFINE(LEADING_UNDERSCORE)
-fi
+FPTOOLS_UNDERSCORE
 
 dnl--------------------------------------------------------------------
 dnl
