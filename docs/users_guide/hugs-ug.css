@@ -1,0 +1,25 @@
+body {
+	font-family: sans-serif;
+	color: black;
+	background: white
+}
+
+h1, h2, h3, h4, div.question { color: #000099 }
+h1, h2, h3, h4 { font-weight: bold }
+div.question { font-style: italic }
+
+h1.title { font-size: 200% }
+h1 { font-size: 150% }
+h2 { font-size: 130% }
+h3 { font-size: 115% }
+h4 { font-size: 100% }
+
+pre {
+	font-family: monospace;
+	border-width: 2px;
+	border-style: outset;
+	padding: 0.3em
+}
+
+pre.screen         { color: #002211; background-color: #F5FDF5 }
+pre.programlisting { color: #442200; background-color: #FDF5E6 }

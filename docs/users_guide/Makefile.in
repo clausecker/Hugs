@@ -22,8 +22,8 @@ ROOT		= users_guide
 PARTS		= $(ROOT).sgml faq.sgml haskell98.sgml hugs_ghc.sgml \
 		  hugs_only.sgml introduction.sgml license.sgml \
 		  miscellaneous.sgml options.sgml using_hugs.sgml
-# Options needed for non-SuSE $(DOCBOOK2HTML)
-HTML_OPTS	= --output $(ROOT) -V '%use-id-as-filename%'
+CSS_FILE	= hugs-ug.css
+DSL_FILE	= hugs-ug.dsl
 
 # Don't use $(ROOT)/index.html, because depending on $(DOCBOOK2HTML) it
 # could be $(ROOT)/$(ROOT).html instead.
@@ -37,7 +37,7 @@ all: $(SGMLDocWays)
 install: $(SGMLDocWays)
 	if test -f $(HTML); \
 	then	$(INSTALL) -d $(DESTDIR)$(hugsdir)/docs/users_guide; \
-		$(CP) users_guide/*.html $(DESTDIR)$(hugsdir)/docs/users_guide; \
+		$(CP) users_guide/*.html users_guide/$(CSS_FILE) $(DESTDIR)$(hugsdir)/docs/users_guide; \
 	fi
 	for ext in dvi pdf ps;\
 	do	if test -f $(ROOT).$$ext;\
@@ -63,16 +63,12 @@ ps: $(ROOT).ps
 
 pdf: $(ROOT).pdf
 
-# MEGA-HACK: There is no standard for the options of db2foo, so try to
-# be clever...   :-P
-$(HTML): $(PARTS)
+$(HTML): $(PARTS) $(DSL_FILE) $(CSS_FILE)
 	$(RM) -r $(ROOT)
+	mkdir $(ROOT)
+	$(CP) $(CSS_FILE) $(ROOT)
 	test -z '$(DOCBOOK2HTML)' || \
-	  if $(DOCBOOK2HTML) --help | grep -e --output > /dev/null 2>&1 ; then \
-	    $(DOCBOOK2HTML) $(HTML_OPTS) $(ROOT).sgml ; \
-	  else \
-	    $(DOCBOOK2HTML) $(ROOT).sgml ; \
-	  fi
+	  $(DOCBOOK2HTML) --dsl $(DSL_FILE) $(ROOT).sgml
 
 $(ROOT).dvi: $(PARTS)
 	test -z '$(DOCBOOK2DVI)' || $(DOCBOOK2DVI) $(ROOT).sgml
