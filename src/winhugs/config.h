@@ -520,46 +520,46 @@
 #define HTYPE_GID_T NotReallyAType
 
 /* Define to Haskell type for GLbitfield */
-/* #undef HTYPE_GLBITFIELD */
+#define HTYPE_GLBITFIELD Word32
 
 /* Define to Haskell type for GLboolean */
-/* #undef HTYPE_GLBOOLEAN */
+#define HTYPE_GLBOOLEAN Word8
 
 /* Define to Haskell type for GLbyte */
-/* #undef HTYPE_GLBYTE */
+#define HTYPE_GLBYTE Int8
 
 /* Define to Haskell type for GLclampd */
-/* #undef HTYPE_GLCLAMPD */
- 
+#define HTYPE_GLCLAMPD Double
+
 /* Define to Haskell type for GLclampf */
-/* #undef HTYPE_GLCLAMPF */
+#define HTYPE_GLCLAMPF Float
 
 /* Define to Haskell type for GLdouble */
-/* #undef HTYPE_GLDOUBLE */
+#define HTYPE_GLDOUBLE Double
 
 /* Define to Haskell type for GLenum */
-/* #undef HTYPE_GLENUM */
+#define HTYPE_GLENUM Word32
 
 /* Define to Haskell type for GLfloat */
-/* #undef HTYPE_GLFLOAT */
+#define HTYPE_GLFLOAT Float
 
 /* Define to Haskell type for GLint */
-/* #undef HTYPE_GLINT */
+#define HTYPE_GLINT Int32
 
 /* Define to Haskell type for GLshort */
-/* #undef HTYPE_GLSHORT */
+#define HTYPE_GLSHORT Int16
 
 /* Define to Haskell type for GLsizei */
-/* #undef HTYPE_GLSIZEI */
+#define HTYPE_GLSIZEI Int32
 
 /* Define to Haskell type for GLubyte */
-/* #undef HTYPE_GLUBYTE */
+#define HTYPE_GLUBYTE Word8
 
 /* Define to Haskell type for GLuint */
-/* #undef HTYPE_GLUINT */
+#define HTYPE_GLUINT Word32
 
 /* Define to Haskell type for GLushort */
-/* #undef HTYPE_GLUSHORT */
+#define HTYPE_GLUSHORT Word16
 
 /* Define to Haskell type for int */
 #define HTYPE_INT Int32
