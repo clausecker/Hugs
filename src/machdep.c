@@ -12,8 +12,8 @@
  * included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.27 $
- * $Date: 2001/09/19 19:14:07 $
+ * $Revision: 1.28 $
+ * $Date: 2001/09/26 18:22:17 $
  * ------------------------------------------------------------------------*/
 
 #ifdef HAVE_SIGNAL_H
@@ -247,7 +247,10 @@ static String local hugsdir       Args((Void));
 static String local hscriptDir    Args((Void));
 #endif
 static String local RealPath      Args((String));
+#if 0
+/* UNUSED */
 static int    local pathCmp       Args((String, String));
+#endif
 static String local normPath      Args((String));
 static Void   local searchChr     Args((Int));
 static Void   local searchStr     Args((String));
@@ -362,6 +365,8 @@ String s; {
     return path;
 }
 
+#if 0
+/* UNUSED */
 static int local pathCmp(p1,p2)       /* Compare paths after normalisation */
 String p1;
 String p2; {
@@ -387,6 +392,7 @@ String p2; {
 #endif
     return filenamecmp(path1,path2);
 }
+#endif
 
 static String local normPath(s) /* Try, as much as possible, to normalize  */
 String s; {                     /* a pathname in some appropriate manner.  */
@@ -428,9 +434,23 @@ String s; {
 
 static Bool local tryEndings(s) /* Try each of the listed endings          */
 String s; {
-    String suf = rindex(s,'.');
-    Int save = searchPos;
+    String suf = 0;
     Int i;
+
+#if defined(HAVE_STRRCHR)
+    suf = rindex(s,'.');
+#elif defined(HAVE_RINDEX)
+    suf = rindex(s,'.');
+#else
+    Int j;
+    
+    for (j=strlen(s)-1; j > 0; j--) {
+      if (s[j] == '.') {
+	suf = &s[j];
+	break;
+      }
+    }
+#endif
     
     searchStr(s);
 
@@ -648,7 +668,23 @@ static Bool find0(along,nm,path)
 String along;			        
 String nm;			        
 String path; {
-    String name = rindex(nm,SLASH);
+    String name = 0; 
+
+#if defined(HAVE_STRRCHR)
+    name = rindex(nm,SLASH);
+#elif defined(HAVE_RINDEX)
+    name = rindex(nm,SLASH);
+#else
+    Int j;
+    
+    for (j=strlen(nm)-1; j > 0; j--) {
+      if (nm[j] == SLASH) {
+	name = &nm[j];
+	break;
+      }
+    }
+#endif
+
     if (name) {		   /* Was an explicit pathname given as part of the name? */
         *name++ = '\0';
         if (find1(NULL,name,nm)) {
@@ -1593,8 +1629,9 @@ String symbol; {
 	ERRMSG(0) "Error while importing DLL \"%s\":\n%s\n", dll, dlerror()
 	EEND;
     }
-    if (sym = dlsym(instance,symbol))
+    if ((sym = dlsym(instance,symbol)) != 0) {
         return sym;
+    }
 
     ERRMSG(0) "Error loading sym:\n%s\n", dlerror()
     EEND;

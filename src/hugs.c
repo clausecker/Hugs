@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.46 $
- * $Date: 2001/09/19 17:21:07 $
+ * $Revision: 1.47 $
+ * $Date: 2001/09/26 18:22:17 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1421,7 +1421,7 @@ static Void local evaluator() {        /* evaluate expr and print value    */
     updateTimers();
 #endif
 #if IO_MONAD
-    if (t = getProgType(ks,type)) {
+    if ((t = getProgType(ks,type)) != 0) {
         if (displayIO) {
             Cell printer = namePrint;
             if (useShow) {

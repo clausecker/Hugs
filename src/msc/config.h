@@ -223,6 +223,9 @@
 /* Define if you have the realpath function.  */
 /* #undef HAVE_REALPATH */
 
+/* Define if you have the rindex function.  */
+/* #undef HAVE_RINDEX */
+
 /* Define if you have the select function.  */
 /* #undef HAVE_SELECT */
 
@@ -246,6 +249,9 @@
 
 /* Define if you have the stricmp function.  */
 #define HAVE_STRICMP 1
+
+/* Define if you have the strrchr function.  */
+#define HAVE_STRRCHR 1
 
 /* Define if you have the time function.  */
 #define HAVE_TIME 1
