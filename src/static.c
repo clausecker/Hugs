@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.146 $
- * $Date: 2003/03/09 23:53:08 $
+ * $Revision: 1.147 $
+ * $Date: 2003/03/12 22:38:06 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -210,11 +210,12 @@ static List   local getBindVars		Args((List bs));
 #endif
 static Void   local depCaseAlt		Args((Int,Cell));
 static Cell   local depVar		Args((Int,Cell,Bool));
-static Cell   local depQVar		Args((Int,Cell));
+static Cell   local depQVar		Args((Int,Cell,Bool));
 static Void   local depConFlds		Args((Int,Cell,Bool));
 static Void   local depUpdFlds		Args((Int,Cell));
 static List   local depFields		Args((Int,Cell,List,Bool));
-static Cell   local checkNameAmbig      Args((Int,Text,Cell));
+static Void   local checkNameAmbigName  Args((Int,Name,Bool));
+static Void   local checkNameAmbig      Args((Int,Text,Cell));
 static Cell   local checkTyconAmbig     Args((Int,Text,Cell));
 #if IPARAM
 static Void   local depWith		Args((Int,Cell));
@@ -4781,7 +4782,11 @@ Bool check; {		 /* function (and only one.)        */
     }
     checkIsCfun(line,n);
     if (check) {
-	checkNameAmbig(line,name(n).text,n);
+      if (isQualIdent(nm)) {
+	depQVar(line,nm,FALSE);
+      } else {
+	checkNameAmbigName(line,n,FALSE);
+      }
     }
     return n;
 }
@@ -5869,7 +5874,7 @@ Cell e; {
 	case CONOPCELL	: return conDefined(line,e,TRUE);
 
 	case QUALIDENT	: if (isQVar(e)) {
-			      return depQVar(line,e);
+			      return depQVar(line,e,TRUE);
 			  } else { /* QConOrConOp */
 			      return conDefined(line,e,TRUE);
 			  }
@@ -6668,7 +6673,27 @@ Cell a; {
     restoreBvars(obvs);			/* Restore original list of bvars  */
 }
 
-static Cell local checkNameAmbig(line,t,e)
+static Void local checkNameAmbigName(line,n,isV)
+Int line;
+Cell n;
+Bool isV; {
+    String kind = (isV ? "variable" : "data constructor");
+    if (!isNull(n) && nonNull(name(n).clashes)) {
+	Text t = name(n).text;
+	List ls = name(n).clashes;
+	ERRMSG(line) "Ambiguous %s occurrence \"%s\"", kind, textToStr(t) ETHEN
+	    ERRTEXT "\n*** Could refer to: " ETHEN
+	    ERRTEXT "%s.%s ", textToStr(module(name(n).mod).text), textToStr(name(n).text) ETHEN
+	    for(;nonNull(ls);ls=tl(ls)) {
+		ERRTEXT "%s.%s ", textToStr(module(name(hd(ls)).mod).text), textToStr(name(hd(ls)).text)
+		ETHEN
+	    }
+	    ERRTEXT "\n" EEND;
+    }
+}
+
+
+static Void local checkNameAmbig(line,t,e)
 Int line;
 Text t;
 Cell e; {
@@ -6679,21 +6704,7 @@ Cell e; {
     } else {
 	n = findName(t);
     }
-
-    if (!isNull(n) && nonNull(name(n).clashes)) {
-	Text t = name(n).text;
-	List ls = name(n).clashes;
-	ERRMSG(line) "Ambiguous variable occurrence \"%s\"", textToStr(t) ETHEN
-	    ERRTEXT "\n*** Could refer to: " ETHEN
-	    ERRTEXT "%s.%s ", textToStr(module(name(n).mod).text), textToStr(name(n).text) ETHEN
-	    for(;nonNull(ls);ls=tl(ls)) {
-		ERRTEXT "%s.%s ", textToStr(module(name(hd(ls)).mod).text), textToStr(name(hd(ls)).text)
-		ETHEN
-	    }
-	    ERRTEXT "\n" EEND;
-    }
-
-    return e;
+    checkNameAmbigName(line,n,TRUE);
 }
 
 static Cell local checkTyconAmbig(line,t,e)
@@ -6750,8 +6761,9 @@ Bool check; {
 #if MUDO
 	    mdepends = cons(isVar(fst(n)) ? fst(n) : e,mdepends);
 #endif
+
 	    if (check) {
-	      checkNameAmbig(line,t,(isVar(fst(n)) ? fst(n) : e));
+	      checkNameAmbig(line,t, (isVar(fst(n)) ? fst(n) : e));
 	    }
 	    return (isVar(fst(n)) ? fst(n) : e);
 	}
@@ -6767,7 +6779,7 @@ Bool check; {
     }
     /* Check whether there's no ambiguity about which global entity */
     if (check) {
-	checkNameAmbig(line,t,n);
+	checkNameAmbig(line,t,e);
     }
 
     if (!moduleThisScript(name(n).mod)) {
@@ -6780,18 +6792,20 @@ Bool check; {
     return e;
 }
 
-static Cell local depQVar(line,e)/* register occurrence of qualified variable */
+static Cell local depQVar(line,e,isV)/* register occurrence of qualified variable */
 Int line;
-Cell e; {
+Cell e;
+Bool isV; {
     List ns = findQualNames(e);
+    String kind = (isV ? "variable" : "data constructor");
     Name n;
     if (isNull(ns)) {	                        /* check global definitions */
-	ERRMSG(line) "Undefined qualified variable \"%s\"", identToStr(e)
+	ERRMSG(line) "Undefined qualified %s \"%s\"", kind, identToStr(e)
 	EEND;
     }
     if (!isNull(tl(ns))) {
         List ls = ns;
-	ERRMSG(line) "Ambiguous qualified variable occurrence \"%s\"", identToStr(e) ETHEN
+	ERRMSG(line) "Ambiguous qualified %s occurrence \"%s\"", kind, identToStr(e) ETHEN
         ERRTEXT "\n*** Could refer to: " ETHEN
 	for(;nonNull(ls);ls=tl(ls)) {
 	  ERRTEXT "%s.%s ", textToStr(module(name(hd(ls)).mod).text), textToStr(name(hd(ls)).text)
