@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: storage.c,v $
- * $Revision: 1.84 $
- * $Date: 2003/12/18 05:20:39 $
+ * $Revision: 1.85 $
+ * $Date: 2003/12/18 17:02:25 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -3761,7 +3761,7 @@ Int what; {
 		       TABALLOC(tabName,   struct strName,   NUM_NAME)
 		       TABALLOC(tabClass,  struct strClass,  NUM_CLASSES)
 		       TABALLOC(cellStack, Cell,             NUM_STACK)
-		       TABALLOC(tabModule, struct strModule, NUM_SCRIPTS)
+		       TABALLOC(tabModule, struct strModule, NUM_MODULE)
 #if TREX
 		       TABALLOC(tabExt,	   Text,	     NUM_EXT)
 #endif
