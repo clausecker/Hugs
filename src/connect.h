@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: connect.h,v $
- * $Revision: 1.40 $
- * $Date: 2002/07/05 05:21:26 $
+ * $Revision: 1.41 $
+ * $Date: 2002/08/04 19:34:29 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -422,6 +422,7 @@ extern Void   setHugsArgs       Args((Int,String[]));
 extern  Void   machdep          Args((Int));
 extern  String findPathname	Args((String,String));
 extern  String findMPathname    Args((String,String,String));
+extern  Bool   readable         Args((String,Bool));
 #if PROFILING
 extern  String timeString	Args((Void));
 #endif

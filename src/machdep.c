@@ -11,8 +11,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.60 $
- * $Date: 2002/08/02 16:12:30 $
+ * $Revision: 1.61 $
+ * $Date: 2002/08/04 19:34:28 $
  * ------------------------------------------------------------------------*/
 #include <math.h>
 
@@ -152,7 +152,6 @@ typedef time_t Time;
 #endif
 
 static Void local getFileInfo   Args((String, Time *, Long *));
-static Bool local readable      Args((String));
 
 static Void local getFileInfo(f,tm,sz)  /* find time stamp and size of file*/
 String f;
@@ -218,8 +217,9 @@ int access(char *fileName, int dummy) {
 }
 #endif
 
-static Bool local readable(f)           /* is f a regular, readable file   */
-String f; {
+Bool readable(f,isReg)        /* is f readable (and also, a regular file?) */
+String f;
+Bool   isReg; {
 #if DJGPP2 || HAVE_GETFINFO /* stat returns bogus mode bits on djgpp2 */
     return (0 == access(f,4));
 #elif defined(HAVE_SYS_STAT_H) || defined(HAVE_STAT_H)
@@ -228,7 +228,7 @@ String f; {
 #if !(defined macintosh)	/* Macintosh files always have read permission */
 	   && (scbuf.st_mode & S_IREAD) /* readable     */
 #endif
-	   && (scbuf.st_mode & S_IFREG) /* regular file */
+	   && ( !isReg || (scbuf.st_mode & S_IFREG)) /* regular file */
 	   );
 #elif defined(HAVE_OS_SWI) /* RISCOS specific */
     os_regset r;                        /* RISCOS PRM p.850     -- JBS     */
@@ -488,7 +488,7 @@ String s; {
     for (i=0; endings[i]; ++i) {
 	Int save = searchPos;
 	searchStr(endings[i]);
-	if (readable(searchBuf))
+	if (readable(searchBuf,TRUE))
 	    return TRUE;
 	searchReset(save);
     }
@@ -731,7 +731,7 @@ String path; {
         return find2(along,nm,path); 	/* Also try nm as-is */
     } else {
         searchStr(nm);			/* Assume nm is a filename */
-	if (!readable(searchBuf)) {
+	if (!readable(searchBuf,TRUE)) {
 	  /* Final attempt, assume its a filename sans recognised file extensions. */
 	  return tryEndings("");
 	}
