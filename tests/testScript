@@ -303,13 +303,13 @@ test_rts() {
 
   # Using generic printer
 # perl runstdtest $HUGS $STDOPTS -u    "-Orts/print.hs"  "-irts/print.input" "-o1rts/print1.output"
-  perl runstdtest $HUGS $STDOPTS -u -f "-Orts/print.hs"  "-irts/print.input" "-o1rts/print2.output"
-# perl runstdtest $HUGS $STDOPTS -u -f "-Orts/catch.hs"  "-irts/catch.input" "-o1rts/catch.output"
+  perl runstdtest $HUGS $STDOPTS -u    "-Orts/print.hs"  "-irts/print.input" "-o1rts/print2.output"
+# perl runstdtest $HUGS $STDOPTS -u    "-Orts/catch.hs"  "-irts/catch.input" "-o1rts/catch.output"
   perl runstdtest $HUGS $STDOPTS -u    "-Orts/enum.hs"   "-irts/enum.input"  "-o1rts/enum.output1"
   perl runstdtest $HUGS $STDOPTS -u   "-Orts/infix.hs"   "-irts/infix.input"  "-o1rts/infix.output"
 
   # Using derived show instance
-  #perl runstdtest $HUGS $STDOPTS +u -f "-Orts/catch2.hs" "-irts/catch.input" "-o1rts/catch2.output"
+# perl runstdtest $HUGS $STDOPTS +u    "-Orts/catch2.hs" "-irts/catch.input" "-o1rts/catch2.output"
 
   # Using derived instances
   perl runstdtest $HUGS $STDOPTS +u    "-Orts/enum.hs"   "-irts/enum.input"  "-o1rts/enum.output2"

@@ -1,14 +1,14 @@
 Type :? for help
 Hugs:a
-Program error: no more threads (deadlock?)
+Program execution error: no more threads (deadlock?)
 
 Hugs:a
 Hugs:ab
 Hugs:
-Program error: no more threads (deadlock?)
+Program execution error: no more threads (deadlock?)
 
 Hugs:adcb
-Program error: no more threads (deadlock?)
+Program execution error: no more threads (deadlock?)
 
 Hugs:aa
 Hugs:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa

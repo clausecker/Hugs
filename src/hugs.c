@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.116 $
- * $Date: 2003/02/17 03:07:56 $
+ * $Revision: 1.117 $
+ * $Date: 2003/02/28 16:49:19 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1070,7 +1070,6 @@ static Void local forHelp() {
 struct options toggle[] = {             /* List of command line toggles    */
     Option('s', 1, "Print no. reductions/cells after eval", &showStats),
     Option('t', 1, "Print type after evaluation",           &addType),
-    Option('f', 1, "Terminate evaluation on first error",   &failOnError),
     Option('g', 1, "Print no. cells recovered after gc",    &gcMessages),
     Option('G', 0, "Generate FFI code for foreign import",  &generate),
     Option('l', 1, "Literate modules as default",           &literateScripts),

@@ -11,8 +11,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: interns.c,v $
- * $Revision: 1.10 $
- * $Date: 2003/02/10 14:52:00 $
+ * $Revision: 1.11 $
+ * $Date: 2003/02/28 16:49:19 $
  * ------------------------------------------------------------------------*/
  
 /* --------------------------------------------------------------------------
@@ -191,16 +191,13 @@ primFun(primCellPtrEq) {	       /* Unsafe pointer equality test     */
 
 primFun(primCatchError2) {	       /* Error catching  primitive        */
 				       /*  :: a -> Either Cell a           */
-    Bool fOE = failOnError;
     Cell err = NIL;
-    failOnError = FALSE;
     err = evalWithNoError(primArg(1)); 
     if (isNull(err)) {
 	updapRoot(nameRight, primArg(1));
     } else {
 	updapRoot(nameLeft, ap(HUGSOBJECT, err));
     }
-    failOnError = fOE;
 }
 
 /* --------------------------------------------------------------------------

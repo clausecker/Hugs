@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: builtin.c,v $
- * $Revision: 1.48 $
- * $Date: 2003/02/14 06:12:17 $
+ * $Revision: 1.49 $
+ * $Date: 2003/02/28 16:49:18 $
  * ------------------------------------------------------------------------*/
 
 /* We include math.h before prelude.h because SunOS 4's cpp incorrectly
@@ -1140,16 +1140,13 @@ primFun(primIndirect) {
 }
 
 primFun(primCatchError) {               /* Error catching  primitive       */
-    Bool fOE = failOnError;
     Cell err = NIL;
-    failOnError = FALSE;
     err = evalWithNoError(primArg(1));  /*  :: a -> Maybe a                */
     if (isNull(err)) {
 	updapRoot(nameJust, primArg(1));
     } else {
 	updateRoot(nameNothing);
     }
-    failOnError = fOE;
 }
 
 primFun(primThrowException) {           /* Failure primitive               */
@@ -1162,16 +1159,13 @@ primFun(primThrowException) {           /* Failure primitive               */
 /* in the Prelude.                                                         */
 
 primFun(primCatchException) {	       /* Error catching primitive         */
-    Bool fOE = failOnError;            /*  :: a -> Either Exception a      */
-    Cell err = NIL;
-    failOnError = FALSE;
+    Cell err = NIL;                    /*  :: a -> Either Exception a      */
     err = evalWithNoError(primArg(1)); 
     if (isNull(err)) {
 	updapRoot(nameRight, primArg(1));
     } else {
 	updapRoot(nameLeft, err);
     }
-    failOnError = fOE;
 }
 
 primFun(primSel) {                      /* Component selection             */

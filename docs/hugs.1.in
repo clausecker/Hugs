@@ -113,9 +113,6 @@ Print type after each evaluation (default: off)
 .B +T
 Apply the Haskell defaulting rules before printing types (default: off)
 .TP
-.B +f
-Terminate evaluation on first error (default: on)
-.TP
 .B +g
 Print number of cells recovered after gc (default: off)
 .TP

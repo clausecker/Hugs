@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: machine.c,v $
- * $Revision: 1.14 $
- * $Date: 2003/02/10 14:52:01 $
+ * $Revision: 1.15 $
+ * $Date: 2003/02/28 16:49:19 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -26,8 +26,6 @@ Bool   debugCode     = FALSE;		/* TRUE => print G-code to screen  */
 #if DEBUG_SHOWSC
 Bool   debugSC	     = FALSE;		/* TRUE => print SC-code to screen */
 #endif
-Bool   failOnError   = TRUE;		/* TRUE => abort as soon as error  */
-					/*	   occurs		   */
 
 /* --------------------------------------------------------------------------
  * Data structures for machine memory (program storage):
@@ -1845,16 +1843,10 @@ Cell ex; {
 #if OBSERVATIONS
     obsCount=0;
 #endif
-#ifdef EMBEDDED
-    longjmp(*evalError,1);
-#else
-    if (failOnError)
-	abandon("Program",ex);
-    else if (evalError)
+    if (evalError)
 	longjmp(*evalError,1);
     else
 	internal("uncaught exception");
-#endif
 }
 
 /* --------------------------------------------------------------------------

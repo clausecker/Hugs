@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: connect.h,v $
- * $Revision: 1.67 $
- * $Date: 2003/02/17 03:07:56 $
+ * $Revision: 1.68 $
+ * $Date: 2003/02/28 16:49:19 $
  * ------------------------------------------------------------------------*/
 #ifndef __CONNECT_H__
 #define __CONNECT_H__
@@ -247,8 +247,6 @@ extern Bool  preludeLoaded;		/* TRUE => prelude has been loaded */
 extern Bool  gcMessages;		/* TRUE => print GC messages	   */
 extern Bool  literateScripts;		/* TRUE => default lit scripts     */
 extern Bool  literateErrors;		/* TRUE => report errs in lit scrs */
-extern Bool  failOnError;		/* TRUE => error produces immediate*/
-					/*	   termination		   */
 extern Bool  showInstRes;               /* TRUE => show instance resolution */
 #if MULTI_INST
 extern Bool  multiInstRes;              /* TRUE => use multi inst resolution */
