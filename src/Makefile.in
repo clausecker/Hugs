@@ -79,7 +79,7 @@ PRELUDE		= config.h options.h prelude.h script.h
 HEADERS		= HsFFI.h config.h unix/MachDeps.h unix/template-hsc.h
 
 TOOLS		= ../tools/Package.hs ../tools/ParsePkgConf.hs \
-		  ../tools/get_ld_options ../tools/get_libraries
+		  ../tools/get_pkg_field
 
 ################################################################
 # Hugs interpreter and standalone evaluator
