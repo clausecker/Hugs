@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: builtin.c,v $
- * $Revision: 1.36 $
- * $Date: 2002/11/29 12:59:34 $
+ * $Revision: 1.37 $
+ * $Date: 2002/11/29 13:20:29 $
  * ------------------------------------------------------------------------*/
 
 /* We include math.h before prelude.h because SunOS 4's cpp incorrectly
@@ -1334,11 +1334,11 @@ Int2Int(primItoI32,  x)
      Int2Int(primI8toI32, (Int8)x)   /* casts used to cause sign extension */
 Int2Int(primI16toI32,(Int16)x)       /* casts used to cause sign extension */
 
-Word2Word(primW32toW8 , x&0xff);
-Word2Word(primW32toW16, x&0xffff);
+Word2Word(primW32toW8 , x&0xff)
+Word2Word(primW32toW16, x&0xffff)
 
-Word2Word(primW8toW32 , x);
-Word2Word(primW16toW32, x);
+Word2Word(primW8toW32 , x)
+Word2Word(primW16toW32, x)
 
 primFun(primI64toI32) {
     Int x, y;
@@ -2004,7 +2004,7 @@ static HsWord16       getWord16()    { eval(pop()); checkWord();  return (unsign
 static HsWord32       getWord32()    { eval(pop()); checkWord();  return (unsigned int) whnfInt; } 
 static HsWord64       getWord64()    { eval(pop()); return int64FromParts(intOf(fst(snd(whnfHead))), intOf(snd(snd(whnfHead)))); }
 static HsPtr          getPtr()       { eval(pop()); checkPtr();   return ptrOf(whnfHead); }
-static HsFunPtr       getFunPtr()    { eval(pop()); checkPtr();   return ptrOf(whnfHead); }
+static HsFunPtr       getFunPtr()    { eval(pop()); checkPtr();   return (HsFunPtr)ptrOf(whnfHead); }
 
 static HsForeignPtr   getForeignPtr() {
     ERRMSG(0) "getForeignPtr: not implemented in Hugs"
@@ -2040,65 +2040,52 @@ String n; {
     return c;
 }
 
-static void putInt(x)         HsInt         x; { push(mkInt(x)); }
-static void putWord(x)        HsWord        x; { push(mkInt((int)x)); }
-static void putAddr(x)        HsAddr        x; { push(mkPtr(x)); }
-#if HAVE_PROTOTYPES
-/* Symantec C and Solaris acc object to old style function headings
- * for this one function.  We continue to prefer pre-ANSI headers
- * elsewhere - for portability reasons.
- */
-static void putChar(HsChar x)                  { push(mkChar(x)); }
-#else
-static void putChar(x)        HsChar        x; { push(mkChar(x)); }
-#endif                        
-static void putFloat(x)       double        x; { push(mkFloat(x)); }
-static void putDouble(x)      double        x; { push(mkFloat(x)); }
-static void putForeign(x,f)   HugsForeign   x; void (*f)(HugsForeign); { push(mkMallocPtr(x,f)); }
-static void putStablePtr(x)   HugsStablePtr x; { push(derefStablePtr(x)); }
-static void putBool(x)        HsBool        x; { push(x?nameTrue:nameFalse); }
+static void putInt (HsInt  x) { push(mkInt(x)); }
+static void putWord(HsWord x) { push(mkInt((int)x)); }
+static void putAddr(HsAddr x) { push(mkPtr(x)); }
+static void putChar(HsChar x) { push(mkChar(x)); }
+static void putFloat (double x) { push(mkFloat(x)); }
+static void putDouble(double x) { push(mkFloat(x)); }
+static void putForeign(HugsForeign x, void (*f)(HugsForeign)) { push(mkMallocPtr(x,f)); }
+static void putStablePtr   (HugsStablePtr x) { push(derefStablePtr(x)); }
+static void putBool        (HsBool x)        { push(x?nameTrue:nameFalse); }
                                             
-static void putInt8(x)        HsInt8        x; { push(mkInt(x)); }
-static void putInt16(x)       HsInt16       x; { push(mkInt(x)); }
-static void putInt32(x)       HsInt32       x; { push(mkInt(x)); }
-static void putInt64(x)       HsInt64       x; { push(pair(I64CELL,pair(part1Int64(x),part2Int64(x)))); }
-static void putWord8(x)       HsWord8       x; { push(mkInt((int)x)); }
-static void putWord16(x)      HsWord16      x; { push(mkInt((int)x)); }
-static void putWord32(x)      HsWord32      x; { push(mkInt((int)x)); }
-static void putWord64(x)      HsWord64      x; { push(pair(I64CELL,pair(part1Int64(x),part2Int64(x)))); }
-static void putPtr(x)         HsPtr         x; { push(mkPtr(x)); }
-static void putFunPtr(x)      HsFunPtr      x; { push(mkPtr(x)); }
+static void putInt8 (HsInt8  x) { push(mkInt(x)); }
+static void putInt16(HsInt16 x) { push(mkInt(x)); }
+static void putInt32(HsInt32 x) { push(mkInt(x)); }
+static void putInt64(HsInt64 x) { push(pair(I64CELL,pair(part1Int64(x),part2Int64(x)))); }
+static void putWord8 (HsWord8  x) { push(mkInt((int)x)); }
+static void putWord16(HsWord16 x) { push(mkInt((int)x)); }
+static void putWord32(HsWord32 x) { push(mkInt((int)x)); }
+static void putWord64(HsWord64 x) { push(pair(I64CELL,pair(part1Int64(x),part2Int64(x)))); }
+static void putPtr   (HsPtr    x) { push(mkPtr(x)); }
+static void putFunPtr(HsFunPtr x) { push(mkPtr((Pointer)x)); }
 
-static void putStablePtr4(x)
-HsStablePtr   x; {
+static void putStablePtr4(HsStablePtr   x) {
     push((HugsStablePtr)x);
 }
 
-static HsStablePtr getStablePtr4() { 
+static HsStablePtr getStablePtr4(void) { 
     HugsStablePtr x = pop();
     return (HsStablePtr)x;
 }
 
-static Void freeStablePtr4(x)
-HsStablePtr x; {
+static Void freeStablePtr4(HsStablePtr x) {
     if (x) freeStablePtr((HugsStablePtr)x);
 }
 
 static HsFloat        getFloat4()    { eval(pop()); checkFloat(); return whnfFloat; }
 static HsDouble       getDouble4()   { eval(pop()); checkFloat(); return whnfFloat; }
 
-static void putFloat4(x)
-HsFloat x; { 
+static void putFloat4(HsFloat x) {
   push(mkFloat(x));
 }
 
-static void putDouble4(x)
-HsDouble x; { 
+static void putDouble4(HsDouble x) {
   push(mkFloat(x));
 }
 
-static void putForeignPtr(x)  
-HsForeignPtr x; {
+static void putForeignPtr(HsForeignPtr x) {
     ERRMSG(0) "putForeignPtr: not implemented in Hugs"
     EEND;
 }
