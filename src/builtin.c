@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: builtin.c,v $
- * $Revision: 1.16 $
- * $Date: 2001/06/23 21:46:43 $
+ * $Revision: 1.17 $
+ * $Date: 2001/06/29 18:13:08 $
  * ------------------------------------------------------------------------*/
 
 /* We include math.h before prelude.h because SunOS 4's cpp incorrectly
@@ -1936,7 +1936,7 @@ int          n; {
     if (n == 0) {
 	push(nameUnit);
     } else if (n == 1) {
-       /* do nothing */
+        /* do nothing, already there. */
     } else {
 	int i;
 	push(mkTuple(n));
@@ -1945,7 +1945,27 @@ int          n; {
 	    drop();
 	}
     }
-    updateRoot(top());
+    /*
+     * Note: have to be a bit careful when returning, since we could
+     * be returning from evaluating a CAF. In the non-CAF case,
+     * 'root' points to the object we've entered, so we can just
+     * go ahead and update it. No problem there.
+     *
+     * For CAFs, the evaluator leaves 'root' pointing at the Name
+     * of the CAF, so updating it directly is not going to work.
+     * Instead, we just leave the result at the top of the stack & 
+     * let the evaluator do what it has always done; clean up & 
+     * update the 'defn' field inside the CAF Name.
+     * 
+     *  [6/01 --sof]
+     */
+    if ( isPair(stack(root))
+#if 0 || DEBUG   
+	 || (whatIs(stack(root)) == AP)
+#endif
+	 ) {
+      updateRoot(top());
+    }
 }
 
 static int runIO(n)
