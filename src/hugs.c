@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.64 $
- * $Date: 2002/02/24 04:38:57 $
+ * $Revision: 1.65 $
+ * $Date: 2002/02/25 22:20:33 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -279,7 +279,13 @@ String argv[]; {
        * in the windows directory, so locate it first..
        */
       
-      notePadLoc = alloca(sizeof(char)*(MAX_PATH + notePadLen + 1));
+      notePadLoc = 
+#ifdef HAVE_ALLOCA
+	  alloca
+#else
+          _alloca
+#endif
+                  (sizeof(char)*(MAX_PATH + notePadLen + 1));
       rc = GetWindowsDirectory(notePadLoc, MAX_PATH);
       if ( !(rc == 0 || rc > MAX_PATH) ) {
 	strcat(notePadLoc, DEFAULT_EDITOR);

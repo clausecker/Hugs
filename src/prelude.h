@@ -9,8 +9,8 @@
  * included in the distribution.
  *
  * $RCSfile: prelude.h,v $
- * $Revision: 1.31 $
- * $Date: 2002/02/24 04:21:44 $
+ * $Revision: 1.32 $
+ * $Date: 2002/02/25 22:20:33 $
  * ------------------------------------------------------------------------*/
 
 #include "config.h"
@@ -554,14 +554,6 @@ extern  int  kbhit	Args((void));
 #else
 # if HAVE__ALLOCA && !defined(__SYMBIAN32__)
 #  include <malloc.h>
-#  ifndef alloca
-#   define alloca _alloca
-#  endif
-# endif
-# if !HAVE_ALLOCA
-#  ifndef alloca
-#   define alloca _alloca
-#  endif
 # endif
 #endif
 
