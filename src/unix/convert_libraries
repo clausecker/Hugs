@@ -18,8 +18,18 @@
 
 cpp_flags='-D__HUGS__'
 cpp="gcc -P -E -traditional -xc $cpp_flags"
-cc="gcc"
-hsc2hs=hsc2hs
+
+cc=${CC-gcc}
+hsc2hs=${hsc2hs-hsc2hs}
+
+# platform sensitive settings
+unameit=`uname -a | grep CYGWIN`
+if [ "x$unameit" != "x" ]; then
+    # For Win32
+    CALLCONV=stdcall
+else
+    CALLCONV=ccall
+fi
 
 hugs_src=../../lib
 
@@ -85,7 +95,7 @@ cvt() {
 		fi
 		sed -n 's/^{-# OPTIONS -\(#include .*\) #-}/\1/p' $target >"$dstdir/$header"
 		# dreadful hack to perform CALLCONV substitution of Network/Socket.hs
-		sed -e 's/CALLCONV/ccall/g' < $target > "$target.ok"
+		sed -e "s/CALLCONV/$CALLCONV/g" < $target > "$target.ok"
 		mv "$target.ok" $target
 		;;
 	*.y|*.ly)
