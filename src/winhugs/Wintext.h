@@ -62,7 +62,7 @@ INT cdecl      WinPrintf           (HWND, const CHAR *, ...);
 INT cdecl      WinFprintf          (HWND, FILE *, const CHAR *, ...);
 CHAR          *GetSelectedText	   (HWND);
 VOID 	       WinSetAllowBreak    (BOOL);
-
+VOID           CreateTextFont      (HWND,LPCSTR,INT);
 
 /* ---------------------------------------------------------------------------
  * Now we map C standard I/O functions to the ones defined in Text.c
@@ -98,4 +98,5 @@ extern char stdstrbuff[];
 #define WM_SETCURSORSTATUS     	WM_USER+10
 #define WM_GOTOXY       	WM_USER+11
 #define WM_GETTEXTMETRIC      	WM_USER+12
+#define WM_SETTEXTFONT       	WM_USER+13
 

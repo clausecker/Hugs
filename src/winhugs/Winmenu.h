@@ -39,6 +39,7 @@
 #define ID_GOPREVIOUS           207
 #define ID_GONEXT               208
 #define ID_EDITSELECTED		209
+#define ID_FONT       	        199
 
 #define ID_RUN   		301
 #define ID_STOP			302

@@ -81,6 +81,7 @@ BEGIN
         MENUITEM "Previous line   &Up arrow",   ID_GOPREVIOUS
         MENUITEM "Next line         &Down arrow", ID_GONEXT
         MENUITEM SEPARATOR
+        MENUITEM "Change Font..",               ID_FONT
         MENUITEM "T&ext Editor",                ID_GOEDIT
         MENUITEM SEPARATOR
     END

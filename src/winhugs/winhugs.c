@@ -156,6 +156,30 @@ static VOID local DoBrowseClasses(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
   ExecDialog(hThisInstance, BROWSECLASSESDLGBOX, BrowseClassesDlgProc);
 }
 
+static VOID local 
+SelectFont(HWND hWnd)
+{
+    CHOOSEFONT cf;
+    LOGFONT* pLF;
+    
+    pLF = (LOGFONT*) SendMessage (hWndText, WM_GETLOGFONT, 0, 0L);
+
+    ZeroMemory(&cf,sizeof(CHOOSEFONT));
+    cf.lStructSize = sizeof(CHOOSEFONT);
+    cf.hwndOwner   = hWnd;
+    cf.lpLogFont   = pLF;
+    cf.Flags       = CF_SCREENFONTS |
+	             CF_FIXEDPITCHONLY |
+		     CF_NOSTYLESEL |
+ 	             CF_INITTOLOGFONTSTRUCT;
+    if (ChooseFont(&cf)) {
+	SendMessage(hWndText, WM_SETTEXTFONT,
+		    (WPARAM)pLF->lfFaceName,
+		    (LPARAM)(cf.iPointSize/10));
+    }
+}
+
+
 
 /* Browse Type Constructors ... */
 static VOID local DoBrowseTycons(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
@@ -176,8 +200,6 @@ static VOID local DoClose(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
   SendMessage (hWnd, WM_COMMAND, ID_EXIT, 0L);
 }
-
-
 
 /* Response to Menu Commands */
 static VOID local DoCommand(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
@@ -274,6 +296,12 @@ static VOID local DoCommand(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
     case ID_GONEXT:		SendMessage(hWndText, WM_KEYDOWN, (WPARAM) VK_DOWN, 0x1000000L);
 				SendMessage(hWndText, WM_KEYUP,   (WPARAM) VK_DOWN, 0x1000000L);
 				break;
+
+    /* Change text window font */
+    case ID_FONT:
+        SelectFont(hWnd);
+	break;
+	
 
     /* Open text editor */
     case ID_GOEDIT:		AbortInterpreter;

@@ -243,7 +243,76 @@ BOOL RegisterTextClass(HINSTANCE hInstance)
  * Create a text window:
  *-------------------------------------------------------------------------*/
 
+VOID
+CreateTextFont(HWND hWnd, 
+	       LPCSTR Fontname,
+	       INT    Fontsize)
+{
+  HDC        hDC;
+  TEXTWINDOWINFO* twi;
+  TEXTMETRIC tm;
+  HFONT      hSaveFont;
+  INT	     CharHeight, CharWidth;
+  RECT       rect;
 
+  /* Get memory for text window structure */
+  twi = (TEXTWINDOWINFO*) GetWindowLong(hWnd, 0);
+
+  /* Create the font */
+  hDC = GetDC(hWnd);
+
+  twi->LogFont.lfHeight         = -MulDiv(Fontsize, GetDeviceCaps(hDC, LOGPIXELSY), 72);
+  twi->LogFont.lfWidth        	= 0;
+  twi->LogFont.lfEscapement   	= 0;
+  twi->LogFont.lfOrientation  	= 0;
+  twi->LogFont.lfWeight       	= FW_NORMAL;
+  twi->LogFont.lfItalic     	= FALSE;
+  twi->LogFont.lfUnderline  	= FALSE;
+  twi->LogFont.lfStrikeOut  	= FALSE;
+  twi->LogFont.lfCharSet  	= ANSI_CHARSET;
+  twi->LogFont.lfOutPrecision 	= OUT_TT_PRECIS;
+  twi->LogFont.lfClipPrecision 	= CLIP_TT_ALWAYS;
+  twi->LogFont.lfQuality 	= DEFAULT_QUALITY;
+  twi->LogFont.lfPitchAndFamily = FIXED_PITCH | FF_MODERN;
+  strcpy(twi->LogFont.lfFaceName, Fontname);
+
+  twi->hFont = CreateFontIndirect(&(twi->LogFont));
+  if (!twi->hFont) {
+    MessageBox(GetFocus(), "Out of memory creating text font", "Wintext",
+	       MB_ICONHAND | MB_SYSTEMMODAL | MB_OK);
+    return;
+  }
+
+  /* Get font dimmensions */
+  hSaveFont = SelectObject(hDC, twi->hFont);
+
+  GetTextMetrics(hDC, &tm);
+
+  CharHeight = tm.tmHeight+tm.tmExternalLeading;
+  CharWidth  = tm.tmAveCharWidth;
+
+  SelectObject(hDC, hSaveFont);
+  ReleaseDC(hWnd, hDC);
+
+  /* Fill in window structure */
+  twi->CharWidth    	= CharWidth;
+  twi->CharHeight   	= CharHeight;
+
+  /* reset scroll bars and redisplay window */
+  twi->VScroll 	   	= 0;
+  twi->HScroll       	= 0;
+  SetScrollPos(hWnd, SB_HORZ, twi->HScroll, TRUE);
+  SetScrollPos(hWnd, SB_VERT, twi->VScroll, TRUE);
+  InvalidateRect(hWnd, NULL, TRUE);
+
+  /* force recomputation of RowsShowed/ColsShowed fields */
+  GetClientRect(hWnd, &rect);
+  DoSize(hWnd, WM_SIZE, 0, MAKELPARAM(rect.right-rect.left,rect.bottom-rect.top));
+
+  WinClrscr(hWnd);
+  WinGotoxy(hWnd, 1, 1);
+  SendMessage(hWnd, WM_CHAR, (WPARAM) VK_RETURN, 0L);
+}
 
 HWND CreateTextWindow(HINSTANCE hInstance, HWND hParent, INT Left, INT Top,
 				UINT Columns, UINT Rows, LPCSTR Fontname, INT Fontsize, HACCEL hAccelTable)
@@ -1845,6 +1914,10 @@ LRESULT CALLBACK TextWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
 
      case WM_GETLOGFONT:
 			  return (LRESULT) DoGetLogFont (hWnd, message, wParam, lParam);
+
+     case WM_SETTEXTFONT:
+			  CreateTextFont(hWnd, (LPCSTR)wParam, (INT)lParam);
+			  break;
 
      case WM_SETCURSORSTATUS:
 			  return (LRESULT) DoSetCursorStatus (hWnd, message, wParam, lParam);
