@@ -238,9 +238,12 @@ Void clearProject() {      /* clear name for current project  */
 Void forgetScriptsFrom(scno) /* remove scripts from system     */
 Script scno; {
     Script i;
-    for (i=scno; i<namesUpto; ++i)
+    for (i=scno; i<namesUpto; ++i) {
 	if (scriptName[i])
 	    free(scriptName[i]);
+	if (scriptReal[i])
+	    free(scriptReal[i]);
+    }
     dropScriptsFrom(scno-1); /* don't count prelude as script  */
     namesUpto = scno;
     if (numScripts>namesUpto)
