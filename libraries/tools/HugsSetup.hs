@@ -28,6 +28,7 @@ import Distribution.PackageDescription
 import Distribution.PreProcess
 import Distribution.PreProcess.Unlit
 import Distribution.Setup
+import Distribution.Simple.Build
 import Distribution.Simple.Configure
 import Distribution.Simple.LocalBuildInfo
 import Distribution.Simple.Utils
@@ -84,7 +85,9 @@ main
 		no_extra_flags args
 		pkg_descr <- getBuildParams currentDir pkg_descr
 		localbuildinfo <- getPersistBuildConfig
-		build pkg_descr localbuildinfo
+		let buildPref = buildDir localbuildinfo
+		build buildPref pkg_descr localbuildinfo knownSuffixHandlers
+		return ()
 
 	    CleanCmd -> do
 		(_, args) <- parseCleanArgs args []
@@ -144,20 +147,6 @@ buildDirOpt = Option "b" ["builddir"] (ReqArg setBuildDir "DIR")
   where setBuildDir dir lbi = lbi { buildDir = dir }
 
 -- actions for Hugs
-
-build :: PackageDescription -> LocalBuildInfo -> IO ()
-build pkg lbi = when (buildPackage pkg) $
-	withLib pkg $ \ libInfo -> do
-	-- Pass 1: preprocess (except cpp) files in source directory
-	preprocessSources pkg lbi knownSuffixHandlers
-	-- Pass 2: copy or cpp files from source directory to build directory
-	files <- listSourceFiles libInfo
-	copyPackage pkg buildPref files
-	-- Pass 3: compile foreign stubs in build directory
-	let destFiles = [buildPref `joinFileName` f | f <- files]
-	ffiFiles <- filterM testFFIModule destFiles
-	mapM_ (compileFFI pkg lbi) ffiFiles
-  where buildPref = buildDir lbi
 
 install :: PackageDescription -> LocalBuildInfo -> Bool -> IO ()
 install pkg lbi uInst =
@@ -221,130 +210,6 @@ parseBasicStanza ((StanzaField name _ _ set):fields) pkg (lineNo, f, val)
   | name == f = set lineNo val pkg
   | otherwise = parseBasicStanza fields pkg (lineNo, f, val)
 parseBasicStanza [] pkg (lineNo, f, val) = return pkg
-
--- Building a package for Hugs
-
--- List of Haskell source files relative to source directory.
-listSourceFiles :: BuildInfo -> IO [FilePath]
-listSourceFiles libInfo = mapM sourceFile (biModules libInfo)
-  where sourceFile mod = do
-		let stem = dotToSep mod
-		let hsFile = stem ++ ".hs"
-		let lhsFile = stem ++ ".lhs"
-		hsExists <- doesFileExist (srcDir `joinFileName` hsFile)
-		lhsExists <- doesFileExist (srcDir `joinFileName` lhsFile)
-		if hsExists then return hsFile
-		    else if lhsExists then return lhsFile
-		    else die ((srcDir `joinFileName` stem) ++
-				".{hs,lhs}: not found")
-	srcDir = hsSourceDir libInfo
-
--- Pass 2: copy or cpp files to build directory
-
--- Copy or cpp a package from the source directory to the build directory.
-copyPackage :: PackageDescription -> FilePath -> [FilePath] -> IO ()
-copyPackage pkg_descr destDir files =
-	withLib pkg_descr $ \ libInfo -> do
-	let useCpp = CPP `elem` extensions libInfo
-	let srcDir = hsSourceDir libInfo
-	let copy_or_cpp f = copyModule useCpp cpp
-				(srcDir `joinFileName` f)
-				(destDir `joinFileName` f)
-	sequence_ [copy_or_cpp f | f <- files]
-  where	cpp = ppCpp (ccOptions pkg_descr)
-
-ppCpp :: [String] -> PreProcessor
-ppCpp flags inFile outFile =
-	rawSystemPath "cpp"
-		(["-traditional", "-P", defHugs] ++ flags ++ [inFile, outFile])
-
--- Copy or cpp a file from the source directory to the build directory.
-copyModule :: Bool -> PreProcessor -> FilePath -> FilePath -> IO ()
-copyModule cppAll cpp srcFile destFile = do
-	createIfNotExists True (dirname destFile)
-	opts <- getOptions srcFile
-	if cppAll || "-cpp" `elem` opts then do
-		cpp srcFile destFile
-		return ()
-	    else
-		copyFile srcFile destFile
-  where dirname f = fst (splitFileName f)
-
--- Pass 3: compile FFI modules in build directory
-
-compileFFI :: PackageDescription -> LocalBuildInfo -> FilePath -> IO ()
-compileFFI pkg_descr lbi file = do
-	withLib pkg_descr $ \ libInfo -> do
-	options <- getOptions file
-	let srcDir = hsSourceDir libInfo
-	let pkg_incs = ["\"" ++ inc ++ "\"" | inc <- includes libInfo]
-	let incs = uniq (sort (includeOpts options ++ pkg_incs))
-	let pathFlag = "-P" ++ buildDir lbi ++ [searchPathSeparator]
-	let hugsArgs = "-98" : pathFlag : map ("-i" ++) incs
-	cfiles <- getCFiles file
-	let cArgs =
-		ccOptions pkg_descr ++
-		map (joinFileName srcDir) cfiles ++
-		["-L" ++ dir | dir <- extraLibDirs libInfo] ++
-		ldOptions pkg_descr ++
-		["-l" ++ lib | lib <- extraLibs libInfo] ++
-		concat [["-framework", f] | f <- frameworks pkg_descr]
-	rawSystem ffihugs (hugsArgs ++ file : cArgs)
-	return ()
-  where	ffihugs = compilerPath (compiler lbi)
-
-includeOpts :: [String] -> [String]
-includeOpts [] = []
-includeOpts ("-#include" : arg : opts) = arg : includeOpts opts
-includeOpts (_ : opts) = includeOpts opts
-
-uniq :: Ord a => [a] -> [a]
-uniq [] = []
-uniq (x:xs) = x : uniq (dropWhile (== x) xs)
-
--- get options from OPTIONS pragmas at the start of the source file
-getOptions :: FilePath -> IO [String]
-getOptions file = do
-	(_, opts) <- getOptionsFromSource file
-	return [opt | (GHC, ghc_opts) <- opts, opt <- ghc_opts]
-
--- get C files from CFILES pragmas throughout the source file
-getCFiles :: FilePath -> IO [String]
-getCFiles file = do
-	inp <- readHaskellFile file
-	return $ concat $ mapMaybe (getPragma "CFILES") $ lines $
-		stripComments True inp
-
-getPragma :: String -> String -> Maybe [String]
-getPragma name line = case words line of
-	("{-#" : pname : rest)
-	    | pname == name && last rest == "#-}" -> Just (init rest)
-	_ -> Nothing
-
--- Does this module contain any FFI stuff?
-testFFIModule :: FilePath -> IO Bool
-testFFIModule file = do
-	inp <- readHaskellFile file
-	return ("foreign" `elem` identifiers (stripComments False inp))
-
--- List of variable identifiers (and reserved words) in a source file.
-identifiers :: String -> [String]
-identifiers cs = case dropWhile (not . isStartChar) cs of
-	[] -> []
-	rest -> ident : identifiers cs'
-	  where (ident, cs') = span isFollowChar rest
-  where isStartChar c = c == '_' || isAlpha c
-	isFollowChar c = c == '_' || c == '\'' || isAlphaNum c
-
--- Get the non-literate source of a Haskell module.
-readHaskellFile :: FilePath -> IO String
-readHaskellFile file = do
-	text <- readFile file
-	return $ if literate then unlit file text else text
-  where literate = ".lhs" `isSuffixOf` file
-
-withTempFileDef :: (FilePath -> IO a) -> IO a
-withTempFileDef = withTempFile "." ""
 
 whenM :: IO Bool -> IO a -> IO ()
 whenM cond act = do
