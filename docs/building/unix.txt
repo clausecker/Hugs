@@ -19,8 +19,7 @@ machine (including Linux, *BSD and MacOS X).  For other systems:
 
 Short version (for Unix-like environments):
 
-    ./configure --prefix=$HOME
-    make install
+    make EXTRA_CONFIGURE_OPTS=--prefix=$HOME
     make clean
     $HOME/bin/hugs $HOME/lib/hugs/demos/Say
     putStr (say "  /Hugs")
@@ -29,7 +28,7 @@ Short version (for Unix-like environments):
 
 Long version:
 
- 0) Choose a directory (or directories) for the Hugs files to go in.
+ 1) Choose a directory (or directories) for the Hugs files to go in.
     In the following, we'll assume:
 
     /usr/local/solaris/bin             user executables
@@ -38,14 +37,15 @@ Long version:
 
     Check that these directories have appropriate permission settings.
 
- 1) Run the configure script:
+ 2) Build Hugs and the libraries
 
         cd hugs98
-        ./configure --exec-prefix=/usr/local/solaris
+        make EXTRA_CONFIGURE_OPTS=--exec-prefix=/usr/local/solaris
 
-    This runs many small tests on the compiler, preprocessor, linker,
-    etc to determine how your system is configured.  It combines this
-    with any configuration flags to generate these files:
+    This starts by running the configure script, which runs many small
+    tests on the compiler, preprocessor, linker, etc to determine how
+    your system is configured.  It combines this with any configuration
+    flags to generate these files:
 
         src/Makefile          -- used to control compilation
         src/config.h          -- #included into every C file in Hugs
@@ -54,23 +54,24 @@ Long version:
 
     plus some others related to documentation, testing and examples.
 
+    EXTRA_CONFIGURE_OPTS can contain any number of options to the
+    configure script.  You can omit it if there are none.
     Read config.txt to find out about general configuration options.
     Hugs-specific options are listed at the end of this file.
 
- 2) Build Hugs and the libraries
-
-    This step builds the executables, calls the shell script
+    It then builds the executables, calls the shell script
+    libraries/tools/make_bootlib to generate a subset of the libraries
+    in libraries/bootlib, and then calls another shell script
     libraries/tools/convert_libraries to convert the Haskell library
     packages under fptools into libraries under hugsdir for use by
-    Hugs, and then runs ffihugs to compile modules that use the ffi.
-    (libraries/Hugs contains Hugs-specific modules that are also
-    copied into hugsdir.)
+    Hugs, using the Cabal library (from the bootlib just created).
+    (libraries/hugsbase/Hugs contains Hugs-specific modules that are
+    also copied into hugsdir.)
 
-        make
-
-    You should now have a working Hugs system, runnable in-place.
-    At this point, you might like to run a few tests to make sure
-    everything's working:
+    If all that worked, you should now have a working Hugs system,
+    runnable in-place.  Even if a few of the libraries had error, you
+    should still have a runnable system.  At this point, you might like
+    to run a few tests to make sure everything's working:
 
         HUGSDIR=hugsdir src/hugs
         -- Run a few tests like 1+2, [1..], etc.  Use ":quit" to exit
