@@ -19,8 +19,8 @@
  * included in the distribution.
  *
  * $RCSfile: iomonad.c,v $
- * $Revision: 1.9 $
- * $Date: 2000/05/05 15:49:52 $
+ * $Revision: 1.10 $
+ * $Date: 2000/10/06 00:45:07 $
  * ------------------------------------------------------------------------*/
  
 Name nameIORun;			        /* run IO code                     */
@@ -711,13 +711,7 @@ primFun(primHGetPosn) {			/* Get file position               */
     Int h;
     HandleArg(h,3);
     if (handles[h].hmode!=HCLOSED) {
-#if HAVE_FGETPOS
-	fpos_t pos;
-	if (fgetpos(handles[h].hfp,&pos)) {
-	    IOReturn(mkInt((Int)pos));
-	}
-#elif HAVE_FTELL
-	/* A reasonable approximation for pre-ANSI compilers */
+#if HAVE_FTELL
 	long pos = ftell(handles[h].hfp);
 	IOReturn(mkInt((Int)pos));
 #else
@@ -728,21 +722,14 @@ primFun(primHGetPosn) {			/* Get file position               */
 }
 
 primFun(primHSetPosn) {			/* Set file position               */
-#if HAVE_FSETPOS
-    fpos_t pos = 0;
-#elif HAVE_FSEEK
+#if HAVE_FSEEK
     long   pos = 0;
 #endif
     Int    h;
     HandleArg(h,3);
     IntArg(pos,4);
     if (handles[h].hmode!=HCLOSED) {
-#if HAVE_FSETPOS
-	if (fsetpos(handles[h].hfp,&pos)) {
-	    IOReturn(nameUnit);
-	}
-#elif HAVE_FSEEK
-	/* A reasonable approximation for pre-ANSI compilers */
+#if HAVE_FSEEK
 	if (fseek(handles[h].hfp,pos,SEEK_SET)) {
 	    IOReturn(nameUnit);
 	}
