@@ -9,8 +9,8 @@
  * included in the distribution.
  *
  * $RCSfile: subst.c,v $
- * $Revision: 1.17 $
- * $Date: 2000/05/05 15:49:52 $
+ * $Revision: 1.18 $
+ * $Date: 2000/10/10 15:32:20 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -62,6 +62,7 @@ static Bool local varToTypeBind		Args((Tyvar *,Type,Int));
 static Bool local inserter		Args((Type,Int,Type,Int));
 static Int  local remover		Args((Text,Type,Int));
 static Int  local tailVar		Args((Type,Int));
+static Void local expandSynFully	Args((Type *, Int *));
 #endif
 
 static Bool local improveAgainst	Args((Int,List,Cell,Int));
@@ -1079,21 +1080,12 @@ un: if (tyv1)
 	    if (isOffset(h2) || isInt(h2)) h2=NIL;
 
 #if TREX
-	    if (isExt(h1) || isExt(h2)) {
-		if (a1==2 && isExt(h1) && a2==2 && isExt(h2)) {
-		    if (extText(h1)==extText(h2)) {
-			return unify(arg(fun(t1)),o1,arg(fun(t2)),o2) &&
-				unify(arg(t1),o1,arg(t2),o2);
-		    } else {
-			return inserter(t1,o1,t2,o2) &&
-				  unify(arg(t1),o1,aVar,
-				     remover(extText(h1),t2,o2));
-		    }
-		} else {
-		    unifyFails = "rows are not compatible";
-		    return FALSE;
-		}
-	    }
+	    if (isExt(h1) && a1==2)
+		return inserter(t1,o1,t2,o2) &&
+			unify(arg(t1),o1,aVar,remover(extText(h1),t2,o2));
+	    if (isExt(h2) && a2==2)
+		return inserter(t2,o2,t1,o1) &&
+			unify(arg(t2),o2,aVar,remover(extText(h2),t1,o1));
 #endif
 	    if (nonNull(h1) && h1==h2) {/* Assuming well-formed types, both*/
 		if (a1!=a2) {		/* t1, t2 must have same no of args*/
@@ -1160,9 +1152,9 @@ un: if (tyv1)
 }
 
 #if TREX
-static Bool local inserter(r1,o1,r,o)	/* Insert first field in (r1,o1)   */
-Type r1;				/* into row (r,o), both of which   */
-Int  o1;				/* are known to begin with an EXT  */
+static Bool local inserter(r1,o1,r,o)	/* Insert first field in (r1,o1),  */
+Type r1;				/* which is known to begin with    */
+Int  o1;				/* an EXT, into row (r,o)          */
 Type r;
 Int  o; {
     Text labt = extText(fun(fun(r1)));	/* Find the text of the label	   */
@@ -1175,6 +1167,7 @@ Int  o; {
 #endif
     for (;;) {
 	Tyvar *tyv;
+	expandSynFully(&r,&o);
 	deRef(tyv,r,o);
 	if (tyv) {
 	    Int beta;			/* Test for common tail		   */
@@ -1210,6 +1203,7 @@ Int  o; {
     printType(stdout,debugType(r,o));
     Putchar('\n');
 #endif
+    expandSynFully(&r,&o);
     deRef(tyv,r,o);
     if (tyv || !isAp(r) || !isAp(fun(r)) || !isExt(fun(fun(r))))
 	internal("remover");
@@ -1226,6 +1220,7 @@ Type r;
 Int  o; {
     for (;;) {
 	Tyvar *tyv;
+	expandSynFully(&r,&o);
 	deRef(tyv,r,o);
 	if (tyv) {
 	    return tyvNum(tyv);
@@ -1236,6 +1231,20 @@ Int  o; {
 	else {
 	    return (-1);
 	}
+    }
+}
+
+static Void local expandSynFully(at,ao)	/* repeatedly expand synonyms	   */
+Type  *at;				/* original expression (*at,*ao)   */
+Int   *ao; {				/* expansion returned in (*at,*ao) */
+    Type h;
+    Int  a;
+    for (;;) {
+	h = getDerefHead(*at,*ao);
+	a = argCount;
+	if (! isSynonym(h) || a<tycon(h).arity)
+	    return;
+	expandSyn(h,a,at,ao);
     }
 }
 #endif
