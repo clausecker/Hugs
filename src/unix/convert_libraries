@@ -136,22 +136,22 @@ mkdir -p $compat
 
 # Stuff from hslibs (many of these are stubs)
 
-  hslibs concurrent CVar.lhs
-  hslibs concurrent Chan.lhs
-  hslibs concurrent Channel.lhs
-  hslibs concurrent ChannelVar.lhs
-  hslibs concurrent Concurrent.lhs
-  hslibs concurrent MVar.lhs
+  hslibs concurrent CVar.lhs		# superseded by MVars
+  hslibs concurrent Chan.lhs		# -> Control.Concurrent.Chan
+  hslibs concurrent Channel.lhs		# -> Control.Concurrent.Chan
+  hslibs concurrent ChannelVar.lhs	# superseded by MVars
+  hslibs concurrent Concurrent.lhs	# -> Control.Concurrent
+  hslibs concurrent MVar.lhs		# -> Control.Concurrent.MVar
 # hslibs concurrent Merge.lhs		# needs pre-emptive concurrency
-  hslibs concurrent Parallel.lhs
-  hslibs concurrent QSem.lhs
-  hslibs concurrent QSemN.lhs
-  hslibs concurrent SampleVar.lhs
-  hslibs concurrent Semaphore.lhs
+  hslibs concurrent Parallel.lhs	# -> Control.Parallel
+  hslibs concurrent QSem.lhs		# -> Control.Concurrent.QSem
+  hslibs concurrent QSemN.lhs		# -> Control.Concurrent.QSemN
+  hslibs concurrent SampleVar.lhs	# -> Control.Concurrent.SampleVar
+  hslibs concurrent Semaphore.lhs	# -> Control.Concurrent.QSem Control.Concurrent.QSemN
 # hslibs concurrent Strategies.lhs
 
-  hslibs data FiniteMap.lhs
-  hslibs data Set.lhs
+  hslibs data FiniteMap.lhs		# -> Data.FiniteMap
+  hslibs data Set.lhs			# -> Data.Set
 
   cp $hs_src/data/edison/COPYRIGHT $compat/COPYRIGHT.edison
   hslibs data/edison/Assoc Assoc.hs
@@ -184,25 +184,32 @@ mkdir -p $compat
   hslibs data/edison/Seq SizedSeq.hs
   hslibs data/edison/Seq TestSeq.hs
 
+  hslibs hssource HsLexer.hs		# -> Language.Haskell.Lexer
+  hslibs hssource HsParseMonad.hs	# -> Language.Haskell.ParseMonad
+  hslibs hssource HsParseUtils.hs	# -> Language.Haskell.ParseUtils
+  hslibs hssource HsParser.hs		# -> Language.Haskell.Parser
+  hslibs hssource HsPretty.hs		# -> Language.Haskell.Pretty
+  hslibs hssource HsSyn.hs		# -> Language.Haskell.Syntax
+
 # hslibs lang Addr.lhs			# deprecated
  libexts Addr
   hslibs lang ArrayBase.hs		# -> Data.Array.Base
-  hslibs lang Arrow.hs
+  hslibs lang Arrow.hs			# -> Control.Arrow
 # hslibs lang ByteArray.lhs		# deprecated
 # hslibs lang CCall.lhs			# GHC-specific (and obsolete)
-  hslibs lang CTypesISO.hs
+  hslibs lang CTypesISO.hs		# -> Foreign.C.TypesISO
 # hslibs lang DiffArray.hs		# -> Data.Array.Diff
 # hslibs lang DirectoryExts.hs
-  hslibs lang Dynamic.hs
-  hslibs lang Exception.hs
+  hslibs lang Dynamic.hs		# -> Data.Dynamic
+  hslibs lang Exception.hs		# -> Control.Exception
 # hslibs lang ForeignObj.lhs		# deprecated
  libexts ForeignObj			# uses Hugs primitives
-# hslibs lang Generics.hs		# GHC-specific
+# hslibs lang Generics.hs		# -> Data.Generics
 # hslibs lang GlaExts.lhs		# deprecated
-  hslibs lang IArray.hs
+  hslibs lang IArray.hs			# -> Data.Array.IArray
 # hslibs lang IOExts.hs
   stub IOExts		Hugs.IOExts Hugs.IORef Hugs.IOArray
-  hslibs lang IORef.hs
+  hslibs lang IORef.hs			# -> Data.IORef
 # hslibs lang LazyST.hs
   stub LazyST		Hugs.LazyST
 # hslibs lang MArray.hs			# lots of GHC stuff (and obsolete)
@@ -213,57 +220,62 @@ mkdir -p $compat
 # hslibs lang PrelByteArr.lhs		# GHC-specific
 # hslibs lang ST.hs			# GHC-specific
   stub ST		Hugs.ST
-  hslibs lang ShowFunctions.hs
-  hslibs lang Stable.hs
-  hslibs lang StableName.hs
+  hslibs lang ShowFunctions.hs		# -> Text.Show.Functions
+  hslibs lang Stable.hs			# -> Foreign.StablePtr System.Mem.StableName
+  hslibs lang StableName.hs		# -> System.Mem.StableName
   hslibs lang StorableArray.hs		# -> Data.Array.Storable
 # hslibs lang SystemExts.lhs		# GHC-specific
 # hslibs lang TimeExts.lhs
-  hslibs lang Weak.hs
+  hslibs lang Weak.hs			# -> System.Mem.Weak
 
-  hslibs lang/monads MonadCont.lhs
-  hslibs lang/monads MonadEither.lhs
-  hslibs lang/monads MonadError.lhs
-  hslibs lang/monads MonadFix.lhs
-  hslibs lang/monads MonadIdentity.lhs
-  hslibs lang/monads MonadList.lhs
-  hslibs lang/monads MonadRWS.lhs
-  hslibs lang/monads MonadReader.lhs
-  hslibs lang/monads MonadState.lhs
-  hslibs lang/monads MonadTrans.lhs
-  hslibs lang/monads MonadWriter.lhs
-  hslibs lang/monads Monoid.lhs
+  hslibs lang/monads MonadCont.lhs	# -> Control.Monad.Cont
+  hslibs lang/monads MonadEither.lhs	# -> Control.Monad.Error
+  hslibs lang/monads MonadError.lhs	# -> Control.Monad.Error
+  hslibs lang/monads MonadFix.lhs	# -> Control.Monad.Fix
+  hslibs lang/monads MonadIdentity.lhs	# -> Control.Monad.Identity
+  hslibs lang/monads MonadList.lhs	# -> Control.Monad.List
+  hslibs lang/monads MonadRWS.lhs	# -> Control.Monad.RWS
+  hslibs lang/monads MonadReader.lhs	# -> Control.Monad.Reader
+  hslibs lang/monads MonadState.lhs	# -> Control.Monad.State
+  hslibs lang/monads MonadTrans.lhs	# -> Control.Monad.Trans
+  hslibs lang/monads MonadWriter.lhs	# -> Control.Monad.Writer
+  hslibs lang/monads Monoid.lhs		# -> Control.Monad.Monoid
+
+  hslibs net BSD.hs			# -> Network.BSD
+  hslibs net CGI.lhs			# -> Network.CGI
+  hslibs net SocketPrim.hs		# -> Network.Socket
+  hslibs net URI.hs			# -> Network.URI
 
 # hslibs text MatchPS.lhs
-  hslibs text Pretty.lhs
+  hslibs text Pretty.lhs		# -> Text.PrettyPrint.HughesPJ
 # hslibs text Regex.lhs
 # hslibs text RegexString.lhs
 
-  hslibs text/html Html.lhs
-  hslibs text/html HtmlBlockTable.lhs
+  hslibs text/html Html.lhs		# -> Text.Html
+  hslibs text/html HtmlBlockTable.lhs	# -> Text.Html.BlockTable
 
-  hslibs text/parsec Parsec.hs
-  hslibs text/parsec ParsecChar.hs
-  hslibs text/parsec ParsecCombinator.hs
-  hslibs text/parsec ParsecError.hs
-  hslibs text/parsec ParsecExpr.hs
-  hslibs text/parsec ParsecLanguage.hs
-  hslibs text/parsec ParsecPerm.hs
-  hslibs text/parsec ParsecPos.hs
-  hslibs text/parsec ParsecPrim.hs
-  hslibs text/parsec ParsecToken.hs
+  hslibs text/parsec Parsec.hs		# -> Text.ParserCombinators.Parsec
+  hslibs text/parsec ParsecChar.hs	# -> Text.ParserCombinators.Parsec.Char
+  hslibs text/parsec ParsecCombinator.hs # -> Text.ParserCombinators.Parsec.Combinator
+  hslibs text/parsec ParsecError.hs	# -> Text.ParserCombinators.Parsec.Error
+  hslibs text/parsec ParsecExpr.hs	# -> Text.ParserCombinators.Parsec.Expr
+  hslibs text/parsec ParsecLanguage.hs	# -> Text.ParserCombinators.Parsec.Language
+  hslibs text/parsec ParsecPerm.hs	# -> Text.ParserCombinators.Parsec.Perm
+  hslibs text/parsec ParsecPos.hs	# -> Text.ParserCombinators.Parsec.Pos
+  hslibs text/parsec ParsecPrim.hs	# -> Text.ParserCombinators.Parsec.Prim
+  hslibs text/parsec ParsecToken.hs	# -> Text.ParserCombinators.Parsec.Token
 
-  hslibs util GetOpt.lhs
+  hslibs util GetOpt.lhs		# -> System.Console.GetOpt
 # hslibs util MD5.lhs			# needs PackedString, etc
 # hslibs util Memo.lhs			# Hugs module is different
 # hslibs util Observe.lhs		# Hugs module is different
 # hslibs util Select.lhs
-  hslibs util Unique.lhs
+  hslibs util Unique.lhs		# -> Data.Unique
 
-  hslibs util/check QuickCheck.hs
+  hslibs util/check QuickCheck.hs	# -> Debug.QuickCheck
 # hslibs util/check QuickCheckBatch.hs	# -> Debug.QuickCheck.Batch
-  hslibs util/check QuickCheckPoly.hs
-  hslibs util/check QuickCheckUtils.hs
+  hslibs util/check QuickCheckPoly.hs	# -> Debug.QuickCheck.Poly
+  hslibs util/check QuickCheckUtils.hs	# -> Debug.QuickCheck.Utils
 
 # Compatibility with lib/hugs:
 
