@@ -182,7 +182,7 @@
 #define HAVE_FSETPOS 1
 
 /* Define if you have the fstat function.  */
-/* #undef HAVE_FSTAT */
+#define HAVE_FSTAT 1
 
 /* Define if you have the ftell function.  */
 #define HAVE_FTELL 1
