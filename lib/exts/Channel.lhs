@@ -85,7 +85,7 @@ writeChan (Chan read write) val
 readChan :: Chan a -> IO a
 readChan (Chan read write)
  = takeMVar read	  >>= \ rend ->
-   takeMVar rend          >>= \ (ChItem val new_rend) ->
+   readMVar rend          >>= \ (ChItem val new_rend) ->
    putMVar read new_rend  >>
    return val
 
