@@ -1417,8 +1417,9 @@ HostPlatform=`/bin/sh $srcdir/config.sub $host` || exit 1
 TargetPlatform=`/bin/sh $srcdir/config.sub $target` || exit 1
 
 if test x"$TargetPlatform" != x"$HostPlatform" ; then
-    echo "Hugs98 does not yet support differing host/target (i.e., cross-compiling)"
-    exit 1
+  { { echo "$as_me:$LINENO: error: Hugs98 does not yet support differing host/target (i.e., cross-compiling)" >&5
+echo "$as_me: error: Hugs98 does not yet support differing host/target (i.e., cross-compiling)" >&2;}
+   { (exit 1); exit 1; }; }
 fi
 
 host_cpu=`echo $HostPlatform | sed 's/-.*//'`
@@ -1721,11 +1722,13 @@ fi
 done
 test -n "$YACC" || YACC="yacc"
 
-if test "`basename ${YACC}`x" = "byaccx"; then
-   echo "Found 'byacc', but the Hugs98 parser is incompatible with it."
-   echo "You need to install 'bison' and re-run the configure script."
-   exit 1;
-fi;
+if test x"`basename ${YACC}`" = x"byacc"; then
+  { { echo "$as_me:$LINENO: error: Found 'byacc', but the Hugs98 parser is incompatible with it.
+You need to install 'bison' and re-run the configure script." >&5
+echo "$as_me: error: Found 'byacc', but the Hugs98 parser is incompatible with it.
+You need to install 'bison' and re-run the configure script." >&2;}
+   { (exit 1); exit 1; }; }
+fi
 
 : ${CFLAGS=-g}
 OPTFLAGS="-O2"
@@ -4052,7 +4055,7 @@ else
 ac_save_LIBS="$LIBS"
 LIBS="";
 cat > conftest.$ac_ext <<EOF
-#line 4055 "configure"
+#line 4058 "configure"
 #include "confdefs.h"
 main() { extern char dlopen(); dlopen();; exit(0); }
 int t() { return 0; }
@@ -4095,7 +4098,7 @@ else
 ac_save_LIBS="$LIBS"
 LIBS="-ldl";
 cat > conftest.$ac_ext <<EOF
-#line 4098 "configure"
+#line 4101 "configure"
 #include "confdefs.h"
 main() { extern char dlopen(); dlopen();; exit(0); }
 int t() { return 0; }
@@ -4150,7 +4153,7 @@ else
 ac_save_LIBS="$LIBS"
 LIBS="";
 cat > conftest.$ac_ext <<EOF
-#line 4153 "configure"
+#line 4156 "configure"
 #include "confdefs.h"
 main() { extern char shl_load(); shl_load();; exit(0); }
 int t() { return 0; }
@@ -4193,7 +4196,7 @@ else
 ac_save_LIBS="$LIBS"
 LIBS="-ldld";
 cat > conftest.$ac_ext <<EOF
-#line 4196 "configure"
+#line 4199 "configure"
 #include "confdefs.h"
 main() { extern char shl_load(); shl_load();; exit(0); }
 int t() { return 0; }
@@ -4248,7 +4251,7 @@ else
 ac_save_LIBS="$LIBS"
 LIBS="";
 cat > conftest.$ac_ext <<EOF
-#line 4251 "configure"
+#line 4254 "configure"
 #include "confdefs.h"
 main() { extern char atan(); atan();; exit(0); }
 int t() { return 0; }
@@ -4291,7 +4294,7 @@ else
 ac_save_LIBS="$LIBS"
 LIBS="-lm";
 cat > conftest.$ac_ext <<EOF
-#line 4294 "configure"
+#line 4297 "configure"
 #include "confdefs.h"
 main() { extern char atan(); atan();; exit(0); }
 int t() { return 0; }
@@ -24850,7 +24853,7 @@ _ACEOF
 ac_save_LIBS="$LIBS"
 LIBS=;
 cat > conftest.$ac_ext <<EOF
-#line 24853 "configure"
+#line 24856 "configure"
 #include "confdefs.h"
 
 #if HAVE_WINDOWS_H
@@ -24891,7 +24894,7 @@ fi
 ac_save_LIBS="$LIBS"
 LIBS=;
 cat > conftest.$ac_ext <<EOF
-#line 24894 "configure"
+#line 24897 "configure"
 #include "confdefs.h"
 
 #if HAVE_WINDOWS_H
