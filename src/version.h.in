@@ -13,7 +13,9 @@
  * Minor releases are of the form "Version YYYYMMDD"
  * Anyone else should use a different format to avoid confusion.    
  *
- * But don't actually modify this file.  Use a script to do the dirty work.
+ * The Makefile will automatically fill in the date for both major and
+ * minor releases.  Only modify this file if you need to override the
+ * automatically generated date.
  */
 #if MAJOR_RELEASE
 #define HUGS_VERSION "MONTH_YEAR"

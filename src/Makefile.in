@@ -72,6 +72,12 @@ hugs@EXE@	: $(IOBJECTS) @WOBJECTS@ @RC_FILES@
 		  $(CC) $(LDFLAGS) $(IOBJECTS) @WOBJECTS@ $(LIBS) -o hugs@EXE@ 
 		  @STRIP@
 
+version.h	: version.h.in $(SOURCES)
+		  @echo "/* version.h - generated from version.h.in by Makefile */" > version.h
+		  @sed -e "s/MONTH_YEAR/`date +"%B %Y"`/" \
+		      -e "s/YYYYMMDD/`date +"%Y%m%d"`/" \
+		      < version.h.in >> version.h
+
 SERVER_OBJECTS	= server@OBJ@ $(OBJECTS) 
 runhugs@OBJ@	: $(PRELUDE) runhugs.c server.h
 runhugs@EXE@	: runhugs@OBJ@ $(SERVER_OBJECTS)
