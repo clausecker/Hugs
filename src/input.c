@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: input.c,v $
- * $Revision: 1.28 $
- * $Date: 2001/09/19 19:14:07 $
+ * $Revision: 1.29 $
+ * $Date: 2001/09/27 00:26:50 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1666,7 +1666,7 @@ loop:	    skip();                     /* Skip qualifying dot             */
     return 0; /*NOTREACHED*/
 }
 
-Bool isQModId(s)
+Bool isModuleId(s)
 String s; {
     Bool hasDot = FALSE;
     if (!isIn(*s,LARGE))
@@ -1674,12 +1674,10 @@ String s; {
     while (isIn(*s,LARGE)) {
         while (isIn(*s,IDAFTER))
             s++;
-        if (*s == '.') {
-            hasDot = TRUE;
+        if (*s == '.')
             s++;
-        }
     }
-    return (*s == '\0') && hasDot;
+    return (*s == '\0');
 }
 
 static Int local repeatLast() {         /* Obtain last expression entered  */

@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: storage.c,v $
- * $Revision: 1.18 $
- * $Date: 2001/09/13 00:53:02 $
+ * $Revision: 1.19 $
+ * $Date: 2001/09/27 00:26:51 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1394,7 +1394,7 @@ String fileOfModule(m)
 Module m; {
     Script s;
     if (m == modulePrelude) {
-	return STD_PRELUDE;
+	return findMPathname(NULL,STD_PRELUDE,hugsPath);
     }
     for(s=0; s<scriptHw; ++s) {
 	if (scripts[s].moduleHw == m) {

@@ -9,8 +9,8 @@
  * included in the distribution.
  *
  * $RCSfile: prelude.h,v $
- * $Revision: 1.26 $
- * $Date: 2001/09/20 19:55:43 $
+ * $Revision: 1.27 $
+ * $Date: 2001/09/27 00:26:50 $
  * ------------------------------------------------------------------------*/
 
 #include "config.h"
@@ -693,7 +693,7 @@ typedef void*    Pointer;
 #if     RISCOS
 #define STD_PRELUDE	   "prelude"
 #else
-#define STD_PRELUDE	   "Prelude.hs"
+#define STD_PRELUDE	   "Prelude"
 #endif
 #endif
 

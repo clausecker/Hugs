@@ -12,8 +12,8 @@
  * included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.28 $
- * $Date: 2001/09/26 18:22:17 $
+ * $Revision: 1.29 $
+ * $Date: 2001/09/27 00:26:50 $
  * ------------------------------------------------------------------------*/
 
 #ifdef HAVE_SIGNAL_H
@@ -255,7 +255,6 @@ static String local normPath      Args((String));
 static Void   local searchChr     Args((Int));
 static Void   local searchStr     Args((String));
 static Bool   local tryEndings    Args((String));
-static Bool   local find0	  Args((String, String, String));
 static Bool   local find1	  Args((String, String, String));
 static Bool   local find2	  Args((String, String, String));
 
@@ -408,9 +407,9 @@ String s; {                     /* a pathname in some appropriate manner.  */
 }
 
 #if HSCRIPT
-static String endings[] = { "", ".hs", ".lhs", ".hsx", ".hash", 0 };
+static String endings[] = { ".hs", ".lhs", ".hsx", ".hash", 0 };
 #else
-static String endings[] = { "", ".hs", ".lhs", 0 };
+static String endings[] = { ".hs", ".lhs", 0 };
 #endif
 static char   searchBuf[FILENAME_MAX+1];
 static Int    searchPos;
@@ -434,33 +433,9 @@ String s; {
 
 static Bool local tryEndings(s) /* Try each of the listed endings          */
 String s; {
-    String suf = 0;
     Int i;
 
-#if defined(HAVE_STRRCHR)
-    suf = rindex(s,'.');
-#elif defined(HAVE_RINDEX)
-    suf = rindex(s,'.');
-#else
-    Int j;
-    
-    for (j=strlen(s)-1; j > 0; j--) {
-      if (s[j] == '.') {
-	suf = &s[j];
-	break;
-      }
-    }
-#endif
-    
     searchStr(s);
-
-    if (suf) {
-        for (i=0; endings[i]; i++)
-            if (strcmp(suf,endings[i])==0) {
-                return readable(searchBuf);
-            }
-    }
-    
     for (i=0; endings[i]; ++i) {
 	Int save = searchPos;
 	searchStr(endings[i]);
@@ -628,89 +603,96 @@ String s;
 #endif /* SEARCH_DIR */
 
 
-String findPathname(along,nm)   /* Look for a file along specified path    */
-String along;                   /* Return NULL if file does not exist      */ 
+String findPathname(along,nm)   /* Look for a file or module along suggested path      */
+String along;                   /* Return **last attempted name** if no file was found */
 String nm; {
     /* AC, 1/21/99: modified to search hugsPath first, then projectPath */
-    String s = findMPathname(along,nm,hugsPath);
+    Bool r = find1(along,nm,hugsPath);
 #if USE_REGISTRY
-    if (!s) {
-	s = findMPathname(along,nm,projectPath);
+    if (!r) {
+	r = find1(along,nm,projectPath);
     }
 #endif /* USE_REGISTRY */
-    return s ? s : normPath(searchBuf);
+    return normPath(searchBuf);
 }
 
 /*
-    find along nm hugspath = [ d++f++e | f <- files, d <- dirs, e <- exts ]
+    find along nm hugspath
+      | isFilePath nm = [nm]
+      | isModuleId nm = [ d++f++e | f <- files, d <- dirs, e <- exts ]
+      | otherwise     = []
       where 
-        (pref,name) = rspan (/=slash) nm
-        dirs        = if null pref then along : hugspath ++ [""] else [pref]
-        files       = if isQModId name then [mod2dir name, name] else [name]
-        exts        = ["",".hs",".lhs"]
+        dirs          = along : "" : hugspath
+        files         = [mod2dir nm, nm]
+        exts          = [".hs",".lhs"]
 
-        rspan p s   = let (a,b) = span p (reverse s) in (reverse b, reverse a)
-        mod2dir s   = map (\c -> if c=='.' then slash else c) s
+        isFilePath s  = rindex '.' s `elem` exts
+        isModuleId s  = all isConid (splitAt '.' s)
+        mod2dir s     = map (\c -> if c=='.' then slash else c) s
 
 */
 
-String findMPathname(along,nm,path)	
-String along;			        
+String findMPathname(along,nm,path) /* Look for a file or module along suggested path */
+String along;                       /* Return NULL if no file was found */
 String nm;			        
 String path; {
-    if (find0(along,nm,path))
+    if (find1(along,nm,path)) {
         return normPath(searchBuf);
-    else
+    } else {
         return NULL;
+    }
 }
 
-static Bool find0(along,nm,path)
-String along;			        
-String nm;			        
-String path; {
-    String name = 0; 
+static Bool isFilePath(nm)
+String nm; {
+    String suffix = 0; 
 
 #if defined(HAVE_STRRCHR)
-    name = rindex(nm,SLASH);
+    suffix = rindex(nm,'.');
 #elif defined(HAVE_RINDEX)
-    name = rindex(nm,SLASH);
+    suffix = rindex(nm,'.');
 #else
     Int j;
     
     for (j=strlen(nm)-1; j > 0; j--) {
-      if (nm[j] == SLASH) {
-	name = &nm[j];
+      if (nm[j] == '.') {
+	suffix = &nm[j];
 	break;
       }
     }
 #endif
 
-    if (name) {		   /* Was an explicit pathname given as part of the name? */
-        *name++ = '\0';
-        if (find1(NULL,name,nm)) {
-            *--name = SLASH;
-            return TRUE;
-        }
-    } else 
-        return find1(along,nm,path) || find1(NULL,nm,NULL);
+    if (suffix) {
+        Int i = 0;
+        for (i=0; endings[i]; ++i)
+            if (strcmp(suffix,endings[i])==0)
+                return TRUE;
+    }
+    return FALSE;
 }
         
-static Bool find1(along,name,path)
+static Bool find1(along,nm,path)
 String along;
-String name;
+String nm;
 String path; {
-    if (isQModId(name)) { 	   /* Is name a hierarchical module ident? */
+    searchReset(0);
+    if (isFilePath(nm)) {		/* Is nm an explicit file path? */
+        searchStr(nm);
+        return readable(searchBuf);
+    } else if (isModuleId(nm)) { 	/* Is nm a module ident? */
         String s;
         Bool r;
-        for (s=name; *s; s++)	   /* Convert to directory prefix */
+        for (s=nm; *s; s++)	   	/* Convert nm to directory prefix */
             if (*s == '.') *s = SLASH;
-        r = find2(along,name,path);
-        for (s=name; *s; s++)
+        r = find2(along,nm,path);
+        for (s=nm; *s; s++)	   	/* Convert back */
             if (*s == SLASH) *s = '.';
         if (r)
             return TRUE;
-    } 		   
-    return find2(along,name,path); /* Always search for name as-is */
+        return find2(along,nm,path); 	/* Also try nm as-is */
+    }
+    searchStr(nm);     /* <- this is weird, but our clients seem to demand a result... */
+    return FALSE;			/* Not a file nor a module name */
 }
 
 static Bool find2(along,name,path)
@@ -719,8 +701,8 @@ String name;
 String path; {
     String pathpt = path;
 
-    searchReset(0);
-    if (along) {                   /* Was a path for an existing file given?  */
+    searchReset(0);		/* First search directory of importing module */
+    if (along) {
 	Int last = (-1);
 	Int i    = 0;
 	for (; along[i]; i++) {
@@ -733,7 +715,12 @@ String path; {
             return TRUE;
     }
 
-    if (pathpt && *pathpt) {       /* Otherwise, we look along the HUGSPATH   */
+    searchReset(0);		/* Next step: search current directory */
+    if (tryEndings(name))
+        return TRUE;
+
+    searchReset(0);		/* Otherwise, we look along the HUGSPATH */
+    if (pathpt && *pathpt) {
 	Bool more = TRUE;
 	do {
 	    Bool recurse = FALSE;   /* DL: shall we recurse ? */
@@ -784,12 +771,8 @@ String path; {
 	    }
 #endif
 	} while (more);
-    } else {
-        /* As a last resort, look for file in the current dir.             */
-        searchReset(0);  
-        return tryEndings(name);  
-    }
-    
+    } 
+    return FALSE;    
 }
 
 /* --------------------------------------------------------------------------
