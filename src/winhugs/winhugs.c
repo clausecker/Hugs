@@ -631,9 +631,11 @@ static VOID local DoMove(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 /* Load and execute Options dialog box */
 static VOID local DoOptions(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
-  ExecDialog (hThisInstance, OPTIONSDLGBOX, OptionsDlgProc);
+  BOOL hitOK = ExecDialog (hThisInstance, OPTIONSDLGBOX, OptionsDlgProc);
   AbortInterpreter;
-  SetInterpreterCommand(":s\n");
+  if (hitOK) {
+     SetInterpreterCommand(":s\n");
+  }
   GotoInterpreter;
 }
 
@@ -1214,7 +1216,7 @@ LRESULT CALLBACK OptionsDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
       switch (wParam) {
 
 	case IDCANCEL:
-	  EndDialog(hDlg, TRUE);
+	  EndDialog(hDlg, FALSE);
 	  return FALSE;
 
 	case IDOK: {
@@ -1238,8 +1240,10 @@ LRESULT CALLBACK OptionsDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 
 #if SUPPORT_PREPROCESSOR
 	  GetDlgItemText(hDlg, ID_PREPROCESSOR, (LPSTR) Buffer, 1024);
-	  if (preprocessor) free(preprocessor);
-	  preprocessor = strCopy(Buffer);
+	  if ( (Buffer && strlen(Buffer) > 0) ) {
+	      if (preprocessor) free(preprocessor);
+	      preprocessor = strCopy(Buffer);
+	  }
 #endif
 
 	  GetDlgItemText(hDlg, ID_CUTOFF, (LPSTR) Buffer, 1024);
@@ -1265,16 +1269,10 @@ LRESULT CALLBACK OptionsDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 	    j++;
 	  }
       }
+      writeRegString("Options", optionsToStr());
 
-/*
-	  for(i=0; toggle[i].c; i++)
-	    if (toggle[i].h98 || !haskell98)
-	      *toggle[i].flag = (Bool) IsDlgButtonChecked(hDlg, ID_OP+i);
-*/
-	  writeRegString("Options", optionsToStr());
-
-	  EndDialog(hDlg, TRUE);
-	  return TRUE;
+      EndDialog(hDlg, TRUE);
+      return TRUE;
 	}
 
 	default:
@@ -1460,7 +1458,7 @@ LRESULT CALLBACK ScriptManDlgProc(HWND hDlg, UINT msg,
 		    for (i=0; i<smUpto; i++)
 			if (smFile[i])
 			    free(smFile[i]);
-		    EndDialog(hDlg, TRUE);
+		    EndDialog(hDlg, FALSE);
 		    return TRUE;
 		}
 	    }
@@ -1718,8 +1716,6 @@ VOID SaveGUIOptions(VOID)
     String opt = readRegString(HKEY_CURRENT_USER,hugsRegRoot,RKEY_DOCPATH, DEFAULT_DOC_DIR);
     writeRegString(RKEY_DOCPATH, opt);
     free(opt);
-
-    writeRegString("Options", optionsToStr());
 
     /* calculate rows and columns */
     if (!IsIconic(hWndMain) && !IsZoomed(hWndMain)) {
