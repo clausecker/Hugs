@@ -11,8 +11,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.48 $
- * $Date: 2002/05/20 09:22:41 $
+ * $Revision: 1.49 $
+ * $Date: 2002/06/05 14:52:27 $
  * ------------------------------------------------------------------------*/
 #include <math.h>
 
@@ -124,7 +124,7 @@ int allow_break_count = 0;
 
 static Bool   local createKey      Args((HKEY, String, PHKEY, REGSAM));
 static Bool   local queryValue     Args((HKEY, String, String, LPDWORD, LPBYTE, DWORD));
-static Bool   local queryString      Args((HKEY,String,String,String*));
+static Bool   local queryString    Args((HKEY,String,String,String*));
 static Bool   local setValue       Args((HKEY, String, String, DWORD, LPBYTE, DWORD));
 static String local readRegString  Args((HKEY, String, String, String));
 static Bool   local writeRegString Args((String,String));
@@ -2093,14 +2093,9 @@ String def; {
 static Bool local writeRegString(var,val)      /* write String to registry */
 String var;                        
 String val; {
-    String realVal;
+    String realVal = ( (NULL == val) ? "" : val);
 
-    if (NULL == val) {
-	realVal = "";
-    } else {
-        realVal = val;
-    }
-    return setValue(HKEY_CURRENT_USER, HugsRoot, var, 
+    return setValue(HKEY_CURRENT_USER, HugsRoot, var,
 		    REG_SZ, (LPBYTE)realVal, lstrlen(realVal)+1);
 }
 
@@ -2230,6 +2225,28 @@ String  def;
 #endif /* USE_REGISTRY */
 
 /* --------------------------------------------------------------------------
+ * Platform initialisation 
+ * ------------------------------------------------------------------------*/
+extern Bool initSystem  Args((Void));
+Bool local
+initSystem()
+{
+  /* Called right away by main()  */
+#if __MWERKS__ && macintosh
+    strcpy(macHugsDir,currentDir());
+    SIOUXSettings.autocloseonquit   = true;
+    SIOUXSettings.asktosaveonclose  = false;
+    SIOUXSettings.columns           = 80;
+    SIOUXSettings.rows              = 40; 
+    SIOUXSettings.tabspaces         = 8;
+    SIOUXSettings.enabledraganddrop = true;
+    SIOUXSetTitle("\pHugs 98");
+    
+#endif
+    return TRUE;
+}
+
+/* --------------------------------------------------------------------------
  * Machine dependent control:
  * ------------------------------------------------------------------------*/
 
@@ -2258,27 +2275,5 @@ Int what; {                             /* initialisation etc..            */
 		       break;
     }
 }
-
-/* --------------------------------------------------------------------------
- * Platform initialisation 
- * ------------------------------------------------------------------------*/
-Bool initSystem()
-{
-  /* Called right away by main()  */
-#if __MWERKS__ && macintosh
-    strcpy(macHugsDir,currentDir());
-    SIOUXSettings.autocloseonquit   = true;
-    SIOUXSettings.asktosaveonclose  = false;
-    SIOUXSettings.columns           = 80;
-    SIOUXSettings.rows              = 40; 
-    SIOUXSettings.tabspaces         = 8;
-    SIOUXSettings.enabledraganddrop = true;
-    SIOUXSetTitle("\pHugs 98");
-    
-#endif
-    return TRUE;
-}
-
-
 
 /*-------------------------------------------------------------------------*/
