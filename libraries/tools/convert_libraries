@@ -157,7 +157,7 @@ build_package() {
 	if $HugsSetup build --verbose; then
 		for name in LICEN[CS]E* COPYING* COPYRIGHT* copyright; do
 			if test -f $name; then
-				cp $name $top_dir/$target_dir/$package
+				cp $name $top_dir/$target_dir
 			fi
 		done
 	else	echo "Skipping $package package"
