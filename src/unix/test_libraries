@@ -38,17 +38,17 @@ test_module() {
 	$hugs -98 +. $module </dev/null >$tmpfile-
 	if grep "^ERROR - Can't find module \"$module\"" $tmpfile- >/dev/null
 	then	echo "missing  $module"
-	elif grep ^ERROR $tmpfile- >/dev/null
+	elif grep '^ERROR' $tmpfile- >/dev/null
 	then
-		module2="`grep '^ERROR ' $tmpfile- | sed -e 's:.*"[^"]*/[a-z][^"/]*/\([^".]*\)\.[a-z]*".*:\1:' -e 's:/:.:g'`"
+		module2=`grep '^ERROR ' $tmpfile- | sed -e 's:.*"[^"]*/[a-z][^"/]*/\([^".]*\)\.[a-z]*".*:\1:' -e 's:/:.:g'`
 		if [ "$module" != "$module2" ]
 		then	reason="imports $module2"
 		else	reason="`sed -n '/^ERROR / s/.* - //p' $tmpfile-`"
 		fi
 		echo "*ERROR*  $module ($reason)"
-	elif grep ^ERROR $tmpfile+ >/dev/null
+	elif grep '^ERROR' $tmpfile+ >/dev/null
 	then
-		module2="`grep '^ERROR ' $tmpfile+ | sed -e 's:.*"[^"]*/[a-z][^"/]*/\([^".]*\)\.[a-z]*".*:\1:' -e 's:/:.:g'`"
+		module2=`grep '^ERROR ' $tmpfile+ | sed -e 's:.*"[^"]*/[a-z][^"/]*/\([^".]*\)\.[a-z]*".*:\1:' -e 's:/:.:g'`
 		if [ "$module" != "$module2" ]
 		then	reason="imports $module2"
 		else
