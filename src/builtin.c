@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: builtin.c,v $
- * $Revision: 1.34 $
- * $Date: 2002/10/22 00:06:22 $
+ * $Revision: 1.35 $
+ * $Date: 2002/10/24 22:26:21 $
  * ------------------------------------------------------------------------*/
 
 /* We include math.h before prelude.h because SunOS 4's cpp incorrectly
@@ -2283,14 +2283,14 @@ static void* mkThunk(void (*app)(void), HugsStablePtr s) {
     pc = &thunk->code[0];
 #if defined(__i386__) || defined(_X86_)
     /* 3 bytes: pushl (%esp) */
-    *pc++ = 0xff; *pc++ = 0x34; *pc++ = 0x24;  
+    *pc++ = (char)0xff; *pc++ = 0x34; *pc++ = 0x24;  
 
     /* 8 bytes: movl s,4(%esp) */
-    *pc++ = 0xc7; *pc++ = 0x44; *pc++ = 0x24; *pc++ = 0x04; 
+    *pc++ = (char)0xc7; *pc++ = 0x44; *pc++ = 0x24; *pc++ = 0x04; 
     *((HugsStablePtr*)pc)++ = s;
 
     /* 5 bytes: jmp app */
-    *pc++ = 0xe9;
+    *pc++ = (char)0xe9;
     *((int*)pc)++ = (char*)app - ((char*)&(thunk->code[16]));
 #elif defined(__ppc__) && defined(__GNUC__)
      /* This is only for MacOS X.
