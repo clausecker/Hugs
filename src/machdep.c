@@ -11,8 +11,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.42 $
- * $Date: 2002/04/11 23:20:18 $
+ * $Revision: 1.43 $
+ * $Date: 2002/05/09 15:00:59 $
  * ------------------------------------------------------------------------*/
 #include <math.h>
 
@@ -647,9 +647,16 @@ String nm; {
       | isModuleId nm = [ d++f++e | f <- files, d <- dirs, e <- exts ]
       | otherwise     = [ nm ++ e | e <- "" : exts ]
       where 
-        dirs          = along : "" : hugspath
+        dirs          = addAlong ("" : hugspath)
         files         = [mod2dir nm, nm]
         exts          = [".hs",".lhs"]
+	
+         -- you can optionally turn on/off the feature of adding the
+         -- 'along' directory (i.e., the directory of the importing module,
+         -- most likely) to the search path. [use the 'X' toggle.]
+	addAlong 
+	 | wantImplicitRoot = (along:)
+	 | otherwise        = id
 
         isModuleId s  = all isConid (splitAt '.' s)
         mod2dir s     = map (\c -> if c=='.' then slash else c) s
@@ -700,7 +707,7 @@ String path; {
     String pathpt = path;
 
     searchReset(0);		/* First search directory of importing module */
-    if (along) {
+    if (optImplicitImportRoot && along) {
 	Int last = (-1);
 	Int i    = 0;
 	for (; along[i]; i++) {

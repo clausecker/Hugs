@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.76 $
- * $Date: 2002/04/16 16:02:56 $
+ * $Revision: 1.77 $
+ * $Date: 2002/05/09 15:00:59 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -170,6 +170,11 @@ static Bool disableOutput = FALSE;      /* redirect output to buffer?      */
 #if IPARAM
 Bool oldIParamSyntax = TRUE;
 #endif
+
+Bool optImplicitImportRoot = TRUE;      
+   /* TRUE => directory of importing module added to search path
+    *         while resolving imports from that module.
+    */
 
 /* --------------------------------------------------------------------------
  * Printing the banner
@@ -1052,6 +1057,11 @@ struct options toggle[] = {             /* List of command line toggles    */
 # endif
 	     "Enable 'with' and 'dlet' implicit param binding forms", &oldIParamSyntax},
 #endif
+
+    {'X',
+     1,
+     "Implicitly add path of importing module to search path", &optImplicitImportRoot},
+
     {0,   
 #if !HASKELL_98_ONLY
           0,

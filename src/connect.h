@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: connect.h,v $
- * $Revision: 1.31 $
- * $Date: 2002/04/16 16:02:55 $
+ * $Revision: 1.32 $
+ * $Date: 2002/05/09 15:00:57 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -211,6 +211,7 @@ extern Bool  hereDocs;                  /* TRUE => enable `here documents' */
 #if IPARAM
 extern Bool  oldIParamSyntax;           /* TRUE => support 'dlet' and 'with' binding forms */
 #endif
+extern Bool  optImplicitImportRoot;     /* see comment next to declaration in hugs.c */
 
 extern Int   cutoff;			/* Constraint Cutoff depth	   */
 
