@@ -55,7 +55,8 @@ INCLUDE		= $(BUILD_DIR)/include/HsFFI.h
 .SUFFIXES	: .c .h @OBJ@
 HFILES		= HsFFI.h builtin.h command.h config.h connect.h errors.h \
 		  evaluator.h goal.h machdep.h module.h observe.h options.h \
-		  opts.h prelude.h script.h server.h storage.h strutil.h subst.h
+		  opts.h output.h prelude.h script.h server.h storage.h \
+		  strutil.h subst.h
 CFILES		= hugs.c runhugs.c server.c \
 		  builtin.c compiler.c errors.c evaluator.c ffi.c goal.c input.c \
 		  machdep.c machine.c module.c observe.c opts.c output.c \
@@ -90,7 +91,7 @@ version@OBJ@	: version.c $(SOURCES)
 		      -c $(CFLAGS) $(OPTFLAGS) $<
 
 SERVER_OBJECTS	= server@OBJ@ $(OBJECTS) 
-runhugs@OBJ@	: $(PRELUDE) runhugs.c server.h
+runhugs@OBJ@	: $(PRELUDE) runhugs.c builtin.h observe.h server.h
 runhugs@EXE@	: runhugs@OBJ@ $(SERVER_OBJECTS)
 		  $(CC) $(LDFLAGS) runhugs@OBJ@ $(SERVER_OBJECTS) $(LIBS) -o runhugs@EXE@
 
