@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.40 $
- * $Date: 2001/09/12 18:06:25 $
+ * $Revision: 1.41 $
+ * $Date: 2001/09/12 22:19:06 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1010,7 +1010,8 @@ Cell  cd; {				/* definitions (w or w/o deriving) */
 	    List us;
 	    lps     = fst(snd(con));
 	    for (us = typeVarsIn(lps,NIL,NIL,NIL); nonNull(us); us=tl(us))
-		if (!varIsMember(textOf(hd(us)),evs)) {
+		if (!varIsMember(textOf(hd(us)),tyvars) &&
+		    !varIsMember(textOf(hd(us)),evs)) {
 		    ERRMSG(line)
 			"Variable \"%s\" in constraint is not locally bound",
 			textToStr(textOf(hd(us)))
