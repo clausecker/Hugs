@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.48 $
- * $Date: 2001/10/27 15:12:25 $
+ * $Revision: 1.49 $
+ * $Date: 2001/11/05 18:26:14 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -254,6 +254,21 @@ String argv[]; {
     FILE *f;
     FileName hugsPrefsFile = "\0";
 #endif
+    Bool backupPlan = FALSE;
+
+    /* To avoid running into the situation where
+     * the user supplies a module search path where
+     * the Prelude cannot be located, a fallback
+     * of searching along a default path is provided.
+     *
+     * Currently this is only done for Win32 builds that
+     * use the Registry to store options, since editing an
+     * ill-formed search path stored in the Registry is particularly
+     * cumbersome.
+     */
+#if (HUGS_FOR_WINDOWS || HAVE_WINDOWS_H) && USE_REGISTRY
+#define TRY_DEFAULT_PATH
+#endif
 
 #if USE_REGISTRY
     String regString;
@@ -345,12 +360,35 @@ String argv[]; {
 #endif
 	}
     }
-    scriptName[0] = strCopy(findMPathname(NULL,STD_PRELUDE,hugsPath));
-    if (!scriptName[0]) {
+
+    do {
+      scriptName[0] = strCopy(findMPathname(NULL,STD_PRELUDE,hugsPath));
+      if (!scriptName[0] && !backupPlan) {
 	Printf("Prelude not found on current path: \"%s\"\n",
 	       hugsPath ? hugsPath : "");
+#ifdef TRY_DEFAULT_PATH
+	Printf("Reverting back to the default path: \"%s\"\n", HUGSPATH);
+	hugsPath = strCopy(HUGSPATH);
+	backupPlan = TRUE;
+      } else if (!scriptName[0]) {
+#endif
 	fatal("Unable to load prelude");
-    }
+	break;
+      } else {
+#ifdef TRY_DEFAULT_PATH
+        if (backupPlan) {
+	  Printf("(Found it; to use the default path in future Hugs sessions,\n");
+	  Printf("type ':regsave' at the prompt now).\n\n");
+	}
+#endif
+        break;
+      }
+    } while (backupPlan);
+
+#ifdef TRY_DEFAULT_PATH
+#undef TRY_DEFAULT_PATH
+#endif
+    
     scriptReal[0] = strCopy(RealPath(scriptName[0]));
 
 #if !HASKELL_98_ONLY
@@ -815,6 +853,9 @@ static struct cmd cmds[] = {
  {":version", PNTVER},
 #ifdef __SYMBIAN32__
  {":Pwd",PRNDIR},
+#endif
+#if (HUGS_FOR_WINDOWS || HAVE_WINDOWS_H) && USE_REGISTRY
+ {":regsave", REGSAVE},
 #endif
  {"",      EVAL},
  {0,0}
@@ -2239,6 +2280,11 @@ String argv[]; {
 #ifdef __SYMBIAN32__
         case PRNDIR : printDir();
               break;
+#endif
+
+#if (HUGS_FOR_WINDOWS || HAVE_WINDOWS_H) && USE_REGISTRY
+	case REGSAVE: writeRegString("Options", optionsToStr());
+	              break;
 #endif
 	}
 #ifdef WANT_TIMER
