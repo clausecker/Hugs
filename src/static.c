@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.125 $
- * $Date: 2002/11/08 16:05:51 $
+ * $Revision: 1.126 $
+ * $Date: 2002/11/08 16:23:58 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1275,7 +1275,7 @@ Cell e; {
 		   txtNm = qtextOf(hd(ents));
 		   qid = mkQId(alias,snd(snd(hd(ents))));
 	       } else {
-		   /* (tycon/class, enties) */
+		   /* ({tycon|class}, [entity]) */
 		   if (isTycon(fst(hd(ents)))) {
 		       txtNm = tycon(fst(hd(ents))).text;
 		       qid = mkQId(alias,mkCon(txtNm));
@@ -1289,9 +1289,11 @@ Cell e; {
 	       /* Decide whether an entity E is to be exported;
 	        * it needs to satisfy the following conditions:
 		*
-		*  - it needs to be visible in unqualified form 
+		*  - it needs to be visible in unqualified form,
+		*    _unambiguously_.
 		*  - it is also available as A.E (where A is the
-		*    alias used in the module re-exportation.)
+		*    alias used in the module re-exportation element
+		*    in the export list.)
 		*  - the two names refer to the same (declared) name.
 		*/
 	       if ( ( (ent = findName(txtNm))            && 
@@ -1306,24 +1308,26 @@ Cell e; {
 		      !isNull((cc = findQualClass(qid))) &&
 		      (nonNull((clashes = cclass(ent).clashes)) ||
 		       cclass(ent).mod == cclass(cc).mod))   ) {
-		   if (nonNull(clashes)) {
-		     Module m1 = modOfEntity(ent);
-		     ERRMSG(0) "Ambiguous export of entity \"%s\"",
-		               textToStr(txtNm) ETHEN
-                     ERRTEXT "\n*** Could refer to: %s.%s ",
-		             textToStr(module(m1).text),
-			     textToStr(txtNm) ETHEN
-		     for(;nonNull(clashes);clashes=tl(clashes)) {
-		       m1 = modOfEntity(hd(clashes));
 
-		       if (m1) {
-		          ERRTEXT "%s.%s ", 
-			          textToStr(module(m1).text),
-				  textToStr(txtNm)
-			  ETHEN
-			}
-		     }
-	             ERRTEXT "\n" EEND;
+		   if (nonNull(clashes)) {
+		       /* Unqualified name is ambiguous, report this. */
+		       Module m1 = modOfEntity(ent);
+		       ERRMSG(0) "Ambiguous export of entity \"%s\"",
+		                 textToStr(txtNm) ETHEN
+                       ERRTEXT "\n*** Could refer to: %s.%s ",
+		               textToStr(module(m1).text),
+			       textToStr(txtNm) ETHEN
+		       for(;nonNull(clashes);clashes=tl(clashes)) {
+			   m1 = modOfEntity(hd(clashes));
+
+			   if (m1) {
+			       ERRTEXT "%s.%s ", 
+				       textToStr(module(m1).text),
+				       textToStr(txtNm)
+			       ETHEN
+			   }
+		       }
+	               ERRTEXT "\n" EEND;
 		   }
 		   checkExportDistinct(exports,hd(ents));
 		   exports=cons(hd(ents),exports);
@@ -1334,7 +1338,7 @@ Cell e; {
     return exports;
 }
 
-static List local checkExport(exports,mt,e) /* Process entry in export list*/
+static List local checkExport(exports,mt,e) /* Process entry in export list */
 List exports;
 Text mt; 
 Cell e; {
@@ -1414,7 +1418,7 @@ Cell e; {
 			 * only the constructors in scope are exported. 
 			 */
 			Cell xs;
-			List exps = NIL;
+			List dcons = NIL;
 			for (xs = module(thisModule).modImports;nonNull(xs);xs=tl(xs)) {
 			    if (isPair(hd(xs)) && fst(hd(xs)) == tycon(nm).mod ) {
 				/* Found the effective import list for tycon's module */
@@ -1424,18 +1428,14 @@ Cell e; {
 				    if ( isPair(hd(ns)) && 
 					 isTycon(fst(hd(ns))) &&
 					 fst(hd(ns)) == nm ) {
-				      List ms;
-				      /* Add the constructors onto the 'exports' list */
-				      for (ms=snd(hd(ns));nonNull(ms);ms=tl(ms)) {
-					  exps=cons(hd(ms),exps);
-				      }
+				      dcons=snd(hd(ns));
 				      break;
 				    }
 				}
 				break;
 			    }
 			}
-			exports=addEntity(nm,exps,exports);
+			exports=addEntity(nm,dcons,exports);
 			return exports;
 		    }
 		} else {
@@ -1460,7 +1460,7 @@ Cell e; {
 		     * only the metods in scope are exported. 
 		     */
 		    Cell xs;
-		    Cell exps = NIL;
+		    List meths = NIL;
 		    for (xs = module(thisModule).modImports;nonNull(xs);xs=tl(xs)) {
 			if (isPair(hd(xs)) && fst(hd(xs)) == cclass(nm).mod ) {
 			   /* Found the effective import list for the class' module */
@@ -1470,11 +1470,7 @@ Cell e; {
 				if ( isPair(hd(ns)) && 
 				     isClass(fst(hd(ns))) &&
 				     fst(hd(ns)) == nm) {
-				    List ms;
-				    /* Add the constructors onto the 'exports' list */
-				    for (ms=snd(hd(ns));nonNull(ms);ms=tl(ms)) {
-					exps=cons(hd(ms),exps);
-				    }
+				    meths=snd(hd(ns));
 				    break;
 				}
 			    }
@@ -1483,7 +1479,7 @@ Cell e; {
 		    }
 		    /* Enter the (class,members) pair _and_ the individual 
 		       member names on to the exports list */
-		    exports=addEntity(nm,exps,exports);
+		    exports=addEntity(nm,meths,exports);
 		    return exports;
 		}
 	    } else {
