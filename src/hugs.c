@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.31 $
- * $Date: 2001/01/31 06:39:30 $
+ * $Revision: 1.32 $
+ * $Date: 2001/02/10 01:07:53 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -22,6 +22,10 @@
 #include <ctype.h>
 
 #include <stdio.h>
+
+#if HAVE_WINDOWS_H
+#include <windows.h>
+#endif
 
 #if HUGS_FOR_WINDOWS
 #include "winhugs\WinHugs.h"
@@ -257,8 +261,30 @@ String argv[]; {
     numScripts    = 0;
     namesUpto     = 1;
 
-#if HUGS_FOR_WINDOWS
-    hugsEdit      = strCopy(fromEnv("EDITOR","c:\\windows\\notepad.exe"));
+#if HUGS_FOR_WINDOWS || HAVE_WINDOWS_H
+#define DEFAULT_EDITOR "\\notepad.exe"
+    /*
+     * Check first to see if the user has explicitly defined
+     * an editor via the environment variable EDITOR..
+     */
+    hugsEdit      = strCopy(fromEnv("EDITOR",NULL));
+    if (hugsEdit == NULL) {
+      UINT rc;
+      int notePadLen = strlen(DEFAULT_EDITOR);
+      char* notePadLoc;
+      /*
+       * Nope, the default editor is used instead. In our case
+       * this is 'notepad', which we assume is always residing
+       * in the windows directory, so locate it first..
+       */
+      
+      notePadLoc = _alloca(sizeof(char)*(MAX_PATH + notePadLen + 1));
+      rc = GetWindowsDirectory(notePadLoc, MAX_PATH);
+      if ( !(rc == 0 || rc > MAX_PATH) ) {
+	strcat(notePadLoc, DEFAULT_EDITOR);
+	hugsEdit = strCopy(notePadLoc);
+      }
+    }
 #elif SYMANTEC_C
     hugsEdit      = "";
 #else
