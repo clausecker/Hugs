@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: connect.h,v $
- * $Revision: 1.43 $
- * $Date: 2002/08/10 11:23:48 $
+ * $Revision: 1.44 $
+ * $Date: 2002/08/28 18:01:17 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -162,6 +162,7 @@ extern Type  typeForeignP;
 extern Type  typeForeign;
 extern Type  typeStable;
 extern Type  typeBool;
+extern Type  typeString;
 
 #define fn(from,to)  ap(ap(typeArrow,from),to)	/* make type: from -> to   */
 

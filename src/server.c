@@ -10,8 +10,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: server.c,v $
- * $Revision: 1.17 $
- * $Date: 2002/07/05 12:55:48 $
+ * $Revision: 1.18 $
+ * $Date: 2002/08/28 18:01:17 $
  * ------------------------------------------------------------------------*/
 
 #define HUGS_SERVER
@@ -269,37 +269,21 @@ HugsServerAPI* hserv; {
  * ------------------------------------------------------------------------*/
 
 #ifndef NO_DYNAMIC_TYPES
-static Name  nameIntToDyn;
-static Name  nameFromDynInt;
-static Name  nameAddrToDyn;
-static Name  nameFromDynAddr;
-static Name  nameStringToDyn;
-static Name  nameFromDynString;
 static Name  nameRunDyn;
 static Name  nameDynApp;
 static Name  nameToDynamic;
+static Name  nameFromDynamic;
 static Class classTypeable;
 
 static Bool linkDynamic()
 {
-    nameIntToDyn      = findName(findText("intToDyn"));
-    nameFromDynInt    = findName(findText("fromDynInt"));
-    nameAddrToDyn     = findName(findText("addrToDyn"));
-    nameFromDynAddr   = findName(findText("fromDynAddr"));
-    nameStringToDyn   = findName(findText("strToDyn"));
-    nameFromDynString = findName(findText("fromDynStr"));
     nameRunDyn        = findName(findText("runDyn"));
     nameDynApp        = findName(findText("dynApp"));
     nameToDynamic     = findName(findText("toDynamic"));
+    nameFromDynamic   = findName(findText("fromDyn"));
     classTypeable     = findClass(findText("Typeable"));
 
-    return (   nonNull(nameIntToDyn      )
-	    && nonNull(nameFromDynInt    )
-	    && nonNull(nameAddrToDyn     )
-	    && nonNull(nameFromDynAddr   )
-	    && nonNull(nameStringToDyn   )
-	    && nonNull(nameFromDynString )
-	    && nonNull(nameRunDyn        )
+    return (   nonNull(nameRunDyn        )
 	    && nonNull(nameDynApp        )
 	    && nonNull(nameToDynamic     )
 	    && nonNull(classTypeable     ));
@@ -483,7 +467,8 @@ static Void MkInt(i)              /* Push an Int onto the stack      */
 Int i;
 {
 #ifndef NO_DYNAMIC_TYPES
-    protect(push(ap(nameIntToDyn,mkInt(i))));
+    Cell d = getDictFor(classTypeable,typeInt);
+    protect(push(ap(ap(nameToDynamic,d),mkInt(i))));
 #else
     protect(push(mkInt(i)));
 #endif
@@ -493,7 +478,8 @@ static Void MkAddr(a)              /* Push an Addr onto the stack      */
 void* a;
 {
 #ifndef NO_DYNAMIC_TYPES
-    protect(push(ap(nameAddrToDyn,mkPtr(a))));
+    Cell d = getDictFor(classTypeable, typeAddr);
+    protect(push(ap(ap(nameToDynamic,d),mkPtr(a))));
 #else
     protect(push(mkPtr(a)));
 #endif
@@ -502,6 +488,7 @@ void* a;
 static Void MkString(s)           /* Push a String onto the stack    */
 String s;
 {
+    Cell d;
     BEGIN_PROTECT
 	Cell   r = NIL;
 	String t = s;
@@ -513,7 +500,8 @@ String s;
 	}
 #ifndef NO_DYNAMIC_TYPES
 	r = pop();
-	push(ap(nameStringToDyn,r));
+	d = getDictFor(classTypeable, typeString);
+	push(ap(ap(nameToDynamic,d),r));
 #endif
     END_PROTECT
 }
@@ -594,10 +582,12 @@ static Bool safeEval(Cell c)
 
 static Int EvalInt()            /* Evaluate a cell (:: Int)         */
 {
+    Cell d;
     BEGIN_PROTECT
 	startEval();
 #ifndef NO_DYNAMIC_TYPES
-	safeEval(ap(nameFromDynInt,pop()));
+        d = getDictFor(classTypeable, typeInt);
+	safeEval(ap(ap(nameFromDynamic,d),pop()));
 #else
 	safeEval(pop());
 #endif
@@ -609,10 +599,12 @@ static Int EvalInt()            /* Evaluate a cell (:: Int)         */
 
 static void* EvalAddr()          /* Evaluate a cell (:: Addr)         */
 {
+    Cell d;
     BEGIN_PROTECT
 	startEval();
 #ifndef NO_DYNAMIC_TYPES
-	safeEval(ap(nameFromDynAddr,pop()));
+        d = getDictFor(classTypeable, typeAddr);
+	safeEval(ap(ap(nameFromDynamic,d),pop()));
 #else
 	safeEval(pop());
 #endif
@@ -624,6 +616,7 @@ static void* EvalAddr()          /* Evaluate a cell (:: Addr)         */
 
 static String EvalString()      /* Evaluate a cell (:: String)      */
 {
+    Cell d;
     BEGIN_PROTECT
 	Int      len = 0;
 	String   s;
@@ -634,7 +627,8 @@ static String EvalString()      /* Evaluate a cell (:: String)      */
 
 	/* Evaluate spine of list onto stack */
 #ifndef NO_DYNAMIC_TYPES
-	ok = tryEval(ap(nameFromDynString,pop()));
+        d = getDictFor(classTypeable, typeString);
+	ok = tryEval(ap(ap(nameFromDynamic,d),pop()));
 #else
 	ok = tryEval(pop());
 #endif

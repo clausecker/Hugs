@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: type.c,v $
- * $Revision: 1.49 $
- * $Date: 2002/08/04 23:58:37 $
+ * $Revision: 1.50 $
+ * $Date: 2002/08/28 18:01:17 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -53,9 +53,9 @@ Type typeForeignP;
 Type typeForeign;
 Type typeStable;
 Type typeBool;
+Type typeString;
 
 static Type typeInteger; 
-static Type typeString;
 static Type typeMaybe;
 static Type typeOrdering;
 
