@@ -22786,12 +22786,13 @@ echo "$as_me: WARNING: hp2ps (heap profile display program) not available
 fi
 
 if test "$enable_timer" = yes; then
-    if test "$ac_cv_header_time" = yes; then
+    if test "$ac_cv_header_time_h" = yes; then
         cat >>confdefs.h <<\_ACEOF
 #define WANT_TIMER 1
 _ACEOF
 
-    elif test "$ac_cv_header_sys_time = yes && $ac_cv_header_sys_resource = yes"; then
+    elif test "$ac_cv_header_sys_time_h" = yes &&
+	 test "$ac_cv_header_sys_resource_h" = yes; then
         cat >>confdefs.h <<\_ACEOF
 #define WANT_TIMER 1
 _ACEOF
