@@ -9,8 +9,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: compiler.c,v $
- * $Revision: 1.18 $
- * $Date: 2003/10/06 17:01:50 $
+ * $Revision: 1.19 $
+ * $Date: 2003/10/06 17:09:40 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -830,7 +830,7 @@ Cell pat; {                     /* replaces parts of pattern that do not   */
 	case DICTVAR   : return pat;
 
 	case LAZYPAT   : {   Cell p = matchPat(snd(pat));
-			     return (p==WILDCARD) ? WILDCARD : ap(LAZYPAT,p);
+			     return (p==WILDCARD) ? WILDCARD : pat;
 			 }
 
 	case WILDCARD  :
