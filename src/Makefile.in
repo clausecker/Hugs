@@ -228,7 +228,7 @@ hugs@OBJ@	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h \
 		  command.h machdep.c timer.c
 storage@OBJ@	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h
 input@OBJ@	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h \
-		  parser.c command.h   
+		  parser.c command.h module.h
 subst@OBJ@	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h subst.h
 static@OBJ@	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h subst.h \
 		  scc.c module.h

@@ -125,7 +125,7 @@ hugs.o		: $(PRELUDE) storage.h connect.h errors.h \
 		  command.h machdep.c timer.c
 storage.o	: $(PRELUDE) storage.h connect.h errors.h
 input.o		: $(PRELUDE) storage.h connect.h errors.h \
-		  parser.c command.h
+		  parser.c command.h module.h
 subst.o		: $(PRELUDE) storage.h connect.h errors.h subst.h
 static.o	: $(PRELUDE) storage.h connect.h errors.h subst.h \
 		  scc.c module.h

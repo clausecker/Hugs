@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.132 $
- * $Date: 2003/01/21 10:05:48 $
+ * $Revision: 1.133 $
+ * $Date: 2003/01/21 10:17:55 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -16,6 +16,7 @@
 #include "connect.h"
 #include "errors.h"
 #include "subst.h"
+#include "module.h"
 
 /* --------------------------------------------------------------------------
  * local function prototypes:

@@ -136,7 +136,7 @@ hugs.obj	: $(PRELUDE) storage.h connect.h errors.h \
 		  command.h machdep.c timer.c
 storage.obj	: $(PRELUDE) storage.h connect.h errors.h
 input.obj	: $(PRELUDE) storage.h connect.h errors.h \
-		  parser.c command.h
+		  parser.c command.h module.h
 subst.obj	: $(PRELUDE) storage.h connect.h errors.h subst.h
 static.obj	: $(PRELUDE) storage.h connect.h errors.h subst.h \
 		  scc.c module.h
