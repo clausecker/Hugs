@@ -9,8 +9,8 @@
  * included in the distribution.
  *
  * $RCSfile: prelude.h,v $
- * $Revision: 1.13 $
- * $Date: 2001/01/31 02:52:13 $
+ * $Revision: 1.14 $
+ * $Date: 2001/02/12 19:53:46 $
  * ------------------------------------------------------------------------*/
 
 #include "config.h"
@@ -118,14 +118,15 @@
 #define MUDO		1
 #define MULTI_INST	1
 #define OBSERVATIONS    1
+#define ZIP_COMP	1
 #else
 #define TREX            0
 #define IPARAM          0
 #define MUDO		0
 #define MULTI_INST      0
 #define OBSERVATIONS    0
-#endif
 #define ZIP_COMP	0
+#endif
 #define HERE_DOC	0
 #define HASKELL_ARRAYS	1
 #define IO_MONAD	1
@@ -674,17 +675,11 @@ typedef void*    Pointer;
 #if IO_MONAD
 #define NUM_HANDLES	   40
 #endif
-#define NUM_FIXUPS         400
 #define NUM_TUPLES         100
 #define NUM_OFFSETS        1024
 #define NUM_CHARS          256
 #if TREX
 #define NUM_EXT		   100
-#endif
-
-#if OBSERVATIONS
-#define NUM_OBS_TAGS       200
-#define NUM_BRKPTS         200
 #endif
 
 #define CHAR_MASK          0xff
@@ -703,7 +698,13 @@ typedef void*    Pointer;
 #define Pick(s,r,l)	   l
 #endif
 
-#define NUM_SCRIPTS        Pick(64,     100,        200)
+#if OBSERVATIONS
+#define NUM_OBS_TAGS       Pick(100,    200,        1000)
+#define NUM_BRKPTS         Pick(100,    200,        200)
+#endif
+
+#define NUM_SCRIPTS        Pick(64,     100,        500)
+#define NUM_FIXUPS         Pick(400,    400,        1000)
 #define NUM_TYCON          Pick(60,     160,        800)
 #define NUM_NAME           Pick(1000,   2000,       16000)
 #define NUM_CLASSES        Pick(30,     240,        480)

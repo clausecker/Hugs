@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: ffi.c,v $
- * $Revision: 1.1 $
- * $Date: 2000/12/13 09:01:54 $
+ * $Revision: 1.2 $
+ * $Date: 2001/02/12 19:53:46 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -80,10 +80,15 @@ List ls; {
     fprintf(out,
             "static void primControl Args((int));\n"
             "static void primControl(what)\n"
-            "int what; {\n"
-            "    switch (what) {\n"
-            "        case %d:\n", RESET
-            );
+            "int what; {\n");
+
+    if (nonNull(es)) {
+      fprintf(out,
+	      "    switch (what) {\n"
+              "        case %d:\n", RESET
+	      );
+    }
+
     for(xs=es; nonNull(xs); xs=tl(xs)) {
         Name n       = hd(xs);
         Text ext     = name(n).extFun;
@@ -96,10 +101,10 @@ List ls; {
             fprintf(out, ");\n");
         }
     }
-    fprintf(out,
-            "    }\n"
-            "}\n"
-            );
+    if (nonNull(es)) {
+      fprintf(out,"    }\n");
+    }
+    fprintf(out, "}\n");
 
     /* Boilerplate initialization function */
     fprintf(out,
