@@ -9,8 +9,8 @@
  * included in the distribution.
  *
  * $RCSfile: output.c,v $
- * $Revision: 1.17 $
- * $Date: 2001/04/27 01:00:35 $
+ * $Revision: 1.18 $
+ * $Date: 2001/04/30 19:41:35 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -840,7 +840,7 @@ Int  co; {
 			    pPut(COND_PREC+1,fst3(snd(e)),co);
 			    putStr(" of");
 			    pIndent(left+2);
-			    putStr(" ; Prelude.True -> ");
+			    putStr(" { Prelude.True -> ");
 			    pPut(COND_PREC+1,snd3(snd(e)),co);
 			    pIndent(left+2);
 			    putStr(" ; Prelude.False ->  ");
@@ -947,10 +947,8 @@ static Void local pLiftedStart(e,co,eq) /* print start of definition       */
 Cell   e;
 Int    co;
 String eq; {
-    if (whatIs(e)!=GUARDED) {
-      putStr(eq);
-      putChr(' ');
-    }
+    putStr(eq);
+    putChr(' ');
     pLifted(e,co,eq);
 }
 
@@ -969,10 +967,11 @@ String eq; {
 			       count++;
 			       putStr("case ");
 			       pPut(NEVER,fst(hd(gs)),co);
-			       putStr(" of ");
+			       putStr(" of\n");
 			       pIndent(left + 2);
 			       putStr("{ Prelude.True -> ");
 			       pPut(NEVER,snd(hd(gs)),co);
+			       putStr("\n");
 			       pIndent(left + 2);
 			       putStr("; _ -> \n");
 			       gs = tl(gs);

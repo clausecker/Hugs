@@ -10,8 +10,8 @@
  * included in the distribution.
  *
  * $RCSfile: compiler.c,v $
- * $Revision: 1.5 $
- * $Date: 2001/04/27 01:00:35 $
+ * $Revision: 1.6 $
+ * $Date: 2001/04/30 19:41:35 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -21,6 +21,7 @@
 
 Addr inputCode;                        /* Addr of compiled code for expr   */
 static Name currentName;               /* Top level name being processed   */
+static FILE *scfp;		       /* super combinator file pointer    */
 
 /* --------------------------------------------------------------------------
  * Local function prototypes:
@@ -93,6 +94,10 @@ static Void local compileGlobalFunction Args((Pair));
 static Void local compileGenFunction	Args((Name));
 static Name local compileSelFunction	Args((Pair));
 static Void local newGlobalFunction     Args((Name,Int,List,Int,Cell));
+
+#if DEBUG_SHOWSC
+static Void local debugConstructors     Args((FILE *fp,Cell c));
+#endif
 
 /* --------------------------------------------------------------------------
  * Translation:    Convert input expressions into a less complex language
@@ -1965,11 +1970,54 @@ Void compileExp() {			/* compile input expression	   */
     inputExpr    = NIL;
 }
 
+
 Void compileDefns() {			/* compile script definitions	   */
     Target t = length(valDefns) + length(genDefns) + length(selDefns);
     Target i = 0;
 
+#if DEBUG_SHOWSC
+    Module mod;
+    String modName;
+    char name[256];
+    List dataCons = NIL;
+
+    if (debugSC) {
+      mod = currentModule;
+      modName = textToStr(module(currentModule).text);
+      strcpy(name,modName);
+      strcpy(name + strlen(modName),".cor");
+      scfp = fopen(name,"w");
+      fprintf(scfp,"module %s;\n",modName);
+      dataCons = dupOnto(dataCons,module(currentModule).tycons);
+      dataCons = dupOnto(dataCons,module(currentModule).classes);
+      for (; nonNull(dataCons); dataCons=tl(dataCons)) {
+	Cell t = hd(dataCons);
+	switch(whatIs(t)) {
+	case TYCON:
+	  if (tycon(t).what == DATATYPE
+	      && nonNull(tycon(t).defn)) {
+	    fprintf(scfp,"data %s\n = ",
+		    textToStr(tycon(t).text));
+	    debugConstructors(scfp,tycon(t).defn);
+	    fprintf(scfp,";\n");
+	  }
+	  break;
+	case CLASS:
+	  fprintf(scfp,"data %s = ",
+		  textToStr(cclass(t).text));
+	  debugConstructors(scfp,cclass(t).dcon);
+	  fprintf(scfp,";\n");
+	  break;
+	default:
+	  fprintf(scfp,"** unknown datacons **");
+	}
+      }
+    }
+
+#endif
+
     setGoal("Compiling",t);
+
     for (; nonNull(valDefns); valDefns=tl(valDefns)) {
 	hd(valDefns) = transBinds(hd(valDefns));
 	mapProc(compileGlobalFunction,hd(valDefns));
@@ -1984,8 +2032,38 @@ Void compileDefns() {			/* compile script definitions	   */
 	soFar(i++);
     }
 
+#if DEBUG_SHOWSC
+    if (debugSC) {
+      fprintf(scfp,"\n-- end of module %s --\n",modName);
+      fclose(scfp);
+    }
+#endif
+
     done();
 }
+
+#if DEBUG_SHOWSC
+static Void local debugConstructors(FILE *fp,Cell c) {
+  int i;
+  switch(whatIs(c)) {
+  case AP:
+    debugConstructors(fp,hd(c));
+    if (nonNull(tl(c))) {
+      fprintf(fp,"\n | ");
+      debugConstructors(fp,tl(c));
+    }
+    break;
+  case NAME: 
+    fprintf(fp,"%s",textToStr(name(c).text));
+    for(i=0;i < name(c).arity;i++) {
+      fprintf(scfp," *");
+    }
+    break;
+  default:
+    fprintf(fp,"** unknown constructor **",whatIs(c));
+  }
+}
+#endif
 
 static Void local compileGlobalFunction(bind)
 Pair bind; {
@@ -2042,7 +2120,7 @@ Cell e; {
     e             = preComp(e);
 #if DEBUG_SHOWSC
     if (debugSC) {
-	printSc(stdout,name(n).text,name(n).arity,e);
+	printSc(scfp,name(n).text,name(n).arity,e);
     }
 #endif
     name(n).code  = codeGen(n,name(n).arity,e);
