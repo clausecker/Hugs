@@ -74,10 +74,17 @@ clean:
 distclean: clean
 	$(RM) -r bootlib
 	$(RM) -r $(BUILD_DIR)
+	$(RM) config.log config.status
+	$(RM) -r autom4te.cache
+	$(RM) a.out
+	$(RM) include/ghcconfig.h
 	$(RM) Makefile
 	$(RM) tools/config tools/cpphs.sh
 	$(RM) tools/cpphs
-	$(RM) hsc2hs/Main.hs hsc2hs/template-hsc.h tools/hsc2hs
+	$(RM) -r hsc2hs
+	$(RM) tools/hsc2hs
+	$(RM) hugsbase/.setup-config hugsbase/.installed-pkg-config
+	$(RM) -r ../fptools/ghc/includes
 
 veryclean: distclean
 
