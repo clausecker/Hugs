@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.77 $
- * $Date: 2002/07/16 03:44:53 $
+ * $Revision: 1.78 $
+ * $Date: 2002/07/26 02:42:57 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -411,8 +411,9 @@ static Name local lookupName(t,nms)    /* find text t in list of Names     */
 Text t;
 List nms; { /* :: [Name] */
     for(; nonNull(nms); nms=tl(nms)) {
-	if (t == name(hd(nms)).text)
+      if (t == name(hd(nms)).text) {
 	    return hd(nms);
+      }
     }
     return NIL;
 }
@@ -484,7 +485,7 @@ Cell   entity; { /* Entry from import/hiding list */
 		if (cclass(f).text == t) {
 		    if (!isIdent(entity)) {
 			if (DOTDOT == snd(entity)) {
-			  List sigs = cclass(f).members;
+			    List sigs = cclass(f).members;
 			    imports=cons(pair(f,sigs),imports);
 			    return dupOnto(sigs,imports);
 			} else if ( NIL == snd(entity)) {
@@ -756,9 +757,9 @@ Cell e; {
     }
     if (cs != NIL && cs != DOTDOT) {
       List xs;
-	for (xs=cs;nonNull(xs);xs=tl(xs)) {
-	  importEntity(source,hd(xs));
-	}
+      for (xs=cs;nonNull(xs);xs=tl(xs)) {
+	importEntity(source,hd(xs));
+      }
     }
     switch (whatIs(ent)) {
       case VARIDCELL  : 
@@ -957,20 +958,20 @@ Cell e; {
 			 * only the constructors in scope are exported. 
 			 */
 			Cell xs;
-			Cell stuff = DOTDOT;
+			List exps = NIL;
 			for (xs = module(thisModule).modImports;nonNull(xs);xs=tl(xs)) {
 			    if (isPair(hd(xs)) && fst(hd(xs)) == tycon(nm).mod ) {
 				/* Found the effective import list for tycon's module */
 				List ns;
+				/* Find the entry for the 'nm' tycon.. */
 				for(ns = snd(hd(xs)); nonNull(ns); ns=tl(ns)) {
 				    if ( isPair(hd(ns)) && 
 					 isTycon(fst(hd(ns))) &&
 					 fst(hd(ns)) == nm ) {
 				      List ms;
-				      stuff = snd(hd(ns));
 				      /* Add the constructors onto the 'exports' list */
-				      for (ms=stuff;nonNull(ms);ms=tl(ms)) {
-					  exports=cons(hd(ms),exports);
+				      for (ms=snd(hd(ns));nonNull(ms);ms=tl(ms)) {
+					  exps=cons(hd(ms),exps);
 				      }
 				      break;
 				    }
@@ -978,13 +979,16 @@ Cell e; {
 				break;
 			    }
 			}
-			return cons(pair(nm,stuff),exports);
+			exports=cons(pair(nm,exps),exports);
+			return dupOnto(exps,exports);
 		    }
 		} else {
-		    exports = checkSubentities(exports,parts,tycon(nm).defn,
-					       "constructor of type",
-					       tycon(nm).text);
- 		    return cons(pair(nm,parts), exports);
+		  List ps = NIL;
+		  ps = checkSubentities(ps,parts,tycon(nm).defn,
+					"constructor of type",
+					tycon(nm).text);
+		  exports = cons(pair(nm,ps), exports);
+		  return dupOnto(ps,exports);
 		}
 	    default:
 		internal("checkExport1");
@@ -1020,9 +1024,11 @@ Cell e; {
 		    return cons(pair(nm,stuff),exports);
 		}
 	    } else {
-		exports = checkSubentities(exports,parts,cclass(nm).members,
-					   "member of class",cclass(nm).text);
-		return cons(pair(nm,parts), exports);
+	      List ps = NIL;
+	      ps = checkSubentities(ps,parts,cclass(nm).members,
+				    "member of class",cclass(nm).text);
+	      exports = cons(pair(nm,ps), exports);
+	      return dupOnto(ps,exports);
 	    }
 	} else {
 	    ERRMSG(0) "Explicit export list given for non-class/datatype \"%s\" in export list of module \"%s\"",
