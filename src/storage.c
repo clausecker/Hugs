@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: storage.c,v $
- * $Revision: 1.83 $
- * $Date: 2003/12/15 17:58:14 $
+ * $Revision: 1.84 $
+ * $Date: 2003/12/18 05:20:39 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -543,6 +543,7 @@ Cell parent; {
     name(nameHw).code         = 0;
     name(nameHw).mod          = currentModule;
     name(nameHw).clashes      = NIL;
+
     module(currentModule).names=cons(nameHw,module(currentModule).names);
     name(nameHw).nextNameHash = nameHash[h];
     nameHash[h]               = nameHw;
@@ -573,6 +574,7 @@ static Void local hashName(nm)          /* Insert Name into hash table	   */
 Name nm; {
     Text t		  = name(nm).text;
     Int  h		  = nHash(t);
+
     name(nm).nextNameHash = nameHash[h];
     name(nm).clashes      = NIL;
     nameHash[h]           = nm;
@@ -1544,7 +1546,9 @@ Module m; {
 	   keeping these large lists around is considerable,
 	   so we approximate.
 	*/
-	module(currentModule).modImports = NIL;
+	if (currentModule != NIL) {
+	  module(currentModule).modImports = NIL;
+	}
 	currentModule = m; /* This is the only assignment to currentModule */
 	for (i=0; i<TYCONHSZ; ++i)
 	    tyconHash[i] = NIL;
