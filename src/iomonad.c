@@ -18,8 +18,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: iomonad.c,v $
- * $Revision: 1.29 $
- * $Date: 2002/08/19 15:30:30 $
+ * $Revision: 1.30 $
+ * $Date: 2002/09/05 10:49:42 $
  * ------------------------------------------------------------------------*/
  
 Name nameIORun;			        /* run IO code                     */
@@ -163,7 +163,7 @@ PROTO_PRIM(primFreeSP);
 PROTO_PRIM(primCastSPToP);
 PROTO_PRIM(primCastPToSP);
 
-PROTO_PRIM(primMakeFP);
+PROTO_PRIM(primNewFP);
 PROTO_PRIM(primWriteFP);
 PROTO_PRIM(primEqFP);
 PROTO_PRIM(primTouchFP);
@@ -275,11 +275,11 @@ static struct primitive iomonadPrimTable[] = {
   {"castStablePtrToPtr",1, primCastSPToP},
   {"castPtrToStablePtr",1, primCastPToSP},
 
-  {"makeForeignObj",	4, primMakeFP},
+  {"makeForeignObj",	4, primNewFP},
   {"writeForeignObj",	4, primWriteFP},
   {"eqForeignObj",	2, primEqFP},
 
-  {"makeForeignPtr",	4, primMakeFP},
+  {"newForeignPtr",	4, primNewFP},
   {"eqForeignPtr",	2, primEqFP},
   {"touchForeignPtr",	3, primTouchFP},
   {"foreignPtrToPtr",	1, primFPToP},
@@ -1615,7 +1615,7 @@ primFun(primCastPToSP) {		/* Ptr () -> StablePtr a   	   */
 #define checkForeign() /* do nothing */
 #endif
 
-primFun(primMakeFP) { /* Ptr a -> FunPtr (Ptr a -> IO ()) -> IO (ForeignPtr a) */
+primFun(primNewFP) { /* Ptr a -> FunPtr (Ptr a -> IO ()) -> IO (ForeignPtr a) */
     Pointer addr = 0;
     Void (*free)(Pointer) = 0;
     eval(IOArg(2));

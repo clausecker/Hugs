@@ -1,7 +1,7 @@
 module ForeignPtr
         ( 
 	  ForeignPtr             -- abstract, instance of: Eq
-        , makeForeignPtr          -- :: Ptr a -> FunPtr (Ptr a -> IO ()) -> IO (ForeignPtr a)
+        , newForeignPtr          -- :: Ptr a -> FunPtr (Ptr a -> IO ()) -> IO (ForeignPtr a)
 --        , addForeignPtrFinalizer -- :: ForeignPtr a -> FunPtr (Ptr a -> IO ()) -> IO ()
 	, withForeignPtr         -- :: ForeignPtr a -> (Ptr a -> IO b) -> IO b
 	, foreignPtrToPtr	 -- :: ForeignPtr a -> Ptr a
@@ -24,7 +24,7 @@ instance Eq (ForeignPtr a) where
     p == q = eqForeignPtr p q
     p /= q = not (eqForeignPtr p q)
 
-primitive makeForeignPtr :: Ptr a -> FunPtr (Ptr a -> IO ()) -> IO (ForeignPtr a)
+primitive newForeignPtr :: Ptr a -> FunPtr (Ptr a -> IO ()) -> IO (ForeignPtr a)
 
 -- not implemented
 -- addForeignPtrFinalizer :: ForeignPtr a -> FunPtr (Ptr a -> IO ()) -> IO ()
