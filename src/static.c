@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.41 $
- * $Date: 2001/09/12 22:19:06 $
+ * $Revision: 1.42 $
+ * $Date: 2001/09/13 20:14:12 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -938,7 +938,7 @@ Tycon d; {
     tcDeps = NIL;			/* find dependents		   */
     switch (whatIs(tycon(d).what)) {
 	case RESTRICTSYN :
-	case SYNONYM	 : rhs = depTypeExp(line,tyvars,rhs);
+	case SYNONYM	 : rhs = depTopType(line,tyvars,rhs);
 			   if (cellIsMember(d,tcDeps)) {
 			       ERRMSG(line) "Recursive type synonym \"%s\"",
 					    textToStr(tycon(d).text)

@@ -11,8 +11,8 @@
  * included in the distribution.
  *
  * $RCSfile: parser.y,v $
- * $Revision: 1.21 $
- * $Date: 2001/09/12 18:52:42 $
+ * $Revision: 1.22 $
+ * $Date: 2001/09/13 20:14:12 $
  * ------------------------------------------------------------------------*/
 
 %{
@@ -522,8 +522,9 @@ type	  : type1			{$$ = $1;}
 	  | btype2			{$$ = $1;}
 	  ;
 type1	  : btype1			{$$ = $1;}
-	  | btype1 ARROW type		{$$ = gc3(fn($1,$3));}
-	  | btype2 ARROW type		{$$ = gc3(fn($1,$3));}
+	  | bpolyType ARROW type	{$$ = gc3(fn($1,$3));}
+	  | btype1    ARROW type	{$$ = gc3(fn($1,$3));}
+	  | btype2    ARROW type	{$$ = gc3(fn($1,$3));}
 	  | error			{syntaxError("type expression");}
 	  ;
 btype	  : btype1			{$$ = $1;}
