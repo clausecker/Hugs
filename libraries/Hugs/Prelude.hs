@@ -1562,6 +1562,7 @@ data IOError
       , ioe_description :: String         -- error-specific string
       , ioe_fileName    :: (Maybe String) -- the resource involved.
       } 
+      deriving (Eq)
 
 data IOErrorKind
   = IOError_UserError
@@ -1573,6 +1574,7 @@ data IOErrorKind
   | IOError_FullError
   | IOError_EOF
   | IOError_WriteError
+    deriving (Eq)
 
 instance Show IOErrorKind where
   show x = 
@@ -1616,9 +1618,6 @@ instance Show IOError where
 	 Just name -> showString "\nResource: " . showString name)
 
 type FilePath = String  -- file pathnames are represented by strings
-
-instance Show (IO a) where
-    showsPrec p f = showString "<<IO action>>"
 
 primitive primbindIO   "rbindIO" :: IO a -> (a -> IO b) -> IO b
 primitive primretIO    "runitIO" :: a -> IO a
