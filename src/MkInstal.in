@@ -43,6 +43,7 @@ install_demos	::
 install_man	::
 		$(INSTALL) -d $(DESTDIR)$(mandir)/man1
 		$(INSTALL_DATA) ../docs/hugs.1 $(DESTDIR)$(mandir)/man1
+		gzip -f -9 $(DESTDIR)$(mandir)/man1/hugs.1
 
 install_notes	::
 		$(INSTALL) -d $(DESTDIR)$(hugsdir)/docs
