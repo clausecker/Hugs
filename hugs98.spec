@@ -25,9 +25,10 @@ Hugs 98 is an interpreter for Haskell, a lazy functional programming language.
 
 %build
 cd src/unix
-./configure --prefix=%{prefix} --mandir=%{_mandir} --with-fptools=../../fptools --enable-ffi
+./configure --prefix=%{prefix} --mandir=%{_mandir} --with-fptools=../../fptools ${EXTRA_CONFIGURE_OPTS}
 cd ..
 make
+( cd ../docs/users_guide && make && gzip -f -9 users_guide.{dvi,pdf,ps} )
 
 %install
 cd src
@@ -47,6 +48,10 @@ gzip -f -9 ${RPM_BUILD_ROOT}%{_mandir}/man1/hugs-package.1
 %doc docs/server.html
 %doc docs/server.tex
 %doc docs/winhugs-notes.txt
+%doc docs/users_guide/users_guide
+%doc docs/users_guide/users_guide.dvi.gz
+%doc docs/users_guide/users_guide.pdf.gz
+%doc docs/users_guide/users_guide.ps.gz
 %{_mandir}/man1/hugs.1.gz
 %{_mandir}/man1/hugs-package.1.gz
 %{prefix}/bin/ffihugs
