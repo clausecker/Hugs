@@ -91,19 +91,25 @@ install: all
 			case $$file in \
 			*.hs|*.lhs|*.so|*.dll) \
 				$(INSTALL) -d $(DESTDIR)$(hugsdir)/$$dir;\
-				$(INSTALL) -c $(BUILD_DIR)/$$file $(DESTDIR)$(hugsdir)/$$file ;;\
+				$(INSTALL) -c -m 0644 $(BUILD_DIR)/$$file $(DESTDIR)$(hugsdir)/$$file ;;\
 			esac \
 		done
 	(cd $(BUILD_DIR); find packages -type f -print) | while read file;\
 		do	dir=`dirname $$file`;\
 			$(INSTALL) -d $(DESTDIR)$(hugsdir)/$$dir;\
-			$(INSTALL) -c $(BUILD_DIR)/$$file $(DESTDIR)$(hugsdir)/$$file;\
+			$(INSTALL) -c -m 0644 $(BUILD_DIR)/$$file $(DESTDIR)$(hugsdir)/$$file;\
 		done
 	(cd $(BUILD_DIR); find demos -type f -print) | while read file;\
 		do	dir=`dirname $$file`;\
 			$(INSTALL) -d $(DESTDIR)$(hugsdir)/$$dir;\
-			$(INSTALL) -c $(BUILD_DIR)/$$file $(DESTDIR)$(hugsdir)/$$file;\
+			$(INSTALL) -c -m 0644 $(BUILD_DIR)/$$file $(DESTDIR)$(hugsdir)/$$file;\
 		done
+	$(INSTALL) -d $(DESTDIR)$(hugsdir)/programs/hsc2hs
+	$(INSTALL_DATA) hsc2hs/Main.hs hsc2hs/template-hsc.h $(DESTDIR)$(hugsdir)/programs/hsc2hs
+	(echo '#! /bin/sh'; \
+	 echo 'runhugs $(hugsdir)/programs/hsc2hs/Main.hs -I$(hugsdir)/include "$$@"') >$(DESTDIR)$(bindir)/hsc2hs-hugs
+	chmod 755 $(DESTDIR)$(bindir)/hsc2hs-hugs
+	$(INSTALL) -c $(CPPHS) $(DESTDIR)$(bindir)/cpphs-hugs
 
 LibStatus: all
 	tools/test_libraries ../fptools >$@
