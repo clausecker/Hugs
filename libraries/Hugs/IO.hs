@@ -60,10 +60,6 @@ module Hugs.IO (
     ioeGetHandle,           -- :: IOError -> Maybe Handle
     ioeGetFileName,         -- :: IOError -> Maybe FilePath
 
-    try,                    -- :: IO a -> IO (Either IOError a)
-    bracket,                -- :: IO a -> (a -> IO b) -> (a -> IO c) -> IO c
-    bracket_,               -- :: IO a -> (a -> IO b) -> IO c -> IO c
-
     -- Non-standard extensions 
     hugsIsEOF,              -- :: IO Bool
     hugsHIsEOF,             -- :: Handle  -> IO Bool
@@ -216,28 +212,6 @@ primitive ioeGetHandle      :: IOError -> Maybe Handle
 
 ioeGetFileName    :: IOError -> Maybe FilePath
 ioeGetFileName ioe = ioe_fileName ioe
-
-try       :: IO a -> IO (Either IOError a)
-try p      = catch (p >>= (return . Right)) (return . Left)
-
-bracket        :: IO a -> (a -> IO b) -> (a -> IO c) -> IO c
-bracket before after m = do
-        x  <- before
-        rs <- try (m x)
-        after x
-        case rs of
-           Right r -> return r
-           Left  e -> ioError e
-
--- variant of the above where middle computation doesn't want x
-bracket_        :: IO a -> (a -> IO b) -> IO c -> IO c
-bracket_ before after m = do
-         x  <- before
-         rs <- try m
-         after x
-         case rs of
-            Right r -> return r
-            Left  e -> ioError e
 
 -----------------------------------------------------------------------------
 -- Non-standard extensions 
