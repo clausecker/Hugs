@@ -499,7 +499,7 @@ String s; {              /* return FALSE if none found.     */
 		       return TRUE;
 #endif
 
-	    case 'L' : ffiSetFlags(strCopy(s+1));
+	    case 'L' : ffiSetFlags(s+1);
 		       return TRUE;
 
 	    case 'h' : setHeapSize(s+1);
