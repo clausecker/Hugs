@@ -34,6 +34,7 @@ X_EXTRA_LIBS='@X_EXTRA_LIBS@'
 
 GL_CFLAGS='@GL_CFLAGS@'
 GL_LIBS='@GL_LIBS@'
+GLUT_LIBS='@GLUT_LIBS@'
 
 case `uname -a` in
 *CYGWIN*) platform=Win32 ;;
@@ -217,6 +218,7 @@ then	$cpp $cpp_flags $includes \
 		-DX_CFLAGS=",\"$X_CFLAGS\"" -DX_PRE_LIBS=",\"$X_PRE_LIBS\"" \
 		-DX_LIBS=",\"$X_LIBS\"" -DX_EXTRA_LIBS=",\"$X_EXTRA_LIBS\"" \
 		-DGL_CFLAGS=",\"$GL_CFLAGS\"" -DGL_LIBS=",\"$GL_LIBS\"" \
+		-DGLUT_LIBS=",\"$GLUT_LIBS\"" \
 		$conf_in >$tmp
 	conf=$tmp
 fi
