@@ -38,6 +38,8 @@ GL_CFLAGS='@GL_CFLAGS@'
 GL_LIBS='@GL_LIBS@'
 GLUT_LIBS='@GLUT_LIBS@'
 
+EXE=@EXE@
+
 case `uname -a` in
 *CYGWIN*) platform=Win32 ;;
 *)	platform=Unix ;;
@@ -229,7 +231,7 @@ do	echo "Converting $modname"
 		hsc_make="${target_stem}_hsc_make"
 		$cc $cpp_flags $includes -o "$hsc_make" "${stem}_hsc_make.c"
 		$hsc_make >$target_stem.hs
-		rm "$hsc_make"
+		rm "$hsc_make${EXE}"
 	elif [ -f $stem.hsc ]; then
 		cp "$stem.hsc" "$target_stem.hsc"
 		$hsc2hs --cc="$cc" $cpp_flags $includes "$target_stem.hsc"
