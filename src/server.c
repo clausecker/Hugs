@@ -10,8 +10,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: server.c,v $
- * $Revision: 1.26 $
- * $Date: 2002/12/10 16:14:57 $
+ * $Revision: 1.27 $
+ * $Date: 2003/01/23 17:47:08 $
  * ------------------------------------------------------------------------*/
 
 #define HUGS_SERVER
@@ -545,6 +545,10 @@ static void evalError(Cell e)
   int  len;
   len = strlen(message);
 
+  if (!isAp(e) || fun(e) != nameErrorCall) {
+    setError("program error");
+    return;
+  }
   push( arg(e) );
 
   while(1) {

@@ -57,8 +57,11 @@ module Hugs.Prelude (
 --  module Ratio,
     Ratio((:%)), (%), numerator, denominator,
 --  Non-standard exports
-    IO(..), IOResult(..), primExitWith, 
+    IO(..), IOResult(..),
     IOException(..), IOErrorType(..),
+    Exception(..),
+    ArithException(..), ArrayException(..), AsyncException(..),
+    ExitCode(..),
     FunPtr, Ptr, Addr,
     Word, StablePtr, ForeignObj, ForeignPtr,
     Int8, Int16, Int32, Int64,
@@ -66,8 +69,9 @@ module Hugs.Prelude (
     Handle,
     basicIORun, blockIO, IOFinished(..),
     threadToIOResult,
-    HugsException, catchHugsException, primThrowException,
+    catchException, throw,
     hugsReturn,
+    Dynamic(..), TypeRep(..), TyCon(..), Obj,
 
     Bool(False, True),
     Maybe(Nothing, Just),
@@ -1039,10 +1043,11 @@ until p f x     = if p x then x else until p f (f x)
 asTypeOf       :: a -> a -> a
 asTypeOf        = const
 
-primitive error  :: String -> a
+error          :: String -> a
+error s         = throw (ErrorCall s)
 
-undefined        :: a
-undefined | False = undefined
+undefined      :: a
+undefined       = error "Prelude.undefined"
 
 -- Standard functions on rational numbers {PreludeRatio} --------------------
 
@@ -1552,9 +1557,89 @@ readFloat r    = [(fromRational ((n%1)*10^^(k-d)),t) | (n,d,s) <- readFix r,
 		       readExp' ('+':s) = readDec s
 		       readExp' s       = readDec s
 
--- Monadic I/O: --------------------------------------------------------------
+----------------------------------------------------------------
+-- Exception datatype and operations
+----------------------------------------------------------------
 
---data IO a             -- builtin datatype of IO actions
+data Exception
+  = ArithException      ArithException
+  | ArrayException      ArrayException
+  | AssertionFailed     String
+  | AsyncException      AsyncException
+  | BlockedOnDeadMVar
+  | Deadlock
+  | DynException        Dynamic
+  | ErrorCall           String
+  | ExitException       ExitCode
+  | IOException 	IOException	-- IO exceptions (from 'ioError')
+  | NoMethodError       String
+  | NonTermination
+  | PatternMatchFail    String
+  | RecConError         String
+  | RecSelError         String
+  | RecUpdError         String
+
+instance Show Exception where
+  showsPrec _ (ArithException e)  = shows e
+  showsPrec _ (ArrayException e)  = shows e
+  showsPrec _ (AssertionFailed s) = showException "assertion failed" s
+  showsPrec _ (AsyncException e)  = shows e
+  showsPrec _ BlockedOnDeadMVar   = showString "thread blocked indefinitely"
+  showsPrec _ Deadlock            = showString "<<deadlock>>"
+  showsPrec _ (DynException _)    = showString "unknown exception"
+  showsPrec _ (ErrorCall s)       = showString s
+  showsPrec _ (ExitException err) = showString "exit: " . shows err
+  showsPrec _ (IOException err)	  = shows err
+  showsPrec _ (NoMethodError s)   = showException "undefined member" s
+  showsPrec _ NonTermination	  = showString "<<loop>>"
+  showsPrec _ (PatternMatchFail s) = showException "pattern match failure" s
+  showsPrec _ (RecConError s)     = showException "undefined field" s
+  showsPrec _ (RecSelError s)     = showException "select of missing field" s
+  showsPrec _ (RecUpdError s)     = showException "update of missing field" s
+
+data ArithException
+  = Overflow
+  | Underflow
+  | LossOfPrecision
+  | DivideByZero
+  | Denormal
+  deriving (Eq, Ord)
+
+instance Show ArithException where
+  showsPrec _ Overflow        = showString "arithmetic overflow"
+  showsPrec _ Underflow       = showString "arithmetic underflow"
+  showsPrec _ LossOfPrecision = showString "loss of precision"
+  showsPrec _ DivideByZero    = showString "divide by zero"
+  showsPrec _ Denormal        = showString "denormal"
+
+data ArrayException
+  = IndexOutOfBounds    String
+  | UndefinedElement    String
+  deriving (Eq, Ord)
+
+instance Show ArrayException where
+  showsPrec _ (IndexOutOfBounds s) =
+    showException "array index out of range" s
+  showsPrec _ (UndefinedElement s) =
+    showException "undefined array element" s
+
+data AsyncException
+  = StackOverflow
+  | HeapOverflow
+  | ThreadKilled
+  deriving (Eq, Ord)
+
+instance Show AsyncException where
+  showsPrec _ StackOverflow   = showString "stack overflow"
+  showsPrec _ HeapOverflow    = showString "heap overflow"
+  showsPrec _ ThreadKilled    = showString "thread killed"
+
+showException :: String -> String -> ShowS
+showException tag msg =
+  showString tag . (if null msg then id else showString ": " . showString msg)
+
+data ExitCode = ExitSuccess | ExitFailure Int
+                deriving (Eq, Ord, Read, Show)
 
 -- data type describing IOErrors / exceptions.
 type IOError = IOException
@@ -1609,18 +1694,28 @@ instance Show IOException where
 	 Nothing -> id
 	 Just name -> showString "\nResource: " . showString name)
 
+-- Monadic I/O: --------------------------------------------------------------
+
+--data IO a             -- builtin datatype of IO actions
+
 type FilePath = String  -- file pathnames are represented by strings
 
 primitive primbindIO   "rbindIO" :: IO a -> (a -> IO b) -> IO b
 primitive primretIO    "runitIO" :: a -> IO a
-primitive catch        "lbindIO" :: IO a -> (IOError -> IO a) -> IO a
-primitive ioError      "lunitIO" :: IOError -> IO a
 primitive putChar		 :: Char -> IO ()
 primitive putStr		 :: String -> IO ()
 primitive getChar   		 :: IO Char
 
+ioError :: IOError -> IO a
+ioError e = IO (\f s -> throw (IOException e))
+
 userError :: String -> IOError
 userError str = IOError Nothing UserError "" str Nothing
+
+catch :: IO a -> (IOError -> IO a) -> IO a
+catch m h = catchException m $ \e -> case e of
+		IOException err -> h err
+		_ -> throw e
 
 print     :: Show a => a -> IO ()
 print      = putStrLn . show
@@ -1714,6 +1809,18 @@ primitive primGetHandleNumber :: Handle -> Int
 
 primitive unsafeCoerce "primUnsafeCoerce" :: a -> b
 
+data Dynamic = Dynamic TypeRep Obj
+
+data TypeRep
+ = App TyCon   [TypeRep]
+ | Fun TypeRep TypeRep
+   deriving ( Eq )
+
+data TyCon = TyCon Int String
+
+instance Eq TyCon where
+  (TyCon t1 _) == (TyCon t2 _) = t1 == t2
+
 data Obj = Obj
 
 toObj :: a -> Obj
@@ -1726,8 +1833,7 @@ newtype IO a = IO ((IOError -> IOResult) -> (a -> IOResult) -> IOResult)
 
 data IOResult 
   = Hugs_ExitWith    Int
-  | Hugs_Error       IOError
-  | Hugs_Catch       IOResult (HugsException -> IOResult) (IOError -> IOResult) (Obj -> IOResult)
+  | Hugs_Catch       IOResult (Exception -> IOResult) (Obj -> IOResult)
   | Hugs_ForkThread  IOResult IOResult
   | Hugs_DeadThread
   | Hugs_YieldThread IOResult
@@ -1736,22 +1842,19 @@ data IOResult
 
 data IOFinished a
   = Finished_ExitWith Int
-  | Finished_Error    IOError
   | Finished_Return   a
 
-data HugsException
-primitive primCatchException :: a -> Either HugsException a
-primitive primThrowException :: HugsException -> a
-primitive primShowException  :: HugsException -> String
+primitive throw "primThrowException" :: Exception -> a
+primitive primCatchException :: a -> Either Exception a
 
-instance Show HugsException where showsPrec _ x r = primShowException x ++ r
-
-catchHugsException :: IO a -> (HugsException -> IO a) -> IO a
-catchHugsException (IO m) k = IO $ \ f s ->
-  Hugs_Catch (m Hugs_Error hugsReturn)
+catchException :: IO a -> (Exception -> IO a) -> IO a
+catchException (IO m) k = IO $ \ f s ->
+  Hugs_Catch (m hugsError hugsReturn)
              (\ e -> case (k e) of { IO k' -> k' f s })
-             f
              (s . fromObj)
+
+hugsError :: IOError -> IOResult
+hugsError _ = error "BUG: old error continuation called"
 
 hugsReturn :: a -> IOResult
 hugsReturn x = Hugs_Return (toObj x)
@@ -1766,22 +1869,28 @@ hugsIORun  :: IO a -> Either Int a
 hugsIORun m = 
   case basicIORun (runAndShowError m) of
     Finished_ExitWith i -> Left i
-    Finished_Error    _ -> Left 1
     Finished_Return   a -> Right a
  where
   runAndShowError :: IO a -> IO a
-  runAndShowError m =
-    m `catch` \err -> do 
+  runAndShowError m = m `catchException` exceptionHandler
+  exceptionHandler :: Exception -> IO a
+  exceptionHandler (ExitException ExitSuccess) = primExitWith 0
+  exceptionHandler (ExitException (ExitFailure n)) = primExitWith n
+  exceptionHandler (IOException err) = runAndShowError $ do
 	putChar '\n'
 	putStr (show err)
 	primExitWith 1
+  exceptionHandler err = runAndShowError $ do
+	putChar '\n'
+	putStr "Program error: "
+	putStrLn (show err)
+	primExitWith 1
 
 basicIORun :: IO a -> IOFinished a
-basicIORun (IO m) = loop [m Hugs_Error hugsReturn]
-
+basicIORun (IO m) = loop [m hugsError hugsReturn]
 
 threadToIOResult :: IO a -> IOResult
-threadToIOResult (IO m) = m Hugs_Error (const Hugs_DeadThread)
+threadToIOResult (IO m) = m hugsError (const Hugs_DeadThread)
 
 -- This is the queue of *runnable* threads.
 -- There may be blocked threads attached to MVars
@@ -1791,8 +1900,7 @@ loop :: [IOResult] -> IOFinished a
 loop []                      = error "no more threads (deadlock?)"
 loop [Hugs_Return   a]       = Finished_Return (fromObj a)
 loop (Hugs_Return   a:r)     = loop (r ++ [Hugs_Return a])
-loop (Hugs_Catch m f1 f2 s:r)= loop (hugs_catch m f1 f2 s : r)
-loop (Hugs_Error    e:_)     = Finished_Error  e
+loop (Hugs_Catch m f s:r)    = loop (hugs_catch m f s : r)
 loop (Hugs_ExitWith i:_)     = Finished_ExitWith i
 loop (Hugs_DeadThread:r)     = loop r
 loop (Hugs_ForkThread a b:r) = loop (a:b:r)
@@ -1800,19 +1908,18 @@ loop (Hugs_YieldThread a:r)  = loop (r ++ [a])
 loop (Hugs_BlockThread a b:r)= loop (b a : r)
 loop _                       = error "Fatal error in Hugs scheduler"
 
-hugs_catch :: IOResult -> (HugsException -> IOResult) -> (IOError -> IOResult) -> (Obj -> IOResult) -> IOResult
-hugs_catch m f1 f2 s = case primCatchException (catch' m) of
-  Left  exn                   -> f1 exn
+hugs_catch :: IOResult -> (Exception -> IOResult) -> (Obj -> IOResult) -> IOResult
+hugs_catch m f s = case primCatchException (catch' m) of
+  Left  exn                   -> f exn
   Right (Hugs_Return a)       -> s a
-  Right (Hugs_Error e)        -> f2 e
-  Right (Hugs_ForkThread a b) -> Hugs_ForkThread (Hugs_Catch a f1 f2 s) b
-  Right (Hugs_YieldThread a)  -> Hugs_YieldThread (Hugs_Catch a f1 f2 s)
-  Right (Hugs_BlockThread a b)-> Hugs_BlockThread (\x -> Hugs_Catch (a x) f1 f2 s) b
+  Right (Hugs_ForkThread a b) -> Hugs_ForkThread (Hugs_Catch a f s) b
+  Right (Hugs_YieldThread a)  -> Hugs_YieldThread (Hugs_Catch a f s)
+  Right (Hugs_BlockThread a b)-> Hugs_BlockThread (\x -> Hugs_Catch (a x) f s) b
   Right r                     -> r
  where
   catch' :: IOResult -> IOResult
-  catch' (Hugs_Catch m' f1' f2' s') = catch' (hugs_catch m' f1' f2' s')
-  catch' x                          = x
+  catch' (Hugs_Catch m' f' s') = catch' (hugs_catch m' f' s')
+  catch' x                     = x
 
 primExitWith     :: Int -> IO a
 primExitWith c    = IO (\ f s -> Hugs_ExitWith c)

@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: type.c,v $
- * $Revision: 1.61 $
- * $Date: 2002/12/20 17:56:23 $
+ * $Revision: 1.62 $
+ * $Date: 2003/01/23 17:47:08 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -118,6 +118,21 @@ Name   nameIllegal;
 #if    IO_HANDLES
 Name   nameEOFErr;
 #endif
+Name   nameArithException;
+Name   nameArrayException;
+Name   nameErrorCall;
+Name   nameIOException;
+Name   nameNoMethodError;
+Name   nameNonTermination;
+Name   namePatternMatchFail;
+Name   nameRecConError;
+Name   nameRecSelError;
+Name   nameRecUpdError;
+
+Name   nameOverflow;
+Name   nameDivideByZero;
+Name   nameIndexOutOfBounds;
+Name   nameUndefinedElement;
 
 #if TREX
 Type  typeNoRow;			/* Empty row			   */
@@ -2261,7 +2276,8 @@ Class c; {				/* defaults for class c		   */
 
     for (; nonNull(mems); mems=tl(mems)) {
 	static String deftext = "default_";
-	String s	      = textToStr(name(hd(mems)).text);
+	Text member           = name(hd(mems)).text;
+	String s	      = textToStr(member);
 	Name   n;
 	for (i = 0; i<FILENAME_MAX && deftext[i]!='\0'; i++) {
 	    buf[i] = deftext[i];
@@ -2273,19 +2289,13 @@ Class c; {				/* defaults for class c		   */
 	n = newName(findText(buf),c);
 
 	if (isNull(hd(defs))) {		/* No default definition	   */
-	    static String header = "Undefined member: ";
-	    for (i=0; i<FILENAME_MAX && header[i]!='\0'; i++)
-		buf[i] = header[i];
-	    for (j=0; (i+j)<FILENAME_MAX && s[j]!='\0'; j++)
-		buf[i+j] = s[j];
-	    buf[i+j] = '\0';
 	    name(n).line  = cclass(c).line;
 	    name(n).arity = 1;
 	    name(n).defn  = singleton(pair(singleton(d),
 					   ap(mkInt(cclass(c).line),
-					      ap(nameError,
-						 mkStr(fixLitText(
-							findText(buf)))))));
+					      ap(namePrimThrow,
+					         ap(nameNoMethodError,
+						    mkStr(member))))));
 	} else {			/* User supplied default defn	   */
 	    List alts = snd(hd(defs));
 	    Int  line = rhsLine(snd(hd(alts)));
@@ -3321,6 +3331,23 @@ Void linkPreludeCM() {			/* Hook to cfuns and mfuns in	   */
 	namePermDenied     = linkName("PermissionDenied");
 	nameUserErr        = linkName("UserError");
 #endif
+
+	nameArithException = linkName("ArithException");
+	nameArrayException = linkName("ArrayException");
+	nameErrorCall      = linkName("ErrorCall");
+	nameIOException    = linkName("IOException");
+	nameNoMethodError  = linkName("NoMethodError");
+	nameNonTermination = linkName("NonTermination");
+	namePatternMatchFail = linkName("PatternMatchFail");
+	nameRecConError    = linkName("RecConError");
+	nameRecSelError    = linkName("RecSelError");
+	nameRecUpdError    = linkName("RecUpdError");
+
+	nameOverflow       = linkName("Overflow");
+	nameDivideByZero   = linkName("DivideByZero");
+
+	nameIndexOutOfBounds = linkName("IndexOutOfBounds");
+	nameUndefinedElement = linkName("UndefinedElement");
     }
 }
 

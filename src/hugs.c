@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.112 $
- * $Date: 2002/12/10 16:14:56 $
+ * $Revision: 1.113 $
+ * $Date: 2003/01/23 17:47:07 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1688,14 +1688,16 @@ static Void local evaluator() {        /* evaluate expr and print value    */
 	    abandon("Program execution",temp);
 	}
 	drop();
+	if (whnfHead == nameRight) {
 #if HUGS_FOR_WINDOWS
-	{ INT svColor = SetForeColor(BLUE);
+	    INT svColor = SetForeColor(BLUE);
 #endif
-	Printf(" :: ");
-	printType(stdout,pop());
+	    Printf(" :: ");
+	    printType(stdout,pop());
 #if HUGS_FOR_WINDOWS
-	SetForeColor(svColor); }
+	    SetForeColor(svColor);
 #endif
+	}
     }
     else {
 	if (nonNull(temp = evalWithNoError(pop()))) {

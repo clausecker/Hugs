@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: builtin.c,v $
- * $Revision: 1.42 $
- * $Date: 2003/01/23 16:50:21 $
+ * $Revision: 1.43 $
+ * $Date: 2003/01/23 17:47:07 $
  * ------------------------------------------------------------------------*/
 
 /* We include math.h before prelude.h because SunOS 4's cpp incorrectly
@@ -105,8 +105,6 @@ Name nameIStrict, nameISeq;             /* primitives for strictness       */
 Name nameFst,     nameSnd;              /* 2-tuple selector functions      */
 Name nameAnd,     nameOr;               /* built-in logical connectives    */
 Name namePrimThrow;                     /* throw primitive function        */
-Name nameError;                         /* error primitive function        */
-Name nameUndefined;                     /* generic undefined value         */
 Name nameComp;                          /* function composition            */
 Name nameApp;                           /* list append                     */
 Name nameShowField;                     /* display single field            */
@@ -158,7 +156,6 @@ Name nameIntToFloat;
 #define updateRoot(c)           update(INDIRECT,c)
 #define updapRoot(l,r)          update(l,r)
 #define blackHoleRoot()         update(nameBlackHole,nameBlackHole)
-#define cantReduce()            evalFails(root)
 
 #if CHECK_TAGS
 
@@ -333,13 +330,14 @@ Name nameIntToFloat;
 }
 
 /* e is an expression with free variables x and y */
-/* pre is a precondition (fvs x,y) to test        */
-#define IntInt2IntPre(nm,e,pre)                    \
+/* y must be non-zero                             */
+#define IntInt2IntNonZero(nm,e)                    \
   primFun(nm) {                                    \
     Int x, y, r;                                   \
     IntArg(x,2);                                   \
     IntArg(y,1);                                   \
-    if (!(pre)) cantReduce();                      \
+    if (y==0)                                      \
+      throwException(ap(nameArithException, nameDivideByZero));\
     r = e;                                         \
     IntResult(r);                                  \
 }
@@ -381,13 +379,14 @@ Name nameIntToFloat;
 }
 
 /* e is an expression with free variables x and y */
-/* pre is a precondition (fvs x,y) to test        */
-#define WordWord2WordPre(nm,e,pre)                 \
+/* y must be non-zero                             */
+#define WordWord2WordNonZero(nm,e)                 \
   primFun(nm) {                                    \
     Unsigned x, y, r;                              \
     WordArg(x,2);                                  \
     WordArg(y,1);                                  \
-    if (!(pre)) cantReduce();                      \
+    if (y==0)                                      \
+      throwException(ap(nameArithException, nameDivideByZero));\
     r = e;                                         \
     WordResult(r);                                 \
 }
@@ -469,13 +468,14 @@ Name nameIntToFloat;
 }
 
 /* e is an expression with free variables x and y */
-/* pre is a precondition (fvs x,y) to test        */
-#define FloatFloat2FloatPre(nm,e,pre)              \
+/* y must be non-zero                             */
+#define FloatFloat2FloatNonZero(nm,e)              \
   primFun(nm) {                                    \
     Float x, y, r;                                 \
     FloatArg(x,2);                                 \
     FloatArg(y,1);                                 \
-    if (!(pre)) cantReduce();                      \
+    if (y==0)                                      \
+      throwException(ap(nameArithException, nameDivideByZero));\
     r = e;                                         \
     FloatResult(r);                                \
 }
@@ -515,7 +515,8 @@ Name nameIntToFloat;
   primFun(nm) {                                    \
     Float x, r;                                    \
     FloatArg(x,1);                                 \
-    if (!(pre)) cantReduce();                      \
+    if (!(pre))                                    \
+      throwException(ap(nameErrorCall, mkStr(findText("argument out of range"))));\
     r = (Float)e;                                  \
     FloatResult(r);                                \
 }
@@ -554,6 +555,8 @@ PROTO_PRIM(primFail);
 PROTO_PRIM(primCatchError);
 PROTO_PRIM(primThrowException);
 PROTO_PRIM(primCatchException);
+PROTO_PRIM(primBlackHole);
+PROTO_PRIM(primIndirect);
 PROTO_PRIM(primSel);
 PROTO_PRIM(primIf);
 PROTO_PRIM(primStrict);
@@ -721,8 +724,8 @@ static struct primitive builtinPrimTable[] = {
   {"catchError",        1, primCatchError},
   {"primThrowException",1, primThrowException},
   {"primCatchException",1, primCatchException},
-  {"gcBhole",           0, primFail},
-  {"error",             1, primFail},
+  {"gcBhole",           0, primBlackHole},
+  {"dictIndirect",      1, primIndirect},
   {"sel",               3, primSel},
   {"if",                3, primIf},
   {"conCmp",            2, primConCmp},
@@ -992,16 +995,22 @@ primFun(primFatbar) {                   /* Fatbar primitive                */
     if (nonNull(temp))
 	if (temp==nameFail)             /* _FAIL [] r = r                  */
 	    updateRoot(primArg(1));
-	else {
-	    updateRoot(temp);
-	    cantReduce();
-	}
+	else
+	    throwException(temp);
     else
 	updateRoot(primArg(2));         /* l     [] r = l  -- otherwise    */
 }
 
 primFun(primFail) {                     /* Failure primitive               */
-    cantReduce();
+    throwException(nameFail);
+}
+
+primFun(primBlackHole) {
+    throwException(nameNonTermination);
+}
+
+primFun(primIndirect) {
+    throwException(nameNonTermination);
 }
 
 primFun(primCatchError) {               /* Error catching  primitive       */
@@ -1017,14 +1026,9 @@ primFun(primCatchError) {               /* Error catching  primitive       */
     failOnError = fOE;
 }
 
-/* ToDo: this just won't work! */
 primFun(primThrowException) {           /* Failure primitive               */
-    evalFails(root+1);                  /*  :: E×ception -> a              */
+    throwException(primArg(1));         /*  :: Exception -> a              */
 }
-
-/* Cells have to be boxed (using the HUGSOBJECT tag) so that we can        */
-/* evaluate a Cell expression such as "fst (cell1, cell2)" without         */
-/* evaluating the thunk inside the Cell.                                   */
 
 /* This function ought to be in the IO monad to preserve referential       */
 /* transparency but it has tricky interactions with the concurrency parts  */
@@ -1032,18 +1036,13 @@ primFun(primThrowException) {           /* Failure primitive               */
 /* in the Prelude.                                                         */
 
 primFun(primCatchException) {	       /* Error catching primitive         */
-    Bool fOE = failOnError;            /*  :: a -> Either Cell a           */
+    Bool fOE = failOnError;            /*  :: a -> Either Exception a      */
     Cell err = NIL;
     failOnError = FALSE;
     err = evalWithNoError(primArg(1)); 
     if (isNull(err)) {
 	updapRoot(nameRight, primArg(1));
     } else {
-        if (isAp(err) && fun(err) == namePrimThrow) {
-            err = arg(err);
-        } else {
-            err = ap(HUGSOBJECT, err);
-        } 
 	updapRoot(nameLeft, err);
     }
     failOnError = fOE;
@@ -1054,7 +1053,7 @@ primFun(primSel) {                      /* Component selection             */
     if (whnfHead==primArg(3))           /* in expr e, built with cfun c    */
 	updateRoot(pushed(intOf(primArg(1))-1));
     else
-	cantReduce();
+	internal("primSel");
 }
 
 primFun(primIf) {                       /* Conditional primitive           */
@@ -1097,7 +1096,8 @@ primFun(primEnIndex) {                  /* derived index for enum type     */
     if (l<=ix && ix<=h) {
 	IntResult(ix-l);
     } else {
-	cantReduce();
+	throwException(ap(nameErrorCall,
+		 mkStr(findText("Ix.index: Index out of range."))));
     }
 }
 
@@ -1120,7 +1120,8 @@ primFun(primEnToEn) {                   /* derived toEnum for enum type    */
     if (nonNull(n = cfunByNum(n,i)))
 	updateRoot(n);
     else
-	cantReduce();
+	throwException(ap(nameErrorCall,
+		mkStr(findText("toEnum: out of range"))));
 }
 
 primFun(primEnFrEn) {                   /* derived fromEnum for enum type  */
@@ -1197,9 +1198,9 @@ IntInt2Int(primMinusInt,x-y)           /* Integer subtraction primitive    */
 IntInt2Int(primMulInt,x*y)             /* Integer multiplication primitive */
 Int2Int(primNegInt,-x)                 /* Integer negation primitive       */
 Int2Bool(primEvenInt,!(x&1))           /* Integer even predicate           */
-IntInt2IntPre(primQuotInt,x/y,y!=0)    /* Integer division primitive       */
+IntInt2IntNonZero(primQuotInt,x/y)     /* Integer division primitive       */
 				       /* truncated towards zero           */
-IntInt2IntPre(primRemInt,x%y,y!=0)     /* Integer remainder primitive      */
+IntInt2IntNonZero(primRemInt,x%y)      /* Integer remainder primitive      */
 
 /* quot and rem satisfy:                                                   */
 /*     (x `quot` y)*y + (x `rem` y) == x                                   */
@@ -1211,7 +1212,7 @@ primFun(primQrmInt) {                  /* Integer quotient and remainder   */
     IntArg(x,2);
     IntArg(y,1);
     if (y==0)
-	cantReduce();
+	throwException(ap(nameArithException, nameDivideByZero));
     IntIntResult(x/y,x%y);
 }
 
@@ -1220,7 +1221,7 @@ primFun(primDivInt) {                  /* Integer division primitive       */
     IntArg(x,2);
     IntArg(y,1);
     if (y==0)
-	cantReduce();
+	throwException(ap(nameArithException, nameDivideByZero));
     r = x%y;
     x = x/y;
     if ((y<0 && r>0) || (y>0 && r<0))
@@ -1233,7 +1234,7 @@ primFun(primModInt) {                  /* Integer modulo primitive         */
     IntArg(x,2);
     IntArg(y,1);
     if (y==0)
-	cantReduce();
+	throwException(ap(nameArithException, nameDivideByZero));
     r = x%y;                           /* "... the modulo having the sign  */
     if ((r<0 && y>0) ||                /*              of the divisor ..." */
 	(r>0 && y<0)) {                /* See definition on p.91 of Haskell*/
@@ -1272,12 +1273,12 @@ WordWord2Word(primMinusWord,x-y)       /* Word subtraction primitive       */
 Word2Word(primNegateWord,-(Int)x)      /* Word negation (modulo MAXWORD)   */
 WordWord2Word(primMulWord,x*y)         /* Word multiplication primitive    */
 Word2Bool(primEvenWord,!(x&1))         /* Word even predicate              */
-WordWord2WordPre(primQuotWord,x/y,y!=0)/* Word division primitive          */
+WordWord2WordNonZero(primQuotWord,x/y) /* Word division primitive          */
 				       /* truncated towards zero           */
-WordWord2WordPre(primDivWord,x/y,y!=0) /* Word division primitive          */
+WordWord2WordNonZero(primDivWord,x/y)  /* Word division primitive          */
 				       /* truncated towards zero           */
-WordWord2WordPre(primRemWord,x%y,y!=0) /* Word remainder primitive         */
-WordWord2WordPre(primModWord,x%y,y!=0) /* Word modulo primitive            */
+WordWord2WordNonZero(primRemWord,x%y)  /* Word remainder primitive         */
+WordWord2WordNonZero(primModWord,x%y)  /* Word modulo primitive            */
 
 /* quot and rem satisfy:                                                   */
 /*     (x `quot` y)*y + (x `rem` y) == x                                   */
@@ -1289,7 +1290,7 @@ primFun(primQrmWord) {                 /* Integer quotient and remainder   */
     WordArg(x,2);
     WordArg(y,1);
     if (y==0)
-	cantReduce();
+	throwException(ap(nameArithException, nameDivideByZero));
     WordWordResult(x/y,x%y);
 }
 
@@ -1396,7 +1397,7 @@ primFun(primIntToChar) {               /* Integer to character primitive   */
     Int i;
     IntArg(i,1);
     if (i<0  || i>MAXCHARVAL)
-	cantReduce();
+	throwException(ap(nameErrorCall, mkStr(findText("chr: out of range"))));
     CharResult(i);
 }
 
@@ -1457,7 +1458,7 @@ FloatFloat2Float(primPlusFloat,x+y)    /* Float addition primitive         */
 FloatFloat2Float(primMinusFloat,x-y)   /* Float subtraction primitive      */
 FloatFloat2Float(primMulFloat,x*y)     /* Float multiplication primitive   */
 Float2Float(primNegFloat,-x)           /* Float negation primitive         */
-FloatFloat2FloatPre(primDivFloat,x/y,y!=0)/* Float division primitive      */
+FloatFloat2FloatNonZero(primDivFloat,x/y)/* Float division primitive       */
 
 #ifdef HAVE_LIBM
 Float2Float(primSinFloat,sin(x))       /* Float sin (trig) primitive       */
@@ -1642,13 +1643,13 @@ FILE *fp; {                             /* and print it on fp              */
 	Cell temp = evalWithNoError(pop());
 	if (nonNull(temp)) {
 	    sp = origSp;
-	    top()  = printBadRedex((top()=temp),nameNil);
+	    top()  = printException((top()=temp),nameNil);
 	}
 	else if (whnfHead==nameCons) {
 	    if (nonNull(temp=evalWithNoError(pop()))) {
 		sp = origSp;
 		onto(temp);
-		pushed(1) = printBadRedex(pushed(0),pushed(1));
+		pushed(1) = printException(pushed(0),pushed(1));
 		drop();
 	    }
 	    else {
@@ -2693,8 +2694,9 @@ Int what; {
 		       pFun(nameEnFrTo,    "_fromTo",  "enFrTo");
 		       pFun(nameEnFrTh,    "_fromThen","enFrTh");
 
+		       pFun(namePrimThrow, "_throw",    "primThrowException");
 		       pFun(nameBlackHole, "_Gc Black Hole",    "gcBhole");
-		       pFun(nameInd,	   "_indirect", "error");
+		       pFun(nameInd,	   "_indirect", "dictIndirect");
 		       name(nameInd).number = DFUNNAME;
 #if    TREX
 		       pFun(nameRecExt,	   "_recExt",	"recExt");
@@ -2719,9 +2721,6 @@ Int what; {
 		       predef(nameOr,           "||");
 		       predef(nameId,           "id");
 		       predef(nameOtherwise,    "otherwise");
-		       predef(namePrimThrow,    "primThrowException");
-		       predef(nameError,        "error");
-		       predef(nameUndefined,    "undefined");
 		       predef(nameComp,         ".");
 		       predef(nameApp,          "++");
 		       predef(nameShowField,    "showField");

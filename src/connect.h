@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: connect.h,v $
- * $Revision: 1.59 $
- * $Date: 2003/01/03 16:12:49 $
+ * $Revision: 1.60 $
+ * $Date: 2003/01/23 17:47:07 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -44,8 +44,6 @@ extern Name  namePmInteger;
 #if NPLUSK
 extern Name  namePmNpk,	  namePmSub;	/* primitives for (n+k) patterns   */
 #endif
-extern Name  nameError;			/* For runtime error messages	   */
-extern Name  nameUndefined;		/* A generic undefined value	   */
 extern Name  nameBlackHole;		/* For GC-detected black hole	   */
 extern Name  nameInd;			/* For dict indirection		   */
 extern Name  nameAnd,	  nameOr;	/* For optimisation of && and ||   */
@@ -104,6 +102,24 @@ extern Name   nameIllegal;
 #if IO_HANDLES
 extern Name   nameEOFErr;
 #endif
+
+extern Name   namePrimThrow;
+
+extern Name   nameArithException;
+extern Name   nameArrayException;
+extern Name   nameErrorCall;
+extern Name   nameIOException;
+extern Name   nameNoMethodError;
+extern Name   nameNonTermination;
+extern Name   namePatternMatchFail;
+extern Name   nameRecConError;
+extern Name   nameRecSelError;
+extern Name   nameRecUpdError;
+
+extern Name   nameOverflow;
+extern Name   nameDivideByZero;
+extern Name   nameIndexOutOfBounds;
+extern Name   nameUndefinedElement;
 
 extern Text  textCCall;                 /* ffi tokens                      */
 extern Text  textSafe;
@@ -395,6 +411,7 @@ extern  Void   run              Args((Addr,StackPtr));
 extern  Void   eval             Args((Cell));
 extern  Cell   evalWithNoError  Args((Cell));
 extern  Void   evalFails        Args((StackPtr));
+extern  Void   throwException   Args((Cell));
 
 #if BYTECODE_PRIMS
 extern Int     IntAt            Args((Addr));

@@ -9,8 +9,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: compiler.c,v $
- * $Revision: 1.12 $
- * $Date: 2002/07/19 18:04:57 $
+ * $Revision: 1.13 $
+ * $Date: 2003/01/23 17:47:07 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -617,10 +617,10 @@ List flds; {
     Int  i;
     Text t = name(c).text;
     Cell tStr   = mkStr(t);
-    Cell msgStr = mkStr(findText(" data constructor built missing a labelled field"));
+    Cell empty  = ap(namePrimThrow, ap(nameRecConError, tStr));
 
     for (i=m; i>0; i--) {
-	e = ap(e,ap(nameError, ap2(nameApp, tStr, msgStr)));
+	e = ap(e,empty);
     }
     for (; nonNull(flds); flds=tl(flds)) {
 	Cell a = e;

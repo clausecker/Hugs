@@ -1,37 +1,22 @@
--- This is a very cut-down version of GHC's Exception module
+-- This is a cut-down version of GHC's Exception module
 --
--- There are some big differences:
--- 1) The IOException type has a smaller set of different constructors.
---    This is because Hugs uses a different internal representation for
---    errors.
--- 2) It is not possible to catch certain kinds of exception in the current
---    Hugs implementation.  In particular, heap and stack overflow and
---    ctrl-C.  Indeed, it is not entirely clear what to do in response to
---    ctrl-C.
--- 3) We don't support an arbitrary throw.
---    It just isn't possible to throw an IOError from outside the
---    IO monad.  You can throw a HugsException or you can use throwIO.
+-- The main difference is that Hugs does not throw asynchronous
+-- exceptions, in particular heap and stack overflow and ctrl-C.
+-- Indeed, it is not entirely clear what to do in response to ctrl-C.
 
 module Hugs.Exception(
         Exception(..),
+	IOException(..),
+	ArithException(..),
+	ArrayException(..),
+	AsyncException(..),
 
 	catchException,		-- :: IO a -> (Exception -> IO a) -> IO a
-
-	-- Hugs-only stuff
-
-	HugsException,
-	catchHugsException,	-- :: IO a -> (HugsException -> IO a) -> IO a
-	primThrowException,	-- :: HugsException -> a
-
-	-- Exception predicates
-
-	ioErrors,		-- :: Exception -> Maybe IOError
-	userErrors,		-- :: Exception -> Maybe String
-	hugsExceptions,		-- :: Exception -> Maybe HugsException
 
 	-- Throwing exceptions
 
 	throwIO,		-- :: Exception -> IO a
+	throw,			-- :: Exception -> a
 
 	evaluate,		-- :: a -> IO a
 
@@ -42,31 +27,32 @@ module Hugs.Exception(
   ) where
 
 import Hugs.Prelude
-import System.IO.Error
 
-----------------------------------------------------------------
--- Exception datatype and operations
-----------------------------------------------------------------
-
-data Exception
-  = IOException 	IOError		-- IO exceptions (from 'ioError')
-  | HugsException  	HugsException	-- An error detected by Hugs
-
-instance Show Exception where
-  showsPrec _ (IOException err)	  = shows err
-  showsPrec _ (HugsException exn) = shows exn
+instance Eq Exception where
+  ArithException e1   == ArithException e2   = e1 == e2
+  ArrayException e1   == ArrayException e2   = e1 == e2
+  AssertionFailed e1  == AssertionFailed e2  = e1 == e2
+  AsyncException e1   == AsyncException e2   = e1 == e2
+  BlockedOnDeadMVar   == BlockedOnDeadMVar   = True
+  Deadlock            == Deadlock            = True
+  DynException _      == DynException _      = False -- incomparable
+  ErrorCall e1        == ErrorCall e2        = e1 == e2
+  ExitException e1    == ExitException e2    = e1 == e2
+  IOException e1      == IOException e2      = e1 == e2
+  NoMethodError e1    == NoMethodError e2    = e1 == e2
+  NonTermination      == NonTermination      = True
+  PatternMatchFail e1 == PatternMatchFail e2 = e1 == e2
+  RecConError e1      == RecConError e2      = e1 == e2
+  RecSelError e1      == RecSelError e2      = e1 == e2
+  RecUpdError e1      == RecUpdError e2      = e1 == e2
+  _                   == _                   = False
 
 ----------------------------------------------------------------
 -- Primitive throw and catch
 ----------------------------------------------------------------
 
 throwIO :: Exception -> IO a
-throwIO (IOException err)   = ioError err
-throwIO (HugsException exn) = primThrowException exn
-
-catchException :: IO a -> (Exception -> IO a) -> IO a
-catchException m k = do
-  (m `catchHugsException` (k . HugsException)) `Prelude.catch` (k . IOException)
+throwIO exn = IO (\f s -> throw exn)
 
 evaluate :: a -> IO a
 evaluate x = IO (\ f s -> x `seq` hugsReturn x)
@@ -78,23 +64,6 @@ evaluate x = IO (\ f s -> x `seq` hugsReturn x)
 block, unblock :: IO a -> IO a
 block   m = m
 unblock m = m
-
-----------------------------------------------------------------
--- Exception Predicates
-----------------------------------------------------------------
-
-ioErrors		:: Exception -> Maybe IOError
-userErrors		:: Exception -> Maybe String
-hugsExceptions		:: Exception -> Maybe HugsException
-
-ioErrors (IOException e) = Just e
-ioErrors _ = Nothing
-
-userErrors (IOException e) | isUserError e = Just (ioeGetErrorString e)
-userErrors _ = Nothing
-
-hugsExceptions (HugsException e) = Just e
-hugsExceptions _ = Nothing
 
 ----------------------------------------------------------------
 -- End

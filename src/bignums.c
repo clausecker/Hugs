@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: bignums.c,v $
- * $Revision: 1.6 $
- * $Date: 2002/09/12 11:52:45 $
+ * $Revision: 1.7 $
+ * $Date: 2003/01/23 17:47:07 $
  * ------------------------------------------------------------------------*/
 
 /*#define DEBUG_BIGNUMS*/
@@ -359,7 +359,7 @@ primFun(primIntegerToInt) {		/* Conversion :: Integer -> Int	   */
 	if (nonNull(whnfHead)) {
 	    updateRoot(whnfHead);
 	} else {
-	    cantReduce();
+	    throwException(ap(nameArithException, nameOverflow));
 	}
     }
 }
@@ -375,7 +375,7 @@ primFun(primIntegerToWord) {		/* Conversion :: Integer -> Word   */
     if (nonNull(whnfHead))
 	updateRoot(whnfHead);
     else
-	cantReduce();
+	throwException(ap(nameArithException, nameOverflow));
 }
 
 primFun(primIntegerToFloat) {		/* Conversion :: Integer -> Float  */
@@ -994,7 +994,7 @@ primFun(primQrmInteger) {		/* Integer quotient and remainder  */
     eval(primArg(1));
     x = bigQrm(primArg(2),primArg(1)=whnfHead);
     if (isNull(x)) {
-	cantReduce();
+	throwException(ap(nameArithException, nameDivideByZero));
     }
     else {
 	updateRoot(x);

@@ -18,8 +18,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: iomonad.c,v $
- * $Revision: 1.38 $
- * $Date: 2003/01/16 18:43:16 $
+ * $Revision: 1.39 $
+ * $Date: 2003/01/23 17:47:07 $
  * ------------------------------------------------------------------------*/
  
 Name nameIORun;			        /* run IO code                     */
@@ -303,7 +303,7 @@ static struct primInfo iomonadPrims = { iomonadControl, iomonadPrimTable, 0 };
 
 #define IOArg(n)    primArg((n)+2)
 #define IOReturn(r) { updapRoot(primArg(1),r); return; }
-#define IOFail(r)   { updapRoot(primArg(2),r); return; }
+#define IOFail(r)   { throwException(ap(nameIOException,r)); return; }
 
 /* --------------------------------------------------------------------------
  * The monad combinators:

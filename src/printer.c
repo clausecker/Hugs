@@ -8,8 +8,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: printer.c,v $
- * $Revision: 1.7 $
- * $Date: 2002/04/11 23:20:21 $
+ * $Revision: 1.8 $
+ * $Date: 2003/01/23 17:47:08 $
  * ------------------------------------------------------------------------*/
 
 static Void   local printer		Args((Name,Int));
@@ -19,9 +19,10 @@ static Void   local outOp		Args((Name));
 static Void   local outStr		Args((String));
 static Void   local outPr		Args((Name,Int,Cell));
 static Void   local outLPr		Args((Name,Cell));
+static Void   local outException	Args((Cell));
 static Void   local outBadRedex		Args((Cell));
-static Cell   local printDBadRedex	Args((Cell,Cell));
-static Cell   local printBadRedex	Args((Cell,Cell));
+static Cell   local printDException	Args((Cell));
+static Cell   local printException	Args((Cell,Cell));
 
 static Name nameLPrint, nameNLPrint;	/* list printing primitives	   */
 static Name nameSPrint, nameNSPrint;	/* string printing primitives	   */
@@ -63,7 +64,6 @@ Int what; {
 PROTO_PRIM(primPrint);
 PROTO_PRIM(primBPrint);
 PROTO_PRIM(primNPrint);
-PROTO_PRIM(primShowException);
 PROTO_PRIM(primLPrint);
 PROTO_PRIM(primNLPrint);
 PROTO_PRIM(primSPrint);
@@ -72,7 +72,6 @@ PROTO_PRIM(primNSPrint);
 static struct primitive printerPrimTable[] = {
   {"print",		3, primPrint},
   {"nprint",		3, primNPrint},
-  {"primShowException", 1, primShowException},
   {"lprint",		2, primLPrint},
   {"nlprint",		2, primNLPrint},
   {"sprint",		2, primSPrint},
@@ -98,7 +97,7 @@ primFun(primPrint) {			/* Evaluate and print term	   */
     out  = NIL;
     if (nonNull(temp)) {
 	push(temp);
-	outBadRedex(top());
+	outException(top());
     }
     else
 	printer(namePrint,d);
@@ -125,18 +124,6 @@ primFun(primNPrint) {			/* print term without evaluation   */
     updOutRoot(primArg(1));
 }
 
-primFun(primShowException) {		/* Print bad redexes               */
-    eval(primArg(1));                   /*     :: Cell -> [Char]           */
-#if CHECK_TAGS
-    if (!isPair(whnfHead) || fst(whnfHead != HUGSOBJECT)) 
-        internal("HugsObject expected");
-#endif
-    out = NIL;
-    out = printDBadRedex(snd(whnfHead),nameNil);
-    updapRoot(fst(out),snd(out));
-    out = NIL;
-}
-
 static Void local printer(pr,d)		/* Main part: primPrint/primNPrint */
 Name pr;				/* printer to use on components	   */
 Int  d; {				/* precedence level		   */
@@ -159,7 +146,7 @@ Int  d; {				/* precedence level		   */
 				    if (nonNull(temp)) {
 					push(temp);
 					outCh('[');
-					outBadRedex(top());
+					outException(top());
 					sp = ksp;
 					outLPr(nameLPrint,pushed(1));
 				    }
@@ -358,7 +345,7 @@ primFun(primLPrint) {			/* evaluate and print list	   */
     if (nonNull(temp)) {
 	push(temp);
 	outStr("] ++ ");
-	outBadRedex(top());
+	outException(top());
     }
     else if (whnfHead==nameCons && whnfArgs==2) {
 	outCh(',');
@@ -397,7 +384,7 @@ primFun(primSPrint) {			/* evaluate and print string	   */
     if (nonNull(temp)) {
 	push(temp);
 	outStr("\" ++ ");
-	outBadRedex(top());
+	outException(top());
     }
     else if (whnfHead==nameCons && whnfArgs==2) {
 	temp = evalWithNoError(top());	/* primArg(4), primArg(3) contain  */
@@ -405,7 +392,7 @@ primFun(primSPrint) {			/* evaluate and print string	   */
 	if (nonNull(temp)) {
 	    push(temp);
 	    outStr("\" ++ [");
-	    outBadRedex(top());
+	    outException(top());
 	    outLPr(nameLPrint,primArg(3));
 	}
 	else if (isChar(whnfHead) && whnfArgs==0) {
@@ -525,6 +512,19 @@ Cell xs; {
     fst(out) = ap(pr,xs);
 }
 
+static Void local outException(ex)	/* Produce expr to print exception */
+Cell ex; {
+    outCh('{');
+    if (isAp(ex) && fun(ex)==nameErrorCall) {
+	outStr("error ");
+	outPr(nameNPrint,FUN_PREC,arg(ex));
+    } else {
+	outStr("throw ");
+	outPr(nameNPrint,FUN_PREC,ex);
+    }
+    outCh('}');
+}
+
 static Void local outBadRedex(rx)	/* Produce expr to print bad redex */
 Cell rx; {
     outCh('{');
@@ -532,25 +532,25 @@ Cell rx; {
     outCh('}');
 }
 
-static Cell local printDBadRedex(rx,rs)	/* Produce expression for bad	   */
-Cell rx, rs; {				/* redex with special handling	   */
-    if (isAp(rx) && fun(rx)==nameError) /* of {error str} redexes	   */
-	return arg(rx);
+static Cell local printDException(ex)	/* Produce expression for exception*/
+Cell ex; {				/* with special handling	   */
+    if (isAp(ex) && fun(ex)==nameErrorCall)/* of {error str} exceptions    */
+	return arg(ex);
     else
-	return printBadRedex(rx,rs);
+	return printException(ex,nameNil);
 }
 
-static Cell local printBadRedex(rx,rs)	/* produce expression for bad	   */
-Cell rx, rs; {				/* redex			   */
+static Cell local printException(ex,rs)	/* produce expression for exception*/
+Cell ex, rs; {
    out = NIL;
-   outBadRedex(rx);
+   outException(ex);
    return revOnto(out,rs);
 }
 
-Void abandon(what,rx)			/* abandon computation		   */
+Void abandon(what,ex)			/* abandon computation		   */
 String what;
-Cell   rx; {
-    push(printDBadRedex(rx,nameNil));
+Cell   ex; {
+    push(printDException(ex));
     out   = NIL;
     outCh('\n');
     outStr(what);

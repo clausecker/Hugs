@@ -31,49 +31,25 @@ data RealWorld = RealWorld
 primitive performGC "primGC" :: IO ()
 
 unsafePerformIO :: IO a -> a
-unsafePerformIO m = performIO (runAndShowError m)
+unsafePerformIO m = valueOf (basicIORun m)
 
 unsafeInterleaveIO :: IO a -> IO a
-unsafeInterleaveIO m = interleaveIO (runAndShowError m)
+unsafeInterleaveIO m = IO (\ f s -> s (unsafePerformIO m))
 
 primitive unsafePtrEq    :: a -> a -> Bool
 primitive unsafePtrToInt :: a -> Int
 
 fixIO :: (a -> IO a) -> IO a
-fixIO m = IO fixIO'
- where
-  fixIO' fail succ =
-    case r of
-    Finished_Return a   -> succ a
-    Finished_Error err  -> fail err
-    other               -> error "IOExts.fixIO: failed"
+fixIO m = IO (\ f s -> r `seq` s a)
    where
     r = basicIORun (m a)
-    a = case r   of 
-        Finished_Return a  -> a
-        _                  -> error "IOExts.fixIO: thread exited with error"
+    a = valueOf r
 
 primitive unsafeCoerce "primUnsafeCoerce" :: a -> b
 
-performIO :: IO a -> a
-performIO m = 
-  case basicIORun m of
-    Finished_Return a  -> a
-    _                  -> error "IOExts.performIO: thread exited with error"
-
-interleaveIO :: IO a -> IO a
-interleaveIO m = IO (\ f s -> 
-  s (case basicIORun m of
-       Finished_Return a  -> a
-       _                  -> error "IOExts.interleaveIO: thread exited with error"
-     ))
-
-runAndShowError :: IO a -> IO a
-runAndShowError m =
-  m `catch` \err -> do 
-      putChar '\n'
-      putStr (show err)
-      return undefined
+valueOf :: IOFinished a -> a
+valueOf (Finished_Return a) = a
+valueOf _ = error "IOExts.valueOf: thread failed"	-- shouldn't happen
 
 -----------------------------------------------------------------------------
 -- Binary files 

@@ -9,15 +9,11 @@
 -----------------------------------------------------------------------------
 
 module Hugs.System (
-	ExitCode(..), exitWith,
 	getArgs, getProgName, getEnv, 
 	system
 	) where
 
-import Hugs.Prelude( primExitWith )
-
-data ExitCode = ExitSuccess | ExitFailure Int
-                deriving (Eq, Ord, Read, Show)
+import Hugs.Prelude( ExitCode(..) )
 
 primitive primArgc          :: IO Int
 primitive primArgv          :: Int -> IO String
@@ -35,17 +31,10 @@ system                      :: String -> IO ExitCode
 system s                     = do r <- primSystem s
                                   return (toExitCode r)
 
-exitWith                    :: ExitCode -> IO a
-exitWith c                   = primExitWith (fromExitCode c)
-
 primitive primSystem        :: String -> IO Int
 
 toExitCode                  :: Int -> ExitCode
 toExitCode 0                 = ExitSuccess
 toExitCode n                 = ExitFailure n
-
-fromExitCode                :: ExitCode -> Int
-fromExitCode ExitSuccess     = 0
-fromExitCode (ExitFailure n) = n
 
 -----------------------------------------------------------------------------

@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: machine.c,v $
- * $Revision: 1.12 $
- * $Date: 2003/01/04 11:08:24 $
+ * $Revision: 1.13 $
+ * $Date: 2003/01/23 17:47:08 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1277,7 +1277,7 @@ Long  numReductions;                    /* number of reductions counted    */
 #define restoreProducer()               /* nothing */
 #endif
 
-static Cell    errorRedex;              /* irreducible error expression    */
+static Cell    exception;               /* Exception thrown                */
 static jmp_buf *evalError = 0;          /* jump buffer for eval errors     */
 
 #if GIMME_STACK_DUMPS
@@ -1805,7 +1805,7 @@ static  void *labs[] = { INSTRLIST };
 			Continue;
 
 	Case(iTABLE)  :
-	Case(iFAIL)   : evalFails(root);                 /* cannot reduce  */
+	Case(iFAIL)   : throwException(ap(namePatternMatchFail, nameNil));
 			return;/*NOT REACHED*/
 
     EndDispatch
@@ -1817,8 +1817,8 @@ static  void *labs[] = { INSTRLIST };
 }
 
 Cell evalWithNoError(e)                /* Evaluate expression, returning   */
-Cell e; {                              /* NIL if successful, irreducible   */
-    Cell badRedex;                     /* expression if not...             */
+Cell e; {                              /* NIL if successful,               */
+    Cell caughtEx;                     /* Exception value if not...        */
     jmp_buf *oldCatch = evalError;
 
 #if JMPBUF_ARRAY
@@ -1826,30 +1826,32 @@ Cell e; {                              /* NIL if successful, irreducible   */
     evalError = catcherr;
     if (setjmp(catcherr[0])==0) {
 	eval(e);
-	badRedex = NIL;
+	caughtEx = NIL;
     }
     else
-	badRedex = errorRedex;
+	caughtEx = exception;
 #else
     jmp_buf catcherr;
     evalError = &catcherr;
     if (setjmp(catcherr)==0) {
 	eval(e);
-	badRedex = NIL;
+	caughtEx = NIL;
     }
     else
-	badRedex = errorRedex;
+	caughtEx = exception;
 #endif
     evalError = oldCatch;
-    return badRedex;
+    return caughtEx;
 }
 
 Void evalFails(root)                   /* Eval of current redex fails     */
 StackPtr root; {
-    errorRedex = stack(root);          /* get error & bypass indirections */
-    while (isPair(errorRedex) && fst(errorRedex)==INDIRECT)
-	errorRedex = snd(errorRedex);
+    internal("evalFails no longer supported");
+}
 
+Void throwException(ex)
+Cell ex; {
+    exception = ex;
 #if OBSERVATIONS
     obsCount=0;
 #endif
@@ -1857,11 +1859,11 @@ StackPtr root; {
     longjmp(*evalError,1);
 #else
     if (failOnError)
-	abandon("Program",errorRedex);
+	abandon("Program",ex);
     else if (evalError)
 	longjmp(*evalError,1);
     else
-	internal("uncaught eval error");
+	internal("uncaught exception");
 #endif
 }
 

@@ -436,8 +436,7 @@ mkdir -p $compat
 # hslibs lang DiffArray.hs		# -> Data.Array.Diff
 # hslibs lang DirectoryExts.hs
   hslibs lang Dynamic.hs
-# hslibs lang Exception.hs
-  stub Exception	Hugs.Exception Control.Exception
+  hslibs lang Exception.hs
 # hslibs lang ForeignObj.lhs		# deprecated
  libexts ForeignObj			# uses Hugs primitives
 # hslibs lang Generics.hs		# GHC-specific

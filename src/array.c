@@ -7,12 +7,11 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: array.c,v $
- * $Revision: 1.5 $
- * $Date: 2002/12/11 16:07:18 $
+ * $Revision: 1.6 $
+ * $Date: 2003/01/23 17:47:07 $
  * ------------------------------------------------------------------------*/
 
 static Name nameEltUndef;		/* undefined element in array	   */
-static Name nameOutBounds;		/* value of of bounds		   */
 
 PROTO_PRIM(primArray);
 PROTO_PRIM(primUpdate);
@@ -22,6 +21,7 @@ PROTO_PRIM(primAmap);
 PROTO_PRIM(primSubscript);
 PROTO_PRIM(primBounds);
 PROTO_PRIM(primElems);
+PROTO_PRIM(primEltUndef);
 #if LAZY_ST
 PROTO_PRIM(primSTNewArr);
 PROTO_PRIM(primSTReadArr);
@@ -46,8 +46,7 @@ static struct primitive arrayPrimTable[] = {
   {"primSubscript",	2, primSubscript},
   {"primBounds",	1, primBounds},
   {"primElems",		1, primElems},
-  {"eltUndef",		0, primFail},
-  {"outBounds",		2, primFail},
+  {"eltUndef",		0, primEltUndef},
 #if LAZY_ST
   {"STNewArr",		4, primSTNewArr},
   {"STReadArr",		3, primSTReadArr},
@@ -67,6 +66,11 @@ static struct primitive arrayPrimTable[] = {
   {0,			0, 0}
 };
 
+static Void outOfBounds Args((void));
+static void outOfBounds() {
+    throwException(ap(nameArrayException, ap(nameIndexOutOfBounds, nameNil)));
+}
+
 /* --------------------------------------------------------------------------
  * Array control:
  * ------------------------------------------------------------------------*/
@@ -80,7 +84,6 @@ Int what; {
 #define pFun(n,s,t)    addPrim(0,n=newName(findText(s),NIL),t,modulePrelude,NIL)
 		       pFun(nameEltUndef,  "_undefined_array_element",
 							"eltUndef");
-		       pFun(nameOutBounds, "_out_of_bounds","outBounds");
 #undef pFun
 		       break;
     }
@@ -254,10 +257,8 @@ static struct primInfo arrayPrims = { arrayControl, arrayPrimTable, 0 };
 			while (whnfHead==nameCons) {		\
 			    eval(pop());			\
 			    eval(top());			\
-			    if (whnfInt<0 || whnfInt>=alen) {	\
-				updapRoot(ap(nameOutBounds,aBounds()),top());\
-				cantReduce();			\
-			    }					\
+			    if (whnfInt<0 || whnfInt>=alen)	\
+				outOfBounds();			\
 			    drop(); p; eval(pop());		\
 			}
 
@@ -319,6 +320,10 @@ primFun(primElems) {			/* :: Array a b -> [b]		   */
     aEvalModel(1);
     aElems(1);
     updateRoot(revOnto(top(),nameNil));
+}
+
+primFun(primEltUndef) {
+    throwException(ap(nameArrayException, ap(nameUndefinedElement, nameNil)));
 }
 
 #if LAZY_ST
