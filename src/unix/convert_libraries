@@ -367,7 +367,7 @@ nocvt base System/Time.hsc		Time.hs		# Hugs primitives
   cvt haskell98 CString.hs
   cvt haskell98 CTypes.hs
   cvt haskell98 ForeignPtr.hs
-# cvt haskell98 Int.hs		# not yet: lacks the deprecated stuff
+  cvt haskell98 Int.hs
   cvt haskell98 MarshalAlloc.hs
   cvt haskell98 MarshalArray.hs
   cvt haskell98 MarshalError.hs
@@ -375,7 +375,7 @@ nocvt base System/Time.hsc		Time.hs		# Hugs primitives
   cvt haskell98 Ptr.hs
   cvt haskell98 StablePtr.hs
   cvt haskell98 Storable.hs
-# cvt haskell98 Word.hs		# not yet: lacks the deprecated stuff
+  cvt haskell98 Word.hs
 
   cvt haskell-src Language/Haskell/Parser.ly
   cvt haskell-src Language/Haskell/Lexer.hs
@@ -505,9 +505,6 @@ mkdir -p $compat
 # hslibs lang SystemExts.lhs		# GHC-specific
 # hslibs lang TimeExts.lhs
   hslibs lang Weak.hs
-
-  stub Int		Hugs.Int	# includes deprecated functions
-  stub Word		Hugs.Word	# includes deprecated functions
 
   hslibs lang/monads MonadCont.lhs
   hslibs lang/monads MonadEither.lhs

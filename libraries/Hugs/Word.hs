@@ -8,17 +8,6 @@ module Hugs.Word
 	, Word16
 	, Word32
 	, Word64
-	-- These functions are deprecated: use fromIntegral instead
-	, word8ToWord32  -- :: Word8  -> Word32
-	, word32ToWord8  -- :: Word32 -> Word8
-	, word16ToWord32 -- :: Word16 -> Word32
-	, word32ToWord16 -- :: Word32 -> Word16
-	, word8ToInt     -- :: Word8  -> Int
-	, intToWord8     -- :: Int    -> Word8
-	, word16ToInt    -- :: Word16 -> Int
-	, intToWord16    -- :: Int    -> Word16
-	, word32ToInt    -- :: Word32 -> Int
-	, intToWord32    -- :: Int    -> Word32
 	) where
 
 import Hugs.Prelude ( Word, Word8, Word16, Word32, Word64 )

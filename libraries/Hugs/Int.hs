@@ -8,15 +8,6 @@ module Hugs.Int
 	, Int16
 	, Int32
 	, Int64
-	-- These functions are deprecated: use fromIntegral instead
-	, int8ToInt  -- :: Int8  -> Int
-	, intToInt8  -- :: Int   -> Int8
-	, int16ToInt -- :: Int16 -> Int
-	, intToInt16 -- :: Int   -> Int16
-	, int32ToInt -- :: Int32 -> Int
-	, intToInt32 -- :: Int   -> Int32
-	, toInt
-	, fromInt
 	-- plus Eq, Ord, Num, Bounded, Real, Integral, Ix, Enum, Read,
 	--  Show and Bits instances for each of Int8, Int16 and Int32
 	) where
@@ -37,14 +28,6 @@ int8ToInt  = int32ToInt   . int8ToInt32
 intToInt8  = int32ToInt8  . intToInt32
 int16ToInt = int32ToInt   . int16ToInt32
 intToInt16 = int32ToInt16 . intToInt32  
-
--- And some non-exported ones
-
-int8ToInt16  :: Int8  -> Int16
-int16ToInt8  :: Int16 -> Int8
-
-int8ToInt16  = int32ToInt16 . int8ToInt32
-int16ToInt8  = int32ToInt8  . int16ToInt32
 
 -----------------------------------------------------------------------------
 -- Int8
