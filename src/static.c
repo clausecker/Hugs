@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.101 $
- * $Date: 2002/09/17 05:41:26 $
+ * $Revision: 1.102 $
+ * $Date: 2002/09/18 18:04:29 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -531,7 +531,6 @@ List ieList; {
   return orphans;
 }
 
-
 /*
  * fixupIEList() traverses an import/export list, adjusting
  * the list in the following ways:
@@ -543,10 +542,6 @@ List ieList; {
  *     parent P -- E appears in an import/export list rather
  *     than P(E). If P is appearing elsewhere in the
  *     import/export list, float E inside of P.
- *
- *  2. the dcons/members/field subordinate names of a type/class
- *     are added to the import/export list, so as to ease later
- *     lookup of these names.
  *
  * ToDo: remove duplicates from the resulting list also; it's
  *       harmless for there to be any, but may lead to confusion
@@ -574,31 +569,6 @@ List ieList; {
       ieList = augmentEntity(FALSE,fst(hd(xs)),snd(hd(xs)),ieList);
     }
   }
-  
-  /* Transformation 2 - augment the IE list with the subordinate
-   * names.
-   */
-  for(xs=ieList;nonNull(xs);xs=tl(xs)) {
-    Cell e = hd(xs);
-    if (isPair(e)) {
-      if (snd(e) == DOTDOT) {
-	if (isTycon(fst(e))) {
-	  Int kind = tycon(fst(e)).what;
-	  if (kind == DATATYPE || kind == NEWTYPE) {
-	    ieList=dupOnto(tycon(fst(e)).defn,ieList);
-	  }
-	} else if (isClass(fst(e))) {
-	  ieList=dupOnto(cclass(fst(e)).members,ieList);
-	} else {
-	  fprintf(stderr, "fixupIEList: Unknown parent entity %d\n", whatIs(fst(e)));
-	  fflush(stderr);
-	}
-      } else if (snd(e) != NIL) {
-	ieList = dupOnto(snd(e),ieList);
-      }
-    }
-  }
-
   return ieList;
 }          
 
@@ -683,19 +653,19 @@ Cell   entity; { /* Entry from import/hiding list */
 		    if (!lookForDataCon) break;
 		}
 	    } else if (isClass(f)) {
+		List sigs = NIL;
+		/* Want all members that are _exported_ by the importing module. */
+		if (isPair(e)) {
+		    if (snd(e) == DOTDOT) {
+			sigs = cclass(f).members;
+		    } else {
+			sigs = snd(e);
+		    }
+		}
 		if (cclass(f).text == t) {
 		    impFound = TRUE;
 		    if (!isId) {
 			if (DOTDOT == subEntities) {
- 			    /* Want all members that are _exported_ by
-			       the importing module.
-			    */
-			    List sigs;
-			    if (snd(e) == DOTDOT) {
-				sigs = cclass(f).members;
-			    } else {
-				sigs = snd(e);
-			    }
 			    imports=addEntity(f,sigs,imports);
 			    return imports;
 			} else if ( NIL == subEntities) {
@@ -707,6 +677,17 @@ Cell   entity; { /* Entry from import/hiding list */
 			}
 		    }
 		    if (!lookForDataCon) break;
+		}
+		if (!impFound && isId) {
+		    List xs = sigs;
+		    while(nonNull(xs)) {
+			if (isName(hd(xs)) && name(hd(xs)).text == t) {
+			    impFound = TRUE;
+			    imports=cons(hd(xs),imports);
+			    break;
+			}
+			xs=tl(xs);
+		    }
 		}
 	    } else {
 		internal("checkImportEntity2");
