@@ -24,7 +24,7 @@
 # TAGS:          build emacs TAGS table
 
 # This rule goes first to make it the default choice
-default		:: hugs@EXE@ runhugs@EXE@
+default		:: hugs@EXE@ runhugs@EXE@ libraries
 
 CC		= @CC@
 CFLAGS		= @CFLAGS@ @DEBUGFLAGS@ @MTCFLAGS@
@@ -40,6 +40,10 @@ CP		= @CP@
 EXE		= @EXE@
 
 FPTOOLS		= @FPTOOLS@
+INSTALL_FFI	= @INSTALL_FFI@
+
+# a file created by make libraries
+LIBRARIES	= ../libraries/Prelude.hs
 
 @SET_INSTALLDIRS@
 
@@ -84,7 +88,9 @@ ffihugs@OBJ@	: runhugs.c
 # Libraries, converted from raw sources out of the fptools tree
 ################################################################
 
-libraries	:
+libraries	:: $(LIBRARIES)
+
+$(LIBRARIES)	:
 		  cd unix; ./convert_hslibs $(FPTOOLS)
 		  cd unix; ./convert_libraries $(FPTOOLS)
 
