@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: storage.c,v $
- * $Revision: 1.43 $
- * $Date: 2002/06/17 21:43:10 $
+ * $Revision: 1.44 $
+ * $Date: 2002/06/22 17:01:35 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -183,12 +183,26 @@ String s2; {
 Text subText(s,l)                /* extract a substring and make it a Text */
 String s;
 Int    l; {
-    Text t = 0;
-    Char c = s[l];    /* save character */
-    s[l] = '\0';
-    t = findText(s);
-    s[l] = c;         /* restore character */
-    return t;
+    /* 
+     * This used to insert '\0' at s[l], do a lookup and then change s[l]
+     * back to its old value.  This fails if the String happens to be the
+     * result of textToStr so instead we make a copy, do the lookup and 
+     * forget the copy.
+     */
+    Text r;
+    char *t;
+    Int  i;
+    if ((t=(char *)malloc(l+1))==0) {
+        ERRMSG(0) "String storage space exhausted"
+	EEND;
+    }
+    for (i=0; i < l; ++i) {
+        t[i] = s[i];
+    }
+    t[i] = '\0';
+    r = findText(t);
+    free(t);
+    return r;
 }
 
 static Int local hash(s)                /* Simple hash function on strings */

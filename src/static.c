@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.75 $
- * $Date: 2002/06/21 23:22:00 $
+ * $Revision: 1.76 $
+ * $Date: 2002/06/22 17:01:34 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -4962,7 +4962,7 @@ Name p; {
     } else { 
         /* static function or address:
          *
-         *  ['static'] ['[' lib ']'] [fname] [&] [cid]
+         *  ['static'] [fname] ['[' lib ']'] [&] [cid]
          *
          */
         Text fn   = -1;
@@ -4988,7 +4988,7 @@ Name p; {
             e   = skipSpaces(e);
             ext = skipToChar(e,']');
             if (*ext != ']' || ext == e) goto cantparse;
-            libn = subText(e,ext-e);
+            libn = subText(e,e-ext);
             ext = skipSpaces(ext+1);
 #ifndef SILENTLY_IGNORE_FFI_LIB_SPECS
             ERRMSG(line) "Hugs doesn't use library specifications."
