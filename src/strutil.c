@@ -13,14 +13,31 @@
 
 String strCopy(s)         /* make malloced copy of a string   */
 String s; {
-    if (s && *s) {
-	char *t, *r;
+    if (s) {
+	char *t;
 	if ((t=(char *)malloc(strlen(s)+1))==0) {
 	    ERRMSG(0) "String storage space exhausted"
 	    EEND;
 	}
-	for (r=t; (*r++ = *s++)!=0; ) {
+	strcpy(t, s);
+	return t;
+    }
+    return NULL;
+}
+
+String strnCopy(s,n)      /* make malloced copy of a substring */
+String s;
+Int n; {
+    if (s) {
+	char *t;
+	if (strlen(s) < n)
+	    n = strlen(s);
+	if ((t=(char *)malloc(n+1))==0) {
+	    ERRMSG(0) "String storage space exhausted"
+	    EEND;
 	}
+	strncpy(t, s, n);
+	t[n] = '\0';
 	return t;
     }
     return NULL;
@@ -42,23 +59,11 @@ String* pName; {
     *pMod = NULL;
     *pName = nm;
   } else {
-    unsigned int nmLen;
-    unsigned int modLen;
-    unsigned int dotLen;
-
-    nmLen  = strlen(nm);
-    dotLen = strlen(dot);
-    modLen = (unsigned int)(nmLen - dotLen);
-
-    *pMod  = (String) malloc(sizeof(Char) * (modLen + 1));
-    *pName = (String) malloc(sizeof(Char) * (dotLen + 1));
-
     /* The module portion consists of everything upto the last dot. */
-    strncpy(*pMod, nm, modLen);
-    (*pMod)[modLen] = '\0';
-    
+    *pMod = strnCopy(nm, dot - nm);
+
     /* Copy everything after the last '.' to the name string */
-    strcpy(*pName, dot+1);
+    *pName = strCopy(dot+1);
   }
 
 }

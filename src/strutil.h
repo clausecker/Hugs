@@ -7,6 +7,9 @@
 /* string copy operator, allocates new via malloc() */
 extern String strCopy Args((String));
 
+/* substring copy operator, allocates new via malloc() */
+extern String strnCopy Args((String, Int));
+
 /* Given a string containing a possibly qualified name,
  * split it up into a module and a name portion.
  */
