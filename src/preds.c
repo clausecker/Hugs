@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: preds.c,v $
- * $Revision: 1.17 $
- * $Date: 1999/11/16 22:59:55 $
+ * $Revision: 1.18 $
+ * $Date: 1999/11/17 01:31:56 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -273,6 +273,7 @@ Int  d; {
 	    fputc('\n', stdout);
 	}
 #endif
+	improve1(0,ps,pi,o);
 	ev = scEntail(ps,pi,o,d);
 #if EXPLAIN_INSTANCE_RESOLUTION
 	if (showInstRes && nonNull(ev)) {

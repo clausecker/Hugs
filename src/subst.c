@@ -9,8 +9,8 @@
  * included in the distribution.
  *
  * $RCSfile: subst.c,v $
- * $Revision: 1.13 $
- * $Date: 1999/11/16 22:59:57 $
+ * $Revision: 1.14 $
+ * $Date: 1999/11/17 01:31:56 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1557,8 +1557,8 @@ Int o1; {
 }
 #endif
 
-Bool pairImprove(line,c,pi1,o1,pi2,o2,above)	/* Look for improvement of (pi1,o1)*/
-Int   line;				/* against (pi2,o2)                */
+Bool pairImprove(line,c,pi1,o1,pi2,o2,above)	/* Look for improvement of   */
+Int   line;					/* (pi1,o1) against (pi2,o2) */
 Class c;
 Cell  pi1;
 Int   o1;
