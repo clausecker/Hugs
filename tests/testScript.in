@@ -273,6 +273,9 @@ test_rts() {
 
   perl runstdtest $HUGS +q -pHugs: -s39 "-Orts/mvar.hs" "-irts/mvar.input" "-o1rts/mvar.output"
 
+  # verifying correct dict generation.
+  perl runstdtest $HUGS +q -pHugs: -s20 "-Orts/type01.hs"  "-o1rts/type01.output" "-irts/type01.input"
+
   # Old test code - it will probably get resurrected at some stage
   # 
   #   perl runstdtest $HUGS +q -pHugs: "-O./ptrEq.hs" "-i./ptrEq.input" "-o1./ptrEq.output"
