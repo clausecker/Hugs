@@ -1673,6 +1673,8 @@ data IOErrorType
   | IllegalOperation
   | PermissionDenied
   | UserError
+     -- GHC compatibility
+  | UnsupportedOperation
      -- DOTNET only
   | DotNetException
     deriving (Eq)
@@ -1688,6 +1690,7 @@ instance Show IOErrorType where
       IllegalOperation  -> "illegal operation"
       PermissionDenied  -> "permission denied"
       UserError         -> "user error"
+      UnsupportedOperation -> "unsupported operation"
       DotNetException   -> ".NET exception"
 
 instance Show IOException where
