@@ -79,6 +79,18 @@ o To check the status of each hierarchical module, run
 
 	src/unix/test_libraries <directory where libraries lives>
 
+o Some libraries are present, but Hugs does not implement all operations,
+  or does not provide the same semantics as GHC:
+    Control.Concurrent.MVar: Hugs provides only co-operative multitasking,
+    	which affects their behaviour.  Also finalizers are not implemented.
+    Control.Exception: non-IO exceptions are not broken down as in the
+	libraries, but treated as a type HugsException handled by the
+	module Hugs.Exception.	The arbitrary throw is not available.
+	Nonetheless, the bracket and bracket_ functions in this module
+	should be used instead of the IO versions.
+    Foreign.Ptr: not all functions are provided.
+    System.Mem.Weak: finalizers must be run explicitly.
+
 o to see what's handled and what's not, have a look at the conversion script
   src/unix/convert_libraries.  It's quite a kludge, but it mostly works,
   though there's still plenty to do.
