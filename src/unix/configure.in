@@ -366,11 +366,12 @@ GCC_LINT_FLAGS="-Wall \
 CFLAGS="-g"
 OPTFLAGS="-O2"
 
-dnl  The following patch avoids the outburst of (benign) error messages
-dnl  during compilation of machine.c under MacOS X/Darwin
+dnl  The following patch avoids the outburst of (benign) error messages during 
+dnl  compilation of machine.c under MacOS X/Darwin, as well as some linker 
+dnl  warnings caused by the default two-level namespace introduced in version 10.1
 dnl
 case "`uname -s`" in
-  Darwin) CFLAGS="$CFLAGS -traditional-cpp" ;;
+  Darwin) CFLAGS="$CFLAGS -no-cpp-precomp"; LDFLAGS="$LDFLAGS -flat_namespace" ;;
   *) ;;
 esac
 
