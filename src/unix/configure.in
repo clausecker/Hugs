@@ -154,8 +154,8 @@ AC_CHECK_HEADERS(dlfcn.h dl.h mach-o/dyld.h, [dynamic_loading=yes])
 dnl Checks for:
 dnl   farcalloc (in bcc), 
 dnl   valloc (in sunos, solaris, mips, amiga, next, minix, ultrix)
-AC_CHECK_HEADER(alloc.h,AC_CHECK_FUNCS(farcalloc))
-AC_CHECK_HEADER(malloc.h,AC_CHECK_FUNCS(valloc))
+AC_CHECK_HEADER(alloc.h,[AC_CHECK_FUNCS(farcalloc)])
+AC_CHECK_HEADER(malloc.h,[AC_CHECK_FUNCS(valloc)])
 
 
 dnl--------------------------------------------------------------------
