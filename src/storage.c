@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: storage.c,v $
- * $Revision: 1.29 $
- * $Date: 2002/02/28 03:25:42 $
+ * $Revision: 1.30 $
+ * $Date: 2002/04/04 06:52:42 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -385,20 +385,24 @@ Cell id; {
 	    return findTycon(qtextOf(id));
 #else /* !IGNORE_MODULES */
 	    Text   t  = qtextOf(id);
-	    Module m  = findQualifier(qmodOf(id));
-	    List   es = NIL;
-	    if (isNull(m)) return NIL;
-	    if (m == currentModule) {
-	      es = module(m).tycons;
-	    } else {
-	      es = module(m).exports;
-	    }
-	    for(; nonNull(es); es=tl(es)) {
+	    List   ms = findQualifiers(qmodOf(id));
+	    if (isNull(ms)) return NIL;
+	    while (nonNull(ms)) {
+	      Module m  = hd(ms);
+	      List   es = NIL;
+	      ms = tl(ms);
+	      if (m == currentModule) {
+		es = module(m).tycons;
+	      } else {
+		es = module(m).exports;
+	      }
+	      for(; nonNull(es); es=tl(es)) {
 		Cell e = hd(es);
 		if (isTycon(e) && tycon(e).text==t) 
-		    return e;
+		  return e;
 		if (isPair(e) && isTycon(fst(e)) &&  tycon(fst(e)).text==t) 
-		    return fst(e);
+		  return fst(e);
+	      }
 	    }
 	    return NIL;
 #endif /* !IGNORE_MODULES */
@@ -553,15 +557,18 @@ Cell id; {				/* in name table		   */
 	    return findName(qtextOf(id));
 #else /* !IGNORE_MODULES */
 	    Text   t  = qtextOf(id);
-	    Module m  = findQualifier(qmodOf(id));
-	    List   es = NIL;
-	    if (isNull(m)) return NIL;
-	    if (m == currentModule) {
-	      es = module(m).names;
-	    } else {
-	      es = module(m).exports;
-	    }
-	    for(; nonNull(es); es=tl(es)) {
+	    List  ms  = findQualifiers(qmodOf(id));
+	    if (isNull(ms)) return NIL;
+	    while (nonNull(ms)) {
+	      Module m  = hd(ms);
+	      List   es = NIL;
+	      ms = tl(ms);
+	      if (m == currentModule) {
+		es = module(m).names;
+	      } else {
+		es = module(m).exports;
+	      }
+	      for(; nonNull(es); es=tl(es)) {
 		Cell e = hd(es);
 		if (isName(e) && name(e).text==t) 
 		    return e;
@@ -574,12 +581,11 @@ Cell id; {				/* in name table		   */
 		    else if (isClass(c))
 			subentities = cclass(c).members;
 		    for(; nonNull(subentities); subentities=tl(subentities)) {
-			/*if (!isName(hd(subentities)))
-			    internal("findQualName3");*/
 			if (name(hd(subentities)).text == t)
 			    return hd(subentities);
 		    }
 		}
+	      }
 	    }
 	    return NIL;
 #endif /* !IGNORE_MODULES */
@@ -955,21 +961,24 @@ Cell c; {				/* class in class list		   */
 	return findClass(qtextOf(c));
 #else /* !IGNORE_MODULES */
 	Text   t  = qtextOf(c);
-	Module m  = findQualifier(qmodOf(c));
-	List   es = NIL;
-	if (isNull(m))
-	    return NIL;
-	if (m == currentModule) {
-	   es = module(m).classes;
-	} else {
-	   es = module(m).exports;
-	}
-	for (; nonNull(es); es=tl(es)) {
+	List   ms = findQualifiers(qmodOf(c));
+	if (isNull(ms)) return NIL;
+	while (nonNull(ms)) {
+	  Module m  = hd(ms);
+	  List   es = NIL;
+	  ms        = tl(ms);
+	  if (m == currentModule) {
+	    es = module(m).classes;
+	  } else {
+	    es = module(m).exports;
+	  }
+	  for (; nonNull(es); es=tl(es)) {
 	    Cell e = hd(es);
 	    if (isClass(e) && cclass(e).text == t)
-	        return e;
+	      return e;
 	    if (isPair(e) && isClass(fst(e)) && cclass(fst(e)).text==t) 
-		return fst(e);
+	      return fst(e);
+	  }
 	}
 #endif
     }
@@ -1313,6 +1322,7 @@ Cell c; {
     return NIL;/*NOTUSED*/
 }
 
+/* Don't use - use findQualifiers() instead */
 Module findQualifier(t)    /* locate Module in import list   */
 Text t; {
     Module ms;
@@ -1326,6 +1336,26 @@ Text t; {
 #endif
     return NIL;
 }
+
+/*
+ * locate Modules with a local alias 't' in the import list.
+ * Notice that more than one module may map to the same local
+ * alias.
+ */
+List findQualifiers(t)   /* locate Modules in import list   */
+Text t; {
+    Module ms;
+    List res = NIL;
+    for (ms=module(currentModule).qualImports; nonNull(ms); ms=tl(ms)) {
+      if (textOf(fst(hd(ms)))==t) {
+	res = cons(snd(hd(ms)), res);
+      }
+    }
+    if (module(currentModule).text==t)
+      res = cons(currentModule,res);
+    return res;
+}
+
 
 Void setCurrModule(m)              /* set lookup tables for current module */
 Module m; {

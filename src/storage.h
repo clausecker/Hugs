@@ -9,8 +9,8 @@
  * included in the distribution.
  *
  * $RCSfile: storage.h,v $
- * $Revision: 1.27 $
- * $Date: 2002/03/19 10:55:10 $
+ * $Revision: 1.28 $
+ * $Date: 2002/04/04 06:52:42 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -774,7 +774,8 @@ extern Inst  newInst	    Args((Void));
 extern Inst  findFirstInst  Args((Tycon));
 extern Inst  findNextInst   Args((Tycon,Inst));
 #if !IGNORE_MODULES
-extern Module findQualifier Args((Text));
+extern Module findQualifier  Args((Text));
+extern List   findQualifiers Args((Text));
 #endif
 
 /* --------------------------------------------------------------------------
