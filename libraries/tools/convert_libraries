@@ -113,7 +113,7 @@ copy_examples() {
 	to_dir=$2
 	if [ -d $from_dir/examples ]
 	then	(cd $from_dir;
-		 $FIND examples -name CVS -prune -o \! -name .cvsignore \! -iname Makefile -type f -print) |
+		 $FIND examples -name CVS -prune -o \! -name .cvsignore \! -name Makefile \! -name makefile -type f -print) |
 			sed 's:^examples/::' |
 			while read name
 			do
@@ -196,10 +196,11 @@ do
 	fi
 	sh $HugsPackage -o $BuildFFI $package_src $HUGSDIR/packages/$package
 	copy_examples $src/$package $HUGSDIR/packages/$package/examples
-	$FIND $src/$package -maxdepth 1 -iname 'licen[cs]e*' -o -iname copyright |
-		while read name; do
+	for name in $src/$package/LICEN[CS]E* $src/$package/COPYING* $src/$package/COPYRIGHT* $src/$package/copyright; do
+		if test -f $name; then
 			cp $name $HUGSDIR/packages/$package
-		done
+		fi
+	done
 done
 
 # Compatibility with lib/exts:
