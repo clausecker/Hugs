@@ -3,11 +3,11 @@
 #
 include Defs.mk
 
-all: fptools src/Makefile
+all: fptools pp-fptools src/Makefile
 	cd src; make
 
 src/Makefile:
-	cd src/unix; make config
+	cd src/unix; make config EXTRA_CONFIGURE_OPTS=$(EXTRA_CONFIGURE_OPTS)
 
 #
 # Utilities needed to check out and process fptools. To override
@@ -26,8 +26,13 @@ fptools:
 	-mkdir fptools
 	$(CVS) -d ${CVSROOT} export -r${HSLIBSTAG} $(addprefix fptools/hslibs/,${HSLIBSDIRS})
 	$(CVS) -d ${CVSROOT} export -r${LIBRARIESTAG} $(addprefix fptools/libraries/,${LIBRARIESDIRS})
-	# preprocess these, so the package can be built without happy & ghc
-	# changes here should be reflected also in RPM.mk (sorry)
+
+.PHONY: pp-fptools
+
+# Preprocess fptools checkout, so the package can be built
+# without happy & ghc changes here should be reflected also
+# in RPM.mk (sorry)
+pp-fptools: fptools
 	$(FIND) fptools/libraries -name "*.ly" -o -name "*.y" |\
 		xargs -l $(HAPPY)
 ifneq "$(USING_AN_OLDER_HSC2HS)" "YES"
