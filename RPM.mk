@@ -16,6 +16,16 @@ RPMDEFS = --define "_topdir ${RPMTMP}" \
 	  --define "version ${VERSION}" \
 	  --define "release ${RELEASE}" \
 
+VERSION_SUBSTS = \
+    -e "s/define MAJOR_RELEASE.*/define MAJOR_RELEASE 0/" \
+    -e "s/VERSION_STRING MONTH_YEAR/VERSION_STRING \"${MONTH_YEAR}\"/" \
+    -e "s/VERSION_STRING YYYYMMDD/VERSION_STRING \"${YEAR_MONTH_DAY}\"/"
+
+RC_STRING = RC1
+RC_VERSION_SUBSTS = \
+    -e "s/define MAJOR_RELEASE.*/define MAJOR_RELEASE 1/" \
+    -e "s/VERSION_STRING MONTH_YEAR/VERSION_STRING \"${MON_YEAR} ${RC_STRING}\"/"
+
 # unless you've just unpacked, `make clean' first
 tar: ${PACKAGE}.tar.gz
 
@@ -31,7 +41,7 @@ ${PACKAGE}.tar.gz:
 	find ${TARTMP}/hugs98/fptools/libraries -name "*.hsc" |\
 		xargs -l hsc2hs --no-compile
 	cp ${TARTMP}/hugs98/src/version.c /tmp/mktar
-	cd ${TARTMP}/hugs98/src; sed -e "s/define MAJOR_RELEASE.*/define MAJOR_RELEASE 0/" -e "s/VERSION_STRING MONTH_YEAR/VERSION_STRING \"${MONTH_YEAR}\"/" -e "s/VERSION_STRING YYYYMMDD/VERSION_STRING \"${YEAR_MONTH_DAY}\"/" < ${TARTMP}/version.c > ${TARTMP}/hugs98/src/version.c
+	cd ${TARTMP}/hugs98/src; sed ${VERSION_SUBSTS} < ${TARTMP}/version.c > ${TARTMP}/hugs98/src/version.c
 	# using `make parser.c' would be best, but by default yacc
 	# will be used, and yacc is, for some reason, incompatible
 	cd ${TARTMP}/hugs98/src; bison -y parser.y; mv y.tab.c parser.c
@@ -57,6 +67,9 @@ rpm: tar rpm-dirs
 	${RPMBUILD} ${RPMDEFS} -ba ${SPECFILE}
 	mv ${RPMTMP}/RPMS/i386/${PACKAGE}-${RELEASE}.i386.rpm .
 	mv ${RPMTMP}/SRPMS/${PACKAGE}-${RELEASE}.src.rpm .
+
+rc-rpm:
+	${MAKE} VERSION_SUBSTS='${RC_VERSION_SUBSTS}' rpm
 
 clean:
 	-cd src; if test -f Makefile; then make veryclean; fi
