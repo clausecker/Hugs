@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.30 $
- * $Date: 2001/02/13 01:02:16 $
+ * $Revision: 1.31 $
+ * $Date: 2001/02/14 22:53:19 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -7111,7 +7111,8 @@ Bool h98Pred(allowArgs,pi)		/* Check syntax of Hask98 predicate*/
 Bool allowArgs;
 Cell pi; {
     return isClass(getHead(pi)) && argCount==1 &&
-	   isOffset(getHead(arg(pi))) && (argCount==0 || allowArgs);
+	   (isOffset(getHead(arg(pi))) || isInt(getHead(arg(pi)))) && 
+           (argCount==0 || allowArgs);
 }
 
 Cell h98Context(allowArgs,ps)		/* Check syntax of Hask98 context  */
