@@ -1,61 +1,80 @@
-		   Building Hugs on Win32 platforms
-		  ----------------------------------
+Building Hugs on Win32 platforms
+================================
 
-Last updated: 11/03/2003
+Building from a source snapshot
+-------------------------------
 
-* Building Hugs sources + libraries
+As the _build_ environment is Unix-slanted, you first need to have
+the following toolchains installed on your Windows platform:
 
-- As the _build_ environment is Unix-slanted, you first 
-  need to have the following toolchains installed on your
-  Windows platform:
-  
-    * Install a recent version of the cygwin 
-      toolchain from
-  
+    * Install a recent version of Cygwin (a full set of Unix
+      tools) from
+
         http://www.cygwin.com/
-     
-    * Install the mingw tools:
+
+    * Install the MinGW compiler toolkit:
 
         http://www.mingw.org/
 
     * Arrange for the mingw/bin directory to appear before
-      the cygwin directories in your PATH.
+      the cygwin directories in your PATH.  (That gets you the
+      MinGW compiler instead of the Cygwin one, so the binaries
+      you build won't require extra libraries to run.)
 
-- check out the Hugs sources following instructions
-  at http://cvs.haskell.org/
+The following alternatives might work, but are untried:
+ - Cygwin by itself, if don't mind Cygwin-dependent binaries.
+ - MinGW with MSYS and msysDTK (a lighter weight alternative
+   to Cygwin).
 
-- cd into the toplevel hugs98 directory.
-- check out the fptools library code:
+0) Get a tarball from http://cvs.haskell.org/Hugs/downloads/snapshots/
+   and unpack it using tar.
 
-    foo$ make fptools
-    ..
+1) cd into the toplevel hugs98 directory.
 
-- Compile up the Hugs sources and convert the library sources for
-  use by Hugs:
+2) Build the interpreter and libraries with
 
-    foo$ export hsc2hs=/path/to/hsc2hs happy=/path/to/happy
-    foo$ make EXTRA_CONFIGURE_OPTS=--build=i386-unknown-mingw32
+     foo$ make EXTRA_CONFIGURE_OPTS=--build=i386-unknown-mingw32
 
-  'hsc2hs' comes with GHC
+   Other configure options you might add are listed in unix.txt.
 
-  'happy' is the Happy parser generator available via
-  http://haskell.org/happy/
+3) Test the bits:
 
-  There's no need to set hsc2hs or happy if 'hsc2hs' and 'happy'
-  are available via your PATH setting.
+     foo$ export HUGSDIR=/path/to/hugs98/hugsdir
+     foo$ src/hugs
 
-- assuming that went OK, compile up some FFI stub libraries:
+Building from CVS
+-----------------
 
-    foo$ cd src
-    foo$ make ffi_libraries
+This is more flexible, but in addition to the environment above,
+you will need a GHC and Happy installation and an Internet
+connection.
 
-- test the bits:
+0) Check out the Hugs sources following instructions
+   at http://cvs.haskell.org/
 
-    foo$ export HUGSDIR=/path/to/hugs98/hugsdir
-    foo$ ./hugs
+1) if 'hsc2hs' and 'happy' are not available via your PATH setting,
+   you need to tell the build system where they are:
 
+     foo$ export hsc2hs=/path/to/hsc2hs happy=/path/to/happy
 
-* Building the Hugs sources using MSVC
+   'hsc2hs' comes with GHC
+
+   'happy' is the Happy parser generator available via
+   http://haskell.org/happy/
+
+2) Proceed from step 1 of the above procedure for building from
+   snapshots.  When you start from CVS, the make command will also
+   check out the fptools library code, and do extra preprocessing
+   that is prebaked in snapshots.
+
+Using Microsoft Visual C++
+--------------------------
+
+Building the libraries needs a Unix-like environment, as described
+above, but once you've done that you can build the interpreter and
+WinHugs using MSVC.
+
+* Building the Hugs interpreter using MSVC
 
 - To compile the interpreter using an MS VC++ compiler, you need
   to copy msc/{config,options,platform}.h into the src/ directory:
