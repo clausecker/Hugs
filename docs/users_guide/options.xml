@@ -101,7 +101,7 @@ and the <citetitle pubwork="article">Hugs 98 User Manual</citetitle>.
 <term><option>-c</option><replaceable>num</replaceable></term>
 <listitem>
 <para>
-Set constraint cutoff limit in the type checker to
+Set the constraint cutoff limit in the type checker to
 <replaceable>num</replaceable> (default: 40).
 See <xref linkend="flexible-instances"/>.
 </para>
@@ -344,7 +344,7 @@ all occurrences of <literal>%%</literal> are replaced by <literal>%</literal>.
 
 <listitem>
 <para>
-(win32 only): if the <option>-E</option> string is prefixed with
+(Win32 only): if the <option>-E</option> string is prefixed with
 the character <quote><literal>&amp;</literal></quote>,
 then the invocation is asynchronous, that is, the editor process
 is created, but Hugs won't wait for the editor to terminate.
@@ -353,7 +353,7 @@ is created, but Hugs won't wait for the editor to terminate.
 
 <listitem>
 <para>
-(win32 only): if the <option>-E</option> string is prefixed with
+(Win32 only): if the <option>-E</option> string is prefixed with
 the character <quote><literal>!</literal></quote>,
 then the invocation will be asynchronous and use the underlying
 command processor/shell to execute the command.
@@ -722,7 +722,7 @@ spotting general trends.
 Print the number of cells recovered after each garbage collection
 (default: off).
 This can be useful for analysing the <firstterm>residency</firstterm> of an
-algorithm, the amount of memory is is actually using at each point in time.
+algorithm, the amount of memory it is actually using at each point in time.
 For example,
 <screen>
 Hugs.Base> :set +g
