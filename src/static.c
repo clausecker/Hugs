@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.47 $
- * $Date: 2001/12/06 20:14:43 $
+ * $Revision: 1.48 $
+ * $Date: 2001/12/12 07:42:37 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1648,6 +1648,16 @@ Class c; {
 	    EEND;
 	}
     }
+    
+#ifdef IPARAM
+    for ( ss = cclass(c).supers; nonNull(ss); ss=tl(ss) ) {
+      if ( isIP(getHead(hd(ss))) ) {
+	    ERRMSG(cclass(c).line)
+	          "Implicit parameters not permitted in class context"
+	    EEND;
+      }
+    }
+#endif
 
     h98CheckCtxt(cclass(c).line,"class definition",FALSE,cclass(c).supers,NIL);
     cclass(c).numSupers = length(cclass(c).supers);
@@ -1971,8 +1981,14 @@ Class c; {				/* class hierarchy is acyclic	   */
 	Int  lev = 0;
 	cclass(c).level = (-1);
 	for (; nonNull(scs); scs=tl(scs)) {
+#ifdef IPARAM
+	  if ( !isIP(getHead(hd(scs))) ) {
+#endif 
 	    Int l = visitClass(getHead(hd(scs)));
 	    if (l>lev) lev=l;
+#ifdef IPARAM
+	  }
+#endif	    
 	}
 	cclass(c).level = 1+lev;	/* level = 1 + max level of supers */
     }
