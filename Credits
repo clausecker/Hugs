@@ -12,48 +12,35 @@ General questions about using Hugs should be sent to
 
 ========================================================================
 
-Primary Hugs author:
+Primary developers:
 
-    Mark Jones, Oregon Graduate Institute
+    Sigbjorn Finne
+    Alastair Reid
+    Jeff Lewis
+    Johan Nordlander
 
-Secondary Hugs authors:
+Original author:
 
-    Alastair Reid, University of Utah
-    Jeff Lewis, Galois Connections
-    Andy Gill, Galois Connections
+    Mark Jones
 
-Hugs for Windows:
+Valuable contributions:
 
-    Pepe Gallardo, Universidad de Malaga
+    Pepe Gallardo
+    Andy Gill
+    Richard Watson
+    Levent Erkok
+    Thomas Nordin
+    Jeremy Shute
+    Hans Aberg
+    Pablo Azero
 
-MacOS port:
-
-    Hans Aberg, Stockholm University
-    Pablo Azero, Universidad Mayor de San Simon
-
-Debugger support:
-
-    Richard Watson, University of South Queensland
-
-Recursive do implementation:
-
-    Levent Erkok, Oregon Graduate Institute
-
-Various contributions and bugfixes:
-
-    Thomas Nordin, Oregon Graduate Institute
-    Sigbjorn Finne, Galois Connections
-
-Current maintainer:
-
-    Johan Nordlander, Oregon Graduate Institute
 
 ========================================================================
 
 The development of Hugs has been supported, in part and at different 
-times, by the Yale Haskell Group at Yale University, and by the Pacific
+times, by the Yale Haskell Group at Yale University, by the Pacific
 Software Research Center (PacSoft) at the Oregon Graduate Institute of
-Science and Technology.
+Science and Technology, and by Galois Connctions, Inc.
 
 ========================================================================
 

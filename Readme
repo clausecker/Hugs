@@ -4,58 +4,50 @@ __   __ __  __  ____   ___      _________________________________________
 ||___|| ||__|| ||__||  __||     Copyright (c) 1994-2001
 ||---||         ___||           World Wide Web: http://haskell.org/hugs
 ||   ||                         Report bugs to: hugs-bugs@haskell.org
-||   || Version: Feb 2001       _________________________________________
+||   || Version: Dec 2001       _________________________________________
 
 ------------------------------------------------------------------------------
 
-   We are pleased to announce a new beta release of Hugs98, a  
-   Haskell interpreter and programming environment for developing 
-   cool Haskell programs.  Sources and binaries are freely available
-   by anonymous FTP and on the World-Wide Web.
+   We are pleased to announce a new release of Hugs98, a Haskell 
+   interpreter and programming environment for developing cool Haskell 
+   programs.  Sources and binaries are freely available on the 
+   World-Wide Web.
 
-   This release is largely conformant with Haskell 98, including
-   monad and record syntax, newtypes, strictness annotations, and
-   modules.  In addition, it comes packaged with the libraries defined
-   in the most recent version of the Haskell Library Report and with
-   extension libraries that are compatible with GHC 3.0 and later.
+   The most important features of this new release are:
+   
+   - The incompatibilities between Hugs and the Haskell Graphics Library
+     have been fixed, and binaries for the HGL are now available on the 
+     Hugs download page.
 
-   This is a major release that incorporates bug fixes as well as 
-   several new features and enhancements that have been developed for 
-   Hugs over the last year. It is announced with the intentions that 
-   it will remain a stable and lightweight implementation of Haskell 98 
-   + extensions for some considerable time.
+   - The missing standard libraries Directory and Time have been 
+     implemented.
 
-   A list of the most important new features looks as follows:
+   - Hugs is now delivered with most of the hslibs libraries installed
+     in the lib/exts/ directory.
 
-   - A Foreign Function Interface closely modelled after the one
-     provided by GHC.
+   - A new command :regsave is availiable under Windows, which persists 
+     the current settings to the Registry.
+     
+   - Hugs now falls back to using the default HUGSPATH on Windows
+     systems, should the user-specified path in the Registry not 
+     contain a valid Prelude.
 
-   - Built-in, Hood-like debugging support.
- 
-   - Parallel list comprehensions, a.k.a. zip-comprehensions.
+   - MacOS X is now one of the supported unix ports, with prebuilt 
+     binaries avaliable on the download page.
 
-   - A new syntax for recursive monad bindings.
+   - Experimental support is provided for hierarchical module names, 
+     where a module name A.B.C is mapped onto the file path 
+     A/B/C{.hs,.lhs} and appended to each of the path prefixes in 
+     HUGSPATH until the name of a readable file is found.
 
-   - A new GUI under Windows that doesn't consume all CPU time.
-
-   - Support for the MacOS platform integrated into the main 
-     distribution.
-
-   - Corrections of all bugs reported for the January 2001 beta 
-     release.
-
-   See the release notes in the "docs" directory of the distribution
-   for more information on the new language features.
-
-   Hugs is best used as a Haskell program development system: it boasts
-   extremely fast compilation, supports incremental compilation, and
-   has the convenience of an interactive interpreter (within which one
-   can move from module to module to test different portions of a
-   program).  However, being an interpreter, it does not nearly match
-   the run-time performance of, for example, GHC or HBC.
+   Most reported bugs have also been fixed; however, some issues primarily
+   related to functional dependencies still remain in this release.  See
+   the heading "Hugs Bugs & Features" on the Hugs web site for further 
+   information.
 
    Send email to hugs-users-request@haskell.org to join the hugs-users
    mailing list.  Bug reports should be sent to hugs-bugs@haskell.org.
+   
    Send email to hugs-bugs-request@haskell.org to subscribe to the
    hugs-bugs list.
 
