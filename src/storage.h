@@ -8,8 +8,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: storage.h,v $
- * $Revision: 1.63 $
- * $Date: 2003/12/02 12:24:03 $
+ * $Revision: 1.64 $
+ * $Date: 2004/01/29 16:30:52 $
  * ------------------------------------------------------------------------*/
 #ifndef __STORAGE_H__
 #define __STORAGE_H__
@@ -334,11 +334,6 @@ extern	Bool		isIdent     Args((Cell));
 extern	Cell	        mkFloat		Args((FloatPro));
 extern  FloatPro	floatOf		Args((Cell));
 extern  String		floatToString   Args((FloatPro));
-#if BREAK_FLOATS
-extern  Cell		part1Float	Args((FloatPro));
-extern  Cell		part2Float	Args((FloatPro));
-extern  FloatPro	floatFromParts	Args((Cell,Cell));
-#endif
 
 #define isDouble(c)     (isPair(c) && fst(c)==DOUBLECELL)
 extern	Cell	        mkDouble	Args((DoublePro));

@@ -11,8 +11,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.114 $
- * $Date: 2004/01/29 09:31:49 $
+ * $Revision: 1.115 $
+ * $Date: 2004/01/29 16:30:51 $
  * ------------------------------------------------------------------------*/
 #include "prelude.h"
 #include "storage.h"
@@ -1556,25 +1556,6 @@ static union {
     }      clVal;
 } fudgeCoerce;
 
-Cell part1Float(fl)
-FloatPro fl; {
-    fudgeCoerce.flVal = fl;
-    return fudgeCoerce.clVal.flPart1;
-}
-
-Cell part2Float(fl)
-FloatPro fl; {
-    fudgeCoerce.flVal = fl;
-    return fudgeCoerce.clVal.flPart2;
-}
-
-FloatPro floatFromParts(c1,c2)
-Cell c1, c2; {
-    fudgeCoerce.clVal.flPart1 = c1;
-    fudgeCoerce.clVal.flPart2 = c2;
-    return fudgeCoerce.flVal;
-}
-
 Cell bfTemp = NIL;
 
 Cell mkFloat(fl)
@@ -1723,6 +1704,24 @@ String floatToString(fl)
 FloatPro fl; {
     internal("floatToString");
     return "";/*NOTREACHED*/
+}
+
+Cell part1Double(dbl)
+DoublePro dbl; {
+    internal("part1Double");
+    return 0;/*NOTREACHED*/
+}
+
+Cell part2Double(dbl)
+DoublePro dbl; {
+    internal("part2Double");
+    return 0;/*NOTREACHED*/
+}
+
+DoublePro doubleFromParts(c1,c2)
+Cell c1, c2; {
+    internal("doubleFromParts");
+    return 0;/*NOTREACHED*/
 }
 
 Cell mkDouble(fl)
