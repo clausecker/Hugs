@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.150 $
- * $Date: 2003/04/06 23:41:24 $
+ * $Revision: 1.151 $
+ * $Date: 2003/04/28 17:15:24 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -5358,7 +5358,7 @@ Cell e; {				/* :: OpExp			   */
                         while (nonNull(s)) {
                             Cell next   = arg(fun(s));
                             arg(fun(s)) = e;
-			    fun(fun(s)) = snd(fun(fun(s)));
+			    fun(fun(s)) = snd(snd(fun(fun(s))));
                             e           = s;
                             s           = next;
 			}
@@ -5373,7 +5373,7 @@ Cell e; {				/* :: OpExp			   */
 				assocOf(sys)!=UMINUS_ASSOC) {
 				ERRMSG(line)
 				 "Ambiguous use of unary minus with \""
-				ETHEN ERREXPR(snd(fun(fun(s))));
+				ETHEN ERREXPR(fst(snd(fun(fun(s)))));
 				ERRTEXT "\""
 				EEND;
 			    }
@@ -5385,7 +5385,7 @@ Cell e; {				/* :: OpExp			   */
 				while (whatIs(e1)==NEG)
 				    e1 = snd(e1);
 				arg(fun(t)) = arg(e1);
-				fun(fun(t)) = snd(fun(fun(t)));
+				fun(fun(t)) = snd(snd(fun(fun(t))));
                                 arg(e1)     = t;
 				sys         = APPLIC;
 				continue;
@@ -5446,9 +5446,9 @@ Cell e; {				/* :: OpExp			   */
 				(assocOf(sye)!=assocOf(sys) ||
 				 assocOf(sye)==NON_ASS)) {
 				ERRMSG(line) "Ambiguous use of operator \""
-				ETHEN ERREXPR(snd(fun(fun(e))));
+				ETHEN ERREXPR(fst(snd(fun(fun(e)))));
 				ERRTEXT "\" with \""
-				ETHEN ERREXPR(snd(fun(fun(s))));
+				ETHEN ERREXPR(fst(snd(fun(fun(s)))));
 				ERRTEXT "\""
 				EEND;
 			    }
@@ -5467,7 +5467,7 @@ Cell e; {				/* :: OpExp			   */
 			    else {				/* reduce  */
 				Cell next   = arg(fun(s));
 				arg(fun(s)) = arg(e);
-				fun(fun(s)) = snd(fun(fun(s)));
+				fun(fun(s)) = snd(snd(fun(fun(s))));
 				arg(e)      = s;
 				s	    = next;
 				sys	    = APPLIC;
@@ -5481,7 +5481,8 @@ Cell e; {				/* :: OpExp			   */
 static Pair local attachFixity(line,op)	/* Attach fixity to operator in an */
 Int  line;				/* infix expression		   */
 Cell op; {
-    Syntax sy = DEF_OPSYNTAX;
+    Syntax sy   = DEF_OPSYNTAX;
+    Cell   trop = op;
 
     switch (whatIs(op)) {
 	case VAROPCELL :
@@ -5493,17 +5494,17 @@ Cell op; {
 				EEND;
 			     }
 			     sy = syntaxOf(n);
-			     op = n;
+			     trop = n;
 			 }
 			 break;
 
 	case CONOPCELL :
-	case CONIDCELL : sy = syntaxOf(op = conDefined(line,op,FALSE));
+	case CONIDCELL : sy = syntaxOf(trop = conDefined(line,op,FALSE));
 			 break;
 
 	case QUALIDENT : {   Name n = findQualName(op);
 			     if (nonNull(n)) {
-				 op = n;
+				 trop = n;
 				 sy = syntaxOf(n);
 			     } else {
 				 ERRMSG(line)
@@ -5517,8 +5518,8 @@ Cell op; {
     if (sy==APPLIC) {
 	sy = DEF_OPSYNTAX;
     }
-    return pair(mkInt(sy),op);		/* Pair fixity with (possibly) */
-					                /* translated operator		   */
+    return pair(mkInt(sy),pair(trop,op)); /* Pair fixity with (possibly) */
+					  /* translated operator	 */
 }
 
 static Syntax local lookupSyntax(t)	/* Try to find fixity for var in  */
