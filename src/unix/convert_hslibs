@@ -95,7 +95,7 @@ cvt data/edison EdisonPrelude.hs
 # No longer useable; use or own.
 #cvt lang ShowFunctions.lhs
 
-cvt lang NumExts.lhs
+# cvt lang NumExts.lhs
 # it'd be really good to have this but it looks like a lot of work
 # cvt lang GlaExts.lhs
 
@@ -238,7 +238,7 @@ cvt text/parsec ParsecToken.hs
 # cvt tools/Xtract XtractParse.hs
 # cvt tools/Xtract XtractParseNew.hs
 
-cvt util GetOpt.lhs
+# cvt util GetOpt.lhs
 # cvt util MD5.lhs
 # cvt util Memo.lhs
 # cvt util Select.lhs
