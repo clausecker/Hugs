@@ -203,7 +203,7 @@ List ieList; {
   if (nonNull(orphans)) {
 #if 0
     /* Debugging - show the orphan list */
-    fprintf(stderr, "Orphan list:\n"); fflush(stderr);
+    fprintf(stderr, "Orphan list{%s}:", textToStr(module(currentModule).text)); fflush(stderr);
     showIEList(orphans,'\n'); fflush(stderr);
 #endif
     /* Transformation 1 (we're actually being a bit sloppy here
@@ -477,7 +477,7 @@ List is; {
         }
       }
     } else {
-        /* concat the two lists, i.e., no removal of duplicates. */
+        /* concat the two lists; remove duplicates. */
         if (!isPair(hd(ms)) && ls != NIL) {
             hd(ms) = pair(e,ls);
         } else if (ls == NIL || ls == NONE || snd(hd(ms)) == DOTDOT) {
@@ -485,7 +485,7 @@ List is; {
         } else if (ls == DOTDOT || snd(hd(ms)) == NIL || snd(hd(ms)) == NONE) {
             snd(hd(ms)) = ls;
         } else {
-            snd(hd(ms)) = dupOnto(ls,snd(hd(ms)));
+            snd(hd(ms)) = nubList(dupOnto(ls,snd(hd(ms))));
         }
         return is;
     }
