@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.140 $
- * $Date: 2003/02/11 04:15:00 $
+ * $Revision: 1.141 $
+ * $Date: 2003/02/12 03:13:37 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -4919,12 +4919,15 @@ List ds; {				/* given list of equations	   */
 		bs = cons(pair(pat,pair(NIL,singleton(pair(NIL,rhs)))),bs);
 	    } else {
 		List vs	= getPatVars(line,pat,NIL);
+#if 0
+		/* Legal Haskell, and a bit useful (intros typing constraints.) */
 		if (isNull(vs)) {
 		    ERRMSG(line) "No variables defined in lhs pattern"
 		    EEND;
 		}
+#endif
 		map2Proc(notDefined,line,bs,vs);
-		bs	    = cons(pair(vs,pair(NIL,snd(d))),bs);
+		bs	= cons(pair(vs,pair(NIL,snd(d))),bs);
 	    }
 	    lastVar = NIL;
 	}
