@@ -1,7 +1,7 @@
 -----------------------------------------------------------------------------
 -- Standard Library: System operations
 --
--- Note: on Windows, system always yields ExitSuccess.
+-- Note: on Windows 9x, system always yields ExitSuccess.
 --
 -- Suitable for use with Hugs 98
 -----------------------------------------------------------------------------
