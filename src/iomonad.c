@@ -14,8 +14,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: iomonad.c,v $
- * $Revision: 1.84 $
- * $Date: 2004/11/01 11:43:22 $
+ * $Revision: 1.85 $
+ * $Date: 2004/11/01 11:49:18 $
  * ------------------------------------------------------------------------*/
  
 Name nameIORun;			        /* run IO code                     */
@@ -91,7 +91,6 @@ PROTO_PRIM(primGetProgName);
 PROTO_PRIM(primGetArgs);
 PROTO_PRIM(primSetProgName);
 PROTO_PRIM(primSetArgs);
-PROTO_PRIM(primGetEnvironment);
 
 PROTO_PRIM(primGetChar);
 PROTO_PRIM(primPutChar);
@@ -233,7 +232,6 @@ static struct primitive iomonadPrimTable[] = {
   {"primGetArgs",       0+IOArity, primGetArgs},
   {"primSetProgName",   1+IOArity, primSetProgName},
   {"primSetArgs",       1+IOArity, primSetArgs},
-  {"primGetEnvironment",0+IOArity, primGetEnvironment},
 
   {"getChar",		0+IOArity, primGetChar},
   {"putChar",		1+IOArity, primPutChar},
@@ -748,18 +746,6 @@ primFun(primSetProgName) {              /* primSetProgName :: String -> IO () */
 primFun(primSetArgs) {                  /* primSetArgs :: [String] -> IO () */
     hugsArgs = IOArg(1);
     IOReturn(nameUnit);
-}
-
-extern char** environ;
-
-primFun(primGetEnvironment) {           /* primGetEnvironment :: IO [String] */
-    Int i;
-    Cell env;
-
-    env = nameNil;
-    for (i=0; environ[i]; i++)
-	env = ap2(nameCons, mkStr(findText(environ[i])), env);
-    IOReturn(env);
 }
 
 /* --------------------------------------------------------------------------
