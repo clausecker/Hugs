@@ -8,8 +8,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: prelude.h,v $
- * $Revision: 1.46 $
- * $Date: 2003/06/20 16:15:11 $
+ * $Revision: 1.47 $
+ * $Date: 2003/07/17 13:46:08 $
  * ------------------------------------------------------------------------*/
 #ifndef __PRELUDE_H__
 #define __PRELUDE_H__
@@ -467,7 +467,7 @@ extern  int  kbhit	Args((void));
 #define FloatPro	   double  /* type to use in prototypes		   */
 				   /* strictly ansi (i.e. gcc) conforming  */
 				   /* but breaks data hiding :-(	   */
-#define FloatFMT	   "%g"
+#define FloatFMT	   "%.7g"
 
 /* Is double too big for two ints?  (if so, use float instead) */
 #define DOUBLE_IS_FLOAT (SIZEOF_DOUBLE > 2*SIZEOF_INT)
@@ -479,7 +479,7 @@ extern  int  kbhit	Args((void));
 #else
 #define DoubleImpType	   double
 #define DoublePro	   double
-#define DoubleFMT          "%.9g"
+#define DoubleFMT          "%.15g"
 #endif
 
 #if HAVE_FLOAT_H
