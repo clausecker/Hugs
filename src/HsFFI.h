@@ -303,7 +303,8 @@ extern  HugsAPI4* hugsAPI4     (void);
 typedef void (*InitModuleFun4) (HugsAPI4*);
 
 extern void hs_perform_gc(void);
-extern void hs_free_stable_ptr(HsStablePtr x);
+extern void hs_free_stable_ptr(HsStablePtr sp);
+extern void hs_free_fun_ptr(HsFunPtr fp);
 
 /* Copied verbatim from prelude.h */
 

@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: builtin.c,v $
- * $Revision: 1.74 $
- * $Date: 2004/03/19 20:38:07 $
+ * $Revision: 1.75 $
+ * $Date: 2004/04/12 16:46:56 $
  * ------------------------------------------------------------------------*/
 
 /* We include math.h before prelude.h because SunOS 4's cpp incorrectly
@@ -2343,9 +2343,14 @@ void hs_perform_gc(void)
     garbageCollect();
 }
 
-void hs_free_stable_ptr(HsStablePtr x)
+void hs_free_stable_ptr(HsStablePtr sp)
 {
-    freeStablePtr4(x);
+    freeStablePtr4(sp);
+}
+
+void hs_free_fun_ptr(HsFunPtr fp)
+{
+    freeHaskellFunctionPtr(fp);
 }
 
 /* --------------------------------------------------------------------------
