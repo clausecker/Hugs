@@ -72,7 +72,7 @@ extern  Void   gcStarted	Args((Void));
 extern  Void   gcScanning	Args((Void));
 extern  Void   gcRecovered	Args((Int));
 extern  Void   gcCStack		Args((Void));
-extern  Void   needPrims        Args((Int)); 
+extern  Void   needPrims        Args((Int,void*)); 
 
 extern  String fromEnv		Args((String,String));
 extern  Bool   initSystem       Args((Void));

@@ -11,8 +11,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.109 $
- * $Date: 2003/12/04 18:01:33 $
+ * $Revision: 1.110 $
+ * $Date: 2003/12/04 18:49:57 $
  * ------------------------------------------------------------------------*/
 #include "prelude.h"
 #include "storage.h"
@@ -2022,8 +2022,9 @@ String file; {
 #  define API_VERSION_FUN  "HugsAPIVersion"
 #endif
 
-Void needPrims(version)   /* Load dll containing prims for current module */
-Int  version; {
+Void needPrims(version,dll)   /* Load dll containing prims for current module */
+Int  version;
+void*  dll; {
     if (havePlugin(textToStr(module(currentModule).text))) {
 	return;
     }
@@ -2038,7 +2039,7 @@ Int  version; {
     case 4 :
 	{ 
 	    InitModuleFun4 initModule;
-	    void* dll = getDLL(mkDLLFilename(scriptFile));
+	    if (!dll) dll = getDLL(mkDLLFilename(scriptFile));
 	    initModule = (InitModuleFun4)getDLLSymbol(dll,INIT_MODULE_FUN);
 	    if (initModule) {
 	        Bool flg = setOldDLLFlag(TRUE);
@@ -2052,7 +2053,7 @@ Int  version; {
     case 5 : 
 	{ 
 	    InitModuleFun5 initModule;
-	    void* dll = getDLL(mkDLLFilename(scriptFile));
+	    if (!dll) dll = getDLL(mkDLLFilename(scriptFile));
 	    initModule = (InitModuleFun5)getDLLSymbol(dll,INIT_MODULE_FUN);
 	    if (initModule) {
 	        Bool flg = setOldDLLFlag(FALSE);
@@ -2066,14 +2067,14 @@ Int  version; {
     case 0 : 
         {
 	    APIVersionFun versionFun;
-	    void* dll     = getDLL(mkDLLFilename(scriptFile));
+	    dll = getDLL(mkDLLFilename(scriptFile));
 	    Int   version = 5;
 
 	    versionFun = (APIVersionFun)getDLLSymbol(dll,API_VERSION_FUN);
 	    if (versionFun) {
 	      version = (*versionFun)();
 	    } 
-	    needPrims(version);
+	    needPrims(version, dll);
 	    return;
 	}
     default: 

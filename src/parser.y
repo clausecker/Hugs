@@ -10,8 +10,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: parser.y,v $
- * $Revision: 1.44 $
- * $Date: 2003/10/14 13:56:23 $
+ * $Revision: 1.45 $
+ * $Date: 2003/12/04 18:49:59 $
  * ------------------------------------------------------------------------*/
 
 %{
@@ -298,7 +298,7 @@ topDecl	  : TYPE tyLhs '=' type		{defTycon(4,$3,$2,$4,SYNONYM);}
 						     $7),NEWTYPE);}
 	  | TNEWTYPE error		{syntaxError("newtype definition");}
 	  | NEEDPRIMS NUMLIT		{if (isInt($2)) {
-					     needPrims(intOf($2));
+					     needPrims(intOf($2), NULL);
 					 } else {
 					     syntaxError("needprims decl");
 					 }
