@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.23 $
- * $Date: 2000/07/26 20:33:04 $
+ * $Revision: 1.24 $
+ * $Date: 2000/09/14 05:49:35 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -182,7 +182,7 @@ char *argv[]; {
     Printf("||___|| ||__|| ||__||  __||     Copyright (c) 1994-2000\n");
     Printf("||---||         ___||           World Wide Web: http://haskell.org/hugs\n");
     Printf("||   ||                         Report bugs to: hugs-bugs@haskell.org\n");
-    Printf("||   || Version: %s _________________________________________\n\n",HUGS_VERSION);
+    Printf("||   || Version: %-14s _________________________________________\n\n",HUGS_VERSION);
 
 #if SYMANTEC_C
     Printf("   Ported to Macintosh by Hans Aberg, compiled " __DATE__ ".\n\n");
@@ -745,6 +745,11 @@ struct options toggle[] = {             /* List of command line toggles    */
              1,
 #endif
              "Print nothing to show progress",        &quiet},
+    {'Q',
+#if !HASKELL_98_ONLY
+             1,
+#endif
+	     "Qualify names when printing",           &useQualifiedNames},
     {'w',
 #if !HASKELL_98_ONLY
              1,

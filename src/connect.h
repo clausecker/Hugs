@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: connect.h,v $
- * $Revision: 1.10 $
- * $Date: 2000/08/15 20:56:10 $
+ * $Revision: 1.11 $
+ * $Date: 2000/09/14 05:49:35 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -186,6 +186,8 @@ extern Bool  showInstRes;               /* TRUE => show instance resolution */
 #if MULTI_INST
 extern Bool  multiInstRes;              /* TRUE => use multi inst resolution */
 #endif
+extern Bool  useQualifiedNames;         /* TRUE => qualify names when printing types and terms */
+
 
 extern Int   cutoff;			/* Constraint Cutoff depth	   */
 

@@ -9,8 +9,8 @@
  * included in the distribution.
  *
  * $RCSfile: output.c,v $
- * $Revision: 1.9 $
- * $Date: 2000/05/21 16:02:15 $
+ * $Revision: 1.10 $
+ * $Date: 2000/09/14 05:49:36 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -50,6 +50,7 @@ static Void local putSigType     Args((Cell));
 static Void local putContext     Args((List,List,Int));
 static Void local putPred        Args((Cell,Int));
 static Void local putType        Args((Cell,Int,Int));
+static Void local putModule      Args((Module));
 static Void local putTyVar       Args((Int));
 static Bool local putTupleType   Args((Cell,Int));
 static Void local putApType      Args((Type,Int,Int));
@@ -143,14 +144,18 @@ Cell e; {
 	case AP         : putAp(d,e);
 			  break;
 
-	case NAME       : unlexVar(name(e).text);
+	case NAME       : 
+	                  putModule(name(e).mod);
+	                  unlexVar(name(e).text);
 			  break;
 
 	case VARIDCELL  :
 	case VAROPCELL  :
 	case DICTVAR    :
 	case CONIDCELL  :
-	case CONOPCELL  : unlexVar(textOf(e));
+	case CONOPCELL  : 
+	                  putModule(name(e).mod);
+	                  unlexVar(textOf(e));
 			  break;
 #if IPARAM
 	case IPVAR	: putChr('?');
@@ -1048,10 +1053,12 @@ Int  fr; {
 	putChr(' ');
 	putType(arg(pi),ALWAYS,fr);
     }
-    else if (isClass(pi))
-	putStr(textToStr(cclass(pi).text));
-    else if (isCon(pi))
+    else if (isClass(pi)) {
+        putModule(cclass(pi).mod);
+        putStr(textToStr(cclass(pi).text));
+    } else if (isCon(pi)) {
 	putStr(textToStr(textOf(pi)));
+    }
 #if IPARAM
     else if (whatIs(pi) == IPCELL)
         unlexVar(textOf(pi));
@@ -1065,7 +1072,9 @@ Cell t;
 Int  prec;
 Int  fr; {
     switch(whatIs(t)) {
-	case TYCON     : putStr(textToStr(tycon(t).text));
+	case TYCON     : 
+	                 putModule(tycon(t).mod);
+	                 putStr(textToStr(tycon(t).text));
 			 break;
 
 	case TUPLE     : {   Int n = tupleOf(t);
@@ -1282,6 +1291,18 @@ Kinds ks; {
 	putKind(hd(ks));
 }
 
+/* --------------------------------------------------------------------------
+ * Print qualified module name (if wanted):
+ * ------------------------------------------------------------------------*/
+Bool useQualifiedNames = FALSE;
+
+static Void local putModule(m)            /* print module qualifier        */
+Module m; {
+  if (useQualifiedNames && !isPrelude(m)) { /* leave out "Prelude." qualifiers, too noisy. */
+       putStr(textToStr(module(m).text));
+       putChr('.');
+    }
+}
 /* --------------------------------------------------------------------------
  * Main drivers:
  * ------------------------------------------------------------------------*/
