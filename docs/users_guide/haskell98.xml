@@ -68,8 +68,8 @@ fails to accept legal (but weird) Haskell 98 expressions like
 <listitem><para>
 In Hugs, the expression must be an fexp
 (or <literal>case</literal> or <literal>do</literal>).
-Legal expressions like <literal>(a+b+)</literal>) and
-<literal>(a*b+)</literal>) are rejected.
+Legal expressions like <literal>(a+b+)</literal> and
+<literal>(a*b+)</literal> are rejected.
 </para></listitem>
 </varlistentry>
 
