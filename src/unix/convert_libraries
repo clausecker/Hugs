@@ -224,6 +224,7 @@ hslibs() {
 # cvt base Data/Array/Diff.hs
   cvt base Data/Array/IArray.hs
   cvt base Data/Array/IO.hs
+  cvt base Data/Array/IO/Internals.hs
   cvt base Data/Array/MArray.hs
   cvt base Data/Array/ST.hs
   cvt base Data/Array/Storable.hs	
