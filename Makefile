@@ -10,6 +10,8 @@ src/Makefile:
 
 fptools:
 	-mkdir fptools
-	cvs -d ${CVSROOT} export -r${HSLIBSTAG} $(addprefix fptools/,${HSLIBSDIRS})
+	cvs -d ${CVSROOT} export -r${HSLIBSTAG} $(addprefix fptools/hslibs/,${HSLIBSDIRS})
+	cvs -d ${CVSROOT} export -r${LIBRARIESTAG} $(addprefix fptools/libraries/,${LIBRARIESDIRS})
+	cd fptools/libraries/haskell-src/Language/Haskell; happy Parser.ly
 
 include RPM.mk

@@ -72,16 +72,24 @@ function cvt_happy {
 	*)	outname=`basename $2 .y`.hs ;;
 	esac
 
-	tmpdir=/tmp/cvt.$$
-	mkdir $tmpdir
-	cat $src/$1/$2 | (
-		cd $tmpdir
-		cat >$inname
-		happy $inname
-	)
-	$cpp $tmpdir/$outname | cat -s >`dirname $dst/$2`/$outname
-	rm -r $tmpdir
- 
+	target=`dirname $dst/$2`/$outname
+
+	# don't run happy if the happy output is already present
+	hs_file="`dirname $src/$1/$2`/$outname"
+	if [ -f "$hs_file" ]
+	then
+		$cpp $hs_file | cat -s >$target
+	else
+		tmpdir=/tmp/cvt.$$
+		mkdir $tmpdir
+		cp $src/$1/$2 $tmpdir/$inname
+		(
+			cd $tmpdir
+			happy $inname
+		)
+		$cpp $tmpdir/$outname | cat -s >$target
+		rm -r $tmpdir
+	fi 
 }
 
 # For when we cannot use the new module yet: use a Hugs file as a

@@ -16,7 +16,9 @@ PACKAGE=${NAME}-${VERSION}
 # HSLIBSTAG=hugs-Dec2001
 TAG=HEAD
 HSLIBSTAG=HEAD
+LIBRARIESTAG=HEAD
 
-HSLIBSDIRS=hslibs libraries/base libraries/haskell98 libraries/haskell-src
+HSLIBSDIRS = concurrent data lang text util
+LIBRARIESDIRS = base haskell98 haskell-src
 
 CVSROOT = ${shell cat CVS/Root}
