@@ -149,7 +149,7 @@ programs from the development environment?</para>
 </question>
 
 <answer>
-<para>We now include a stand-alone version of Hugs which will
+<para>The distribution includes a stand-alone version of Hugs which will
 <quote>load and go</quote> as well as handle command line arguments
 (see <xref linkend="runhugs"/> for details).</para>
 </answer>

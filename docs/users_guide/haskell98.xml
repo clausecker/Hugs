@@ -258,7 +258,8 @@ In Haskell 98, a floating point literal like <literal>1.234e-5</literal>
 stands for <quote><literal>fromRational (1234 % 100000000)</literal></quote>.
 In particular, if the literal is of <literal>Rational</literal> type,
 the fraction is exact.
-In Hugs such literals are stored as double precision floating point numbers.
+In Hugs such literals are stored as double precision floating point numbers
+before being converted to the appropriate type.
 If the literal is of <literal>Rational</literal> type,
 it usually denotes the same number, but some precision may be lost.
 </para></listitem>
@@ -270,7 +271,7 @@ Floating point values are printed differently
 </term>
 <listitem><para>
 Haskell 98 specifies that <function>show</function> for floating point numbers
-is the function <literal>Numeric.showFloat</literal>,
+is the function <function>Numeric.showFloat</function>,
 but Hugs uses an internal function with slightly different semantics.
 </para></listitem>
 </varlistentry>
@@ -380,7 +381,8 @@ is implemented except for the following limitations:
 </para>
 <itemizedlist>
 <listitem><para>
-Only the <literal>ccall</literal> calling convention is supported.
+Only the <literal>ccall</literal>, <literal>stdcall</literal> and
+<literal>dotnet</literal> calling conventions are supported.
 All others are flagged as errors.
 </para></listitem>
 
@@ -389,9 +391,9 @@ All others are flagged as errors.
 </para></listitem>
 
 <listitem><para>
-<literal>foreign import wrapper</literal> are only implemented for the
+<literal>foreign import "wrapper"</literal> is only implemented for the
 x86, PowerPC and Sparc architectures and has been most thoroughly tested on
-Windows and Linux using gcc.
+Windows and Linux using <command>gcc</command>.
 </para></listitem>
 </itemizedlist>
 <para>

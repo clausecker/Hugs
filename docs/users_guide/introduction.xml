@@ -114,10 +114,9 @@ General information about functional programming.
 </variablelist>
 
 <para>
-More information about Haskell may be found on the Haskell home page
-<ulink url="http://www.haskell.org/">http://www.haskell.org/</ulink>
-and the Hugs home page
-<ulink url="http://www.haskell.org/hugs/">http://www.haskell.org/hugs/</ulink>.
+More information about Haskell may be found on the
+<ulink url="http://www.haskell.org/">Haskell home page</ulink>
+and the <ulink url="http://www.haskell.org/hugs/">Hugs home page</ulink>.
 </para>
 
 </sect2>
@@ -133,7 +132,7 @@ all with archives of past postings:
 <variablelist>
 
 <varlistentry>
-<term><ulink url="http://www.haskell.org/mailman/listinfo/hugs-users">hugs-users</ulink>:</term>
+<term><ulink url="http://www.haskell.org/mailman/listinfo/hugs-users">hugs-users</ulink></term>
 <listitem>
 <para>
 This is the place for general discussion about using Hugs.
@@ -142,7 +141,7 @@ This is the place for general discussion about using Hugs.
 </varlistentry>
 
 <varlistentry>
-<term><ulink url="http://www.haskell.org/mailman/listinfo/hugs-bugs">hugs-bugs</ulink>:</term>
+<term><ulink url="http://www.haskell.org/mailman/listinfo/hugs-bugs">hugs-bugs</ulink></term>
 <listitem>
 <para>
 Use this list for reporting bugs.
@@ -157,7 +156,7 @@ Before reporting a bug, check the list of known deviations from Haskell 98
 </varlistentry>
 
 <varlistentry>
-<term><ulink url="http://www.haskell.org/mailman/listinfo/cvs-hugs">cvs-hugs</ulink>:</term>
+<term><ulink url="http://www.haskell.org/mailman/listinfo/cvs-hugs">cvs-hugs</ulink></term>
 <listitem>
 <para>
 Discussion of the development of Hugs takes place on this list.
@@ -168,7 +167,7 @@ This list also receives commit messages from the
 </varlistentry>
 
 <varlistentry>
-<term><ulink url="http://www.haskell.org/mailman/listinfo/haskell-cafe">haskell-cafe</ulink>:</term>
+<term><ulink url="http://www.haskell.org/mailman/listinfo/haskell-cafe">haskell-cafe</ulink></term>
 <listitem>
 <para>
 An informal list for chatting about Haskell.
@@ -179,7 +178,7 @@ but Hugs-specific questions would be better directed at the Hugs lists.
 </varlistentry>
 
 <varlistentry>
-<term><ulink url="http://www.haskell.org/mailman/listinfo/haskell">haskell</ulink>:</term>
+<term><ulink url="http://www.haskell.org/mailman/listinfo/haskell">haskell</ulink></term>
 <listitem>
 <para>
 A lower-volume list for more technical discussion of Haskell.
@@ -192,14 +191,14 @@ Please do not post beginner questions or Hugs-specific questions to this list.
 
 <para>
 There are several other Haskell-related mailing lists served by
-<literal>www.haskell.org</literal>.
+<systemitem class="fqdomainname">www.haskell.org</systemitem>.
 See <ulink url="http://www.haskell.org/mailman/listinfo/"><literal>http://www.haskell.org/mailman/listinfo/</literal></ulink>
 for the full list.
 </para>
 
 <para>
 Some Haskell-related discussion also takes place in the Usenet newsgroup
-<ulink url="news:comp.lang.functional"><literal>comp.lang.functional</literal></ulink>.
+<ulink url="news:comp.lang.functional"><systemitem class="newsgroup">comp.lang.functional</systemitem></ulink>.
 </para>
 
 </sect2>

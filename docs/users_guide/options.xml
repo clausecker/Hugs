@@ -250,8 +250,8 @@ Set list of filename suffixes.
 </para>
 <para>
 Normally, when you import a module <replaceable>M</replaceable>,
-Hugs looks for files <replaceable>M</replaceable><literal>.hs</literal>
-and <replaceable>M</replaceable><literal>.lhs</literal>
+Hugs looks for files <filename><replaceable>M</replaceable>.hs</filename>
+and <filename><replaceable>M</replaceable>.lhs</filename>
 in each directory in you search path.
 With this option, you can change this list,
 in a similar way to the <option>-P</option> option for the search path.
@@ -262,9 +262,9 @@ Windows or Macs use <quote><literal>;</literal></quote> instead.)
 If you use <literal>-S:.xhs</literal> then the suffix
 list becomes <quote><literal>.hs:.lhs:.xhs</literal></quote>,
 so Hugs will look for
-<replaceable>M</replaceable><literal>.hs</literal>,
-<replaceable>M</replaceable><literal>.lhs</literal>
-and <replaceable>M</replaceable><literal>.xhs</literal>.
+<filename><replaceable>M</replaceable>.hs</filename>,
+<filename><replaceable>M</replaceable>.lhs</filename>
+and <filename><replaceable>M</replaceable>.xhs</filename>.
 </para>
 <para>
 A null entry in this list will be replaced by the previous suffix list;
@@ -454,7 +454,7 @@ gives rise to the error
 ERROR "Test.hs":4 - Illegal type in class constraint
 </screen>
 However if <option>+k</option> is given,
-the error message is identified as a <literal>Kind error</literal>,
+the error message is identified as a <emphasis>Kind error</emphasis>,
 and is expanded to include the conflicting kinds:
 <screen>
 ERROR "Test.hs":4 - Kind error in class constraint
@@ -941,23 +941,70 @@ This may be set using the General tab of the
 <command>runhugs</command>
 <arg rep="repeat" choice="opt"><replaceable>option</replaceable></arg>
 <arg choice="plain"><replaceable>file</replaceable></arg>
+<arg rep="repeat" choice="opt"><replaceable>argument</replaceable></arg>
 </cmdsynopsis>
 
 <para>
 The <command>runhugs</command> command is an interpreter for an executable Hugs
-script, which must be a file containing a Haskell
+script.
+The first non-option should be the name of a file containing a Haskell
 <literal>Main</literal> module.
-For example, an executable file might contain the lines
+The <command>runhugs</command> command will invoke the
+the <function>main</function> function in this module, with any subsequent
+arguments available through the <function>getArgs</function> action.
+</para>
+
+<para>
+For example, suppose we have a file <filename>echo.hs</filename> containing
 <programlisting>
-#!/usr/local/bin/runhugs +l
+module Main where
+
+import System.Environment
+
+main = do
+        args &lt;- getArgs
+        putStrLn (unwords args)
+</programlisting>
+Then we can run this program with the command
+<screen>
+runhugs echo.hs a b c
+</screen>
+We can also test the program from within the interpreter
+using the <function>withArgs</function> function from the
+<literal>System.Environment</literal> module:
+<screen>
+Main> withArgs ["a", "b", "c"] main
+a b c
+</screen>
+</para>
+
+<para>
+On Unix systems, it is possible for an executable file to specify which
+program is used to run it.
+To do this we need to make the module a literate script, like the following:
+<programlisting>
+#! /usr/local/bin/runhugs +l
 
 > module Main where
-> main = putStr "Hello, World\n"
+
+> import System.Environment
+
+> main = do
+>       args &lt;- getArgs
+>       putStrLn (unwords args)
 </programlisting>
-When this file is executed, <command>runhugs</command> will invoke
-the <function>main</function> function.
-Any arguments given on the command line will be available through
-the <function>getArgs</function> action.
+If this file is called <filename>myecho</filename>, and is executable,
+we can say
+<screen>
+myecho a b c
+</screen>
+This invokes the command
+<screen>
+/usr/local/bin/runhugs +l myecho a b c
+</screen>
+The <link linkend="option-literate"><option>+l</option></link> option tells
+<command>runhugs</command> that <filename>myecho</filename> contains a
+literate script.
 </para>
 
 </sect1>
@@ -973,25 +1020,26 @@ the <function>getArgs</function> action.
 </cmdsynopsis>
 
 <para>
-Suppose you have some C functions in <literal>test.c</literal>
-and some ffi declarations for those functions in <literal>Test.hs</literal>
-and the code in <literal>test.c</literal> needs to be
+Suppose you have some C functions in <filename>test.c</filename>
+with some <literal>foreign import</literal> declarations for those
+functions in <filename>Test.hs</filename>,
+and that the code in <filename>test.c</filename> needs to be
 compiled with <option>-lm</option>.
 To use these with Hugs, you must first use <command>ffihugs</command>
-to generate <literal>Test.c</literal>, compile it and link it against
-<literal>test.c</literal> with <option>-lm</option> to produce
-<literal>Test.so</literal>:
-<programlisting>
+to generate <filename>Test.c</filename>, compile it and link it against
+<filename>test.c</filename> with <option>-lm</option> to produce
+<filename>Test.so</filename>:
+<screen>
 ffihugs +G +L"test.c" +L"-lm" Test.hs
-</programlisting>
-(If <literal>Test.hs</literal> depends on other ffi modules,
-you'll have to compile them first.)
-Now you can run Hugs as normal;
-when <literal>Test.hs</literal> is loaded,
-Hugs will load <literal>Test.so</literal>.)
-<programlisting>
+</screen>
+(If <filename>Test.hs</filename> depends on other modules using foreign
+functions, you'll have to compile those modules too.)
+Now you can run Hugs as normal.
+When <filename>Test.hs</filename> is loaded,
+Hugs will load <filename>Test.so</filename>.
+<screen>
 hugs Test.hs
-</programlisting>
+</screen>
 and then use the imported or exported functions.
 </para>
 

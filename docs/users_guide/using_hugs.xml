@@ -36,12 +36,12 @@ Haskell 98 mode: Restart with command line option -98 to enable extensions
 Type :? for help
 Hugs.Base>
 </screen>
-The prompt string <literal>Hugs.Base></literal> indicates that the current
+The prompt string <prompt>Hugs.Base></prompt> indicates that the current
 module is an empty module called <literal>Hugs.Base</literal>
 (assuming no modules were specified on the command line).
 At this prompt, you can type Haskell expressions to be evaluated,
 and also enter commands of the form
-<quote><command>:<replaceable>cmd</replaceable></command></quote>,
+<quote><literal>:<replaceable>cmd</replaceable></literal></quote>,
 where <replaceable>cmd</replaceable> may be abbreviated to a single letter.
 </para>
 
@@ -229,9 +229,9 @@ Other backslashes are interpreted literally.
 <para>
 When asked to load a module <replaceable>M</replaceable>,
 Hugs looks for a file
-<replaceable>dir</replaceable><literal>/</literal><replaceable>M</replaceable><literal>.hs</literal>
+<filename><replaceable>dir</replaceable>/<replaceable>M</replaceable>.hs</filename>
 or
-<replaceable>dir</replaceable><literal>/</literal><replaceable>M</replaceable><literal>.lhs</literal>,
+<filename><replaceable>dir</replaceable>/<replaceable>M</replaceable>.lhs</filename>,
 where <replaceable>dir</replaceable> is a directory in its search path.
 (The <quote><literal>/</literal></quote> is used on Unix systems;
 Windows systems use <quote><literal>\</literal></quote>.)
@@ -247,9 +247,9 @@ The file found should contain a Haskell module called
 <para>
 In mapping compound module names like <literal>A.B.C</literal> to files,
 the dots are interpreted as slashes, leading to filenames
-<replaceable>dir</replaceable><literal>/A/B/C.hs</literal>
+<filename><replaceable>dir</replaceable>/A/B/C.hs</filename>
 or
-<replaceable>dir</replaceable><literal>/A/B/C.lhs</literal>.
+<filename><replaceable>dir</replaceable>/A/B/C.lhs</filename>.
 </para>
 
 <para>
@@ -277,12 +277,12 @@ Main>
 </screen>
 where the directory <literal>/path/to/my/project</literal> contains other
 modules used directly or indirectly by the module <literal>Main</literal>
-in <literal>code.hs</literal>.
+in <filename>code.hs</filename>.
 For example, suppose <literal>Main</literal> imports <literal>A.B.C</literal>,
 which in turn imports <literal>D</literal>.
 These may be resolved to filenames
-<literal>/path/to/my/project/A/B/C.hs</literal>,
-and (assuming that is found), <literal>/path/to/my/project/D.hs</literal>.
+<filename>/path/to/my/project/A/B/C.hs</filename>,
+and (assuming that is found), <filename>/path/to/my/project/D.hs</filename>.
 However imports from modules found on the search path do not use the extra
 directory.
 </para>
@@ -344,7 +344,7 @@ Set the current module for evaluating expressions.
 
 <listitem>
 <para>
-The <literal>:edit</literal> command starts an editor program to modify
+The <command>:edit</command> command starts an editor program to modify
 or view a Haskell module.
 Hugs suspends until the editor terminates,
 and then reloads the currently loaded modules.

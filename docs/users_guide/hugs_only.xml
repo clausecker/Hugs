@@ -121,7 +121,7 @@ and should be imported if you use the
 <title>Hugs debugging primitives</title>
 
 <para>
-This release of Hugs contains support for debugging by observations
+Hugs contains support for debugging by observations
 inspired by the Andy Gill's Hood library:
 </para>
 
@@ -145,7 +145,7 @@ The Haskell Object Observation Debugger
 <para>
 Hood is a portable Haskell library that implements the combinator
 <programlisting>
-Observable a => observe :: String -> a -> a
+observe :: Observable a => String -> a -> a
 </programlisting>
 The partial application
 <screen>

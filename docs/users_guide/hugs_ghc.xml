@@ -141,7 +141,7 @@ This will be translated to:
                                       ...
 ]
 ]]></programlisting>
-where <quote><replaceable>zipN</replaceable></quote>
+where <quote><literal>zip<replaceable>N</replaceable></literal></quote>
 is the appropriate zip for the given number of branches.
 </para>
 
@@ -269,7 +269,7 @@ Sometimes one can avoid overlapping instances.
 The particular example discussed above is similar to the situation described
 by the <literal>Show</literal> class in the <literal>Prelude</literal>.
 However there overlapping instances are avoided by adding the method
-<function>showList</function> to the class
+<function>showList</function> to the class.
 </para>
 
 </sect2>
@@ -689,7 +689,7 @@ least xs = fst (sort xs)
 Without lifting a finger, the <literal>?cmp</literal> parameter is
 propagated to become a parameter of <function>least</function> as well.
 With explicit parameters,
-the default is that parameters must always be explicit propagated.
+the default is that parameters must always be explicitly propagated.
 With implicit parameters, the default is to always propagate them.
 </para>
 
@@ -788,9 +788,9 @@ f t = let { ?x = t; ?y = ?x+(1::Int) } in ?x + ?y
 The use of <literal>?x</literal> in the binding for <literal>?y</literal>
 does not <quote>see</quote> the binding for <literal>?x</literal>,
 so the type of <literal>f</literal> is
-<programlisting>
+<screen>
 f :: (?x::Int) => Int -> Int
-</programlisting>
+</screen>
 </para></listitem>
 </itemizedlist>
 </para>

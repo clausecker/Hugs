@@ -267,11 +267,11 @@ of <literal>hslibs</literal>.
 </para></listitem>
 
 <listitem><para>
-The <command>:set</command> option now refuses the user to set a module
+The <command>:set</command> command now refuses the user to set a module
 search path that doesn't contain the <literal>Prelude</literal>.
 This is to protect users from accidentally rendering their Hugs setups
-unusable, esp. so on Windows machines where the options are persisted
-to the Registry.
+unusable, especially on Windows machines where the options persist
+in the Registry.
 </para></listitem>
 
 <listitem><para>

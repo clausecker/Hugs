@@ -9,9 +9,12 @@ div.navheader, div.navfooter {
 	padding-right: 3px;
 	background: #ddeeff
 }
-div.navheader td, div.navfooter td { font-size: 80% }
+div.navheader td, div.navfooter td {
+	color: #000099;
+	font-size: 80%
+}
 
-h1, h2, h3, h4, div.question, div.navheader th, div.navfooter td {
+h1, h2, h3, h4, div.question, div.navheader th {
 	color: #000099
 }
 h1, h2, h3, h4 { font-weight: bold }
@@ -22,6 +25,16 @@ h1 { font-size: 150% }
 h2 { font-size: 130% }
 h3 { font-size: 115% }
 h4 { font-size: 100% }
+
+var, code.function, span.systemitem {
+	font-family: monospace; font-style: normal
+}
+b.command, var.option {
+	font-family: monospace; font-weight: bold
+}
+var.replaceable {
+	font-family: sans-serif; font-style: italic
+}
 
 pre {
 	font-family: monospace;
