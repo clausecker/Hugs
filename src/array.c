@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: array.c,v $
- * $Revision: 1.9 $
- * $Date: 2003/10/14 13:56:20 $
+ * $Revision: 1.10 $
+ * $Date: 2004/01/06 10:02:51 $
  * ------------------------------------------------------------------------*/
 
 static Name nameEltUndef;		/* undefined element in array	   */
@@ -146,13 +146,13 @@ static struct primInfo arrayPrims = { arrayControl, arrayPrimTable, 0 };
  * aGetBounds(a)	Extract bounds from primArg(a).
  *
  * There is no guarantee that the representation used for arr will be the
- * same as for any other array.  The following method does however ensure
+ * same as for any other array.  The following methods do however ensure
  * that the standard representation is used when a value is finally returned:
  *
  * updarrRoot();	Updates root of redex with array represented by arr.
  *			(Should also reset arr to avoid space leaks.)
- * aRetForST()		Update root to return an array from ST monad;
- *			i.e. return (arr, primArg(1)) as Haskell pair.
+ * aRetForIO();		Update root to return an array from IO monad;
+ *			i.e. pass arr to the continuation.
  */
 
 #define declArr		StackPtr arrPos=sp+1; Int alen; push(NIL)
@@ -227,9 +227,6 @@ static struct primInfo arrayPrims = { arrayControl, arrayPrimTable, 0 };
 #define aBounds()	fst(arr)
 #define aGetBounds(a)	fst(snd(primArg(a)))
 #define updarrRoot()	updapRoot(ARRAY,arr); arr=NIL
-#define aRetForST()	arr = ap(ARRAY,arr);			\
-			updapRoot(ap(mkTuple(2),arr),primArg(1));\
-			arr = NIL;
 #define aRetForIO()	arr = ap(ARRAY,arr);			\
 			updapRoot(primArg(1),arr);		\
 			arr = NIL;
@@ -342,7 +339,7 @@ primFun(primIOFreeze) {			/* :: IOArray a b		   */
 primFun(primIOArrEq) {		        /* :: IOArray a b                 */
     aEvalModel(1);                      /*    -> IOArray a b -> Bool      */
     aEvalModel(2);
-    updateRoot(primArg(1)==primArg(2) ? nameTrue : nameFalse);
+    BoolResult(primArg(1)==primArg(2));
 }
 
 #endif /* IO_MONAD */
@@ -366,7 +363,6 @@ primFun(primIOArrEq) {		        /* :: IOArray a b                 */
 #undef aBounds
 #undef aGetBounds
 #undef updarrRoot
-#undef aRetForST
 #undef aRetForIO
 
 /*-------------------------------------------------------------------------*/
