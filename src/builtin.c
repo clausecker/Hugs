@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: builtin.c,v $
- * $Revision: 1.43 $
- * $Date: 2003/01/23 17:47:07 $
+ * $Revision: 1.44 $
+ * $Date: 2003/01/26 00:44:44 $
  * ------------------------------------------------------------------------*/
 
 /* We include math.h before prelude.h because SunOS 4's cpp incorrectly
@@ -1180,14 +1180,6 @@ primFun(primEnFrTh) {                   /* derived enumFromThen for enum ty*/
 
 
 /* --------------------------------------------------------------------------
- * Array primitives:
- * ------------------------------------------------------------------------*/
-
-#if HASKELL_ARRAYS
-#include "array.c"
-#endif
-
-/* --------------------------------------------------------------------------
  * Integer arithmetic primitives:
  * ------------------------------------------------------------------------*/
 
@@ -1701,6 +1693,14 @@ FILE *fp; {                             /* and print it on fp              */
 
 #if LAZY_ST
 #include "stmonad.c"
+#endif
+
+/* --------------------------------------------------------------------------
+ * Array primitives:
+ * ------------------------------------------------------------------------*/
+
+#if HASKELL_ARRAYS
+#include "array.c"
 #endif
 
 /* --------------------------------------------------------------------------
