@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: storage.c,v $
- * $Revision: 1.56 $
- * $Date: 2002/11/06 15:50:10 $
+ * $Revision: 1.57 $
+ * $Date: 2002/11/09 02:54:18 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -2906,7 +2906,10 @@ List ns; {
 	    return hd(ns);
 	}
         if ( (isMethod && isPair(hd(ns)) && isClass(fst(hd(ns)))) ||
-	     (isDCon   && isPair(hd(ns)) && isTycon(fst(hd(ns)))) ) {
+	     (isDCon   && 
+	      isPair(hd(ns)) && isTycon(fst(hd(ns))) && 
+	      (tycon(fst(hd(ns))).what != SYNONYM)   &&
+	      (tycon(fst(hd(ns))).what != RESTRICTSYN)) ) {
 	  Name r;
 	  List subs = snd(hd(ns));
 	  if (subs == DOTDOT) {
