@@ -166,11 +166,18 @@ Hugs specific configuration options
 	Note that this option also disables readline, so the locale-based
 	option with a UTF-8 locale may be preferable if you have recent
 	enough libraries.
+   You can usually omit this option, in which case locale will be used
+   if it is available on your system.
+
    You will then need to run Hugs in an environment that supports your
    chosen encoding.  For example (with the appropriate locale settings):
 	UTF-8 works with glibc 2.2, xterm 4.0, bash 2.05b and readline 4.3
 	EUC multi-byte charsets work with multilingual wterm or rxvt
 	Single-byte charsets work in most environments
+	Single- and multi-byte charsets work under Win32.  (The locale
+	used is the "user-default ANSI code page", which may be set
+	using the "Regional Options" tab of the regional and language
+	control panel.)
 
  --enable-timer
 

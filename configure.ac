@@ -217,8 +217,9 @@ AC_ARG_ENABLE(char-encoding,
   [AC_HELP_STRING([--enable-char-encoding],
      [encode all character I/O using the byte encoding determined by the
       locale in effect at that time.  To require that the UTF-8 encoding
-      is always used, give the --enable-char-encoding=utf8 option.])],
-  , [enable_char_encoding=no])
+      is always used, give the --enable-char-encoding=utf8 option.
+      [default=autodetect]])],
+  , [enable_char_encoding=autodetect])
 
 dnl--------------------------------------------------------------------
 dnl
@@ -400,17 +401,39 @@ if test "${ac_cv_header_wchar_h+set}" = set; then
     [wchar_t_is_unicode=yes],
     [wchar_t_is_unicode=no])
   AC_MSG_RESULT([$wchar_t_is_unicode])
+elif test "x$target" = "xwindows"; then
+  wchar_t_is_unicode=yes	# actually UTF-16
+else
+  wchar_t_is_unicode=no
 fi
+
+AC_MSG_CHECKING([for locale-based character encoding])
+if test "${ac_cv_header_locale_h+set}" = set &&
+   test "$wchar_t_is_unicode" = yes; then
+  locale_char_encoding=yes
+else
+  locale_char_encoding=no
+fi
+AC_MSG_RESULT([$locale_char_encoding])
 
 case $enable_char_encoding in
 locale|yes)
-  if test "${ac_cv_header_locale_h+set}" = set &&
-     test "$wchar_t_is_unicode"; then
-    AC_DEFINE([CHAR_ENCODING_LOCALE], [1],
-      [Define to 1 to use a Char encoding determined by the locale.])
+  if test "$locale_char_encoding" = yes; then
+    enable_char_encoding=locale
   else
     AC_MSG_ERROR([System does not support locale-based encoding of Unicode.])
+    enable_char_encoding=no
   fi ;;
+autodetect)
+  if test "$locale_char_encoding" = yes; then
+    enable_char_encoding=locale
+  fi ;;
+esac
+
+case $enable_char_encoding in
+locale)
+  AC_DEFINE([CHAR_ENCODING_LOCALE], [1],
+    [Define to 1 to use a Char encoding determined by the locale.]) ;;
 utf8)
   AC_DEFINE([CHAR_ENCODING_UTF8], [1],
     [Define to 1 to use the UTF-8 Char encoding.]) ;;
