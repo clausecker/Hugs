@@ -50,6 +50,7 @@ else
 	$(FIND) ${TARTMP}/hugs98/fptools/libraries -name "*_hsc_make.c" |\
 		xargs src/unix/hsc_kludge
 endif
+	@touch ${TARTMP}/hugs98/fptools/stamp-fptools
 	cp ${TARTMP}/hugs98/src/version.c /tmp/mktar
 	cd ${TARTMP}/hugs98/src; sed ${VERSION_SUBSTS} < ${TARTMP}/version.c > ${TARTMP}/hugs98/src/version.c
 	# using `make parser.c' would be best, but by default yacc
