@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: storage.c,v $
- * $Revision: 1.52 $
- * $Date: 2002/10/02 23:59:26 $
+ * $Revision: 1.53 $
+ * $Date: 2002/10/03 16:34:20 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1485,7 +1485,7 @@ Text t; {
  */
 List findQualifiers(t)   /* locate Modules in alias list */
 Text t; {
-    Module ms;
+    List ms;
     List res = NIL;
     
     for (ms = module(currentModule).modAliases; nonNull(ms); ms=tl(ms)) {
@@ -1501,6 +1501,16 @@ Text t; {
    return res;
 }
 
+Text findModAlias(t)  /* given a module name 't', locate its alias. */
+Text t; {
+    List ms;
+    for (ms = module(currentModule).modAliases; nonNull(ms); ms=tl(ms)) {
+	if ( module(snd(hd(ms))).text == t ) {
+	    return textOf(fst(hd(ms))); 
+	}
+    }
+    return NIL;
+}	 
 
 Void setCurrModule(m)              /* set lookup tables for current module */
 Module m; {

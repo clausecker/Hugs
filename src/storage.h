@@ -8,8 +8,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: storage.h,v $
- * $Revision: 1.44 $
- * $Date: 2002/09/25 13:49:45 $
+ * $Revision: 1.45 $
+ * $Date: 2002/10/03 16:34:20 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -794,6 +794,7 @@ extern Inst   findFirstInst  Args((Tycon));
 extern Inst   findNextInst   Args((Tycon,Inst));
 extern Module findQualifier  Args((Text));
 extern List   findQualifiers Args((Text));
+extern Text   findModAlias   Args((Text));
 
 /* --------------------------------------------------------------------------
  * Character values:
