@@ -35,6 +35,7 @@ module Char
 isLatin1 :: Char -> Bool
 isLatin1 c = True -- c <= '\xff'
 
+{- ToDo: delay moving these out of the Prelude.
 isAscii, isControl, isPrint :: Char -> Bool
 isAscii c   =  fromEnum c < 128
 isControl c =  c < ' ' ||  c >= '\DEL' && c <= '\x9f'
@@ -54,5 +55,5 @@ intToDigit i
   | i >= 10 && i <= 15   =  toEnum (fromEnum 'a' + i - 10)
   | otherwise            =  error "Char.intToDigit: not a digit"
 
-
+-}
 -----------------------------------------------------------------------------

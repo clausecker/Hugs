@@ -47,16 +47,19 @@ module Prelude (
 --  module Ix,
     Ix(range, index, inRange, rangeSize),
 --  module Char,
-    isSpace, isUpper, isLower,
+    isAscii, isControl, isPrint, isSpace, isUpper, isLower,
     isAlpha, isDigit, isOctDigit, isHexDigit, isAlphaNum,
+    digitToInt, intToDigit,
     toUpper, toLower,
     ord, chr,
     readLitChar, showLitChar, lexLitChar,
 --  module Numeric
-    readFloat,
+    showSigned, showInt,
+    readSigned, readInt,
+    readDec, readOct, readHex, readSigned,
+    readFloat, lexDigits, 
 --  module Ratio,
     Ratio, Rational, (%), numerator, denominator, approxRational,
-
 --  Non-standard exports
     IO(..), IOResult(..), primExitWith, Addr, Word, StablePtr, ForeignObj,
     basicIORun, blockIO, IOFinished(..),
@@ -517,9 +520,11 @@ instance Bounded Char where
     minBound = '\0'
     maxBound = '\255'
 
-isSpace            :: Char -> Bool
+isAscii, isControl, isPrint, isSpace            :: Char -> Bool
 isUpper, isLower, isAlpha, isDigit, isAlphaNum  :: Char -> Bool
-
+isAscii c              =  fromEnum c < 128
+isControl c            =  c < ' ' ||  c == '\DEL'
+isPrint c              =  c >= ' ' &&  c <= '~'
 isSpace c              =  c == ' '  ||
 			  c == '\t' ||
 			  c == '\n' ||
@@ -539,6 +544,20 @@ isLower c              =  c >= 'a'   &&  c <= 'z'    ||
 isAlpha c              =  isUpper c  ||  isLower c
 isDigit c              =  c >= '0'   &&  c <= '9'
 isAlphaNum c           =  isAlpha c  ||  isDigit c
+
+-- Digit conversion operations
+digitToInt :: Char -> Int
+digitToInt c
+  | isDigit c            =  fromEnum c - fromEnum '0'
+  | c >= 'a' && c <= 'f' =  fromEnum c - fromEnum 'a' + 10
+  | c >= 'A' && c <= 'F' =  fromEnum c - fromEnum 'A' + 10
+  | otherwise            =  error "Char.digitToInt: not a digit"
+
+intToDigit :: Int -> Char
+intToDigit i
+  | i >= 0  && i <=  9   =  toEnum (fromEnum '0' + i)
+  | i >= 10 && i <= 15   =  toEnum (fromEnum 'a' + i - 10)
+  | otherwise            =  error "Char.intToDigit: not a digit"
 
 toUpper, toLower      :: Char -> Char
 toUpper c | isLower c  = toEnum (fromEnum c - fromEnum 'a' + fromEnum 'A')
@@ -1497,6 +1516,19 @@ readHex = readInt 16 isHexDigit hex
 fromEnum_0 :: Int
 fromEnum_0 = fromEnum '0'
 
+-- showInt is used for positive numbers only
+showInt    :: Integral a => a -> ShowS
+showInt n r | n < 0 = error "Numeric.showInt: can't show negative numbers"
+            | otherwise =
+              let (n',d) = quotRem n 10
+		  r'     = toEnum (fromEnum '0' + fromIntegral d) : r
+	      in  if n' == 0 then r' else showInt n' r'
+
+showSigned    :: Real a => (a -> ShowS) -> Int -> a -> ShowS
+showSigned showPos p x = if x < 0 then showParen (p > 6)
+						 (showChar '-' . showPos (-x))
+				  else showPos x
+
 -- readInt reads a string of digits using an arbitrary base.  
 -- Leading minus signs must be handled elsewhere.
 
@@ -1512,6 +1544,7 @@ readSigned readPos = readParen False read'
 						(x,t)   <- read'' s]
 			   read'' r = [(n,s)  | (str,s) <- lex r,
 						(n,"")  <- readPos str]
+
 
 -- This floating point reader uses a less restrictive syntax for floating
 -- point than the Haskell lexer.  The `.' is optional.

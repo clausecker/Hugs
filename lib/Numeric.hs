@@ -104,8 +104,8 @@ integerLogBase b i =
         in  doDiv (i `div` (b^l)) l
 
 
+{- ToDo: delay moving these out of the Prelude.
 -- Misc utilities to show integers and floats 
-
 showSigned    :: Real a => (a -> ShowS) -> Int -> a -> ShowS
 showSigned showPos p x 
  | x < 0 	= showParen (p > 6)
@@ -138,6 +138,7 @@ readDec, readOct, readHex :: Integral a => ReadS a
 readDec = readInt 10    isDigit digitToInt
 readOct = readInt  8 isOctDigit digitToInt
 readHex = readInt 16 isHexDigit digitToInt {-works over hex 'digits' too-}
+-}
 
 showEFloat     :: (RealFloat a) => Maybe Int -> a -> ShowS
 showFFloat     :: (RealFloat a) => Maybe Int -> a -> ShowS
@@ -293,10 +294,12 @@ floatToDigits base x =
                 in  gen [] (r * bk) s (mUp * bk) (mDn * bk)
     in  (map fromIntegral (reverse rds), k)
 
+{-
 -- duplicated from Prelude
 -- (to avoid non-standardly exporting 'lexDigits' from there).
 lexDigits        :: ReadS String 
 lexDigits        =  nonnull isDigit
+-}
 
 nonnull          :: (Char -> Bool) -> ReadS String
 nonnull p s      =  [(cs,t) | (cs@(_:_),t) <- [span p s]]
