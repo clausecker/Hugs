@@ -228,7 +228,7 @@ mkdir -p $compat
   stub IOExts		Hugs.IOExts Hugs.IORef Hugs.IOArray System.IO.Unsafe
   hslibs lang IORef.hs			# -> Data.IORef
 # hslibs lang LazyST.hs
-  stub LazyST		Data.STRef Control.Monad.ST.Lazy Hugs.LazyST
+  stub LazyST		Data.STRef.Lazy Control.Monad.ST.Lazy Hugs.LazyST
 # hslibs lang MArray.hs			# lots of GHC stuff (and obsolete)
 # hslibs lang MutableArray.lhs		# deprecated
   hslibs lang NativeInfo.hs		# -> System.Info
@@ -236,7 +236,7 @@ mkdir -p $compat
   hslibs lang PackedString.lhs		# -> Data.PackedString
 # hslibs lang PrelByteArr.lhs		# GHC-specific
 # hslibs lang ST.hs			# GHC-specific
-  stub ST		Data.STRef Data.Array.ST Control.Monad.ST Hugs.ST
+  stub ST		Data.STRef.Strict Data.Array.ST Control.Monad.ST Hugs.ST
   hslibs lang ShowFunctions.hs		# -> Text.Show.Functions
   hslibs lang Stable.hs			# -> Foreign.StablePtr System.Mem.StableName
   hslibs lang StableName.hs		# -> System.Mem.StableName
