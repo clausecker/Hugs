@@ -140,21 +140,14 @@ Use old implicit parameter syntax
 (a Hugs extension; default: off)
 </para>
 <para>
-With the <option>-98</option> option, Hugs supports implicit parameters,
-as described in
-<citetitle pubwork=article>Implicit parameters: dynamic scoping with static types</citetitle>, J Lewis,
-MB Shields, E Meijer, J Launchbury,
-<citetitle pubwork=book>27th ACM Symposium on Principles of Programming Languages (POPL'00)</citetitle>, Boston, Jan 2000.
-The syntax used in that paper, using new keywords <literal>dlet</literal>
-and <literal>with</literal>, is now deprecated in favour of the form
-<programlisting>
-  let ?var = exp in exp
-</programlisting>
-The old syntax is still supported if the <option>+W</option> option is given.
-(If <option>+98</option> is in effect, neither syntax is available.)
-This makes <literal>dlet</literal> and <literal>with</literal> into keywords,
-which will cause some libraries to fail,
+With the <option>-98</option> option, Hugs supports implicit parameters
+(see <xref linkend="implicit-parameters">).
+If the <option>+W</option> option is also given,
+Hugs accepts the obsolete syntax for bindings using additional keywords
+<literal>dlet</literal> and <literal>with</literal>.
+Note that this will cause some libraries to fail,
 e.g. <literal>Foreign</literal>.
+This option will disappear in time.
 </para>
 </listitem>
 </varlistentry>
