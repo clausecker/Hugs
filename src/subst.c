@@ -9,8 +9,8 @@
  * included in the distribution.
  *
  * $RCSfile: subst.c,v $
- * $Revision: 1.8 $
- * $Date: 1999/09/20 20:01:00 $
+ * $Revision: 1.9 $
+ * $Date: 1999/09/22 08:38:13 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -550,6 +550,32 @@ Int  o; {
     }
     else
 	return pi;
+}
+
+Type zonkTyvar(vn)	/* flatten type by chasing all references	   */
+Int vn; {		/* and collapsing OFFSETS to absolute indexes	   */
+    Tyvar *tyv = tyvar(vn);
+
+    if (tyv->bound)
+	return zonkType(tyv->bound,tyv->offs);
+    else
+	return mkInt(vn);
+}
+
+Type zonkType(t,o)	/* flatten type by chasing all references	   */
+Type t;			/* and collapsing OFFSETS to absolute indexes	   */
+Int  o; {
+    STACK_CHECK
+    switch (whatIs(t)) {
+	case AP        : {   Type l = zonkType(fst(t),o);/* ensure correct */
+			     Type r = zonkType(snd(t),o);/* eval. order    */
+			     return ap(l,r);
+			 }
+	case OFFSET    : return zonkTyvar(o+offsetOf(t));
+	case INTCELL   : return zonkTyvar(intOf(t));
+    }
+
+    return t;
 }
 
 #ifdef DEBUG_TYPES

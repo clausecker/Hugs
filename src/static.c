@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.10 $
- * $Date: 1999/09/15 21:39:04 $
+ * $Revision: 1.11 $
+ * $Date: 1999/09/22 08:38:11 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -83,7 +83,6 @@ static List   local checkQuantVars	Args((Int,List,List,Cell));
 static List   local offsetTyvarsIn	Args((Type,List));
 static List   local otvars		Args((Cell,List));
 static Bool   local osubset		Args((List,List));
-static List   local oclose		Args((List,List));
 static Void   local kindConstr		Args((Int,Int,Int,Constr));
 static Kind   local kindAtom		Args((Int,Constr));
 static Void   local kindPred		Args((Int,Int,Int,Cell));
@@ -2143,12 +2142,42 @@ List vs; {
     }
 }
 
+List zonkTyvarsIn(t,vs)
+Type t;
+List vs; {
+    switch (whatIs(t)) {
+	case AP	      : return zonkTyvarsIn(fun(t),
+			         zonkTyvarsIn(arg(t),vs));
+
+	case INTCELL  : if (cellIsMember(t,vs))
+			    return vs;
+			else
+			    return cons(t,vs);
+
+	case OFFSET   : internal("zonkTyvarsIn");
+
+	default	      : return vs;
+    }
+}
+
 static List local otvars(pi,os)		/* os is a list of offsets that	   */
 Cell pi;				/* refer to the arguments of pi;   */
 List os; {				/* find list of offsets in those   */
     List us = NIL;			/* positions			   */
     for (; nonNull(os); os=tl(os)) {
 	us = offsetTyvarsIn(nthArg(offsetOf(hd(os)),pi),us);
+    }
+    return us;
+}
+
+static List local otvarsZonk(pi,os,o)	/* same as above, but zonks	   */
+Cell pi;
+List os; {
+    List us = NIL;
+    List vs = NIL;
+    for (; nonNull(os); os=tl(os)) {
+        Type t = zonkType(nthArg(offsetOf(hd(os)),pi),o);
+	us = zonkTyvarsIn(t,us);
     }
     return us;
 }
@@ -2169,7 +2198,7 @@ List us, vs; {				/* of vs			   */
     return isNull(us);
 }
 
-static List local oclose(fds,vs)	/* Compute closure of vs wrt to fds*/
+List oclose(fds,vs)	/* Compute closure of vs wrt to fds*/
 List fds;
 List vs; {
     Bool changed = TRUE;
@@ -2231,6 +2260,30 @@ List ps; {
 #if IPARAM
 	else if (isIP(c)) {
 	    fds = cons(pair(NIL,offsetTyvarsIn(arg(pi),NIL)),fds);
+	}
+#endif
+    }
+    return fds;
+}
+
+List calcFunDepsPreds(ps)
+List ps; {
+    List fds  = NIL;
+    for (; nonNull(ps); ps=tl(ps)) {/* Calc functional dependencies	   */
+	Cell pi3 = hd(ps);
+	Cell pi = fst3(pi3);
+	Cell c  = getHead(pi);
+	Int o = intOf(snd3(pi3));
+	if (isClass(c)) {
+	    List fs = cclass(c).fds;
+	    for (; nonNull(fs); fs=tl(fs)) {
+		fds = cons(pair(otvarsZonk(pi,fst(hd(fs)),o),
+				otvarsZonk(pi,snd(hd(fs)),o)),fds);
+	    }
+	}
+#if IPARAM
+	else if (isIP(c)) {
+	    fds = cons(pair(NIL,zonkTyvarsIn(arg(pi),NIL)),fds);
 	}
 #endif
     }
