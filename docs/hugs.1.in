@@ -1,5 +1,5 @@
 .\" @configure_input@
-.TH HUGS 1 "September 2002" "" ""
+.TH HUGS 1 "September 2003" "" ""
 .ds LB @HUGSDIR@
 .ds BN @BINDIR@
 .ds HP @HUGSPATH@
@@ -83,7 +83,8 @@ is given (a Hugs extension; default: off)
 .SS "Module loading"
 .TP
 .B +l
-Literate scripts as default (default: off)
+Treat files whose names end in neither `\fB.hs\fP' nor `\fB.lhs\fP'
+as literate scripts (default: off)
 .TP
 .B +e
 Warn about errors in literate scripts (default: on)
@@ -95,7 +96,7 @@ Print dots to show progress while loading modules (default: off)
 Print nothing to show progress while loading modules (default: on)
 .TP
 .B +w
-Always show which files loaded (default: off)
+Always show which files are loaded (default: off)
 .SS "Expression evaluation"
 .TP
 .B +s
@@ -108,7 +109,7 @@ Print type after each evaluation (default: off)
 Apply the Haskell defaulting rules before printing types (default: off)
 .TP
 .B +g
-Print number of cells recovered after gc (default: off)
+Print number of cells recovered after each garbage collection (default: off)
 .TP
 .B +Q
 Qualify names when printing (default: off)
@@ -151,7 +152,7 @@ means all the immediate subdirectories of
 The default value is
 .RS
 .IP
-\fB\*(HP\fP
+.B \*(HP
 .RE
 .TP
 .BI \-S str
@@ -254,12 +255,12 @@ and prints the prompt so that further commands can be entered.
 The
 .I runhugs
 command is an interpreter for an executable Hugs script,
-which must be a literate script containing a Haskell \fBMain\fP module.
+which must contain a Haskell \fBMain\fP module.
 For example, the executable file \fBhello\fP might contain the lines
 .LP
 .nf
 .RS
-\fB#!\*(BN/runhugs
+\fB#!\*(BN/runhugs +l
 .sp
 > module Main where
 > main = putStr "Hello, World\\n"\fP
@@ -274,11 +275,14 @@ function.
 Any arguments given on the command line will be available through
 .RB getArgs .
 .SH "C INTERFACE"
-On the x86, PowerPC and Sparc architectures,
+On architectures that support dynamic linking,
 .I Hugs
 implements the part of the
 .I "Haskell 98 Foreign Function Interface"
 (FFI) that allows Haskell functions to call C routines.
+(On the x86, PowerPC and Sparc architectures,
+all \fBforeign import\fP are supported;
+on others, only \fBstatic\fP imports are provided.)
 Modules containing such
 .B foreign
 declarations must be compiled using the
@@ -332,17 +336,19 @@ various mailing lists and much more.
 .SH "SEE ALSO"
 Mark P. Jones et al. \fIHugs 98 User Manual\fP, June 1999.
 .PP
-S. Peyton Jones and J. Hughes (editors).  \fIReport on the Programming
-Language Haskell 98, A Non-strict Purely Functional Language\fP.
-February 1999.
+\fIHugs 98 User's Guide\fP (distributed with Hugs).
 .PP
 Paul Hudak & Joseph H. Fasel.  A gentle introduction to Haskell.
 \fIACM SIGPLAN Notices\fP, 27(5), May 1992.
 .PP
+S. Peyton Jones (editor).
+\fIHaskell 98 Language and Libraries: The Revised Report\fP.
+December 2002.
+.PP
 Manuel Chakravarty et al.
 .IR "Haskell 98 Foreign Function Interface 1.0",
 .IR "Addendum to the Haskell Report" ,
-2002.
+September 2003.
 .SH AUTHOR
 Hugs 98: Mark Jones and others, June 1999.
 .PP
