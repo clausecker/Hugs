@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: ffi.c,v $
- * $Revision: 1.29 $
- * $Date: 2003/04/24 14:47:00 $
+ * $Revision: 1.30 $
+ * $Date: 2003/07/16 16:29:43 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -34,6 +34,7 @@ static Void local ffiGetList     Args((Int,List,String));
 static Void local ffiPutList     Args((Int,List,String));
 static Void local ffiCallFun     Args((Int,Text,List,List));
 static Void local ffiDeclareFun  Args((Int,Text,Bool,Bool,List,Type));
+static Void local ffiFunTypeCast Args((Int,List,Type));
 static Void local ffiPrimProto   Args((Text,Int));
 static Void local ffiPrimHeader  Args((Text,Int));
 static Void local ffiReturn      Args((Type,String,Int));
@@ -193,7 +194,9 @@ List es; {
            "#ifdef __cplusplus\n"
            "extern \"C\" {\n"
            "#endif\n"
-	   "DLLEXPORT(int)  HugsAPIVersion();\n"
+           "#ifndef __cplusplus\n"
+	   "DLLEXPORT(int)  HugsAPIVersion(void);\n"
+           "#endif\n"
 	   "DLLEXPORT(int)  HugsAPIVersion() {return (%d);}\n"
            "DLLEXPORT(void) initModule(HugsAPI5 *);\n"
            "DLLEXPORT(void) initModule(HugsAPI5 *hugsAPI) {\n"
@@ -458,6 +461,27 @@ List resultTy; {
     fprintf(out,")");
 }
 
+static Void local ffiFunTypeCast(line,argTys,resultTy)
+Int line;
+List argTys;
+List resultTy; {
+    Int  i;
+    fprintf(out,"(");
+    if (resultTy == typeUnit) {
+        fprintf(out,"void");
+    } else {
+        foreignType(line,resultTy);
+    }
+    fprintf(out," (*)(");
+    for(i=1; nonNull(argTys); argTys=tl(argTys),++i) {
+        foreignType(line,hd(argTys));
+        if (nonNull(tl(argTys))) {
+            fprintf(out,", ");
+        }
+    }
+    fprintf(out,"))");
+}
+
 static Void local ffiCallFun(line,e,argTys,resultTy)
 Int  line;
 Text e;
@@ -619,7 +643,9 @@ Type resultTy; {
 
     ffiDeclareList(line,argTys,"arg");
     ffiDeclare(line,resultTy,"res",1);
-    fprintf(out,"    %s = hugs->getAddr();\n", textToStr(e));
+    fprintf(out,"    %s = ", textToStr(e));
+    ffiFunTypeCast(line,argTys,resultTy);
+    fprintf(out,"hugs->getFunPtr();\n");
     ffiGetList(line,argTys,"arg");
     ffiCallFun(line,e,argTys,resultTy);
     fprintf(out,"    ");
@@ -812,7 +838,10 @@ Type ty; {
     ffiPrimProto(cid,id);
     ffiPrimHeader(cid,id);
     fprintf(out,"{\n");
-    fprintf(out,"    hugs->putAddr(&%s);\n", textToStr(cid));
+    if (getHead(ty) == typeFunPtr)
+	fprintf(out,"    hugs->putFunPtr((HsFunPtr)&%s);\n", textToStr(cid));
+    else
+	fprintf(out,"    hugs->putPtr(&%s);\n", textToStr(cid));
     fprintf(out,"}\n");
 }
 
