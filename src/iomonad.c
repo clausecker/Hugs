@@ -14,8 +14,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: iomonad.c,v $
- * $Revision: 1.76 $
- * $Date: 2004/03/02 17:10:38 $
+ * $Revision: 1.77 $
+ * $Date: 2004/03/17 10:38:54 $
  * ------------------------------------------------------------------------*/
  
 Name nameIORun;			        /* run IO code                     */
@@ -97,7 +97,7 @@ PROTO_PRIM(primPutChar);
 PROTO_PRIM(primPutStr);
 
 #if IO_HANDLES
-static Void local fwritePrim  Args((StackPtr,Bool,Bool,String));
+static Void local fwritePrim  Args((StackPtr,Int,Bool,String));
 static Void local fopenPrim   Args((StackPtr,Bool,String));
 static int local getIOMode    Args((Cell));
 
@@ -418,15 +418,15 @@ String local modeString(hmode,binary) /* return mode string for f(d)open */
 Int  hmode;
 Bool binary; {
     if (binary) {
-	return (hmode&HAPPEND)    ? "ab+" :
-	       (hmode&HWRITE)     ? "wb+" :
+	return (hmode&HAPPEND)    ? "ab"  :
+	       (hmode&HWRITE)     ? "wb"  :
 	       (hmode&HREADWRITE) ? "wb+" :
 	       (hmode&HREAD)      ? "rb"  : (String)0;
     } else {
-	return (hmode&HAPPEND)     ? "a+" :
-	       (hmode&HWRITE)      ? "w+" :
-	       (hmode&HREADWRITE)  ? "w+" :
-	       (hmode&HREAD)       ? "r"  : (String)0;
+	return (hmode&HAPPEND)    ? "a"   :
+	       (hmode&HWRITE)     ? "w"   :
+	       (hmode&HREADWRITE) ? "w+"  :
+	       (hmode&HREAD)      ? "r"   : (String)0;
     }
 }
 
@@ -1654,25 +1654,25 @@ primFun(primHGetBuf) {			/* read binary data into a buffer   */
 }
 
 primFun(primWriteFile) {		/* write string to specified file  */
-    fwritePrim(root,FALSE,FALSE,"Prelude.writeFile");
+    fwritePrim(root,HWRITE,FALSE,"Prelude.writeFile");
 }
 
 primFun(primAppendFile) {		/* append string to specified file */
-    fwritePrim(root,TRUE,FALSE,"Prelude.appendFile");
+    fwritePrim(root,HAPPEND,FALSE,"Prelude.appendFile");
 }
 
 primFun(primWriteBinaryFile) {		/* write string to specified file  */
-    fwritePrim(root,FALSE,TRUE,"IOExtensions.writeBinaryFile");
+    fwritePrim(root,HWRITE,TRUE,"System.IO.writeBinaryFile");
 }
 
 primFun(primAppendBinaryFile) {		/* append string to specified file */
-    fwritePrim(root,TRUE,TRUE,"IOExtensions.appendBinaryFile");
+    fwritePrim(root,HAPPEND,TRUE,"System.IO.appendBinaryFile");
 }
 
-static Void local fwritePrim(root,append,binary,loc)
+static Void local fwritePrim(root,hmode,binary,loc)
                                  /* Auxiliary function for  */
 StackPtr root;			 /* writing/appending to    */
-Bool     append; 		 /* an output file	    */
+Int      hmode; 		 /* an output file	    */
 Bool     binary;
 String   loc; {
     String s    = evalName(IOArg(2));		/* Eval and check filename */
@@ -1692,11 +1692,7 @@ String   loc; {
        sensibly, this to succeed, hence the test has been removed.
     */
 
-    if (binary) {
-	stmode = append ? "ab+" : "wb+";
-    } else {
-	stmode = append ? "a+" : "w+";
-    }
+    stmode = modeString(hmode,binary);
     if  ( (wfp = fopen(s,stmode)) == NULL ) {
 	IOFail (mkIOError(NIL,
 			  toIOError(errno),
