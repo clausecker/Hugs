@@ -9,6 +9,28 @@ AC_INIT(../hugs.c)
 AC_CONFIG_HEADER(../config.h ../options.h)
 
 dnl--------------------------------------------------------------------
+dnl Choose host(/target/build) platform
+dnl--------------------------------------------------------------------
+
+dnl Guess host/target/build platform(s) if necessary.
+AC_CANONICAL_SYSTEM
+
+# "$host" defaults to "$target"
+if test "x$host" = xNONE ; then
+    host=$target
+fi
+
+dnl ** canonicalize platform names
+BuildPlatform=`/bin/sh $srcdir/config.sub $build` || exit 1
+HostPlatform=`/bin/sh $srcdir/config.sub $host` || exit 1
+TargetPlatform=`/bin/sh $srcdir/config.sub $target` || exit 1
+
+if test x"$TargetPlatform" != x"$HostPlatform" ; then
+    echo "Hugs98 does not yet support differing host/target (i.e., cross-compiling)"
+    exit 1
+fi
+
+dnl--------------------------------------------------------------------
 dnl
 dnl Check for programs
 dnl
@@ -21,8 +43,45 @@ if (test "`basename ${YACC}`x" == "byaccx"); then
    echo "You need to install 'bison' and re-run the configure script."
    exit 1;
 fi;
+
 AC_PROG_CC
 AC_PROG_CPP
+AC_PROG_GCC_TRADITIONAL
+
+CFLAGS="-g"
+OPTFLAGS="-O2"
+
+dnl  The following patch avoids the outburst of (benign) error messages during 
+dnl  compilation of machine.c under MacOS X/Darwin, as well as some linker 
+dnl  warnings caused by the default two-level namespace introduced in version 10.1
+dnl
+case $HostPlatform in
+  *-*-darwin*)CFLAGS="$CFLAGS -no-cpp-precomp"; LDFLAGS="$LDFLAGS -flat_namespace" ;;
+  # As suggested by James B. White III (Trey) <whitejbiii@ornl.gov> (for
+  # AIX 4.3.3 & XL C 5.0.2 at least, may need to tweak the pattern match
+  # below some to avoid upsetting other AIX versions).
+  *-*-aix*) 
+     optcflags="-qalloca"
+     CFLAGS_save="$CFLAGS"
+     CFLAGS="$CFLAGS $optcflags"
+     AC_MSG_CHECKING([whether $CC accepts $optcflags])
+     AC_LANG_C
+     AC_TRY_COMPILER([int main(){return(0);}],optok,cross)
+     if test "$optok" = "yes"; then
+	# lump the recognition of -qalloca together with -qmaxmem=-1 and -bmaxdata..
+        CFLAGS="$CFLAGS_save $optcflags"
+	LDFLAGS="$LDFLAGS -bmaxdata:0x70000000"; 
+	OPTFLAGS="-O -qmaxmem=-1"
+        AC_MSG_RESULT([yes])
+     else
+        CFLAGS="$CFLAGS_save"
+	AC_MSG_RESULT([no])
+     fi
+      ;;
+  *) ;;
+esac
+
+AC_CHECK_PROG(LD,ld,ld)
 AC_CHECK_PROGS(PERL,perl)  dnl should test for perl5
 AC_PROG_MAKE_SET
 AC_CHECK_PROG(have_hp2ps,hp2ps,1,0)
@@ -231,7 +290,6 @@ if test "$ac_cv_type_signal" = void; then
 AC_DEFINE(VOID_INT_SIGNALS)
 fi
 
-AC_PROG_GCC_TRADITIONAL
 
 dnl ** check for leading underscores in symbol names
 # We assume that they _aren't_ there if anything goes wrong.
@@ -257,9 +315,6 @@ test -n "$verbose" && echo "    setting LEADING_UNDERSCORE to $LEADING_UNDERSCOR
 if test "$LEADING_UNDERSCORE" = "YES"; then
 AC_DEFINE(LEADING_UNDERSCORE)
 fi
-
-AC_CHECK_PROG(LD,ld,ld)
-
 
 dnl--------------------------------------------------------------------
 dnl
@@ -362,18 +417,6 @@ GCC_LINT_FLAGS="-Wall \
   -Wmissing-declarations -Wnested-externs \
   -Wno-parentheses \
   "
-
-CFLAGS="-g"
-OPTFLAGS="-O2"
-
-dnl  The following patch avoids the outburst of (benign) error messages during 
-dnl  compilation of machine.c under MacOS X/Darwin, as well as some linker 
-dnl  warnings caused by the default two-level namespace introduced in version 10.1
-dnl
-case "`uname -s`" in
-  Darwin) CFLAGS="$CFLAGS -no-cpp-precomp"; LDFLAGS="$LDFLAGS -flat_namespace" ;;
-  *) ;;
-esac
 
 dnl--------------------------------------------------------------------
 dnl
