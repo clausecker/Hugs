@@ -18,6 +18,7 @@ cpp_flags='-D__HUGS__'
 
 cc=${CC-@CC@}
 : ${cpp='gcc -P -E -traditional -xc'}
+: ${happy=happy}
 : ${hsc2hs=hsc2hs}
 : ${greencard=greencard}
 : ${ffihugs=@BINDIR@/ffihugs}
@@ -257,7 +258,7 @@ do	echo "Converting $modname"
 		cp $stem.y $tmpdir
 		(
 			cd $tmpdir
-			happy $basename.y
+			$happy $basename.y
 		)
 		$cpp $cpp_flags $tmpdir/$basename.hs | grep -v '^#' |
 			cat -s >$target_stem.hs
@@ -267,7 +268,7 @@ do	echo "Converting $modname"
 		cp $stem.ly $tmpdir
 		(
 			cd $tmpdir
-			happy $basename.ly
+			$happy $basename.ly
 		)
 		$cpp $cpp_flags $tmpdir/$basename.hs | grep -v '^#' |
 			cat -s >$target_stem.hs
