@@ -142,7 +142,7 @@ HugsPackage=libraries/tools/hugs-package
 # extra_packages - packaged with Hugs, but may also be independently updated
 #	(each of these goes in a separate hierarchy under {Hugs}/packages)
 
-core_packages='base haskell98 haskell-src network QuickCheck'
+core_packages='base Cabal haskell98 haskell-src network QuickCheck'
 extra_packages='fgl HaXml mtl parsec HUnit'
 
 #
