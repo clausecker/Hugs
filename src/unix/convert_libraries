@@ -182,14 +182,26 @@ function stub {
 
 # Copy the Hugs version to the compatibility lib
 
-function hugslibs {
+function libexts {
 	case $# in
 	1)	;;
-	*)	echo "usage: hugslibs module" >&2
+	*)	echo "usage: libexts module" >&2
 		exit 1 ;;
 	esac
 
-	name="`ls ../../lib/{hugs,exts}/$1.*hs`"
+	name="`ls ../../lib/exts/$1.*hs`"
+	echo "Copy `basename $name`"
+	sed 's/import Prelude/import Hugs.Prelude/' $name >$compat/`basename $name`
+}
+
+function libhugs {
+	case $# in
+	1)	;;
+	*)	echo "usage: libhugs module" >&2
+		exit 1 ;;
+	esac
+
+	name="`ls ../../lib/hugs/$1.*hs`"
 	echo "Copy `basename $name`"
 	sed 's/import Prelude/import Hugs.Prelude/' $name >$compat/`basename $name`
 }
@@ -386,12 +398,28 @@ mkdir -p $compat
 # Hugs-only modules
 
     stub ConcBase	Hugs.ConcBase
-hugslibs MonadRec	# new libs have Fix, but Rec is used by mdo
-hugslibs Memo		# hslibs module is different
-hugslibs Observe	# hslibs module is different
-hugslibs Quote		# only hugs supports here docs
-hugslibs Trex		# only hugs supports Trex
+ libexts MonadRec	# new libs have Fix, but Rec is used by mdo
+ libexts Memo		# hslibs module is different
+ libexts Observe	# hslibs module is different
     stub HugsStorable	Hugs.Storable
+
+ libhugs AnsiInteract
+ libhugs AnsiScreen
+ libhugs CVHAssert
+ libhugs GenericPrint
+ cp ../../lib/hugs/GenericPrint.hs $compat	# don't change the import
+ libhugs HugsDynamic
+ libhugs HugsInternals
+ libhugs HugsLibs
+ libhugs IOExtensions
+ libhugs Interact
+ libhugs ListUtils
+ libhugs Number
+ libhugs ParseLib
+ libhugs Quote		# only hugs supports here docs
+ libhugs StdLibs
+ libhugs Trace
+ libhugs Trex		# only hugs supports Trex
 
 # Stuff from hslibs (many of these are stubs)
 
@@ -400,10 +428,10 @@ hugslibs Trex		# only hugs supports Trex
   hslibs concurrent Channel.lhs
   hslibs concurrent ChannelVar.lhs
 # hslibs concurrent Concurrent.lhs	# -> Control.Concurrent
-hugslibs Concurrent
+ libexts Concurrent
   hslibs concurrent MVar.lhs
 # hslibs concurrent Merge.lhs
-hugslibs Merge				# deprecated Hugs lib
+ libexts Merge				# deprecated Hugs lib
   hslibs concurrent Parallel.lhs
   hslibs concurrent QSem.lhs
   hslibs concurrent QSemN.lhs
@@ -446,7 +474,7 @@ hugslibs Merge				# deprecated Hugs lib
   hslibs data/edison/Seq TestSeq.hs
 
 # hslibs lang Addr.lhs			# deprecated
-hugslibs Addr
+ libexts Addr
 # hslibs lang ArrayBase.hs		# -> Data.Array.Base
   hslibs lang Arrow.hs
 # hslibs lang ByteArray.lhs		# deprecated
@@ -457,7 +485,7 @@ hugslibs Addr
   hslibs lang Dynamic.hs
   hslibs lang Exception.hs
 # hslibs lang ForeignObj.lhs		# deprecated
-hugslibs ForeignObj			# uses Hugs primitives
+ libexts ForeignObj			# uses Hugs primitives
 # hslibs lang Generics.hs		# GHC-specific
 # hslibs lang GlaExts.lhs		# deprecated
   hslibs lang IArray.hs

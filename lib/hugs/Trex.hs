@@ -7,7 +7,10 @@
 -- Suitable for use with Hugs 98, if compiled with TREX support.
 -----------------------------------------------------------------------------
 
-module Trex( module Prelude, ShowRecRow(..), EqRecRow(..), insertField ) where
+module Trex( Rec, EmptyRec, EmptyRow,
+	ShowRecRow(..), EqRecRow(..), insertField ) where
+
+import Prelude -- ( Rec, EmptyRec, EmptyRow )
 
 -- Code for equalities:
 

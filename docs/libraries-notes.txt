@@ -43,16 +43,15 @@ libraries, comprising
 	as the old lib/exts modules, but implemented by importing
 	hierarchical modules.  For example there is a module MonadReader
 	that merely imports and re-exports the hierarchical module
-	Control.Monad.Reader.
-
-The old {Hugs}/lib/hugs directory is also usable with these libraries.
+	Control.Monad.Reader.  It also includes versions of the old
+	lib/hugs modules.
 
 The old library setup will disappear when this new setup has had more
 testing, though the compatibility stubs will be kept for a while.
 
 To use the new setup, set HUGSFLAGS to
 
-	-W -P{Hugs}/libraries:{Hugs}/oldlib:{Hugs}/lib/hugs
+	-W -P{Hugs}/libraries:{Hugs}/oldlib
 
 (The -W option disables the old syntax for implicit parameters using
 "with" and "dlet" -- some modules use "with" as an identifier.)  Do not
@@ -70,8 +69,6 @@ o the Hugs.* packages (in libraries/Hugs) provide Hugs-specific
   implementations of standard features, as well as some Hugs-only
   features.  Any program importing them (or modules in oldlib) will not
   be portable to other implementations.
-
-o To use TRex with the new setup, import Hugs.TRex
 
 o As noted above, the Prelude is now Haskell 98-compliant.  Most of the
   names formerly exported are available from library modules, including
