@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.87 $
- * $Date: 2002/09/08 02:24:02 $
+ * $Revision: 1.88 $
+ * $Date: 2002/09/08 14:36:00 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -116,6 +116,7 @@ static Void   local clearProject      Args((Void));
 static Void   local addScriptName     Args((String,Bool));
 static Bool   local addScript         Args((String,Long));
 static Void   local forgetScriptsFrom Args((Script));
+static Void   local forgetAllScripts  Args((Void));
 static Void   local forgetAScript     Args((Script,Bool));
 static Void   local setLastEdit       Args((String,Int));
 static Void   local failed            Args((Void));
@@ -1235,7 +1236,7 @@ String s; {
     currProject = s;
     projInput(currProject);
     scriptFile = currProject;
-    forgetScriptsFrom(1);
+    forgetAllScripts();
     while ((s=readFilename())!=0)
 	addScriptName(s,TRUE);
     if (namesUpto<=1) {
@@ -1364,9 +1365,6 @@ List imps; {
 static Void local forgetScriptsFrom(scno) /* remove scripts from system     */
 Script scno; {
     Script i;
-    if (newPrelude && scno == 1 && namesUpto > 1) {
-      scno++;
-    }    
     for (i=scno; i<namesUpto; ++i)
 	if (scriptName[i])
 	    free(scriptName[i]);
@@ -1374,6 +1372,13 @@ Script scno; {
     namesUpto = scno;
     if (numScripts>namesUpto)
 	numScripts = scno;
+}
+
+static Void local forgetAllScripts() {
+  /* Drop all but the stable scripts; i.e., the
+   * Prelude and (possibly) it's implementation module(s).
+   */
+  forgetScriptsFrom( (newPrelude && namesUpto > 1) ? 2 : 1);
 }
 
 static Void local forgetAScript(scno,dropScr) /* remove a script from system */
@@ -2417,7 +2422,7 @@ String argv[]; {
                           find();
 			  break;
 	    case LOAD   : clearProject();
-			  forgetScriptsFrom(1);
+			  forgetAllScripts();
 			  load();
 			  break;
 	    case ALSO   : clearProject();
