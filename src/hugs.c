@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.66 $
- * $Date: 2002/02/26 05:33:47 $
+ * $Revision: 1.67 $
+ * $Date: 2002/02/28 03:42:45 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1767,10 +1767,10 @@ Cell   c; {
 #endif
 }
 
-static Void local splitQualString(nm, pMod, pName) /* Given a string containing a possibly
-                                                      qualified name, split it up into a
-						      module and a name portion.
-						   */
+/* Given a string containing a possibly qualified name,
+ * split it up into a module and a name portion.
+ */
+static Void local splitQualString(nm, pMod, pName) 
 String nm;
 String* pMod;
 String* pName; {
@@ -1821,7 +1821,13 @@ static Void local info() {              /* describe objects                */
 	 /* In the event of a qualified name, decompose it. */
 	 splitQualString(s, &mod,&nm);
 	 
-	 if (mod != NULL) {
+	 if (mod != NULL && mod[0] == '\0') {
+	     /* ".<whatever>"  is assumed to be a non-qualified name */
+	     free(mod); mod = NULL;
+	     free(nm);  nm = s;
+	 }
+	 
+	 if ( mod != NULL ) {
 	   Module homeMod = findModule(findText(mod));
 	   if (nonNull(homeMod)) {
 	     setCurrModule(homeMod);
