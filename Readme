@@ -4,7 +4,7 @@ __   __ __  __  ____   ___      _________________________________________
 ||___|| ||__|| ||__||  __||     Copyright (c) 1994-2001
 ||---||         ___||           World Wide Web: http://haskell.org/hugs
 ||   ||                         Report bugs to: hugs-bugs@haskell.org
-||   || Version: Jan 2001 beta  _________________________________________
+||   || Version: Feb 2001       _________________________________________
 
 ------------------------------------------------------------------------------
 
@@ -19,22 +19,33 @@ __   __ __  __  ____   ___      _________________________________________
    in the most recent version of the Haskell Library Report and with
    extension libraries that are compatible with GHC 3.0 and later.
 
-   This is a beta release that aims at giving as many people as 
-   possible a chance to react to the changes and additions that have 
-   recently been incorporated.  A list of the most important new
-   features looks as follows:
+   This is a major release that incorporates bug fixes as well as 
+   several new features and enhancements that have been developed for 
+   Hugs over the last year. It is announced with the intentions that 
+   it will remain a stable and lightweight implementation of Haskell 98 
+   + extensions for some considerable time.
+
+   A list of the most important new features looks as follows:
 
    - A Foreign Function Interface closely modelled after the one
      provided by GHC.
 
    - Built-in, Hood-like debugging support.
  
+   - Parallel list comprehensions, a.k.a. zip-comprehensions.
+
    - A new syntax for recursive monad bindings.
 
    - A new GUI under Windows that doesn't consume all CPU time.
 
-   See the release notes in the "docs" directory for more information
-   on some of these features.
+   - Support for the MacOS platform integrated into the main 
+     distriution.
+
+   - Corrections of all bugs reported for the January 2001 beta 
+     release.
+
+   See the release notes in the "docs" directory of the distribution
+   for more information on the new language features.
 
    Hugs is best used as a Haskell program development system: it boasts
    extremely fast compilation, supports incremental compilation, and
