@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.36 $
- * $Date: 2001/03/19 17:45:58 $
+ * $Revision: 1.37 $
+ * $Date: 2001/06/08 23:26:25 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -252,6 +252,10 @@ String argv[]; {
     FileName hugsPrefsFile = "\0";
 #endif
 
+#if USE_REGISTRY
+    String regString;
+#endif 
+
     setLastEdit((String)0,0);
     lastEdit      = 0;
     scriptFile    = 0;
@@ -290,10 +294,14 @@ String argv[]; {
     hugsPath      = strCopy(HUGSPATH);
     readOptions("-p\"%s> \" -r$$");
 #if USE_REGISTRY
-    projectPath   = strCopy(readRegChildStrings(HKEY_LOCAL_MACHINE,ProjectRoot,
-					        "HUGSPATH", PATHSEP, ""));
-    readOptions(readRegString(HKEY_LOCAL_MACHINE,HugsRoot,"Options",""));
-    readOptions(readRegString(HKEY_CURRENT_USER, HugsRoot,"Options",""));
+    projectPath   = readRegChildStrings(HKEY_LOCAL_MACHINE,ProjectRoot,
+				        "HUGSPATH", PATHSEP, "");
+
+    regString = readRegString(HKEY_LOCAL_MACHINE,HugsRoot,"Options","");
+    readOptions(regString); free(regString);
+
+    regString = readRegString(HKEY_CURRENT_USER, HugsRoot,"Options","");
+    readOptions(regString); free(regString);
 #endif /* USE_REGISTRY */
 #if USE_PREFERENCES_FILE
     if (f=fopen(PREFS_FILE_NAME,"r")) { /* is preferences file in the {Current} folder? */

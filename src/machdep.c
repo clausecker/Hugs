@@ -12,8 +12,8 @@
  * included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.15 $
- * $Date: 2001/04/02 04:05:13 $
+ * $Revision: 1.16 $
+ * $Date: 2001/06/08 23:26:25 $
  * ------------------------------------------------------------------------*/
 
 #ifdef HAVE_SIGNAL_H
@@ -280,7 +280,9 @@ static String local hugsdir() {     /* directory containing lib/Prelude.hs */
 	String s = readRegString(HKEY_LOCAL_MACHINE,HugsRoot,"InstallDir", 
 				 HUGSDIR);
 	if (s) { 
-	    strcpy(dir,s); 
+	  /* Protect against overruns */
+	  strncpy(dir,s,FILENAME_MAX);
+	  free(s);
 	}
     }
     return dir;
@@ -329,7 +331,9 @@ static String local hscriptDir() {  /* Directory containing hscript.dll	   */
     if (dir[0] == '\0') { /* not initialised yet */
 	String s = readRegString(HKEY_LOCAL_MACHINE,HScriptRoot,"InstallDir","");
 	if (s) {
-	    strcpy(dir,s);
+	  /* Protect against overruns */
+	  strncpy(dir,s,FILENAME_MAX);
+	  free(s);
 	}
     }
     return dir;
@@ -1676,6 +1680,46 @@ DWORD   bufSize; {
     }
 }
 
+/* Specialised version of queryValue(), which doesn't require
+ * you to guess the length of a REG_SZ value. Allocates a big
+ * enough buffer (using malloc()) to hold the key's value, which
+ * is then returned to the callee (along with the resp. to free the
+ * buffer.)
+ */
+static Bool local queryString(hKey, regPath, var, pString)
+HKEY    hKey;
+String  regPath;
+String  var;
+String* pString; {
+    HKEY  hRootKey;
+    LONG  rc;
+    DWORD bufSize;
+    DWORD valType = REG_SZ;
+    Bool  res;
+
+    if (!createKey(hKey, regPath, &hRootKey, KEY_READ)) {
+	return FALSE;
+    } else {
+        /* Determine the length of the entry */
+	rc = RegQueryValueEx(hRootKey, var, NULL, &valType, NULL, &bufSize);
+	
+	if (rc == ERROR_SUCCESS && valType == REG_SZ) {
+	  /* Got the length, now allocate the buffer and retrieve the string. */
+	  if ((*pString = (String)malloc(sizeof(char) * (bufSize + 1))) != NULL) {
+	    rc = RegQueryValueEx(hRootKey, var, NULL, &valType, (LPBYTE)*pString, &bufSize);
+	    res = (rc == ERROR_SUCCESS);
+	  } else {
+	    res = FALSE;
+	  }
+	} else {
+	  res = FALSE;
+	}
+
+	RegCloseKey(hRootKey);
+	return (res);
+    }
+}
+
 static Bool local setValue(hKey, regPath, var, type, buf, bufSize)
 HKEY   hKey;
 String regPath;
@@ -1699,17 +1743,20 @@ HKEY   key;
 String regPath;
 String var; 
 String def; {
-#if HUGS_FOR_WINDOWS
-    static char  buf[2048]; /* 300 chars get too short with long file names */
-#else
-    static char  buf[300];
-#endif
-    DWORD type;
-    if (queryValue(key, regPath,var, &type, buf, sizeof(buf))
-	&& type == REG_SZ) {
-	return (String)buf;
+    char* stringVal;
+    
+    if (queryString(key, regPath, var, &stringVal)) {
+        /* The callee is responsible for freeing the returned string */
+	return (String)stringVal;
     } else {
-	return def;
+        /* Create a *copy* of the default string, so that it can be freed
+	   without worry. */
+      if ((stringVal = malloc(sizeof(char) * (strlen(def) + 1))) == NULL) {
+	return NULL;
+      } else {
+	strcpy(stringVal, def);
+	return (String)stringVal;
+      }
     }
 }
 
@@ -1750,10 +1797,7 @@ Int    val; {
 }
 
 /* concatenate together all strings from registry of the form regPath\\*\\var,
- * seperated by character sep
- */
-/* N.B. for consistency with readRegString, returns a pointer in to static
- * storage.
+ * seperated by character sep.
  */
 static String local readRegChildStrings(key,regPath,var,sep,def)
 HKEY	key;
@@ -1768,17 +1812,56 @@ String  def;
   DWORD dwIndex = 0;
   char subKeyName[256];
   DWORD subKeyLen;
-  static char resPath[512]; /* result path, returned to caller */
-  static char *curPos = resPath;
+  BOOL addedPath = FALSE;
+
+  char* resPath = NULL; /* result path, returned to caller */
+  unsigned int strIncrement = 512; /* min length 'resPath' is extended by. */
+  unsigned int resRoom = 0;        /* Number of chars left in 'resPath'. */
+  unsigned int resLength = 0;      /* resPath length */
+  unsigned int maxLen = 0;
+
+  unsigned int strLength = 0;      /* length of component */
   String component;
   FILETIME ft; /* just to satisfy RegEnumKeyEx() */
-
+  char sepString[2];
+  
+  sepString[0] = sep;
+  sepString[1] = '\0';
+  
+/* Macro which appends a NUL terminated string to 'resPath', taking
+ * care of (re)allocating the string buffer, so that it'll fit.
+ */
+#define APPEND_STRING__(x) \
+    if ( (strLength = strlen(x)) > resRoom || (resRoom == 0 && (x) != NULL) ) { \
+       maxLen = max(strLength, strIncrement); \
+       if (resPath == NULL) { \
+           if ( (resPath = (String)malloc(sizeof(char) * maxLen)) == NULL) { \
+ 		return NULL; \
+	   } \
+	   resPath[0] = '\0'; \
+	   resLength = maxLen; \
+	   resRoom   = maxLen; \
+       } else { \
+       	   String tmpPtr; \
+       	   if ( (tmpPtr = (String)realloc(resPath,sizeof(char) * (resLength + maxLen))) == NULL) { \
+	        /* The assumption is that the string is well-formed at the point we exhaust the allocator. */ \
+	   	return resPath; \
+	   } \
+	   resPath = tmpPtr; \
+	   resLength += maxLen; \
+	   resRoom = maxLen; \
+       } \
+    } \
+    strcat(resPath, x); \
+    resRoom -= strLength;
+  
   ulResult = RegOpenKeyEx(key, regPath, 0, KEY_READ, &baseKey);
   if (ulResult != ERROR_SUCCESS) {
-    return def;
+  	APPEND_STRING__(def);
+	return resPath;
   }
 
-  strcpy(resPath, def);
+  APPEND_STRING__(def);
   while (!done) {
     subKeyLen = sizeof(subKeyName);
     ulResult = RegEnumKeyEx(baseKey, dwIndex, subKeyName, &subKeyLen,
@@ -1787,12 +1870,13 @@ String  def;
       /* read next component of path */
       component = readRegString(baseKey, subKeyName, var, "");
       
-      if (curPos != resPath) {
-	*curPos++ = (char) sep;
+      if (!addedPath) {
+      	APPEND_STRING__(sepString);
+	addedPath = TRUE;
       }
-      /* N.B. potential buffer overrun: */
-      strcpy(curPos, component);
-      curPos += strlen(component);
+      
+      APPEND_STRING__(component);
+      free(component); /* readRegString() dynamically allocated it, so let go. */
     } else {
       if (ulResult == ERROR_NO_MORE_ITEMS) {
 	done = 1;
@@ -1805,6 +1889,8 @@ String  def;
   RegCloseKey(baseKey);
   return resPath;
 }
+
+#undef APPEND_STRING__
 #endif /* USE_REGISTRY */
 
 /* --------------------------------------------------------------------------

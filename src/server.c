@@ -11,8 +11,8 @@
  * included in the distribution.
  *
  * $RCSfile: server.c,v $
- * $Revision: 1.3 $
- * $Date: 1999/09/13 11:01:06 $
+ * $Revision: 1.4 $
+ * $Date: 2001/06/08 23:26:25 $
  * ------------------------------------------------------------------------*/
 
 #define NO_MAIN
@@ -166,6 +166,10 @@ String s; {
 DLLEXPORT(HugsServerAPI*) initHugsServer(argc, argv) /*server initialisation*/
 Int    argc;
 String argv[]; {
+#if USE_REGISTRY
+    String regString;
+#endif
+
     setHugsAPI();
 
     BEGIN_PROTECT			/* Too much text for protect()	   */
@@ -180,12 +184,12 @@ String argv[]; {
 	    readOptions(argv[0]);
 	} else {
 #if USE_REGISTRY
-	    projectPath = strCopy(readRegChildStrings(HKEY_LOCAL_MACHINE,
-					ProjectRoot, "HUGSPATH", PATHSEP, ""));
-	    readOptions(readRegString(HKEY_LOCAL_MACHINE,
-					HugsRoot,"Options",""));
-	    readOptions(readRegString(HKEY_CURRENT_USER,
-					HugsRoot,"Options",""));
+	    projectPath = readRegChildStrings(HKEY_LOCAL_MACHINE,
+					      ProjectRoot, "HUGSPATH", PATHSEP, "");
+	    regString = readRegString(HKEY_LOCAL_MACHINE,HugsRoot,"Options","");
+	    readOptions(regString); free(regString);
+	    regString = readRegString(HKEY_CURRENT_USER,HugsRoot,"Options","");
+	    readOptions(regString); free(regString);
 #endif /* USE_REGISTRY */
 	    readOptions(fromEnv("HUGSFLAGS",""));
 	    for (i=1; i<argc; ++i) {
