@@ -12,8 +12,8 @@
  * included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.40 $
- * $Date: 2002/03/28 16:18:04 $
+ * $Revision: 1.41 $
+ * $Date: 2002/04/04 06:45:55 $
  * ------------------------------------------------------------------------*/
 #include <math.h>
 
@@ -2224,8 +2224,8 @@ Int what; {                             /* initialisation etc..            */
 /* --------------------------------------------------------------------------
  * Platform initialisation 
  * ------------------------------------------------------------------------*/
-static Bool local initSystem  Args((Void));
-static Bool local
+extern Bool initSystem  Args((Void));
+Bool local
 initSystem()
 {
   /* Called right away by main()  */
