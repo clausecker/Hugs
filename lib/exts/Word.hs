@@ -292,17 +292,17 @@ instance Bits Word32 where
 -- Word64
 -----------------------------------------------------------------------------
 
-data Word64 = W64 {lo,hi::Word32} deriving (Eq, Ord, Bounded)
-
-w64ToInteger W64{lo=lo,hi=hi} = toInteger lo + 0x100000000 * toInteger hi 
-integerToW64 x = case x `quotRem` 0x100000000 of 
-                 (h,l) -> W64{lo=fromInteger l, hi=fromInteger h}
-
-instance Show Word64 where
-  showsPrec p = showInt . w64ToInteger
-
-instance Read Word64 where
-  readsPrec p s = [ (integerToW64 x,r) | (x,r) <- readDec s ]
+-- data Word64 = W64 {lo,hi::Word32} deriving (Eq, Ord, Bounded)
+-- 
+-- w64ToInteger W64{lo=lo,hi=hi} = toInteger lo + 0x100000000 * toInteger hi 
+-- integerToW64 x = case x `quotRem` 0x100000000 of 
+--                  (h,l) -> W64{lo=fromInteger l, hi=fromInteger h}
+-- 
+-- instance Show Word64 where
+--   showsPrec p = showInt . w64ToInteger
+-- 
+-- instance Read Word64 where
+--   readsPrec p s = [ (integerToW64 x,r) | (x,r) <- readDec s ]
 
 -----------------------------------------------------------------------------
 -- End of exported definitions
