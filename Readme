@@ -4,7 +4,7 @@ __   __ __  __  ____   ___      _________________________________________
 ||___|| ||__|| ||__||  __||     Copyright (c) 1994-2003
 ||---||         ___||           World Wide Web: http://haskell.org/hugs
 ||   ||                         Report bugs to: hugs-bugs@haskell.org
-||   || Version: Sep 2003       _________________________________________
+||   || Version: Oct 2003       _________________________________________
 
 ------------------------------------------------------------------------------
 
@@ -19,9 +19,10 @@ __   __ __  __  ____   ___      _________________________________________
      For now, compatibility with the old libraries is provided by stub
      modules, but users are encouraged to migrate to the new libraries.
    - The Double type is now double-precision on most architectures.
-   - The -N, -i, -f, -W and -X options are gone, as is the :project command.
+   - The -e, -f, -i, -N, -W and -X options are gone, as is the :project
+     command.
    - Integrated .NET support (on Windows).
-   - The beginnings of a User's Guide (still largely incomplete).
+   - The beginnings of a User's Guide (still somewhat incomplete).
    - Numerous bug fixes since the previous major release in Nov 2002.
 
    The home page for Hugs is at http://haskell.org/hugs.

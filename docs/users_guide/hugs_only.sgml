@@ -10,13 +10,19 @@ they require the <option>-98</option> option.
 <title>Typed extensible records</title>
 
 <para>
+<literal>Trex</literal> is a very powerful and flexible record system.
 See
-<ulink url="http://cvs.haskell.org/Hugs/pages/hugsman/exts.html#sect7.2">Section 7.2 of the <citetitle pubwork=article>Hugs 98 User Manual</citetitle></ulink>.
+<ulink url="http://cvs.haskell.org/Hugs/pages/hugsman/exts.html#sect7.2">Section 7.2 of the <citetitle pubwork=article>Hugs 98 User Manual</citetitle></ulink>
+for details.
 </para>
 
 <para>
 To use equality and <literal>show</literal> on extensible records,
 a module must import <literal>Hugs.Trex</literal>.
+This module also defines an empty record value and type:
+<programlisting>
+  emptyRec :: Rec EmptyRow
+</programlisting>
 </para>
 
 </sect1>
@@ -25,8 +31,36 @@ a module must import <literal>Hugs.Trex</literal>.
 <title>Restricted type synonyms</title>
 
 <para>
-Restricted type synonyms are a mechanism for defining abstract datatypes
-(now largely replaced by the Haskell 98 module system).
+Restricted type synonyms are a mechanism for defining abstract datatypes.
+You can achieve similar effects, and more portably,
+using the Haskell 98 module system.
+</para>
+
+<para>
+The idea is that you can say that a type synonym is transparent
+in the definitions of certain functions (the operations on the type),
+but opaque elsewhere, by writing
+<programlisting>
+  type Table a b = [(a,b)] in
+        empty :: Table a b,
+        isEmpty :: Table a b -> Bool,
+        add :: a -> b -> Table a b -> Table a b,
+        search :: a -> Table a b -> Maybe b
+
+  empty = []
+  isEmpty = null
+  add a b t = (a,b):t
+  search = lookup
+</programlisting>
+or equivalently
+<programlisting>
+  type Table a b = [(a,b)] in empty, isEmpty, add, search
+
+  empty :: Table a b
+  empty = []
+
+  ...
+</programlisting>
 See
 <ulink url="http://cvs.haskell.org/Hugs/pages/hugsman/exts.html#sect7.3.5">Section 7.3.5 of the <citetitle pubwork=article>Hugs 98 User Manual</citetitle></ulink>
 for details.
@@ -482,7 +516,7 @@ or it should be done only with caution.
 <title>Interaction with the root optimisation</title>
 
 <para>
-The hugs compiler uses an optimisation when generating code that builds
+The Hugs compiler uses an optimisation when generating code that builds
 expressions on the heap. If a function definition has the form
 <programlisting>
   f arg1 .. argN = ..... f arg1 .. argM .....
@@ -491,7 +525,7 @@ where 1 &le; <replaceable>M</replaceable> &le; <replaceable>N</replaceable>,
 then the expression graph for <replaceable>f arg1 .. argM</replaceable>
 is copied rather than rebuilt from individual application nodes.
 This interacts with the observation algorithm so that observing functions
-of the above form give unexpected results.
+of the above form gives unexpected results.
 </para>
 
 <para>

@@ -9,7 +9,7 @@ Hugs starts with a banner like
   ||___|| ||__|| ||__||  __||     Copyright (c) 1994-2003
   ||---||         ___||           World Wide Web: http://haskell.org/hugs
   ||   ||                         Report bugs to: hugs-bugs@haskell.org
-  ||   || Version: March 2003     _________________________________________
+  ||   || Version: October 2003   _________________________________________
 
   Haskell 98 mode: Restart with command line option -98 to enable extensions
 
@@ -103,7 +103,7 @@ removing the ambiguity.
 <para>
 Print the type of <replaceable>expr</replaceable>,
 without evaluating it.
-Usually the Haskell defaulting rules are not applied to the type
+Usually the defaulting rules (discussed above) are not applied to the type
 before printing,
 but this can be changed with the
 <link linkend="option-default-types"><option>+T</option></link> option.
@@ -122,6 +122,10 @@ but this can be changed with the
 <para>
 Set command line options.
 See <xref linkend="options-list"> for a list of available options.
+On Win32, the new option settings are saved to the registry,
+and so persist across Hugs sessions.
+To make settings persistent on other systems,
+put them in the <literal>HUGSFLAGS</literal> environment variable.
 </para>
 <para>
 If no options are given, list the available options and their current settings.
@@ -285,7 +289,7 @@ and then reload all the previously loaded modules.
 
 <listitem>
 <para>
-Set module for evaluating expressions.
+Set the current module for evaluating expressions.
 </para>
 </listitem>
 </varlistentry>
@@ -323,7 +327,7 @@ If no filename is specified, Hugs edits the current module.
 
 <listitem>
 <para>
-edit module containing definition of <replaceable>name</replaceable>.
+Edit the module containing the definition of <replaceable>name</replaceable>.
 </para>
 </listitem>
 </varlistentry>
@@ -344,7 +348,7 @@ edit module containing definition of <replaceable>name</replaceable>.
 
 <listitem>
 <para>
-Display a brief summary of commands.
+Display a brief summary of the commands listed here.
 </para>
 </listitem>
 </varlistentry>
@@ -423,7 +427,14 @@ If no modules are given, it describes the current module.
 
 <listitem>
 <para>
-Print Hugs version.
+Print the version of the Hugs interpreter.
+Major releases of Hugs are identified by a month and year:
+<screen>
+  Prelude> :version
+  -- Hugs Version October 2003
+</screen>
+Development snapshots are identified by a date in
+<replaceable>YYYYMMDD</replaceable> form.
 </para>
 </listitem>
 </varlistentry>

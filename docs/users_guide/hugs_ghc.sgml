@@ -155,14 +155,52 @@ is the appropriate zip for the given number of branches.
 <sect2 id="flexible-contexts">
 <title>More flexible contexts</title>
 
-<para>to be written</para>
+<para>In Haskell 98, contexts consist of class constraints
+on type variables applied to zero or more types, as in
+<programlisting>
+  f :: (Functor f, Num (f Int)) => f String -> f Int -> f Int
+</programlisting>
+In class and instance declarations only type variables may be constrained.
+With the <option>-98</option> option,
+any type may be constrained by a class, as in
+<programlisting>
+  g :: (C [a], D (a -> b)) => [a] -> b
+</programlisting>
+Classes are not limited to a single argument either
+(see <xref linkend="multi-param">).
+</para>
 
 </sect2>
 
 <sect2 id="flexible-instances">
 <title>More flexible instance declarations</title>
 
-<para>to be written</para>
+<para>In Haskell 98, instances may only be declared for
+a <literal>data</literal> or <literal>newtype</literal> type constructor
+applied to type variables.
+With the <option>-98</option> option, any type may be made an instance:
+<programlisting>
+  instance Monoid (a -> a) where ...
+  instance Show (Tree Int) where ...
+  instance MyClass a where ...
+  instance C String where
+</programlisting>
+This relaxation, together with the relaxation of contexts mentioned above,
+makes the checking of constraints undecidable in general
+(because you can now code arbitrary Prolog programs using instances).
+To ensure that type checking terminates,
+Hugs imposes a limit on the depth of constraints it will check,
+and type checking fails if this limit is reached.
+You can raise the limit with the
+<link linkend="option-constraint-cutoff"><option>-c</option></link> option,
+but such a failure usually indicates that the type checker wasn't going to
+terminate for the particular constraint problem you set it.
+</para>
+
+<para>Note that GHC implements a different solution, placing syntactic
+restrictions on instances to ensure termination, though you can also
+turn these off, in which case a depth limit like that in Hugs is used.
+</para>
 
 </sect2>
 
@@ -170,8 +208,67 @@ is the appropriate zip for the given number of branches.
 <title>Overlapping instances</title>
 
 <para>
-These are enabled in Hugs with the
-<link linkend="option-overlapping"><option>+o</option></link> option.
+With the relaxation on the form of instances discussed in the previous
+section, it seems we could write
+<programlisting>
+  class C a where c :: a
+  instance C (Bool,a) where ...
+  instance C (a,Char) where ...
+</programlisting>
+but then in the expression <literal>c :: (Bool,Char)</literal>,
+either instance could be chosen.
+For this reason, overlapping instances are forbidden:
+<screen>
+  ERROR "Test.hs":4 - Overlapping instances for class "C"
+  *** This instance   : C (a,Char)
+  *** Overlaps with   : C (Bool,a)
+  *** Common instance : C (Bool,Char)
+</screen>
+However if the
+<link linkend="option-overlapping"><option>+o</option></link> option is set,
+they are permitted when one of the types is a substitution instance of
+the other (but not equivalent to it), as in
+<programlisting>
+  class C a where toString :: a -> String
+  instance C [Char] where ...
+  instance C a => C [a] where ...
+</programlisting>
+Now for the type <literal>[Char]</literal>, the first instance is used;
+for any type <literal>[<replaceable>t</replaceable>]</literal>,
+where <replaceable>t</replaceable> is a type distinct from
+<literal>Char</literal>, the second instance is used.
+Note that the context plays no part in the acceptability of the instances,
+or in the choice of which to use.
+</para>
+
+<para>
+The above analysis omitted one case, where the type <literal>t</literal> is
+a type variable, as in
+<programlisting>
+  f :: C a => [a] -> String
+  f xs = toString xs
+</programlisting>
+We cannot decide which instance to choose, so Hugs rejects this definition.
+However if the
+<link linkend="option-overlapping"><option>+O</option></link> option is set,
+this declaration is accepted, and the more general instance is selected,
+even though this will be the wrong choice if <literal>f</literal> is later
+applied to a list of <literal>Char</literal>.
+</para>
+
+<para>
+Hugs used to have a <option>+m</option> option
+(if Hugs was compiled with <literal>MULTI_INST</literal> set),
+which accepted more overlapping instances by deferring the choice between them,
+but it is currently broken.
+</para>
+
+<para>
+Sometimes one can avoid overlapping instances.
+The particular example discussed above is similar to the situation described
+by the <literal>Show</literal> class in the <literal>Prelude</literal>.
+However there overlapping instances are avoided by adding the method
+<literal>showList</literal> to the class
 </para>
 
 </sect2>
@@ -245,8 +342,104 @@ first parameter and second parameters, but different third parameters.
 <sect2 id="rank-2-types">
 <title>Rank 2 types</title>
 
-<para>to be written
-(GHC supports arbitrary rank polymorphism.)
+<para>In Haskell 98, all type signatures are implicitly universally
+quantified at the outer level, for example
+<programlisting>
+  id :: a -> a
+</programlisting>
+Variables bound with a <literal>let</literal> or <literal>where</literal>
+may be polymorphic, as in
+<programlisting>
+  let f x = x in (f True, f 'a')
+</programlisting>
+but function arguments may not be: Haskell 98 rejects
+<programlisting>
+  g f = (f True, f 'a')
+</programlisting>
+However, with the <option>-98</option>, the function <literal>g</literal>
+may be given the signature
+<programlisting>
+  g :: (forall a. a -> a) -> (Bool, Char)
+</programlisting>
+This is called a <emphasis>rank 2</emphasis> type, because a function
+argument is polymorphic, as indicated by the <literal>forall</literal>
+quantifier.
+</para>
+
+<para>
+Now the function <literal>g</literal> may be applied to expression whose
+generalized type is at least as general as that declared.
+In this case the choice is limited: we can write
+<screen>
+  g id
+  g undefined
+  g (const undefined)
+</screen>
+or various equivalent forms
+<screen>
+  g (\x -&gt; x)
+  g (id . id . id)
+  g (id id id)
+</screen>
+There are a number of restrictions on such functions:
+<itemizedlist>
+<listitem><para>
+Functions that take polymorphic arguments must be given an explicit
+type signature.
+</para></listitem>
+
+<listitem><para>
+In the definition of the function, polymorphic arguments must be matched,
+and can only be matched by a variable or wildcard (<literal>_</literal>)
+pattern.
+</para></listitem>
+
+<listitem><para>
+When such functions are used, the polymorphic arguments must be supplied:
+you can't just use <literal>g</literal> on its own.
+</para></listitem>
+</itemizedlist>
+GHC, which supports arbitrary rank polymorphism,
+is able to relax some of these restrictions.
+</para>
+
+<para>
+Hugs reports an error if a type variable in a <literal>forall</literal>
+is unused in the enclosed type.
+</para>
+
+<para>
+An important application of rank 2 types is the primitive
+<programlisting>
+  runST :: (forall s. ST s a) -> a
+</programlisting>
+in the module <literal>Control.Monad.ST</literal>.
+Here the type signature ensures that objects created by the state monad,
+whose types all refer to the parameter <literal>s</literal>,
+are unused outside the application of <literal>runST</literal>.
+Thus to use this module you need the <option>-98</option> option.
+Also, from the restrictions above,
+it follows that <literal>runST</literal> must always
+be applied to its polymorphic argument.
+Hugs does not permit either of
+<programlisting>
+  myRunST :: (forall s. ST s a) -> a
+  myRunST = runST
+
+  f x = runST $ do
+        ...
+        return y
+</programlisting>
+(though GHC does).
+Instead, you can write
+<programlisting>
+  myRunST :: (forall s. ST s a) -> a
+  myRunST x = runST x
+
+  f x = runST (do
+        ...
+        return y)
+</programlisting>
 </para>
 
 </sect2>
@@ -254,14 +447,94 @@ first parameter and second parameters, but different third parameters.
 <sect2 id="polymorphic-components">
 <title>Polymorphic components</title>
 
-<para>to be written</para>
+<para>Similarly, components of a constructor may be polymorphic:
+<programlisting>
+  newtype List a = MkList (forall r. r -> (a -> r -> r) -> r)
+  newtype NatTrans f g = MkNT (forall a. f a -> g a)
+  data MonadT m = MkMonad {
+                  my_return :: forall a. a -> m a,
+                  my_bind :: forall a b. m a -> (a -> m b) -> m b
+                }
+</programlisting>
+So that the constructors have rank 2 types:
+<programlisting>
+  MkList :: (forall r. r -> (a -> r -> r) -> r) -> List a
+  MkNT :: (forall a. f a -> g a) -> NatTrans f g
+  MkMonad :: (forall a. a -> m a) ->
+             (forall a b. m a -> (a -> m b) -> m b) -> MonadT m
+</programlisting>
+As with functions having rank 2 types, such a constructor must be supplied
+with any polymorphic arguments when it is used in an expression.
+</para>
+
+<para>
+The record update syntax cannot be used with records containing
+polymorphic components.
+<para>
 
 </sect2>
 
 <sect2 id="existential-quantification">
 <title>Existential quantification</title>
 
-<para>to be written</para>
+<para>It is also possible to have existentially quantified constructors,
+somewhat confusingly also specified with <literal>forall</literal>,
+but before the constructor, as in
+<programlisting>
+  data Accum a = forall s. MkAccum s (a -> s -> s) (s -> a)
+</programlisting>
+This type describes objects with a state of an abstract type
+<literal>s</literal>,
+together with functions to update and query the state.
+The <literal>forall</literal> is somewhat motivated by the polymorphic
+type of the constructor <literal>MkAccum</literal>, which is
+<programlisting>
+  s -> (a -> s -> s) -> (s -> a) -> Accum a
+</programlisting>
+because it must be able to operate on any state.
+</para>
+
+<para>
+Some sample values of the <literal>Accum</literal> type are:
+<programlisting>
+  adder = MkAccum 0 (+) id
+  averager = MkAccum (0,0)
+                     (\x (t,n) -> (t+x,n+1))
+                     (uncurry (/))
+</programlisting>
+Unfortunately, existentially quantified constructors may not contain
+named fields.
+You also can't use <literal>deriving</literal> with existentially quantified
+types.
+</para>
+
+<para>
+When we match against an existentially quantified constructor, as in
+<programlisting>
+  runAccum (MkAccum s add get) [] = ??
+</programlisting>
+we do not know the type of <literal>s</literal>,
+only that <literal>add</literal> and <literal>get</literal>
+take arguments of the same type as <literal>s</literal>.
+So our options are limited.  One possibility is
+<programlisting>
+  runAccum (MkAccum s add get) [] = get s
+</programlisting>
+Similarly we can also write
+<programlisting>
+  runAccum (MkAccum s add get) (x:xs) =
+      runAccum (MkAccum (add x v) add get) xs
+</programlisting>
+</para>
+
+<para>
+This particular application of existentials &ndash; modelling objects &ndash;
+may also be done with a Haskell 98 recursive type:
+<programlisting>
+  data Accum a = MkAccum { add_value :: a -> Accum a, get_value :: a}
+</programlisting>
+but other applications do require existentials.
+</para>
 
 </sect2>
 
@@ -270,7 +543,52 @@ first parameter and second parameters, but different third parameters.
 <sect1 id="type-annotations">
 <title>Type annotations in patterns</title>
 
-<para>to be written</para>
+<para>
+Haskell 98 allows expressions to be annotated with type signatures.
+With the <option>-98</option> option,
+these annotations are also allowed on patterns:
+<programlisting>
+  f (x::Int) = fromIntegral x :: Double
+</programlisting>
+Moreover type variables in pattern annotations are treated specially:
+unless the type variable is already bound (by another pattern annotation),
+it is universally quantified over the pattern and its scope, e.g.
+<programlisting>
+  snoc (xs::[a]) (x::a) = xs++[x] :: [a]
+</programlisting>
+Occurrences of the type variable in type signatures within this scope
+are bound to this type variable.
+In the above example the second and third occurrences of <literal>a</literal>
+are bound by the first.
+This permits locally defined variables to be given signatures in situations
+where it would be impossible in Haskell 98:
+<programlisting>
+  sortImage :: Ord b => (a -> b) -> [a] -> [a]
+  sortImage (f::a->b) = sortBy cmp
+      where
+          cmp :: a -> a -> Ordering
+          cmp x y = compare (f x) (f y)
+</programlisting>
+Note that the relationship between signature declarations and pattern
+annotations is asymmetrical: pattern annotations may capture type variables
+in signature declarations, but not vice versa.
+There is no connection between the type variables in the type signature
+of <literal>sortImage</literal> and those in its definition,
+but the occurrence of <literal>a</literal> in the signature of
+<literal>cmp</literal> is bound by the pattern <literal>(f::a-&gt;b)</literal>.
+</para>
+
+<para>
+In GHC, type variables bound by pattern annotations are existentially
+quantified, and so may be instantiated.
+Thus the following is accepted by GHC but not Hugs:
+<programlisting>
+  g (xs::[a]) = xs ++ "\n"
+</programlisting>
+GHC also allows <emphasis>result type signatures</emphasis>,
+where a type signature is attached to the left side of a function definition,
+but Hugs does not.
+</para>
 
 </sect1>
 
