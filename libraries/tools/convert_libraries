@@ -116,7 +116,7 @@ copy_examples() {
 	to_dir=$2
 	if [ -d $from_dir/examples ]
 	then	(cd $from_dir;
-		 $FIND examples -name CVS -prune -o \! -name .cvsignore \! -name Makefile \! -name makefile -type f -print) |
+		 $FIND examples -follow -name CVS -prune -o \! -name .cvsignore \! -name Makefile \! -name makefile -type f -print) |
 			sed 's:^examples/::' |
 			while read name
 			do
