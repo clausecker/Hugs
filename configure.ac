@@ -700,16 +700,24 @@ HUGS_TRY_DYNLINK([/LD])
 HUGS_TRY_DYNLINK([/LD /ML /nologo])
 
 dnl Try the win32 way
-HUGS_TRY_DYNLINK([-shared])
+dnl gcc-mingw, gcc-cygwin don't want to be given -fPIC,
+dnl but this test fouls up gcc-linux on some architectures.
+case "$target_os" in
+mingw32|cygwin32)
+  HUGS_TRY_DYNLINK([-shared]) ;;
+esac
 
 dnl Try the gcc flags
 HUGS_TRY_DYNLINK([-shared -fPIC])
 
 dnl Try the MacOS X flags
-HUGS_TRY_DYNLINK(-bundle)
+HUGS_TRY_DYNLINK([-flat_namespace -bundle -undefined suppress])
 
 dnl Try the MacOS X flags
-HUGS_TRY_DYNLINK([-bundle -lc])        
+HUGS_TRY_DYNLINK([-bundle])        
+
+dnl Try the MacOS X flags
+dnl HUGS_TRY_DYNLINK([-bundle -lc])        
 
 dnl Try the gcc flags
 dnl HUGS_TRY_DYNLINK([-shared -nostdlib])
