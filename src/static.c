@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.142 $
- * $Date: 2003/02/14 02:01:51 $
+ * $Revision: 1.143 $
+ * $Date: 2003/02/26 21:10:20 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -150,7 +150,7 @@ static Cell   local checkPat		Args((Int,Cell));
 static Cell   local checkMaybeCnkPat	Args((Int,Cell));
 static Cell   local checkApPat		Args((Int,Int,Cell));
 static Void   local addToPatVars	Args((Int,Cell));
-static Name   local conDefined		Args((Int,Cell));
+static Name   local conDefined		Args((Int,Cell,Bool));
 static Void   local checkIsCfun		Args((Int,Name));
 static Void   local checkCfunArgs	Args((Int,Cell,Int));
 static Cell   local checkPatType	Args((Int,String,Cell,Type));
@@ -4658,7 +4658,7 @@ Cell p; {
 			 }
 			 /* deliberate fall through */
 	case CONIDCELL :
-	case CONOPCELL : p = conDefined(line,p);
+	case CONOPCELL : p = conDefined(line,p,TRUE);
 			 checkCfunArgs(line,p,args);
 			 break;
 
@@ -4694,15 +4694,19 @@ Cell v; {				/* for repeated variables.	   */
     }
 }
 
-static Name local conDefined(line,nm)  /* check that nm is the name of a   */
-Int  line;			       /* previously defined constructor   */
-Cell nm; {			       /* function.			   */
+static Name local conDefined(line,nm,check)  
+Int  line;		 /* check that nm is the name of a  */
+Cell nm;                 /* previously defined constructor  */
+Bool check; {		 /* function (and only one.)        */
     Name n = findQualName(nm);
     if (isNull(n)) {
 	ERRMSG(line) "Undefined constructor function \"%s\"", identToStr(nm)
 	EEND;
     }
     checkIsCfun(line,n);
+    if (check) {
+	checkNameAmbig(line,name(n).text,n);
+    }
     return n;
 }
 
@@ -5414,7 +5418,7 @@ Cell op; {
 			 break;
 
 	case CONOPCELL :
-	case CONIDCELL : sy = syntaxOf(op = conDefined(line,op));
+	case CONIDCELL : sy = syntaxOf(op = conDefined(line,op,FALSE));
 			 break;
 
 	case QUALIDENT : {   Name n = findQualName(op);
@@ -5786,12 +5790,12 @@ Cell e; {
 	case VAROPCELL	: return depVar(line,e,TRUE);
 
 	case CONIDCELL	:
-	case CONOPCELL	: return conDefined(line,e);
+	case CONOPCELL	: return conDefined(line,e,TRUE);
 
 	case QUALIDENT	: if (isQVar(e)) {
 			      return depQVar(line,e);
 			  } else { /* QConOrConOp */
-			      return conDefined(line,e);
+			      return conDefined(line,e,TRUE);
 			  }
 
 	case INFIX     : return depExpr(line,tidyInfix(line,snd(e)));
@@ -6736,7 +6740,7 @@ static Void local depConFlds(line,e,isP)/* check construction using fields */
 Int  line;
 Cell e;
 Bool isP; {
-    Name c = conDefined(line,fst(snd(e)));
+    Name c = conDefined(line,fst(snd(e)),TRUE);
     if (isNull(snd(snd(e))) ||
 	nonNull(cellIsMember(c,depFields(line,e,snd(snd(e)),isP)))) {
 	fst(snd(e)) = c;
