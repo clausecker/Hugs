@@ -8,8 +8,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: storage.h,v $
- * $Revision: 1.34 $
- * $Date: 2002/05/09 15:56:52 $
+ * $Revision: 1.35 $
+ * $Date: 2002/05/14 16:13:00 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -959,6 +959,7 @@ extern Script	   scriptThisTycon  Args((Tycon));
 extern Script	   scriptThisInst   Args((Inst));
 extern Script	   scriptThisClass  Args((Class));
 extern String      fileOfModule     Args((Module));
+extern Void	   dropAScript      Args((Script));
 extern Void	   dropScriptsFrom  Args((Script));
 
 /* --------------------------------------------------------------------------

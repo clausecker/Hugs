@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: storage.c,v $
- * $Revision: 1.37 $
- * $Date: 2002/04/17 14:23:46 $
+ * $Revision: 1.38 $
+ * $Date: 2002/05/14 16:12:59 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1480,7 +1480,7 @@ Module m; {
  * original state immediately before the file was read.
  * ------------------------------------------------------------------------*/
 
-typedef struct {                       /* record of storage state prior to */
+typedef struct strScript{              /* record of storage state prior to */
     Text  file;                        /* reading script/module            */
     Text  textHw;
     Text  nextNewText;
@@ -1623,6 +1623,29 @@ Text f; {
 	return 0;
     }
     return (-1);
+}
+
+Void dropAScript(sno)   /* elide one script from the stack */
+Script sno; {
+
+    int i = sno + 1;
+    
+    while (i < scriptHw) {
+	scripts[i-1].file = scripts[i].file;
+	scripts[i-1].textHw = scripts[i].textHw;
+	scripts[i-1].nextNewText = scripts[i].nextNewText;
+	scripts[i-1].nextNewDText = scripts[i].nextNewDText;
+	scripts[i-1].addrHw = scripts[i].addrHw;
+	scripts[i-1].moduleHw = scripts[i].moduleHw;
+	scripts[i-1].tyconHw = scripts[i].tyconHw;
+	scripts[i-1].nameHw = scripts[i].nameHw;
+	scripts[i-1].classHw = scripts[i].classHw;
+	scripts[i-1].instHw = scripts[i].instHw;
+#if TREX
+	scripts[i-1].extHw = scripts[i].extHw;
+#endif
+	i++;
+    }
 }
 
 Void dropScriptsFrom(sno)               /* Restore storage to state prior  */

@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.77 $
- * $Date: 2002/05/09 15:00:59 $
+ * $Revision: 1.78 $
+ * $Date: 2002/05/14 16:13:00 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -96,6 +96,7 @@ static Void   local clearProject      Args((Void));
 static Void   local addScriptName     Args((String,Bool));
 static Bool   local addScript         Args((String,Long));
 static Void   local forgetScriptsFrom Args((Script));
+static Void   local forgetAScript     Args((Script));
 static Void   local setLastEdit       Args((String,Int));
 static Void   local failed            Args((Void));
 static String local strCopy           Args((String));
@@ -379,8 +380,8 @@ String argv[]; {
     evalModule = findText("");      /* evaluate wrt last module by default */
     if (proj) {
 	if (namesUpto>1) {
-	    fprintf(stderr,
-		    "\nUsing project file, ignoring additional filenames\n");
+	    FPrintf(stderr, "\nUsing project file, ignoring additional filenames\n");
+	    FFlush(stderr);
 	}
 	loadProject(strCopy(proj));
     }
@@ -1203,7 +1204,11 @@ Long   len; {                           /* length of script file   */
     setLastEdit(fname,0);
 
     needsImports = FALSE;
-    parseScript(fname,len);             /* process script file */
+    if (!parseScript(fname,len)) {   /* process script file */
+	/* file or parse error, drop the script */ 
+	forgetAScript(numScripts);
+	errFail();
+    }
     if (needsImports) return FALSE;
     checkDefns();
     typeCheckDefns();
@@ -1277,6 +1282,28 @@ Script scno; {
     namesUpto = scno;
     if (numScripts>namesUpto)
 	numScripts = scno;
+}
+
+static Void local forgetAScript(scno) /* remove a script from system */
+Script scno; {
+    Script i;
+    
+    if (scno > namesUpto)
+	return;
+
+    if (scriptName[scno])
+	free(scriptName[scno]);
+    if (scriptReal[scno])
+	free(scriptReal[scno]);
+
+    for (i=scno+1; i < namesUpto; i++) {
+	scriptName[i-1] = scriptName[i];
+	scriptReal[i-1] = scriptReal[i];
+	lastChange[i-1] = lastChange[i];
+        postponed[i-1]  = postponed[i];
+    }
+    dropAScript(scno);
+    namesUpto--;
 }
 
 /* --------------------------------------------------------------------------
@@ -1734,6 +1761,7 @@ static Void local xplain() {         /* print type of expression (if any)*/
     } else {
 	fprintf(stdout, "Sat\n");
     }
+    fflush(stdout);
     showInstRes = sir;
 }
 #endif
