@@ -1093,10 +1093,12 @@ instance Integral a => RealFrac (Ratio a) where
 			    where (q,r) = quotRem x y
 
 instance Integral a => Enum (Ratio a) where
-    toEnum       = fromInt
-    fromEnum     = truncate
-    enumFrom     = numericEnumFrom
-    enumFromThen = numericEnumFromThen
+    toEnum         = fromInt
+    fromEnum       = truncate
+    enumFrom       = numericEnumFrom
+    enumFromTo     = numericEnumFromTo
+    enumFromThen   = numericEnumFromThen
+    enumFromThenTo = numericEnumFromThenTo
 
 instance (Read a, Integral a) => Read (Ratio a) where
     readsPrec p = readParen (p > 7)
