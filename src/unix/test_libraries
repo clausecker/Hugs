@@ -52,7 +52,8 @@ test_module() {
 		if [ "$module" != "$module2" ]
 		then	reason="imports $module2"
 		else
-			case "`sed -n '/^ERROR / s/.* - //p' $tmpfile+`" in
+			reason="`sed -n '/^ERROR / s/.* - //p' $tmpfile+`"
+			case "$reason" in
 			"Syntax error in data type definition (unexpected \`.')")
 				reason='rank-2 datatypes' ;;
 			"Syntax error in type expression (unexpected \`.')")
@@ -61,8 +62,6 @@ test_module() {
 				reason='functional dependencies' ;;
 			"Haskell 98 does not support multiple parameter classes")
 				reason='multi-parameter type classes' ;;
-			*)
-				reason=unknown ;;
 			esac
 		fi
 		echo "hugs -98 $module ($reason)"
