@@ -8,8 +8,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: prelude.h,v $
- * $Revision: 1.52 $
- * $Date: 2003/10/04 04:01:33 $
+ * $Revision: 1.53 $
+ * $Date: 2003/10/10 15:41:17 $
  * ------------------------------------------------------------------------*/
 #ifndef __PRELUDE_H__
 #define __PRELUDE_H__
@@ -367,6 +367,10 @@ extern int vsnprintf  Args((char*, unsigned long, const char*, va_list));
 # else
 extern int vsnprintf  Args((char*, int, const char*, va_list));
 # endif
+#endif
+
+#if !defined(HAVE_SNPRINTF) && defined(HAVE__SNPRINTF)
+#define snprintf _snprintf
 #endif
 
 /*---------------------------------------------------------------------------

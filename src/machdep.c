@@ -11,8 +11,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.99 $
- * $Date: 2003/10/08 15:47:25 $
+ * $Revision: 1.100 $
+ * $Date: 2003/10/10 15:41:16 $
  * ------------------------------------------------------------------------*/
 #include "prelude.h"
 #include "storage.h"
@@ -1702,7 +1702,7 @@ va_list     ap; {
 }
 #endif /* HAVE_VSNPRINTF */
 
-#if !defined(HAVE_SNPRINTF)
+#if !defined(HAVE_SNPRINTF) && !defined(HAVE__SNPRINTF)
 int snprintf(char* buffer, int count, const char* fmt, ...);
 int snprintf(char* buffer, int count, const char* fmt, ...) {
 #if defined(HAVE__VSNPRINTF)
