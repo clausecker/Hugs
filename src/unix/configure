@@ -308,7 +308,7 @@ ac_includes_default="\
 # include <unistd.h>
 #endif"
 
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS build build_cpu build_vendor build_os host host_cpu host_vendor host_os target target_cpu target_vendor target_os HostPlatform_CPP TargetPlatform_CPP BuildPlatform_CPP HostArch_CPP TargetArch_CPP BuildArch_CPP HostOS_CPP TargetOS_CPP BuildOS_CPP FPTOOLS YACC CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT CPP EGREP PTHREAD_CC PTHREAD_LIBS PTHREAD_CFLAGS RM CP LD PERL SET_MAKE have_hp2ps DOCBOOK2HTML DOCBOOK2DVI DOCBOOK2PDF DOCBOOK2PS fp_prog_find FindCmd fp_prog_sort SortCmd DIFF CONTEXT_DIFF GL_CFLAGS GL_LIBS GLU_CFLAGS GLU_LIBS X_CFLAGS X_PRE_LIBS X_LIBS X_EXTRA_LIBS GLUT_CFLAGS GLUT_LIBS FFI_LIBRARIES HavePosixRegex HAVE_STRUCT_MSGHDR_MSG_ACCRIGHTS HAVE_STRUCT_MSGHDR_MSG_CONTROL ALLOCA OPTFLAGS DEBUGFLAGS LDDEBUGFLAGS HUGSPATH HUGSSUFFIXES hugsdir HUGSDIR BINDIR DLL DLL_ENDING DEV_NULL WOBJECTS RC_FILES STRIP LIBOBJS LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS build build_cpu build_vendor build_os host host_cpu host_vendor host_os target target_cpu target_vendor target_os HostPlatform_CPP TargetPlatform_CPP BuildPlatform_CPP HostArch_CPP TargetArch_CPP BuildArch_CPP HostOS_CPP TargetOS_CPP BuildOS_CPP FPTOOLS YACC CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT CPP EGREP PTHREAD_CC PTHREAD_LIBS PTHREAD_CFLAGS RM CP LD PERL SET_MAKE have_hp2ps DOCBOOK2HTML DOCBOOK2DVI DOCBOOK2PDF DOCBOOK2PS fp_prog_find FindCmd fp_prog_sort SortCmd DIFF CONTEXT_DIFF GL_CFLAGS GL_LIBS GLU_CFLAGS GLU_LIBS X_CFLAGS X_PRE_LIBS X_LIBS X_EXTRA_LIBS GLUT_CFLAGS GLUT_LIBS HavePosixRegex HAVE_STRUCT_MSGHDR_MSG_ACCRIGHTS HAVE_STRUCT_MSGHDR_MSG_CONTROL ALLOCA OPTFLAGS DEBUGFLAGS LDDEBUGFLAGS FFI_LIBRARIES HUGSPATH HUGSSUFFIXES hugsdir HUGSDIR BINDIR DLL DLL_ENDING DEV_NULL WOBJECTS RC_FILES STRIP LIBOBJS LTLIBOBJS'
 ac_subst_files='MkInstall MkDepend'
 
 # Initialize some variables set by options.
@@ -7297,11 +7297,6 @@ fi
 done
 
 
-if test "$target" = windows; then
-  dynamic_loading=yes
-else
-  dynamic_loading=no
-fi
 
 
 
@@ -7441,21 +7436,11 @@ if test `eval echo '${'$as_ac_Header'}'` = yes; then
   cat >>confdefs.h <<_ACEOF
 #define `echo "HAVE_$ac_header" | $as_tr_cpp` 1
 _ACEOF
- dynamic_loading=yes
+ break
 fi
 
 done
 
-if test "$enable_ffi" = autodetect; then
-  enable_ffi="$dynamic_loading"
-fi
-
-
-if test "$enable_ffi" = yes; then
-  FFI_LIBRARIES=ffi_libraries
-else
-  FFI_LIBRARIES=
-fi
 
 if test "${ac_cv_header_alloc_h+set}" = set; then
   echo "$as_me:$LINENO: checking for alloc.h" >&5
@@ -31471,6 +31456,158 @@ _ACEOF
 
 fi
 
+dynamic_loading=no
+echo "$as_me:$LINENO: checking for LoadLibrary" >&5
+echo $ECHO_N "checking for LoadLibrary... $ECHO_C" >&6
+if test "${fp_cv_func_LoadLibrary+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  cat >conftest.$ac_ext <<_ACEOF
+#line $LINENO "configure"
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+#include <windows.h>
+int
+main ()
+{
+LoadLibrary("")
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext conftest$ac_exeext
+if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
+  (eval $ac_link) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+         { ac_try='test -s conftest$ac_exeext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  fp_cv_func_LoadLibrary=yes
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+fp_cv_func_LoadLibrary=no
+fi
+rm -f conftest.$ac_objext conftest$ac_exeext conftest.$ac_ext
+fi
+echo "$as_me:$LINENO: result: $fp_cv_func_LoadLibrary" >&5
+echo "${ECHO_T}$fp_cv_func_LoadLibrary" >&6
+if test $fp_cv_func_LoadLibrary = yes; then
+
+cat >>confdefs.h <<\_ACEOF
+#define HAVE_LOADLIBRARY 1
+_ACEOF
+ dynamic_loading=yes
+else
+
+
+
+for ac_func in dlopen shl_load NSCreateObjectFileImageFromFile
+do
+as_ac_var=`echo "ac_cv_func_$ac_func" | $as_tr_sh`
+echo "$as_me:$LINENO: checking for $ac_func" >&5
+echo $ECHO_N "checking for $ac_func... $ECHO_C" >&6
+if eval "test \"\${$as_ac_var+set}\" = set"; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  cat >conftest.$ac_ext <<_ACEOF
+#line $LINENO "configure"
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+/* System header to define __stub macros and hopefully few prototypes,
+    which can conflict with char $ac_func (); below.
+    Prefer <limits.h> to <assert.h> if __STDC__ is defined, since
+    <limits.h> exists even on freestanding compilers.  */
+#ifdef __STDC__
+# include <limits.h>
+#else
+# include <assert.h>
+#endif
+/* Override any gcc2 internal prototype to avoid an error.  */
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+/* We use char because int might match the return type of a gcc2
+   builtin and then its argument prototype would still apply.  */
+char $ac_func ();
+/* The GNU C library defines this for functions which it implements
+    to always fail with ENOSYS.  Some functions are actually named
+    something starting with __ and the normal name is an alias.  */
+#if defined (__stub_$ac_func) || defined (__stub___$ac_func)
+choke me
+#else
+char (*f) () = $ac_func;
+#endif
+#ifdef __cplusplus
+}
+#endif
+
+int
+main ()
+{
+return f != $ac_func;
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext conftest$ac_exeext
+if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
+  (eval $ac_link) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+         { ac_try='test -s conftest$ac_exeext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  eval "$as_ac_var=yes"
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+eval "$as_ac_var=no"
+fi
+rm -f conftest.$ac_objext conftest$ac_exeext conftest.$ac_ext
+fi
+echo "$as_me:$LINENO: result: `eval echo '${'$as_ac_var'}'`" >&5
+echo "${ECHO_T}`eval echo '${'$as_ac_var'}'`" >&6
+if test `eval echo '${'$as_ac_var'}'` = yes; then
+  cat >>confdefs.h <<_ACEOF
+#define `echo "HAVE_$ac_func" | $as_tr_cpp` 1
+_ACEOF
+ dynamic_loading=yes; break
+fi
+done
+
+fi
+
+
+if test x"$enable_ffi" = xautodetect; then
+  enable_ffi="$dynamic_loading"
+fi
+
+if test x"$enable_ffi" = xyes; then
+  FFI_LIBRARIES=ffi_libraries
+else
+  FFI_LIBRARIES=
+fi
+
+
 if test "$enable_lint" = yes; then
     if test "$CC" = "gcc"; then
         LINT_FLAGS="$GCC_LINT_FLAGS"
@@ -32294,7 +32431,6 @@ s,@X_LIBS@,$X_LIBS,;t t
 s,@X_EXTRA_LIBS@,$X_EXTRA_LIBS,;t t
 s,@GLUT_CFLAGS@,$GLUT_CFLAGS,;t t
 s,@GLUT_LIBS@,$GLUT_LIBS,;t t
-s,@FFI_LIBRARIES@,$FFI_LIBRARIES,;t t
 s,@HavePosixRegex@,$HavePosixRegex,;t t
 s,@HAVE_STRUCT_MSGHDR_MSG_ACCRIGHTS@,$HAVE_STRUCT_MSGHDR_MSG_ACCRIGHTS,;t t
 s,@HAVE_STRUCT_MSGHDR_MSG_CONTROL@,$HAVE_STRUCT_MSGHDR_MSG_CONTROL,;t t
@@ -32302,6 +32438,7 @@ s,@ALLOCA@,$ALLOCA,;t t
 s,@OPTFLAGS@,$OPTFLAGS,;t t
 s,@DEBUGFLAGS@,$DEBUGFLAGS,;t t
 s,@LDDEBUGFLAGS@,$LDDEBUGFLAGS,;t t
+s,@FFI_LIBRARIES@,$FFI_LIBRARIES,;t t
 s,@HUGSPATH@,$HUGSPATH,;t t
 s,@HUGSSUFFIXES@,$HUGSSUFFIXES,;t t
 s,@hugsdir@,$hugsdir,;t t

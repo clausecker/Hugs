@@ -363,22 +363,7 @@ dnl Windows include files
 AC_CHECK_HEADERS(windows.h winsock.h)
 
 dnl dynamic loading include files
-if test "$target" = windows; then
-  dynamic_loading=yes
-else
-  dynamic_loading=no
-fi
-AC_CHECK_HEADERS(dlfcn.h dl.h mach-o/dyld.h, [dynamic_loading=yes])
-if test "$enable_ffi" = autodetect; then
-  enable_ffi="$dynamic_loading"
-fi
-
-AC_SUBST(FFI_LIBRARIES)
-if test "$enable_ffi" = yes; then
-  FFI_LIBRARIES=ffi_libraries
-else
-  FFI_LIBRARIES=
-fi
+AC_CHECK_HEADERS([dlfcn.h dl.h mach-o/dyld.h], [break])
 
 dnl Checks for:
 dnl   farcalloc (in bcc), 
@@ -883,6 +868,24 @@ AC_DEFINE_UNQUOTED(MKDLL_CMD,
 if test "$ac_cv_leading_underscore" = "yes"; then
 AC_DEFINE(LEADING_UNDERSCORE)
 fi
+
+dynamic_loading=no
+FP_CHECK_FUNC([LoadLibrary],
+  [@%:@include <windows.h>], [LoadLibrary("")],
+  [dynamic_loading=yes],
+  [AC_CHECK_FUNCS([dlopen shl_load NSCreateObjectFileImageFromFile],
+    [dynamic_loading=yes; break])])
+
+if test x"$enable_ffi" = xautodetect; then
+  enable_ffi="$dynamic_loading"
+fi
+
+if test x"$enable_ffi" = xyes; then
+  FFI_LIBRARIES=ffi_libraries
+else
+  FFI_LIBRARIES=
+fi
+AC_SUBST([FFI_LIBRARIES])
 
 dnl--------------------------------------------------------------------
 dnl
