@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: type.c,v $
- * $Revision: 1.36 $
- * $Date: 2001/09/12 19:22:33 $
+ * $Revision: 1.37 $
+ * $Date: 2001/12/07 18:27:32 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1882,6 +1882,10 @@ List bs; {
 	monorestrict(bs);
     else
 	unrestricted(bs);
+
+    elimTauts();			       /* clean up any additional */
+    					       /* tauts that arose due to */
+					       /* late-stage `improvement' */
 
     mapProc(removeTypeSigs,bs);		       /* Remove binding type info */
     hd(varsBounds) = revOnto(hd(defnBounds),   /* transfer completed assmps*/
