@@ -9,8 +9,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: compiler.c,v $
- * $Revision: 1.14 $
- * $Date: 2003/02/10 14:52:00 $
+ * $Revision: 1.15 $
+ * $Date: 2003/02/12 02:16:24 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -256,7 +256,7 @@ List bs; {				/* eliminating pattern matching on */
     for (; nonNull(bs); bs=tl(bs)) {
 #if IPARAM
 	Cell v = fst(hd(bs));
-	while (isAp(v) && fst(v) == nameInd)
+	while (isAp(v) && fun(v) == nameInd)
 	    v = arg(v);
 	fst(hd(bs)) = v;
 	if (isVar(v)) {
@@ -952,12 +952,29 @@ List lds; {
 			 }
 
 #if NPLUSK
-	case ADDPAT    : return remPat1(arg(pat),       /* n + k = expr */
-					ap(ap(ap(namePmSub,
-						 arg(fun(pat))),
-						 mkInt(snd(fun(fun(pat))))),
-						 expr),
-					lds);
+	case ADDPAT    : 
+	  { Cell dict = arg(fun(pat));
+	    /* I don't really know what I'm doing here, but
+	     * when evaluating an expression like
+	     *
+	     *    Prelude> let (x+4) = 5 in x
+	     *
+	     * this results in primSub being passed a dict indirection.
+	     * As far as I can gather, a dict indirection is a compile-time
+	     * construction only, so shorten it out here. 
+	     * 
+	     * sof 2/03.
+	     */
+	    while(isAp(dict) && fun(dict) == nameInd) {
+	      dict = arg(dict);
+	    }
+	    return remPat1(arg(pat),       /* n + k = expr */
+			   ap(ap(ap(namePmSub,
+				    dict),
+				 mkInt(snd(fun(fun(pat))))),
+			      expr),
+			   lds);
+	  }
 #endif
 
 	case FINLIST   : return remPat1(mkConsList(snd(pat)),expr,lds);
