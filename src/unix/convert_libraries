@@ -19,7 +19,7 @@
 cpp_flags='-D__HUGS__'
 cpp="gcc -P -E -traditional -xc $cpp_flags"
 cc="gcc"
-hsc2hs="f:/fptools/HEAD/ghc/utils/hsc2hs/hsc2hs-inplace"
+hsc2hs=hsc2hs
 
 hugs_src=../../lib
 
