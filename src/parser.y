@@ -10,8 +10,8 @@
  * in the distribution for details.
  *
  * $RCSfile: parser.y,v $
- * $Revision: 1.3 $
- * $Date: 1999/07/28 23:00:35 $
+ * $Revision: 1.4 $
+ * $Date: 1999/08/05 16:59:34 $
  * ------------------------------------------------------------------------*/
 
 %{
@@ -77,7 +77,7 @@ static Void   local noIP	 Args((String));
 
 %}
 
-%token EXPR       SCRIPT
+%token EXPR       CONTEXT    SCRIPT
 %token CASEXP     OF         DATA       TYPE       IF
 %token THEN       ELSE       WHERE      LET        IN
 %token INFIXN     INFIXL     INFIXR     PRIMITIVE  TNEWTYPE
@@ -102,6 +102,7 @@ static Void   local noIP	 Args((String));
 /*- Top level script/module structure -------------------------------------*/
 
 start	  : EXPR exp wherePart		{inputExpr = letrec($3,$2); sp-=2;}
+	  | CONTEXT context		{inputContext = $2;	    sp-=1;}
 	  | SCRIPT topModule		{valDefns  = $2;	    sp-=1;}
 	  | error			{syntaxError("input");}
 	  ;

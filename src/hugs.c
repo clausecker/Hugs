@@ -7,8 +7,8 @@
  * in the distribution for details.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.2 $
- * $Date: 1999/07/28 18:48:14 $
+ * $Revision: 1.3 $
+ * $Date: 1999/08/05 16:59:34 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -23,6 +23,11 @@
 #include <stdio.h>
 
 Bool haskell98 = TRUE;			/* TRUE => Haskell 98 compatibility*/
+
+Bool showInstRes = FALSE;
+#if MULTI_INST
+Bool multiInstRes = FALSE;
+#endif
 
 /* --------------------------------------------------------------------------
  * Local function prototypes:
@@ -606,6 +611,7 @@ static struct cmd cmds[] = {
 #if !IGNORE_MODULES
  {":module",SETMODULE}, 
 #endif
+ {":xplain", XPLAIN},
  {"",      EVAL},
  {0,0}
 };
@@ -664,6 +670,10 @@ struct options toggle[] = {             /* List of command line toggles    */
     {'o', "Allow overlapping instances",           &allowOverlap},
     {'u', "Use \"show\" to display results",       &useShow},
     {'i', "Chase imports while loading modules",   &chaseImports},
+    {'x', "Explain instance resolution",           &showInstRes},
+#if MULTI_INST
+    {'m', "Use multi instance resolution",         &multiInstRes},
+#endif
 #if DEBUG_CODE
     {'D', "Debug: show generated G code",          &debugCode},
 #endif
@@ -1144,6 +1154,26 @@ static Void local showtype() {         /* print type of expression (if any)*/
     Putchar('\n');
 }
 
+static Void local xplain() {         /* print type of expression (if any)*/
+    Cell type;
+    Cell d;
+    Bool sir = showInstRes;
+
+    setCurrModule(findEvalModule());
+    startNewScript(0);                 /* Enables recovery of storage      */
+				       /* allocated during evaluation      */
+    parseContext();
+    checkContext();
+    showInstRes = TRUE;
+    d = provePred(NIL,NIL,hd(inputContext));
+    if (isNull(d)) {
+	fprintf(stdout, "not Sat\n");
+    } else {
+	fprintf(stdout, "Sat\n");
+    }
+    showInstRes = sir;
+}
+
 /* --------------------------------------------------------------------------
  * Enhanced help system:  print current list of scripts or give information
  * about an object.
@@ -1533,6 +1563,8 @@ String argv[]; {
 	    case EVAL   : evaluator();
 			  break;
 	    case TYPEOF : showtype();
+			  break;
+	    case XPLAIN : xplain();
 			  break;
 	    case NAMES  : listNames();
 			  break;

@@ -7,8 +7,8 @@
  * in the distribution for details.
  *
  * $RCSfile: connect.h,v $
- * $Revision: 1.2 $
- * $Date: 1999/07/28 18:48:13 $
+ * $Revision: 1.3 $
+ * $Date: 1999/08/05 16:59:33 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -162,6 +162,7 @@ extern List  defaultDefns;		/* default definitions (if any)	   */
 extern Int   defaultLine;		/* line in which default defs occur*/
 extern List  evalDefaults;		/* defaults for evaluator	   */
 extern Cell  inputExpr;			/* evaluator input expression      */
+extern Cell  inputContext;		/* evaluator input expression      */
 extern Addr  inputCode;			/* Code for compiled input expr    */
 
 extern Int   whnfArgs;		 	/* number of args of term in whnf  */
@@ -179,6 +180,10 @@ extern Bool  literateScripts;		/* TRUE => default lit scripts     */
 extern Bool  literateErrors;		/* TRUE => report errs in lit scrs */
 extern Bool  failOnError;		/* TRUE => error produces immediate*/
 					/*	   termination		   */
+extern Bool  showInstRes;               /* TRUE => show instance resolution */
+#if MULTI_INST
+extern Bool  multiInstRes;              /* TRUE => use multi inst resolution */
+#endif
 
 extern Int   cutoff;			/* Constraint Cutoff depth	   */
 

@@ -7,8 +7,8 @@
  * in the distribution for details.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.3 $
- * $Date: 1999/07/28 23:00:36 $
+ * $Revision: 1.4 $
+ * $Date: 1999/08/05 16:59:35 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -2709,16 +2709,24 @@ Inst in; {
 		    continue;
 		}
 	    }
-	    ERRMSG(inst(in).line) "Overlapping instances for class \"%s\"",
-				  textToStr(cclass(c).text)
-	    ETHEN
-	    ERRTEXT "\n*** This instance   : " ETHEN ERRPRED(inst(in).head);
-	    ERRTEXT "\n*** Overlaps with   : " ETHEN
-					       ERRPRED(inst(hd(ins)).head);
-	    ERRTEXT "\n*** Common instance : " ETHEN
-					       ERRPRED(pi);
-	    ERRTEXT "\n"
-	    EEND;
+#if MULTI_INST
+	    if (multiInstRes) {
+		break;
+	    } else {
+#endif
+		ERRMSG(inst(in).line) "Overlapping instances for class \"%s\"",
+				      textToStr(cclass(c).text)
+		ETHEN
+		ERRTEXT "\n*** This instance   : " ETHEN ERRPRED(inst(in).head);
+		ERRTEXT "\n*** Overlaps with   : " ETHEN
+						   ERRPRED(inst(hd(ins)).head);
+		ERRTEXT "\n*** Common instance : " ETHEN
+						   ERRPRED(pi);
+		ERRTEXT "\n"
+		EEND;
+#if MULTI_INST
+	    }
+#endif
 	}
 	prev = ins;			/* No overlap detected, so move on */
 	ins  = tl(ins);			/* to next instance		   */
@@ -5690,6 +5698,21 @@ Void checkExp() {			/* Top level static check on Expr  */
     clearScope();			/* Analyse expression in the scope */
     withinScope(NIL);			/* of no local bindings		   */
     inputExpr = depExpr(0,inputExpr);
+    leaveScope();
+    staticAnalysis(RESET);
+}
+
+Void checkContext() {			/* Top level static check on Expr  */
+    List vs, qs;
+
+    staticAnalysis(RESET);
+    clearScope();			/* Analyse expression in the scope */
+    withinScope(NIL);			/* of no local bindings		   */
+    qs = inputContext;
+    for (vs = NIL; nonNull(qs); qs=tl(qs)) {
+	vs = typeVarsIn(hd(qs),NIL,vs);
+    }
+    map2Proc(depPredExp,0,vs,inputContext);
     leaveScope();
     staticAnalysis(RESET);
 }

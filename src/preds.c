@@ -7,8 +7,8 @@
  * in the distribution for details.
  *
  * $RCSfile: preds.c,v $
- * $Revision: 1.2 $
- * $Date: 1999/07/28 18:48:19 $
+ * $Revision: 1.3 $
+ * $Date: 1999/08/05 16:59:34 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -33,6 +33,10 @@ static Cell   local scFind	      Args((Cell,Cell,Int,Cell,Int,Int));
 static Cell   local scEntail	      Args((List,Cell,Int,Int));
 static Cell   local entail	      Args((List,Cell,Int,Int));
 static Cell   local inEntail	      Args((List,Cell,Int,Int));
+#if MULTI_INST
+static Cell   local inEntails	      Args((List,Cell,Int,Int));
+static Bool   local instCompare	      Args((Inst, Inst));
+#endif
 #if TREX
 static Cell   local lacksNorm	      Args((Type,Int,Cell));
 #endif
@@ -306,11 +310,17 @@ List ps;				/* Using superclasses and equality.*/
 Cell pi;
 Int  o;
 Int  d; {
+    auto int i;
     for (; nonNull(ps); ps=tl(ps)) {
 	Cell pi1 = hd(ps);
 	Cell ev  = scFind(thd3(pi1),fst3(pi1),intOf(snd3(pi1)),pi,o,d);
 	if (nonNull(ev))
 	    return ev;
+	if (nonNull(ev) && showInstRes) {
+	    for (i = 0; i < d; i++)
+	      fputc(' ', stdout);
+	    fprintf(stdout, "scFound.\n");
+	}
     }
     return NIL;
 }
@@ -369,7 +379,13 @@ Cell pi;				/* tautology, and construction	   */
 Int  o;
 Int  d; {
     Cell ev = scEntail(ps,pi,o,d);
-    return nonNull(ev) ? ev : inEntail(ps,pi,o,d);
+    return nonNull(ev) ? ev :
+#if MULTI_INST
+                              multiInstRes ? inEntails(ps,pi,o,d) :
+                                             inEntail(ps,pi,o,d);
+#else
+                              inEntail(ps,pi,o,d);
+#endif
 }
 
 static Cell local inEntail(ps,pi,o,d)	/* Calc evidence for (pi,o) from ps*/
@@ -425,6 +441,116 @@ Int  d; {
     }
 #endif
 }
+
+#if MULTI_INST
+static Cell local inEntails(ps,pi,o,d)	/* Calc evidence for (pi,o) from ps*/
+List ps;				/* using a top-level instance	   */
+Cell pi;				/* entailment			   */
+Int  o;
+Int  d; {
+    auto int i;
+    auto int k = 0;
+    Cell ins = findInstsFor(pi,o);	/* Class predicates		   */
+    Inst in, in_;
+    Cell pi_;
+    Cell e_;
+
+    if (d++ >= cutoff)
+	cutoffExceeded(pi,o,NIL,0,ps);
+
+    if (showInstRes) {
+	pi_ = copyPred(pi, o);
+	for (i = 0; i < d; i++)
+	  fputc(' ', stdout);
+	fputs("inEntail: ", stdout);
+	printPred(stdout, pi_);
+	fputc('\n', stdout);
+    }
+
+    for (; nonNull(ins); ins=tl(ins)) {
+        in = snd(hd(ins));
+	if (nonNull(in)) {
+	    Int  beta = fst(hd(ins));
+	    Cell e    = inst(in).builder;
+	    Cell es   = inst(in).specifics;
+	    Cell es_  = es;
+
+	    if (showInstRes) {
+		for (i = 0; i < d; i++)
+		  fputc(' ', stdout);
+		fputs("try ", stdout);
+		printContext(stdout, es);
+		fputs(" => ", stdout);
+		printPred(stdout, inst(in).head);
+		fputc('\n', stdout);
+	    }
+
+	    for (; nonNull(es); es=tl(es)) {
+		Cell ev = entail(ps,hd(es),beta,d);
+		if (nonNull(ev))
+		    e = ap(e,ev);
+		else {
+		    e = NIL;
+		    break;
+		}
+	    }
+	    if (showInstRes)
+		for (i = 0; i < d; i++)
+		  fputc(' ', stdout);
+	    if (nonNull(e)) {
+		if (showInstRes)
+		    fprintf(stdout, "Sat\n");
+		if (k > 0) {
+		    if (instCompare (in_, in)) {
+		        ERRMSG(0) "Multiple satisfiable instances for "
+			ETHEN
+			ERRPRED(copyPred(pi, o));
+			ERRTEXT "\nin_ " ETHEN ERRPRED(inst(in_).head);
+			ERRTEXT "\nin  " ETHEN ERRPRED(inst(in).head);
+			ERRTEXT "\n"
+			EEND;
+		    }
+		}
+		if (k++ == 0) {
+		    e_ = e;
+		    in_ = in;
+		}
+		continue;
+	    } else {
+		if (showInstRes)
+		    fprintf(stdout, "not Sat\n");
+		continue;
+	    }
+	}
+	if (showInstRes) {
+	    for (i = 0; i < d; i++)
+	      fputc(' ', stdout);
+	    fprintf(stdout, "not Sat.\n");
+	}
+    }
+    if (k > 0)
+	return e_;
+    if (showInstRes) {
+	for (i = 0; i < d; i++)
+	  fputc(' ', stdout);
+	fprintf(stdout, "all not Sat.\n");
+    }
+    return NIL;
+}
+
+static Bool local instComp_(ia,ib)	/* See if ia is an instance of ib  */
+Inst ia, ib;{
+    Int alpha = newKindedVars(inst(ia).kinds);
+    Int beta  = newKindedVars(inst(ib).kinds);
+    return matchPred(inst(ia).head,alpha,inst(ib).head,beta);
+}
+
+static Bool local instCompare (ia, ib)
+Inst ia, ib;
+{
+    return instComp_(ia, ib) && instComp_(ib, ia);
+}
+#endif
 
 Cell provePred(ks,ps,pi)		/* Find evidence for predicate pi  */
 Kinds ks;				/* assuming ps.  If ps is null,	   */

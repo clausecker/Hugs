@@ -7,8 +7,8 @@
  * in the distribution for details.
  *
  * $RCSfile: options.h.in,v $
- * $Revision: 1.2 $
- * $Date: 1999/07/28 18:48:16 $
+ * $Revision: 1.3 $
+ * $Date: 1999/08/05 16:59:34 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -108,6 +108,9 @@
 
 /* Define if implicit parameters should be enabled			   */
 #define IPARAM 1
+
+/* Define if multi instance resolution should be enabled		   */
+#define MULTI_INST 1
 
 /* Define if heap profiling should be used                                 */
 #define PROFILING 0

@@ -8,8 +8,8 @@
  * in the distribution for details.
  *
  * $RCSfile: subst.c,v $
- * $Revision: 1.2 $
- * $Date: 1999/07/28 18:48:23 $
+ * $Revision: 1.3 $
+ * $Date: 1999/08/05 16:59:35 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1361,6 +1361,35 @@ Int   o; {				/* match is found, then tyvars from*/
 
     return NIL;
 }
+
+#if MULTI_INST
+Cell findInstsFor(pi,o)			/* Find matching instance for pred */
+Cell  pi;				/* (pi,o), or otherwise NIL.  If a */
+Int   o; {				/* match is found, then tyvars from*/
+    Class c = getHead(pi);		/* typeOff have been initialized to*/
+    List  ins;				/* allow direct use of specifics.  */
+    List  res = NIL;
+
+    if (!isClass(c))
+	return NIL;
+
+    for (ins=cclass(c).instances; nonNull(ins); ins=tl(ins)) {
+	Inst in   = hd(ins);
+	Int  beta = newKindedVars(inst(in).kinds);
+	if (matchPred(pi,o,inst(in).head,beta)) {
+	    res = cons (pair (beta, in), res);
+	    continue;
+	}
+	else
+	    numTyvars = beta;
+    }
+    if (res == NIL) {
+	unrestrictBind();
+    }
+
+    return rev(res);
+}
+#endif
 
 /* --------------------------------------------------------------------------
  * Improvement:

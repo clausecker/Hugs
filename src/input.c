@@ -7,8 +7,8 @@
  * in the distribution for details.
  *
  * $RCSfile: input.c,v $
- * $Revision: 1.3 $
- * $Date: 1999/07/28 23:00:34 $
+ * $Revision: 1.4 $
+ * $Date: 1999/08/05 16:59:34 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -46,6 +46,7 @@ Int  defaultLine     = 0;               /* line in which default defs occur*/
 List evalDefaults    = NIL;             /* defaults for evaluator          */
 
 Cell inputExpr       = NIL;             /* input expression                */
+Cell inputContext    = NIL;             /* input context                   */
 Bool literateScripts = FALSE;           /* TRUE => default to lit scripts  */
 Bool literateErrors  = TRUE;            /* TRUE => report errs in lit scrs */
 
@@ -1566,6 +1567,9 @@ Long   len; {                          /* Used to set a target for reading */
 Void parseExp() {                      /* Read an expression to evaluate   */
     parseInput(EXPR);
     setLastExpr(inputExpr);
+}
+Void parseContext() {                  /* Read a context to prove   */
+    parseInput(CONTEXT);
 }
 
 /* --------------------------------------------------------------------------
