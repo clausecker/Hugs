@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: preds.c,v $
- * $Revision: 1.22 $
- * $Date: 2000/03/06 18:59:26 $
+ * $Revision: 1.23 $
+ * $Date: 2000/03/08 07:20:59 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -645,13 +645,17 @@ Kinds ks;				/* assuming ps.  If ps is null,	   */
 List  ps;				/* then we get to decide whether   */
 Cell  pi; {				/* is tautological, and we can use */
     Int  beta;				/* the evidence as a dictionary.   */
-    Cell ev;
+    List qs;
+
     emptySubstitution();
-    beta = newKindedVars(ks);		/* (ks provides kinds for any	   */
-    ps   = makePredAss(ps,beta);	/*  vars that appear in pi.)	   */
-    ev   = entail(ps,pi,beta,0);
+    beta = newKindedVars(ks);
+    qs = makePredAss(cons(pi,NIL),beta);
+    preds = qs;
+    elimTauts();
+    if (resolveDefs(NIL))
+	elimTauts();
     emptySubstitution();
-    return ev;
+    return (nonNull(preds) ? NIL : thd3(hd(qs)));
 }
 
 #if TREX

@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.17 $
- * $Date: 1999/11/16 22:59:54 $
+ * $Revision: 1.18 $
+ * $Date: 2000/03/08 07:20:59 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1242,6 +1242,7 @@ static Void local xplain() {         /* print type of expression (if any)*/
     parseContext();
     checkContext();
     showInstRes = TRUE;
+    /* ZZ this is now broken ... */
     d = provePred(NIL,NIL,hd(inputContext));
     if (isNull(d)) {
 	fprintf(stdout, "not Sat\n");
