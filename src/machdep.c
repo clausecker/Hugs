@@ -12,8 +12,8 @@
  * included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.10 $
- * $Date: 2001/01/31 02:52:13 $
+ * $Revision: 1.11 $
+ * $Date: 2001/01/31 21:10:38 $
  * ------------------------------------------------------------------------*/
 
 #ifdef HAVE_SIGNAL_H
@@ -113,6 +113,8 @@ int allow_break_count = 0;
 
 #if HUGS_FOR_WINDOWS
 #define HugsRoot ("SOFTWARE\\Haskell\\Hugs\\Winhugs" HUGS_VERSION "\\")
+#else
+#define HugsRoot ("SOFTWARE\\Haskell\\Hugs\\" HUGS_VERSION "\\")
 #endif
 #define ProjectRoot ("SOFTWARE\\Haskell\\Projects\\")
 
