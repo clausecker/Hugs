@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.126 $
- * $Date: 2003/04/28 20:58:23 $
+ * $Revision: 1.127 $
+ * $Date: 2003/08/07 13:14:33 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -23,6 +23,7 @@
 #include "machdep.h"
 #include "goal.h"
 #include "output.h"
+#include "module.h"
 #include <setjmp.h>
 #include <ctype.h>
 
@@ -58,7 +59,6 @@ static Void   local showInst          Args((Inst));
 static Void   local describe          Args((Text));
 static Void   local listNames         Args((Void));
 static Void   local expandPath        Args((String,String,unsigned int));
-static Void   local browseit	      Args((Module,String,Bool));
 static Void   local browse	      Args((Void));
 static Void   local initialize        Args((Int, String []));
 
@@ -265,7 +265,7 @@ static Void local menu() {
     Printf(":set                help on command line options\n");
     Printf(":names [pat]        list names currently in scope\n");
     Printf(":info <names>       describe named objects\n");
-    Printf(":browse <modules>   browse names defined in <modules>\n");
+    Printf(":browse <modules>   browse names exported by <modules>\n");
 #if EXPLAIN_INSTANCE_RESOLUTION
     Printf(":xplain <context>   explain instance resolution for <context>\n");
 #endif
@@ -475,61 +475,27 @@ static Void local showtype() {         /* print type of expression (if any)*/
     Putchar('\n');
 }
 
-static Void local browseit(mod,t,all)
-Module mod; 
-String t;
-Bool all; {
-    if (nonNull(mod)) {
-	Cell cs;
-	if (nonNull(t))
-	    Printf("module %s where\n",textToStr(module(mod).text));
-	for (cs = module(mod).names; nonNull(cs); cs=tl(cs)) {
-	    Name nm = hd(cs);
-	    /* only look at things defined in this module,
-	       unless `all' flag is set */
-	    if (all || name(nm).mod == mod) {
-		/* unwanted artifacts, like lambda lifted values,
-		   are in the list of names, but have no types */
-		if (nonNull(name(nm).type)) {
-		    printExp(stdout,nm);
-		    Printf(" :: ");
-		    printType(stdout,name(nm).type);
-		    if (isCfun(nm)) {
-			Printf("  -- data constructor");
-		    } else if (isMfun(nm)) {
-			Printf("  -- class member");
-		    } else if (isSfun(nm)) {
-			Printf("  -- selector function");
-		    }
-		    if (name(nm).primDef) {
-			Printf("   -- primitive");
-		    }
-		    Printf("\n");
-		}
-	    }
-	}
-    } else {
-      if (isNull(mod)) {
-	Printf("Unknown module %s\n",t);
-      }
-    }
-}
-
 static Void local browse() {            /* browse modules                  */
-    Int    count = 0;                   /* or give menu of commands        */
+    Int    count = 0;                   /* or current module               */
     String s;
     Bool all = FALSE;
 
     setCurrModule(findEvalModule());
     startNewScript(0);                  /* for recovery of storage         */
-    for (; (s=readFilename())!=0; count++)
+    while ((s=readFilename())!=0)
 	if (strcmp(s,"all") == 0) {
 	    all = TRUE;
-	    --count;
-	} else
-	    browseit(findModule(findText(s)),s,all);
+	} else {
+	    Module mod = findModule(findText(s));
+	    if (isNull(mod)) {
+		Printf("Unknown module %s\n",s);
+	    } else {
+		browseModule(mod,all);
+	    }
+	    count++;
+	}
     if (count == 0)
-	browseit(findEvalModule(),NULL,all);
+	browseModule(findEvalModule(),all);
 }
 
 #if EXPLAIN_INSTANCE_RESOLUTION

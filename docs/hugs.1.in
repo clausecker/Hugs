@@ -220,7 +220,7 @@ list names currently in scope matching any of the shell-style patterns.
 describe named objects.
 .TP
 \fB:browse\fP \fImodules\fP
-browse names defined in \fImodules\fP.
+browse names exported by \fImodules\fP.
 .TP
 \fB:find\fP \fIname\fP
 edit file containing definition of \fIname\fP.

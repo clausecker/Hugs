@@ -14,6 +14,7 @@
 #include "connect.h"
 #include "errors.h"
 #include "module.h"
+#include "output.h"
 
 /* --------------------------------------------------------------------------
  * Static analysis of modules:
@@ -49,6 +50,9 @@ static List   local allMethodsOrDCons   Args((List,Cell,Module,Bool));
 static Cell   local importEntity	Args((Module,Cell));
 static Void   local importTycon		Args((Module,Tycon));
 static Void   local importClass		Args((Module,Class));
+
+static Void   local browseName		Args((Name));
+static Void   local browseEntity	Args((Cell));
 
 Void addQualImport(orig,new,entities) /* Add to qualified import list       */
 Cell orig;       /* Original name of module                                */
@@ -404,6 +408,7 @@ Bool   isHidden; {
                             }
                             ys=tl(ys);
                         }
+			subentities = rev(subentities);
                     } else {
                         if (isClass(c)) {
                             subentities = cclass(c).members;
@@ -415,6 +420,7 @@ Bool   isHidden; {
                 imports = addEntity(c,subentities,imports);
             }
         }
+	imports = rev(imports);
     } else {
         map2Accum(checkImportEntity,imports,m,isHidden,impList);
     }
@@ -1203,4 +1209,52 @@ List exports; {
     }
 #endif
     return es;
+}
+
+/* --------------------------------------------------------------------------
+ * Browsing module exports
+ * ------------------------------------------------------------------------*/
+
+Void browseModule(mod,all)
+Module mod;
+Bool all; {			/* include all names in scope in the module? */
+    List exports = resolveImportList(mod, DOTDOT, FALSE);
+    Printf("module %s where\n",textToStr(module(mod).text));
+    if (all) {
+	List all_names = dupList(module(mod).names);
+	mapProc(browseName,rev(all_names));
+    } else {
+	mapProc(browseEntity,exports);
+    }
+}
+
+static Void local browseEntity(entity)
+Cell entity; {			 /* Entity | (Entity,[Entity]) */
+    if (isName(entity)) {
+	browseName(entity);
+    } else {			 /* (Entity,[Entity]) */
+	mapProc(browseName,snd(entity));
+    }
+}
+
+static Void local browseName(nm)
+Name nm; {
+    /* unwanted artifacts, like lambda lifted values,
+       are in the list of names, but have no types */
+    if (nonNull(name(nm).type)) {
+	printExp(stdout,nm);
+	Printf(" :: ");
+	printType(stdout,name(nm).type);
+	if (isCfun(nm)) {
+	    Printf("  -- data constructor");
+	} else if (isMfun(nm)) {
+	    Printf("  -- class member");
+	} else if (isSfun(nm)) {
+	    Printf("  -- selector function");
+	}
+	if (name(nm).primDef) {
+	    Printf("  -- primitive");
+	}
+	Printf("\n");
+    }
 }

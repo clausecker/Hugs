@@ -19,5 +19,6 @@ extern Void checkImportList     Args((Bool,Pair));
 extern Void checkQualImportList Args((Pair));
 extern Void fixupImportExports  Args((List));
 extern List checkExports        Args((List));
+extern Void browseModule	Args((Module,Bool));
 
 #endif /* __MODULE_H__ */

@@ -1,6 +1,6 @@
 hugs$(OBJ): hugs.c prelude.h config.h options.h storage.h HsFFI.h command.h \
   connect.h errors.h script.h opts.h strutil.h evaluator.h machdep.h \
-  goal.h output.h
+  goal.h output.h module.h
 runhugs$(OBJ): runhugs.c prelude.h config.h options.h storage.h HsFFI.h \
   connect.h machdep.h observe.h builtin.h evaluator.h errors.h server.h \
   HugsAPI.h
@@ -32,7 +32,7 @@ machdep$(OBJ): machdep.c prelude.h config.h options.h storage.h HsFFI.h \
 machine$(OBJ): machine.c prelude.h config.h options.h storage.h HsFFI.h \
   connect.h errors.h
 module$(OBJ): module.c prelude.h config.h options.h storage.h HsFFI.h \
-  connect.h errors.h module.h
+  connect.h errors.h module.h output.h
 opts$(OBJ): opts.c prelude.h config.h options.h storage.h HsFFI.h connect.h \
   errors.h machdep.h strutil.h opts.h
 output$(OBJ): output.c prelude.h config.h options.h storage.h HsFFI.h \

@@ -333,7 +333,7 @@ standing for a range of characters, and
 
 <para>
 If no patterns are given,
-all named defined in any of the currently loaded modules are listed.
+all names defined in any of the currently loaded modules are listed.
 </para>
 </listitem>
 </varlistentry>
@@ -361,13 +361,16 @@ If no arguments are given, the names of all currently loaded files are printed.
 <varlistentry id="browse-command">
 <term>
 <cmdsynopsis>
-<command>:browse</command> <arg rep=repeat choice=plain><replaceable>module</replaceable></arg>
+<command>:browse</command> <arg choice=opt><option>all</option></arg> <arg rep=repeat choice=opt><replaceable>module</replaceable></arg>
 </cmdsynopsis>
 </term>
 
 <listitem>
 <para>
-List names defined in the specified modules (which must already be loaded).
+List names exported by the specified modules (which must already be loaded).
+If <quote><option>all</option></quote> is given,
+list all names in scope inside the modules.
+If no modules are given, it describes the current module.
 </para>
 </listitem>
 </varlistentry>
