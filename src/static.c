@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.83 $
- * $Date: 2002/08/26 23:12:34 $
+ * $Revision: 1.84 $
+ * $Date: 2002/09/05 15:50:16 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -951,6 +951,8 @@ Cell e; {
 		return exports; /* Not reached */
 	    case NEWTYPE:
 	    case DATATYPE:
+		/* ToDo: the traversal code here is near identical to
+		   that done for classes below, and ought to be abstracted. */
 		if (DOTDOT==parts) {
 		    Module thisModule = lastModule();
 		    if ( tycon(nm).mod == thisModule ) {
@@ -1005,25 +1007,29 @@ Cell e; {
 		     * only the metods in scope are exported. 
 		     */
 		    Cell xs;
-		    Cell stuff;
+		    Cell exps = NIL;
 		    for (xs = module(thisModule).modImports;nonNull(xs);xs=tl(xs)) {
 			if (isPair(hd(xs)) && fst(hd(xs)) == cclass(nm).mod ) {
-			   /* Found the effective import list for tycon's module */
+			   /* Found the effective import list for the class' module */
 			    List ns;
+			    /* Locate the class.. */
 			    for(ns = snd(hd(xs)); nonNull(ns); ns=tl(ns)) {
-				if (isPair(hd(ns)) && 
-				    isClass(fst(hd(ns))) &&
-				    fst(hd(ns)) == nm) {
-				    List xs;
-				    stuff = snd(hd(ns));
-				    xs = stuff;
+				if ( isPair(hd(ns)) && 
+				     isClass(fst(hd(ns))) &&
+				     fst(hd(ns)) == nm) {
+				    List ms;
+				    /* Add the constructors onto the 'exports' list */
+				    for (ms=snd(hd(ns));nonNull(ms);ms=tl(ms)) {
+					exps=cons(hd(ms),exps);
+				    }
 				    break;
 				}
 			    }
 			    break;
 			}
 		    }
-		    return cons(pair(nm,stuff),exports);
+		    exports=cons(pair(nm,exps),exports);
+		    return dupOnto(exps,exports);
 		}
 	    } else {
 	      List ps = NIL;
