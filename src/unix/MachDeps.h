@@ -5,8 +5,7 @@
  * foreign function interface libraries.
  */
 
-#include "../config.h"
-#include "../options.h"
+#include "config.h"
 
 #define SIZEOF_HSCHAR      SIZEOF_CHAR
 #define SIZEOF_HSINT	   SIZEOF_INT
