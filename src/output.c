@@ -8,8 +8,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: output.c,v $
- * $Revision: 1.36 $
- * $Date: 2003/12/04 13:53:51 $
+ * $Revision: 1.37 $
+ * $Date: 2004/01/10 12:47:32 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -378,7 +378,7 @@ static Void local putFlds(exp,fs)       /* Output exp using labelled fields*/
 Cell exp;
 List fs; {
     put(ALWAYS,exp);
-    putChr('{');
+    putStr(" {");
     for (; nonNull(fs); fs=tl(fs)) {
 	Cell v = hd(fs);
 	if (isVar(v))

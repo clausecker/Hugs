@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.166 $
- * $Date: 2004/01/10 01:14:36 $
+ * $Revision: 1.167 $
+ * $Date: 2004/01/10 12:47:32 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -3449,12 +3449,13 @@ Int  a; {
     }
     if (nonNull(cfs)) {
 	/* To display a value using record syntax:
-	 *    showsPrec d C{x=e, y=f, z=g} = showString "C"  . showChar '{' .
-	 *				     showField "x" e . showChar ',' .
-	 *				     showField "y" f . showChar ',' .
-	 *				     showField "z" g . showChar '}'
+	 *    showsPrec d C{x=e, y=f, z=g} =
+	 *		showString "C"  . showString " {" .
+	 *		showField "x" e . showString ", " .
+	 *		showField "y" f . showString ", " .
+	 *		showField "z" g . showChar '}'
 	 *    showField lab val
-	 *	= showString lab . showChar '=' . shows val
+	 *	= showString lab . showString " = " . shows val
 	 */
 	Cell rhs     = showsCB;
 	List vs      = dupOnto(snd(hd(cfs)),NIL);
@@ -3468,13 +3469,14 @@ Int  a; {
 		pat = fun(pat);
 		vs  = tl(vs);
 		if (isAp(pat)) {
-		    rhs = ap(showsCM,rhs);
+		    rhs = ap(showsCM,ap(showsSP,rhs));
 		} else {
 		    break;
 		}
 	    }
 	}
-	rhs = ap2(nameComp,ap(nameApp,mkStr(name(h).text)),ap(showsOB,rhs));
+	rhs = ap2(nameComp,ap(nameApp,mkStr(name(h).text)),
+			ap(showsSP,ap(showsOB,rhs)));
 	return rhs;
     }
     else if (a==0) {

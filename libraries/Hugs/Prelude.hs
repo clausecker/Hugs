@@ -1359,7 +1359,7 @@ showParen    :: Bool -> ShowS -> ShowS
 showParen b p = if b then showChar '(' . p . showChar ')' else p
 
 showField    :: Show a => String -> a -> ShowS
-showField m v = showString m . showChar '=' . shows v
+showField m v = showString m . showString " = " . shows v
 
 readParen    :: Bool -> ReadS a -> ReadS a
 readParen b g = if b then mandatory else optional

@@ -15,9 +15,9 @@ Hugs:[".","..","a","b"]
 
 Hugs:"dir6_test_dir"
 
-Hugs:Permissions{readable=True,writable=True,executable=False,searchable=True}
-Permissions{readable=True,writable=True,executable=False,searchable=False}
-Permissions{readable=False,writable=True,executable=False,searchable=False}
+Hugs:Permissions {readable = True, writable = True, executable = False, searchable = True}
+Permissions {readable = True, writable = True, executable = False, searchable = False}
+Permissions {readable = False, writable = True, executable = False, searchable = False}
 got expected IO error
 
 Hugs:[Leaving Hugs]
