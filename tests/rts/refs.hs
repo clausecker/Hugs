@@ -1,6 +1,6 @@
 -- !!! Testing Refs
 
-import IOExts
+import Data.IORef
 
 a1 = 
 	newIORef 'a'	>>= \ v ->
