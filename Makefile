@@ -127,7 +127,6 @@ src/stamp-h.in: configure.ac aclocal.m4 fptools
 # fetching library sources
 
 fptools:
-	-mkdir fptools
 	cvs -d `cat CVS/Root` checkout -r $(HSLIBSTAG) `for lib in $(HSLIBSDIRS); do echo fptools/hslibs/$$lib; done`
 	cvs -d `cat CVS/Root` checkout -r $(LIBRARIESTAG) fptools/config.sub fptools/config.guess fptools/install-sh `for lib in $(LIBRARIESDIRS); do echo fptools/libraries/$$lib; done`
 	cvs -d `cat CVS/Root` checkout -r $(HSC2HSTAG) fptools/ghc/utils/hsc2hs
