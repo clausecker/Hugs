@@ -57,9 +57,6 @@ function cvt {
  
 }
 
-# For when we cannot use the new module yet: use a Hugs file as a
-# stopgap replacement.
-
 function cvt_happy {
 	case $# in
 	2)	;;
@@ -86,6 +83,9 @@ function cvt_happy {
 	rm -r $tmpdir
  
 }
+
+# For when we cannot use the new module yet: use a Hugs file as a
+# stopgap replacement.
 
 function nocvt {
 	case $# in
