@@ -34,7 +34,7 @@ instance Show Type where
     = showsPrec p tycon 
     | otherwise
     = showParen (p > 9) $
-      showsPrec p tycon . showArgs tys
+      showsPrec p tycon . showString " " . showArgs tys
    where
     arg1 = head tys
     arg2 = head (tail tys)
@@ -42,7 +42,8 @@ instance Show Type where
     zeroarg = l == 0
     onearg = l == 1
     twoarg = l == 2  
-    showArgs [] = id
+    showArgs []     = id
+    showArgs [a]    = showsPrec 10 a
     showArgs (a:as) = showsPrec 10 a . showString " " . showArgs as 
 
 unitTC    = Tycon "()"
@@ -126,7 +127,7 @@ fromDyn d = res
                 Just r -> r
                 Nothing -> error ("fromDyn failed.  Expecting " ++
                                   show expectedType ++
-                                  " found " ++ show d) 
+                                  " found " ++ show d ++ "\n") 
          expectedType = toDynamic res
 
 intToDyn :: Int -> Dynamic
