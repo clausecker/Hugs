@@ -330,6 +330,11 @@ if test "${ac_cv_header_stdlib_h+set}" = set ||
   AC_CHECK_FUNCS(valloc)
 fi
 
+dnl ** check for POSIX regex
+HavePosixRegex=NO
+AC_CHECK_HEADERS(regex.h,[AC_CHECK_FUNC(regcomp, [HavePosixRegex=YES])])
+AC_SUBST(HavePosixRegex)
+
 dnl check for OpenGL include files
 if test x"$enable_hopengl" != x"no"; then
   if test "$UseQuartzOpenGL" = YES ; then
