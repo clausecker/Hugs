@@ -10,13 +10,11 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: parser.y,v $
- * $Revision: 1.37 $
- * $Date: 2003/03/03 06:31:04 $
+ * $Revision: 1.38 $
+ * $Date: 2003/03/05 15:21:47 $
  * ------------------------------------------------------------------------*/
 
 %{
-extern String scriptFile;
-
 #ifndef lint
 #define lint
 #endif

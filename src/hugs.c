@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.118 $
- * $Date: 2003/03/03 06:31:02 $
+ * $Revision: 1.119 $
+ * $Date: 2003/03/05 15:21:45 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -16,6 +16,7 @@
 #include "command.h"
 #include "connect.h"
 #include "errors.h"
+#include "script.h"
 #include <setjmp.h>
 #include <ctype.h>
 
@@ -47,12 +48,10 @@ static Bool printTypeUseDefaults = FALSE;
  * Local function prototypes:
  * ------------------------------------------------------------------------*/
 
-#if !defined(HUGS_SERVER)
-static Void   local initialize        Args((Int,String []));
-#endif /* !HUGS_SERVER */
 static Void   local loadPrelude       Args((Void));
 static Void   local promptForInput    Args((String));
 #if !defined(HUGS_SERVER)
+static Void   local initialize        Args((Int,String []));
 static Void   local interpreter       Args((Int,String []));
 static Void   local menu              Args((Void));
 static Void   local guidance          Args((Void));
@@ -62,19 +61,12 @@ static Void   local set               Args((Void));
 static Void   local changeDir         Args((Void));
 static Void   local load              Args((Void));
 static Void   local project           Args((Void));
-#endif /* !HUGS_SERVER */
-static Void   local readScripts       Args((Int));
-static Void   local whatScripts       Args((Void));
-#if !defined(HUGS_SERVER)
 static Void   local editor            Args((Void));
 static Void   local find              Args((Void));
 static Void   local runEditor         Args((Void));
 static Void   local setModule         Args((Void));
 static Module local findEvalModule    Args((Void));
 static Void   local evaluator         Args((Void));
-#endif /* !HUGS_SERVER */
-static Void   local stopAnyPrinting   Args((Void));
-#if !defined(HUGS_SERVER)
 static Void   local showtype          Args((Void));
 static String local objToStr          Args((Module, Cell));
 static Void   local splitQualString   Args((String,String*,String*));
@@ -84,6 +76,7 @@ static Void   local showInst          Args((Inst));
 static Void   local describe          Args((Text));
 static Void   local listNames         Args((Void));
 #endif /* !HUGS_SERVER */
+static Void   local stopAnyPrinting   Args((Void));
 #if HUGS_FOR_WINDOWS
 static Void   local autoReloadFiles   Args((Void));
 #endif
@@ -106,16 +99,7 @@ static Bool   local isOption          Args((String));
 static Void   local expandPath        Args((String,String,unsigned int));
 #endif /* !HUGS_SERVER */
 
-static Void   local loadProject       Args((String));
-static Void   local clearProject      Args((Void));
-static Void   local addScriptName     Args((String,Bool));
-static Bool   local addScript         Args((String,Long));
-static Void   local forgetScriptsFrom Args((Script));
-static Void   local forgetAllScripts  Args((Void));
-static Void   local forgetAScript     Args((Script));
-static Void   local setLastEdit       Args((String,Int));
 static Void   local failed            Args((Void));
-static String local strCopy           Args((String));
 #if !defined(HUGS_SERVER)
 static Void   local browseit	      Args((Module,String,Bool));
 static Void   local browse	      Args((Void));
@@ -146,37 +130,18 @@ char iniArgv[10][33];
 
 static Bool   printing     = FALSE;     /* TRUE => currently printing value*/
 static Bool   showStats    = FALSE;     /* TRUE => print stats after eval  */
-static Bool   listScripts  = TRUE;      /* TRUE => list scripts after loading*/
 static Bool   addType      = FALSE;     /* TRUE => print type with value   */
 static Bool   useShow      = TRUE;      /* TRUE => use Text/show printer   */
 static Bool   displayIO    = FALSE;     /* TRUE => use printer for IO result*/
-static Bool   chaseImports = TRUE;      /* TRUE => chase imports on load   */
 static Bool   useDots      = RISCOS;    /* TRUE => use dots in progress    */
-static Bool   quiet        = FALSE;     /* TRUE => don't show progress     */
-static Bool   generate     = FALSE;     /* TRUE => generate ffi code       */
 #if HUGS_FOR_WINDOWS
 static Bool autoLoadFiles  = TRUE;	/* TRUE => reload files before eval*/
 static Bool InAutoReloadFiles = FALSE;	/* TRUE =>loading files before eval*/
 #endif
 
-static String scriptName[NUM_SCRIPTS];  /* Script file names               */
-static String scriptReal[NUM_SCRIPTS];  /* Full path to canonical name     */
-static Time   lastChange[NUM_SCRIPTS];  /* Time of last change to script   */
-static Bool   postponed[NUM_SCRIPTS];   /* Indicates postponed load        */
-static Bool   chased[NUM_SCRIPTS];      /* Added by import chasing?        */
-static Int    numScripts;               /* Number of scripts loaded        */
-static Int    namesUpto;                /* Number of script names set      */
-static Int    scriptsStable;            /* Number of (Prelude) scripts     */
-                                        /* considered stable */
-static Bool   needsImports;             /* set to TRUE if imports required */
-       String scriptFile;               /* Name of current script (if any) */
-
 #if !defined(HUGS_SERVER)
 static Text   evalModule  = 0;          /* Name of module we eval exprs in */
 #endif /* !HUGS_SERVER */
-static String currProject = 0;          /* Name of current project file    */
-static Bool   projectLoaded = FALSE;    /* TRUE => project file loaded     */
-
 static String lastEdit   = 0;           /* Name of script to edit (if any) */
 static Int    lastLine   = 0;           /* Editor line number (if possible)*/
 static String prompt     = 0;           /* Prompt string                   */
@@ -186,6 +151,11 @@ String hugsPath		 = 0;		/* String for file search path     */
 String projectPath	 = 0;		/* String for project search path  */
 String hugsSuffixes	 = 0;		/* Source filename suffixes        */
 Bool   preludeLoaded	 = FALSE;
+
+Bool   listScripts  = TRUE;    /* TRUE => list scripts after loading*/
+Bool   chaseImports = TRUE;    /* TRUE => chase imports on load   */
+Bool   quiet        = FALSE;   /* TRUE => don't show progress     */
+Bool   generateFFI  = FALSE;   /* TRUE => generate ffi code       */
 
 #if REDIRECT_OUTPUT
 static Bool disableOutput = FALSE;      /* redirect output to buffer?      */
@@ -290,10 +260,8 @@ static Void local loadPrelude() {  /* load in the Prelude module(s). */
 	       hugsPath ? hugsPath : "");
 	fatal("Unable to load prelude");
     }
-    scriptName[0] = strCopy(prelLocation);
+    addScriptName(prelLocation, FALSE);
     free(prelName);
-    scriptReal[0] = strCopy(RealPath(scriptName[0]));
-    chased[0] = FALSE;
     
     /* add the H98 Prelude module to the stack */
     addScriptName(findMPathname(NULL, STD_PRELUDE,hugsPath), FALSE);
@@ -311,7 +279,7 @@ static Void local loadPrelude() {  /* load in the Prelude module(s). */
      * stack (e.g., ":l<ENTER>"), only modules later than the Prelude
      * ones are scratched.
      */
-    scriptsStable = namesUpto;
+    setScriptStableMark();
 }
 
 #if !defined(HUGS_SERVER)
@@ -325,15 +293,9 @@ String argv[]; {
     FileName hugsPrefsFile = "\0";
 #endif
 
-#ifdef HUGS_SERVER
-    setHugsAPI();
-#endif 
-
     setLastEdit((String)0,0);
     lastEdit      = 0;
-    scriptFile    = 0;
-    numScripts    = 0;
-    namesUpto     = 1;
+    initScripts();
 
 #if HUGS_FOR_WINDOWS || HAVE_WINDOWS_H
 #define DEFAULT_EDITOR "\\notepad.exe"
@@ -458,7 +420,7 @@ String argv[]; {
 
     evalModule = findText("");      /* evaluate wrt last module by default */
     if (proj) {
-	if (namesUpto>1) {
+	if ( getScriptHwMark() > 1 ) {
 	    FPrintf(stderr, "\nUsing project file, ignoring additional filenames\n");
 	    FFlush(stderr);
 	}
@@ -481,12 +443,6 @@ static Void shutdownHugs() {
   if (prompt)    free(prompt);
   if (repeatStr) free(repeatStr);
   if (lastEdit)  free(lastEdit);
-  
-  for (i=0; i < numScripts ; i++) {
-    if (scriptName[i]) free(scriptName[i]);
-    if (scriptReal[i]) free(scriptReal[i]);
-  }
-  
 }
 
 #if USE_PREFERENCES_FILE
@@ -1072,7 +1028,7 @@ struct options toggle[] = {             /* List of command line toggles    */
     Option('s', 1, "Print no. reductions/cells after eval", &showStats),
     Option('t', 1, "Print type after evaluation",           &addType),
     Option('g', 1, "Print no. cells recovered after gc",    &gcMessages),
-    Option('G', 0, "Generate FFI code for foreign import",  &generate),
+    Option('G', 0, "Generate FFI code for foreign import",  &generateFFI),
     Option('l', 1, "Literate modules as default",           &literateScripts),
     Option('e', 1, "Warn about errors in literate modules", &literateErrors),
     Option('.', 1, "Print dots to show progress",           &useDots),
@@ -1192,189 +1148,10 @@ static Void local printDir() {         /* print directory                */
 #endif /* !HUGS_SERVER */
 
 /* --------------------------------------------------------------------------
- * Loading project and script files:
- * ------------------------------------------------------------------------*/
-
-static Void local loadProject(s)        /* Load project file               */
-String s; {
-    clearProject();
-    currProject = s;
-    projInput(currProject);
-    scriptFile = currProject;
-    forgetAllScripts();
-    while ((s=readFilename())!=0)
-	addScriptName(s,TRUE);
-    if (namesUpto<=1) {
-	ERRMSG(0) "Empty project file"
-	EEND;
-    }
-    scriptFile    = 0;
-    projectLoaded = TRUE;
-}
-
-static Void local clearProject() {      /* clear name for current project  */
-    if (currProject)
-	free(currProject);
-    currProject   = 0;
-    projectLoaded = FALSE;
-#if HUGS_FOR_WINDOWS
-    setLastEdit((String)0,0);
-#endif
-}
-
-static Void local addScriptName(s,sch)  /* Add script to list of scripts   */
-String s;                               /* to be read in ...               */
-Bool   sch; {                           /* TRUE => requires pathname search*/
-    if (namesUpto>=NUM_SCRIPTS) {
-	ERRMSG(0) "Too many module files (maximum of %d allowed)",
-		  NUM_SCRIPTS
-	EEND;
-    }
-    else {
-	scriptName[namesUpto] = strCopy(sch ? findPathname(NULL,s) : s);
-	scriptReal[namesUpto] = strCopy(RealPath(scriptName[namesUpto]));
-        chased[namesUpto]     = !sch;
-	namesUpto++;
-    }
-}
-
-static Bool local addScript(fname,len)  /* read single script file */
-String fname;                           /* name of script file     */
-Long   len; {                           /* length of script file   */
-    scriptFile = fname;
-
-#if HUGS_FOR_WINDOWS         /* Set clock cursor while loading   */
-    allowBreak();
-    SetCursor(LoadCursor(NULL, IDC_WAIT));
-    AddFileToFileNamesMenu(&FilesMenu, RealPath(fname));
-#endif
-
-    if (!quiet) {
-	Printf("Reading file \"%s\":\n",fname);  FlushStdout();
-    }
-    setLastEdit(fname,0);
-
-    needsImports = FALSE;
-    if (!parseScript(fname,len)) {   /* process script file */
-	/* file or parse error, drop the script */ 
-	forgetAScript(numScripts);
-	errFail();
-    }
-    if (needsImports) return FALSE;
-    checkDefns();
-    typeCheckDefns();
-    compileDefns();
-    scriptFile    = 0;
-    preludeLoaded = TRUE;
-    return TRUE;
-}
-
-Bool chase(imps)                        /* Process list of import requests */
-List imps; {
-    if (chaseImports) {
-	Int    origPos  = numScripts;   /* keep track of original position */
-	String origName = scriptName[origPos];
-	for (; nonNull(imps); imps=tl(imps)) {
-	    String iname = findPathname(origName,textToStr(textOf(hd(imps))));
-	    String rname = RealPath(iname);
-	    Int    i     = 0;
-	    for (; i<namesUpto; i++)
-		if (filenamecmp(scriptReal[i],rname)==0)
-		    break;
-	    if (i>=origPos) {           /* Neither loaded or queued        */
-		String theName;
-		String theReal;
-		Time   theTime;
-		Bool   thePost;
-		Bool   theChase;
-
-		postponed[origPos] = TRUE;
-		needsImports       = TRUE;
-
-		if (i>=namesUpto)       /* Name not found (i==namesUpto)   */
-		    addScriptName(iname,FALSE);
-		else if (postponed[i]) {/* Check for recursive dependency  */
-		    ERRMSG(0)
-		      "Recursive import dependency between \"%s\" and \"%s\"",
-		      scriptName[origPos], iname
-		    EEND;
-		}
-		/* Right rotate section of tables between numScripts and i so
-		 * that i ends up with other imports in front of orig. script
-		 */
-		theName = scriptName[i];
-		theReal = scriptReal[i];
-		thePost = postponed[i];
-		theChase = chased[i];
-		timeSet(theTime,lastChange[i]);
-		for (; i>numScripts; i--) {
-		    scriptName[i] = scriptName[i-1];
-		    scriptReal[i] = scriptReal[i-1];
-		    postponed[i]  = postponed[i-1];
-		    chased[i]     = chased[i-1];
-		    timeSet(lastChange[i],lastChange[i-1]);
-		}
-		scriptName[numScripts] = theName;
-		scriptReal[numScripts] = theReal;
-		postponed[numScripts]  = thePost;
-		chased[numScripts]     = theChase;
-		timeSet(lastChange[numScripts],theTime);
-		origPos++;
-	    }
-	}
-	return needsImports;
-    }
-    return FALSE;
-}
-
-static Void local forgetScriptsFrom(scno) /* remove scripts from system     */
-Script scno; {
-    Script i;
-    for (i=scno; i<namesUpto; ++i)
-	if (scriptName[i])
-	    free(scriptName[i]);
-    dropScriptsFrom(scno-1); /* don't count prelude as script  */
-    namesUpto = scno;
-    if (numScripts>namesUpto)
-	numScripts = scno;
-}
-
-static Void local forgetAllScripts() {
-  /* Drop all but the stable scripts; i.e., the
-   * Prelude and (possibly) it's implementation module(s).
-   */
-  forgetScriptsFrom( scriptsStable ); 
-}
-
-static Void local forgetAScript(scno) /* remove a script from system */
-Script scno; {
-    Script i;
-    
-    if (scno > namesUpto)
-	return;
-
-    if (scriptName[scno])
-	free(scriptName[scno]);
-    if (scriptReal[scno])
-	free(scriptReal[scno]);
-
-    for (i=scno+1; i < namesUpto; i++) {
-	scriptName[i-1] = scriptName[i];
-	scriptReal[i-1] = scriptReal[i];
-	lastChange[i-1] = lastChange[i];
-        postponed[i-1]  = postponed[i];
-        chased[i-1]     = chased[i];
-    }
-    dropAScript(scno);
-    namesUpto--;
-}
-
-/* --------------------------------------------------------------------------
  * Commands for loading and removing script files:
  * ------------------------------------------------------------------------*/
 
 #if !defined(HUGS_SERVER)
-
 static Void local load() {           /* read filenames from command line   */
     String s;                        /* and add to list of scripts waiting */
 				     /* to be read                         */
@@ -1406,60 +1183,6 @@ static Void local project() {          /* read list of script names from   */
 
 #endif /* !HUGS_SERVER */
 
-static Void local readScripts(n)        /* Reread current list of scripts, */
-Int n; {                                /* loading everything after and    */
-    Time timeStamp;                     /* including the first script which*/
-    Long fileSize;                      /* has been either changed or added*/
-
-#if HUGS_FOR_WINDOWS
-    SetCursor(LoadCursor(NULL, IDC_WAIT));
-#endif
-
-    for (; n<numScripts; n++) {         /* Scan previously loaded scripts  */
-	getFileInfo(scriptName[n], &timeStamp, &fileSize);
-	if (timeChanged(timeStamp,lastChange[n])) {
-	    dropScriptsFrom(n-1);
-	    numScripts = n;
-	    break;
-	}
-    }
-    for (; n<NUM_SCRIPTS; n++)          /* No scripts have been postponed  */
-	postponed[n] = FALSE;           /* at this stage                   */
-
-
-    while (numScripts<namesUpto) {      /* Process any remaining scripts   */
-	getFileInfo(scriptName[numScripts], &timeStamp, &fileSize);
-	timeSet(lastChange[numScripts],timeStamp);
-	if (numScripts>0)               /* no new script for prelude       */
-	    startNewScript(scriptName[numScripts]);
-        generate_ffi = generate && !chased[numScripts];
-	if (addScript(scriptName[numScripts],fileSize))
-	    numScripts++;
-	else
-	    dropScriptsFrom(numScripts-1);
-    }
-
-    if (listScripts)
-	whatScripts();
-    if (numScripts<=1)
-	setLastEdit((String)0, 0);
-}
-
-static Void local whatScripts() {       /* list scripts in current session */
-    int i;
-#if HUGS_FOR_WINDOWS
-    if (!InAutoReloadFiles) {
-#endif
-    Printf("\nHugs session for:");
-    if (projectLoaded)
-	Printf(" (project: %s)",currProject);
-    for (i=0; i<numScripts; ++i)
-	Printf("\n%s",scriptName[i]);
-    Putchar('\n');
-#if HUGS_FOR_WINDOWS
-    }
-#endif
-}
 
 #if !defined(HUGS_SERVER)
 
@@ -1495,11 +1218,11 @@ static Void local find() {              /* edit file containing definition */
 	setCurrModule(findEvalModule());
 	startNewScript(0);
 	if (nonNull(c=findTycon(t=findText(nm)))) {
-	    if (startEdit(tycon(c).line,scriptName[scriptThisTycon(c)])) {
+	    if ( startEdit(tycon(c).line,getScriptName(scriptThisTycon(c))) ) {
 		readScripts(1);
 	    }
 	} else if (nonNull(c=findName(t))) {
-	    if (startEdit(name(c).line,scriptName[scriptThisName(c)])) {
+	    if ( startEdit(name(c).line,getScriptName(scriptThisName(c))) ) {
 		readScripts(1);
 	    }
 	} else {
@@ -1525,7 +1248,7 @@ static Void local runEditor() {         /* run editor on script lastEdit   */
 
 #endif /* !HUGS_SERVER */
 
-static Void local setLastEdit(fname,line)/* keep name of last file to edit */
+Void setLastEdit(fname,line) /* keep name of last file to edit */
 String fname;
 Int    line; {
     if (lastEdit) {
@@ -1539,7 +1262,6 @@ Int    line; {
       AddFileToFileNamesMenu(&EditMenu, RealPath(lastEdit));
 #endif
 }
-
 
 /* --------------------------------------------------------------------------
  * Read and evaluate an expression:
@@ -2314,7 +2036,6 @@ static Void local stopEvaluatorThread(Void) {
     }
 }
 
-
 static DWORD local evaluatorThreadBody(LPDWORD notUsed) {
 
     Int evaluatorNumber = setjmp(goToEvaluator);
@@ -2396,9 +2117,9 @@ String argv[]; {
     Int errorNumber = setjmp(catch_error);
 
     breakOn(TRUE);                      /* enable break trapping           */
-    if (numScripts==0) {                /* only succeeds on first time,    */
-	if (errorNumber)                /* before prelude has been loaded  */
-	    fatal("Unable to load prelude");
+    if ( numLoadedScripts()==0 ) {      /* only succeeds on first time,    */
+	if (errorNumber)                /* before Prelude has been loaded  */
+	    fatal("Unable to load Prelude");
 	initialize(argc,argv);
 	forHelp();
     }
@@ -2413,7 +2134,7 @@ String argv[]; {
     for (;;) {
 	Command cmd;
 	everybody(RESET);               /* reset to sensible initial state */
-	dropScriptsFrom(numScripts-1); 
+	dropScriptsFrom(numLoadedScripts()-1); 
 	                                /* remove partially loaded scripts */
 					/* not counting prelude as a script*/
 
@@ -2440,7 +2161,7 @@ String argv[]; {
 			  load();
 			  break;
 	    case ALSO   : clearProject();
-			  forgetScriptsFrom(numScripts);
+			  forgetScriptsFrom(numLoadedScripts());
 			  load();
 			  break;
 	    case RELOAD : readScripts(1);
@@ -2758,7 +2479,7 @@ String def; {                   /* or: default value given by def          */
  * String manipulation routines:
  * ------------------------------------------------------------------------*/
 
-static String local strCopy(s)         /* make malloced copy of a string   */
+String strCopy(s)         /* make malloced copy of a string   */
 String s; {
     if (s && *s) {
 	char *t, *r;
@@ -3007,6 +2728,7 @@ Int what; {                     /* system to respond as appropriate ...    */
     controlFuns(what);
     plugins(what);
     ffi(what);
+    script(what);
 }
 
 /* --------------------------------------------------------------------------

@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: connect.h,v $
- * $Revision: 1.69 $
- * $Date: 2003/03/03 06:31:02 $
+ * $Revision: 1.70 $
+ * $Date: 2003/03/05 15:21:45 $
  * ------------------------------------------------------------------------*/
 #ifndef __CONNECT_H__
 #define __CONNECT_H__
@@ -291,6 +291,11 @@ extern Bool  allowUnsafeOverlap;	/* TRUE => in addition, allow      */
 					/* potentially inconsistent        */
 					/* overlapping instances           */
 
+extern Bool   listScripts;              /* TRUE => list scripts after loading*/
+extern Bool   chaseImports;             /* TRUE => chase imports on load   */
+extern Bool   quiet;                    /* TRUE => don't show progress     */
+extern Bool   generateFFI;              /* TRUE => generate ffi code       */
+
 /* --------------------------------------------------------------------------
  * Function prototypes etc...
  * ------------------------------------------------------------------------*/
@@ -308,7 +313,8 @@ extern  Void   setGoal          Args((String, Target));
 extern  Void   soFar            Args((Target));
 extern  Void   done             Args((Void));
 extern  String fromEnv		Args((String,String));
-extern  Bool   chase		Args((List));
+extern  String strCopy          Args((String));
+extern  Void   setLastEdit      Args((String,Int));
 
 extern  Void   storage          Args((Int));
 

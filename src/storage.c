@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: storage.c,v $
- * $Revision: 1.64 $
- * $Date: 2003/03/03 06:31:05 $
+ * $Revision: 1.65 $
+ * $Date: 2003/03/05 15:21:47 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -3482,7 +3482,7 @@ unsigned long maxIdx;
 unsigned long hWater;
 const char* tabName; {
    DynTable *tab = (DynTable*)malloc(sizeof(struct strDynTable));
-
+   
    if ( tab != NULL ) {
      tab->idx     = 0;
      tab->maxIdx  = maxIdx;

@@ -10,8 +10,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: server.c,v $
- * $Revision: 1.29 $
- * $Date: 2003/03/03 06:31:04 $
+ * $Revision: 1.30 $
+ * $Date: 2003/03/05 15:21:47 $
  * ------------------------------------------------------------------------*/
 
 #define HUGS_SERVER
@@ -126,10 +126,10 @@ static String ClearError()
     lastError  = NULL;
     ClearOutputBuffer();
 
-    if (err && (numScripts > 0)) 
+    if (err && (numLoadedScripts() > 0)) 
     {
         everybody(RESET);        
-        dropScriptsFrom(numScripts-1);  /* remove partially loaded scripts */
+        dropScriptsFrom(numLoadedScripts()-1);  /* remove partially loaded scripts */
     }
     return err;
 }
@@ -209,9 +209,8 @@ String argv[]; {
 
       lastEdit      = 0;
       setLastEdit((String)0,0);
-      scriptFile    = 0;		/* Name of current script (if any) */
-      numScripts    = 0;		/* Number of scripts loaded	   */
-      namesUpto     = 1;		/* Number of script names set	   */
+      initScripts();
+
       hugsPath      = strCopy(HUGSPATH);
       hugsSuffixes  = strCopy(HUGSSUFFIXES);
 #if HSCRIPT
@@ -307,7 +306,7 @@ static Bool linkDynamic()
 
 static Int GetNumScripts()      /* Get number of scripts in system  */
 {
-    protect(return numScripts);
+    protect(return numLoadedScripts());
     return 0;
 }
 
@@ -343,7 +342,7 @@ String fn;
 {
     protect(
 	loadProject(strCopy(fn));
-	readScripts(numScripts);
+	readScripts(numLoadedScripts());
 	everybody(RESET);
 	);
 }
@@ -356,7 +355,7 @@ String fn;
    */
     protect(
 	addScriptName(fn,TRUE);
-	readScripts(numScripts);
+	readScripts(numLoadedScripts());
 	everybody(RESET);
 	);
 }
@@ -366,7 +365,7 @@ String mod;
 {
     protect(
 	addScriptName(mod,TRUE);
-	readScripts(numScripts);
+	readScripts(numLoadedScripts());
 	everybody(RESET);
 	);
 }

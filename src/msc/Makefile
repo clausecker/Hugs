@@ -50,19 +50,19 @@ CP		= copy
 .SUFFIXES	:
 .SUFFIXES	: .c .h .obj
 HFILES		= prelude.h config.h options.h storage.h connect.h \
-		  errors.h command.h server.h HsFFI.h module.h machdep.h
+		  errors.h command.h server.h HsFFI.h module.h machdep.h script.h
 CFILES		= hugs.c storage.c input.c static.c type.c subst.c \
 		  output.c compiler.c machine.c interp.c builtin.c \
-		  server.c ffi.c module.c machdep.c
+		  server.c ffi.c module.c machdep.c script.c
 INCFILES	= parser.c preds.c bignums.c scc.c timer.c \
 		  printer.c iomonad.c interns.c stmonad.c array.c
 YFILES		= parser.y
 SOURCES		= $(HFILES) $(CFILES) $(INCFILES) $(YFILES) 
 OBJECTS		= storage.obj input.obj static.obj type.obj subst.obj \
 		  compiler.obj plugin.obj builtin.obj machine.obj output.obj \
-		  ffi.obj version.obj module.obj machdep.obj
+		  ffi.obj version.obj module.obj machdep.obj script.obj
 IOBJECTS	= hugs.obj hugs.res $(OBJECTS)
-PRELUDE		= config.h options.h prelude.h
+PRELUDE		= config.h options.h prelude.h script.h
 
 ################################################################
 # Hugs interpreter and standalone evaluator
@@ -185,6 +185,7 @@ builtin.obj	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h builtin.h \
 ffi.obj		: $(PRELUDE) storage.h HsFFI.h connect.h errors.h
 module.obj	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h module.h
 machdep.obj	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h machdep.h
+script.obj	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h 
 
 hugs.res	: msc\hugs.rc ..\icons\hugsicon.ico
 		rc /imsc /i..\icons /r /fo hugs.res msc\hugs.rc 

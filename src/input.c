@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: input.c,v $
- * $Revision: 1.60 $
- * $Date: 2003/03/03 06:31:04 $
+ * $Revision: 1.61 $
+ * $Date: 2003/03/05 15:21:45 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -17,6 +17,7 @@
 #include "command.h"
 #include "errors.h"
 #include "module.h"
+#include "script.h"
 #include <ctype.h>
 #if HAVE_GETDELIM_H
 #include "getdelim.h"

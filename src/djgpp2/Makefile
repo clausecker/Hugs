@@ -37,10 +37,10 @@ CP		= COPY
 .SUFFIXES	:
 .SUFFIXES	: .c .h .o
 HFILES		= prelude.h config.h options.h storage.h connect.h \
-		  errors.h command.h server.h HsFFI.h module.h machdep.h
+		  errors.h command.h server.h HsFFI.h module.h machdep.h script.h
 CFILES		= hugs.c storage.c input.c static.c type.c subst.c \
 		  output.c compiler.c machine.c interp.c builtin.c \
-		  server.c ffi.c module.c machdep.c
+		  server.c ffi.c module.c machdep.c script.c
 INCFILES	= parser.c preds.c bignums.c scc.c timer.c \
 		  printer.c iomonad.c interns.c stmonad.c array.c
 YFILES		= parser.y
@@ -48,7 +48,7 @@ SOURCES		= $(HFILES) $(CFILES) $(INCFILES) $(YFILES)
 OBJECTS		= storage.o input.o static.o type.o subst.o compiler.o \
 		  plugin.o builtin.o machine.o output.o ffi.o version.o module.o machdep.o
 IOBJECTS	= hugs.o $(OBJECTS)
-PRELUDE		= config.h options.h prelude.h
+PRELUDE		= config.h options.h prelude.h script.h
 
 ################################################################
 # Hugs interpreter and standalone evaluator
@@ -141,6 +141,7 @@ builtin.o	: $(PRELUDE) storage.h connect.h errors.h \
 ffi.o		: $(PRELUDE) storage.h connect.h errors.h
 module.o	: $(PRELUDE) storage.h connect.h errors.h module.h
 machdep.o	: $(PRELUDE) storage.h connect.h errors.h machdep.h
+script.o	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h 
 
 ################################################################
 # Regression tests (none supplied)
