@@ -26,12 +26,12 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: timer.c,v $
- * $Revision: 1.5 $
- * $Date: 2003/10/14 13:56:25 $
+ * $Revision: 1.6 $
+ * $Date: 2004/10/14 22:08:49 $
  * ------------------------------------------------------------------------*/
 
 
-#if defined(HAVE_SYS_TIME_H) && defined(HAVE_SYS_RESOURCE_H)
+#if HAVE_SYS_TIME_H && HAVE_SYS_RESOURCE_H
 #include <sys/time.h>
 #include <sys/resource.h>
 

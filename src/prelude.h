@@ -8,8 +8,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: prelude.h,v $
- * $Revision: 1.70 $
- * $Date: 2004/10/01 10:28:44 $
+ * $Revision: 1.71 $
+ * $Date: 2004/10/14 22:08:48 $
  * ------------------------------------------------------------------------*/
 #ifndef __PRELUDE_H__
 #define __PRELUDE_H__
@@ -388,10 +388,10 @@ extern int vsnprintf  Args((char*, size_t, const char*, va_list));
  * Irritating, but easy to work around.
  *-------------------------------------------------------------------------*/
 
-#if !defined(HAVE_POPEN) && defined(HAVE__POPEN)
+#if !HAVE_POPEN && HAVE__POPEN
 #define popen(x,y) _popen(x,y)
 #endif
-#if !defined(HAVE_PCLOSE) && defined(HAVE__PCLOSE)
+#if !HAVE_PCLOSE && HAVE__PCLOSE
 #define pclose(x) _pclose(x)
 #endif
 
@@ -610,13 +610,13 @@ extern  int  kbhit	Args((void));
  *
  */
 #if USE_PREPROCESSOR
-# if defined(HAVE_POPEN) || defined (HAVE__POPEN)
-# define SUPPORT_PREPROCESSOR 1
+# if HAVE_POPEN || HAVE__POPEN
+#  define SUPPORT_PREPROCESSOR 1
 # else
-# define SUPPORT_PREPROCESSOR 0
+#  define SUPPORT_PREPROCESSOR 0
 # endif
 #else
-#define SUPPORT_PREPROCESSOR 0
+# define SUPPORT_PREPROCESSOR 0
 #endif
 
 /*---------------------------------------------------------------------------
@@ -632,7 +632,7 @@ extern  int  kbhit	Args((void));
  * File operations:
  *-------------------------------------------------------------------------*/
 
-#if !defined(HAVE_UNISTD_H) && !defined(_MSC_VER)
+#if !HAVE_UNISTD_H && !_MSC_VER
 extern int 	chdir 	   Args((const char*));
 #endif
 

@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: builtin.c,v $
- * $Revision: 1.76 $
- * $Date: 2004/05/08 14:15:43 $
+ * $Revision: 1.77 $
+ * $Date: 2004/10/14 22:08:41 $
  * ------------------------------------------------------------------------*/
 
 /* We include math.h before prelude.h because SunOS 4's cpp incorrectly
@@ -23,45 +23,39 @@
 #include "machdep.h"
 #include "char.h"
 #include <ctype.h>
+
 #if HAVE_IO_H
-#include <io.h>
+# include <io.h>
 #endif
 
 /* Header files needed to compile the IO primitives */
 #if IO_MONAD
+
 #if HAVE_SYS_TYPES_H
 # include <sys/types.h>
-#else
-# if HAVE_TYPES_H
-#  include <types.h>
-# endif
+#elif HAVE_TYPES_H
+# include <types.h>
 #endif
 #if HAVE_SYS_STAT_H
 # include <sys/stat.h>
-#else
-# if HAVE_STAT_H
-#  include <stat.h>
-# endif
+#elif HAVE_STAT_H
+# include <stat.h>
 #endif
 
 #if HAVE_UNISTD_H
-#include <unistd.h>
+# include <unistd.h>
 #endif
 
-#ifndef __MINGW32__
-# if HAVE_SYS_TIMES_H
-#  include <sys/times.h>
-# endif
+#if HAVE_SYS_TIMES_H && !defined(__MINGW32__)
+# include <sys/times.h>
 #endif
 
 #if HAVE_SYS_TIME_H
-#include <sys/time.h>
+# include <sys/time.h>
 #endif
 
-#ifndef __MINGW32__
-# if defined(HAVE_SYS_RESOURCE_H)
-#  include <sys/resource.h>
-# endif
+#if HAVE_SYS_RESOURCE_H && !defined(__MINGW32__)
+# include <sys/resource.h>
 #endif
 
 #if HAVE_ERRNO_H
@@ -69,7 +63,7 @@
 #endif
 
 #if HAVE_SYS_TIMEB_H
-#include <sys/timeb.h>
+# include <sys/timeb.h>
 #endif
 
 #if HAVE_WINDOWS_H
@@ -77,15 +71,15 @@
 #endif
 
 #if HAVE_DIRENT_H
-#include <dirent.h>
+# include <dirent.h>
 #endif
 
 #if HAVE_DIRECT_H
-#include <direct.h>
+# include <direct.h>
 #endif
 
 #if HAVE_FCNTL_H
-#include <fcntl.h>
+# include <fcntl.h>
 #endif
 
 #endif /* IO_MONAD */

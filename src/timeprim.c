@@ -108,7 +108,7 @@ primFun(primGetCalTime) { /* Int   -> Int -> IO (.....) */
                           /* isUTC => convert time to UTC, o/wise local time */
 
   Int isUTC;
-#if defined(HAVE_LOCALTIME) && defined(HAVE_GMTIME)
+#if HAVE_LOCALTIME && HAVE_GMTIME
   time_t secs;
   struct tm* tm;
   char* zoneNm = NULL;
@@ -165,7 +165,7 @@ primFun(primGetCalTime) { /* Int   -> Int -> IO (.....) */
 		    mkInt(tm->tm_isdst)),
 		 zoneStr),
 	      mkInt(utcOff)));
-#else
+#else /* !(HAVE_LOCALTIME && HAVE_GMTIME) */
 
   IntArg(isUTC,2+IOArity);
 
@@ -236,7 +236,7 @@ primFun(primMkTime) { /* Int{-year-}  -> Int{-month-} -> Int{-day-} ->
 #endif
   
   IOReturn(mkInt(t+tz));
-#else
+#else /* !HAVE_MKTIME */
   IOFail(mkIOError(NULL,
 		   nameIllegal,
 		   "Time.toClockTime",
@@ -264,59 +264,23 @@ CAFInt(primClockTicks, sysconf(_SC_CLK_TCK))
 primFun(primGetCPUUsage) { /* IO (Int,Int,Int,Int) */
   int userSec, userNSec;
   int sysSec,  sysNSec;
-#if !IS_WINDOWS
-#if defined(HAVE_GETRUSAGE) /* && ! irix_TARGET_OS && ! solaris2_TARGET_OS */
-    struct rusage t;
-
-    getrusage(RUSAGE_SELF, &t);
-    userSec  = t.ru_utime.tv_sec;
-    userNSec = 1000 * t.ru_utime.tv_usec;
-    sysSec   = t.ru_stime.tv_sec;
-    sysNSec  = 1000 * t.ru_stime.tv_usec;
-
-#else
-# if defined(HAVE_TIMES)
-    struct tms t;
-#  if defined(CLK_TCK)
-#   define ticks CLK_TCK
-#  else
-    long ticks;
-    ticks = sysconf(_SC_CLK_TCK);
-#  endif
-
-    times(&t);
-    userSec  = t.tms_utime / ticks;
-    userNSec = (t.tms_utime - userSec * ticks) * (1000000000 / ticks);
-    sysSec   = t.tms_stime / ticks;
-    sysNSec  = (t.tms_stime - sysSec * ticks) * (1000000000 / ticks);
-
+#if IS_WINDOWS
+# ifdef _MSC_VER
+#  define NS_PER_SEC 10000000
 # else
-    IOFail(mkIOError(NULL,
-		     nameIllegal,
-		     "CPUTime.getCPUTime",
-		     "illegal operation",
-		     NULL));
+#  define NS_PER_SEC 10000000LL
 # endif
-#endif
-#else
-/* Win32 version */
-
-#ifdef _MSC_VER
-#define NS_PER_SEC 10000000
-#else
-#define NS_PER_SEC 10000000LL
-#endif
-#define FT2usecs(ll,ft)    \
+# define FT2usecs(ll,ft)    \
     (ll)=(ft).dwHighDateTime; \
     (ll) <<= 32;              \
     (ll) |= (ft).dwLowDateTime;
 
     FILETIME creationTime, exitTime, kernelTime, userTime;
-#ifdef _MSC_VER
+# ifdef _MSC_VER
     unsigned __int64 uT, kT;
-#else
+# else
     unsigned long long uT, kT;
-#endif
+# endif
  
     /* Notice that the 'process time' includes the time used
        by all the threads of a process, all of which may not
@@ -339,6 +303,36 @@ primFun(primGetCPUUsage) { /* IO (Int,Int,Int,Int) */
       sysSec   = (unsigned int)(kT / NS_PER_SEC);
       sysNSec  = (unsigned int)((kT - sysSec * NS_PER_SEC) * 100);
     }
+#elif HAVE_GETRUSAGE /* && ! irix_TARGET_OS && ! solaris2_TARGET_OS */
+    struct rusage t;
+
+    getrusage(RUSAGE_SELF, &t);
+    userSec  = t.ru_utime.tv_sec;
+    userNSec = 1000 * t.ru_utime.tv_usec;
+    sysSec   = t.ru_stime.tv_sec;
+    sysNSec  = 1000 * t.ru_stime.tv_usec;
+
+#elif HAVE_TIMES
+    struct tms t;
+# if defined(CLK_TCK)
+#  define ticks CLK_TCK
+# else
+    long ticks;
+    ticks = sysconf(_SC_CLK_TCK);
+# endif
+
+    times(&t);
+    userSec  = t.tms_utime / ticks;
+    userNSec = (t.tms_utime - userSec * ticks) * (1000000000 / ticks);
+    sysSec   = t.tms_stime / ticks;
+    sysNSec  = (t.tms_stime - sysSec * ticks) * (1000000000 / ticks);
+
+#else
+    IOFail(mkIOError(NULL,
+		     nameIllegal,
+		     "CPUTime.getCPUTime",
+		     "illegal operation",
+		     NULL));
 #endif
     IOReturn(ap(ap(ap(ap( mkTuple(4), mkInt(userSec)),
 		      mkInt(userNSec)),

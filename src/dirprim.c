@@ -573,7 +573,7 @@ primFun(primGetDirContents) { /* FilePath -> IO [FilePath] */
 		     &IOArg(1)));
   }
   IOReturn(ls);
-#elif defined(HAVE_DIRENT_H)
+#elif HAVE_DIRENT_H
   /* opendir() / readdir() implementation. */
   DIR* dir;
   struct dirent* pDir;

@@ -14,8 +14,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: iomonad.c,v $
- * $Revision: 1.82 $
- * $Date: 2004/10/07 01:49:15 $
+ * $Revision: 1.83 $
+ * $Date: 2004/10/14 22:08:45 $
  * ------------------------------------------------------------------------*/
  
 Name nameIORun;			        /* run IO code                     */
@@ -596,7 +596,7 @@ Cell   *mbF;	/* a FilePath or NULL */
 static Name local toIOError(errc)
 int errc;
 {
-#if defined(HAVE_ERRNO_H)  && !(__MWERKS__ && macintosh)
+#if HAVE_ERRNO_H  && !(__MWERKS__ && macintosh)
     switch(errc) {
 
     case EEXIST:
@@ -625,7 +625,7 @@ static String local toIOErrorDescr(errc,isFile)
 int   errc;
 Bool  isFile;
 {
-#if defined(HAVE_ERRNO_H)  && !(__MWERKS__ && macintosh)
+#if HAVE_ERRNO_H  && !(__MWERKS__ && macintosh)
     switch(errc) {
 
     case EEXIST:
@@ -1706,7 +1706,7 @@ primFun(primHWaitForInput) { /* Check whether a character can be read
     HandleArg(h,2+IOArity);
     IntArg(msecs,1+IOArity);
     
-#if defined(HAVE_SELECT)
+#if HAVE_SELECT
     if (!(handles[h].hmode&(HREAD|HREADWRITE))) {
 	IOFail(mkIOError(&handles[h].hcell,
 			 nameIllegal,

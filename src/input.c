@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: input.c,v $
- * $Revision: 1.85 $
- * $Date: 2004/03/29 11:43:45 $
+ * $Revision: 1.86 $
+ * $Date: 2004/10/14 22:08:44 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -253,7 +253,7 @@ String prompt; {                       /* standard in (i.e. console/kbd)   */
     hereState   = START;
 #endif
 
-#if defined(HAVE_ISATTY) && USE_READLINE
+#if HAVE_ISATTY && USE_READLINE
     if (!isatty(fileno(stdin))) { /* not reading from a tty: */
 	reading = NOKEYBOARD;     /* don't try readline      */
 	Printf("%s",prompt);FlushStdout();

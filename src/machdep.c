@@ -11,8 +11,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.120 $
- * $Date: 2004/10/07 10:59:44 $
+ * $Revision: 1.121 $
+ * $Date: 2004/10/14 22:08:46 $
  * ------------------------------------------------------------------------*/
 #include "prelude.h"
 #include "storage.h"
@@ -73,7 +73,7 @@
 #if HAVE_DOS_H
 # include <dos.h>
 #endif
-#if defined(HAVE_CONIO_H) && ! HUGS_FOR_WINDOWS
+#if HAVE_CONIO_H && ! HUGS_FOR_WINDOWS
 # include <conio.h>
 #endif
 #if HAVE_IO_H
@@ -159,7 +159,7 @@ Void getFileInfo(f,tm,sz)  /* find time stamp and size of file*/
 String f;
 Time   *tm;
 Long   *sz; {
-#if defined(HAVE_SYS_STAT_H) || defined(HAVE_STAT_H) || defined(HAVE_UNIX_H)
+#if HAVE_SYS_STAT_H || HAVE_STAT_H || HAVE_UNIX_H
     struct stat scbuf;
     if (!stat(f,&scbuf)) {
 	*tm = scbuf.st_mtime;
@@ -224,7 +224,7 @@ String f;
 Bool   isReg; {
 #if DJGPP2 || HAVE_GETFINFO /* stat returns bogus mode bits on djgpp2 */
     return (0 == access(f,4));
-#elif defined(HAVE_SYS_STAT_H) || defined(HAVE_STAT_H)
+#elif HAVE_SYS_STAT_H || HAVE_STAT_H
     struct stat scbuf;
     return (  !stat(f,&scbuf) 
 #if !(defined macintosh)	/* Macintosh files always have read permission */
@@ -232,7 +232,7 @@ Bool   isReg; {
 #endif
 	   && ( !isReg || (scbuf.st_mode & S_IFREG)) /* regular file */
 	   );
-#elif defined(HAVE_OS_SWI) /* RISCOS specific */
+#elif HAVE_OS_SWI /* RISCOS specific */
     os_regset r;                        /* RISCOS PRM p.850     -- JBS     */
     assert(dummy == 0);
     r.r[0] = 17; /* Read catalogue, no path */
