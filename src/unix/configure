@@ -14113,8 +14113,9 @@ echo $ECHO_N "checking Haskell type for char... $ECHO_C" >&6
 if test "${fptools_cv_htype_char+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-  if test "$cross_compiling" = yes; then
-  fptools_cv_htype_char=NotReallyATypeCross
+  fptools_cv_htype_sup_char=yes;
+if test "$cross_compiling" = yes; then
+  fptools_cv_htype_char=NotReallyATypeCross; fptools_cv_htype_sup_char=no
 else
   cat >conftest.$ac_ext <<_ACEOF
 #line $LINENO "configure"
@@ -14210,25 +14211,31 @@ echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
 
 ( exit $ac_status )
-fptools_cv_htype_char=NotReallyAType
+fptools_cv_htype_char=NotReallyAType; fptools_cv_htype_sup_char=no
 fi
 rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
- echo "$as_me:$LINENO: result: $fptools_cv_htype_char" >&5
+ if test "$fptools_cv_htype_sup_char" == yes; then
+  echo "$as_me:$LINENO: result: $fptools_cv_htype_char" >&5
 echo "${ECHO_T}$fptools_cv_htype_char" >&6
-cat >>confdefs.h <<_ACEOF
+  cat >>confdefs.h <<_ACEOF
 #define HTYPE_CHAR $fptools_cv_htype_char
 _ACEOF
 
+else
+  echo "$as_me:$LINENO: result: not supported" >&5
+echo "${ECHO_T}not supported" >&6
+fi
 
 echo "$as_me:$LINENO: checking Haskell type for signed char" >&5
 echo $ECHO_N "checking Haskell type for signed char... $ECHO_C" >&6
 if test "${fptools_cv_htype_signed_char+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-  if test "$cross_compiling" = yes; then
-  fptools_cv_htype_signed_char=NotReallyATypeCross
+  fptools_cv_htype_sup_signed_char=yes;
+if test "$cross_compiling" = yes; then
+  fptools_cv_htype_signed_char=NotReallyATypeCross; fptools_cv_htype_sup_signed_char=no
 else
   cat >conftest.$ac_ext <<_ACEOF
 #line $LINENO "configure"
@@ -14324,25 +14331,31 @@ echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
 
 ( exit $ac_status )
-fptools_cv_htype_signed_char=NotReallyAType
+fptools_cv_htype_signed_char=NotReallyAType; fptools_cv_htype_sup_signed_char=no
 fi
 rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
- echo "$as_me:$LINENO: result: $fptools_cv_htype_signed_char" >&5
+ if test "$fptools_cv_htype_sup_signed_char" == yes; then
+  echo "$as_me:$LINENO: result: $fptools_cv_htype_signed_char" >&5
 echo "${ECHO_T}$fptools_cv_htype_signed_char" >&6
-cat >>confdefs.h <<_ACEOF
+  cat >>confdefs.h <<_ACEOF
 #define HTYPE_SIGNED_CHAR $fptools_cv_htype_signed_char
 _ACEOF
 
+else
+  echo "$as_me:$LINENO: result: not supported" >&5
+echo "${ECHO_T}not supported" >&6
+fi
 
 echo "$as_me:$LINENO: checking Haskell type for unsigned char" >&5
 echo $ECHO_N "checking Haskell type for unsigned char... $ECHO_C" >&6
 if test "${fptools_cv_htype_unsigned_char+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-  if test "$cross_compiling" = yes; then
-  fptools_cv_htype_unsigned_char=NotReallyATypeCross
+  fptools_cv_htype_sup_unsigned_char=yes;
+if test "$cross_compiling" = yes; then
+  fptools_cv_htype_unsigned_char=NotReallyATypeCross; fptools_cv_htype_sup_unsigned_char=no
 else
   cat >conftest.$ac_ext <<_ACEOF
 #line $LINENO "configure"
@@ -14438,25 +14451,31 @@ echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
 
 ( exit $ac_status )
-fptools_cv_htype_unsigned_char=NotReallyAType
+fptools_cv_htype_unsigned_char=NotReallyAType; fptools_cv_htype_sup_unsigned_char=no
 fi
 rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
- echo "$as_me:$LINENO: result: $fptools_cv_htype_unsigned_char" >&5
+ if test "$fptools_cv_htype_sup_unsigned_char" == yes; then
+  echo "$as_me:$LINENO: result: $fptools_cv_htype_unsigned_char" >&5
 echo "${ECHO_T}$fptools_cv_htype_unsigned_char" >&6
-cat >>confdefs.h <<_ACEOF
+  cat >>confdefs.h <<_ACEOF
 #define HTYPE_UNSIGNED_CHAR $fptools_cv_htype_unsigned_char
 _ACEOF
 
+else
+  echo "$as_me:$LINENO: result: not supported" >&5
+echo "${ECHO_T}not supported" >&6
+fi
 
 echo "$as_me:$LINENO: checking Haskell type for short" >&5
 echo $ECHO_N "checking Haskell type for short... $ECHO_C" >&6
 if test "${fptools_cv_htype_short+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-  if test "$cross_compiling" = yes; then
-  fptools_cv_htype_short=NotReallyATypeCross
+  fptools_cv_htype_sup_short=yes;
+if test "$cross_compiling" = yes; then
+  fptools_cv_htype_short=NotReallyATypeCross; fptools_cv_htype_sup_short=no
 else
   cat >conftest.$ac_ext <<_ACEOF
 #line $LINENO "configure"
@@ -14552,25 +14571,31 @@ echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
 
 ( exit $ac_status )
-fptools_cv_htype_short=NotReallyAType
+fptools_cv_htype_short=NotReallyAType; fptools_cv_htype_sup_short=no
 fi
 rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
- echo "$as_me:$LINENO: result: $fptools_cv_htype_short" >&5
+ if test "$fptools_cv_htype_sup_short" == yes; then
+  echo "$as_me:$LINENO: result: $fptools_cv_htype_short" >&5
 echo "${ECHO_T}$fptools_cv_htype_short" >&6
-cat >>confdefs.h <<_ACEOF
+  cat >>confdefs.h <<_ACEOF
 #define HTYPE_SHORT $fptools_cv_htype_short
 _ACEOF
 
+else
+  echo "$as_me:$LINENO: result: not supported" >&5
+echo "${ECHO_T}not supported" >&6
+fi
 
 echo "$as_me:$LINENO: checking Haskell type for unsigned short" >&5
 echo $ECHO_N "checking Haskell type for unsigned short... $ECHO_C" >&6
 if test "${fptools_cv_htype_unsigned_short+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-  if test "$cross_compiling" = yes; then
-  fptools_cv_htype_unsigned_short=NotReallyATypeCross
+  fptools_cv_htype_sup_unsigned_short=yes;
+if test "$cross_compiling" = yes; then
+  fptools_cv_htype_unsigned_short=NotReallyATypeCross; fptools_cv_htype_sup_unsigned_short=no
 else
   cat >conftest.$ac_ext <<_ACEOF
 #line $LINENO "configure"
@@ -14666,25 +14691,31 @@ echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
 
 ( exit $ac_status )
-fptools_cv_htype_unsigned_short=NotReallyAType
+fptools_cv_htype_unsigned_short=NotReallyAType; fptools_cv_htype_sup_unsigned_short=no
 fi
 rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
- echo "$as_me:$LINENO: result: $fptools_cv_htype_unsigned_short" >&5
+ if test "$fptools_cv_htype_sup_unsigned_short" == yes; then
+  echo "$as_me:$LINENO: result: $fptools_cv_htype_unsigned_short" >&5
 echo "${ECHO_T}$fptools_cv_htype_unsigned_short" >&6
-cat >>confdefs.h <<_ACEOF
+  cat >>confdefs.h <<_ACEOF
 #define HTYPE_UNSIGNED_SHORT $fptools_cv_htype_unsigned_short
 _ACEOF
 
+else
+  echo "$as_me:$LINENO: result: not supported" >&5
+echo "${ECHO_T}not supported" >&6
+fi
 
 echo "$as_me:$LINENO: checking Haskell type for int" >&5
 echo $ECHO_N "checking Haskell type for int... $ECHO_C" >&6
 if test "${fptools_cv_htype_int+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-  if test "$cross_compiling" = yes; then
-  fptools_cv_htype_int=NotReallyATypeCross
+  fptools_cv_htype_sup_int=yes;
+if test "$cross_compiling" = yes; then
+  fptools_cv_htype_int=NotReallyATypeCross; fptools_cv_htype_sup_int=no
 else
   cat >conftest.$ac_ext <<_ACEOF
 #line $LINENO "configure"
@@ -14780,25 +14811,31 @@ echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
 
 ( exit $ac_status )
-fptools_cv_htype_int=NotReallyAType
+fptools_cv_htype_int=NotReallyAType; fptools_cv_htype_sup_int=no
 fi
 rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
- echo "$as_me:$LINENO: result: $fptools_cv_htype_int" >&5
+ if test "$fptools_cv_htype_sup_int" == yes; then
+  echo "$as_me:$LINENO: result: $fptools_cv_htype_int" >&5
 echo "${ECHO_T}$fptools_cv_htype_int" >&6
-cat >>confdefs.h <<_ACEOF
+  cat >>confdefs.h <<_ACEOF
 #define HTYPE_INT $fptools_cv_htype_int
 _ACEOF
 
+else
+  echo "$as_me:$LINENO: result: not supported" >&5
+echo "${ECHO_T}not supported" >&6
+fi
 
 echo "$as_me:$LINENO: checking Haskell type for unsigned int" >&5
 echo $ECHO_N "checking Haskell type for unsigned int... $ECHO_C" >&6
 if test "${fptools_cv_htype_unsigned_int+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-  if test "$cross_compiling" = yes; then
-  fptools_cv_htype_unsigned_int=NotReallyATypeCross
+  fptools_cv_htype_sup_unsigned_int=yes;
+if test "$cross_compiling" = yes; then
+  fptools_cv_htype_unsigned_int=NotReallyATypeCross; fptools_cv_htype_sup_unsigned_int=no
 else
   cat >conftest.$ac_ext <<_ACEOF
 #line $LINENO "configure"
@@ -14894,25 +14931,31 @@ echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
 
 ( exit $ac_status )
-fptools_cv_htype_unsigned_int=NotReallyAType
+fptools_cv_htype_unsigned_int=NotReallyAType; fptools_cv_htype_sup_unsigned_int=no
 fi
 rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
- echo "$as_me:$LINENO: result: $fptools_cv_htype_unsigned_int" >&5
+ if test "$fptools_cv_htype_sup_unsigned_int" == yes; then
+  echo "$as_me:$LINENO: result: $fptools_cv_htype_unsigned_int" >&5
 echo "${ECHO_T}$fptools_cv_htype_unsigned_int" >&6
-cat >>confdefs.h <<_ACEOF
+  cat >>confdefs.h <<_ACEOF
 #define HTYPE_UNSIGNED_INT $fptools_cv_htype_unsigned_int
 _ACEOF
 
+else
+  echo "$as_me:$LINENO: result: not supported" >&5
+echo "${ECHO_T}not supported" >&6
+fi
 
 echo "$as_me:$LINENO: checking Haskell type for long" >&5
 echo $ECHO_N "checking Haskell type for long... $ECHO_C" >&6
 if test "${fptools_cv_htype_long+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-  if test "$cross_compiling" = yes; then
-  fptools_cv_htype_long=NotReallyATypeCross
+  fptools_cv_htype_sup_long=yes;
+if test "$cross_compiling" = yes; then
+  fptools_cv_htype_long=NotReallyATypeCross; fptools_cv_htype_sup_long=no
 else
   cat >conftest.$ac_ext <<_ACEOF
 #line $LINENO "configure"
@@ -15008,25 +15051,31 @@ echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
 
 ( exit $ac_status )
-fptools_cv_htype_long=NotReallyAType
+fptools_cv_htype_long=NotReallyAType; fptools_cv_htype_sup_long=no
 fi
 rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
- echo "$as_me:$LINENO: result: $fptools_cv_htype_long" >&5
+ if test "$fptools_cv_htype_sup_long" == yes; then
+  echo "$as_me:$LINENO: result: $fptools_cv_htype_long" >&5
 echo "${ECHO_T}$fptools_cv_htype_long" >&6
-cat >>confdefs.h <<_ACEOF
+  cat >>confdefs.h <<_ACEOF
 #define HTYPE_LONG $fptools_cv_htype_long
 _ACEOF
 
+else
+  echo "$as_me:$LINENO: result: not supported" >&5
+echo "${ECHO_T}not supported" >&6
+fi
 
 echo "$as_me:$LINENO: checking Haskell type for unsigned long" >&5
 echo $ECHO_N "checking Haskell type for unsigned long... $ECHO_C" >&6
 if test "${fptools_cv_htype_unsigned_long+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-  if test "$cross_compiling" = yes; then
-  fptools_cv_htype_unsigned_long=NotReallyATypeCross
+  fptools_cv_htype_sup_unsigned_long=yes;
+if test "$cross_compiling" = yes; then
+  fptools_cv_htype_unsigned_long=NotReallyATypeCross; fptools_cv_htype_sup_unsigned_long=no
 else
   cat >conftest.$ac_ext <<_ACEOF
 #line $LINENO "configure"
@@ -15122,17 +15171,22 @@ echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
 
 ( exit $ac_status )
-fptools_cv_htype_unsigned_long=NotReallyAType
+fptools_cv_htype_unsigned_long=NotReallyAType; fptools_cv_htype_sup_unsigned_long=no
 fi
 rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
- echo "$as_me:$LINENO: result: $fptools_cv_htype_unsigned_long" >&5
+ if test "$fptools_cv_htype_sup_unsigned_long" == yes; then
+  echo "$as_me:$LINENO: result: $fptools_cv_htype_unsigned_long" >&5
 echo "${ECHO_T}$fptools_cv_htype_unsigned_long" >&6
-cat >>confdefs.h <<_ACEOF
+  cat >>confdefs.h <<_ACEOF
 #define HTYPE_UNSIGNED_LONG $fptools_cv_htype_unsigned_long
 _ACEOF
 
+else
+  echo "$as_me:$LINENO: result: not supported" >&5
+echo "${ECHO_T}not supported" >&6
+fi
 
 if test "$fptools_cv_have_long_long" = yes; then
 echo "$as_me:$LINENO: checking Haskell type for long long" >&5
@@ -15140,8 +15194,9 @@ echo $ECHO_N "checking Haskell type for long long... $ECHO_C" >&6
 if test "${fptools_cv_htype_long_long+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-  if test "$cross_compiling" = yes; then
-  fptools_cv_htype_long_long=NotReallyATypeCross
+  fptools_cv_htype_sup_long_long=yes;
+if test "$cross_compiling" = yes; then
+  fptools_cv_htype_long_long=NotReallyATypeCross; fptools_cv_htype_sup_long_long=no
 else
   cat >conftest.$ac_ext <<_ACEOF
 #line $LINENO "configure"
@@ -15237,25 +15292,31 @@ echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
 
 ( exit $ac_status )
-fptools_cv_htype_long_long=NotReallyAType
+fptools_cv_htype_long_long=NotReallyAType; fptools_cv_htype_sup_long_long=no
 fi
 rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
- echo "$as_me:$LINENO: result: $fptools_cv_htype_long_long" >&5
+ if test "$fptools_cv_htype_sup_long_long" == yes; then
+  echo "$as_me:$LINENO: result: $fptools_cv_htype_long_long" >&5
 echo "${ECHO_T}$fptools_cv_htype_long_long" >&6
-cat >>confdefs.h <<_ACEOF
+  cat >>confdefs.h <<_ACEOF
 #define HTYPE_LONG_LONG $fptools_cv_htype_long_long
 _ACEOF
 
+else
+  echo "$as_me:$LINENO: result: not supported" >&5
+echo "${ECHO_T}not supported" >&6
+fi
 
 echo "$as_me:$LINENO: checking Haskell type for unsigned long long" >&5
 echo $ECHO_N "checking Haskell type for unsigned long long... $ECHO_C" >&6
 if test "${fptools_cv_htype_unsigned_long_long+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-  if test "$cross_compiling" = yes; then
-  fptools_cv_htype_unsigned_long_long=NotReallyATypeCross
+  fptools_cv_htype_sup_unsigned_long_long=yes;
+if test "$cross_compiling" = yes; then
+  fptools_cv_htype_unsigned_long_long=NotReallyATypeCross; fptools_cv_htype_sup_unsigned_long_long=no
 else
   cat >conftest.$ac_ext <<_ACEOF
 #line $LINENO "configure"
@@ -15351,17 +15412,22 @@ echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
 
 ( exit $ac_status )
-fptools_cv_htype_unsigned_long_long=NotReallyAType
+fptools_cv_htype_unsigned_long_long=NotReallyAType; fptools_cv_htype_sup_unsigned_long_long=no
 fi
 rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
- echo "$as_me:$LINENO: result: $fptools_cv_htype_unsigned_long_long" >&5
+ if test "$fptools_cv_htype_sup_unsigned_long_long" == yes; then
+  echo "$as_me:$LINENO: result: $fptools_cv_htype_unsigned_long_long" >&5
 echo "${ECHO_T}$fptools_cv_htype_unsigned_long_long" >&6
-cat >>confdefs.h <<_ACEOF
+  cat >>confdefs.h <<_ACEOF
 #define HTYPE_UNSIGNED_LONG_LONG $fptools_cv_htype_unsigned_long_long
 _ACEOF
 
+else
+  echo "$as_me:$LINENO: result: not supported" >&5
+echo "${ECHO_T}not supported" >&6
+fi
 
 fi
 echo "$as_me:$LINENO: checking Haskell type for float" >&5
@@ -15369,8 +15435,9 @@ echo $ECHO_N "checking Haskell type for float... $ECHO_C" >&6
 if test "${fptools_cv_htype_float+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-  if test "$cross_compiling" = yes; then
-  fptools_cv_htype_float=NotReallyATypeCross
+  fptools_cv_htype_sup_float=yes;
+if test "$cross_compiling" = yes; then
+  fptools_cv_htype_float=NotReallyATypeCross; fptools_cv_htype_sup_float=no
 else
   cat >conftest.$ac_ext <<_ACEOF
 #line $LINENO "configure"
@@ -15466,25 +15533,31 @@ echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
 
 ( exit $ac_status )
-fptools_cv_htype_float=NotReallyAType
+fptools_cv_htype_float=NotReallyAType; fptools_cv_htype_sup_float=no
 fi
 rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
- echo "$as_me:$LINENO: result: $fptools_cv_htype_float" >&5
+ if test "$fptools_cv_htype_sup_float" == yes; then
+  echo "$as_me:$LINENO: result: $fptools_cv_htype_float" >&5
 echo "${ECHO_T}$fptools_cv_htype_float" >&6
-cat >>confdefs.h <<_ACEOF
+  cat >>confdefs.h <<_ACEOF
 #define HTYPE_FLOAT $fptools_cv_htype_float
 _ACEOF
 
+else
+  echo "$as_me:$LINENO: result: not supported" >&5
+echo "${ECHO_T}not supported" >&6
+fi
 
 echo "$as_me:$LINENO: checking Haskell type for double" >&5
 echo $ECHO_N "checking Haskell type for double... $ECHO_C" >&6
 if test "${fptools_cv_htype_double+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-  if test "$cross_compiling" = yes; then
-  fptools_cv_htype_double=NotReallyATypeCross
+  fptools_cv_htype_sup_double=yes;
+if test "$cross_compiling" = yes; then
+  fptools_cv_htype_double=NotReallyATypeCross; fptools_cv_htype_sup_double=no
 else
   cat >conftest.$ac_ext <<_ACEOF
 #line $LINENO "configure"
@@ -15580,25 +15653,31 @@ echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
 
 ( exit $ac_status )
-fptools_cv_htype_double=NotReallyAType
+fptools_cv_htype_double=NotReallyAType; fptools_cv_htype_sup_double=no
 fi
 rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
- echo "$as_me:$LINENO: result: $fptools_cv_htype_double" >&5
+ if test "$fptools_cv_htype_sup_double" == yes; then
+  echo "$as_me:$LINENO: result: $fptools_cv_htype_double" >&5
 echo "${ECHO_T}$fptools_cv_htype_double" >&6
-cat >>confdefs.h <<_ACEOF
+  cat >>confdefs.h <<_ACEOF
 #define HTYPE_DOUBLE $fptools_cv_htype_double
 _ACEOF
 
+else
+  echo "$as_me:$LINENO: result: not supported" >&5
+echo "${ECHO_T}not supported" >&6
+fi
 
 echo "$as_me:$LINENO: checking Haskell type for ptrdiff_t" >&5
 echo $ECHO_N "checking Haskell type for ptrdiff_t... $ECHO_C" >&6
 if test "${fptools_cv_htype_ptrdiff_t+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-  if test "$cross_compiling" = yes; then
-  fptools_cv_htype_ptrdiff_t=NotReallyATypeCross
+  fptools_cv_htype_sup_ptrdiff_t=yes;
+if test "$cross_compiling" = yes; then
+  fptools_cv_htype_ptrdiff_t=NotReallyATypeCross; fptools_cv_htype_sup_ptrdiff_t=no
 else
   cat >conftest.$ac_ext <<_ACEOF
 #line $LINENO "configure"
@@ -15694,25 +15773,31 @@ echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
 
 ( exit $ac_status )
-fptools_cv_htype_ptrdiff_t=NotReallyAType
+fptools_cv_htype_ptrdiff_t=NotReallyAType; fptools_cv_htype_sup_ptrdiff_t=no
 fi
 rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
- echo "$as_me:$LINENO: result: $fptools_cv_htype_ptrdiff_t" >&5
+ if test "$fptools_cv_htype_sup_ptrdiff_t" == yes; then
+  echo "$as_me:$LINENO: result: $fptools_cv_htype_ptrdiff_t" >&5
 echo "${ECHO_T}$fptools_cv_htype_ptrdiff_t" >&6
-cat >>confdefs.h <<_ACEOF
+  cat >>confdefs.h <<_ACEOF
 #define HTYPE_PTRDIFF_T $fptools_cv_htype_ptrdiff_t
 _ACEOF
 
+else
+  echo "$as_me:$LINENO: result: not supported" >&5
+echo "${ECHO_T}not supported" >&6
+fi
 
 echo "$as_me:$LINENO: checking Haskell type for size_t" >&5
 echo $ECHO_N "checking Haskell type for size_t... $ECHO_C" >&6
 if test "${fptools_cv_htype_size_t+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-  if test "$cross_compiling" = yes; then
-  fptools_cv_htype_size_t=NotReallyATypeCross
+  fptools_cv_htype_sup_size_t=yes;
+if test "$cross_compiling" = yes; then
+  fptools_cv_htype_size_t=NotReallyATypeCross; fptools_cv_htype_sup_size_t=no
 else
   cat >conftest.$ac_ext <<_ACEOF
 #line $LINENO "configure"
@@ -15808,25 +15893,31 @@ echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
 
 ( exit $ac_status )
-fptools_cv_htype_size_t=NotReallyAType
+fptools_cv_htype_size_t=NotReallyAType; fptools_cv_htype_sup_size_t=no
 fi
 rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
- echo "$as_me:$LINENO: result: $fptools_cv_htype_size_t" >&5
+ if test "$fptools_cv_htype_sup_size_t" == yes; then
+  echo "$as_me:$LINENO: result: $fptools_cv_htype_size_t" >&5
 echo "${ECHO_T}$fptools_cv_htype_size_t" >&6
-cat >>confdefs.h <<_ACEOF
+  cat >>confdefs.h <<_ACEOF
 #define HTYPE_SIZE_T $fptools_cv_htype_size_t
 _ACEOF
 
+else
+  echo "$as_me:$LINENO: result: not supported" >&5
+echo "${ECHO_T}not supported" >&6
+fi
 
 echo "$as_me:$LINENO: checking Haskell type for wchar_t" >&5
 echo $ECHO_N "checking Haskell type for wchar_t... $ECHO_C" >&6
 if test "${fptools_cv_htype_wchar_t+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-  if test "$cross_compiling" = yes; then
-  fptools_cv_htype_wchar_t=NotReallyATypeCross
+  fptools_cv_htype_sup_wchar_t=yes;
+if test "$cross_compiling" = yes; then
+  fptools_cv_htype_wchar_t=NotReallyATypeCross; fptools_cv_htype_sup_wchar_t=no
 else
   cat >conftest.$ac_ext <<_ACEOF
 #line $LINENO "configure"
@@ -15922,25 +16013,31 @@ echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
 
 ( exit $ac_status )
-fptools_cv_htype_wchar_t=NotReallyAType
+fptools_cv_htype_wchar_t=NotReallyAType; fptools_cv_htype_sup_wchar_t=no
 fi
 rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
- echo "$as_me:$LINENO: result: $fptools_cv_htype_wchar_t" >&5
+ if test "$fptools_cv_htype_sup_wchar_t" == yes; then
+  echo "$as_me:$LINENO: result: $fptools_cv_htype_wchar_t" >&5
 echo "${ECHO_T}$fptools_cv_htype_wchar_t" >&6
-cat >>confdefs.h <<_ACEOF
+  cat >>confdefs.h <<_ACEOF
 #define HTYPE_WCHAR_T $fptools_cv_htype_wchar_t
 _ACEOF
 
+else
+  echo "$as_me:$LINENO: result: not supported" >&5
+echo "${ECHO_T}not supported" >&6
+fi
 
 echo "$as_me:$LINENO: checking Haskell type for sig_atomic_t" >&5
 echo $ECHO_N "checking Haskell type for sig_atomic_t... $ECHO_C" >&6
 if test "${fptools_cv_htype_sig_atomic_t+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-  if test "$cross_compiling" = yes; then
-  fptools_cv_htype_sig_atomic_t=NotReallyATypeCross
+  fptools_cv_htype_sup_sig_atomic_t=yes;
+if test "$cross_compiling" = yes; then
+  fptools_cv_htype_sig_atomic_t=NotReallyATypeCross; fptools_cv_htype_sup_sig_atomic_t=no
 else
   cat >conftest.$ac_ext <<_ACEOF
 #line $LINENO "configure"
@@ -16041,20 +16138,26 @@ fi
 rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
- echo "$as_me:$LINENO: result: $fptools_cv_htype_sig_atomic_t" >&5
+ if test "$fptools_cv_htype_sup_sig_atomic_t" == yes; then
+  echo "$as_me:$LINENO: result: $fptools_cv_htype_sig_atomic_t" >&5
 echo "${ECHO_T}$fptools_cv_htype_sig_atomic_t" >&6
-cat >>confdefs.h <<_ACEOF
+  cat >>confdefs.h <<_ACEOF
 #define HTYPE_SIG_ATOMIC_T $fptools_cv_htype_sig_atomic_t
 _ACEOF
 
+else
+  echo "$as_me:$LINENO: result: not supported" >&5
+echo "${ECHO_T}not supported" >&6
+fi
 
 echo "$as_me:$LINENO: checking Haskell type for clock_t" >&5
 echo $ECHO_N "checking Haskell type for clock_t... $ECHO_C" >&6
 if test "${fptools_cv_htype_clock_t+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-  if test "$cross_compiling" = yes; then
-  fptools_cv_htype_clock_t=NotReallyATypeCross
+  fptools_cv_htype_sup_clock_t=yes;
+if test "$cross_compiling" = yes; then
+  fptools_cv_htype_clock_t=NotReallyATypeCross; fptools_cv_htype_sup_clock_t=no
 else
   cat >conftest.$ac_ext <<_ACEOF
 #line $LINENO "configure"
@@ -16150,25 +16253,31 @@ echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
 
 ( exit $ac_status )
-fptools_cv_htype_clock_t=NotReallyAType
+fptools_cv_htype_clock_t=NotReallyAType; fptools_cv_htype_sup_clock_t=no
 fi
 rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
- echo "$as_me:$LINENO: result: $fptools_cv_htype_clock_t" >&5
+ if test "$fptools_cv_htype_sup_clock_t" == yes; then
+  echo "$as_me:$LINENO: result: $fptools_cv_htype_clock_t" >&5
 echo "${ECHO_T}$fptools_cv_htype_clock_t" >&6
-cat >>confdefs.h <<_ACEOF
+  cat >>confdefs.h <<_ACEOF
 #define HTYPE_CLOCK_T $fptools_cv_htype_clock_t
 _ACEOF
 
+else
+  echo "$as_me:$LINENO: result: not supported" >&5
+echo "${ECHO_T}not supported" >&6
+fi
 
 echo "$as_me:$LINENO: checking Haskell type for time_t" >&5
 echo $ECHO_N "checking Haskell type for time_t... $ECHO_C" >&6
 if test "${fptools_cv_htype_time_t+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-  if test "$cross_compiling" = yes; then
-  fptools_cv_htype_time_t=NotReallyATypeCross
+  fptools_cv_htype_sup_time_t=yes;
+if test "$cross_compiling" = yes; then
+  fptools_cv_htype_time_t=NotReallyATypeCross; fptools_cv_htype_sup_time_t=no
 else
   cat >conftest.$ac_ext <<_ACEOF
 #line $LINENO "configure"
@@ -16264,25 +16373,31 @@ echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
 
 ( exit $ac_status )
-fptools_cv_htype_time_t=NotReallyAType
+fptools_cv_htype_time_t=NotReallyAType; fptools_cv_htype_sup_time_t=no
 fi
 rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
- echo "$as_me:$LINENO: result: $fptools_cv_htype_time_t" >&5
+ if test "$fptools_cv_htype_sup_time_t" == yes; then
+  echo "$as_me:$LINENO: result: $fptools_cv_htype_time_t" >&5
 echo "${ECHO_T}$fptools_cv_htype_time_t" >&6
-cat >>confdefs.h <<_ACEOF
+  cat >>confdefs.h <<_ACEOF
 #define HTYPE_TIME_T $fptools_cv_htype_time_t
 _ACEOF
 
+else
+  echo "$as_me:$LINENO: result: not supported" >&5
+echo "${ECHO_T}not supported" >&6
+fi
 
 echo "$as_me:$LINENO: checking Haskell type for dev_t" >&5
 echo $ECHO_N "checking Haskell type for dev_t... $ECHO_C" >&6
 if test "${fptools_cv_htype_dev_t+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-  if test "$cross_compiling" = yes; then
-  fptools_cv_htype_dev_t=NotReallyATypeCross
+  fptools_cv_htype_sup_dev_t=yes;
+if test "$cross_compiling" = yes; then
+  fptools_cv_htype_dev_t=NotReallyATypeCross; fptools_cv_htype_sup_dev_t=no
 else
   cat >conftest.$ac_ext <<_ACEOF
 #line $LINENO "configure"
@@ -16383,20 +16498,26 @@ fi
 rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
- echo "$as_me:$LINENO: result: $fptools_cv_htype_dev_t" >&5
+ if test "$fptools_cv_htype_sup_dev_t" == yes; then
+  echo "$as_me:$LINENO: result: $fptools_cv_htype_dev_t" >&5
 echo "${ECHO_T}$fptools_cv_htype_dev_t" >&6
-cat >>confdefs.h <<_ACEOF
+  cat >>confdefs.h <<_ACEOF
 #define HTYPE_DEV_T $fptools_cv_htype_dev_t
 _ACEOF
 
+else
+  echo "$as_me:$LINENO: result: not supported" >&5
+echo "${ECHO_T}not supported" >&6
+fi
 
 echo "$as_me:$LINENO: checking Haskell type for ino_t" >&5
 echo $ECHO_N "checking Haskell type for ino_t... $ECHO_C" >&6
 if test "${fptools_cv_htype_ino_t+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-  if test "$cross_compiling" = yes; then
-  fptools_cv_htype_ino_t=NotReallyATypeCross
+  fptools_cv_htype_sup_ino_t=yes;
+if test "$cross_compiling" = yes; then
+  fptools_cv_htype_ino_t=NotReallyATypeCross; fptools_cv_htype_sup_ino_t=no
 else
   cat >conftest.$ac_ext <<_ACEOF
 #line $LINENO "configure"
@@ -16492,25 +16613,31 @@ echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
 
 ( exit $ac_status )
-fptools_cv_htype_ino_t=NotReallyAType
+fptools_cv_htype_ino_t=NotReallyAType; fptools_cv_htype_sup_ino_t=no
 fi
 rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
- echo "$as_me:$LINENO: result: $fptools_cv_htype_ino_t" >&5
+ if test "$fptools_cv_htype_sup_ino_t" == yes; then
+  echo "$as_me:$LINENO: result: $fptools_cv_htype_ino_t" >&5
 echo "${ECHO_T}$fptools_cv_htype_ino_t" >&6
-cat >>confdefs.h <<_ACEOF
+  cat >>confdefs.h <<_ACEOF
 #define HTYPE_INO_T $fptools_cv_htype_ino_t
 _ACEOF
 
+else
+  echo "$as_me:$LINENO: result: not supported" >&5
+echo "${ECHO_T}not supported" >&6
+fi
 
 echo "$as_me:$LINENO: checking Haskell type for mode_t" >&5
 echo $ECHO_N "checking Haskell type for mode_t... $ECHO_C" >&6
 if test "${fptools_cv_htype_mode_t+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-  if test "$cross_compiling" = yes; then
-  fptools_cv_htype_mode_t=NotReallyATypeCross
+  fptools_cv_htype_sup_mode_t=yes;
+if test "$cross_compiling" = yes; then
+  fptools_cv_htype_mode_t=NotReallyATypeCross; fptools_cv_htype_sup_mode_t=no
 else
   cat >conftest.$ac_ext <<_ACEOF
 #line $LINENO "configure"
@@ -16606,25 +16733,31 @@ echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
 
 ( exit $ac_status )
-fptools_cv_htype_mode_t=NotReallyAType
+fptools_cv_htype_mode_t=NotReallyAType; fptools_cv_htype_sup_mode_t=no
 fi
 rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
- echo "$as_me:$LINENO: result: $fptools_cv_htype_mode_t" >&5
+ if test "$fptools_cv_htype_sup_mode_t" == yes; then
+  echo "$as_me:$LINENO: result: $fptools_cv_htype_mode_t" >&5
 echo "${ECHO_T}$fptools_cv_htype_mode_t" >&6
-cat >>confdefs.h <<_ACEOF
+  cat >>confdefs.h <<_ACEOF
 #define HTYPE_MODE_T $fptools_cv_htype_mode_t
 _ACEOF
 
+else
+  echo "$as_me:$LINENO: result: not supported" >&5
+echo "${ECHO_T}not supported" >&6
+fi
 
 echo "$as_me:$LINENO: checking Haskell type for off_t" >&5
 echo $ECHO_N "checking Haskell type for off_t... $ECHO_C" >&6
 if test "${fptools_cv_htype_off_t+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-  if test "$cross_compiling" = yes; then
-  fptools_cv_htype_off_t=NotReallyATypeCross
+  fptools_cv_htype_sup_off_t=yes;
+if test "$cross_compiling" = yes; then
+  fptools_cv_htype_off_t=NotReallyATypeCross; fptools_cv_htype_sup_off_t=no
 else
   cat >conftest.$ac_ext <<_ACEOF
 #line $LINENO "configure"
@@ -16720,25 +16853,31 @@ echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
 
 ( exit $ac_status )
-fptools_cv_htype_off_t=NotReallyAType
+fptools_cv_htype_off_t=NotReallyAType; fptools_cv_htype_sup_off_t=no
 fi
 rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
- echo "$as_me:$LINENO: result: $fptools_cv_htype_off_t" >&5
+ if test "$fptools_cv_htype_sup_off_t" == yes; then
+  echo "$as_me:$LINENO: result: $fptools_cv_htype_off_t" >&5
 echo "${ECHO_T}$fptools_cv_htype_off_t" >&6
-cat >>confdefs.h <<_ACEOF
+  cat >>confdefs.h <<_ACEOF
 #define HTYPE_OFF_T $fptools_cv_htype_off_t
 _ACEOF
 
+else
+  echo "$as_me:$LINENO: result: not supported" >&5
+echo "${ECHO_T}not supported" >&6
+fi
 
 echo "$as_me:$LINENO: checking Haskell type for pid_t" >&5
 echo $ECHO_N "checking Haskell type for pid_t... $ECHO_C" >&6
 if test "${fptools_cv_htype_pid_t+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-  if test "$cross_compiling" = yes; then
-  fptools_cv_htype_pid_t=NotReallyATypeCross
+  fptools_cv_htype_sup_pid_t=yes;
+if test "$cross_compiling" = yes; then
+  fptools_cv_htype_pid_t=NotReallyATypeCross; fptools_cv_htype_sup_pid_t=no
 else
   cat >conftest.$ac_ext <<_ACEOF
 #line $LINENO "configure"
@@ -16834,25 +16973,31 @@ echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
 
 ( exit $ac_status )
-fptools_cv_htype_pid_t=NotReallyAType
+fptools_cv_htype_pid_t=NotReallyAType; fptools_cv_htype_sup_pid_t=no
 fi
 rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
- echo "$as_me:$LINENO: result: $fptools_cv_htype_pid_t" >&5
+ if test "$fptools_cv_htype_sup_pid_t" == yes; then
+  echo "$as_me:$LINENO: result: $fptools_cv_htype_pid_t" >&5
 echo "${ECHO_T}$fptools_cv_htype_pid_t" >&6
-cat >>confdefs.h <<_ACEOF
+  cat >>confdefs.h <<_ACEOF
 #define HTYPE_PID_T $fptools_cv_htype_pid_t
 _ACEOF
 
+else
+  echo "$as_me:$LINENO: result: not supported" >&5
+echo "${ECHO_T}not supported" >&6
+fi
 
 echo "$as_me:$LINENO: checking Haskell type for gid_t" >&5
 echo $ECHO_N "checking Haskell type for gid_t... $ECHO_C" >&6
 if test "${fptools_cv_htype_gid_t+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-  if test "$cross_compiling" = yes; then
-  fptools_cv_htype_gid_t=NotReallyATypeCross
+  fptools_cv_htype_sup_gid_t=yes;
+if test "$cross_compiling" = yes; then
+  fptools_cv_htype_gid_t=NotReallyATypeCross; fptools_cv_htype_sup_gid_t=no
 else
   cat >conftest.$ac_ext <<_ACEOF
 #line $LINENO "configure"
@@ -16948,25 +17093,31 @@ echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
 
 ( exit $ac_status )
-fptools_cv_htype_gid_t=NotReallyAType
+fptools_cv_htype_gid_t=NotReallyAType; fptools_cv_htype_sup_gid_t=no
 fi
 rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
- echo "$as_me:$LINENO: result: $fptools_cv_htype_gid_t" >&5
+ if test "$fptools_cv_htype_sup_gid_t" == yes; then
+  echo "$as_me:$LINENO: result: $fptools_cv_htype_gid_t" >&5
 echo "${ECHO_T}$fptools_cv_htype_gid_t" >&6
-cat >>confdefs.h <<_ACEOF
+  cat >>confdefs.h <<_ACEOF
 #define HTYPE_GID_T $fptools_cv_htype_gid_t
 _ACEOF
 
+else
+  echo "$as_me:$LINENO: result: not supported" >&5
+echo "${ECHO_T}not supported" >&6
+fi
 
 echo "$as_me:$LINENO: checking Haskell type for uid_t" >&5
 echo $ECHO_N "checking Haskell type for uid_t... $ECHO_C" >&6
 if test "${fptools_cv_htype_uid_t+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-  if test "$cross_compiling" = yes; then
-  fptools_cv_htype_uid_t=NotReallyATypeCross
+  fptools_cv_htype_sup_uid_t=yes;
+if test "$cross_compiling" = yes; then
+  fptools_cv_htype_uid_t=NotReallyATypeCross; fptools_cv_htype_sup_uid_t=no
 else
   cat >conftest.$ac_ext <<_ACEOF
 #line $LINENO "configure"
@@ -17062,25 +17213,31 @@ echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
 
 ( exit $ac_status )
-fptools_cv_htype_uid_t=NotReallyAType
+fptools_cv_htype_uid_t=NotReallyAType; fptools_cv_htype_sup_uid_t=no
 fi
 rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
- echo "$as_me:$LINENO: result: $fptools_cv_htype_uid_t" >&5
+ if test "$fptools_cv_htype_sup_uid_t" == yes; then
+  echo "$as_me:$LINENO: result: $fptools_cv_htype_uid_t" >&5
 echo "${ECHO_T}$fptools_cv_htype_uid_t" >&6
-cat >>confdefs.h <<_ACEOF
+  cat >>confdefs.h <<_ACEOF
 #define HTYPE_UID_T $fptools_cv_htype_uid_t
 _ACEOF
 
+else
+  echo "$as_me:$LINENO: result: not supported" >&5
+echo "${ECHO_T}not supported" >&6
+fi
 
 echo "$as_me:$LINENO: checking Haskell type for cc_t" >&5
 echo $ECHO_N "checking Haskell type for cc_t... $ECHO_C" >&6
 if test "${fptools_cv_htype_cc_t+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-  if test "$cross_compiling" = yes; then
-  fptools_cv_htype_cc_t=NotReallyATypeCross
+  fptools_cv_htype_sup_cc_t=yes;
+if test "$cross_compiling" = yes; then
+  fptools_cv_htype_cc_t=NotReallyATypeCross; fptools_cv_htype_sup_cc_t=no
 else
   cat >conftest.$ac_ext <<_ACEOF
 #line $LINENO "configure"
@@ -17176,25 +17333,31 @@ echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
 
 ( exit $ac_status )
-fptools_cv_htype_cc_t=NotReallyAType
+fptools_cv_htype_cc_t=NotReallyAType; fptools_cv_htype_sup_cc_t=no
 fi
 rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
- echo "$as_me:$LINENO: result: $fptools_cv_htype_cc_t" >&5
+ if test "$fptools_cv_htype_sup_cc_t" == yes; then
+  echo "$as_me:$LINENO: result: $fptools_cv_htype_cc_t" >&5
 echo "${ECHO_T}$fptools_cv_htype_cc_t" >&6
-cat >>confdefs.h <<_ACEOF
+  cat >>confdefs.h <<_ACEOF
 #define HTYPE_CC_T $fptools_cv_htype_cc_t
 _ACEOF
 
+else
+  echo "$as_me:$LINENO: result: not supported" >&5
+echo "${ECHO_T}not supported" >&6
+fi
 
 echo "$as_me:$LINENO: checking Haskell type for speed_t" >&5
 echo $ECHO_N "checking Haskell type for speed_t... $ECHO_C" >&6
 if test "${fptools_cv_htype_speed_t+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-  if test "$cross_compiling" = yes; then
-  fptools_cv_htype_speed_t=NotReallyATypeCross
+  fptools_cv_htype_sup_speed_t=yes;
+if test "$cross_compiling" = yes; then
+  fptools_cv_htype_speed_t=NotReallyATypeCross; fptools_cv_htype_sup_speed_t=no
 else
   cat >conftest.$ac_ext <<_ACEOF
 #line $LINENO "configure"
@@ -17290,25 +17453,31 @@ echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
 
 ( exit $ac_status )
-fptools_cv_htype_speed_t=NotReallyAType
+fptools_cv_htype_speed_t=NotReallyAType; fptools_cv_htype_sup_speed_t=no
 fi
 rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
- echo "$as_me:$LINENO: result: $fptools_cv_htype_speed_t" >&5
+ if test "$fptools_cv_htype_sup_speed_t" == yes; then
+  echo "$as_me:$LINENO: result: $fptools_cv_htype_speed_t" >&5
 echo "${ECHO_T}$fptools_cv_htype_speed_t" >&6
-cat >>confdefs.h <<_ACEOF
+  cat >>confdefs.h <<_ACEOF
 #define HTYPE_SPEED_T $fptools_cv_htype_speed_t
 _ACEOF
 
+else
+  echo "$as_me:$LINENO: result: not supported" >&5
+echo "${ECHO_T}not supported" >&6
+fi
 
 echo "$as_me:$LINENO: checking Haskell type for tcflag_t" >&5
 echo $ECHO_N "checking Haskell type for tcflag_t... $ECHO_C" >&6
 if test "${fptools_cv_htype_tcflag_t+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-  if test "$cross_compiling" = yes; then
-  fptools_cv_htype_tcflag_t=NotReallyATypeCross
+  fptools_cv_htype_sup_tcflag_t=yes;
+if test "$cross_compiling" = yes; then
+  fptools_cv_htype_tcflag_t=NotReallyATypeCross; fptools_cv_htype_sup_tcflag_t=no
 else
   cat >conftest.$ac_ext <<_ACEOF
 #line $LINENO "configure"
@@ -17404,25 +17573,31 @@ echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
 
 ( exit $ac_status )
-fptools_cv_htype_tcflag_t=NotReallyAType
+fptools_cv_htype_tcflag_t=NotReallyAType; fptools_cv_htype_sup_tcflag_t=no
 fi
 rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
- echo "$as_me:$LINENO: result: $fptools_cv_htype_tcflag_t" >&5
+ if test "$fptools_cv_htype_sup_tcflag_t" == yes; then
+  echo "$as_me:$LINENO: result: $fptools_cv_htype_tcflag_t" >&5
 echo "${ECHO_T}$fptools_cv_htype_tcflag_t" >&6
-cat >>confdefs.h <<_ACEOF
+  cat >>confdefs.h <<_ACEOF
 #define HTYPE_TCFLAG_T $fptools_cv_htype_tcflag_t
 _ACEOF
 
+else
+  echo "$as_me:$LINENO: result: not supported" >&5
+echo "${ECHO_T}not supported" >&6
+fi
 
 echo "$as_me:$LINENO: checking Haskell type for nlink_t" >&5
 echo $ECHO_N "checking Haskell type for nlink_t... $ECHO_C" >&6
 if test "${fptools_cv_htype_nlink_t+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-  if test "$cross_compiling" = yes; then
-  fptools_cv_htype_nlink_t=NotReallyATypeCross
+  fptools_cv_htype_sup_nlink_t=yes;
+if test "$cross_compiling" = yes; then
+  fptools_cv_htype_nlink_t=NotReallyATypeCross; fptools_cv_htype_sup_nlink_t=no
 else
   cat >conftest.$ac_ext <<_ACEOF
 #line $LINENO "configure"
@@ -17518,25 +17693,31 @@ echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
 
 ( exit $ac_status )
-fptools_cv_htype_nlink_t=NotReallyAType
+fptools_cv_htype_nlink_t=NotReallyAType; fptools_cv_htype_sup_nlink_t=no
 fi
 rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
- echo "$as_me:$LINENO: result: $fptools_cv_htype_nlink_t" >&5
+ if test "$fptools_cv_htype_sup_nlink_t" == yes; then
+  echo "$as_me:$LINENO: result: $fptools_cv_htype_nlink_t" >&5
 echo "${ECHO_T}$fptools_cv_htype_nlink_t" >&6
-cat >>confdefs.h <<_ACEOF
+  cat >>confdefs.h <<_ACEOF
 #define HTYPE_NLINK_T $fptools_cv_htype_nlink_t
 _ACEOF
 
+else
+  echo "$as_me:$LINENO: result: not supported" >&5
+echo "${ECHO_T}not supported" >&6
+fi
 
 echo "$as_me:$LINENO: checking Haskell type for ssize_t" >&5
 echo $ECHO_N "checking Haskell type for ssize_t... $ECHO_C" >&6
 if test "${fptools_cv_htype_ssize_t+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-  if test "$cross_compiling" = yes; then
-  fptools_cv_htype_ssize_t=NotReallyATypeCross
+  fptools_cv_htype_sup_ssize_t=yes;
+if test "$cross_compiling" = yes; then
+  fptools_cv_htype_ssize_t=NotReallyATypeCross; fptools_cv_htype_sup_ssize_t=no
 else
   cat >conftest.$ac_ext <<_ACEOF
 #line $LINENO "configure"
@@ -17632,25 +17813,31 @@ echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
 
 ( exit $ac_status )
-fptools_cv_htype_ssize_t=NotReallyAType
+fptools_cv_htype_ssize_t=NotReallyAType; fptools_cv_htype_sup_ssize_t=no
 fi
 rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
- echo "$as_me:$LINENO: result: $fptools_cv_htype_ssize_t" >&5
+ if test "$fptools_cv_htype_sup_ssize_t" == yes; then
+  echo "$as_me:$LINENO: result: $fptools_cv_htype_ssize_t" >&5
 echo "${ECHO_T}$fptools_cv_htype_ssize_t" >&6
-cat >>confdefs.h <<_ACEOF
+  cat >>confdefs.h <<_ACEOF
 #define HTYPE_SSIZE_T $fptools_cv_htype_ssize_t
 _ACEOF
 
+else
+  echo "$as_me:$LINENO: result: not supported" >&5
+echo "${ECHO_T}not supported" >&6
+fi
 
 echo "$as_me:$LINENO: checking Haskell type for rlim_t" >&5
 echo $ECHO_N "checking Haskell type for rlim_t... $ECHO_C" >&6
 if test "${fptools_cv_htype_rlim_t+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-  if test "$cross_compiling" = yes; then
-  fptools_cv_htype_rlim_t=NotReallyATypeCross
+  fptools_cv_htype_sup_rlim_t=yes;
+if test "$cross_compiling" = yes; then
+  fptools_cv_htype_rlim_t=NotReallyATypeCross; fptools_cv_htype_sup_rlim_t=no
 else
   cat >conftest.$ac_ext <<_ACEOF
 #line $LINENO "configure"
@@ -17746,17 +17933,22 @@ echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
 
 ( exit $ac_status )
-fptools_cv_htype_rlim_t=NotReallyAType
+fptools_cv_htype_rlim_t=NotReallyAType; fptools_cv_htype_sup_rlim_t=no
 fi
 rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
- echo "$as_me:$LINENO: result: $fptools_cv_htype_rlim_t" >&5
+ if test "$fptools_cv_htype_sup_rlim_t" == yes; then
+  echo "$as_me:$LINENO: result: $fptools_cv_htype_rlim_t" >&5
 echo "${ECHO_T}$fptools_cv_htype_rlim_t" >&6
-cat >>confdefs.h <<_ACEOF
+  cat >>confdefs.h <<_ACEOF
 #define HTYPE_RLIM_T $fptools_cv_htype_rlim_t
 _ACEOF
 
+else
+  echo "$as_me:$LINENO: result: not supported" >&5
+echo "${ECHO_T}not supported" >&6
+fi
 
 
 if test x"$enable_hopengl" != x"no"; then
@@ -17765,8 +17957,9 @@ echo $ECHO_N "checking Haskell type for GLboolean... $ECHO_C" >&6
 if test "${fptools_cv_htype_GLboolean+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-  if test "$cross_compiling" = yes; then
-  fptools_cv_htype_GLboolean=NotReallyATypeCross
+  fptools_cv_htype_sup_GLboolean=yes;
+if test "$cross_compiling" = yes; then
+  fptools_cv_htype_GLboolean=NotReallyATypeCross; fptools_cv_htype_sup_GLboolean=no
 else
   cat >conftest.$ac_ext <<_ACEOF
 #line $LINENO "configure"
@@ -17862,25 +18055,31 @@ echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
 
 ( exit $ac_status )
-fptools_cv_htype_GLboolean=NotReallyAType
+fptools_cv_htype_GLboolean=NotReallyAType; fptools_cv_htype_sup_GLboolean=no
 fi
 rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
- echo "$as_me:$LINENO: result: $fptools_cv_htype_GLboolean" >&5
+ if test "$fptools_cv_htype_sup_GLboolean" == yes; then
+  echo "$as_me:$LINENO: result: $fptools_cv_htype_GLboolean" >&5
 echo "${ECHO_T}$fptools_cv_htype_GLboolean" >&6
-cat >>confdefs.h <<_ACEOF
+  cat >>confdefs.h <<_ACEOF
 #define HTYPE_GLBOOLEAN $fptools_cv_htype_GLboolean
 _ACEOF
 
+else
+  echo "$as_me:$LINENO: result: not supported" >&5
+echo "${ECHO_T}not supported" >&6
+fi
 
 echo "$as_me:$LINENO: checking Haskell type for GLbyte" >&5
 echo $ECHO_N "checking Haskell type for GLbyte... $ECHO_C" >&6
 if test "${fptools_cv_htype_GLbyte+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-  if test "$cross_compiling" = yes; then
-  fptools_cv_htype_GLbyte=NotReallyATypeCross
+  fptools_cv_htype_sup_GLbyte=yes;
+if test "$cross_compiling" = yes; then
+  fptools_cv_htype_GLbyte=NotReallyATypeCross; fptools_cv_htype_sup_GLbyte=no
 else
   cat >conftest.$ac_ext <<_ACEOF
 #line $LINENO "configure"
@@ -17976,25 +18175,31 @@ echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
 
 ( exit $ac_status )
-fptools_cv_htype_GLbyte=NotReallyAType
+fptools_cv_htype_GLbyte=NotReallyAType; fptools_cv_htype_sup_GLbyte=no
 fi
 rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
- echo "$as_me:$LINENO: result: $fptools_cv_htype_GLbyte" >&5
+ if test "$fptools_cv_htype_sup_GLbyte" == yes; then
+  echo "$as_me:$LINENO: result: $fptools_cv_htype_GLbyte" >&5
 echo "${ECHO_T}$fptools_cv_htype_GLbyte" >&6
-cat >>confdefs.h <<_ACEOF
+  cat >>confdefs.h <<_ACEOF
 #define HTYPE_GLBYTE $fptools_cv_htype_GLbyte
 _ACEOF
 
+else
+  echo "$as_me:$LINENO: result: not supported" >&5
+echo "${ECHO_T}not supported" >&6
+fi
 
 echo "$as_me:$LINENO: checking Haskell type for GLubyte" >&5
 echo $ECHO_N "checking Haskell type for GLubyte... $ECHO_C" >&6
 if test "${fptools_cv_htype_GLubyte+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-  if test "$cross_compiling" = yes; then
-  fptools_cv_htype_GLubyte=NotReallyATypeCross
+  fptools_cv_htype_sup_GLubyte=yes;
+if test "$cross_compiling" = yes; then
+  fptools_cv_htype_GLubyte=NotReallyATypeCross; fptools_cv_htype_sup_GLubyte=no
 else
   cat >conftest.$ac_ext <<_ACEOF
 #line $LINENO "configure"
@@ -18090,25 +18295,31 @@ echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
 
 ( exit $ac_status )
-fptools_cv_htype_GLubyte=NotReallyAType
+fptools_cv_htype_GLubyte=NotReallyAType; fptools_cv_htype_sup_GLubyte=no
 fi
 rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
- echo "$as_me:$LINENO: result: $fptools_cv_htype_GLubyte" >&5
+ if test "$fptools_cv_htype_sup_GLubyte" == yes; then
+  echo "$as_me:$LINENO: result: $fptools_cv_htype_GLubyte" >&5
 echo "${ECHO_T}$fptools_cv_htype_GLubyte" >&6
-cat >>confdefs.h <<_ACEOF
+  cat >>confdefs.h <<_ACEOF
 #define HTYPE_GLUBYTE $fptools_cv_htype_GLubyte
 _ACEOF
 
+else
+  echo "$as_me:$LINENO: result: not supported" >&5
+echo "${ECHO_T}not supported" >&6
+fi
 
 echo "$as_me:$LINENO: checking Haskell type for GLshort" >&5
 echo $ECHO_N "checking Haskell type for GLshort... $ECHO_C" >&6
 if test "${fptools_cv_htype_GLshort+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-  if test "$cross_compiling" = yes; then
-  fptools_cv_htype_GLshort=NotReallyATypeCross
+  fptools_cv_htype_sup_GLshort=yes;
+if test "$cross_compiling" = yes; then
+  fptools_cv_htype_GLshort=NotReallyATypeCross; fptools_cv_htype_sup_GLshort=no
 else
   cat >conftest.$ac_ext <<_ACEOF
 #line $LINENO "configure"
@@ -18204,25 +18415,31 @@ echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
 
 ( exit $ac_status )
-fptools_cv_htype_GLshort=NotReallyAType
+fptools_cv_htype_GLshort=NotReallyAType; fptools_cv_htype_sup_GLshort=no
 fi
 rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
- echo "$as_me:$LINENO: result: $fptools_cv_htype_GLshort" >&5
+ if test "$fptools_cv_htype_sup_GLshort" == yes; then
+  echo "$as_me:$LINENO: result: $fptools_cv_htype_GLshort" >&5
 echo "${ECHO_T}$fptools_cv_htype_GLshort" >&6
-cat >>confdefs.h <<_ACEOF
+  cat >>confdefs.h <<_ACEOF
 #define HTYPE_GLSHORT $fptools_cv_htype_GLshort
 _ACEOF
 
+else
+  echo "$as_me:$LINENO: result: not supported" >&5
+echo "${ECHO_T}not supported" >&6
+fi
 
 echo "$as_me:$LINENO: checking Haskell type for GLushort" >&5
 echo $ECHO_N "checking Haskell type for GLushort... $ECHO_C" >&6
 if test "${fptools_cv_htype_GLushort+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-  if test "$cross_compiling" = yes; then
-  fptools_cv_htype_GLushort=NotReallyATypeCross
+  fptools_cv_htype_sup_GLushort=yes;
+if test "$cross_compiling" = yes; then
+  fptools_cv_htype_GLushort=NotReallyATypeCross; fptools_cv_htype_sup_GLushort=no
 else
   cat >conftest.$ac_ext <<_ACEOF
 #line $LINENO "configure"
@@ -18318,25 +18535,31 @@ echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
 
 ( exit $ac_status )
-fptools_cv_htype_GLushort=NotReallyAType
+fptools_cv_htype_GLushort=NotReallyAType; fptools_cv_htype_sup_GLushort=no
 fi
 rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
- echo "$as_me:$LINENO: result: $fptools_cv_htype_GLushort" >&5
+ if test "$fptools_cv_htype_sup_GLushort" == yes; then
+  echo "$as_me:$LINENO: result: $fptools_cv_htype_GLushort" >&5
 echo "${ECHO_T}$fptools_cv_htype_GLushort" >&6
-cat >>confdefs.h <<_ACEOF
+  cat >>confdefs.h <<_ACEOF
 #define HTYPE_GLUSHORT $fptools_cv_htype_GLushort
 _ACEOF
 
+else
+  echo "$as_me:$LINENO: result: not supported" >&5
+echo "${ECHO_T}not supported" >&6
+fi
 
 echo "$as_me:$LINENO: checking Haskell type for GLint" >&5
 echo $ECHO_N "checking Haskell type for GLint... $ECHO_C" >&6
 if test "${fptools_cv_htype_GLint+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-  if test "$cross_compiling" = yes; then
-  fptools_cv_htype_GLint=NotReallyATypeCross
+  fptools_cv_htype_sup_GLint=yes;
+if test "$cross_compiling" = yes; then
+  fptools_cv_htype_GLint=NotReallyATypeCross; fptools_cv_htype_sup_GLint=no
 else
   cat >conftest.$ac_ext <<_ACEOF
 #line $LINENO "configure"
@@ -18432,25 +18655,31 @@ echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
 
 ( exit $ac_status )
-fptools_cv_htype_GLint=NotReallyAType
+fptools_cv_htype_GLint=NotReallyAType; fptools_cv_htype_sup_GLint=no
 fi
 rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
- echo "$as_me:$LINENO: result: $fptools_cv_htype_GLint" >&5
+ if test "$fptools_cv_htype_sup_GLint" == yes; then
+  echo "$as_me:$LINENO: result: $fptools_cv_htype_GLint" >&5
 echo "${ECHO_T}$fptools_cv_htype_GLint" >&6
-cat >>confdefs.h <<_ACEOF
+  cat >>confdefs.h <<_ACEOF
 #define HTYPE_GLINT $fptools_cv_htype_GLint
 _ACEOF
 
+else
+  echo "$as_me:$LINENO: result: not supported" >&5
+echo "${ECHO_T}not supported" >&6
+fi
 
 echo "$as_me:$LINENO: checking Haskell type for GLuint" >&5
 echo $ECHO_N "checking Haskell type for GLuint... $ECHO_C" >&6
 if test "${fptools_cv_htype_GLuint+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-  if test "$cross_compiling" = yes; then
-  fptools_cv_htype_GLuint=NotReallyATypeCross
+  fptools_cv_htype_sup_GLuint=yes;
+if test "$cross_compiling" = yes; then
+  fptools_cv_htype_GLuint=NotReallyATypeCross; fptools_cv_htype_sup_GLuint=no
 else
   cat >conftest.$ac_ext <<_ACEOF
 #line $LINENO "configure"
@@ -18546,25 +18775,31 @@ echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
 
 ( exit $ac_status )
-fptools_cv_htype_GLuint=NotReallyAType
+fptools_cv_htype_GLuint=NotReallyAType; fptools_cv_htype_sup_GLuint=no
 fi
 rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
- echo "$as_me:$LINENO: result: $fptools_cv_htype_GLuint" >&5
+ if test "$fptools_cv_htype_sup_GLuint" == yes; then
+  echo "$as_me:$LINENO: result: $fptools_cv_htype_GLuint" >&5
 echo "${ECHO_T}$fptools_cv_htype_GLuint" >&6
-cat >>confdefs.h <<_ACEOF
+  cat >>confdefs.h <<_ACEOF
 #define HTYPE_GLUINT $fptools_cv_htype_GLuint
 _ACEOF
 
+else
+  echo "$as_me:$LINENO: result: not supported" >&5
+echo "${ECHO_T}not supported" >&6
+fi
 
 echo "$as_me:$LINENO: checking Haskell type for GLsizei" >&5
 echo $ECHO_N "checking Haskell type for GLsizei... $ECHO_C" >&6
 if test "${fptools_cv_htype_GLsizei+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-  if test "$cross_compiling" = yes; then
-  fptools_cv_htype_GLsizei=NotReallyATypeCross
+  fptools_cv_htype_sup_GLsizei=yes;
+if test "$cross_compiling" = yes; then
+  fptools_cv_htype_GLsizei=NotReallyATypeCross; fptools_cv_htype_sup_GLsizei=no
 else
   cat >conftest.$ac_ext <<_ACEOF
 #line $LINENO "configure"
@@ -18660,25 +18895,31 @@ echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
 
 ( exit $ac_status )
-fptools_cv_htype_GLsizei=NotReallyAType
+fptools_cv_htype_GLsizei=NotReallyAType; fptools_cv_htype_sup_GLsizei=no
 fi
 rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
- echo "$as_me:$LINENO: result: $fptools_cv_htype_GLsizei" >&5
+ if test "$fptools_cv_htype_sup_GLsizei" == yes; then
+  echo "$as_me:$LINENO: result: $fptools_cv_htype_GLsizei" >&5
 echo "${ECHO_T}$fptools_cv_htype_GLsizei" >&6
-cat >>confdefs.h <<_ACEOF
+  cat >>confdefs.h <<_ACEOF
 #define HTYPE_GLSIZEI $fptools_cv_htype_GLsizei
 _ACEOF
 
+else
+  echo "$as_me:$LINENO: result: not supported" >&5
+echo "${ECHO_T}not supported" >&6
+fi
 
 echo "$as_me:$LINENO: checking Haskell type for GLenum" >&5
 echo $ECHO_N "checking Haskell type for GLenum... $ECHO_C" >&6
 if test "${fptools_cv_htype_GLenum+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-  if test "$cross_compiling" = yes; then
-  fptools_cv_htype_GLenum=NotReallyATypeCross
+  fptools_cv_htype_sup_GLenum=yes;
+if test "$cross_compiling" = yes; then
+  fptools_cv_htype_GLenum=NotReallyATypeCross; fptools_cv_htype_sup_GLenum=no
 else
   cat >conftest.$ac_ext <<_ACEOF
 #line $LINENO "configure"
@@ -18774,25 +19015,31 @@ echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
 
 ( exit $ac_status )
-fptools_cv_htype_GLenum=NotReallyAType
+fptools_cv_htype_GLenum=NotReallyAType; fptools_cv_htype_sup_GLenum=no
 fi
 rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
- echo "$as_me:$LINENO: result: $fptools_cv_htype_GLenum" >&5
+ if test "$fptools_cv_htype_sup_GLenum" == yes; then
+  echo "$as_me:$LINENO: result: $fptools_cv_htype_GLenum" >&5
 echo "${ECHO_T}$fptools_cv_htype_GLenum" >&6
-cat >>confdefs.h <<_ACEOF
+  cat >>confdefs.h <<_ACEOF
 #define HTYPE_GLENUM $fptools_cv_htype_GLenum
 _ACEOF
 
+else
+  echo "$as_me:$LINENO: result: not supported" >&5
+echo "${ECHO_T}not supported" >&6
+fi
 
 echo "$as_me:$LINENO: checking Haskell type for GLbitfield" >&5
 echo $ECHO_N "checking Haskell type for GLbitfield... $ECHO_C" >&6
 if test "${fptools_cv_htype_GLbitfield+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-  if test "$cross_compiling" = yes; then
-  fptools_cv_htype_GLbitfield=NotReallyATypeCross
+  fptools_cv_htype_sup_GLbitfield=yes;
+if test "$cross_compiling" = yes; then
+  fptools_cv_htype_GLbitfield=NotReallyATypeCross; fptools_cv_htype_sup_GLbitfield=no
 else
   cat >conftest.$ac_ext <<_ACEOF
 #line $LINENO "configure"
@@ -18888,25 +19135,31 @@ echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
 
 ( exit $ac_status )
-fptools_cv_htype_GLbitfield=NotReallyAType
+fptools_cv_htype_GLbitfield=NotReallyAType; fptools_cv_htype_sup_GLbitfield=no
 fi
 rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
- echo "$as_me:$LINENO: result: $fptools_cv_htype_GLbitfield" >&5
+ if test "$fptools_cv_htype_sup_GLbitfield" == yes; then
+  echo "$as_me:$LINENO: result: $fptools_cv_htype_GLbitfield" >&5
 echo "${ECHO_T}$fptools_cv_htype_GLbitfield" >&6
-cat >>confdefs.h <<_ACEOF
+  cat >>confdefs.h <<_ACEOF
 #define HTYPE_GLBITFIELD $fptools_cv_htype_GLbitfield
 _ACEOF
 
+else
+  echo "$as_me:$LINENO: result: not supported" >&5
+echo "${ECHO_T}not supported" >&6
+fi
 
 echo "$as_me:$LINENO: checking Haskell type for GLfloat" >&5
 echo $ECHO_N "checking Haskell type for GLfloat... $ECHO_C" >&6
 if test "${fptools_cv_htype_GLfloat+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-  if test "$cross_compiling" = yes; then
-  fptools_cv_htype_GLfloat=NotReallyATypeCross
+  fptools_cv_htype_sup_GLfloat=yes;
+if test "$cross_compiling" = yes; then
+  fptools_cv_htype_GLfloat=NotReallyATypeCross; fptools_cv_htype_sup_GLfloat=no
 else
   cat >conftest.$ac_ext <<_ACEOF
 #line $LINENO "configure"
@@ -19002,25 +19255,31 @@ echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
 
 ( exit $ac_status )
-fptools_cv_htype_GLfloat=NotReallyAType
+fptools_cv_htype_GLfloat=NotReallyAType; fptools_cv_htype_sup_GLfloat=no
 fi
 rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
- echo "$as_me:$LINENO: result: $fptools_cv_htype_GLfloat" >&5
+ if test "$fptools_cv_htype_sup_GLfloat" == yes; then
+  echo "$as_me:$LINENO: result: $fptools_cv_htype_GLfloat" >&5
 echo "${ECHO_T}$fptools_cv_htype_GLfloat" >&6
-cat >>confdefs.h <<_ACEOF
+  cat >>confdefs.h <<_ACEOF
 #define HTYPE_GLFLOAT $fptools_cv_htype_GLfloat
 _ACEOF
 
+else
+  echo "$as_me:$LINENO: result: not supported" >&5
+echo "${ECHO_T}not supported" >&6
+fi
 
 echo "$as_me:$LINENO: checking Haskell type for GLclampf" >&5
 echo $ECHO_N "checking Haskell type for GLclampf... $ECHO_C" >&6
 if test "${fptools_cv_htype_GLclampf+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-  if test "$cross_compiling" = yes; then
-  fptools_cv_htype_GLclampf=NotReallyATypeCross
+  fptools_cv_htype_sup_GLclampf=yes;
+if test "$cross_compiling" = yes; then
+  fptools_cv_htype_GLclampf=NotReallyATypeCross; fptools_cv_htype_sup_GLclampf=no
 else
   cat >conftest.$ac_ext <<_ACEOF
 #line $LINENO "configure"
@@ -19116,25 +19375,31 @@ echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
 
 ( exit $ac_status )
-fptools_cv_htype_GLclampf=NotReallyAType
+fptools_cv_htype_GLclampf=NotReallyAType; fptools_cv_htype_sup_GLclampf=no
 fi
 rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
- echo "$as_me:$LINENO: result: $fptools_cv_htype_GLclampf" >&5
+ if test "$fptools_cv_htype_sup_GLclampf" == yes; then
+  echo "$as_me:$LINENO: result: $fptools_cv_htype_GLclampf" >&5
 echo "${ECHO_T}$fptools_cv_htype_GLclampf" >&6
-cat >>confdefs.h <<_ACEOF
+  cat >>confdefs.h <<_ACEOF
 #define HTYPE_GLCLAMPF $fptools_cv_htype_GLclampf
 _ACEOF
 
+else
+  echo "$as_me:$LINENO: result: not supported" >&5
+echo "${ECHO_T}not supported" >&6
+fi
 
 echo "$as_me:$LINENO: checking Haskell type for GLdouble" >&5
 echo $ECHO_N "checking Haskell type for GLdouble... $ECHO_C" >&6
 if test "${fptools_cv_htype_GLdouble+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-  if test "$cross_compiling" = yes; then
-  fptools_cv_htype_GLdouble=NotReallyATypeCross
+  fptools_cv_htype_sup_GLdouble=yes;
+if test "$cross_compiling" = yes; then
+  fptools_cv_htype_GLdouble=NotReallyATypeCross; fptools_cv_htype_sup_GLdouble=no
 else
   cat >conftest.$ac_ext <<_ACEOF
 #line $LINENO "configure"
@@ -19230,25 +19495,31 @@ echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
 
 ( exit $ac_status )
-fptools_cv_htype_GLdouble=NotReallyAType
+fptools_cv_htype_GLdouble=NotReallyAType; fptools_cv_htype_sup_GLdouble=no
 fi
 rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
- echo "$as_me:$LINENO: result: $fptools_cv_htype_GLdouble" >&5
+ if test "$fptools_cv_htype_sup_GLdouble" == yes; then
+  echo "$as_me:$LINENO: result: $fptools_cv_htype_GLdouble" >&5
 echo "${ECHO_T}$fptools_cv_htype_GLdouble" >&6
-cat >>confdefs.h <<_ACEOF
+  cat >>confdefs.h <<_ACEOF
 #define HTYPE_GLDOUBLE $fptools_cv_htype_GLdouble
 _ACEOF
 
+else
+  echo "$as_me:$LINENO: result: not supported" >&5
+echo "${ECHO_T}not supported" >&6
+fi
 
 echo "$as_me:$LINENO: checking Haskell type for GLclampd" >&5
 echo $ECHO_N "checking Haskell type for GLclampd... $ECHO_C" >&6
 if test "${fptools_cv_htype_GLclampd+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-  if test "$cross_compiling" = yes; then
-  fptools_cv_htype_GLclampd=NotReallyATypeCross
+  fptools_cv_htype_sup_GLclampd=yes;
+if test "$cross_compiling" = yes; then
+  fptools_cv_htype_GLclampd=NotReallyATypeCross; fptools_cv_htype_sup_GLclampd=no
 else
   cat >conftest.$ac_ext <<_ACEOF
 #line $LINENO "configure"
@@ -19344,17 +19615,22 @@ echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
 
 ( exit $ac_status )
-fptools_cv_htype_GLclampd=NotReallyAType
+fptools_cv_htype_GLclampd=NotReallyAType; fptools_cv_htype_sup_GLclampd=no
 fi
 rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
- echo "$as_me:$LINENO: result: $fptools_cv_htype_GLclampd" >&5
+ if test "$fptools_cv_htype_sup_GLclampd" == yes; then
+  echo "$as_me:$LINENO: result: $fptools_cv_htype_GLclampd" >&5
 echo "${ECHO_T}$fptools_cv_htype_GLclampd" >&6
-cat >>confdefs.h <<_ACEOF
+  cat >>confdefs.h <<_ACEOF
 #define HTYPE_GLCLAMPD $fptools_cv_htype_GLclampd
 _ACEOF
 
+else
+  echo "$as_me:$LINENO: result: not supported" >&5
+echo "${ECHO_T}not supported" >&6
+fi
 
 fi
 
@@ -19492,7 +19768,7 @@ unset fptools_check_cconst_result
 ac_save_LIBS="$LIBS"
 LIBS=;
 cat > conftest.$ac_ext <<EOF
-#line 19495 "configure"
+#line 19771 "configure"
 #include "confdefs.h"
 
 #if HAVE_WINDOWS_H
@@ -19533,7 +19809,7 @@ fi
 ac_save_LIBS="$LIBS"
 LIBS=;
 cat > conftest.$ac_ext <<EOF
-#line 19536 "configure"
+#line 19812 "configure"
 #include "confdefs.h"
 
 #if HAVE_WINDOWS_H
