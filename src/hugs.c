@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.45 $
- * $Date: 2001/08/20 13:24:34 $
+ * $Revision: 1.46 $
+ * $Date: 2001/09/19 17:21:07 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -2173,7 +2173,7 @@ String argv[]; {
                           startEvaluatorThread();
 			  loopInBackground();
 #else
-                          evaluator();
+			  evaluator();
 #endif
 			  break;
 	    case TYPEOF : 
@@ -2332,8 +2332,13 @@ Int l; {
     stopAnyPrinting();
     FPrintf(errorStream,"ERROR");
 
+    /*
+     * Encapsulating the filename portion inside of d-quotes makes it
+     * a tad easier for an Emacs-mode to decipher the location of the error.
+     * -- sof 9/01.
+     */
     if (scriptFile) {
- 	FPrintf(errorStream," %s",scriptFile);
+ 	FPrintf(errorStream," \"%s\"",scriptFile);
 	setLastEdit(scriptFile,l);
  	if (l) FPrintf(errorStream,":%d",l);
 	scriptFile = 0;
