@@ -40,9 +40,12 @@ build_os=[`echo $BuildPlatform | sed 's/^\([^-]*\)-\([^-]*\)-\([^-]*\).*/\3/'`]
 AC_DEFINE_UNQUOTED(HOST_ARCH, "$host_cpu")
 AC_DEFINE_UNQUOTED(HOST_OS, "$host_os")
 
-HostPlatform_CPP=`echo $HostPlatform | sed 's/-/_/g'`
-TargetPlatform_CPP=`echo $TargetPlatform | sed 's/-/_/g'`
-BuildPlatform_CPP=`echo $BuildPlatform | sed 's/-/_/g'`
+# ToDo: We should probably use AS_TR_CPP here, but this changes case, too, and
+# I'm a bit reluctant to do this without closer inspection of the Hugs code.
+fp_tr_cpp="sed s%[[^_abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789]]%_%g"
+HostPlatform_CPP=`echo $HostPlatform | $fp_tr_cpp`
+TargetPlatform_CPP=`echo $TargetPlatform | $fp_tr_cpp`
+BuildPlatform_CPP=`echo $BuildPlatform | $fp_tr_cpp`
 
 AC_SUBST(HostPlatform,   $HostPlatform_CPP)
 AC_SUBST(TargetPlatform, $TargetPlatform_CPP)
