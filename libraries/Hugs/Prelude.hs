@@ -1123,13 +1123,13 @@ instance Integral a => Enum (Ratio a) where
 
 instance (Read a, Integral a) => Read (Ratio a) where
     readsPrec p = readParen (p > 7)
-			    (\r -> [(x%y,u) | (x,s)   <- reads r,
+			    (\r -> [(x%y,u) | (x,s)   <- readsPrec 8 r,
 					      ("%",t) <- lex s,
-					      (y,u)   <- reads t ])
+					      (y,u)   <- readsPrec 8 t ])
 
 instance Integral a => Show (Ratio a) where
     showsPrec p (x:%y) = showParen (p > 7)
-			     (shows x . showString " % " . shows y)
+			     (showsPrec 8 x . showString " % " . showsPrec 8 y)
 
 -- Standard list functions {PreludeList} ------------------------------------
 
