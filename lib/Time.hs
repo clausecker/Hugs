@@ -67,7 +67,8 @@ module Time
 	) where
 
 import Locale
-import IOExts
+import Char ( intToDigit )
+import IOExts ( unsafePerformIO )
 
 data ClockTime 
   = TOD Integer  -- secs
