@@ -146,8 +146,8 @@ chmod 755 $BuildFFI
 # extra_packages - packaged with Hugs, but may also be independently updated
 #	(each of these goes in a separate hierarchy under {Hugs}/packages)
 
-core_packages='base haskell98 haskell-src network parsec QuickCheck'
-extra_packages='mtl fgl'
+core_packages='base haskell98 haskell-src network QuickCheck'
+extra_packages='fgl HaXml mtl parsec'
 
 #
 # ToDo: fix -- cygwin supports 'unix' only when no -mno-cygwin is given to gcc
@@ -178,12 +178,22 @@ do
 	sh $HugsPackage -o $BuildFFI $src/$package
 	copy_examples $src/$package $HUGSDIR/demos/$package
 done
+cp $src/base/LICENSE $HUGSDIR/libraries
 
 for package in $extra_packages
 do
 	mkdir -p $HUGSDIR/packages/$package
-	sh $HugsPackage -o $BuildFFI $src/$package $HUGSDIR/packages/$package
+	if [ -d $src/$package/src ]; then
+		package_src=$src/$package/src
+	else
+		package_src=$src/$package
+	fi
+	sh $HugsPackage -o $BuildFFI $package_src $HUGSDIR/packages/$package
 	copy_examples $src/$package $HUGSDIR/packages/$package/examples
+	$FIND $src/$package -maxdepth 1 -iname 'licen[cs]e*' -o -iname copyright |
+		while read name; do
+			cp $name $HUGSDIR/packages/$package
+		done
 done
 
 # Compatibility with lib/exts:
