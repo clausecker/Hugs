@@ -24,9 +24,9 @@ static Name   local lookupName		Args((Text,List));
 static Module local modOfEntity         Args((Cell));
 static Void   local reportAmbigEntity   Args((Text,Text,List));
 static List   local checkSubentities	Args((List,List,List,String,Text));
-static Void   local checkExportDistinct Args((List,Cell));
-static List   local checkExportTycon	Args((List,Text,Cell,Tycon));
-static List   local checkExportClass	Args((List,Text,Cell,Class));
+static Void   local checkExportDistinct Args((List,Bool,Cell));
+static List   local checkExportTycon	Args((List,Text,Bool,Cell,Tycon));
+static List   local checkExportClass	Args((List,Text,Bool,Cell,Class));
 static List   local checkExportModule	Args((List,Text,Cell));
 static List   local checkExport		Args((List,Text,Cell));
 static List   local checkImportEntity	Args((List,Module,Bool,Cell));
@@ -768,8 +768,9 @@ List clashes; {
     }
 }
 
-static Void local checkExportDistinct(exports,ent) /* verify that the entity is unique in unqualified form */
+static Void local checkExportDistinct(exports,lone,ent) /* verify that the entity is unique in unqualified form */
 List exports;
+Bool lone;
 Cell ent; {
   Name  clashNm;
   Tycon clashTc;
@@ -811,7 +812,7 @@ Cell ent; {
       }
   } else if (isPair(ent)) {
       List subs = NIL;
-      checkExportDistinct(exports, fst(ent));
+      checkExportDistinct(exports, lone, fst(ent));
       if (snd(ent) == DOTDOT) {
 	if (isTycon(fst(ent))) {
 	  if (tycon(fst(ent)).what == SYNONYM ||
@@ -826,7 +827,7 @@ Cell ent; {
       } else {
 	subs = snd(ent);
       }
-      map1Proc(checkExportDistinct,exports,subs);
+      map2Proc(checkExportDistinct,exports,lone,subs);
       return;
   } else {
     return;
@@ -843,17 +844,18 @@ Cell ent; {
       EEND;
   }
   
-  if (nonNull(clashes)) {
+  if (lone && nonNull(clashes)) {
       reportAmbigEntity(module(mod1).text,txt,clashes);
   }
 }
 
-static List local checkExportTycon(exports,mt,spec,tc)
+static List local checkExportTycon(exports,mt,viaModExport,spec,tc)
 List  exports;
 Text  mt;
-Cell  spec; 
+Bool  viaModExport;
+Cell  spec;
 Tycon tc; {
-    checkExportDistinct(exports,pair(tc,spec));
+    checkExportDistinct(exports,!viaModExport,pair(tc,spec));
     if (DOTDOT == spec || SYNONYM == tycon(tc).what) {
 	return addEntity(tc,DOTDOT,exports);
     } else {
@@ -861,12 +863,13 @@ Tycon tc; {
     }
 }
 
-static List local checkExportClass(exports,mt,spec,cl)
+static List local checkExportClass(exports,mt,viaModExport,spec,cl)
 List  exports;
 Text  mt;
+Bool  viaModExport;
 Class cl;
 Cell  spec; {
-    checkExportDistinct(exports,pair(cl,spec));
+    checkExportDistinct(exports,!viaModExport,pair(cl,spec));
     if (DOTDOT == spec) {
 	return addEntity(cl,DOTDOT,exports);
     } else {
@@ -898,18 +901,18 @@ Cell e; {
 
 	     for(xs=module(m).classes; nonNull(xs); xs=tl(xs)) {
 	       if (cclass(hd(xs)).mod==m) 
-	           exports = checkExportClass(exports,mt,DOTDOT,hd(xs));
+	           exports = checkExportClass(exports,mt,TRUE,DOTDOT,hd(xs));
 	     }
 	     for(xs=module(m).tycons; nonNull(xs); xs=tl(xs)) {
 	       if (tycon(hd(xs)).mod==m) 
-		   exports = checkExportTycon(exports,mt,DOTDOT,hd(xs));
+		   exports = checkExportTycon(exports,mt,TRUE,DOTDOT,hd(xs));
 	     }
 	     for(xs=module(m).names; nonNull(xs); xs=tl(xs)) {
 	         if (name(hd(xs)).mod==m && 
 		     /* don't add dcons or class members */
 		     (!isCfun(hd(xs)) &&
 		      !isClass(name(hd(xs)).parent))) {
-		     checkExportDistinct(exports,hd(xs));
+		     checkExportDistinct(exports,FALSE,hd(xs));
 		     exports = cons(hd(xs),exports);
 		 }
 	     }
@@ -992,7 +995,7 @@ Cell e; {
 		   if (nonNull(clashes)) {
 		       reportAmbigEntity(module(modOfEntity(ent)).text,txtNm,clashes);
 		   }
-		   checkExportDistinct(exports,hd(ents));
+		   checkExportDistinct(exports,FALSE,hd(ents));
 		   exports=cons(hd(ents),exports);
 	       }
 	     }
@@ -1011,11 +1014,11 @@ Cell e; {
 
 	if (isQCon(e) && nonNull(export=findQualTycon(e))) {
 	    expFound = TRUE;
-	    exports = checkExportTycon(exports,mt,NIL,export);
+	    exports = checkExportTycon(exports,mt,FALSE,NIL,export);
 	} else if (isQCon(e) && nonNull(export=findQualClass(e))) {
 	    /* opaque class export */
 	    expFound = TRUE;
-	    exports = checkExportClass(exports,mt,NIL,export);
+	    exports = checkExportClass(exports,mt,FALSE,NIL,export);
 	} else if (nonNull(export=findQualName(e))) {
 	    /* Data constructors cannot appear in export lists,
 	     * so flag an error if they do.
@@ -1035,7 +1038,7 @@ Cell e; {
 	        EEND;
 	    }
 	    expFound = TRUE;
-	    checkExportDistinct(exports,export);
+	    checkExportDistinct(exports,TRUE,export);
 	    exports=cons(export,exports);
 	}
 	if (!expFound) {
