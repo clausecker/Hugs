@@ -260,6 +260,7 @@ test_tcheck() {
   # effect of editing a file and reloading
   perl runstdtest $HUGS $STDOPTS "-itcheck/DictHW.input" "-o1tcheck/DictHW.output"
   perl runstdtest $HUGS $STDOPTS tcheck/TyErr.hs "-o1tcheck/TyErr.output"
+  perl runstdtest $HUGS $STDOPTS "-Otcheck/recupd.hs" "-itcheck/recupd.input" "-o1tcheck/recupd.output"
 
 }
 
