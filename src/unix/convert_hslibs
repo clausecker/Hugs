@@ -199,9 +199,14 @@ cvt text/html Html.lhs
 cvt text/html HtmlBlockTable.lhs
 
 cvt text/parsec Parsec.hs
+cvt text/parsec ParsecChar.hs
+cvt text/parsec ParsecCombinator.hs
 cvt text/parsec ParsecError.hs
 cvt text/parsec ParsecExpr.hs
 cvt text/parsec ParsecLanguage.hs
+cvt text/parsec ParsecPerm.hs
+cvt text/parsec ParsecPos.hs
+cvt text/parsec ParsecPrim.hs
 cvt text/parsec ParsecToken.hs
 
 # cvt tools/DrIFT ChaseImports.hs
