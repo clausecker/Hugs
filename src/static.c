@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.42 $
- * $Date: 2001/09/13 20:14:12 $
+ * $Revision: 1.43 $
+ * $Date: 2001/09/27 17:45:37 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -6836,7 +6836,7 @@ Bool isP; {
 	if (nonNull(s) && isSfun(s)) {
 	    fst(fb) = s;
 	} else {
-	  if (isQVar(fst(fb))) {
+	  if (isQualIdent(fst(fb))) {
 	    ERRMSG(l) "\"%s.%s\" is not a selector function/field name",
 	      textToStr(qmodOf(fst(fb))),textToStr(qtextOf(fst(fb)))
             EEND;
