@@ -1,14 +1,15 @@
-Hugs:IO Error: User error
-Reason: foo
-
-Hugs:True
-Hugs:Caught error
-
-Hugs:Caught error
-Continuing
-
-Hugs:
+Type :? for help
 IO Error: User error
 Reason: foo
 
-Hugs:[Leaving Hugs]
+True
+Caught error
+
+Caught error
+Continuing
+
+
+IO Error: User error
+Reason: foo
+
+[Leaving Hugs]

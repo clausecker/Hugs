@@ -1,15 +1,16 @@
-Hugs:a
+Type :? for help
+a
 Program error: no more threads (deadlock?)
 
-Hugs:a
-Hugs:ab
-Hugs:
+a
+ab
+
 Program error: no more threads (deadlock?)
 
-Hugs:adcb
+adcb
 Program error: no more threads (deadlock?)
 
-Hugs:aa
-Hugs:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
-Hugs:ba
-Hugs:[Leaving Hugs]
+aa
+bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+ba
+[Leaving Hugs]

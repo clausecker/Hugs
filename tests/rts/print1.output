@@ -1,72 +1,73 @@
-Hugs:"abcd"
-Hugs:[]
-Hugs:"abcd\NULefgh\NUL"
-Hugs:"abc
+Type :? for help
+"abcd"
+[]
+"abcd\NULefgh\NUL"
+"abc
 Program error: def
 
-Hugs:"abc
+"abc
 Program error: def
 
-Hugs:"abc
+"abc
 Program error: foo
 
-Hugs:"abc
+"abc
 Program error: foo
 
-Hugs:"\"
+"\"
 Program error: foo
 
-Hugs:"abcd"
-Hugs:
+"abcd"
+
 Program error: foo
 
-Hugs:
+
 Program error: 
 Program error: foo
 
-Hugs:1
-Hugs:1
-Hugs:1
-Hugs:1
-Hugs:1
-Hugs:1
-Hugs:1
-Hugs:1
-Hugs:1
-Hugs:1
-Hugs:1
-Hugs:()
-Hugs:
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+()
+
 Program error: foo
 
-Hugs:10
-Hugs:-10
-Hugs:
+10
+-10
+
 Program error: foo
 
-Hugs:
+
 Program error: foo
 
-Hugs:10
-Hugs:10
-Hugs:10.0
-Hugs:-10.0
-Hugs:10.0
-Hugs:-10.0
-Hugs:'a'
-Hugs:'\NUL'
-Hugs:'\DEL'
-Hugs:[]
-Hugs:[1]
-Hugs:Bool_True
-Hugs:Bool_False
-Hugs:('a','b')
-Hugs:('a','b','c')
-Hugs:(1,
+10
+10
+10.0
+-10.0
+10.0
+-10.0
+'a'
+'\NUL'
+'\DEL'
+[]
+[1]
+Bool_True
+Bool_False
+('a','b')
+('a','b','c')
+(1,
 Program error: foo
 
-Hugs:E_R 1
-Hugs:E_L 'a'
-Hugs:M_J Bool_True
-Hugs:M_N
-Hugs:[Leaving Hugs]
+E_R 1
+E_L 'a'
+M_J Bool_True
+M_N
+[Leaving Hugs]

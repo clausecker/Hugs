@@ -1,4 +1,5 @@
-Hugs:
+Type :? for help
+
 Testing open, read and close
 -- !!! Testing system calls
 
@@ -14,4 +15,4 @@ tests = do
 
 Testing open, write and close
 
-Hugs:[Leaving Hugs]
+[Leaving Hugs]

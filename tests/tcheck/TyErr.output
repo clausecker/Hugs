@@ -2,4 +2,4 @@ ERROR "tcheck/TyErr.hs":19 - Unresolved top-level overloading
 *** Binding             : popIndentList
 *** Outstanding context : Monad b
 
-Hugs:[Leaving Hugs]
+[Leaving Hugs]

@@ -3,4 +3,4 @@ ERROR "static/mod46.hs":4 - Cannot build superclass instance
 *** Context supplied    : ()
 *** Required superclass : Eq T
 
-Hugs:[Leaving Hugs]
+[Leaving Hugs]

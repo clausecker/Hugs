@@ -1,2 +1,2 @@
 ERROR "static/qual5.hs":5 - Undefined qualified variable "A.foo"
-Hugs:[Leaving Hugs]
+[Leaving Hugs]

@@ -1,32 +1,33 @@
-Hugs:got expected IO error
+Type :? for help
+got expected IO error
 
-Hugs:
-Hugs:
-Hugs:got expected IO error
 
-Hugs:got expected IO error
 
-Hugs:File size: 5
+got expected IO error
 
-Hugs:('a',False)
+got expected IO error
+
+File size: 5
+
+('a',False)
 ('b',False)
 ('c',False)
 ('d',False)
 ('e',True)
 got expected IO error
 
-Hugs:NoBuffering
+NoBuffering
 LineBuffering
 True
 BlockBuffering (Just 23)
 
-Hugs:got expected IO error
+got expected IO error
 got expected IO error
 'a'
 
-Hugs:'a'
+'a'
 'b'
 'c'
 'c'
 
-Hugs:[Leaving Hugs]
+[Leaving Hugs]

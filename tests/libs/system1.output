@@ -1,8 +1,8 @@
 Type :? for help
-Hugs:ExitSuccess
-Hugs:ExitFailure 1
-Hugs:ExitFailure 2
-Hugs:[]
-Hugs:"Hugs"
-Hugs:getEnv "SHELL" returns known shell
-Hugs:[Leaving Hugs]
+ExitSuccess
+ExitFailure 1
+ExitFailure 2
+[]
+"Hugs"
+getEnv "SHELL" returns known shell
+[Leaving Hugs]

@@ -1,11 +1,12 @@
-Hugs:'1'
+Type :? for help
+'1'
 '2'
 'b'
 'a'
 '3'
 '4'
 
-Hugs:'1'
+'1'
 '2'
 '1'
 '2'
@@ -16,7 +17,7 @@ Hugs:'1'
 '3'
 '4'
 
-Hugs:'1'
+'1'
 '2'
 '1'
 '2'
@@ -27,6 +28,6 @@ Hugs:'1'
 '3'
 '4'
 
-Hugs:ccccccccccbbbbbbbbbbaaaaaaaaaa
-Hugs:aabbccddeeffgghhiijj
-Hugs:[Leaving Hugs]
+ccccccccccbbbbbbbbbbaaaaaaaaaa
+aabbccddeeffgghhiijj
+[Leaving Hugs]
