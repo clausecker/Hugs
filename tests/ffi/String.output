@@ -1,8 +1,8 @@
 Type :? for help
 Hugs:
-Testing puts (and withString0)
+Testing puts (and withCString)
 Test successful
 
-Testing peekArray0
+Testing peekArray0 (and withString0)
 Test successful
 Hugs:[Leaving Hugs]
