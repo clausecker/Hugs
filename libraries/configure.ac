@@ -178,18 +178,11 @@ FPTOOLS_CHECK_HTYPE(GLclampd)
 fi
 
 dnl ** check for more functions
-AC_CHECK_FUNCS(ftime)
 AC_CHECK_FUNCS(getclock)
 AC_CHECK_FUNCS(getrusage)
 AC_CHECK_FUNCS(gettimeofday)
-AC_CHECK_FUNCS(gmtime)
-AC_CHECK_FUNCS(localtime)
-AC_CHECK_FUNCS(lstat)
-AC_CHECK_FUNCS(readdir_r)
-AC_CHECK_FUNCS(setenv)
 AC_CHECK_FUNCS(time)
 AC_CHECK_FUNCS(times)
-AC_CHECK_FUNCS(unsetenv)
 
 AC_CHECK_LIB([dl], [dlopen])
 
