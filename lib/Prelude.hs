@@ -325,8 +325,13 @@ class (Ord a) => Ix a where
     rangeSize            :: (a,a) -> Int
 
     rangeSize r@(l,u)
-             | l > u      = 0
-             | otherwise  = index r u + 1
+             | null (range r) = 0
+             | otherwise      = index r u + 1
+	-- NB: replacing "null (range r)" by  "not (l <= u)"
+	-- fails if the bounds are tuples.  For example,
+	-- 	(1,2) <= (2,1)
+	-- but the range is nevertheless empty
+	--	range ((1,2),(2,1)) = []
 
 class Enum a where
     succ, pred           :: a -> a
