@@ -9,8 +9,8 @@
  * included in the distribution.
  *
  * $RCSfile: storage.h,v $
- * $Revision: 1.22 $
- * $Date: 2001/12/04 19:13:14 $
+ * $Revision: 1.23 $
+ * $Date: 2001/12/13 03:19:27 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -720,6 +720,7 @@ struct strClass {
 #endif
     Int    level;			/* Level in class hierarchy	   */
     Int    arity;			/* Number of arguments		   */
+    List   tyvars;			/* Names of tyvars		   */
     Kinds  kinds;			/* Kinds of constructors in class  */
     Cell   head;			/* Head of class		   */
     List   fds;				/* Functional Dependencies	   */

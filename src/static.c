@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.48 $
- * $Date: 2001/12/12 07:42:37 $
+ * $Revision: 1.49 $
+ * $Date: 2001/12/13 03:19:28 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -58,6 +58,7 @@ static Void   local checkBanged		Args((Name,Kinds,List,Type));
 static Type   local instantiateSyn	Args((Type,Type));
 
 static Void   local checkClassDefn	Args((Class));
+static Void   local checkClassDefn2	Args((Class));
 static Cell   local depPredExp		Args((Int,List,Cell));
 static Void   local checkMems		Args((Class,List,Cell));
 static Void   local checkMems2		Args((Class,Cell));
@@ -1618,6 +1619,7 @@ Class c; {
     /* add in the tyvars from the `supers' so that we don't
        prematurely complain about undefined tyvars */
     tyvars = typeVarsIn(cclass(c).supers,NIL,NIL,tyvars);
+    cclass(c).tyvars = dupList(tyvars);
 
     if (cclass(c).arity==0) {
 	cclass(c).head = c;
@@ -1633,22 +1635,6 @@ Class c; {
     tcDeps	        = NIL;		/* find dependents		   */
     map2Over(depPredExp,cclass(c).line,tyvars,cclass(c).supers);
 
-    {   /* depPredExp instantiates class names to class structs, so
-         * now we have enough info to check for ambiguity
-         */
-	List tvts = offsetTyvarsIn(cclass(c).head,NIL);
-	List tvps = offsetTyvarsIn(cclass(c).supers,NIL);
-	List fds  = calcFunDeps(cclass(c).supers);
-	tvts = oclose(fds,tvts);
-	tvts = odiff(tvps,tvts);
-
-	if (!isNull(tvts)) {
-	    ERRMSG(cclass(c).line) "Undefined type variable \"%s\"",
-	      textToStr(textOf(nth(offsetOf(hd(tvts)),tyvars)))
-	    EEND;
-	}
-    }
-    
 #ifdef IPARAM
     for ( ss = cclass(c).supers; nonNull(ss); ss=tl(ss) ) {
       if ( isIP(getHead(hd(ss))) ) {
@@ -1669,6 +1655,30 @@ Class c; {
 
     cclass(c).kinds     = tcDeps;
     tcDeps              = NIL;
+}
+
+static Void local checkClassDefn2_(cs)
+List cs; {
+    mapProc(checkClassDefn2,cs);
+}
+
+static Void local checkClassDefn2(c)    /* validate class definition, pt 2 */
+Class c; {				/* can only finish this job after  */
+					/* we've inherited fds             */
+					/* and are in dependency order     */
+    if (!isTycon(c)) {
+	List tvts = offsetTyvarsIn(cclass(c).head,NIL);
+	List tvps = offsetTyvarsIn(cclass(c).supers,NIL);
+	List fds  = calcFunDeps(cclass(c).supers);
+	tvts = oclose(fds,tvts);
+	tvts = odiff(tvps,tvts);
+
+	if (!isNull(tvts)) {
+	    ERRMSG(cclass(c).line) "Undefined type variable \"%s\"",
+	      textToStr(textOf(nth(offsetOf(hd(tvts)),cclass(c).tyvars)))
+	    EEND;
+	}
+    }
 }
 
 /* --------------------------------------------------------------------------
@@ -7008,6 +7018,7 @@ Void checkContext() {			/* Top level static check on Expr  */
 #endif
 
 Void checkDefns() {			/* Top level static analysis	   */
+    List tcs;
 #if !IGNORE_MODULES
     Module thisModule = lastModule();
 #endif
@@ -7041,13 +7052,16 @@ Void checkDefns() {			/* Top level static analysis	   */
     mapProc(checkTyconDefn,tyconDefns);	/* validate tycon definitions	   */
     checkSynonyms(tyconDefns);		/* check synonym definitions	   */
     mapProc(checkClassDefn,classDefns);	/* process class definitions	   */
-    mapProc(kindTCGroup,tcscc(tyconDefns,classDefns)); /* attach kinds	   */
+    tcs = tcscc(tyconDefns,classDefns); /* calc dependencies for type      */
+					/* constructors and classes        */
+    mapProc(kindTCGroup,tcs);		/* attach kinds	   		   */
     mapProc(visitClass,classDefns);	/* check class hierarchy	   */
     mapProc(extendFundeps,classDefns);  /* finish class definitions	   */
 					/* (convenient if we do this after */
 					/* calling `visitClass' so that we */
 					/* know the class hierarchy is     */
 					/* acyclic)                        */
+    mapProc(checkClassDefn2_,tcs);	/* process class definitions again */
     mapProc(addMembers,classDefns);	/* add definitions for member funs */
     linkPreludeCM();			/* Get prelude cfuns and mfuns	   */
 
