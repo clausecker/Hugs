@@ -1,5 +1,7 @@
 module Quote(Quote, quote, trim) where
 
+import List
+
 class Quote a where
     quote :: a -> String
 
@@ -35,13 +37,18 @@ instance Integral a => Quote (Ratio a) where
 -- are not visually confusing (especially if you are doing
 -- something like using here docs to generate Haskell code)
 
-trim s = unlines ls'
-  where s'  = case s of { '\n':cs -> cs; _ -> s }
-	ls  = lines s'
+trim s = unlines' ls'
+  where ls  = lines' s
 	ls' = map (trimoff 0 n) ls
 	n = case filter (/= 0) $ map (whitecount 0) ls of
 	      [] -> 0
 	      xs -> minimum xs
+
+-- like the prelude functions, but preserve (lack of) trailing newline
+lines' s    = let (l,s') = break ('\n'==) s
+	      in l : case s' of []      -> []
+				(_:s'') -> lines' s''
+unlines' ss = concat $ intersperse "\n" ss
 
 whitecount n []        = n
 whitecount n (' ':cs)  = whitecount (n + 1) cs
