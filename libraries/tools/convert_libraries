@@ -143,7 +143,7 @@ export HUGSFLAGS
 
 HugsPackage=libraries/tools/hugs-package
 
-HugsSetup="$runhugs -98 $top_dir/libraries/tools/HugsSetup.hs"
+HugsSetup="$runhugs -98 $top_dir/fptools/libraries/Cabal/examples/hapax.hs"
 
 # Distinguish two classes of package:
 # core_packages - released with Hugs and not independently updated
