@@ -9,8 +9,8 @@
  * which is included in the distribution.
  *
  * $RCSfile: options.h,v $
- * $Revision: 1.12 $
- * $Date: 2003/10/24 15:11:12 $
+ * $Revision: 1.13 $
+ * $Date: 2003/11/30 15:36:10 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -121,7 +121,7 @@
  * #includes so you must :load (not :reload) if you change any
  * (non-Haskell) configurations files.
  */
-#define USE_PREPROCESSOR 1
+#define USE_PREPROCESSOR 0
 
 /* Define if you want to time every evaluation. 
  *

@@ -88,13 +88,12 @@
 #define ID_LASTEXPR		123
 #define ID_EDITOR	        124
 #define ID_PATH			125
-#define ID_PREPROCESSOR		126
 
-#define ID_ROWS	                127
-#define ID_COLS	                128
-#define ID_HEAPSIZE	        129
+#define ID_ROWS	                126
+#define ID_COLS	                127
+#define ID_HEAPSIZE	        128
 
-#define ID_CUTOFF               130
+#define ID_CUTOFF               129
 
 /* Browse Classes dialog */
 #define LB_CLASS	       1001

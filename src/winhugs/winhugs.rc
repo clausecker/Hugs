@@ -155,7 +155,7 @@ BEGIN
     LTEXT           "Total physical memory:",-1,130,115,84,8
 END
 
-OPTIONSDLGBOX DIALOG FIXED IMPURE  14, 24, 313, 241
+OPTIONSDLGBOX DIALOG FIXED IMPURE  14, 24, 313, 234
 STYLE DS_MODALFRAME | DS_3DLOOK | DS_FIXEDSYS | WS_POPUP | WS_CAPTION |
     WS_SYSMENU
 CAPTION "Options"
@@ -204,22 +204,20 @@ BEGIN
                     BS_AUTOCHECKBOX | WS_TABSTOP,160,109,140,10
     LTEXT           "Path:",-1,12,139,22,8
     EDITTEXT        ID_PATH,37,137,183,12,ES_AUTOHSCROLL
-    LTEXT           "Preprocessor filter:",-1,12,153,62,8
-    EDITTEXT        ID_PREPROCESSOR,76,151,144,12,ES_AUTOHSCROLL
-    LTEXT           "Editor:",-1,12,167,25,8
-    EDITTEXT        ID_EDITOR,39,165,181,12,ES_AUTOHSCROLL
-    LTEXT           "Prompt string:",-1,12,181,47,8
-    EDITTEXT        ID_PROMPT,62,179,158,12
-    LTEXT           "Repeat last expression string:",-1,12,195,96,8
-    EDITTEXT        ID_LASTEXPR,111,193,109,12
-    LTEXT           "Set constraint cutoff limit:",-1,12,210,89,8
-    EDITTEXT        ID_CUTOFF,97,207,123,12
-    LTEXT           "Heap size:",-1,12,225,47,8
-    EDITTEXT        ID_HEAPSIZE,52,222,168,12
+    LTEXT           "Editor:",-1,12,155,25,8
+    EDITTEXT        ID_EDITOR,37,153,183,12,ES_AUTOHSCROLL
+    LTEXT           "Prompt string:",-1,12,169,47,8
+    EDITTEXT        ID_PROMPT,62,167,158,12
+    LTEXT           "Repeat last expression string:",-1,12,183,96,8
+    EDITTEXT        ID_LASTEXPR,111,182,109,12
+    LTEXT           "Set constraint cutoff limit:",-1,12,198,80,8
+    EDITTEXT        ID_CUTOFF,97,195,123,12
+    LTEXT           "Heap size:",-1,12,214,36,8
+    EDITTEXT        ID_HEAPSIZE,52,210,168,12
     PUSHBUTTON      "Ok",IDOK,256,139,40,14
     PUSHBUTTON      "Cancel",IDCANCEL,256,160,40,14
-    GROUPBOX        "",-1,5,128,227,112
-    LTEXT           "",ID_PLACEBITMAP,246,198,73,1
+    GROUPBOX        "",-1,5,128,227,102
+    LTEXT           "",ID_PLACEBITMAP,246,188,73,1
 END
 
 BROWSECLASSESDLGBOX DIALOG DISCARDABLE  65535, 18, 344, 220

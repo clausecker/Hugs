@@ -1148,8 +1148,12 @@ LRESULT CALLBACK OptionsDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
       SetDlgItemText(hDlg, ID_LASTEXPR,     (LPCSTR) repeatStr);
       SetDlgItemText(hDlg, ID_PATH,	    (LPCSTR) hugsPath);
       SetDlgItemText(hDlg, ID_EDITOR,	    (LPCSTR) hugsEdit);
+
 #if SUPPORT_PREPROCESSOR
-      SetDlgItemText(hDlg, ID_PREPROCESSOR, (LPCSTR) preprocessor);
+      /* Note: preprocessor filtering not supported in WinHugs due
+	       to _popen() not working as exptected from within 
+	       a GUI application (_popen() works over consoles.)
+      */
 #endif
       sprintf(Buffer, "%d", cutoff);
       SetDlgItemText(hDlg, ID_CUTOFF,	    (LPCSTR) Buffer);
@@ -1232,11 +1236,11 @@ LRESULT CALLBACK OptionsDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 	      appendStringFormat(builder, " -E\"%s\"", Buffer);
 	  }
 
-#if SUPPORT_PREPROCESSOR
-	  GetDlgItemText(hDlg, ID_PREPROCESSOR, (LPSTR) Buffer, 1024);
-	  if (Buffer[0] != '\0') {
-	      appendStringFormat(builder, " -F\"%s\"", Buffer);
-	  }
+#ifdef SUPPORT_PREPROCESSOR
+      /* Note: preprocessor filtering not supported in WinHugs due
+	       to _popen() not working as exptected from within 
+	       a GUI application (_popen() works over consoles.)
+      */
 #endif
 
 	  GetDlgItemText(hDlg, ID_CUTOFF, (LPSTR) Buffer, 1024);
