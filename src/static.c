@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.169 $
- * $Date: 2004/02/04 21:47:34 $
+ * $Revision: 1.170 $
+ * $Date: 2004/11/09 00:27:22 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -3858,7 +3858,7 @@ Int  line;
 List defs; {
     if (defaultLine!=0) {
 	ERRMSG(line) "Multiple default declarations are not permitted in" ETHEN
-	ERRTEXT     "a single script file.\n"
+	ERRTEXT      " a single script file.\n"
 	EEND;
     }
     defaultDefns = defs;
