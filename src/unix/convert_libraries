@@ -424,12 +424,6 @@ nocvt base System/Time.hsc		Time.hs		# Hugs primitives
 # cvt unix System/Posix/Process.hsc
 # cvt unix System/Posix/Unistd.hsc
 
-  echo Copying FFI support files
-  cp ../../lib/exts/Storable_aux.[ch]   $dst/Hugs
-  cp ../config.h                        $dst/Foreign/C
-  cp $src/base/cbits/errno.c            $dst/Foreign/C
-  cp $src/base/include/*.h              $dst/Foreign/C
-
 # Hugs-only modules
 
 nocvt hugs Hugs/CVHAssert.hs		hugs/CVHAssert.hs
@@ -440,6 +434,12 @@ nocvt hugs Hugs/Observe.lhs		exts/Observe.lhs
 nocvt hugs Hugs/Quote.hs		hugs/Quote.hs
 nocvt hugs Hugs/Trace.hs		hugs/Trace.hs
 nocvt hugs Hugs/Trex.hs			hugs/Trex.hs
+
+  echo Copying FFI support files
+  cp ../../lib/exts/Storable_aux.[ch]   $dst/Hugs
+  cp ../config.h                        $dst/Foreign/C
+  cp $src/base/cbits/errno.c            $dst/Foreign/C
+  cp $src/base/include/*.h              $dst/Foreign/C
 
 # Compatibility with lib/exts:
 
