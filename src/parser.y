@@ -10,8 +10,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: parser.y,v $
- * $Revision: 1.31 $
- * $Date: 2002/04/16 16:02:56 $
+ * $Revision: 1.32 $
+ * $Date: 2002/05/18 09:38:29 $
  * ------------------------------------------------------------------------*/
 
 %{
@@ -494,6 +494,7 @@ context	  : '(' ')'			{$$ = gc2(NIL);}
  	  ;
 lcontext  : lacks			{$$ = gc1(singleton($1));}
  	  | '(' lacks1 ')'		{$$ = gc3(checkCtxt(rev($2)));}
+	  ;
 lacks	  : varid '\\' varid		{
 #if TREX
 					 $$ = gc3(ap(mkExt(textOf($3)),$1));
@@ -656,6 +657,7 @@ lwherePart : /* empty */		{$$ = gc0(NIL);}
 
 ldecls	  : '{' ldecls0 end		{$$ = gc3($2);}
 	  | '{' ldecls1 end		{$$ = gc3($2);}
+	  ;
 
 ldecls0	  : /* empty */			{$$ = gc0(NIL);}
 	  | ldecls0 ';'			{$$ = gc2($1);}
@@ -963,6 +965,7 @@ list	  : exp				{$$ = gc1(ap(FINLIST,cons($1,NIL)));}
 	  ;
 zipquals  : zipquals '|' quals		{$$ = gc3(cons(rev($3),$1));}
 	  | '|' quals			{$$ = gc2(cons(rev($2),NIL));}
+	  ;
 quals	  : quals ',' qual		{$$ = gc3(cons($3,$1));}
 	  | qual			{$$ = gc1(cons($1,NIL));}
 	  ;
