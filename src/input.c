@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: input.c,v $
- * $Revision: 1.83 $
- * $Date: 2003/12/18 17:05:29 $
+ * $Revision: 1.84 $
+ * $Date: 2004/02/04 11:21:43 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -944,6 +944,8 @@ Char getStrChr(String *sp) {
 	    }
 	    c |= b<<shift;
 	}
+#else
+	c = ExtractChar(*sp);
 #endif
 	if (c=='0')
 	    c = '\0';
