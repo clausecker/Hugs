@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.94 $
- * $Date: 2002/09/12 21:23:26 $
+ * $Revision: 1.95 $
+ * $Date: 2002/09/13 04:23:18 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -35,6 +35,7 @@ static List   local resolveImportList	Args((Module,Cell,Bool));
 static Void   local checkImportList	Args((Bool,Pair));
 static Void   local checkQualImportList	Args((Pair));
 static Cell   local entityIsMember      Args((Cell,List));
+static List   local augmentEntity       Args((Bool,Cell,Cell,List));
 static List   local addEntity           Args((Cell,Cell,List));
 static List   local addEntityPair       Args((Cell,List));
 static List   local mergeImportLists    Args((List,List));
@@ -675,20 +676,24 @@ List is; {
   return addEntity(e,NIL,is);
 }
 
-static List local addEntity(e,ls,is) /* For entity e, add 'ls' to the 'is'   */
-                                     /* import/export list,combining it with */
-Cell e;                              /* previous entries (if any.)           */
-Cell ls;
+static List local augmentEntity(addNew,e,ls,is) 
+Bool addNew;                      /* For entity e, add 'ls' to the 'is'   */
+Cell e;                           /* import/export list,combining it with */
+Cell ls;                          /* previous entries (if any.)           */
 List is; {
 
     Cell ms = entityIsMember(e,is);
     
     if (!ms) {
+      if (!addNew) {
+	return is;
+      } else {
 	if (isName(e) && ls == NIL) {
 	   return cons(e,is);
 	} else {
 	    return cons(pair(e,ls),is);
 	}
+      }
     } else {
 	/* concat the two lists, i.e., no removal of duplicates. */
 	if (!isPair(hd(ms)) && ls != NIL) {
@@ -704,7 +709,12 @@ List is; {
     }
 }
 
-
+static List local addEntity(e,ls,is)
+Cell e;
+Cell ls;
+List is; {
+  return augmentEntity(TRUE,e,ls,is);
+}
 
 static Cell local entityIsMember(x,xs) /* Test for membership of specific  */
 Cell x;                                /* entity x in import/export list xs  */
@@ -926,18 +936,25 @@ Cell  spec; {
     }
 }
 
-static List local checkExport(exports,mt,e) /* Process entry in export list*/
-List exports;
+static List local checkExport(acc,mt,e) /* Process entry in export list*/
+List acc;
 Text mt; 
 Cell e; {
+    List exports = fst(acc);
+    List delayedExports = snd(acc);
+
     if (isIdent(e)) {
 	Cell export = NIL;
 	List origExports = exports;
 	if (nonNull(export=findQualName(e))) {
-	    /* check to see whether the exported name N belongs to a class
-	     * or data con (i.e., a field name), named P. If so, process
-	     * the export as P(N).
+	    /* Check to see whether the exported name N belongs to a class
+	     * or a data con (i.e., a field name), named P. If so, add the
+	     * name to the export list, but put P(N) on a list of delayed
+	     * exports. These delayed exports are then processed after
+	     * the entire export list has been traversed -- see checkExports()
+	     * comment for details of why.
 	     */
+
 	    /* Data constructors cannot appear in export lists,
 	     * so flag an error if they do.
 	     *
@@ -953,15 +970,17 @@ Cell e; {
 	        EEND;
 	    }
 	    if (isClass(name(export).parent)) {
-		return checkExport(exports,mt,pair(mkCon(cclass(name(export).parent).text),
-						   singleton(mkVar(name(export).text))));
+	      delayedExports=cons(pair(mkCon(cclass(name(export).parent).text),
+				      mkVar(name(export).text)),
+				  delayedExports);
 	    }
 	    if ( isName(export) && name(export).number == SELNAME ) {
 		/* a field name */
 		Cell p = name(export).parent; /* the data constructor */
 		Cell t = name(p).parent;      /* the type constructor */
-		return checkExport(exports,mt,pair(mkCon(tycon(t).text),
-						   singleton(mkVar(name(export).text))));
+		delayedExports=cons(pair(mkCon(tycon(t).text),
+					 mkVar(name(export).text)),
+				    delayedExports);
 	    }
 	    exports=cons(export,exports);
 	} 
@@ -978,7 +997,7 @@ Cell e; {
 		      textToStr(mt)
 	    EEND;
 	}
-	return exports;
+	return pair(exports,delayedExports);
     } else if (MODULEENT == fst(e)) {
 	Module m = findModid(snd(e));
 	/* Re-exporting a module we didn't import isn't allowed. */
@@ -1019,7 +1038,7 @@ Cell e; {
 	      exports = dupOnto(module(m).exports,exports);
 	    }
 	}
-	return exports;
+	return pair(exports, delayedExports);
     } else {
 	Cell ident = fst(e); /* class name or type name */
 	Cell parts = snd(e); /* members or constructors */
@@ -1033,13 +1052,14 @@ Cell e; {
 			      textToStr(mt)
 		    EEND;
 		}
-		return addEntity(nm,DOTDOT,exports);
+		exports = addEntity(nm,DOTDOT,exports);
+		return pair(exports, delayedExports);
 	    case RESTRICTSYN:	
 		ERRMSG(0) "Transparent export of restricted type synonym \"%s\" in export list of module \"%s\"",
 			  identToStr(ident),
 			  textToStr(mt)
 		EEND;
-		return exports; /* Not reached */
+		return acc; /* Not reached */
 	    case NEWTYPE:
 	    case DATATYPE:
 		/* ToDo: the traversal code here is near identical to
@@ -1047,7 +1067,8 @@ Cell e; {
 		if (DOTDOT==parts) {
 		    Module thisModule = lastModule();
 		    if ( tycon(nm).mod == thisModule ) {
-			return addEntity(nm,DOTDOT,exports);
+		      exports = addEntity(nm,DOTDOT,exports);
+		      return pair(exports, delayedExports);
 		    } else {
 			/* If we're re-exporting a tycon via (..),
 			 * only the constructors in scope are exported. 
@@ -1075,7 +1096,8 @@ Cell e; {
 			    }
 			}
 			exports=addEntity(nm,exps,exports);
-			return dupOnto(exps,exports);
+			exports= dupOnto(exps,exports);
+			return pair(exports, delayedExports);
 		    }
 		} else {
 		  List ps = NIL;
@@ -1083,7 +1105,8 @@ Cell e; {
 					"constructor of type",
 					tycon(nm).text);
 		  exports = addEntity(nm,ps,exports);
-		  return dupOnto(ps,exports);
+		  exports = dupOnto(ps,exports);
+		  return pair(exports, delayedExports);
 		}
 	    default:
 		internal("checkExport1");
@@ -1092,7 +1115,8 @@ Cell e; {
 	    if (DOTDOT == parts) {
 		Module thisModule = lastModule();
 		if ( cclass(nm).mod == thisModule ) {
-		    return addEntity(nm,DOTDOT,exports);
+		  exports = addEntity(nm,DOTDOT,exports);
+ 		  return pair(exports, delayedExports);
 		} else {
 		    /* If we're re-exporting a class via (..),
 		     * only the metods in scope are exported. 
@@ -1122,14 +1146,16 @@ Cell e; {
 		    /* Enter the (class,members) pair _and_ the individual 
 		       member names on to the exports list */
 		    exports=addEntity(nm,exps,exports);
-		    return dupOnto(exps,exports);
+		    exports=dupOnto(exps,exports);
+		    return pair(exports, delayedExports);
 		}
 	    } else {
 	      List ps = NIL;
 	      ps = checkSubentities(ps,parts,cclass(nm).members,
 				    "member of class",cclass(nm).text);
 	      exports=addEntity(nm,ps,exports);
-	      return dupOnto(ps,exports);
+	      exports=dupOnto(ps,exports);
+	      return pair(exports, delayedExports);
 	    }
 	} else {
 	    ERRMSG(0) "Explicit export list given for non-class/datatype \"%s\" in export list of module \"%s\"",
@@ -1138,16 +1164,40 @@ Cell e; {
 	    EEND;
 	}
     }
-    return exports;/*NOTUSED*/
+    return acc;/*NOTUSED*/
 }
 
 static List local checkExports(exports)
 List exports; {
     Module m  = lastModule();
     Text   mt = module(m).text;
-    List   es = NIL;
+    List   es = NIL;             /* [Entity | (Entity,DOTDOT|NIL|[Entity])] */
+    List   delayedExports = NIL; /* [(TyCon/Class,fieldName/methodName)] */
+    Cell   res = pair(es,delayedExports);
 
-    map1Accum(checkExport,es,mt,exports);
+    /* To properly handle methods and field names that are exported 
+     * separately from their class/type, we initially collect all of
+     * them up in a list, paired together with their parent class/type. 
+     * This list is then traversed, adding the method/field name to the
+     * entry for its parent class/type, but _only if_ that class/type
+     * is already exported, i.e., just exporting a method _does not_
+     * cause its class to implicitly be added to the export list.
+     *
+     * This only applies to methods and field names; data constructors
+     * cannot be exported on their own.
+     */
+    map1Accum(checkExport,res,mt,exports);
+    es = fst(res);
+    
+    /* tack on the member/field orphan entities */
+    for(delayedExports=snd(res);
+	nonNull(delayedExports);
+	delayedExports=tl(delayedExports)) {
+      es = augmentEntity(FALSE,
+			 fst(hd(delayedExports)),
+			 singleton(snd(hd(delayedExports))),
+			 es);
+    }
 
 #if DEBUG_MODULES
     for(xs=es; nonNull(xs); xs=tl(xs)) {
