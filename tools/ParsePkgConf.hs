@@ -1,38 +1,38 @@
 module ParsePkgConf( parsePackageConfig, parseOnePackageConfig ) where
 
--- ParSec version of fptools/ghc/utils/ghc-pkg/ParsePkgConfLite.y
+-- ReadP version of fptools/ghc/utils/ghc-pkg/ParsePkgConfLite.y
 -- (so we don't have to rely on Happy)
 
-import Control.Monad(liftM)
+import Control.Monad (guard, liftM)
 import Data.Char
-import Text.ParserCombinators.Parsec
+import Text.ParserCombinators.ReadP
+import Text.Read.Lex
+import Prelude hiding (lex)
 
 import Package
 
 parsePackageConfig :: String -> [PackageConfig]
-parsePackageConfig = doParse (list package)
+parsePackageConfig = read
 
 parseOnePackageConfig :: String -> PackageConfig
-parseOnePackageConfig = doParse package
+parseOnePackageConfig = read
 
-doParse :: Parser a -> String -> a
-doParse p s = case parse p "" s of
-    Left err -> error (show err)
-    Right a -> a
+instance Read PackageConfig where
+    readsPrec _ = readP_to_S package
+    readList = readP_to_S (list package)
 
-package :: Parser PackageConfig
+package :: ReadP PackageConfig
 package = do
-    spaces
-    symbol "Package"
-    symbol "{"
-    fs <- sepBy field (symbol ",")
-    symbol "}"
+    lexeme "Package"
+    lexeme "{"
+    fs <- optCommaList field
+    lexeme "}"
     return (foldl (flip ($)) defaultPackageConfig fs)
 
-field :: Parser (PackageConfig -> PackageConfig)
+field :: ReadP (PackageConfig -> PackageConfig)
 field = do
-    fieldName <- identifier
-    symbol "="
+    Ident fieldName <- lex
+    lexeme "="
     case fieldName of
 	"name"		   -> liftM set_name stringLiteral
 	"auto"		   -> liftM set_auto bool
@@ -66,29 +66,39 @@ field = do
     set_framework_dirs ss p	= p{framework_dirs = ss}
     set_extra_frameworks ss p	= p{extra_frameworks = ss}
 
-bool :: Parser Bool
-bool = (symbol "True" >> return True) <|> (symbol "False" >> return False)
+bool :: ReadP Bool
+bool = (lexeme "True" >> return True) <++ (lexeme "False" >> return False)
 
-list :: Parser a -> Parser [a]
-list p = between (symbol "[") (symbol "]") (sepBy p (symbol ","))
+list :: ReadP a -> ReadP [a]
+list p = do
+    lexeme "["
+    vs <- optCommaList p
+    lexeme "]"
+    return vs
 
-symbol :: String -> Parser String
-symbol s = word $ string s
+stringLiteral :: ReadP String
+stringLiteral = do
+    String s <- lex
+    return s
 
-stringLiteral :: Parser String
-stringLiteral = word $ between (char '"') (char '"') (many stringChar)
-  where
-    stringChar :: Parser Char
-    stringChar = (char '\\' >> anyChar) <|> satisfy (/= '"')
+identifier :: ReadP String
+identifier = do
+    Ident s <- lex
+    return s
 
-identifier :: Parser String
-identifier = word $ do
-    c <- lower
-    cs <- many (alphaNum <|> char '_')
-    return (c:cs)
+optCommaList :: ReadP a -> ReadP [a]
+optCommaList p = p_list <++ return []
+    where
+	p_list = do
+	    a <- p
+	    do
+		lexeme ","
+		as <- p_list
+		return (a:as)
+	     <++
+		return [a]
 
-word :: Parser a -> Parser a
-word p = do
-    v <- p
-    spaces
-    return v
+lexeme :: String -> ReadP ()
+lexeme s = do
+    s' <- hsLex
+    guard (s == s')

@@ -276,7 +276,7 @@ fi
 
 # Get values from the package description file
 
-get_pkg_field="$runhugs $HUGSDIR/tools/get_pkg_field"
+get_pkg_field="$runhugs -98 $HUGSDIR/tools/get_pkg_field"
 
 extra_libraries=
 extra_ld_opts=
