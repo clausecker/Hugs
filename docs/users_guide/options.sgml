@@ -19,7 +19,7 @@ and then read from the following sources in order:
 <para>
 (Windows only) the registry under the <literal>HKEY_CURRENT_USER</literal> key.
 This step is skipped if the environment variable
-<literal>IGNORE_USER_REGISTRY</literal> is set,
+<envar>IGNORE_USER_REGISTRY</envar> is set,
 providing an emergency workaround if the settings are invalid.
 </para>
 </listitem>
@@ -34,13 +34,13 @@ the GUI settings.
 <listitem>
 <para>
 (Mac OS prior to Mac OS X)
-the preferences file <quote><literal>Hugs Preferences</literal></quote>.
+the preferences file <quote><filename>Hugs Preferences</filename></quote>.
 </para>
 </listitem>
 
 <listitem>
 <para>
-The environment variable <literal>HUGSFLAGS</literal>, if set.
+The environment variable <envar>HUGSFLAGS</envar>, if set.
 </para>
 </listitem>
 
@@ -781,7 +781,7 @@ The method for setting these varies with the system.
 <variablelist>
 
 <varlistentry id="EMACS">
-<term><option>EMACS</option></term>
+<term><envar>EMACS</envar></term>
 <listitem>
 <para>
 (Windows only)
@@ -792,7 +792,7 @@ If this variable is set, Hugs is assumed to be running in an Emacs subshell
 </varlistentry>
 
 <varlistentry id="HOME">
-<term><option>HOME</option></term>
+<term><envar>HOME</envar></term>
 <listitem>
 <para>
 The user's home directory.
@@ -807,7 +807,7 @@ and for <quote><literal>~</literal></quote> in the argument of the
 </varlistentry>
 
 <varlistentry id="HUGSFLAGS">
-<term><option>HUGSFLAGS</option></term>
+<term><envar>HUGSFLAGS</envar></term>
 <listitem>
 <para>
 Additional options for Hugs, processed before any given on the command line
@@ -830,7 +830,7 @@ Other bachslashes are interpreted literally.
 </varlistentry>
 
 <varlistentry id="HUGSDIR">
-<term><option>HUGSDIR</option></term>
+<term><envar>HUGSDIR</envar></term>
 <listitem>
 <para>
 The Hugs library directory.
@@ -842,7 +842,7 @@ This is substituted for <literal>{Hugs}</literal> in the argument of the
 </varlistentry>
 
 <varlistentry id="IGNORE-USER-REGISTRY">
-<term><option>IGNORE_USER_REGISTRY</option></term>
+<term><envar>IGNORE_USER_REGISTRY</envar></term>
 <listitem>
 <para>
 (Windows only)
@@ -855,7 +855,7 @@ somehow.
 </varlistentry>
 
 <varlistentry id="SHELL">
-<term><option>SHELL</option></term>
+<term><envar>SHELL</envar></term>
 <listitem>
 <para>
 The shell that is invoked by the <command>:!</command> command
