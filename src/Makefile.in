@@ -75,6 +75,8 @@ runhugs@EXE@	: runhugs@OBJ@ $(SERVER_OBJECTS)
 ################################################################
 
 clean		::
+		  $(RM) hugs@EXE@
+		  $(RM) runhugs@EXE@
 		  $(RM) *.o
 		  $(RM) *.O
 		  $(RM) *.obj
