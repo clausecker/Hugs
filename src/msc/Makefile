@@ -13,7 +13,7 @@
 #
 # <default>:   	  make hugs.exe and runhugs.exe
 # install:	  make and install programs/libraries
-# hugs.exe:    	  make minimal working system
+# hugs.exe:	  make minimal working system
 # runhugs.exe:	  make batch-mode version of Hugs
 # hugsscript.dll: make DLL version of Hugs
 # clean:       	  delete files not required in running system
@@ -44,10 +44,10 @@ LIBS		=  kernel32.lib advapi32.lib
 YACC		= bison
 RM		= -del
 CP		= xcopy /Y
-EXE             = .exe
+EXE		= .exe
 OBJ		= .obj
 
-FPTOOLS         = ../../fptools
+FPTOOLS		= ../../fptools
 
 BUILD_DIR	= ..\\hugsdir
 
@@ -59,27 +59,33 @@ INCLUDES	= $(BUILD_DIR)/include/HsFFI.h
 
 .SUFFIXES	:
 .SUFFIXES	: .c .h .obj
-HFILES		= prelude.h config.h options.h storage.h connect.h \
-		  errors.h command.h server.h HsFFI.h module.h machdep.h \
-		  script.h opts.h strutil.h evaluator.h goal.h observe.h
-CFILES		= hugs.c storage.c input.c static.c type.c subst.c \
-		  output.c compiler.c machine.c interp.c builtin.c \
-		  server.c ffi.c module.c machdep.c script.c opts.c \
-		  strutil.c errors.c evaluator.c goal.c observe.c
-INCFILES	= parser.c preds.c bignums.c scc.c timer.c \
-		  printer.c iomonad.c interns.c array.c
+HFILES		= HsFFI.h builtin.h command.h config.h connect.h errors.h \
+		  evaluator.h goal.h machdep.h module.h observe.h options.h \
+		  opts.h output.h prelude.h script.h server.h storage.h \
+		  strutil.h subst.h
+CFILES		= hugs.c runhugs.c server.c edit.c observe.c \
+		  builtin.c compiler.c errors.c evaluator.c \
+		  ffi.c goal.c input.c machdep.c machine.c \
+		  module.c opts.c output.c plugin.c script.c \
+		  static.c storage.c strutil.c subst.c \
+		  type.c version.c
+INCFILES	= array.c bignums.c interns.c iomonad.c \
+		  parser.c preds.c printer.c scc.c timer.c
 YFILES		= parser.y
 SOURCES		= $(HFILES) $(CFILES) $(INCFILES) $(YFILES) 
-OBJECTS		= storage.obj input.obj static.obj type.obj subst.obj \
-		  compiler.obj plugin.obj builtin.obj machine.obj output.obj \
-		  ffi.obj version.obj module.obj machdep.obj script.obj \
-		  opts.obj strutil.obj errors.obj evaluator.obj goal.obj
+OBJECTS		= builtin.obj compiler.obj errors.obj evaluator.obj \
+		  ffi.obj goal.obj input.obj machdep.obj machine.obj \
+		  module.obj opts.obj output.obj plugin.obj script.obj \
+		  static.obj storage.obj strutil.obj subst.obj \
+		  type.obj version.obj
 IOBJECTS	= hugs.obj edit.obj observe.obj hugs.res $(OBJECTS)
-PRELUDE		= config.h options.h prelude.h script.h errors.h
+PRELUDE		= config.h options.h prelude.h script.h
+
 HEADERS		= HsFFI.h config.h unix\\MachDeps.h unix\\template-hsc.h
+
+TOOLSDIR        = ..\\tools
 TOOLS		= ..\\tools\\Package.hs ..\\tools\\ParsePkgConf.hs \
 		  ..\\tools\\get_pkg_field
-TOOLSDIR        = ..\\tools
 
 ################################################################
 # Hugs interpreter and standalone evaluator
@@ -187,8 +193,8 @@ distclean	::
 		  $(RM) *~
 veryclean	:: distclean
 veryclean	::
-		  $(RM) options.h
 		  $(RM) config.h
+		  $(RM) options.h
 TAGS		::
 		  etags *.[ych]
 
@@ -205,6 +211,7 @@ compiler.obj	: compiler.c
 		  $(CC) -c $(CFLAGS) compiler.c
 static.obj	: static.c
 		  $(CC) -c $(CFLAGS) static.c
+
 parser.c	: parser.y
 		  -$(YACC) parser.y
 		  mv parser.tab.c parser.c
