@@ -16,10 +16,6 @@
 #
 #   ./convert_libraries  <directory where libraries lives> <build dir>
 
-cpp_flags='-D__HUGS__ -Isrc -Isrc/unix'
-
-: ${cpp='gcc -P -E -traditional -xc'}
-
 case $# in
 2)	;;
 *)	echo "usage: $0 <directory where libraries lives> <build dir>" >&2
@@ -100,8 +96,8 @@ hslibs() {
 		exit 1 ;;
 	esac
 
-	echo "Converting $2"
-	$cpp $cpp_flags $hs_src/$1/$2 | grep -v '^#' >$compat/$2
+	echo "Copy $2"
+	cp $hs_src/$1/$2 $compat/$2
 }
 
 # Convert hierarchical modules
@@ -217,7 +213,7 @@ mkdir -p $compat
   hslibs lang ArrayBase.hs		# -> Data.Array.Base
   hslibs lang Arrow.hs			# -> Control.Arrow
 # hslibs lang ByteArray.lhs		# deprecated
-  hslibs lang CTypesISO.hs		# -> Foreign.C.TypesISO
+# hslibs lang CTypesISO.hs		# uses C preprocessor
   hslibs lang DiffArray.hs		# -> Data.Array.Diff
 # hslibs lang DirectoryExts.hs
   hslibs lang Dynamic.hs		# -> Data.Dynamic
@@ -235,7 +231,7 @@ mkdir -p $compat
 # hslibs lang MArray.hs			# lots of GHC stuff (and obsolete)
 # hslibs lang MutableArray.lhs		# deprecated
   hslibs lang NativeInfo.hs		# -> System.Info
-  hslibs lang NumExts.lhs
+# hslibs lang NumExts.lhs		# uses C preprocessor
   hslibs lang PackedString.lhs		# -> Data.PackedString
 # hslibs lang PrelByteArr.lhs		# GHC-specific
 # hslibs lang ST.hs			# GHC-specific
@@ -275,7 +271,7 @@ mkdir -p $compat
 # hslibs posix PosixErr.lhs
   hslibs posix PosixFiles.lhs
   hslibs posix PosixIO.lhs
-  hslibs posix PosixProcEnv.lhs
+# hslibs posix PosixProcEnv.lhs		# uses C preprocessor
 # hslibs posix PosixProcPrim.lhs
   hslibs posix PosixTTY.lhs
 # hslibs posix PosixUtil.lhs
