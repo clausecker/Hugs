@@ -8,8 +8,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: output.c,v $
- * $Revision: 1.31 $
- * $Date: 2003/10/14 13:56:23 $
+ * $Revision: 1.32 $
+ * $Date: 2003/11/13 12:55:57 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -48,7 +48,7 @@ static Int  local unusedTups     Args((Int,Cell));
 static Void local unlexVar       Args((Text));
 static Void local unlexFullVar   Args((Name));
 static Void local unlexOp        Args((Text));
-static Void local unlexCharConst Args((Cell));
+static Void local unlexCharConst Args((Char));
 static Void local unlexStrConst  Args((Text));
 
 static Void local putSigType     Args((Cell));
@@ -71,7 +71,7 @@ static Void local printArg       Args((FILE *,Cell));
 static Bool local isStrConst	 Args((Cell));
 static Void local putStrConst	 Args((Cell));
 static Bool local isCharCell	 Args((Cell));
-static Bool local getCellChar    Args((Cell));
+static Char local getCellChar    Args((Cell));
 
 /* --------------------------------------------------------------------------
  * Basic output routines:
@@ -603,7 +603,7 @@ Cell e; {
 	}
 }
 
-static Bool local getCellChar(e)
+static Char local getCellChar(e)
 Cell e; {
     while(1)
         switch(whatIs(e)) {
@@ -738,7 +738,7 @@ Text t; {                              /* alpha numeric symbols must be    */
 }
 
 static Void local unlexCharConst(c)
-Cell c; {
+Char c; {
     putChr('\'');
     putStr(unlexChar(c,'\''));
     putChr('\'');
