@@ -26,10 +26,14 @@ module Hugs.IOExts
 	   -- non-echoing getchar
 	, getCh                 -- :: IO Char
 	, argv                  -- :: [String]
+
+	  -- Non-standard extensions 
+	, hugsIsEOF             -- :: IO Bool
+	, hugsHIsEOF            -- :: Handle  -> IO Bool
 	) where
 
 import Hugs.Prelude
-import Hugs.IO( IOMode(..), Handle, openFile )
+import Hugs.IO
 import Hugs.IORef
 import Hugs.System ( getArgs )
 
@@ -78,4 +82,15 @@ primitive appendBinaryFile  	 :: FilePath -> String -> IO ()
 primitive readBinaryFile    	 :: FilePath -> IO String
 primitive openBinaryFile         :: FilePath -> IOMode -> IO Handle
 
+-----------------------------------------------------------------------------
+-- Non-standard extensions 
+-- (likely to disappear when IO library is more complete)
+--
+-- keep them around for now.
+
 primitive getCh                  :: IO Char -- non-echoing getchar
+
+-- C library style test for EOF (doesn't obey Haskell semantics)
+primitive hugsHIsEOF "hugsHIsEOF" :: Handle -> IO Bool
+hugsIsEOF             :: IO Bool
+hugsIsEOF              = hugsHIsEOF stdin

@@ -48,9 +48,6 @@ module Hugs.IO (
     hIsSeekable,            -- :: Handle -> IO Bool
 
     -- Non-standard extensions 
-    hugsIsEOF,              -- :: IO Bool
-    hugsHIsEOF,             -- :: Handle  -> IO Bool
-    
     openFd                  -- :: Int -> Bool -> IOMode -> Bool -> IO Handle
     ) where
 
@@ -174,17 +171,6 @@ primitive hIsOpen,
    	  hIsReadable,
    	  hIsWritable,
 	  hIsSeekable :: Handle -> IO Bool
-
------------------------------------------------------------------------------
--- Non-standard extensions 
--- (likely to disappear when IO library is more complete)
---
--- keep them around for now.
-
--- C library style test for EOF (doesn't obey Haskell semantics)
-primitive hugsHIsEOF "hugsHIsEOF" :: Handle -> IO Bool
-hugsIsEOF             :: IO Bool
-hugsIsEOF              = hugsHIsEOF stdin
 
 -----------------------------------------------------------------------------
 
