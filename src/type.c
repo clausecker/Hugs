@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: type.c,v $
- * $Revision: 1.23 $
- * $Date: 2000/08/15 20:56:10 $
+ * $Revision: 1.24 $
+ * $Date: 2000/08/15 21:10:42 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1326,7 +1326,6 @@ List qss; {
     List svPreds;
 #endif
     enterGathering();
-    printf("typeZComp!\n");
     enterBindings();
     for (pss = qss;nonNull(pss);pss=tl(pss)) {
 	gatheredAss = cons(NIL,gatheredAss);
@@ -1347,14 +1346,6 @@ List qss; {
     leaveBindings();
     leaveBindings();
 
-    { List q = gatheredAss;
-      Int n = 0;
-    for (; nonNull(q); q=tl(q), ++n) {
-	printf("gatheredAss %d: ", n);
-	print(hd(q),50);
-	printf("\n");
-    }
-    }
     /* now, we construct a regular comprehension out of the parallel one */
     zpat = mkTuple(length(qss));
     zexp = findQualName(mkQVar(findText("List"),zipName(length(qss))));
@@ -1363,22 +1354,7 @@ List qss; {
 	zpat = ap(zpat, ps);
 	zexp = ap(zexp, ap(MONADCOMP,pair(nameListMonad,pair(ps, hd(pss)))));
     }
-    Printf("zpat: ");
-    printExp(stdout,zpat);
-    Printf("\n");
-    Printf("zexp: ");
-    printExp(stdout,zexp);
-    Printf("\n");
     leaveGathering();
-    { List q = gatheredAss;
-      Int n = 0;
-      printf("after leaving\n");
-    for (; nonNull(q); q=tl(q), ++n) {
-	printf("gatheredAss %d: ", n);
-	print(hd(q),50);
-	printf("\n");
-    }
-    }
     return pair(fst(e),singleton(ap(FROMQUAL,pair(zpat,zexp))));
 }
 
@@ -1391,15 +1367,6 @@ List qs; {
 #if IPARAM
     List svPreds;
 #endif
-    { List q = gatheredAss;
-      Int n = 0;
-      printf("typeCompy\n");
-    for (; nonNull(q); q=tl(q), ++n) {
-	printf("gatheredAss %d: ", n);
-	print(hd(q),50);
-	printf("\n");
-    }
-    }
 
     STACK_CHECK
     if (!isNull(qs)) {			/* no qualifiers left		   */
@@ -1428,34 +1395,7 @@ List qs; {
 				fst(snd(q))
 				    = typeFreshPat(l,patBtyvs(fst(snd(q))));
 				shouldBe(l,fst(snd(q)),NIL,genQual,aVar,beta);
-    { List q = varsBounds;
-      Int n = 0;
-      printf("varsBounds\n");
-    for (; nonNull(q); q=tl(q), ++n) {
-	printf("varsBounds %d: ", n);
-	print(hd(q),50);
-	printf("\n");
-    }
-    }
-    { List q = gatheredAss;
-      Int n = 0;
-      printf("gatheredAss bf\n");
-    for (; nonNull(q); q=tl(q), ++n) {
-	printf("gatheredAss %d: ", n);
-	print(hd(q),50);
-	printf("\n");
-    }
-    }
 				hd(gatheredAss) = dupOnto(hd(varsBounds),hd(gatheredAss));
-    { List q = gatheredAss;
-      Int n = 0;
-      printf("gatheredAss af\n");
-    for (; nonNull(q); q=tl(q), ++n) {
-	printf("gatheredAss %d: ", n);
-	print(hd(q),50);
-	printf("\n");
-    }
-    }
 				gatheredTyvars = dupOnto(hd(btyvars),gatheredTyvars);
 				gatheredPTyvars = dupOnto(hd(pendingBtyvs),gatheredPTyvars);
 				typeCompy(l,m,qs1);

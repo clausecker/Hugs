@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.24 $
- * $Date: 2000/08/15 20:56:10 $
+ * $Revision: 1.25 $
+ * $Date: 2000/08/15 21:10:42 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -5673,7 +5673,7 @@ Cell e;
 List qss; {
     Int n = length(qss);
     enterGathering();
-    if (isNull(findQualName(mkQVar(findText("List"),zipName(n))))) {
+    if (n > 3 && isNull(findQualName(mkQVar(findText("List"),zipName(n))))) {
 	ERRMSG(l) "undefined variable \"%s\" (introduced by parallel comprehension)", textToStr(zipName(n))
 	EEND;
     }
