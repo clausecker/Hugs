@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: builtin.c,v $
- * $Revision: 1.20 $
- * $Date: 2002/04/11 23:20:18 $
+ * $Revision: 1.21 $
+ * $Date: 2002/04/17 15:22:55 $
  * ------------------------------------------------------------------------*/
 
 /* We include math.h before prelude.h because SunOS 4's cpp incorrectly
@@ -2043,7 +2043,11 @@ struct thunk_data {
     struct thunk_data* next;
     struct thunk_data* prev;
     HugsStablePtr      stable;
+#if defined(__ppc__)
+     char               code[13*4];
+#else
     char               code[16];
+#endif
 };
 
 struct thunk_data* foreignThunks = 0;
@@ -2076,11 +2080,62 @@ static void* mkThunk(void* app, HugsStablePtr s) {
     /* 5 bytes: jmp app */
     *pc++ = 0xe9;
     *((int*)pc)++ = (char*)app - ((char*)&(thunk->code[16]));
+#elif defined(__ppc__) && defined(__GNUC__)
+     /* This is only for MacOS X.
+      * It does not work on MacOS 9 because of the very strange
+      * handling of function pointers in OS 9.
+      * I don't know about LinuxPPC calling conventions.
+      * Please note that it only works for up to 7 arguments.
+      */
+
+     {
+         unsigned long *adj_code = (unsigned long*)pc;
+         // make room for extra arguments
+         adj_code[0] = 0x7d2a4b78;    //mr r10,r9
+         adj_code[1] = 0x7d094378;    //mr r9,r8
+         adj_code[2] = 0x7ce83b78;    //mr r8,r7
+         adj_code[3] = 0x7cc73378;    //mr r7,r6
+         adj_code[4] = 0x7ca62b78;    //mr r6,r5
+         adj_code[5] = 0x7c852378;    //mr r5,r4
+         adj_code[6] = 0x7c641b78;    //mr r4,r3
+
+         adj_code[7] = 0x3c000000; //lis r0,hi(app)
+         adj_code[7] |= ((unsigned long)app) >> 16;
+
+         adj_code[8] = 0x3c600000; //lis r3,hi(s)
+         adj_code[8] |= ((unsigned long)s) >> 16;
+
+         adj_code[9] = 0x60000000; //ori r0,r0,lo(app)
+         adj_code[9] |= ((unsigned long)app) & 0xFFFF;
+
+         adj_code[10] = 0x60630000; //ori r3,r3,lo(s)
+         adj_code[10] |= ((unsigned long)s) & 0xFFFF;
+
+         adj_code[11] = 0x7c0903a6; //mtctr r0
+         adj_code[12] = 0x4e800420; //bctr
+
+         pc = (char*) &adj_code[13];
+
+         // Flush the Instruction cache:
+         //MakeDataExecutable(adjustor,4*13);
+             /* This would require us to link with CoreServices.framework */
+         { /* this should do the same: */
+             int n = 13;
+             unsigned long *p = adj_code;
+             while(n--)
+             {
+                 __asm__ volatile ("dcbf 0,%0\n\tsync\n\ticbi 0,%0"
+                             : : "g" (p));
+                 p++;
+             }
+             __asm__ volatile ("sync\n\tisync");
+         }
+     }
 #else
     ERRMSG(0) "Foreign export dynamic is not supported on this architecture" 
     EEND;
 #endif
-    assert(pc <= &thunk->code[16]);
+    assert(pc <= &thunk->code[0] + sizeof(thunk->code));
     return &thunk->code; /* a pointer into the middle of the thunk */
 }
 
