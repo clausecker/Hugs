@@ -217,6 +217,20 @@ in a module <literal>Hugs.Prelude</literal> that these modules import.
 </para></listitem>
 </varlistentry>
 
+<varlistentry>
+<term>Wierd treatment of <literal>(:)</literal></term>
+<listitem><para>
+The Hugs prelude exports <literal>(:)</literal> as if it were an identifier,
+even though this is not permitted in user-defined modules.
+This means that Hugs incorrectly rejects the following:
+<programlisting>
+  module Foo where
+  import Prelude()
+  cs = 'a':cs
+</programlisting>
+</para></listitem>
+</varlistentry>
+
 </variablelist>
 
 </sect2>
