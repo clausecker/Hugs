@@ -11,8 +11,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.87 $
- * $Date: 2003/04/10 09:26:01 $
+ * $Revision: 1.88 $
+ * $Date: 2003/05/05 19:46:38 $
  * ------------------------------------------------------------------------*/
 #include "prelude.h"
 #include "storage.h"
@@ -1632,33 +1632,19 @@ DoublePro fl; {
  *-------------------------------------------------------------------------*/
 
 #ifdef PROVIDE_INT64
-union fudgeI64Coerce {
-    HsInt64  ival;
-    struct {
-	Int valPart1,valPart2;
-    }      cval;
-};
-
 Int part1Int64(i)
 HsInt64 i; {
-    union fudgeI64Coerce fudge;
-    fudge.ival = i;
-    return fudge.cval.valPart1;
+    return (Int)(i >> 32);
 }
 
 Int part2Int64(i)
 HsInt64 i; {
-    union fudgeI64Coerce fudge;
-    fudge.ival = i;
-    return fudge.cval.valPart2;
+    return (Int)(i);
 }
 
 HsInt64 int64FromParts(c1,c2)
 Int c1, c2; {
-    union fudgeI64Coerce fudge;
-    fudge.cval.valPart1 = c1;
-    fudge.cval.valPart2 = c2;
-    return fudge.ival;
+    return ((HsInt64)c1 << 32) | (HsInt64)((HsWord64)c2);
 }
 #endif /* PROVIDE_INT64 */
 

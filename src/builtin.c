@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: builtin.c,v $
- * $Revision: 1.57 $
- * $Date: 2003/04/03 15:44:10 $
+ * $Revision: 1.58 $
+ * $Date: 2003/05/05 19:46:38 $
  * ------------------------------------------------------------------------*/
 
 /* We include math.h before prelude.h because SunOS 4's cpp incorrectly
@@ -963,33 +963,33 @@ Word2Word(primW8toW32 , x)
 Word2Word(primW16toW32, x)
 
 primFun(primI64toI32) {
-    Int x, y;
+    Cell x, y;
     eval(primArg(1)); 
     x = fst(snd(whnfHead));
     y = snd(snd(whnfHead));
-    IntIntResult(x,y);
+    updapRoot(ap(mkTuple(2),x),y);
 }
 
 primFun(primI32toI64) {
     Int x, y;
     IntArg(x,2);
     IntArg(y,1);
-    updateRoot(pair(I64CELL,pair(x,y)));
+    updateRoot(pair(I64CELL,pair(mkInt(x),mkInt(y))));
 }
 
 primFun(primW64toW32) {
-    Unsigned x, y;
+    Cell x, y;
     eval(primArg(1)); 
     x = fst(snd(whnfHead));
     y = snd(snd(whnfHead));
-    WordWordResult(x,y);
+    updapRoot(ap(mkTuple(2),x),y);
 }
 
 primFun(primW32toW64) {
     Unsigned x, y;
     WordArg(x,2);
     WordArg(y,1);
-    updateRoot(pair(I64CELL,pair(x,y)));
+    updateRoot(pair(I64CELL,pair(mkInt(x),mkInt(y))));
 }
 
 #endif /* WORD_OPS */
@@ -1736,11 +1736,11 @@ static void putBool        (HsBool x)        { push(x?nameTrue:nameFalse); }
 static void putInt8 (HsInt8  x) { push(mkInt(x)); }
 static void putInt16(HsInt16 x) { push(mkInt(x)); }
 static void putInt32(HsInt32 x) { push(mkInt(x)); }
-static void putInt64(HsInt64 x) { push(pair(I64CELL,pair(part1Int64(x),part2Int64(x)))); }
+static void putInt64(HsInt64 x) { push(pair(I64CELL,pair(mkInt(part1Int64(x)),mkInt(part2Int64(x))))); }
 static void putWord8 (HsWord8  x) { push(mkInt((int)x)); }
 static void putWord16(HsWord16 x) { push(mkInt((int)x)); }
 static void putWord32(HsWord32 x) { push(mkInt((int)x)); }
-static void putWord64(HsWord64 x) { push(pair(I64CELL,pair(part1Int64(x),part2Int64(x)))); }
+static void putWord64(HsWord64 x) { push(pair(I64CELL,pair(mkInt(part1Int64(x)),mkInt(part2Int64(x))))); }
 static void putPtr   (HsPtr    x) { push(mkPtr(x)); }
 static void putFunPtr(HsFunPtr x) { push(mkPtr((Pointer)x)); }
 
