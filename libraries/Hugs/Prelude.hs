@@ -965,16 +965,20 @@ instance RealFloat Double where
     isIEEE      _ = False
 
 instance Enum Float where
+    succ x                = x+1
+    pred x                = x-1
     toEnum		  = primIntToFloat
-    fromEnum		  = truncate
+    fromEnum		  = fromInteger . truncate   -- may overflow
     enumFrom		  = numericEnumFrom
     enumFromThen	  = numericEnumFromThen
     enumFromTo n m	  = numericEnumFromTo n (m+1/2)
     enumFromThenTo n n' m = numericEnumFromThenTo n n' (m + (n'-n)/2)
 
 instance Enum Double where
+    succ x                = x+1
+    pred x                = x-1
     toEnum		  = primIntToDouble
-    fromEnum		  = truncate
+    fromEnum		  = fromInteger . truncate   -- may overflow
     enumFrom		  = numericEnumFrom
     enumFromThen	  = numericEnumFromThen
     enumFromTo n m	  = numericEnumFromTo n (m+1/2)
@@ -1093,8 +1097,10 @@ instance Integral a => RealFrac (Ratio a) where
 			    where (q,r) = quotRem x y
 
 instance Integral a => Enum (Ratio a) where
+    succ x         = x+1
+    pred x         = x-1
     toEnum         = fromInt
-    fromEnum       = truncate
+    fromEnum       = fromInteger . truncate   -- may overflow
     enumFrom       = numericEnumFrom
     enumFromTo     = numericEnumFromTo
     enumFromThen   = numericEnumFromThen
