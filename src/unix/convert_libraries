@@ -67,6 +67,7 @@ function cvt_happy {
 	echo "Converting $1/$2"
 	mkdir -p `dirname $dst/$2`
 
+	inname=`basename $2`
 	case $2 in
 	*.ly)	outname=`basename $2 .ly`.hs ;;
 	*)	outname=`basename $2 .y`.hs ;;
@@ -74,10 +75,10 @@ function cvt_happy {
 
 	tmpdir=/tmp/cvt.$$
 	mkdir $tmpdir
-	(
+	cat $src/$1/$2 | (
 		cd $tmpdir
-		cp $src/$1/$2 .
-		happy `basename $2`
+		cat >$inname
+		happy $inname
 	)
 	$cpp $tmpdir/$outname | cat -s >`dirname $dst/$2`/$outname
 	rm -r $tmpdir
