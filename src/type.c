@@ -7,8 +7,8 @@
  * in the distribution for details.
  *
  * $RCSfile: type.c,v $
- * $Revision: 1.3 $
- * $Date: 1999/07/28 23:00:36 $
+ * $Revision: 1.4 $
+ * $Date: 1999/08/06 23:03:19 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -2105,8 +2105,10 @@ Int    beta; {
 #endif
     if (!sameSchemes(t,rt))
 	tooGeneral(line,mem,rt,t);
-    if (nonNull(preds))
+    if (nonNull(preds)) {
+	preds = scSimplify(preds);
 	cantEstablish(line,wh,mem,t,ps);
+    }
 }
 
 /* --------------------------------------------------------------------------

@@ -7,8 +7,8 @@
  * in the distribution for details.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.3 $
- * $Date: 1999/08/05 16:59:34 $
+ * $Revision: 1.4 $
+ * $Date: 1999/08/06 23:03:18 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -611,6 +611,7 @@ static struct cmd cmds[] = {
 #if !IGNORE_MODULES
  {":module",SETMODULE}, 
 #endif
+ {":browse", BROWSE},
  {":xplain", XPLAIN},
  {"",      EVAL},
  {0,0}
@@ -636,6 +637,8 @@ static Void local menu() {
     Printf(":set                help on command line options\n");
     Printf(":names [pat]        list names currently in scope\n");
     Printf(":info <names>       describe named objects\n");
+    Printf(":browse <name>	browse module <name>\n");
+    Printf(":xplain <context>	explain instance resolution for <context>\n");
     Printf(":find <name>        edit module containing definition of name\n");
     Printf(":!command           shell escape\n");
     Printf(":cd dir             change directory\n");
@@ -1154,6 +1157,51 @@ static Void local showtype() {         /* print type of expression (if any)*/
     Putchar('\n');
 }
 
+static Void local browseit(mod)
+Module mod; {
+    if (nonNull(mod)) {
+	Cell cs;
+	for (cs = module(mod).names; nonNull(cs); cs=tl(cs)) {
+	    Name nm = hd(cs);
+	    /* only look at things defined in this module */
+	    if (name(nm).mod == mod) {
+		/* unwanted artifacts, like lambda lifted values,
+		   are in the list of names, but have no types */
+		if (nonNull(name(nm).type)) {
+		    printExp(stdout,nm);
+		    Printf(" :: ");
+		    printType(stdout,name(nm).type);
+		    if (isCfun(nm)) {
+			Printf("  -- data constructor");
+		    } else if (isMfun(nm)) {
+			Printf("  -- class member");
+		    } else if (isSfun(nm)) {
+			Printf("  -- selector function");
+		    }
+		    if (name(nm).primDef) {
+			Printf("   -- primitive");
+		    }
+		    Printf("\n");
+		}
+	    }
+	}
+    }
+}
+
+static Void local browse() {            /* browse modules                  */
+    Int    count = 0;                   /* or give menu of commands        */
+    String s;
+
+    setCurrModule(findEvalModule());
+    startNewScript(0);                  /* for recovery of storage         */
+    for (; (s=readFilename())!=0; count++) {
+	browseit(findModule(findText(s)));
+    }
+    if (count == 0) {
+	whatScripts();
+    }
+}
+
 static Void local xplain() {         /* print type of expression (if any)*/
     Cell type;
     Cell d;
@@ -1252,7 +1300,7 @@ Text t; {
     Tycon  tc  = findTycon(t);
     Class  cl  = findClass(t);
     Name   nm  = findName(t);
-    Module mod = findEvalModule();
+    Module mod = findModule(t);
 
     if (nonNull(tc)) {                  /* as a type constructor           */
 	Type t = tc;
@@ -1399,6 +1447,11 @@ Text t; {
 	    Printf("   -- primitive");
 	}
 	Printf("\n\n");
+    }
+
+    if (nonNull(mod)) {                 /* as a module                     */
+	Printf("-- module\n");
+        browseit(mod);
     }
 
     if (isNull(tc) && isNull(cl) && isNull(nm)) {
@@ -1563,6 +1616,8 @@ String argv[]; {
 	    case EVAL   : evaluator();
 			  break;
 	    case TYPEOF : showtype();
+			  break;
+	    case BROWSE : browse();
 			  break;
 	    case XPLAIN : xplain();
 			  break;
