@@ -110,7 +110,7 @@ function stub {
 # Those with an extra arg simply use a Hugs module instead. (to be fixed)
 
   cvt base Control/Arrow.hs
-# cvt base Control/Concurrent.hs
+# cvt base Control/Concurrent.hs	# Hugs lacks ThreadId
   cvt base Control/Concurrent/Chan.hs
   cvt base Control/Concurrent/MVar.hs
   cvt base Control/Concurrent/QSem.hs
@@ -133,16 +133,16 @@ function stub {
   cvt base Control/Monad/Trans.hs
   cvt base Control/Monad/Writer.hs
   cvt base Control/Parallel.hs
-# cvt base Control/Parallel/Strategies.hs
+# cvt base Control/Parallel/Strategies.hs	# unused by GHC
   cvt base Data/Array.hs
-# cvt base Data/Array/Base.hs
+# cvt base Data/Array/Base.hs		# largely GHC-specific
 # cvt base Data/Array/Diff.hs
   cvt base Data/Array/IArray.hs
   cvt base Data/Array/IO.hs
   cvt base Data/Array/MArray.hs
   cvt base Data/Array/ST.hs
 # cvt base Data/Array/Storable.hs
-# cvt base Data/Array/Unboxed.hs
+# cvt base Data/Array/Unboxed.hs	# GHC-specific
   cvt base Data/Bits.hs
   cvt base Data/Bool.hs
   cvt base Data/Char.hs
@@ -163,10 +163,10 @@ function stub {
   cvt base Data/STRef/Strict.hs
   cvt base Data/Set.hs
   cvt base Data/Tuple.hs
-# cvt base Data/Unique.hs
+  cvt base Data/Unique.hs
   cvt base Data/Word.hs
   cvt base Debug/QuickCheck.hs
-# cvt base Debug/QuickCheck/Batch.hs	# needs Control.Concurrent for ThreadId
+# cvt base Debug/QuickCheck/Batch.hs	# needs Control.Concurrent.myThreadId
   cvt base Debug/QuickCheck/Poly.hs
   cvt base Debug/QuickCheck/Utils.hs
   cvt base Debug/Trace.hs
