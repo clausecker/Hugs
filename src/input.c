@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: input.c,v $
- * $Revision: 1.52 $
- * $Date: 2002/09/30 04:44:29 $
+ * $Revision: 1.53 $
+ * $Date: 2002/10/05 16:06:59 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -86,7 +86,7 @@ static Void local saveStrChr      Args((Char));
 static Cell local readAChar       Args((Bool));
 
 static Bool local lazyReadMatches Args((String));
-static Cell local readEscapeChar  Args((Bool));
+static Cell local readEscapeChar  Args((Bool,Bool));
 static Void local skipGap         Args((Void));
 static Cell local readCtrlChar    Args((Void));
 static Cell local readOctChar     Args((Void));
@@ -995,7 +995,7 @@ Bool isStrLit; {                       /* TRUE => enable \& and gaps       */
     Cell c = mkChar(c0);
 
     if (c0=='\\')                      /* escape character?                */
-	return readEscapeChar(isStrLit);
+	return readEscapeChar(isStrLit,TRUE);
     if (!isISO(c0)) {
 	ERRMSG(row) "Non ISO character `\\%d' in constant", ((int)c0)
 	EEND;
@@ -1047,11 +1047,12 @@ String s; {                            /* possibly using characters that   */
     return s[i]=='\0';
 }
 
-static Cell local readEscapeChar(isStrLit)/* read escape character         */
-Bool isStrLit; {
+static Cell local readEscapeChar(isStrLit,skipEsc)/* read escape character         */
+Bool isStrLit;
+Bool skipEsc; {
     int i=0;
 
-    skip(/* '\\' */);
+    if (skipEsc) skip(/* '\\' */);
     switch (c0) {
 	case '&'  : if (isStrLit) {
 			skip();
@@ -1307,7 +1308,23 @@ String readFilename() {                /* Read filename from input (if any)*/
 	if (c0=='"') {
 	    skip();
 	    while (c0!=EOF && c0!='\"') {
-		Cell c = readAChar(TRUE);
+		Cell c;
+		/* Permit and treat an escaped space as legal character
+		   in a filename. Some environments include these when
+		   pasting filenames (MacOS X one, according to reports).
+		*/
+		if (c0 == '\\') {
+		  skip();
+		  if (c0 == ' ') {
+		    saveTokenChar(' ');
+		    skip();
+		    continue;
+		  } else {
+		    c = readEscapeChar(TRUE,FALSE);
+		  }
+		} else {
+		  c = readAChar(TRUE);
+		}
 		if (nonNull(c)) {
 		    saveTokenChar(charOf(c));
 		}
@@ -1320,8 +1337,15 @@ String readFilename() {                /* Read filename from input (if any)*/
 	    }
 	}
 	else {
-	    saveTokenChar(c0);
+  	    Int savedChar = c0;
 	    skip();
+	    /* Handle escaped spaces - see above comment. */
+	    if (savedChar == '\\' && c0 == ' ') {
+	      saveTokenChar(' ');
+	      skip();
+	    } else {
+	      saveTokenChar(savedChar);
+	    }
 	}
     }
     endToken();
