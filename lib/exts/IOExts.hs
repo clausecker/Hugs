@@ -55,12 +55,12 @@ fixIO m = IO fixIO'
     case r of
     Finished_Return a   -> succ a
     Finished_Error err  -> fail err
-    other               -> error "IOExts:fixIO: failed"
+    other               -> error "IOExts.fixIO: failed"
    where
     r = basicIORun (m a)
     a = case r   of 
         Finished_Return a  -> a
-        _                  -> error "IOExts:fixIO: thread exited with error"
+        _                  -> error "IOExts.fixIO: thread exited with error"
 
 primitive unsafeCoerce "primUnsafeCoerce" :: a -> b
 
