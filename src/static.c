@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.84 $
- * $Date: 2002/09/05 15:50:16 $
+ * $Revision: 1.85 $
+ * $Date: 2002/09/08 02:24:02 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -344,10 +344,14 @@ String reloadModule;
 Void startModule(nm)                             /* switch to a new module */
 Cell nm; {
     Module m;
+    Text t = textOf(nm);
     if (!isCon(nm)) internal("startModule");
-    if (isNull(m = findModule(textOf(nm))))
-	m = newModule(textOf(nm));
-    else if (!isPreludeScript()) {
+    if (isNull(m = findModule(t))) {
+	m = newModule(t);
+	if ( newPrelude && moduleUserPrelude == 0 && t == textUserPrelude ) {
+	  moduleUserPrelude = m;
+	}
+    } else if (!isPreludeScript()) {
 	/* You're allowed to break the rules in the Prelude! */
 #if HSCRIPT
 	reloadModule = textToStr(textOf(nm));
@@ -1028,6 +1032,8 @@ Cell e; {
 			    break;
 			}
 		    }
+		    /* Enter the (class,members) pair _and_ the individual 
+		       member names on to the exports list */
 		    exports=cons(pair(nm,exps),exports);
 		    return dupOnto(exps,exports);
 		}
@@ -1099,7 +1105,7 @@ Cell what; {				/* SYNONYM/DATATYPE/etc...	   */
         ERRTEXT "\n*** Could refer to: " ETHEN
        ERRTEXT "%s.%s ", textToStr(module(tycon(tc).mod).text), textToStr(tycon(tc).text) ETHEN
 	for(;nonNull(ls);ls=tl(ls)) {
-	  ERRTEXT "%s.%s", textToStr(module(tycon(hd(ls)).mod).text), textToStr(tycon(hd(ls)).text)
+	  ERRTEXT "%s.%s ", textToStr(module(tycon(hd(ls)).mod).text), textToStr(tycon(hd(ls)).text)
 	  ETHEN
 	}
 	ERRTEXT "\n" EEND;
@@ -2108,7 +2114,7 @@ Cell pred; {
 	  ERRTEXT "\n*** Could refer to: " ETHEN
 	  ERRTEXT "%s.%s ", textToStr(module(cclass(c).mod).text), textToStr(cclass(c).text) ETHEN
 	  for(;nonNull(ls);ls=tl(ls)) {
-	    ERRTEXT "%s.%s", 
+	    ERRTEXT "%s.%s ", 
 		    textToStr(module(cclass(hd(ls)).mod).text), 
 		    textToStr(cclass(hd(ls)).text)
 		    ETHEN
@@ -7177,7 +7183,7 @@ Cell e; {
 	    ERRTEXT "\n*** Could refer to: " ETHEN
 	    ERRTEXT "%s.%s ", textToStr(module(name(n).mod).text), textToStr(name(n).text) ETHEN
 	    for(;nonNull(ls);ls=tl(ls)) {
-		ERRTEXT "%s.%s", textToStr(module(name(hd(ls)).mod).text), textToStr(name(hd(ls)).text)
+		ERRTEXT "%s.%s ", textToStr(module(name(hd(ls)).mod).text), textToStr(name(hd(ls)).text)
 		ETHEN
 	    }
 	    ERRTEXT "\n" EEND;
@@ -7205,7 +7211,7 @@ Cell e; {
 	    ERRTEXT "\n*** Could refer to: " ETHEN
 	    ERRTEXT "%s.%s ", textToStr(module(tycon(tc).mod).text), textToStr(tycon(tc).text) ETHEN
 	    for(;nonNull(ls);ls=tl(ls)) {
-		ERRTEXT "%s.%s", textToStr(module(tycon(hd(ls)).mod).text), textToStr(tycon(hd(ls)).text)
+		ERRTEXT "%s.%s ", textToStr(module(tycon(hd(ls)).mod).text), textToStr(tycon(hd(ls)).text)
 		ETHEN
 	    }
 	    ERRTEXT "\n" EEND;
@@ -7592,10 +7598,10 @@ Void checkDefns() {			/* Top level static analysis	   */
     mapProc(checkQualImport,  module(thisModule).modAliases);
     mapProc(checkUnqualImport,unqualImports);
     /* Add "import Prelude" if there's no explicit import */
-    if (thisModule!=modulePrelude
-	&& isNull(cellAssoc(modulePrelude,unqualImports))
-	&& isNull(cellRevAssoc(modulePrelude,module(thisModule).modAliases)) ) {
-	addUnqualImport(modulePrelude,mkCon(textPrelude),DOTDOT);
+    if ((thisModule!=modulePrelude && thisModule!=moduleUserPrelude)
+	&& isNull(cellAssoc(moduleUserPrelude,unqualImports))
+	&& isNull(cellRevAssoc(moduleUserPrelude,module(thisModule).modAliases)) ) {
+	addUnqualImport(moduleUserPrelude,mkCon(textUserPrelude),DOTDOT);
     }
     map1Proc(checkImportList, FALSE, unqualImports);
     mapProc(checkQualImportList, module(thisModule).qualImports);

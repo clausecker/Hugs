@@ -8,8 +8,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: prelude.h,v $
- * $Revision: 1.36 $
- * $Date: 2002/06/18 00:41:58 $
+ * $Revision: 1.37 $
+ * $Date: 2002/09/08 02:24:02 $
  * ------------------------------------------------------------------------*/
 
 #include "config.h"
@@ -718,8 +718,10 @@ typedef void*    Pointer;
 #ifndef STD_PRELUDE
 #if     RISCOS
 #define STD_PRELUDE	   "prelude"
+#define STD_PRELUDE_IMPL   "prelimpl"
 #else
 #define STD_PRELUDE	   "Prelude"
+#define STD_PRELUDE_IMPL   "PrelImpl"
 #endif
 #endif
 

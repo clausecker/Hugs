@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.86 $
- * $Date: 2002/08/08 23:35:47 $
+ * $Revision: 1.87 $
+ * $Date: 2002/09/08 02:24:02 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -34,6 +34,11 @@
 #if !HASKELL_98_ONLY
 Bool haskell98 = TRUE;			/* TRUE => Haskell 98 compatibility*/
 #endif
+
+Bool newPrelude = FALSE;  
+ /* TRUE => have Prelude re-export Prelude impl module so as to 
+  *         only export what Haskell 98 mandates.
+  */
 
 #if EXPLAIN_INSTANCE_RESOLUTION
 Bool showInstRes = FALSE;
@@ -111,7 +116,7 @@ static Void   local clearProject      Args((Void));
 static Void   local addScriptName     Args((String,Bool));
 static Bool   local addScript         Args((String,Long));
 static Void   local forgetScriptsFrom Args((Script));
-static Void   local forgetAScript     Args((Script));
+static Void   local forgetAScript     Args((Script,Bool));
 static Void   local setLastEdit       Args((String,Int));
 static Void   local failed            Args((Void));
 static String local strCopy           Args((String));
@@ -278,6 +283,7 @@ Int    argc;
 String argv[]; {
     Script i;
     String proj = 0;
+    String prelLocation;
 #if USE_PREFERENCES_FILE
     FILE *f;
     FileName hugsPrefsFile = "\0";
@@ -287,7 +293,7 @@ String argv[]; {
     lastEdit      = 0;
     scriptFile    = 0;
     numScripts    = 0;
-    namesUpto     = 1;
+    namesUpto     = 2;
 
 #if HUGS_FOR_WINDOWS || HAVE_WINDOWS_H
 #define DEFAULT_EDITOR "\\notepad.exe"
@@ -304,8 +310,9 @@ String argv[]; {
        * Nope, the default editor is used instead. In our case
        * this is 'notepad', which we assume is always residing
        * in the windows directory, so locate it first..
+       * (it would be somewhat odd for a user not to have that
+       * directory in his/her PATH, but less we assume, the better.)
        */
-      
       notePadLoc = 
 #ifdef HAVE_ALLOCA
 	  alloca
@@ -333,6 +340,7 @@ String argv[]; {
     readOptions(readRegString(HKEY_LOCAL_MACHINE,HugsRoot,"Options",""), TRUE);
     readOptions(readRegString(HKEY_CURRENT_USER, HugsRoot,"Options",""), TRUE);
 #endif /* USE_REGISTRY */
+
 #if USE_PREFERENCES_FILE
     if (f=fopen(PREFS_FILE_NAME,"r")) {
            /* is preferences file in the {Current} folder? */
@@ -376,13 +384,33 @@ String argv[]; {
 	}
     }
 
-    scriptName[0] = strCopy(findMPathname(NULL,STD_PRELUDE,hugsPath));
+    /* Figure out whether we're using the 'new' Prelude
+     * or not -- if 'PrelImpl' is reachable via the search
+     * path, we are.
+     */
+    if ( ( prelLocation = findMPathname(NULL, STD_PRELUDE_IMPL, hugsPath)) ) {
+      newPrelude = TRUE;
+      scriptName[0] = strCopy(prelLocation);
+      /* Hackily add 'Prelude' onto the script stack. */
+      scriptName[1] = strCopy (findPathname(NULL,STD_PRELUDE));
+      scriptReal[1] = strCopy(RealPath(scriptName[1]));
+      chased[1]     = FALSE;
+    } else {
+      newPrelude = FALSE;
+      scriptName[0] = strCopy(findMPathname(NULL, STD_PRELUDE,hugsPath));
+      /* Using the old Prelude, so the room we tentatively 
+         made available on the script stack needs to be 
+	 taken back. */
+      scriptName[1] = 0;
+      scriptReal[1] = 0;
+      forgetAScript(1,FALSE);
+    }
+
     if (!scriptName[0]) {
 	Printf("Prelude not found on current path: \"%s\"\n",
 	       hugsPath ? hugsPath : "");
 	fatal("Unable to load prelude");
     }
-    
     scriptReal[0] = strCopy(RealPath(scriptName[0]));
 
 #if !HASKELL_98_ONLY
@@ -1263,7 +1291,7 @@ Long   len; {                           /* length of script file   */
     needsImports = FALSE;
     if (!parseScript(fname,len)) {   /* process script file */
 	/* file or parse error, drop the script */ 
-	forgetAScript(numScripts);
+	forgetAScript(numScripts,TRUE);
 	errFail();
     }
     if (needsImports) return FALSE;
@@ -1333,20 +1361,24 @@ List imps; {
     return FALSE;
 }
 
-static Void local forgetScriptsFrom(scno)/* remove scripts from system     */
+static Void local forgetScriptsFrom(scno) /* remove scripts from system     */
 Script scno; {
     Script i;
+    if (newPrelude && scno == 1 && namesUpto > 1) {
+      scno++;
+    }    
     for (i=scno; i<namesUpto; ++i)
 	if (scriptName[i])
 	    free(scriptName[i]);
-    dropScriptsFrom(scno-1);             /* don't count prelude as script  */
+    dropScriptsFrom(scno-1); /* don't count prelude as script  */
     namesUpto = scno;
     if (numScripts>namesUpto)
 	numScripts = scno;
 }
 
-static Void local forgetAScript(scno) /* remove a script from system */
-Script scno; {
+static Void local forgetAScript(scno,dropScr) /* remove a script from system */
+Script scno;
+Bool   dropScr; {
     Script i;
     
     if (scno > namesUpto)
@@ -1364,7 +1396,9 @@ Script scno; {
         postponed[i-1]  = postponed[i];
         chased[i-1]     = chased[i];
     }
-    dropAScript(scno);
+    if (dropScr) {
+      dropAScript(scno);
+    }
     namesUpto--;
 }
 
@@ -2360,7 +2394,8 @@ String argv[]; {
     for (;;) {
 	Command cmd;
 	everybody(RESET);               /* reset to sensible initial state */
-	dropScriptsFrom(numScripts-1);  /* remove partially loaded scripts */
+	dropScriptsFrom(numScripts-1); 
+	                                /* remove partially loaded scripts */
 					/* not counting prelude as a script*/
 
 	promptForInput(textToStr(module(findEvalModule()).text));

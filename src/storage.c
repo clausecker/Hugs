@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: storage.c,v $
- * $Revision: 1.48 $
- * $Date: 2002/07/19 18:02:21 $
+ * $Revision: 1.49 $
+ * $Date: 2002/09/08 02:24:03 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -652,7 +652,7 @@ Cell id; {				/* in name table		   */
 List findQualNames(id)			/* Locate (possibly qualified) names */
 Cell id; {				/* in name table		     */
     if (!isPair(id))
-	internal("findQualName");
+	internal("findQualNames");
     switch (fst(id)) {
 	case VARIDCELL :
 	case VAROPCELL :
@@ -1666,7 +1666,7 @@ String fileOfModule(m)
 Module m; {
     Script s;
     if (m == modulePrelude) {
-	return findMPathname(NULL,STD_PRELUDE,hugsPath);
+	return findMPathname(NULL,textToStr(textPrelude),hugsPath);
     }
     for(s=0; s<scriptHw; ++s) {
 	if ( scripts[s].moduleHw == m ) {
@@ -1684,7 +1684,7 @@ Text f; {
 	    return s+1;
 	}
     }
-    if (f == findText(STD_PRELUDE)) {
+    if (f == textPrelude) {
 	return 0;
     }
     return (-1);
@@ -1721,7 +1721,7 @@ Script sno; {
 
 Void dropScriptsFrom(sno)               /* Restore storage to state prior  */
 Script sno; {                           /* to reading script sno           */
-    if (sno < scriptHw) {               /* is there anything to restore?   */
+    if (sno > 0 && sno < scriptHw) {    /* is there anything to restore?   */
 	int i;
 	textHw       = scripts[sno].textHw;
 	nextNewText  = scripts[sno].nextNewText;

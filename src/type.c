@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: type.c,v $
- * $Revision: 1.50 $
- * $Date: 2002/08/28 18:01:17 $
+ * $Revision: 1.51 $
+ * $Date: 2002/09/08 02:24:03 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -32,6 +32,7 @@ Type typeArrow,   typeList;		/* Important primitive types	   */
 Type typeUnit;
 
 Module modulePrelude;
+Module moduleUserPrelude;
 
 Type typeInt;                          
 Type typeInt8;                          
@@ -1410,7 +1411,7 @@ List qss; {
     if (isNull(zexp)) {
       /* if they don't have List loaded, we can still handle the most
 	 common cases, because `zip' and `zip3' are defined in the Prelude */
-      zexp = findQualFun(findText(STD_PRELUDE),zName);
+      zexp = findQualFun(textPrelude,zName);
     }
     if (isNull(zexp)) {
 	ERRMSG(l) "\"%s\" not in scope (introduced by parallel comprehension)", textToStr(zName) ETHEN
@@ -3099,6 +3100,7 @@ Int what; {
 		       dummyVar     = inventVar();
 
 		       modulePrelude = newModule(textPrelude);
+		       moduleUserPrelude = 0;
 		       setCurrModule(modulePrelude);
 
 		       starToStar   = simpleKind(1);

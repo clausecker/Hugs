@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: input.c,v $
- * $Revision: 1.48 $
- * $Date: 2002/08/04 19:36:55 $
+ * $Revision: 1.49 $
+ * $Date: 2002/09/08 02:24:02 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -137,7 +137,8 @@ Text   textThreadsafe;                  /* threadsafe                      */
 Text   textExport;                      /* export                          */
 
 Text   textNum;                         /* Num                             */
-Text   textPrelude;                     /* Prelude                         */
+Text   textPrelude;                     /* PrelImpl                        */
+Text   textUserPrelude;                 /* Prelude                         */
 Text   textPlus;			/* (+)				   */
 
 static Cell conMain;                    /* Main                            */
@@ -1943,7 +1944,8 @@ Int what; {
 		       textBang       = findText("!");
 		       textDot	      = findText(".");
 		       textImplies    = findText("=>");
-		       textPrelude    = findText("Prelude");
+		       textPrelude    = findText( ( newPrelude ? STD_PRELUDE_IMPL : STD_PRELUDE ) );
+		       textUserPrelude= findText(STD_PRELUDE);
 		       textNum        = findText("Num");
 		       textModule     = findText("module");
 		       textImport     = findText("import");
