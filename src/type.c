@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: type.c,v $
- * $Revision: 1.22 $
- * $Date: 2000/08/14 20:23:45 $
+ * $Revision: 1.23 $
+ * $Date: 2000/08/15 20:56:10 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1302,17 +1302,6 @@ List bs; {
     return ps;
 }
 
-static Text local zipName(n)
-Int n; {
-    static char zip[14];
-    /* n >= 2, enforced by the parser */
-    if (n == 2)
-	strcpy(zip, "zip");
-    else
-	sprintf(zip, "zip%d", n);
-    return findText(zip);
-}
-
 static Cell local tupleUp(xs)
 List xs; {
     Int n = length(xs);
@@ -1368,7 +1357,7 @@ List qss; {
     }
     /* now, we construct a regular comprehension out of the parallel one */
     zpat = mkTuple(length(qss));
-    zexp = mkVar(zipName(length(qss)));
+    zexp = findQualName(mkQVar(findText("List"),zipName(length(qss))));
     for (pss=qss, ass=rev(gatheredAss);nonNull(pss);pss=tl(pss), ass=tl(ass)) {
 	List ps = tupleUp(getPats(hd(ass)));
 	zpat = ap(zpat, ps);

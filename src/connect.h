@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: connect.h,v $
- * $Revision: 1.9 $
- * $Date: 2000/05/05 15:49:52 $
+ * $Revision: 1.10 $
+ * $Date: 2000/08/15 20:56:10 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -272,6 +272,9 @@ extern  Void   addEvalInst	Args((Int,Cell,Int,List));
 #if TREX
 extern  Inst   addRecShowInst	Args((Class,Ext));
 extern  Inst   addRecEqInst	Args((Class,Ext));
+#endif
+#if ZIP_COMP
+extern Text    zipName		Args((Int));
 #endif
 extern  List   oclose		Args((List,List));
 extern  List   zonkTyvarsIn	Args((Type,List));

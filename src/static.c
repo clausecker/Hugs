@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.23 $
- * $Date: 2000/08/14 20:23:45 $
+ * $Revision: 1.24 $
+ * $Date: 2000/08/15 20:56:10 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -5656,11 +5656,27 @@ static List gatheredTyvars;
 #define enterGathering() List svGVs = gatheredVars, svGBs = gatheredBinds, svGTs = gatheredTyvars; gatheredVars = gatheredBinds = gatheredTyvars = NIL
 #define leaveGathering() gatheredVars = svGVs; gatheredBinds = svGBs; gatheredTyvars = svGTs
 
+Text zipName(n)
+Int n; {
+    static char zip[14];
+    /* n >= 2, enforced by the parser */
+    if (n == 2)
+	strcpy(zip, "zip");
+    else
+	sprintf(zip, "zip%d", n);
+    return findText(zip);
+}
+
 static Void local depZComp(l,e,qss)
 Int l;
 Cell e;
 List qss; {
+    Int n = length(qss);
     enterGathering();
+    if (isNull(findQualName(mkQVar(findText("List"),zipName(n))))) {
+	ERRMSG(l) "undefined variable \"%s\" (introduced by parallel comprehension)", textToStr(zipName(n))
+	EEND;
+    }
     withinScope(NIL);
     for (;nonNull(qss);qss=tl(qss)) {
 	depCompy(l,hd(qss));
