@@ -9,8 +9,8 @@
  * included in the distribution.
  *
  * $RCSfile: prelude.h,v $
- * $Revision: 1.29 $
- * $Date: 2002/01/01 22:39:12 $
+ * $Revision: 1.30 $
+ * $Date: 2002/01/21 04:24:29 $
  * ------------------------------------------------------------------------*/
 
 #include "config.h"
@@ -53,11 +53,17 @@
 
 #ifdef __SYMBIAN32__
 #define IS_WIN32 0
+#define IS_WINDOWS 0
 #else
 #if defined(_WIN32) || defined(__WIN32__)
 # define IS_WIN32 1
+# define IS_WINDOWS 1
+#elif defined(_WIN64)
+# define IS_WIN64 1
+# define IS_WINDOWS 1
 #else
 # define IS_WIN32 0
+# define IS_WINDOWS 0
 #endif
 #endif
 
@@ -398,7 +404,7 @@ extern int vsnprintf  Args((char*, int, const char*, va_list));
  * all potentially infinite loops of the evaluator check the flag using
  * the "allowBreak" call.
  */ 
-#define HANDLERS_CANT_LONGJMP IS_WIN32
+#define HANDLERS_CANT_LONGJMP IS_WINDOWS
 
 
 #if DOS
