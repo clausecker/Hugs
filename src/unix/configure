@@ -1664,6 +1664,13 @@ fi;
 
 # make FPTOOLS an absolute path (for MkInstal's sake)
 FPTOOLS=`cd $FPTOOLS; pwd`
+
+case $host_os in
+  cygwin*|mingw*)
+     # Check to see if cygpath exists. If so, use it.
+     cygpath -w a >/dev/null 2>&1 && FPTOOLS=`cygpath -w $FPTOOLS | sed -e 's@\\\\@/@g'`;;
+esac
+
 echo "$as_me:$LINENO: checking for hslibs and libraries in $FPTOOLS" >&5
 echo $ECHO_N "checking for hslibs and libraries in $FPTOOLS... $ECHO_C" >&6
 if test -d "$FPTOOLS/hslibs" && test -d "$FPTOOLS/libraries"; then
@@ -4055,7 +4062,7 @@ else
 ac_save_LIBS="$LIBS"
 LIBS="";
 cat > conftest.$ac_ext <<EOF
-#line 4058 "configure"
+#line 4065 "configure"
 #include "confdefs.h"
 main() { extern char dlopen(); dlopen();; exit(0); }
 int t() { return 0; }
@@ -4098,7 +4105,7 @@ else
 ac_save_LIBS="$LIBS"
 LIBS="-ldl";
 cat > conftest.$ac_ext <<EOF
-#line 4101 "configure"
+#line 4108 "configure"
 #include "confdefs.h"
 main() { extern char dlopen(); dlopen();; exit(0); }
 int t() { return 0; }
@@ -4153,7 +4160,7 @@ else
 ac_save_LIBS="$LIBS"
 LIBS="";
 cat > conftest.$ac_ext <<EOF
-#line 4156 "configure"
+#line 4163 "configure"
 #include "confdefs.h"
 main() { extern char shl_load(); shl_load();; exit(0); }
 int t() { return 0; }
@@ -4196,7 +4203,7 @@ else
 ac_save_LIBS="$LIBS"
 LIBS="-ldld";
 cat > conftest.$ac_ext <<EOF
-#line 4199 "configure"
+#line 4206 "configure"
 #include "confdefs.h"
 main() { extern char shl_load(); shl_load();; exit(0); }
 int t() { return 0; }
@@ -4251,7 +4258,7 @@ else
 ac_save_LIBS="$LIBS"
 LIBS="";
 cat > conftest.$ac_ext <<EOF
-#line 4254 "configure"
+#line 4261 "configure"
 #include "confdefs.h"
 main() { extern char atan(); atan();; exit(0); }
 int t() { return 0; }
@@ -4294,7 +4301,7 @@ else
 ac_save_LIBS="$LIBS"
 LIBS="-lm";
 cat > conftest.$ac_ext <<EOF
-#line 4297 "configure"
+#line 4304 "configure"
 #include "confdefs.h"
 main() { extern char atan(); atan();; exit(0); }
 int t() { return 0; }
@@ -24853,7 +24860,7 @@ _ACEOF
 ac_save_LIBS="$LIBS"
 LIBS=;
 cat > conftest.$ac_ext <<EOF
-#line 24856 "configure"
+#line 24863 "configure"
 #include "confdefs.h"
 
 #if HAVE_WINDOWS_H
@@ -24894,7 +24901,7 @@ fi
 ac_save_LIBS="$LIBS"
 LIBS=;
 cat > conftest.$ac_ext <<EOF
-#line 24897 "configure"
+#line 24904 "configure"
 #include "confdefs.h"
 
 #if HAVE_WINDOWS_H
