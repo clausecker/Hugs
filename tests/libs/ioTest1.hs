@@ -51,7 +51,7 @@ io4 = exHandler (const False) $ do
      x <- hGetChar h
      loop h
 
--- repeated hCloses is an error; should raise isIllegalOperation
+-- repeated hCloses is no longer an error
 io5 :: IO ()
 io5 = exHandler (const False) $ do
   h <- openFile "io5_test_file" WriteMode
