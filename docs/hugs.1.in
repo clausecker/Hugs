@@ -3,6 +3,7 @@
 .ds LB @HUGSDIR@
 .ds BN @BINDIR@
 .ds HP @HUGSPATH@
+.ds NP {Hugs}/libraries:{Hugs}/oldlib
 .ds HS @HUGSSUFFIXES@
 .ds VI vi
 .SH NAME
@@ -113,6 +114,9 @@ Allow overlapping instances (a Hugs extension; default: off)
 .TP
 .B +O
 Allow unsafe overlapping instances (a Hugs extension; default: off)
+.TP
+.B +N
+Use the hierarchical libraries (default: off)
 .LP
 Other options (in which \fB\-\fP could be replaced by \fB+\fP,
 the choice making no difference) are:
@@ -133,9 +137,17 @@ which should be a colon-separated list of directories.
 A null entry in this list will be replaced by the previous search path.
 Any occurrence of \fB{Hugs}\fP in this string is expanded to
 the Hugs library directory, namely \fB\*(LB\fP.
-The default value is
+With \fB\-N\fP, the default value is
+.RS
 .IP
 \fB\*(HP\fP
+.RE
+.IP
+With \fB\+N\fP, the default value is
+.RS
+.IP
+\fB\*(NP\fP
+.RE
 .TP
 .BI \-S str
 Set the colon-separated list of source file suffixes to \fIstr\fP
