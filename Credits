@@ -15,9 +15,10 @@ General questions about using Hugs should be sent to
 Primary developers:
 
     Sigbjorn Finne
-    Alastair Reid
     Jeff Lewis
     Johan Nordlander
+    Ross Paterson
+    Alastair Reid
 
 Original author:
 
@@ -25,15 +26,14 @@ Original author:
 
 Valuable contributions:
 
-    Pepe Gallardo
-    Andy Gill
-    Richard Watson
-    Levent Erkok
-    Thomas Nordin
-    Jeremy Shute
     Hans Aberg
     Pablo Azero
-
+    Levent Erkok
+    Pepe Gallardo
+    Andy Gill
+    Thomas Nordin
+    Jeremy Shute
+    Richard Watson
 
 ========================================================================
 
