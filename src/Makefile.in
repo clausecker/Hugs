@@ -276,10 +276,24 @@ evaluator@OBJ@	: $(PRELUDE) storage.h connect.h errors.h script.h \
 		  output.h strutil.h opts.h machdep.h evaluator.h
 
 ################################################################
-# Regression tests (none supplied)
+# Regression tests (Unix only)
+#
+# Uses runstdtest (from ghc-0.26/ghc/glafp-utils/scripts), perl 5
+# and /bin/sh (Bourne shell).
+#
+# "make check" generates a lot of output to explain what is going on
+# and reassure you that progress is being made.  This is great if you've
+# never run these tests before - but if you just want to reassure yourself
+# that nothing has broken since the last release, you might prefer to
+# run this command which removes all the explanations and success
+# stories - leaving just the errors (if any).
+#
+#  make check | egrep -v '^--( |-----)'
+#
 ################################################################
 
-check		:
+check		: libraries
+		  cd ../tests; sh testScript
 
 check_libraries : libraries
 		  unix/test_libraries $(FPTOOLS)
