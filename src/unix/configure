@@ -8602,14 +8602,14 @@ fi
 
 
 if test "x$FPTOOLS" != x ; then
-  if test -d "$FPTOOLS" &&
-     test -d "$FPTOOLS/hslibs" &&
-     test -d "$FPTOOLS/libraries"
-  then echo "found directory $FPTOOLS"
-  else
-       echo "The argument to --with-fptools must be a directory containing a copy of"
-       echo "hslibs and libraries from the Haskell CVS repository."
-       exit 1
+  echo $ac_n "checking directory $FPTOOLS""... $ac_c" 1>&6
+echo "configure:8607: checking directory $FPTOOLS" >&5
+  if test -d "$FPTOOLS/hslibs" && test -d "$FPTOOLS/libraries"
+  then echo "$ac_t""looks ok" 1>&6
+  else echo "$ac_t""failed" 1>&6
+       { echo "configure: error: 
+The argument to --with-fptools must be a directory containing copies of
+hslibs and libraries from the Haskell CVS repository." 1>&2; exit 1; }
   fi
 fi
 
