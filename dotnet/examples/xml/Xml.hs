@@ -6,11 +6,12 @@ module Xml where
 import Dotnet
 import qualified Dotnet.System.Xml.XmlDocument
 import Dotnet.System.Xml.XmlNode
-import qualified Dotnet.System.Xml.XmlNodeType as Type
+import Dotnet.System.Xml.XmlNodeType as Type
 import Dotnet.System.Xml.XmlNodeList
 import qualified Dotnet.System.Xml.XmlAttributeCollection as Attr
 import qualified Dotnet.System.Xml.XmlNamedNodeMap as Attr
 import qualified Dotnet.System.Xml.XmlAttribute as At
+import qualified Dotnet.System.Xml.XmlDeclaration as Decl
 import XMLSyn
 import Maybe
 
@@ -18,7 +19,7 @@ import Maybe
 -- This example demonstrates how to make use of the .NET Xml classes
 -- to handle the parsing of XML documents. After having parsed a document
 -- externally, we simply walk over the document to generate a Haskell
--- representation of the document. 
+-- representation of it.
 --
 
 loadXML :: String -> IO XMLDoc
@@ -30,9 +31,23 @@ loadXML url = do
   let v = Type.fromXmlNodeType tag
   case v of
     Type.Document -> do
+      version <- doc # getVersion
       vs <- doc # getNodes
-      return (XMLDoc Nothing vs)
+      return (XMLDoc version vs)
     _ -> return (XMLDoc Nothing [])
+
+getVersion :: XmlNode a -> IO (Maybe XMLHeader)
+getVersion doc = do
+  -- probe for the xml declaration (assumed to be first child of a document.)
+  ch  <- doc # get_FirstChild
+  tag <- ch # get_NodeType
+  case Type.fromXmlNodeType tag of
+    Type.XmlDeclaration -> do
+      v   <- ch # Decl.get_Version
+      enc <- ch # Decl.get_Encoding
+      std <- ch # Decl.get_Standalone
+      return (Just (XMLHeader (Just (XMLVersionInfo v (Just enc) (Just std))) [] []))
+    _ -> return Nothing
 
 getNodes :: XmlNode a -> IO [Markup]
 getNodes node = do
@@ -57,9 +72,11 @@ getNode node = do
     Type.Text -> do
       s <- node # get_InnerText
       return (Just (XMLSyn.CharData s))
-    _ -> do
+    _ ->
+{- debugging:
       str <- toString tag
       print str
+-} 
       return Nothing
 
 getAttributes :: XmlNode a -> IO [Attribute]
@@ -72,7 +89,7 @@ getAttribute :: At.XmlAttribute a -> IO Attribute
 getAttribute attr = do
   x <- attr # At.get_LocalName
   y <- attr # At.get_Value
-  return (Attribute x y)
+  return (XMLSyn.Attribute x y)
 
 foreign import dotnet
   "ctor System.Xml.XmlDocument"
