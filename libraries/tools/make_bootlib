@@ -19,6 +19,10 @@ target=libraries/bootlib
 cpphs=libraries/tools/cpphs
 fp_includes=fptools/ghc/includes
 
+HUGSDIR=hugsdir
+HUGSFLAGS="-P$target"
+export HUGSDIR HUGSFLAGS
+
 # platform sensitive settings
 
 case `uname -a` in
@@ -119,10 +123,6 @@ done
 # compile some modules in bootlibs with ffihugs
 
 ffihugs=src/ffihugs
-
-HUGSDIR=hugsdir
-HUGSFLAGS="-P$target"
-export HUGSDIR HUGSFLAGS
 
 base_includes="-I$source/base/include -I$fp_includes"
 
