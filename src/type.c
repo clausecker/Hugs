@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: type.c,v $
- * $Revision: 1.64 $
- * $Date: 2003/02/12 05:49:14 $
+ * $Revision: 1.65 $
+ * $Date: 2003/02/15 00:02:20 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -2266,7 +2266,6 @@ Class c; {				/* defaults for class c		   */
     List dsels  = cclass(c).dsels;
     Cell pat    = cclass(c).dcon;
     Int  width  = cclass(c).numSupers + cclass(c).numMembers;
-    char buf[FILENAME_MAX+1];
     Int  i      = 0;
     Int  j      = 0;
 
@@ -2278,6 +2277,7 @@ Class c; {				/* defaults for class c		   */
 	Name   n;
 	Text member           = name(hd(mems)).text;
 #if 0
+    char buf[FILENAME_MAX+1];
 	/* This is unsafe, creating a new name that's in the
 	   same namespace as the user's -- indeed, a bug was
 	   reported as a result of this.
