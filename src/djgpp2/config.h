@@ -318,8 +318,8 @@
 /* Define if you have the dld library (-ldld).  */
 #undef HAVE_LIBDLD
 
-/* Define if you have the m library (-lm).  */
-#define HAVE_LIBM 1
+/* Define to 1 if floating point arithmetic is supported.  */
+#define FLOATS_SUPPORTED 1
 
 /* Define if you have the editline library (-leditline).  */
 #undef HAVE_LIBREADLINE

@@ -327,7 +327,7 @@ dnl--------------------------------------------------------------------
 
 AC_CHECK_LIB_NOWARN(dl, dlopen)
 AC_CHECK_LIB_NOWARN(dld, shl_load)
-AC_CHECK_LIB_NOWARN(m, atan)
+AC_CHECK_LIB([m], [atan])
 FP_CHECK_GLUT
 
 dnl--------------------------------------------------------------------
@@ -580,6 +580,10 @@ FP_CHECK_FUNC([WinExec],
 
 FP_CHECK_FUNC([GetModuleFileName],
   [@%:@include <windows.h>], [GetModuleFileName((HMODULE)0,(LPTSTR)0,0)])
+
+AC_CHECK_FUNCS([atan],
+  AC_DEFINE([FLOATS_SUPPORTED], [1],
+    [Define to 1 if floating point arithmetic is supported.])
 
 AC_CHECK_FUNCS(strcasecmp _stricmp stricmp strcmpi)
 AC_CHECK_FUNCS(strcmp)
