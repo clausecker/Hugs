@@ -11,8 +11,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.102 $
- * $Date: 2003/10/15 05:15:39 $
+ * $Revision: 1.103 $
+ * $Date: 2003/10/21 15:21:54 $
  * ------------------------------------------------------------------------*/
 #include "prelude.h"
 #include "storage.h"
@@ -1390,14 +1390,15 @@ Bool   useShell; {
   BOOL bStatus;
   DWORD dwResult;
 
+  if (useShell) {
+    return system(cmd);
+  }
+
   ZeroMemory(&si, sizeof(si));
   si.cb = sizeof(si);
   si.dwFlags = STARTF_USESHOWWINDOW;
   si.wShowWindow = SW_SHOW;
   
-  if (useShell) {
-    return system(cmd);
-  }
   bStatus = 
     CreateProcess(NULL,  /* app name is the first component of the command line string */
 		  cmd, 
