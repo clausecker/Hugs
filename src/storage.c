@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: storage.c,v $
- * $Revision: 1.57 $
- * $Date: 2002/11/09 02:54:18 $
+ * $Revision: 1.58 $
+ * $Date: 2002/11/29 13:05:43 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -3204,7 +3204,7 @@ CFinalizer cleanup; {
     if (i >= mallocPtr_hw) {
 	mallocPtr_hw = i + 1;
     }
-    mallocPtrs[i].finalizers = cons(mkPtr(cleanup), mallocPtrs[i].finalizers);
+    mallocPtrs[i].finalizers = cons(mkPtr((Pointer)cleanup), mallocPtrs[i].finalizers);
     return (mallocPtrs[i].mpcell = ap(MPCELL,i));
 }
 

@@ -119,7 +119,7 @@ typedef int            HugsStablePtr;
 
 typedef void (*HugsPrim) (HugsStackPtr); /* primitive function	   */
 
-#ifndef Args  /* hack hack */
+#ifndef Args  
 struct hugs_primitive {		         /* table of primitives		   */
     char*  ref;				 /* primitive reference string	   */
     int	   arity;			 /* primitive function arity	   */
