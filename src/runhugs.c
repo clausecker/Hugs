@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: runhugs.c,v $
- * $Revision: 1.16 $
- * $Date: 2003/03/09 23:53:07 $
+ * $Revision: 1.17 $
+ * $Date: 2003/04/01 13:01:06 $
  * ------------------------------------------------------------------------*/
 
 #include <stdio.h>
@@ -74,6 +74,29 @@ char* argv[]; {
     argc = ccommand(&argv);
 #endif
 
+    /* For 'ffihugs', we use all arguments.  */
+#if defined(FFI_COMPILER)
+#if defined(_MSC_VER) && !defined(_MANAGED)
+    __try {
+#endif
+
+    /* initialize using any options in argv */
+    loadHugs(argc, argv);
+
+    /* process non-options as files */
+    {
+	int i; /* ignore first arg - name of this program */
+	for( i=1; i < argc; ++i) {
+            if (!(argv[i] /* paranoia */
+	         && (argv[i][0] == '+' || argv[i][0] == '-')
+	         )) {
+                hugs->loadFile(argv[i]);
+                check();
+	    }
+        }
+    }
+
+#else /* ! FFI_COMPILER */
     /* skip over any option flags before the program name */
     {
 	int i = 1; /* ignore first arg - name of this program */
@@ -105,8 +128,6 @@ char* argv[]; {
     hugs->loadFile(argv[0]);
     check();
 
-    /* For 'ffihugs', we're done once the module has been loaded.  */
-#if !defined(FFI_COMPILER)
     hugs->setHugsArgs(argc,argv);
     hugs->pushHVal(hugs->compileExpr("Main","main >> return ()"));
     exitCode = hugs->doIO();
