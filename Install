@@ -120,6 +120,8 @@ Long version:
       chmod 755 echo
       ./echo Hello World
 
+    On Unix, regression tests are run by "make install; make check".
+
     Administrators of sites with multiple architectures often prefer to
     install a shell script in /usr/local/bin which will select an 
     appropriate binary according to the architecture on which it is
@@ -148,12 +150,8 @@ Hugs specific configuration options:
 
  --with-readline
 
-   Use command line editor if available.
-
-   We highly recommend this option.  However, it changes Hugs' user
-   interface in a way that will cause every single regression test
-   to fail.  
-   (On Unix, regression tests are run by "make install; make check".)
+   Use command line editor (if available) when the interpreter is used
+   interactively.  We highly recommend this option.
 
    There are two choices of command line editor that can be used with Hugs:
 
@@ -195,7 +193,7 @@ Hugs specific configuration options:
  --disable-large-banner
 
    Print a single-line startup banner instead of the 9 line banner.
-   (This option will also cause the "make check" regression tests to fail.)
+   (This option will cause the "make check" regression tests to fail.)
 
  --with-gui
 
