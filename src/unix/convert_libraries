@@ -101,7 +101,7 @@ hslibs() {
 	esac
 
 	echo "Converting $2"
-	$cpp $cpp_flags $hs_src/$1/$2 >$compat/$2
+	$cpp $cpp_flags $hs_src/$1/$2 | grep -v '^#' >$compat/$2
 }
 
 # Convert hierarchical modules

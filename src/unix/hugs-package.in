@@ -243,9 +243,12 @@ do	echo "Converting $modname"
 			$greencard -t ffi -i $abs_src_dir $modname.gc
 		)
 	elif [ -f $stem.hs ]; then
-		$cpp $cpp_flags $includes $stem.hs | cat -s >$target_stem.hs
+		# gcc-3.3 on MacOS X 10.3 is reported to add #pragma
+		$cpp $cpp_flags $includes $stem.hs | grep -v '^#' |
+			cat -s >$target_stem.hs
 	elif [ -f $stem.lhs ]; then
-		$cpp $cpp_flags $includes $stem.lhs | cat -s >$target_stem.lhs
+		$cpp $cpp_flags $includes $stem.lhs | grep -v '^#' |
+			cat -s >$target_stem.lhs
 	elif [ -f $stem.y ]; then
 		mkdir $tmpdir
 		cp $stem.y $tmpdir
@@ -253,7 +256,8 @@ do	echo "Converting $modname"
 			cd $tmpdir
 			happy $basename.y
 		)
-		$cpp $cpp_flags $tmpdir/$basename.hs | cat -s >$target_stem.hs
+		$cpp $cpp_flags $tmpdir/$basename.hs | grep -v '^#' |
+			cat -s >$target_stem.hs
 		rm -r $tmpdir
 	elif [ -f $stem.ly ]; then
 		mkdir $tmpdir
@@ -262,7 +266,8 @@ do	echo "Converting $modname"
 			cd $tmpdir
 			happy $basename.ly
 		)
-		$cpp $cpp_flags $tmpdir/$basename.hs | cat -s >$target_stem.hs
+		$cpp $cpp_flags $tmpdir/$basename.hs | grep -v '^#' |
+			cat -s >$target_stem.hs
 		rm -r $tmpdir
 	else
 		echo "$0: don't know how to handle $stem" >&2
@@ -286,7 +291,7 @@ then	$cpp $cpp_flags $includes \
 		-DX_LIBS="\"$X_LIBS\"" -DX_EXTRA_LIBS="\"$X_EXTRA_LIBS\"" \
 		-DGL_CFLAGS=",\"$GL_CFLAGS\"" -DGL_LIBS=",\"$GL_LIBS\"" \
 		-DGLUT_LIBS=",\"$GLUT_LIBS\"" \
-		$conf_in >$tmp
+		$conf_in | grep -v '^#' >$tmp
 	conf=$tmp
 fi
 
