@@ -8,8 +8,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: output.c,v $
- * $Revision: 1.26 $
- * $Date: 2002/04/11 23:20:20 $
+ * $Revision: 1.27 $
+ * $Date: 2002/10/03 14:17:34 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -65,11 +65,12 @@ static Void local putKinds	 Args((Kinds));
 #if OBSERVATIONS
 static Bool local printObsList   Args((Cell,Int,Bool));
 static Void local printArg       Args((FILE *,Cell));
+#endif
+
 static Bool local isStrConst	 Args((Cell));
 static Void local putStrConst	 Args((Cell));
 static Bool local isCharCell	 Args((Cell));
 static Bool local getCellChar    Args((Cell));
-#endif
 
 /* --------------------------------------------------------------------------
  * Basic output routines:
@@ -564,8 +565,6 @@ Cell e; {
     }
 }
 
-#if OBSERVATIONS
-
 static Void local putStrConst(e)
 Cell e; {
     putChr('"'); 
@@ -595,8 +594,10 @@ Cell e; {
 	    case CHARCELL	: return 1;
 	    case INDIRECT	: e = snd(e);
 	    			  break;
+#if OBSERVATIONS
 	    case OBSERVE	: e = markedExpr(e);
 	    			  break;
+#endif
 	    default		: return 0;
 	}
 }
@@ -608,12 +609,13 @@ Cell e; {
 	    case CHARCELL	: return charOf(e);
 	    case INDIRECT	: e = snd(e);
 	    			  break;
+#if OBSERVATIONS
 	    case OBSERVE	: e = markedExpr(e);
 	    			  break;
+#endif
 	    default		: internal("error in getCellChar");
 	}
 }
-#endif
 
 static Void local putOverInfix(args,t,sy,e)
 Int    args;                           /* infix applied to >= 3 arguments  */
