@@ -396,8 +396,10 @@ that require two or more options (see <xref linkend="runhugs"/>).
 </para></listitem>
 
 <listitem><para>
-The new <option>+i</option> option can be used to specify include files on
-the <command>ffihugs</command> command line (see <xref linkend="ffihugs"/>).
+The syntax of the <command>ffihugs</command> has changed
+(see <xref linkend="ffihugs"/>).
+The <option>+G</option> and <option>+L</option> options are gone,
+and the new <option>+i</option> option can be used to specify include files.
 </para></listitem>
 
 </itemizedlist>

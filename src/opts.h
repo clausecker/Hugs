@@ -30,7 +30,6 @@ extern Void   setHeapSize         Args((String));
 extern Bool  showStats;                /* TRUE => print stats after eval  */
 extern Bool  addType;                  /* TRUE => print type with value   */
 extern Bool  gcMessages;	       /* TRUE => print GC messages	  */
-extern Bool  generateFFI;              /* TRUE => generate ffi code       */
 extern Bool  literateScripts;	       /* TRUE => default lit scripts     */
 extern Bool  useDots;                  /* TRUE => use dots in progress    */
 extern Bool  quiet;                    /* TRUE => don't show progress     */

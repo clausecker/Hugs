@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: connect.h,v $
- * $Revision: 1.88 $
- * $Date: 2004/11/30 15:56:27 $
+ * $Revision: 1.89 $
+ * $Date: 2004/12/01 17:33:16 $
  * ------------------------------------------------------------------------*/
 #ifndef __CONNECT_H__
 #define __CONNECT_H__
@@ -343,7 +343,8 @@ extern  Void   implementForeignImportWrapper Args((Int,Int,Text,List,Bool,Type))
 extern  Void   implementForeignImportLabel   Args((Int,Int,Text,Text,Text,Type));
 extern  Void   implementForeignExport        Args((Int,Int,Text,List,Bool,Type));
 extern  Bool   foreignNeedStubs              Args((List,List));
-extern  Bool   generate_ffi;
+extern  Bool   generateFFI;	/* running ffihugs? */
+extern  Bool   generate_ffi;	/* generate FFI for the current module? */
 
 extern  Void   typeChecker      Args((Int));
 extern  Type   typeCheckExp	Args((Bool));

@@ -3,6 +3,7 @@
 . ./config
 
 HUGS=../src/hugs
+FFIHUGS=../src/ffihugs
 HUGSDIR=../hugsdir
 HUGSFLAGS=
 export HUGS HUGSDIR HUGSFLAGS
@@ -353,28 +354,28 @@ test_ffi() {
 ----------------------------------------------------------------"
 
   # Test static checking and code generation first.
-  perl runstdtest $HUGS $STDOPTS +G +L"ffi/types_aux.c" "-Offi/Types.hs" "-o1ffi/Loaded.output"
-  perl runstdtest $HUGS $STDOPTS +G +L"ffi/forms_aux.c" "-Offi/Forms.hs" "-o1ffi/Loaded.output"
+  perl runstdtest $FFIHUGS $STDOPTS "-Offi/Types.hs" "-Offi/types_aux.c" "-o1ffi/Empty.output"
+  perl runstdtest $FFIHUGS $STDOPTS "-Offi/Forms.hs" "-Offi/forms_aux.c" "-o1ffi/Empty.output"
 
   # This is a pair of tests: first build, then test runtime
-  perl runstdtest $HUGS $STDOPTS +G "-Offi/Sin.hs" "-o1ffi/Loaded.output"
+  perl runstdtest $FFIHUGS $STDOPTS "-Offi/Sin.hs" "-o1ffi/Empty.output"
   perl runstdtest $HUGS $STDOPTS    "-Offi/Sin.hs" "-iffi/Sin.input" "-o1ffi/Sin.output"
 
   # This is a pair of tests: first build, then test runtime
-  perl runstdtest $HUGS $STDOPTS +G "-Offi/String.hs" "-o1ffi/Loaded.output"
+  perl runstdtest $FFIHUGS $STDOPTS "-Offi/String.hs" "-o1ffi/Empty.output"
   perl runstdtest $HUGS $STDOPTS    "-Offi/String.hs" "-iffi/String.input" "-o1ffi/String.output"
 
   # This is a pair of tests: first build, then test runtime
-  perl runstdtest $HUGS $STDOPTS +G +L"ffi/FileIO_aux.c" "-Offi/FileIO.hs" "-o1ffi/Loaded.output"
-  perl runstdtest $HUGS $STDOPTS                     "-Offi/FileIO.hs" "-iffi/FileIO.input" "-o1ffi/FileIO.output"
+  perl runstdtest $FFIHUGS $STDOPTS "-Offi/FileIO.hs" "-Offi/FileIO_aux.c" "-o1ffi/Empty.output"
+  perl runstdtest $HUGS $STDOPTS    "-Offi/FileIO.hs" "-iffi/FileIO.input" "-o1ffi/FileIO.output"
 
   # This is a pair of tests: first build, then test runtime
-  perl runstdtest $HUGS $STDOPTS +G "-Offi/Sparc.hs" "-o1ffi/Loaded.output"
+  perl runstdtest $FFIHUGS $STDOPTS "-Offi/Sparc.hs" "-o1ffi/Empty.output"
   perl runstdtest $HUGS $STDOPTS    "-Offi/Sparc.hs" "-iffi/Sparc.input" "-o1ffi/Sparc.output"
 
   # This is a pair of tests: first build, then test runtime
-  perl runstdtest $HUGS $STDOPTS +G +Lffi/callback.c "-Offi/Callback.hs" "-o1ffi/Loaded.output"
-  perl runstdtest $HUGS $STDOPTS                     "-Offi/Callback.hs" "-iffi/Callback.input" "-o1ffi/Callback.output"
+  perl runstdtest $FFIHUGS $STDOPTS "-Offi/Callback.hs" "-Offi/callback.c" "-o1ffi/Empty.output"
+  perl runstdtest $HUGS $STDOPTS    "-Offi/Callback.hs" "-iffi/Callback.input" "-o1ffi/Callback.output"
 
 } # End of test ffi
 

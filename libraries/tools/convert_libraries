@@ -170,7 +170,7 @@ done
 cp $src/base/LICENSE $HUGSDIR/libraries
 
 echo Compiling $HUGSDIR/libraries/Hugs/Storable.hs
-HUGSFLAGS='' $ffihugs +G +L$HUGSDIR/libraries/Hugs/Storable_aux.c Hugs.Storable
+HUGSFLAGS='' $ffihugs Hugs.Storable $HUGSDIR/libraries/Hugs/Storable_aux.c
 
 for package in $extra_packages
 do

@@ -27,7 +27,6 @@ Bool   displayIO    = FALSE;     /* TRUE => use printer for IO result*/
 Bool   useDots      = RISCOS;    /* TRUE => use dots in progress    */
 Bool   listScripts  = FALSE;     /* TRUE => list scripts after loading*/
 Bool   quiet        = TRUE;      /* TRUE => don't show progress     */
-Bool   generateFFI  = FALSE;     /* TRUE => generate ffi code       */
 Bool   printing     = FALSE;     /* TRUE => currently printing value*/
 String  hugsEdit   = 0;	         /* String for editor command       */
 String  prompt     = 0;          /* Prompt string                   */
@@ -101,7 +100,6 @@ struct options toggle[] = {     /* List of command line toggles    */
     Option('s', 1, "Print no. reductions/cells after eval", &showStats),
     Option('t', 1, "Print type after evaluation",           &addType),
     Option('g', 1, "Print no. cells recovered after gc",    &gcMessages),
-    Option('G', 0, "Generate FFI code for foreign import",  &generateFFI),
     Option('l', 1, "Literate modules as default",           &literateScripts),
     Option('.', 1, "Print dots to show progress",           &useDots),
     Option('q', 1, "Print nothing to show progress",        &quiet),
@@ -498,9 +496,6 @@ String s; {              /* return FALSE if none found.     */
 		       }
 		       return TRUE;
 #endif
-
-	    case 'L' : ffiSetFlags(s+1);
-		       return TRUE;
 
 	    case 'i' : ffiAddCppInclude(s+1);
 		       return TRUE;

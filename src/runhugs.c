@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: runhugs.c,v $
- * $Revision: 1.21 $
- * $Date: 2003/11/01 17:02:48 $
+ * $Revision: 1.22 $
+ * $Date: 2004/12/01 17:33:18 $
  * ------------------------------------------------------------------------*/
 
 #include <stdio.h>
@@ -62,13 +62,13 @@ int main(argc,argv)
 int    argc;
 char* argv[]; {
     int    exitCode = 0;
-#if !defined(FFI_COMPILER)
     char** hugs_argv;
     int    hugs_argc;
-#endif
+    char*  progname;
 
+    progname = argv ? argv[0] : "runhugs";
     if (!initSystem()) {
-      fprintf(stderr,"%s: failed to initialize, exiting\n", (argv ? argv[0] : ""));
+      fprintf(stderr,"%s: failed to initialize, exiting\n", progname);
       fflush(stderr);
       exit(1);
     }
@@ -76,29 +76,10 @@ char* argv[]; {
     argc = ccommand(&argv);
 #endif
 
-    /* For 'ffihugs', we use all arguments.  */
 #if defined(FFI_COMPILER)
-#if defined(_MSC_VER) && !defined(_MANAGED)
-    __try {
+    generateFFI = TRUE;
 #endif
 
-    /* initialize using any options in argv */
-    loadHugs(argc, argv);
-
-    /* process non-options as files */
-    {
-	int i; /* ignore first arg - name of this program */
-	for( i=1; i < argc; ++i) {
-            if (!(argv[i] /* paranoia */
-	         && (argv[i][0] == '+' || argv[i][0] == '-')
-	         )) {
-                hugs->loadFile(argv[i]);
-                check();
-	    }
-        }
-    }
-
-#else /* ! FFI_COMPILER */
     /* skip over any option flags before the program name */
     {
 	int i = 1; /* ignore first arg - name of this program */
@@ -116,7 +97,7 @@ char* argv[]; {
     }
 
     if (argc < 1) {
-	fprintf(stderr,"runhugs: missing file argument\n");
+	fprintf(stderr,"%s: missing file argument\n",progname);
 	fflush(stderr);
 	exit(1);
     }
@@ -127,6 +108,18 @@ char* argv[]; {
 
     loadHugs(hugs_argc, hugs_argv);
 
+#if defined(FFI_COMPILER)
+    /* all arguments following the module name are passed to the C compiler */
+    {
+	int i;
+	for (i=1; i<argc; ++i)
+	    ffiSetFlags(argv[i]);
+    }
+
+    hugs->loadFile(argv[0]);
+    check();
+#else
+    /* all arguments following the module name are available via getArgs */
     hugs->loadFile(argv[0]);
     check();
 

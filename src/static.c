@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.172 $
- * $Date: 2004/11/20 20:26:01 $
+ * $Revision: 1.173 $
+ * $Date: 2004/12/01 17:33:18 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -3947,14 +3947,16 @@ Cell   t;{
  * Foreign export declarations provide the address of a C symbol.
  * ------------------------------------------------------------------------*/
 
-/* When using the FFI, you first run Hugs with generate_ffi == TRUE
+/* When using the FFI, you first run Hugs with generateFFI == TRUE
  * to generate C files for any modules which contain foreign import/export
  * declarations.  You then compile and partially link the C files and run
- * Hugs with generate_ffi == FALSE to load the object files and lookup
+ * Hugs with generateFFI == FALSE to load the object files and lookup
  * the appropriate helper functions in the object files.
  * Only when you run Hugs in the second mode can you actually execute code.
  */
-Bool generate_ffi = FALSE;
+Bool generateFFI = FALSE;
+
+Bool generate_ffi = FALSE;	/* generate FFI for the current module? */
 
 static Int checkCallConv  Args((Int,Text));
 

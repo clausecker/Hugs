@@ -228,7 +228,7 @@ do
 	then
 		dstdir=`dirname $filename`
 
-		cmd="$ffihugs +G -98 -P$target_dir:"
+		cmd="$ffihugs -98 -P$target_dir:"
 
 		# Determine the list of headers used by the file
 		# bug: <foo.h> and "foo.h" will not be unified
@@ -243,26 +243,27 @@ do
 		do	cmd="$cmd +i$h"
 		done
 
+		cmd="$cmd $filename"
+
 		for flag in -I$dstdir -I$source_dir/include
-		do	cmd="$cmd +L$flag"
+		do	cmd="$cmd $flag"
 		done
 		for file in `sed -n 's/{-# CBITS \(.*\) #-}/\1/p' $filename`
-		do	cmd="$cmd +L$source_dir/cbits/$file"
+		do	cmd="$cmd $source_dir/cbits/$file"
 		done
 		for flag in $extra_ld_opts $extra_cc_opts
-		do	cmd="$cmd +L$flag"
+		do	cmd="$cmd $flag"
 		done
 		for lib in $extra_libraries
 		do	if test "$platform" = Win32 && test "$cc" != gcc; then
-				cmd="$cmd +L$lib.lib"
+				cmd="$cmd $lib.lib"
 			else
-				cmd="$cmd +L-l$lib"
+				cmd="$cmd -l$lib"
 			fi
 		done
 		for framework in $extra_frameworks
-		do	cmd="$cmd +L-framework +L$framework"
+		do	cmd="$cmd -framework $framework"
 		done
-		cmd="$cmd $filename"
 
 		echo "Compiling $filename"
 		$cmd
