@@ -13,6 +13,9 @@ module Hugs.Numeric
 	, showFloat	-- :: (RealFloat a) => a -> ShowS
 
 	, floatToDigits -- :: (RealFloat a) => Integer -> a -> ([Int], Int)
+	
+	, showInt       -- :: Integral a => a -> ShowS
+	, showSigned    -- :: Real a => (a -> ShowS) -> Int -> a -> ShowS
 	) where
 
 import Data.Char   ( intToDigit )
@@ -240,3 +243,20 @@ floatToDigits base x =
                 let bk = expt base (-k)
                 in  gen [] (r * bk) s (mUp * bk) (mDn * bk)
     in  (map fromIntegral (reverse rds), k)
+
+-- -----------------------------------------------------------------------------
+-- Showing
+
+-- showInt is used for positive numbers only
+showInt    :: Integral a => a -> ShowS
+showInt n r | n < 0 = error "Numeric.showInt: can't show negative numbers"
+            | otherwise =
+              let (n',d) = quotRem n 10
+		  r'     = toEnum (fromEnum '0' + fromIntegral d) : r
+	      in  if n' == 0 then r' else showInt n' r'
+
+showSigned    :: Real a => (a -> ShowS) -> Int -> a -> ShowS
+showSigned showPos p x = if x < 0 then showParen (p > 6)
+						 (showChar '-' . showPos (-x))
+				  else showPos x
+

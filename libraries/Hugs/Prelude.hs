@@ -50,7 +50,6 @@ module Hugs.Prelude (
     isAlpha, isDigit, isOctDigit, isHexDigit, isAlphaNum,
     readLitChar, showLitChar, lexLitChar,
 --  module Numeric
-    showSigned, showInt,
     readSigned, readInt,
     readDec, readOct, readHex, readSigned,
     readFloat, lexDigits, 
@@ -339,7 +338,7 @@ class (Ord a) => Ix a where
 
 	-- Must specify one of index, unsafeIndex
     index b i | inRange b i = unsafeIndex b i
-              | otherwise   = error "Error in array index"
+              | otherwise   = error "Prelude.Ix.index: Error in array index"
     unsafeIndex b i = index b i
 
 	-- As long as you don't override the default rangeSize,
@@ -523,7 +522,7 @@ instance Ix Char where
     range (c,c')      = [c..c']
     index b@(c,c') ci
        | inRange b ci = fromEnum ci - fromEnum c
-       | otherwise    = error "Ix.index: Index out of range."
+       | otherwise    = error "Prelude.Ix{Char}.index: Index out of range."
     inRange (c,c') ci = fromEnum c <= i && i <= fromEnum c'
 			where i = fromEnum ci
 
@@ -730,14 +729,14 @@ instance Ix Int where
     range (m,n)          = [m..n]
     index b@(m,n) i
 	   | inRange b i = i - m
-	   | otherwise   = error "index: Index out of range"
+	   | otherwise   = error "Prelude.Ix{Int}.index: Index out of range"
     inRange (m,n) i      = m <= i && i <= n
 
 instance Ix Integer where
     range (m,n)          = [m..n]
     index b@(m,n) i
 	   | inRange b i = fromInteger (i - m)
-	   | otherwise   = error "index: Index out of range"
+	   | otherwise   = error "Prelude.Ix{Integer}.index: Index out of range"
     inRange (m,n) i      = m <= i && i <= n
 
 instance Enum Int where
@@ -1517,19 +1516,6 @@ readHex = readInt 16 isHexDigit hex
 
 fromEnum_0 :: Int
 fromEnum_0 = fromEnum '0'
-
--- showInt is used for positive numbers only
-showInt    :: Integral a => a -> ShowS
-showInt n r | n < 0 = error "Numeric.showInt: can't show negative numbers"
-            | otherwise =
-              let (n',d) = quotRem n 10
-		  r'     = toEnum (fromEnum '0' + fromIntegral d) : r
-	      in  if n' == 0 then r' else showInt n' r'
-
-showSigned    :: Real a => (a -> ShowS) -> Int -> a -> ShowS
-showSigned showPos p x = if x < 0 then showParen (p > 6)
-						 (showChar '-' . showPos (-x))
-				  else showPos x
 
 -- readInt reads a string of digits using an arbitrary base.  
 -- Leading minus signs must be handled elsewhere.
