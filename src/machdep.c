@@ -11,8 +11,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.70 $
- * $Date: 2002/10/25 13:02:07 $
+ * $Revision: 1.71 $
+ * $Date: 2002/10/26 17:55:41 $
  * ------------------------------------------------------------------------*/
 #include <math.h>
 
@@ -2181,7 +2181,6 @@ Char c; {
 Void compileAndLink(fn,flags)
 String fn; 
 String flags; {
-    List xs = NIL;
     char* i = scriptFile;
  
     used    = 0;

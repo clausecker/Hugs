@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.114 $
- * $Date: 2002/10/25 06:34:05 $
+ * $Revision: 1.115 $
+ * $Date: 2002/10/26 17:55:42 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -912,7 +912,6 @@ Pair importSpec; {
 	 */
 	for(; nonNull(imports); imports=tl(imports)) {
 	  Cell e = hd(imports);
-	  Cell subs = NIL;
 
 	  if (isPair(e)) {
 	    /* A tycon/class */
@@ -7843,7 +7842,7 @@ List fs;
    bind to a couple of names in the Trex library (which
    are used when generating 'show' code.)
 */
-static trexLibNeeded = FALSE;
+static Bool trexLibNeeded = FALSE;
 
 static Void local trexUsed() {
     trexLibNeeded = TRUE;
