@@ -189,7 +189,7 @@ function hugslibs {
 		exit 1 ;;
 	esac
 
-	name="`ls ../../lib/exts/$1.*hs`"
+	name="`ls ../../lib/{hugs,exts}/$1.*hs`"
 	echo "Copy `basename $name`"
 	sed 's/import Prelude/import Hugs.Prelude/' $name >$compat/`basename $name`
 }
@@ -389,7 +389,8 @@ mkdir -p $compat
 hugslibs MonadRec	# new libs have Fix, but Rec is used by mdo
 hugslibs Memo		# hslibs module is different
 hugslibs Observe	# hslibs module is different
-hugslibs Quote		# only hugs explicitly supports here docs
+hugslibs Quote		# only hugs supports here docs
+hugslibs Trex		# only hugs supports Trex
     stub HugsStorable	Hugs.Storable
 
 # Stuff from hslibs (many of these are stubs)
