@@ -11,8 +11,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.65 $
- * $Date: 2002/08/26 18:39:49 $
+ * $Revision: 1.66 $
+ * $Date: 2002/09/09 14:47:02 $
  * ------------------------------------------------------------------------*/
 #include <math.h>
 
@@ -722,11 +722,16 @@ String path; {
     if (isModuleId(nm)) {	 	/* Is nm a module ident? */
         String s;
         Bool r;
+	Bool conv = FALSE;
         for (s=nm; *s; s++)	   	/* Convert nm to directory prefix */
-            if (*s == '.') *s = SLASH;
+            if (*s == '.') { *s = SLASH; conv = TRUE; }
         r = find2(along,nm,path);
-        for (s=nm; *s; s++)	   	/* Convert back */
-            if (*s == SLASH) *s = '.';
+	if (conv) {
+	    for (s=nm; *s; s++)	   	/* Convert back */
+		if (*s == SLASH) *s = '.';
+	} else {
+	    return r;
+	}
         if (r)
             return TRUE;
         return find2(along,nm,path); 	/* Also try nm as-is */
