@@ -3,7 +3,7 @@
  * ------------------------------------------------------------------------*/
 
 /* Is this a major release or not? */
-#define MAJOR_RELEASE 1
+#define MAJOR_RELEASE 0
 
 /* Define this as a string (of exactly 13 characters) uniquely identifying the 
  * current version.
@@ -14,6 +14,6 @@
 #if MAJOR_RELEASE
 #define HUGS_VERSION "July 1999    "
 #else
-#define HUGS_VERSION "990727 Beta  "
+#define HUGS_VERSION "990810 Beta  "
 #endif
 

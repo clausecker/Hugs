@@ -7,8 +7,8 @@
  * in the distribution for details.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.4 $
- * $Date: 1999/08/06 23:03:18 $
+ * $Revision: 1.5 $
+ * $Date: 1999/08/11 05:48:01 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -613,6 +613,7 @@ static struct cmd cmds[] = {
 #endif
  {":browse", BROWSE},
  {":xplain", XPLAIN},
+ {":version", PNTVER},
  {"",      EVAL},
  {0,0}
 };
@@ -643,6 +644,7 @@ static Void local menu() {
     Printf(":!command           shell escape\n");
     Printf(":cd dir             change directory\n");
     Printf(":gc                 force garbage collection\n");
+    Printf(":version            print Hugs version\n");
     Printf(":quit               exit Hugs interpreter\n");
 }
 
@@ -1635,6 +1637,9 @@ String argv[]; {
 	    case CHGDIR : changeDir();
 			  break;
 	    case INFO   : info();
+			  break;
+	    case PNTVER: Printf("-- Hugs Version %s\n",
+				 HUGS_VERSION);
 			  break;
 	    case QUIT   : breakOn(FALSE);
 			  return;
