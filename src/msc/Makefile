@@ -27,8 +27,8 @@
 default		:: hugs.exe runhugs.exe ffihugs.exe hugsscript.dll
 
 CC		= cl /nologo
-CFLAGS          = -ML -DMONTH_YEAR="\"Nov 2002\""
-#CFLAGS		= -ML -Zi -DMONTH_YEAR="\"Nov 2002\""
+CFLAGS          = -ML -DMONTH_YEAR="\"Oct 2003\""
+#CFLAGS		= -ML -Zi -DMONTH_YEAR="\"Oct 2003\""
 # When debugging:
 #CFLAGS		= -ML -Zi
 OPTFLAGS	= -O2
@@ -43,9 +43,19 @@ LIBS		=  kernel32.lib advapi32.lib
 
 YACC		= bison
 RM		= -del
-CP		= copy
+CP		= xcopy /Y
+EXE             = .exe
 OBJ		= .obj
 
+FPTOOLS         = ../../fptools
+
+BUILD_DIR	= ..\\hugsdir
+
+# a file created by make libraries
+LIBRARIES	= $(BUILD_DIR)/libraries/Prelude.hs
+
+# a file created by make include
+INCLUDES	= $(BUILD_DIR)/include/HsFFI.h
 
 .SUFFIXES	:
 .SUFFIXES	: .c .h .obj
@@ -66,12 +76,16 @@ OBJECTS		= storage.obj input.obj static.obj type.obj subst.obj \
 		  opts.obj strutil.obj errors.obj evaluator.obj goal.obj
 IOBJECTS	= hugs.obj edit.obj observe.obj hugs.res $(OBJECTS)
 PRELUDE		= config.h options.h prelude.h script.h errors.h
+HEADERS		= HsFFI.h config.h unix\\MachDeps.h unix\\template-hsc.h
+TOOLS		= ..\\tools\\Package.hs ..\\tools\\ParsePkgConf.hs \
+		  ..\\tools\\get_pkg_field
+TOOLSDIR        = ..\\tools
 
 ################################################################
 # Hugs interpreter and standalone evaluator
 ################################################################
 
-hugs.exe	: $(IOBJECTS)  
+hugs.exe	: $(IOBJECTS)
 		  $(CC) $(LDFLAGS) $(IOBJECTS)  $(LIBS) -o hugs.exe 
 		  
 
@@ -89,21 +103,54 @@ hugsscript.obj  : hugsscript.c
 hugsscript.dll  : $(SERVER_OBJECTS) hugsscript.obj
 		  $(CC) $(DLL_FLAGS) $(LDFLAGS) $(SERVER_OBJECTS) hugsscript.obj $(LIBS) -o hugsscript.dll
 
+################################################################
+# Libraries, converted from raw sources out of the fptools tree
+################################################################
+
+CONVERTERS	= unix/convert_libraries unix/hugs-package
+
+libraries	:: $(LIBRARIES) 
+
+$(LIBRARIES)	: runhugs.exe ffihugs.exe ../libraries/Hugs/*.* $(CONVERTERS) $(TOOLS) $(INCLUDES)
+		  -mkdir $(BUILD_DIR)\\tools
+		  $(CP) $(TOOLSDIR)\*.* $(BUILD_DIR)\\tools
+		  -mkdir $(BUILD_DIR)\\libraries
+		  -mkdir $(BUILD_DIR)\\libraries/Hugs
+		  $(CP) ..\libraries\Hugs\*.* $(BUILD_DIR)\\libraries\\Hugs
+		  cd unix && sh convert_libraries $(FPTOOLS) ../../hugsdir
+
+$(INCLUDES)	: $(HEADERS)
+		  -mkdir $(BUILD_DIR)\\include
+		  $(CP) HsFFI.h $(BUILD_DIR)\\include
+		  $(CP) config.h $(BUILD_DIR)\\include
+		  $(CP) unix\\MachDeps.h $(BUILD_DIR)\\include
+		  $(CP) unix\\template-hsc.h $(BUILD_DIR)\\include
+
+################################################################
+# Library modules that use the Foreign Function Interface
+################################################################
+
+FFI_LIBRARIES	= $(BUILD_DIR)/libraries/Hugs/Storable.dll
+
+ffi_libraries	: $(FFI_LIBRARIES)
+
+BUILD_FFI = env HUGSDIR='$(BUILD_DIR)' HUGSFLAGS='' ./ffihugs +G
+
 #
 # Create all the FFI extension DLLs.
 #
-FFIHUGS=..\ffihugs
-FFIHUGS_OPTS=+G -98 -P
+FFIHUGS=ffihugs.exe
+FFIHUGS_OPTS=+G -98 -P../hugsdir/libraries +L-I../hugsdir/include
 
 .PHONY: ffi-dlls
 
-ffi-dlls:
+ffi-dlls: $(FFIHUGS)
 	$(FFIHUGS) $(FFIHUGS_OPTS) +L../libraries/Hugs/Storable_aux.c Hugs.Storable
 	$(FFIHUGS) $(FFIHUGS_OPTS) Foreign.Marshal.Alloc
 	$(FFIHUGS) $(FFIHUGS_OPTS) Foreign.Marshal.Utils
-	$(FFIHUGS) $(FFIHUGS_OPTS) +L../libraries/Foreign/C/errno.c Foreign.C.Error
-	$(FFIHUGS) $(FFIHUGS_OPTS) +L../libraries/Network/initWinSock.c +L../libraries/Network/winSockErr.c +Lwsock32.lib Network.Socket
-	$(FFIHUGS) $(FFIHUGS_OPTS) +Lwsock32.lib Network.BSD
+	$(FFIHUGS) $(FFIHUGS_OPTS) +L../hugsdir/libraries/Foreign/C/Error.c Foreign.C.Error
+#	$(FFIHUGS) $(FFIHUGS_OPTS) +L../libraries/Network/initWinSock.c +L../libraries/Network/winSockErr.c +Lwsock32.lib Network.Socket
+#	$(FFIHUGS) $(FFIHUGS_OPTS) +Lwsock32.lib Network.BSD
 
 ################################################################
 # Clean, distclean, veryclean, TAGS
