@@ -11,8 +11,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: server.c,v $
- * $Revision: 1.32 $
- * $Date: 2003/03/09 23:53:08 $
+ * $Revision: 1.33 $
+ * $Date: 2003/03/10 02:12:24 $
  * ------------------------------------------------------------------------*/
 #include "prelude.h"
 #include "storage.h"
@@ -120,7 +120,7 @@ static Void setHugsAPI() {       /* initialise virtual function table */
 static char  serverErrMsg[ErrorBufferSize];   /* Buffer for error messages */
 char* lastError = NULL;
 
-static String ClearError()
+String ClearError()
 {
     String err = lastError;
     lastError  = NULL;
