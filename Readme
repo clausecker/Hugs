@@ -1,56 +1,34 @@
 ------------------------------------------------------------------------------
 __   __ __  __  ____   ___      _________________________________________
 ||   || ||  || ||  || ||__      Hugs 98: Based on the Haskell 98 standard
-||___|| ||__|| ||__||  __||     Copyright (c) 1994-2001
+||___|| ||__|| ||__||  __||     Copyright (c) 1994-2002
 ||---||         ___||           World Wide Web: http://haskell.org/hugs
 ||   ||                         Report bugs to: hugs-bugs@haskell.org
-||   || Version: Dec 2001       _________________________________________
+||   || Version: Oct 2002 RC1   _________________________________________
 
 ------------------------------------------------------------------------------
 
-   We are pleased to announce a new release of Hugs98, a Haskell 
-   interpreter and programming environment for developing cool Haskell 
-   programs.  Sources and binaries are freely available on the 
-   World-Wide Web.
+   We are pleased to announce a new release of Hugs98, an interpreter
+   and programming environment for developing Haskell programs.
+   Sources and binaries are freely available on the World-Wide Web.
 
-   The most important features of this new release are:
+   Feature highlights of this new release are:
    
-   - The incompatibilities between Hugs and the Haskell Graphics Library
-     have been fixed, and binaries for the HGL are now available on the 
-     Hugs download page.
+   - Much improved FFI support (contributed by Alastair Reid), bringing
+     Hugs really very close to the Haskell FFI specification.
+   - Adoption of a significant subset of GHC's hierarchical libraries
+     (hard work contributed by Ross Paterson.)
+   - An (allegedly) complete implementation of the Haskell98 module
+     system.
+   - Numerous bug fixes since the previous major release in Dec 2001.
 
-   - The missing standard libraries Directory, CPUTime, Time and Locale 
-     have been added along with a complete implementation of Haskell98 IO.
-
-   - Hugs is now delivered with most of the hslibs libraries installed
-     in the lib/exts/ directory.  The added modules cover the Edison, 
-     Parsec, HaXml, QuickCheck, concurrent, monad, and html subdirectories 
-     of hslibs.
-
-   - The :set option now refuses the user to set a module search path
-     that doesn't contain the Prelude. This is to protect users from
-     accidentally rendering their Hugs setups unusable, esp. so on
-     Windows machines where the options are persisted to the Registry.
-
-   - MacOS X is now one of the supported unix ports, with pre-built 
-     binaries available on the download page.
-
-   - Experimental support is provided for hierarchical module names, 
-     where a module name A.B.C is mapped onto the file path 
-     A/B/C{.hs,.lhs} and appended to each of the path prefixes in 
-     HUGSPATH until the name of a readable file is found.
-
-   Most reported bugs have also been fixed; however, some issues still
-   remain.  See the heading "Hugs Bugs & Features" on the Hugs web site
-   for further information.
+   The home page for Hugs is at http://haskell.org/hugs.
 
    Send email to hugs-users-request@haskell.org to join the hugs-users
    mailing list.  Bug reports should be sent to hugs-bugs@haskell.org.
    
    Send email to hugs-bugs-request@haskell.org to subscribe to the
    hugs-bugs list.
-
-   The home page for Hugs is at http://www.haskell.org/hugs.
 
 ------------------------------------------------------------------------------
  The Hugs 98 system is Copyright (c) Mark P Jones, Alastair Reid, the
