@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.86 $
- * $Date: 2002/09/08 06:14:42 $
+ * $Revision: 1.87 $
+ * $Date: 2002/09/10 15:13:54 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -35,6 +35,7 @@ static List   local resolveImportList	Args((Module,Cell,Bool));
 static Void   local checkImportList	Args((Bool,Pair));
 static Void   local checkQualImportList	Args((Pair));
 static Cell   local lookupImport        Args((Text,List));
+static Cell   local entityIsMember      Args((Cell,List));
 static Text   local findImportText      Args((Cell));
 static List   local mergeImportLists    Args((List,List));
 
@@ -626,6 +627,18 @@ List is; {
   return NIL;
 }
 
+static Cell local entityIsMember(x,xs) /* Test for membership of specific  */
+Cell x;                                /* entity x in import/export list xs  */
+List xs; {
+    for (; nonNull(xs); xs=tl(xs)) {
+	if (isPair (hd(xs)) && x==fst(hd(xs)))
+	    return hd(xs);
+	if (x == hd(xs))
+	    return hd(xs);
+    }
+    return NIL;
+}
+
 static Text local findImportText(c)
 Cell c; {
     if (isName(c))  return name(c).text;
@@ -708,7 +721,7 @@ Pair importSpec; {
 	  if (isPair(e)) {
 	      e = fst(e);
 	  }
-	  if (!cellIsMember(e,hidden)) {
+	  if (!entityIsMember(e,hidden)) {
 	    if (isQual) {
 	      modImps = cons(e,modImps);
 	    } else {
