@@ -126,5 +126,5 @@ src/stamp-h.in: configure.ac aclocal.m4 fptools
 
 fptools:
 	-mkdir fptools
-	cvs -d `cat CVS/Root` get -r$(HSLIBSTAG) `for d in $(HSLIBSDIRS); do echo fptools/hslibs/$$d; done`
-	cvs -d `cat CVS/Root` get -r$(LIBRARIESTAG) config.sub config.guess install-sh `for d in $(LIBRARIESDIRS) $(LIBRARIESFILES); do echo fptools/libraries/$$d; done`
+	cvs -d `cat CVS/Root` get -r$(HSLIBSTAG) `for lib in $(HSLIBSDIRS); do echo fptools/hslibs/$$lib; done`
+	cvs -d `cat CVS/Root` get -r$(LIBRARIESTAG) fptools/config.sub fptools/config.guess fptools/install-sh `for lib in $(LIBRARIESDIRS) $(LIBRARIESFILES); do echo fptools/libraries/$$lib; done`
