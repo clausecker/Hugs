@@ -1,11 +1,12 @@
 -- !!! Hiding an abstract (Prelude) type
 module M where
 
-import Prelude hiding ( Char, ord )
-import qualified Prelude ( ord )
+import Prelude hiding ( Char )
+import Char    hiding ( ord, Char )
+import qualified Char ( ord )
 
 type Char = Int
 
 ord :: Char -> Int
-ord x = Prelude.ord (chr x) + 1
+ord x = Char.ord (chr x) + 1
 
