@@ -878,4 +878,46 @@ ifndef([AC_HELP_STRING],
     [  ifelse(builtin([eval],len([$1])<24),1,[builtin([format], [%-23s], [$1])],[$1
                          ]) $2]))
 
+dnl
+dnl Getting at the right version of 'find'
+dnl (i.e., not the MS util on a Win32 box).
+dnl
+AC_DEFUN(FPTOOLS_FIND_FIND,
+[
+AC_PATH_PROG(Find2Cmd, find)
+$Find2Cmd --version > conftest.out 2>&1 
+if grep "FIND: Parameter format" conftest.out >/dev/null 2>&1 ; then
+   # Encountered MS' find utility, which is not what we're after.
+   #
+   # HACK - AC_CHECK_PROG is useful here in that does let you reject
+   # an (absolute) entry in the path (Find2Cmd). It is not so useful
+   # in that it doesn't let you (AFAIU) set VARIABLE equal to the 
+   # absolute path eventually found. So, hack around this by inspecting
+   # what variables hold the abs. path & use them directly.
+   AC_CHECK_PROG(FindCmd,find,`echo $ac_dir/$ac_word`,find,,$Find2Cmd)
+else
+FindCmd=$Find2Cmd
+AC_SUBST(FindCmd)
+fi
+])
+
+dnl
+dnl Getting at the right version of 'sort'
+dnl (i.e., not the MS util on a Win32 box).
+dnl
+AC_DEFUN(FPTOOLS_FIND_SORT,
+[
+AC_PATH_PROG(Sort2Cmd, sort)
+$Sort2Cmd --version > conftest.out 2>&1 
+if grep "^--version" conftest.out >/dev/null 2>&1 ; then
+   # Encountered MS' sort utility, which is not what we're after.
+   #
+   # HACK - see FPTOOLS_FIND_FIND remark.
+   AC_CHECK_PROG(SortCmd,sort,`echo $ac_dir/$ac_word`,sort,,$Sort2Cmd)
+else
+SortCmd=$Sort2Cmd
+AC_SUBST(SortCmd)
+fi
+])
+
 dnl End of file
