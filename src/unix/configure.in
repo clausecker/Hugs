@@ -357,22 +357,7 @@ AC_CHECK_LIB_NOWARN(dl, dlopen)
 AC_CHECK_LIB_NOWARN(dld, shl_load)
 AC_CHECK_LIB_NOWARN(m, atan)
 AC_PATH_XTRA
-
-dnl Should we use the "native" (= Quartz) Opengl on MacOS X or the X11 one?
-UseQuartzOpenGL=NO
-case $HostPlatform in
-  *-*-darwin*)
-     if test x"$enable_hopengl" != x"x11"; then
-       AC_DEFINE(USE_QUARTZ_OPENGL)
-       UseQuartzOpenGL=YES
-     fi
-     ;;
-  *) ;;
-esac
-
-if test x"$enable_hopengl" != x"no"; then
-  FPTOOLS_HAVE_OPENGL
-fi
+FP_CHECK_GLUT
 
 dnl--------------------------------------------------------------------
 dnl
@@ -443,7 +428,7 @@ dnl check for OpenGL include files
 if test x"$enable_hopengl" != x"no"; then
   fp_save_cppflags="$CPPFLAGS"
   CPPFLAGS="$CPPFLAGS $X_CFLAGS"
-  if test "$UseQuartzOpenGL" = YES ; then
+  if test x"$use_quartz_opengl" = xyes ; then
     AC_CHECK_HEADERS(OpenGL/gl.h)
   else
     AC_CHECK_HEADERS(GL/gl.h)
