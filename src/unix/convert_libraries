@@ -1,11 +1,11 @@
 #!/bin/sh
 
 # This script generates:
-# ../../libraries:
+# $2/libraries:
 #	copies of the heirarchical libraries suitable for
 #	use with Hugs.  Note that some of the libraries require extensions
 #	to Haskell 98 and have to be run with the -98 flag.
-# ../../oldlib:
+# $2/oldlib:
 #	compatibility stubs for old Hugs libraries
 #
 # A HUGSPATH consisting of both of these should approximate the old libs,
@@ -137,9 +137,6 @@ stub() {
 		done
 		echo '    ) where'
 		echo
-		if [ $stub_module = Exception ]		# gross kludge
-		then	echo "import Prelude hiding (catch)"
-		fi
 		for real
 		do	echo "import $real"
 		done
@@ -244,7 +241,7 @@ hslibs() {
   cvt base Data/Unique.hs
   cvt base Data/Word.hs
   cvt base Debug/QuickCheck.hs
-# cvt base Debug/QuickCheck/Batch.hs	# needs Control.Concurrent.myThreadId
+# cvt base Debug/QuickCheck/Batch.hs	# needs pre-emptive concurrency
   cvt base Debug/QuickCheck/Poly.hs
   cvt base Debug/QuickCheck/Utils.hs
   cvt base Debug/Trace.hs
@@ -307,7 +304,7 @@ hslibs() {
   cvt base Text/Show.hs
   cvt base Text/Show/Functions.hs
 
-  # Haskell 98 Library Report (minus Numeric, which is in base)
+  # Haskell 98 Report (minus Numeric and Prelude, which are in base)
 
   cvt haskell98 Array.hs
   cvt haskell98 CPUTime.hs
@@ -527,7 +524,7 @@ mkdir -p $compat
   libhugs HugsDynamic				# temporary measure
      stub HugsInternals		Hugs.Internals
   libhugs HugsLibs				# only useful for testing
-  libhugs IOExtensions
+     stub IOExtensions		Hugs.IOExts
   libhugs Interact
   libhugs ListUtils
   libhugs Number
