@@ -1,7 +1,7 @@
 ROOT := ${subst /src/unix,,${shell pwd}}
 OPTS =  \
 	--with-readline \
-	--disable-large-banner
+#	--disable-large-banner
 GNULIBS = 
 
 config: configure
