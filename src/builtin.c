@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: builtin.c,v $
- * $Revision: 1.29 $
- * $Date: 2002/08/09 14:24:59 $
+ * $Revision: 1.30 $
+ * $Date: 2002/08/25 22:23:27 $
  * ------------------------------------------------------------------------*/
 
 /* We include math.h before prelude.h because SunOS 4's cpp incorrectly
@@ -2245,7 +2245,7 @@ struct thunk_data {
     struct thunk_data* next;
     struct thunk_data* prev;
     HugsStablePtr      stable;
-#if defined(__i386__)
+#if defined(__i386__) || defined(_X86_)
     char               code[16];
 #elif defined(__ppc__)
      char               code[13*4];
@@ -2279,7 +2279,7 @@ static void* mkThunk(void (*app)(void), HugsStablePtr s) {
     foreignThunks = thunk;
     thunk->stable = s;
     pc = &thunk->code[0];
-#if defined(__i386__)
+#if defined(__i386__) || defined(_X86_)
     /* 3 bytes: pushl (%esp) */
     *pc++ = 0xff; *pc++ = 0x34; *pc++ = 0x24;  
 
