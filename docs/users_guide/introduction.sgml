@@ -488,11 +488,11 @@ Numerous bug fixes since the previous major release in Dec 2001.
 </sect2>
 
 <sect2>
-<title>Under development</title>
+<title>September 2003</title>
 
 <para>
 There has been substantial internal restructuring.
-User-visible changes include:
+In addition to numerour bug fixes, user-visible changes include:
 </para>
 
 <itemizedlist>
@@ -507,7 +507,9 @@ on most architectures.
 
 <listitem><para>
 Hugs now relies on the same hierarchical libraries as GHC and Nhc98,
-though compatibility stubs for old libraries are still provided.
+and provides almost all of them.
+For now, compatibility with the old libraries is provided by stub
+modules, but users are encouraged to migrate to the new libraries.
 </para></listitem>
 
 <listitem><para>
@@ -518,17 +520,13 @@ to an <literal>Exception</literal>
 </para></listitem>
 
 <listitem><para>
-Integrated .NET support.
+Integrated .NET support (on Windows platforms).
 </para></listitem>
 
 <listitem><para>
 The <option>-N</option>, <option>-i</option>, <option>-f</option>,
 <option>-W</option> and <option>-X</option> options
 and the <command>:project</command> command have been removed.
-</para></listitem>
-
-<listitem><para>
-Numerous bug fixes.
 </para></listitem>
 </itemizedlist>
 
