@@ -20,7 +20,7 @@ module Hugs.Word
 	) where
 import Data.Bits
 import Data.Int
-import Numeric ( readDec, showInt )
+-- import Numeric ( readDec, showInt ) -- defined in the Prelude
 
 -----------------------------------------------------------------------------
 -- The "official" coercion functions
