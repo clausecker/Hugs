@@ -1,6 +1,6 @@
 Vendor:       PacSoft, Portland, Oregon.
 Name:         hugs98
-Version:      Jan2001
+Version:      Feb2001
 License:      BSDish
 Release:      1
 Group:        Development/Languages/Haskell
