@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: options.h,v $
- * $Revision: 1.9 $
- * $Date: 2003/02/17 11:20:58 $
+ * $Revision: 1.10 $
+ * $Date: 2003/03/06 23:42:17 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -99,12 +99,6 @@
 #define SMALL_HUGS   0
 #define REGULAR_HUGS 0
 #define LARGE_HUGS   1
-
-/* Define if you want to turn off the module system to reduce memory usage.
- * Warning: some of the standard libraries and demo programs require that
- * the module system be enabled.
- */
-#define IGNORE_MODULES 0
 
 /* --------------------------------------------------------------------------
  * Fancy features

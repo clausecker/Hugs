@@ -414,7 +414,6 @@ dnl
 dnl--------------------------------------------------------------------
 
 
-AC_ARG_ENABLE(modules,          [  --disable-modules         disable module system],            AC_DEFINE(IGNORE_MODULES))
 AC_ARG_ENABLE(path-canonicalization,[  --enable-path-canonicalization enable filepath canonicalization],AC_DEFINE(PATH_CANONICALIZATION))
 AC_ARG_WITH(preprocessor,       [  --with-preprocessor       use a preprocessor], AC_DEFINE(USE_PREPROCESSOR))
 AC_ARG_ENABLE(timer,            [  --enable-timer            enable evaluation timing])
