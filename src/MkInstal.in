@@ -32,6 +32,13 @@ install_demos	::
 		$(INSTALL_DATA) ../demos/prolog/*.*    $(DESTDIR)$(hugsdir)/demos/prolog
 		$(INSTALL_DATA) ../demos/prolog/readme $(DESTDIR)$(hugsdir)/demos/prolog
 		$(INSTALL_DATA) ../demos/prolog/stdlib $(DESTDIR)$(hugsdir)/demos/prolog
+		if test -d ../fptools/libraries/GLUT/examples ; then \
+			$(INSTALL) -d $(DESTDIR)$(hugsdir)/demos/GLUT ; \
+			for exampledir in Misc RedBook ; do \
+				$(INSTALL) -d $(DESTDIR)$(hugsdir)/demos/GLUT/$$exampledir ; \
+				$(INSTALL_DATA) ../fptools/libraries/GLUT/examples/$$exampledir/*.hs $(DESTDIR)$(hugsdir)/demos/GLUT/$$exampledir ; \
+			done ; \
+		fi
 
 install_man	::
 		$(INSTALL) -d $(DESTDIR)$(mandir)/man1
