@@ -103,13 +103,13 @@ main
 		localbuildinfo <- getPersistBuildConfig
 		install pkg_descr localbuildinfo mprefix False
 
-	    InstallCmd mprefix uInst -> do
-		((mprefix,uInst), _, args) <- parseInstallArgs (mprefix,uInst) args []
+	    InstallCmd uInst -> do
+		(uInst, _, args) <- parseInstallArgs uInst args []
 		no_extra_flags args
 		pkg_descr <- getBuildParams currentDir pkg_descr
 		localbuildinfo <- getPersistBuildConfig
-		install pkg_descr localbuildinfo mprefix uInst
-		when (isNothing mprefix && hasLibs pkg_descr)
+		install pkg_descr localbuildinfo uInst
+		when (hasLibs pkg_descr)
 			 (register pkg_descr localbuildinfo uInst)
 
 	    SDistCmd -> do
@@ -159,8 +159,8 @@ build pkg lbi = when (buildPackage pkg) $
   where buildPref = buildDir lbi
 
 install :: PackageDescription -> LocalBuildInfo ->
-	Maybe FilePath -> Bool -> IO ()
-install pkg lbi mprefix uInst =
+	Bool -> IO ()
+install pkg lbi uInst =
 	when (buildPackage pkg) $
 	withLib pkg $ \ libInfo -> do
 	pkgDir <- hugsPackageDir pkg lbi uInst
