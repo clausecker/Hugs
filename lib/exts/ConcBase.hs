@@ -103,7 +103,7 @@ forkIO m = continueIO (threadToIOResult ((m `catchHugsException` forkExnHandler)
 
 forkErrHandler :: IOError -> IO a
 forkErrHandler e = do
-    putStr "\nThread raised error: "
+    putStr "\nThread raised error:\n"
     putStr (show e)
     putStr "\n"           
     kill
