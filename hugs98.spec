@@ -53,6 +53,5 @@ gzip -f -9 $RPM_BUILD_ROOT%{prefix}/man/man1/hugs.1
 %{prefix}/bin/ffihugs
 %{prefix}/lib/hugs/demos
 %{prefix}/lib/hugs/include
-%{prefix}/lib/hugs/lib
 %{prefix}/lib/hugs/libraries
 %{prefix}/lib/hugs/oldlib
