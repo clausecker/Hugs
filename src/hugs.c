@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.89 $
- * $Date: 2002/09/09 03:48:17 $
+ * $Revision: 1.90 $
+ * $Date: 2002/09/09 14:45:01 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -285,6 +285,7 @@ String argv[]; {
     Script i;
     String proj = 0;
     String prelLocation;
+    String prelName;
 #if USE_PREFERENCES_FILE
     FILE *f;
     FileName hugsPrefsFile = "\0";
@@ -389,7 +390,10 @@ String argv[]; {
      * or not -- if STD_PRELUDE_IMPL is reachable via the search
      * path, we are.
      */
-    if ( ( prelLocation = findMPathname(NULL, STD_PRELUDE_IMPL, hugsPath)) ) {
+
+    /* sigh, findMPathname() mutates its module/name arg*/
+    prelName = strCopy(STD_PRELUDE_HUGS); 
+    if ( ( prelLocation = findMPathname(NULL, prelName, hugsPath)) ) {
       newPrelude = TRUE;
       scriptName[0] = strCopy(prelLocation);
       /* Hackily add 'Prelude' onto the script stack. */
@@ -406,6 +410,7 @@ String argv[]; {
       scriptReal[1] = 0;
       forgetAScript(1,FALSE);
     }
+    free(prelName);
 
     if (!scriptName[0]) {
 	Printf("Prelude not found on current path: \"%s\"\n",
