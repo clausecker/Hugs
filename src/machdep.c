@@ -11,8 +11,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.69 $
- * $Date: 2002/10/12 14:57:58 $
+ * $Revision: 1.70 $
+ * $Date: 2002/10/25 13:02:07 $
  * ------------------------------------------------------------------------*/
 #include <math.h>
 
@@ -2188,6 +2188,9 @@ String flags; {
 
     /* The compile and link command */
     insert(MKDLL_CMD);
+    
+    /* Identify ourselves */
+    insert(" -D__HUGS__");
 
     /* the path to HsFFI.h */
     insert(" \"-I");
