@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.63 $
- * $Date: 2002/02/12 16:35:49 $
+ * $Revision: 1.64 $
+ * $Date: 2002/02/24 04:38:57 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -104,6 +104,8 @@ static Void   local failed            Args((Void));
 static String local strCopy           Args((String));
 static Void   local browseit	      Args((Module,String,Bool));
 static Void   local browse	          Args((Void));
+
+static Bool   printMostGeneralType = TRUE;
 
 #if USE_PREFERENCES_FILE
 static Void    readPrefsFile          Args((FILE *));
@@ -277,13 +279,7 @@ String argv[]; {
        * in the windows directory, so locate it first..
        */
       
-      notePadLoc = 
-#ifdef HAVE_ALLOCA
-          alloca
-#else
-          _alloca
-#endif
-	(sizeof(char)*(MAX_PATH + notePadLen + 1));
+      notePadLoc = alloca(sizeof(char)*(MAX_PATH + notePadLen + 1));
       rc = GetWindowsDirectory(notePadLoc, MAX_PATH);
       if ( !(rc == 0 || rc > MAX_PATH) ) {
 	strcat(notePadLoc, DEFAULT_EDITOR);
@@ -305,20 +301,24 @@ String argv[]; {
     readOptions(readRegString(HKEY_CURRENT_USER, HugsRoot,"Options",""), TRUE);
 #endif /* USE_REGISTRY */
 #if USE_PREFERENCES_FILE
-    if (f=fopen(PREFS_FILE_NAME,"r")) { /* is preferences file in the {Current} folder? */
+    if (f=fopen(PREFS_FILE_NAME,"r")) {
+           /* is preferences file in the {Current} folder? */
 	  readPrefsFile(f);
-	} else {                               /* is preferences file in the {Hugs} folder? */
+	} else {
+          /* is preferences file in the {Hugs} folder? */
         strcpy(hugsPrefsFile,macHugsDir);
         strcat(hugsPrefsFile,":");
         strcat(hugsPrefsFile,PREFS_FILE_NAME);
         if (f=fopen(hugsPrefsFile,"r"))
           readPrefsFile(f);
-	  }                                              /* else: take default preferences */
+	  } /* else: take default preferences */
     readOptions(hugsFlags,FALSE);
-    if (iniArgc > 0)            /* load additional files found in the preferences file */
-	  for (i=0; i<iniArgc; i++) {
-	    addScriptName(iniArgv[i],TRUE);
+    if (iniArgc > 0) {
+        /* load additional files found in the preferences file */
+      for (i=0; i<iniArgc; i++) {
+	addScriptName(iniArgv[i],TRUE);
       }
+    }
 #else
 # if HUGS_FOR_WINDOWS
     ReadGUIOptions();
@@ -336,10 +336,9 @@ String argv[]; {
 	    }
 	} else if (argv[i] && argv[i][0]/* workaround for /bin/sh silliness*/
 		 && !processOption(argv[i])) {
-#if HUGS_FOR_WINDOWS
-	    {addScriptName(argv[i],TRUE); SetWorkingDir(argv[i]); }
-#else
 	    addScriptName(argv[i],TRUE);
+#if HUGS_FOR_WINDOWS
+	    SetWorkingDir(argv[i]);
 #endif
 	}
     }
@@ -480,7 +479,7 @@ static Void local optionInfo() {        /* Print information about command */
     Printf(fmts,"Pstr","Set search path for modules to str");
     Printf(fmts,"Estr","Use editor setting given by str");
     Printf(fmts,"cnum","Set constraint cutoff limit");
-#if USE_PREPROCESSOR  && (defined(HAVE_POPEN) || defined(HAVE__POPEN))
+#if SUPPORT_PREPROCESSOR
     Printf(fmts,"Fstr","Set preprocessor filter to str");
 #endif
 #if PROFILING
@@ -507,7 +506,7 @@ static Void local optionInfo() {        /* Print information about command */
     }
     Printf("\nEditor setting  : -E");
     printString(hugsEdit);
-#if USE_PREPROCESSOR  && (defined(HAVE_POPEN) || defined(HAVE__POPEN))
+#if SUPPORT_PREPROCESSOR
     Printf("\nPreprocessor    : -F");
     printString(preprocessor);
 #endif
@@ -576,7 +575,7 @@ static String local optionsToStr() {          /* convert options to string */
     PUTStr('P',hugsPath);
     PUTStr('E',hugsEdit);
     PUTInt('c',cutoff);  PUTC(' ');
-#if USE_PREPROCESSOR  && (defined(HAVE_POPEN) || defined(HAVE__POPEN))
+#if SUPPORT_PREPROCESSOR
     PUTStr('F',preprocessor);
 #endif
 #if PROFILING
@@ -677,7 +676,7 @@ String s; {                             /* return FALSE if none found.     */
 		       hugsEdit = strCopy(s+1);
 		       return TRUE;
 
-#if USE_PREPROCESSOR  && (defined(HAVE_POPEN) || defined(HAVE__POPEN))
+#if SUPPORT_PREPROCESSOR
 	    case 'F' : if (preprocessor) free(preprocessor);
 		       preprocessor = strCopy(s+1);
 		       return TRUE;
@@ -1001,6 +1000,11 @@ struct options toggle[] = {             /* List of command line toggles    */
 #endif
 	     "Enable `here documents'",       &hereDocs},
 #endif
+    {'T', 
+#if !HASKELL_98_ONLY
+             1,
+#endif
+            "print most general type",  &printMostGeneralType},
     {0,   
 #if !HASKELL_98_ONLY
           0,
@@ -1588,7 +1592,7 @@ static Void local showtype() {         /* print type of expression (if any)*/
     parseExp();
     checkExp();
     defaultDefns = evalDefaults;
-    type = typeCheckExp(FALSE);
+    type = typeCheckExp(!printMostGeneralType);
     printExp(stdout,inputExpr);
 #if HUGS_FOR_WINDOWS
     { INT svColor = SetForeColor(BLUE);
