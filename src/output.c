@@ -9,8 +9,8 @@
  * included in the distribution.
  *
  * $RCSfile: output.c,v $
- * $Revision: 1.22 $
- * $Date: 2001/08/11 03:53:37 $
+ * $Revision: 1.23 $
+ * $Date: 2001/08/15 01:07:06 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -67,7 +67,7 @@ static Void local putKinds	 Args((Kinds));
 static Bool local printObsList   Args((Cell,Int,Bool));
 static Void local printArg       Args((FILE *,Cell));
 static Bool local isStrConst	 Args((Cell));
-static Bool local putStrConst	 Args((Cell));
+static Void local putStrConst	 Args((Cell));
 static Bool local isCharCell	 Args((Cell));
 static Bool local getCellChar    Args((Cell));
 #endif
@@ -567,7 +567,7 @@ Cell e; {
 
 #if OBSERVATIONS
 
-static Bool local putStrConst(e)
+static Void local putStrConst(e)
 Cell e; {
     putChr('"'); 
     while (isAp(e) && isAp(fun(e)) && fun(fun(e))==nameCons) {
