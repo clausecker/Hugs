@@ -7,6 +7,16 @@ Generate FFI code: {+,-}G
 Qualify names when printing, {+,-}Q
 -----------------------------------
 
+By default, the interpreter will print out names without qualifying
+them with their defining modules. Most of the time that's exactly what
+you want, but can become confusing if you re-define types and
+functions; the error messages not pinning down what entity it is
+referring to. To have the interpreter qualify the names, use +Q.
+Typically, you use +Q when resolving errors, but turn it back off
+again afterwards.
+
+Default: -Q
+
 Allow overlapping instances: {+,-}o
 -----------------------------------
 
