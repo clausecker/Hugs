@@ -2,7 +2,7 @@
 
 # Convert a Haskell package for use by Hugs
 
-usage="$0 <source-directory> <target-directory>"
+usage="$0 [-o script] source-dir [target-dir]"
 
 # The source directory is assumed to be the root of a package hierarchy,
 # i.e. A/B/C.hs contains the module A.B.C
@@ -20,8 +20,17 @@ cc=${CC-gcc}
 : ${cpp='gcc -P -E -traditional -xc'}
 : ${hsc2hs=hsc2hs}
 : ${greencard=green-card}
-: ${ffihugs=../ffihugs}
-: ${runhugs=../runhugs}
+: ${ffihugs=@BINDIR@/ffihugs}
+: ${runhugs=@BINDIR@/runhugs}
+: ${HUGSDIR=@HUGSDIR@}
+HUGSFLAGS='-W'
+
+export HUGSDIR HUGSFLAGS
+
+X_CFLAGS='@X_CFLAGS@'
+X_PRE_LIBS='@X_PRE_LIBS@'
+X_LIBS='@X_LIBS@'
+X_EXTRA_LIBS='@X_EXTRA_LIBS@'
 
 case `uname -a` in
 *CYGWIN*) platform=Win32 ;;
@@ -34,21 +43,35 @@ Win32)	CALLCONV=stdcall ;;
 *)	CALLCONV=ccall ;;
 esac
 
+script=
+while [ $# -gt 0 ]
+do	case $1 in
+	-o)	shift		# don't execute FFI commands:
+		script="$1"	# append them to the named script
+		shift
+		;;
+	-*)	echo "$0: unrecognized option '$1'" >&2
+		echo "usage: $usage" >&2
+		exit 1 ;;
+	*)	break ;;
+	esac
+done
+
 case $# in
-2)	;;
+1)	target_dir=$HUGSDIR/libraries ;;
+2)	target_dir=$2 ;;
 *)	echo "usage: $usage" >&2
 	exit 1 ;;
 esac
 
 source_dir=$1
-target_dir=$2
 
 if [ ! -d $source_dir ]; then
 	echo "Can't find directory '$1'" >&2
 	exit 1
 fi
 
-includes="-I. -I.. -I$source_dir/include"
+includes="-I$HUGSDIR/include -I$source_dir/include"
 tmpdir=/tmp/cvt.$$
 
 [ -d $tmpdir ] && rm -r $tmpdir
@@ -163,9 +186,7 @@ do	echo "Converting $modname"
 	fi
 done <$module_list
 
-# Pass 2: generate a script to compile FFI modules
-
-. ./params
+# Pass 2: compile FFI modules (or save commands in a script)
 
 conf_in=`echo $source_dir/*.conf.in`
 conf=`echo $source_dir/*.conf`
@@ -181,11 +202,9 @@ fi
 extra_libraries=
 extra_ld_opts=
 if [ -f "$conf" ]
-then	extra_libraries=`$runhugs ../../tools/get_libraries $conf`
-	extra_ld_opts=`$runhugs ../../tools/get_ld_options $conf`
+then	extra_libraries=`$runhugs $HUGSDIR/tools/get_libraries $conf`
+	extra_ld_opts=`$runhugs $HUGSDIR/tools/get_ld_options $conf`
 fi
-
-script=`dirname $0`/BuildFFI
 
 while read modname
 do
@@ -225,7 +244,13 @@ do
 			esac
 		done
 
-		echo "echo 'Compiling $filename'" >>$script
-		echo $cmd >>$script
+		case "$script" in
+		'')
+			echo "Compiling $filename"
+			$cmd ;;
+		*)
+			echo "echo 'Compiling $filename'" >>$script
+			echo $cmd >>$script ;;
+		esac
 	fi
 done <$module_list

@@ -39,7 +39,6 @@ if [ ! -d $hs_src ]; then
 fi
 
 target="$2"
-dst="$target/libraries"
 compat="$target/oldlib"
 
 # Create a compatibility stub for a Hugs extension module
@@ -108,8 +107,9 @@ hslibs() {
 # Convert hierarchical modules
 
 HUGSDIR="$target"
-HUGSFLAGS='-W'
-export HUGSDIR HUGSFLAGS
+ffihugs=../ffihugs
+runhugs=../runhugs
+export HUGSDIR ffihugs runhugs
 
 echo "#! /bin/sh
 
@@ -126,7 +126,7 @@ fi
 
 for package in $packages
 do
-	./convert_package $1/libraries/$package $dst
+	sh hugs-package -o BuildFFI $1/libraries/$package
 done
 
 # Compatibility with lib/exts:

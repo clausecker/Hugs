@@ -23,6 +23,7 @@ install_bin	:: hugs$(EXE) runhugs$(EXE) ffihugs$(EXE) libraries
 		$(INSTALL) -c hugs$(EXE) $(DESTDIR)$(bindir)
 		$(INSTALL) -c runhugs$(EXE) $(DESTDIR)$(bindir)
 		$(INSTALL) -c ffihugs$(EXE) $(DESTDIR)$(bindir)
+		$(INSTALL) -c -m 0755 unix/hugs-package $(DESTDIR)$(bindir)
 
 install_demos	::
 		$(INSTALL) -d $(DESTDIR)$(hugsdir)/demos

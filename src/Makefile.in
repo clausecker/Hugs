@@ -76,7 +76,10 @@ OBJECTS		= builtin@OBJ@ compiler@OBJ@ errors@OBJ@ evaluator@OBJ@ \
 IOBJECTS	= hugs@OBJ@ edit@OBJ@ observe@OBJ@ $(OBJECTS)
 PRELUDE		= config.h options.h prelude.h script.h
 
-HEADERS		= HsFFI.h
+HEADERS		= HsFFI.h config.h unix/MachDeps.h
+
+TOOLS		= ../tools/Package.hs ../tools/ParsePkgConf.hs \
+		  ../tools/get_ld_options ../tools/get_libraries
 
 ################################################################
 # Hugs interpreter and standalone evaluator
@@ -106,11 +109,13 @@ ffihugs@OBJ@	: runhugs@OBJ@
 # Libraries, converted from raw sources out of the fptools tree
 ################################################################
 
-CONVERTERS	= unix/convert_libraries unix/convert_package
+CONVERTERS	= unix/convert_libraries unix/hugs-package
 
 libraries	:: $(LIBRARIES) @FFI_LIBRARIES@
 
-$(LIBRARIES)	: ../libraries/Hugs/*.* $(CONVERTERS)
+$(LIBRARIES)	: ../libraries/Hugs/*.* $(CONVERTERS) $(TOOLS) $(INCLUDE)
+		  mkdir -p $(BUILD_DIR)/tools
+		  $(CP) $(TOOLS) $(BUILD_DIR)/tools
 		  mkdir -p $(BUILD_DIR)/libraries/Hugs
 		  $(CP) ../libraries/Hugs/*.* $(BUILD_DIR)/libraries/Hugs
 		  cd unix; ./convert_libraries $(FPTOOLS) ../../hugsdir

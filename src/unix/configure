@@ -11566,7 +11566,8 @@ done
 
 ac_given_srcdir=$srcdir
 
-trap 'rm -fr `echo "../Makefile ../../docs/Makefile ../../docs/hugs.1 $TESTSCRIPT params ../config.h ../options.h" | sed "s/:[^ ]*//g"` conftest*; exit 1' 1 2 15
+trap 'rm -fr `echo "../Makefile ../../docs/Makefile \
+	../../docs/hugs.1 $TESTSCRIPT hugs-package ../config.h ../options.h" | sed "s/:[^ ]*//g"` conftest*; exit 1' 1 2 15
 EOF
 cat >> $CONFIG_STATUS <<EOF
 
@@ -11696,7 +11697,8 @@ EOF
 
 cat >> $CONFIG_STATUS <<EOF
 
-CONFIG_FILES=\${CONFIG_FILES-"../Makefile ../../docs/Makefile ../../docs/hugs.1 $TESTSCRIPT params"}
+CONFIG_FILES=\${CONFIG_FILES-"../Makefile ../../docs/Makefile \
+	../../docs/hugs.1 $TESTSCRIPT hugs-package"}
 EOF
 cat >> $CONFIG_STATUS <<\EOF
 for ac_file in .. $CONFIG_FILES; do if test "x$ac_file" != x..; then

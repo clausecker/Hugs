@@ -767,7 +767,8 @@ if test -f ../../tests/config.in ; then
  TESTSCRIPT=../../tests/config
 fi
 
-AC_OUTPUT(../Makefile ../../docs/Makefile ../../docs/hugs.1 $TESTSCRIPT params)
+AC_OUTPUT(../Makefile ../../docs/Makefile \
+	../../docs/hugs.1 $TESTSCRIPT hugs-package)
 
 echo ''
 echo '************************************************'
