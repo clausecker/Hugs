@@ -73,9 +73,9 @@ VOID           CreateTextFont      (HWND,LOGFONT*,INT);
 #undef          getc
 #define         getc(x)         WinGetc(hWndText,(x))
 #undef          putchar
-#define         putchar(x)      WinPutchar(hWndText,(x))
+#define         putchar(x)      WinPutchar(hWndText,(CHAR)(x))
 #undef          putc
-#define         putc(c,s)       WinPutc(hWndText,c,s)
+#define         putc(c,s)       WinPutc(hWndText,(CHAR)c,s)
 //#define         fputc(c,s)      WinPutc(hWndText,c,s)
 #define         kbhit()         WinKbhit(hWndText)
 #undef          getchar
