@@ -344,6 +344,8 @@ LRESULT CALLBACK BrowseClassesDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM
 	  break;
 
 	case IDCANCEL: /* Close dialog */
+	    EndDialog(hDlg, FALSE);
+	    return TRUE;
 	case IDOK:
 	  EndDialog(hDlg, TRUE);
 	  return TRUE;
@@ -628,6 +630,8 @@ LRESULT CALLBACK BrowseNamesDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM l
 	    break;
 
 	case IDCANCEL: /* Close dialog */
+          EndDialog(hDlg, FALSE);
+	  return TRUE;
 	case IDOK:
 	  EndDialog(hDlg, TRUE);
 	  return TRUE;
@@ -1052,9 +1056,11 @@ LRESULT CALLBACK BrowseTyconsDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM 
 	    break;
 
 	case IDCANCEL:  /* Close dialog */
+	    EndDialog(hDlg, FALSE);
+	    return TRUE;
 	case IDOK:
-	  EndDialog(hDlg, TRUE);
-	  return TRUE;
+	    EndDialog(hDlg, TRUE);
+	    return TRUE;
 
 	default:
 	  return TRUE;
