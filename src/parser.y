@@ -11,8 +11,8 @@
  * included in the distribution.
  *
  * $RCSfile: parser.y,v $
- * $Revision: 1.11 $
- * $Date: 2000/12/13 09:36:05 $
+ * $Revision: 1.12 $
+ * $Date: 2001/01/02 22:17:13 $
  * ------------------------------------------------------------------------*/
 
 %{
@@ -934,6 +934,12 @@ varid	  : VARID			{$$ = $1;}
 	  | HIDING			{$$ = gc1(varHiding);}
 	  | QUALIFIED			{$$ = gc1(varQualified);}
 	  | ASMOD			{$$ = gc1(varAsMod);}
+	  | EXPORT			{$$ = gc1(varExport);}
+	  | DYNAMIC			{$$ = gc1(varDynamic);}
+	  | CCALL			{$$ = gc1(varCCall);}
+	  | STDKALL			{$$ = gc1(varStdCall);}
+	  | UNSAFE			{$$ = gc1(varUnsafe);}
+	  | LABEL			{$$ = gc1(varLabel);}
 	  ;
 qconid	  : QCONID			{$$ = $1;}
 	  | CONID			{$$ = $1;}

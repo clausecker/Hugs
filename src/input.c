@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: input.c,v $
- * $Revision: 1.17 $
- * $Date: 2001/01/02 18:21:40 $
+ * $Revision: 1.18 $
+ * $Date: 2001/01/02 22:17:13 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -125,6 +125,8 @@ static Text textBang,    textDot,      textAll,	   textImplies;
 
 static Text textModule,  textImport;
 static Text textHiding,  textQualified, textAsMod;
+static Text textExport, textDynamic, textCCall, textStdCall;
+static Text textUnsafe, textLabel;
 static Text textWildcard;
 static Text textNeedPrims;
 static Text textForeign, textExport,   textDynamic,textUnsafe, textLabel;
@@ -146,6 +148,12 @@ static Cell varDot;			/* (.)				   */
 static Cell varHiding;                  /* hiding                          */
 static Cell varQualified;               /* qualified                       */
 static Cell varAsMod;                   /* as                              */
+static Cell varExport;                  /* export                          */
+static Cell varDynamic;                 /* dynamic                         */
+static Cell varCCall;                   /* ccall                           */
+static Cell varStdCall;                 /* stdcall                         */
+static Cell varUnsafe;                  /* unsafe                          */
+static Cell varLabel;                   /* label                           */
 
 static List imps;                       /* List of imports to be chased    */
 
@@ -1768,6 +1776,12 @@ Int what; {
 		       varHiding      = mkVar(textHiding);
 		       varQualified   = mkVar(textQualified);
 		       varAsMod       = mkVar(textAsMod);
+		       varExport      = mkVar(textExport);
+		       varDynamic     = mkVar(textDynamic);
+		       varCCall       = mkVar(textCcall);
+		       varStdCall     = mkVar(textStdcall);
+		       varUnsafe      = mkVar(textUnsafe);
+		       varLabel       = mkVar(textLabel);
 		       conMain        = mkCon(findText("Main"));
 		       varMain        = mkVar(findText("main"));
 		       evalDefaults   = NIL;
@@ -1820,6 +1834,12 @@ Int what; {
 		       mark(varHiding);
 		       mark(varQualified);
 		       mark(varAsMod);
+		       mark(varExport);
+		       mark(varDynamic);
+		       mark(varCCall);
+		       mark(varStdCall);
+		       mark(varUnsafe);
+		       mark(varLabel);
 		       mark(varMain);
 		       mark(conMain);
 		       mark(imps);
