@@ -1001,28 +1001,30 @@ dnl (done last because -W flags messes everything else up)
 dnl
 dnl--------------------------------------------------------------------
 
-HUGS_FOR_WINDOWS=0
+HUGS_FOR_WINDOWS=no
 if test "x$with_gui" = xyes; then
   if test "x$target" = "xwindows"; then
     LDFLAGS="$LDFLAGS -W"
     WOBJECTS="win-text.obj"
     STRIP="brc32 hugs32.rc hugs.exe -w32"
     RC_FILES="hugs32.rc"
-    HUGS_FOR_WINDOWS=1
+    HUGS_FOR_WINDOWS=yes
   elif test "x$target" = "xdos"; then
     WOBJECTS="win-text.obj"
     STRIP="brc hugs16.rc hugs.exe"
     RC_FILES="hugs16.rc"
-    HUGS_FOR_WINDOWS=1
+    HUGS_FOR_WINDOWS=yes
   else
     AC_MSG_WARN(
 [not building Hugs GUI because this isn't a DOS machine
     ])
   fi
 fi
-AC_DEFINE_UNQUOTED([HUGS_FOR_WINDOWS], [$HUGS_FOR_WINDOWS],
-  [Define to 1 if you want to use the "Hugs for Windows" GUI. (Windows
-   3.1 and compatibles only)])
+if test $HUGS_FOR_WINDOWS = yes; then
+  AC_DEFINE([HUGS_FOR_WINDOWS], [1],
+    [Define to 1 if you want to use the "Hugs for Windows" GUI.
+     (Windows 3.1 and compatibles only)])
+fi
 AC_SUBST_DEF(WOBJECTS,"")
 AC_SUBST_DEF(RC_FILES,"")
 AC_SUBST_DEF(STRIP,"")
