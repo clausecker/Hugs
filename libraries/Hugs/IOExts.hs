@@ -5,8 +5,8 @@
 -----------------------------------------------------------------------------
 
 module Hugs.IOExts
-	( fixIO				-- :: (a -> IO a) -> IO a
-	, unsafePerformIO		-- :: IO a -> a
+	( fixIO			-- :: (a -> IO a) -> IO a
+	, unsafePerformIO	-- :: IO a -> a
 
 	, performGC
 
@@ -22,6 +22,10 @@ module Hugs.IOExts
 	, writeBinaryFile       -- :: FilePath -> String -> IO ()
 	, appendBinaryFile      -- :: FilePath -> String -> IO ()
 	, openBinaryFile        -- :: FilePath -> IOMode -> IO Handle
+
+	, hSetBinaryMode	-- :: Handle -> Bool -> IO ()
+	, hPutBuf	        -- :: Handle -> Ptr a -> Int -> IO ()
+	, hGetBuf	        -- :: Handle -> Ptr a -> Int -> IO Int
 
 	, argv                  -- :: [String]
 
@@ -39,6 +43,7 @@ import Hugs.Prelude
 import Hugs.IO
 import Hugs.IORef
 import Hugs.System ( getArgs )
+import Hugs.Ptr ( Ptr )
 
 -----------------------------------------------------------------------------
 
@@ -84,6 +89,10 @@ primitive writeBinaryFile   	 :: FilePath -> String -> IO ()
 primitive appendBinaryFile  	 :: FilePath -> String -> IO ()
 primitive readBinaryFile    	 :: FilePath -> IO String
 primitive openBinaryFile         :: FilePath -> IOMode -> IO Handle
+
+primitive hSetBinaryMode	 :: Handle -> Bool -> IO ()
+primitive hPutBuf	    	 :: Handle -> Ptr a -> Int -> IO ()
+primitive hGetBuf	    	 :: Handle -> Ptr a -> Int -> IO Int
 
 primitive hIsTerminalDevice	 :: Handle -> IO Bool
 primitive hGetEcho		 :: Handle -> IO Bool

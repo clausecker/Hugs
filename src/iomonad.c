@@ -14,8 +14,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: iomonad.c,v $
- * $Revision: 1.71 $
- * $Date: 2004/02/03 16:11:16 $
+ * $Revision: 1.72 $
+ * $Date: 2004/02/20 17:45:08 $
  * ------------------------------------------------------------------------*/
  
 Name nameIORun;			        /* run IO code                     */
@@ -140,6 +140,10 @@ PROTO_PRIM(primAppendFile);
 PROTO_PRIM(primReadBinaryFile);
 PROTO_PRIM(primWriteBinaryFile);
 PROTO_PRIM(primAppendBinaryFile);
+
+PROTO_PRIM(primHSetBinaryMode);
+PROTO_PRIM(primHPutBuf);
+PROTO_PRIM(primHGetBuf);
 
 PROTO_PRIM(primHIsTerminalDevice);
 PROTO_PRIM(primHGetEcho);
@@ -272,6 +276,9 @@ static struct primitive iomonadPrimTable[] = {
   {"readBinaryFile",	1+IOArity, primReadBinaryFile},
   {"writeBinaryFile",	2+IOArity, primWriteBinaryFile},
   {"appendBinaryFile",	2+IOArity, primAppendBinaryFile},
+  {"hSetBinaryMode",	2+IOArity, primHSetBinaryMode},
+  {"hPutBuf",		3+IOArity, primHPutBuf},
+  {"hGetBuf",		3+IOArity, primHGetBuf},
   {"hIsTerminalDevice",	1+IOArity, primHIsTerminalDevice},
   {"hGetEcho",		1+IOArity, primHGetEcho},
   {"hSetEcho",		2+IOArity, primHSetEcho},
@@ -1488,6 +1495,134 @@ primFun(primReadBinaryFile) {		/* read file as lazy string	   */
     Cell hnd = openHandle(root,IOArg(1),HREAD,TRUE,"IOExtensions.readBinaryFile");
     handles[intValOf(hnd)].hmode = HSEMICLOSED;
     IOReturn(ap(nameHreader,hnd));
+}
+
+primFun(primHSetBinaryMode) {
+    Int h;
+    Bool binary;
+
+    HandleArg(h, 2+IOArity);
+    BoolArg(binary, 1+IOArity);
+    if (handles[h].hmode==HCLOSED) {
+        IOFail(mkIOError(NIL,
+			 nameIllegal,
+		         "System.IO.hSetBinaryMode",
+		         "invalid handle",
+			 NIL));
+    }
+#if CHAR_ENCODING
+    handles[h].hBinaryMode = binary;
+#endif
+    IOReturn(nameUnit);
+}
+
+primFun(primHPutBuf) {			/* write binary data from a buffer   */
+    Int h, size;
+    Pointer buf;
+
+    HandleArg(h, 3+IOArity);
+    PtrArg(buf, 2+IOArity);
+    IntArg(size, 1+IOArity);
+
+    /* argument checks */
+    if (!(handles[h].hmode & (HWRITE | HAPPEND | HREADWRITE))) {
+	IOFail(mkIOError(handles[h].hcell,
+			 nameIllegal,
+			 "System.IO.hPutBuf",
+			 "handle is not writable",
+			 NIL));
+    }
+    if (size < 0) {
+	IOFail(mkIOError(handles[h].hcell,
+			 nameIllegal,
+			 "System.IO.hPutBuf",
+			 "illegal buffer size",
+			 NIL));
+    }
+
+    /* Flush input buffer for R/W handles */
+    if ((handles[h].hmode & HREADWRITE) && handles[h].hHaveRead) {
+	fflush(handles[h].hfp);
+	handles[h].hHaveRead = FALSE;
+    }
+
+    errno = 0;
+    while (size > 0) {
+	size -= (Int)fwrite(buf, 1, size, handles[h].hfp);
+	if (errno < 0) {
+	    IOFail (mkIOError(handles[h].hcell,
+			      toIOError(errno),
+			      "System.IO.hPutBuf",
+			      toIOErrorDescr(errno,TRUE),
+			      NIL));
+	}
+    }
+
+    IOReturn(nameUnit);
+}
+
+primFun(primHGetBuf) {			/* read binary data into a buffer   */
+    Int h, size, savedSize;
+    Pointer buf;
+
+    HandleArg(h, 3+IOArity);
+    PtrArg(buf, 2+IOArity);
+    IntArg(size, 1+IOArity);
+    savedSize = size;
+
+    /* argument checks */
+    if (!(handles[h].hmode & (HREAD | HREADWRITE))) {
+	IOFail(mkIOError(handles[h].hcell,
+			 nameIllegal,
+			 "System.IO.hGetBuf",
+			 "handle is not readable",
+			 NIL));
+    }
+    if (size < 0) {
+	IOFail(mkIOError(handles[h].hcell,
+			 nameIllegal,
+			 "System.IO.hGetBuf",
+			 "illegal buffer size",
+			 NIL));
+    }
+
+    /* Flush output buffer for R/W handles */
+    if ((handles[h].hmode & HREADWRITE) && !handles[h].hHaveRead) {
+	fflush(handles[h].hfp);
+	handles[h].hHaveRead = TRUE;
+    }
+
+    /* use lookahead character, if any (note the characte/byte confusion here) */
+#if CHAR_ENCODING
+    if (size > 0 && handles[h].hLookAhead >= 0) {
+	*((char*)buf)++ = (char)(handles[h].hLookAhead);
+	handles[h].hLookAhead = -1;
+	size--;
+    }
+#endif
+
+    if (h == HSTDIN) {
+	while (size > 0) {
+	    Int c = readTerminalChar();
+	    if (c == EOF) break;
+	    *((char*)buf)++ = (char)c;
+	    size--;
+	}
+    } else {
+	errno = 0;
+	while (size > 0 && !feof(handles[h].hfp)) {
+	    size -= (Int)fread(buf, 1, size, handles[h].hfp);
+	    if (errno != 0) {
+		IOFail (mkIOError(handles[h].hcell,
+				  toIOError(errno),
+				  "System.IO.hGetBuf",
+				  toIOErrorDescr(errno,TRUE),
+				  NIL));
+	    }
+	}
+    }
+
+    IOReturn(mkInt(savedSize - size));
 }
 
 primFun(primWriteFile) {		/* write string to specified file  */
