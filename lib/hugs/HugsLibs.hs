@@ -16,7 +16,6 @@ import Interact
 import AnsiScreen
 import AnsiInteract
 import IOExtensions
-import Sequence
 import ListUtils
 import Dynamic
 

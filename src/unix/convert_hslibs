@@ -50,6 +50,7 @@ cvt concurrent Semaphore.lhs
 cvt data FiniteMap.lhs      
 cvt data Set.lhs
 
+cp $src/data/edison/COPYRIGHT $dst/COPYRIGHT.edison
 cvt data/edison/Assoc Assoc.hs
 cvt data/edison/Assoc AssocDefaults.hs
 cvt data/edison/Assoc AssocList.hs
@@ -179,7 +180,6 @@ cvt text Pretty.lhs
 
 # Note that we are forced to rename the "with" combinator to avoid a clash
 # with implicit parameter syntax.
-cvt text/HaXml/lib HPutStrLn.hs
 cvt text/HaXml/lib Haskell2Xml.hs
 cvt text/HaXml/lib IsPrefixOf.hs
 cvt text/HaXml/lib IsSuffixOf.hs
