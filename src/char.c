@@ -535,16 +535,18 @@ static void local markConsCharTable() {
 static void local freeConsCharTable() {
     int i, j;
 
-    for (j=1; j<NUM_LEVEL2; j++)
-	if (consCharTable[0][j]!=NULL)
-	    free(consCharTable[0][j]);
-    for (i=1; i<NUM_LEVEL1; i++)
-	if (consCharTable[i]!=NULL) {
-	    for (j=0; j<NUM_LEVEL2; j++)
-		if (consCharTable[i][j]!=NULL)
-		    free(consCharTable[i][j]);
-	    free(consCharTable[i]);
-	}
+    if (consCharTable[0]) {	/* only if the table has been initialized */
+	for (j=1; j<NUM_LEVEL2; j++)
+	    if (consCharTable[0][j]!=NULL)
+		free(consCharTable[0][j]);
+	for (i=1; i<NUM_LEVEL1; i++)
+	    if (consCharTable[i]!=NULL) {
+		for (j=0; j<NUM_LEVEL2; j++)
+		    if (consCharTable[i][j]!=NULL)
+			free(consCharTable[i][j]);
+		free(consCharTable[i]);
+	    }
+    }
 }
 
 #else /* !UNICODE_CHARS */
