@@ -1079,7 +1079,7 @@ instance Integral a => Real (Ratio a) where
 
 instance Integral a => Fractional (Ratio a) where
     (x:%y) / (x':%y')   = (x*y') % (y*x')
-    recip (x:%y)        = y :% x
+    recip (x:%y)        = y % x
     fromRational (x:%y) = fromInteger x :% fromInteger y
     fromDouble 		= doubleToRatio
 
