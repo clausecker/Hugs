@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: bignums.c,v $
- * $Revision: 1.5 $
- * $Date: 2002/04/11 23:20:18 $
+ * $Revision: 1.6 $
+ * $Date: 2002/09/12 11:52:45 $
  * ------------------------------------------------------------------------*/
 
 /*#define DEBUG_BIGNUMS*/
@@ -178,18 +178,32 @@ Bignum n; {
     if (n!=ZERONUM) {
 	List ds = snd(n);
 	if (nonNull(ds)) {
-	    Int m = digitOf(hd(ds));
+	    Int m;
 	    Int b = 1;
-	    while (nonNull(ds=tl(ds))) {/* This code will fail to convert  */
-		Int d = digitOf(hd(ds));/* (-MAXPOSINT) - 1 correctly	   */
-		if (b > (MAXPOSINT/BIGBASE))
-		    return NIL;
-		b *= BIGBASE;
-		if (d > (MAXPOSINT - m)/b)
-		    return NIL;
-		m += b*d;
+	    if (fst(n)==POSNUM) {
+		m = digitOf(hd(ds));
+		while (nonNull(ds=tl(ds))) {
+		    Int d = digitOf(hd(ds));
+		    if (b > (MAXPOSINT/BIGBASE))
+			return NIL;
+		    b *= BIGBASE;
+		    if (d > (MAXPOSINT - m)/b)
+			return NIL;
+		    m += b*d;
+		}
+	    } else { /* fst(n)==NEGNUM */
+		m = - digitOf(hd(ds));
+		while (nonNull(ds=tl(ds))) {
+		    Int d = - digitOf(hd(ds));
+		    if (b > (MAXPOSINT/BIGBASE))
+			return NIL;
+		    b *= BIGBASE;
+		    if (d < (MINNEGINT - m)/b)
+			return NIL;
+		    m += b*d;
+		}
 	    }
-	    return mkInt(fst(n)==POSNUM ? m : (-m));
+	    return mkInt(m);
 	}
     }
     return mkInt(0);
