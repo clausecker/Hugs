@@ -166,6 +166,13 @@ This option will disappear in time.
 <para>
 Literate scripts as default (default: off)
 </para>
+<para>
+Files with names ending in <quote><literal>.hs</literal></quote>
+are always treated as ordinary Haskell,
+while those ending in <quote><literal>.lhs</literal></quote>
+are always treated as literate scripts.
+This option determines whether other files are literate scripts or not.
+(See <xref linkend="runhugs"> for an example.)
 </listitem>
 </varlistentry>
 
@@ -509,8 +516,8 @@ and this works for any type:
   Prelude> [Just (2+3), Nothing]
   [Maybe_Just 5,Maybe_Nothing]
 </screen>
-Another advantage of the built-in printer is its treatment of failures,
-or exceptions.
+Another feature of the built-in printer is its treatment of failures
+(or exceptions).
 Normally, an exception causes immediate failure of the expression:
 <screen>
   Prelude> :set +u
@@ -599,22 +606,21 @@ Defaulting types when printing (default: off)
 </para>
 <para>
 When printing out types, the interpreter will not try to
-simplify types by applying Haskell's defaulting rules for
-numeric types, e.g.,
+simplify types by applying defaulting rules, e.g.,
 <screen>
   Prelude> :t 1
   1 :: Num a => a
   Prelude>
 </screen>
 With the <option>+T</option> option,
-the interpreter attempts to <quote>default</quote> types first:
+the interpreter attempts to <quote>default</quote> types first,
+using the same rules as for expressions (see <xref linkend="basic-commands">):
 <screen>
   Prelude> :set +T
   Prelude> :t 1
   1 :: Integer
   Prelude>
 </screen>
-Default: -T
 </para>
 </listitem>
 </varlistentry>
@@ -648,11 +654,11 @@ debugger (see <xref linkend="observe-and-root-optimisation">).
 
 <para>
 The <command>runhugs</command> command is an interpreter for an executable Hugs
-script, which must be a literate script containing a Haskell
+script, which must be a file containing a Haskell
 <literal>Main</literal> module.
 For example, an executable file might contain the lines
 <programlisting> 
-  #!/usr/local/bin/runhugs
+  #!/usr/local/bin/runhugs +l
 
   > module Main where
   > main = putStr "Hello, World\n"

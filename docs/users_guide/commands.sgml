@@ -63,6 +63,32 @@ Usually the value produced by this action is ignored,
 but this can be changed with the
 <link linkend="option-display-io"><option>+I</option></link> option.
 </para>
+
+<note>
+<title>On ambiguous types</title>
+<para>
+If the type of <replaceable>expr</replaceable> is ambiguous,
+defaulting is applied to each ambiguous
+type variable <replaceable>v</replaceable>
+whose constraints all have the form
+<replaceable>C</replaceable> <replaceable>v</replaceable>
+where <replaceable>C</replaceable> is a standard class,
+and at least one of these classes is a numeric class, or is
+<literal>Show</literal>, <literal>Eq</literal> or <literal>Ord</literal>.
+(This is an extension of the Haskell 98 rule applied to top-level definitions
+in modules, which requires a numeric class.)
+It is an error if any ambiguous type variables cannot be handled in this way.
+For example, consider
+<screen>
+  Prelude> reverse []
+  []
+</screen>
+Here a <literal>Show</literal> constraint on the list elements arises
+from Hugs's use of <literal>show</literal> to display the result,
+so the type of the elements defaults to <literal>Integer</literal>,
+removing the ambiguity.
+</para>
+</note>
 </listitem>
 </varlistentry>
 
@@ -77,6 +103,10 @@ but this can be changed with the
 <para>
 Print the type of <replaceable>expr</replaceable>,
 without evaluating it.
+Usually the Haskell defaulting rules are not applied to the type
+before printing,
+but this can be changed with the
+<link linkend="option-default-types"><option>+T</option></link> option.
 </para>
 </listitem>
 </varlistentry>
@@ -149,6 +179,12 @@ The last module loaded becomes the current module.
 </para>
 
 <para>
+You may specify a literal filename.
+The named file may contain a Haskell module with any name,
+but you can't load two modules with the same name together.
+</para>
+
+<para>
 When asked to load a module <replaceable>M</replaceable>,
 Hugs looks for a file
 <replaceable>dir</replaceable><literal>/</literal><replaceable>M</replaceable><literal>.hs</literal>
@@ -161,6 +197,8 @@ The search path may be changed using the
 <link linkend="option-search-path"><option>-P</option></link> option,
 while the set of suffixes tried may be changed using the
 <link linkend="option-suffixes"><option>-S</option></link> option.
+The file found should contain a Haskell module called
+<replaceable>M</replaceable>.
 </para>
 
 <para>
@@ -169,6 +207,7 @@ the dots are interpreted as slashes, leading to filenames
 <replaceable>dir</replaceable><literal>/A/B/C.hs</literal>
 or
 <replaceable>dir</replaceable><literal>/A/B/C.lhs</literal>.
+</para>
 
 <para>
 Modules imported by Haskell modules are resolved to filenames in the same way,
