@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: preds.c,v $
- * $Revision: 1.19 $
- * $Date: 1999/11/23 17:19:13 $
+ * $Revision: 1.20 $
+ * $Date: 1999/11/23 17:23:04 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -828,7 +828,10 @@ List sps; {				/* context ps.  sps = savePreds.   */
 
 	if (nonNull(ev)) {		/* Discharge if ps ||- (pi,o)	   */
 	    overEvid(thd3(hd(p)),ev);
-	} else if (!isAp(pi) || isIP(fun(pi)) || !anyGenerics(pi,o)) {
+	} else if (isIP(fun(pi))) {
+	    tl(p) = rems;
+	    rems  = p;
+	} else if (!isAp(pi) || !anyGenerics(pi,o)) {
 	    tl(p) = sps;		/* Defer if no generics		   */
 	    sps   = p;
 	}
