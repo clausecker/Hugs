@@ -14,8 +14,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: iomonad.c,v $
- * $Revision: 1.52 $
- * $Date: 2003/08/01 10:01:59 $
+ * $Revision: 1.53 $
+ * $Date: 2003/10/01 15:55:18 $
  * ------------------------------------------------------------------------*/
  
 Name nameIORun;			        /* run IO code                     */
@@ -158,8 +158,6 @@ PROTO_PRIM(primTouchFP);
 PROTO_PRIM(primFPToP);
 
 #if GC_WEAKPTRS
-PROTO_PRIM(primMakeWeakPtr);
-PROTO_PRIM(primDerefWeakPtr);
 PROTO_PRIM(primWeakPtrEq);
 PROTO_PRIM(primMkWeak);
 PROTO_PRIM(primDeRefWeak);
@@ -279,13 +277,10 @@ static struct primitive iomonadPrimTable[] = {
 
   {"newForeignPtr_",	1+IOArity, primNewFP},
   {"addForeignPtrFinalizer", 2+IOArity, primAddFPF},
-  {"eqForeignPtr",	2, primEqFP},
   {"touchForeignPtr",	1+IOArity, primTouchFP},
   {"unsafeForeignPtrToPtr", 1, primFPToP},
 
 #if GC_WEAKPTRS
-  {"makeWeakPtr",       1+IOArity, primMakeWeakPtr},
-  {"derefWeakPtr",      1+IOArity, primDerefWeakPtr},
   {"weakPtrEq",		2, primWeakPtrEq},
   {"mkWeak",		3+IOArity, primMkWeak},
   {"deRefWeak",		1+IOArity, primDeRefWeak},
@@ -1792,21 +1787,6 @@ primFun(primEqSN) {		/* StableName a -> StableName a -> Bool	   */
 #else
 #define checkWeak() /* do nothing */
 #endif
-
-primFun(primMakeWeakPtr) {		/* a -> IO (Weak a)		   */
-    assert(isGenPair(IOArg(1)));	/* (Sadly, this may not be true)   */
-    IOReturn(mkWeakPtr(IOArg(1)));	/* OLD ... retire soon		   */
-}
-
-primFun(primDerefWeakPtr) {		/* Weak a -> IO (Maybe a)	   */
-    eval(IOArg(1));			/* OLD ... retire soon		   */
-    checkWeak();
-    if (isNull(derefWeakPtr(whnfHead))) {
-	IOReturn(nameNothing);
-    } else {
-	IOReturn(ap(nameJust,derefWeakPtr(whnfHead)));
-    }
-}
 
 primFun(primWeakPtrEq) {		/* Weak a -> Weak a -> Bool	   */
     eval(primArg(2));
