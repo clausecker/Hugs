@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: input.c,v $
- * $Revision: 1.49 $
- * $Date: 2002/09/08 02:24:02 $
+ * $Revision: 1.50 $
+ * $Date: 2002/09/09 03:48:20 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -137,7 +137,7 @@ Text   textThreadsafe;                  /* threadsafe                      */
 Text   textExport;                      /* export                          */
 
 Text   textNum;                         /* Num                             */
-Text   textPrelude;                     /* PrelImpl                        */
+Text   textPrelude;                     /* Prelude / Hugs.Prelude          */
 Text   textUserPrelude;                 /* Prelude                         */
 Text   textPlus;			/* (+)				   */
 

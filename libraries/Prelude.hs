@@ -83,7 +83,7 @@ module Prelude (
     {-NONSTANDARD-}Ix
   ) where
 
-import PrelImpl hiding 
+import Hugs.Prelude hiding 
    (Ix(..), 
     Ratio,(%),numerator,denominator,approxRational,
     showSigned,showInt,readSigned,readInt,

@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.88 $
- * $Date: 2002/09/08 14:36:00 $
+ * $Revision: 1.89 $
+ * $Date: 2002/09/09 03:48:17 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -386,7 +386,7 @@ String argv[]; {
     }
 
     /* Figure out whether we're using the 'new' Prelude
-     * or not -- if 'PrelImpl' is reachable via the search
+     * or not -- if STD_PRELUDE_IMPL is reachable via the search
      * path, we are.
      */
     if ( ( prelLocation = findMPathname(NULL, STD_PRELUDE_IMPL, hugsPath)) ) {

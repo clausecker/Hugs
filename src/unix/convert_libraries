@@ -54,7 +54,7 @@ function cvt {
 	mkdir -p $dstdir
 
 	$cpp -I. -I.. -I$src/$1/include $src/$1/$2 | 
-	sed -e "s/import Prelude/import PrelImpl/" |
+	sed -e "s/import Prelude/import Hugs.Prelude/" |
 	cat -s >$dst/$2
 }
 
@@ -118,7 +118,7 @@ function nocvt {
 		s/import Storable/import Foreign.Storable/
 		s/import ForeignPtr/import Foreign.ForeignPtr/
 		s/import Dynamic/import Data.Dynamic/
-		s/import Prelude/import PrelImpl/
+		s/import Prelude/import Hugs.Prelude/
 		" $hugs_src/$3 >$dst/$new_stem$old_extension
 }
 
@@ -281,7 +281,7 @@ nocvt base Foreign/Ptr.hs		exts/Ptr.hs	# not quite right
   cvt base Foreign/StablePtr.hs
   cvt base Foreign/Storable.hs		
   cvt base Numeric.hs
-nocvt base PrelImpl.hs			Prelude.hs	# Hugs special
+nocvt base Hugs/Prelude.hs		Prelude.hs	# Hugs special
 nocvt base System/CPUTime.hsc		CPUTime.hs	# Hugs primitives
   cvt base System/Cmd.hs
   cvt base System/Console/GetOpt.hs
