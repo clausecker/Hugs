@@ -93,11 +93,17 @@ To add a new test, you:
    Put a comment of the form 
 
      --!!! What is being tested
-     --!!! Anything else you think important
-     --!!! ...
 
    at the start of the Haskell module.  runstdtest will print
    this string when it runs the test.
+
+   If there is anything subtle about the test or if the test checks
+   that an old bug has been fixed, it's a good idea to include that
+   information in the test files as normal Haskell comments.
+
+   Tests should be as small as possible and run in as little time
+   as possible so that you can run the entire testsuite in a short
+   (1-2 minutes) time.
 
 2) Test
 
