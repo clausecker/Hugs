@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: input.c,v $
- * $Revision: 1.55 $
- * $Date: 2002/11/08 16:05:27 $
+ * $Revision: 1.56 $
+ * $Date: 2002/11/09 17:50:27 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1315,7 +1315,7 @@ String readFilename() {                /* Read filename from input (if any)*/
 		   
 		   Also, we no longer support the full array of escape chars
 		   in filename / option strings; apart from '\ ', only '\"'
-		   is recognised. This is done to have lone backslashes
+		   and '\\' are recognised. This is done to have lone backslashes
 		   (as is common in filenames on certain platforms) be interpreted
 		   as just that. As was, such backslashes would either cause
 		   the interpreter to fall over (and fail to start up) or
@@ -1323,7 +1323,7 @@ String readFilename() {                /* Read filename from input (if any)*/
 		*/
 		if (c0 == '\\') {
 		  skip();
-		  if (c0 == '"' || c0 == ' ') {
+		  if (c0 == '"' || c0 == ' ' || c0 == '\\') {
 		    saveTokenChar(c0);
 		    skip();
 		    continue;
