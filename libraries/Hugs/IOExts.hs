@@ -34,13 +34,13 @@ unsafePerformIO :: IO a -> a
 unsafePerformIO m = valueOf (basicIORun m)
 
 unsafeInterleaveIO :: IO a -> IO a
-unsafeInterleaveIO m = return (unsafePerformIO m)
+unsafeInterleaveIO m = IO (\ f s -> s (unsafePerformIO m))
 
 primitive unsafePtrEq    :: a -> a -> Bool
 primitive unsafePtrToInt :: a -> Int
 
 fixIO :: (a -> IO a) -> IO a
-fixIO m = IO (\ s -> r `seq` s a)
+fixIO m = IO (\ f s -> r `seq` s a)
    where
     r = basicIORun (m a)
     a = valueOf r

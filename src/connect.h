@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: connect.h,v $
- * $Revision: 1.62 $
- * $Date: 2003/01/27 17:12:18 $
+ * $Revision: 1.63 $
+ * $Date: 2003/01/31 01:40:46 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -99,7 +99,7 @@ extern Name   nameAlreadyExists, nameAlreadyInUse, nameDoesNotExist, nameIsFull;
 extern Name   nameIllegal;
 #endif
 
-#define IOArity		1		/* arity of IO actions             */
+#define IOArity		2		/* arity of IO actions             */
 
 #if IO_HANDLES
 extern Name   nameEOFErr;

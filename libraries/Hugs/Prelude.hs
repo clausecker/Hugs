@@ -1699,14 +1699,14 @@ instance Show IOException where
 
 type FilePath = String  -- file pathnames are represented by strings
 
-primitive primbindIO		 :: IO a -> (a -> IO b) -> IO b
-primitive primretIO		 :: a -> IO a
+primitive primbindIO   "rbindIO" :: IO a -> (a -> IO b) -> IO b
+primitive primretIO    "runitIO" :: a -> IO a
 primitive putChar		 :: Char -> IO ()
 primitive putStr		 :: String -> IO ()
 primitive getChar   		 :: IO Char
 
 ioError :: IOError -> IO a
-ioError e = IO (\ s -> throw (IOException e))
+ioError e = IO (\f s -> throw (IOException e))
 
 userError :: String -> IOError
 userError str = IOError Nothing UserError "" str Nothing
@@ -1828,7 +1828,7 @@ toObj   = unsafeCoerce
 fromObj :: Obj -> a
 fromObj = unsafeCoerce
 
-newtype IO a = IO ((a -> IOResult) -> IOResult)
+newtype IO a = IO ((IOError -> IOResult) -> (a -> IOResult) -> IOResult)
 
 data IOResult 
   = Hugs_ExitWith    Int
@@ -1847,17 +1847,20 @@ primitive throw "primThrowException" :: Exception -> a
 primitive primCatchException :: a -> Either Exception a
 
 catchException :: IO a -> (Exception -> IO a) -> IO a
-catchException (IO m) k = IO $ \ s ->
-  Hugs_Catch (m hugsReturn)
-             (\ e -> case (k e) of { IO k' -> k' s })
+catchException (IO m) k = IO $ \ f s ->
+  Hugs_Catch (m hugsError hugsReturn)
+             (\ e -> case (k e) of { IO k' -> k' f s })
              (s . fromObj)
+
+hugsError :: IOError -> IOResult
+hugsError _ = error "BUG: old error continuation called"
 
 hugsReturn :: a -> IOResult
 hugsReturn x = Hugs_Return (toObj x)
 
 -- reify current thread, execute 'm <thread>' and switch to next thread
 blockIO :: ((a -> IOResult) -> IO ()) -> IO a
-blockIO m = IO (\ s -> Hugs_BlockThread (s . fromObj) m')
+blockIO m = IO (\ f s -> Hugs_BlockThread (s . fromObj) m')
  where
   m' k = threadToIOResult (m (k . toObj))
 
@@ -1883,10 +1886,10 @@ hugsIORun m =
 	primExitWith 1
 
 basicIORun :: IO a -> IOFinished a
-basicIORun (IO m) = loop [m hugsReturn]
+basicIORun (IO m) = loop [m hugsError hugsReturn]
 
 threadToIOResult :: IO a -> IOResult
-threadToIOResult (IO m) = m (const Hugs_DeadThread)
+threadToIOResult (IO m) = m hugsError (const Hugs_DeadThread)
 
 -- This is the queue of *runnable* threads.
 -- There may be blocked threads attached to MVars
@@ -1918,7 +1921,7 @@ hugs_catch m f s = case primCatchException (catch' m) of
   catch' x                     = x
 
 primExitWith     :: Int -> IO a
-primExitWith c    = IO (\ s -> Hugs_ExitWith c)
+primExitWith c    = IO (\ f s -> Hugs_ExitWith c)
 
 primCompAux      :: Ord a => a -> a -> Ordering -> Ordering
 primCompAux x y o = case compare x y of EQ -> o; LT -> LT; GT -> GT

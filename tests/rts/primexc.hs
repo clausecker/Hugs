@@ -23,9 +23,9 @@ test1 x = case primCatchException x of
 -- Won't behave correctly if combined with threads - use the Prelude
 -- code for that!
 catch' :: IO a -> (Exception -> IO a) -> IO a
-catch' (IO m) h = IO (\ s -> 
-  case primCatchException (m s) of
-    Left exn -> case h exn of { (IO h') -> h' s }
+catch' (IO m) h = IO (\ f s -> 
+  case primCatchException (m f s) of
+    Left exn -> case h exn of { (IO h') -> h' f s }
     Right m' -> m'
   )
 
