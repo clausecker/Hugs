@@ -54,7 +54,7 @@ typedef double         HsDouble;
 
 typedef hugs_int64_t   HsInt64;        
 typedef hugs_uint64_t  HsWord64;       
-typedef char           HsChar;
+typedef int            HsChar;
 typedef int            HsBool;         
 typedef void*          HsAddr;       
 typedef void*          HsPtr;          
@@ -227,7 +227,7 @@ typedef struct {
   HsAddr    	 (*getAddr)        (void);
   HsFloat        (*getFloat)       (void);
   HsDouble       (*getDouble)      (void);
-  HsChar         (*getChar)        (void);
+  char           (*getChar)        (void);
   HugsForeign    (*getForeign)     (void);
   HugsStablePtr  (*getStablePtr)   (void); /* deprecated */
 
@@ -237,7 +237,7 @@ typedef struct {
   void      	 (*putAddr)        (HsAddr);
   void           (*putFloat)       (HsFloat);
   void           (*putDouble)      (HsDouble);
-  void           (*putChar)        (HsChar);
+  void           (*putChar)        (char);
   void      	 (*putForeign)     (HugsForeign, void (*)(HugsForeign));
   void           (*putStablePtr)   (HugsStablePtr); /* deprecated */
 

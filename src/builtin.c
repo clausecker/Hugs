@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: builtin.c,v $
- * $Revision: 1.68 $
- * $Date: 2003/11/01 17:02:44 $
+ * $Revision: 1.69 $
+ * $Date: 2003/11/13 20:58:32 $
  * ------------------------------------------------------------------------*/
 
 /* We include math.h before prelude.h because SunOS 4's cpp incorrectly
@@ -1610,6 +1610,7 @@ static void           getUnit        Args((void));
 static HsInt          getInt         Args((void));
 static HsWord         getWord        Args((void));
 static HsAddr         getAddr        Args((void));
+static char           getChar4       Args((void));
 static HsChar         getChar        Args((void));
 static HugsForeign    getForeign     Args((void));
 static HsBool         getBool        Args((void));
@@ -1633,6 +1634,7 @@ static HugsStablePtr  getStablePtr   Args((void));
 static void           putInt         Args((HsInt));
 static void           putWord        Args((HsWord));
 static void           putAddr        Args((HsAddr));
+static void           putChar4       Args((char));
 static void           putChar        Args((HsChar));
 static void           putForeign     Args((HugsForeign, void (*)(void *)));
 static void           putStablePtr4  Args((HsStablePtr));
@@ -1663,6 +1665,7 @@ static void           getUnit()      { eval(pop()); }
 static HsInt          getInt()       { eval(pop()); checkInt();   return whnfInt; }
 static HsWord         getWord()      { eval(pop()); checkWord();  return (unsigned int) whnfInt; }
 static HsAddr         getAddr()      { eval(pop()); checkPtr();   return ptrOf(whnfHead); }
+static char           getChar4()     { eval(pop()); checkChar();  return charOf(whnfHead); }
 static HsChar         getChar()      { eval(pop()); checkChar();  return charOf(whnfHead); }
 static HugsForeign    getForeign()   { eval(pop()); return derefMP(whnfHead); }
 static HsBool         getBool()      { eval(pop()); checkBool();  return (whnfHead == nameTrue); }
@@ -1714,6 +1717,7 @@ String n; {
 static void putInt (HsInt  x) { push(mkInt(x)); }
 static void putWord(HsWord x) { push(mkInt((int)x)); }
 static void putAddr(HsAddr x) { push(mkPtr(x)); }
+static void putChar4(char x) { push(mkChar(x)); }
 static void putChar(HsChar x) { push(mkChar(x)); }
 static void putForeign(HugsForeign x, void (*f)(HugsForeign)) { push(mkMallocPtr(x,f)); }
 static void putStablePtr   (HugsStablePtr x) { push(derefStablePtr(x)); }
@@ -2154,7 +2158,7 @@ HugsAPI4* hugsAPI4() { /* build virtual function table */
 	api.getAddr       = getAddr;
 	api.getFloat      = getFloat;
 	api.getDouble     = getDouble;
-	api.getChar       = getChar;
+	api.getChar       = getChar4;
 	api.getForeign    = getForeign;
 	api.getStablePtr  = getStablePtr;
 
@@ -2164,7 +2168,7 @@ HugsAPI4* hugsAPI4() { /* build virtual function table */
 	api.putAddr       = putAddr;
 	api.putFloat      = putFloat;
 	api.putDouble     = putDouble;
-	api.putChar       = putChar;
+	api.putChar       = putChar4;
 	api.putForeign    = putForeign;
 	api.putStablePtr  = putStablePtr;
 
