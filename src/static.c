@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.46 $
- * $Date: 2001/12/04 19:13:14 $
+ * $Revision: 1.47 $
+ * $Date: 2001/12/06 20:14:43 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -2239,9 +2239,11 @@ Type t; {
     if (isQualType(t)) {
 	map2Over(depPredExp,l,tvs,fst(snd(t)));
 	snd(snd(t)) = depTypeExp(l,tvs,snd(snd(t)));
+	/* it's premature to judge ambiguity (e.g. given functional deps)
 	if (isAmbiguous(t)) {
 	    ambigError(l,"type component",NIL,t);
 	}
+	*/
     } else {
 	t = depTypeExp(l,tvs,t);
     }
