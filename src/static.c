@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.81 $
- * $Date: 2002/08/25 20:53:37 $
+ * $Revision: 1.82 $
+ * $Date: 2002/08/25 22:08:57 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -5007,9 +5007,10 @@ Name p; {
 
         /* ToDo: check that ta == t */
 
+	t = fullerExpand(t);
         argTys = NIL;
         while (getHead(t)==typeArrow && argCount==2) {
-            Type ta = arg(fun(t));
+            Type ta = fullerExpand(arg(fun(t)));
             Type tr = arg(t);
             argTys = cons(ta,argTys);
             t = tr;
@@ -5021,6 +5022,7 @@ Name p; {
             isIO = TRUE;
             t = hd(getArgs(t));
         }
+	t = fullerExpand(t);
 
         if (generate_ffi) {
             name(p).arity = 3;
