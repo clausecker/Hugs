@@ -7,7 +7,7 @@ machine (including Linux, *BSD and MacOS X).  For other systems:
     Windows:
         Precompiled binaries are provided, although similar installation
         procedures can be used for these machines if you have a Unix-like
-        environment installed: see docs/win32-notes.txt for details.
+        environment installed: see win32.txt for details.
 
     Systems without a Unix-like environment:
         These will be more difficult.  You'll have to construct the
@@ -55,8 +55,8 @@ Long version:
 
     plus some others related to documentation and testing.
 
-    Read Hugs98/src/unix/INSTALL to find out about general configuration
-    options.  Hugs-specific options are listed at the end of this file.
+    Read config.txt to find out about general configuration options.
+    Hugs-specific options are listed at the end of this file.
 
  2) Build Hugs and the libraries
 

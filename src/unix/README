@@ -1,11 +1,13 @@
 An overview of Hugs configuration
 =================================
 
+[This is out of date]
+
 We use GNU's autoconf to determine the configuration of the target platform.
 
-See Install in the top-level directory for Unix instructions and
-Hugs-specific configure options.  See src/unix/INSTALL for general
-configure options.
+See docs/building/unix.txt for Unix instructions and Hugs-specific
+configure options.  See docs/building/config.txt for general configure
+options.
 
 [Note: all configuration scripts should be run from the directory containing
  the script - but I'll use full paths when discussing scripts so that you
