@@ -11,8 +11,8 @@
  * included in the distribution.
  *
  * $RCSfile: parser.y,v $
- * $Revision: 1.25 $
- * $Date: 2001/12/09 23:24:19 $
+ * $Revision: 1.26 $
+ * $Date: 2001/12/11 23:20:24 $
  * ------------------------------------------------------------------------*/
 
 %{
@@ -141,6 +141,10 @@ start	  : EXPR exp wherePart		{inputExpr = letrec($3,$2); sp-=2;}
 topModule : startMain begin modBody end {
 					 setExportList(singleton(ap(MODULEENT,mkCon(module(currentModule).text))));
 					 $$ = gc3($3);
+					}
+          | startMain '{' modBody '}'   {
+					 setExportList(singleton(ap(MODULEENT,mkCon(module(currentModule).text))));
+					 $$ = gc4($3);
 					}
 	  | TMODULE modname expspec WHERE '{' modBody end
 					{setExportList($3);   $$ = gc7($6);}
