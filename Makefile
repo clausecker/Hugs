@@ -5,6 +5,8 @@ all: libraries src/Makefile
 	cd src; make
 
 libraries: fptools
+
+fptools:
 	-mkdir fptools
 	cvs -d ${CVSROOT} export -r${HSLIBSTAG} fptools/hslibs
 	cvs -d ${CVSROOT} export -r${HSLIBSTAG} fptools/libraries
