@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: connect.h,v $
- * $Revision: 1.41 $
- * $Date: 2002/08/04 19:34:29 $
+ * $Revision: 1.42 $
+ * $Date: 2002/08/04 23:58:37 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -158,6 +158,7 @@ extern Type  typeAddr;
 extern Type  typeFloat;
 extern Type  typeDouble;
 extern Type  typeChar;
+extern Type  typeForeignP;
 extern Type  typeForeign;
 extern Type  typeStable;
 extern Type  typeBool;

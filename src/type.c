@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: type.c,v $
- * $Revision: 1.48 $
- * $Date: 2002/06/14 14:41:14 $
+ * $Revision: 1.49 $
+ * $Date: 2002/08/04 23:58:37 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -49,6 +49,7 @@ Type typeAddr;
 Type typeFloat;
 Type typeDouble;
 Type typeChar;
+Type typeForeignP;
 Type typeForeign;
 Type typeStable;
 Type typeBool;
@@ -3204,18 +3205,19 @@ Void linkPreludeTC() {			/* Hook to tycons and classes in   */
 	typeInt16    = linkTycon("Int16");
 	typeInt32    = linkTycon("Int32");
 	typeInt64    = linkTycon("Int64");
-	typeWord     = linkTycon("Word");
+	typeWord     = linkTycon("Word");       /* deprecated */
 	typeWord8    = linkTycon("Word8");
 	typeWord16   = linkTycon("Word16");
 	typeWord32   = linkTycon("Word32");
 	typeWord64   = linkTycon("Word64");
 	typeFunPtr   = linkTycon("FunPtr");
 	typePtr      = linkTycon("Ptr");
-	typeAddr     = linkTycon("Addr");
+	typeAddr     = linkTycon("Addr");       /* deprecated */
 	typeFloat    = linkTycon("Float");
 	typeDouble   = linkTycon("Double");
 	typeChar     = linkTycon("Char");
-	typeForeign  = linkTycon("ForeignObj");
+	typeForeignP = linkTycon("ForeignPtr");
+	typeForeign  = linkTycon("ForeignObj"); /* deprecated */
 	typeStable   = linkTycon("StablePtr");
 	typeBool     = linkTycon("Bool");
 	typeString   = linkTycon("String");

@@ -18,8 +18,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: iomonad.c,v $
- * $Revision: 1.27 $
- * $Date: 2002/06/14 14:41:10 $
+ * $Revision: 1.28 $
+ * $Date: 2002/08/04 23:58:37 $
  * ------------------------------------------------------------------------*/
  
 Name nameIORun;			        /* run IO code                     */
@@ -163,9 +163,11 @@ PROTO_PRIM(primFreeSP);
 PROTO_PRIM(primCastSPToP);
 PROTO_PRIM(primCastPToSP);
 
-PROTO_PRIM(primMakeFO);
-PROTO_PRIM(primWriteFO);
-PROTO_PRIM(primEqFO);
+PROTO_PRIM(primMakeFP);
+PROTO_PRIM(primWriteFP);
+PROTO_PRIM(primEqFP);
+PROTO_PRIM(primTouchFP);
+PROTO_PRIM(primFPToP);
 
 #if GC_WEAKPTRS
 PROTO_PRIM(primMakeWeakPtr);
@@ -273,9 +275,14 @@ static struct primitive iomonadPrimTable[] = {
   {"castStablePtrToPtr",1, primCastSPToP},
   {"castPtrToStablePtr",1, primCastPToSP},
 
-  {"makeForeignObj",	4, primMakeFO},
-  {"writeForeignObj",	4, primWriteFO},
-  {"eqForeignObj",	2, primEqFO},
+  {"makeForeignObj",	4, primMakeFP},
+  {"writeForeignObj",	4, primWriteFP},
+  {"eqForeignObj",	2, primEqFP},
+
+  {"makeForeignPtr",	4, primMakeFP},
+  {"eqForeignPtr",	2, primEqFP},
+  {"touchForeignPtr",	3, primTouchFP},
+  {"foreignPtrToPtr",	1, primFPToP},
 
 #if GC_WEAKPTRS
   {"makeWeakPtr",       3, primMakeWeakPtr},
@@ -1616,7 +1623,7 @@ primFun(primCastPToSP) {		/* Ptr () -> StablePtr a   	   */
 #define checkForeign() /* do nothing */
 #endif
 
-primFun(primMakeFO) {			/* a -> IO (Ref a)		   */
+primFun(primMakeFP) { /* Ptr a -> FunPtr (Ptr a -> IO ()) -> IO (ForeignPtr a) */
     Pointer addr = 0;
     Void (*free)(Pointer) = 0;
     eval(IOArg(2));
@@ -1626,7 +1633,7 @@ primFun(primMakeFO) {			/* a -> IO (Ref a)		   */
     IOReturn(mkMallocPtr(addr,free));
 }
 
-primFun(primWriteFO) {		/* ForeignObj -> Addr -> IO ()		   */
+primFun(primWriteFP) {		/* ForeignPtr a -> Ptr a -> IO ()	   */
     Cell mp = NIL;
     eval(IOArg(2));
     checkForeign();
@@ -1636,13 +1643,25 @@ primFun(primWriteFO) {		/* ForeignObj -> Addr -> IO ()		   */
     IOReturn(nameUnit);
 }
 
-primFun(primEqFO) {			/* ForeignObj -> ForeignObj -> Bool*/
+primFun(primEqFP) {		/* ForeignPtr a -> ForeignPtr a -> Bool    */
     eval(primArg(2));
     checkForeign();
     push(whnfHead);
     eval(primArg(1));
     checkForeign();
     updateRoot(pop()==whnfHead ? nameTrue : nameFalse);
+}
+
+primFun(primTouchFP) {		/* ForeignPtr a -> IO ()	           */
+    eval(IOArg(2));
+    checkForeign();
+    IOReturn(nameUnit);
+}
+
+primFun(primFPToP) {		/* ForeignPtr a -> Ptr a                   */
+    eval(primArg(1));
+    checkForeign();
+    PtrResult(mallocPtrs[whnfHead].ptr);
 }
 
 #if STABLE_NAMES

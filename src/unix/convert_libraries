@@ -267,7 +267,7 @@ nocvt base Control/Exception.hs		exts/Exception.hs	# Hugs special
   cvt base Foreign/C/String.hs		
   cvt base Foreign/C/Types.hs
   cvt base Foreign/C/TypesISO.hs
-dummy base Foreign/ForeignPtr.hs
+  cvs base Foreign/ForeignPtr.hs
   cvt base Foreign/Marshal/Alloc.hs
   cvt base Foreign/Marshal/Array.hs
   cvt base Foreign/Marshal/Error.hs

@@ -1743,7 +1743,8 @@ data Word8
 data Word16
 data Word32
 data Word64
-data ForeignObj
+data ForeignObj  -- builtin datatype of C pointers with finalizers (deprecated)
+data ForeignPtr a -- builtin datatype of C pointers with finalizers
 data StablePtr a
 
 primitive unsafeCoerce "primUnsafeCoerce" :: a -> b

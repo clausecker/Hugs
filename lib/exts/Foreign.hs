@@ -3,7 +3,8 @@ module Foreign (
         module Int,
         module Word,
         module Ptr,
-        module ForeignObj,
+        module ForeignObj, -- deprecated
+        module ForeignPtr,
         module StablePtr,
         module Storable,
         module MarshalAlloc,
@@ -17,7 +18,8 @@ import Bits
 import Int
 import Word
 import Ptr
-import ForeignObj
+import ForeignObj  -- deprecated
+import ForeignPtr
 import StablePtr
 import Storable
 import MarshalAlloc
