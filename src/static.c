@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.123 $
- * $Date: 2002/11/04 16:10:39 $
+ * $Revision: 1.124 $
+ * $Date: 2002/11/06 16:00:46 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -26,7 +26,9 @@ static Void   local checkQualImport	Args((Pair));
 static Void   local checkUnqualImport	Args((Triple));
 
 static Name   local lookupName		Args((Text,List));
+static Module local modOfEntity         Args((Cell));
 static List   local checkSubentities	Args((List,List,List,String,Text));
+static Void   local checkExportDistinct Args((List,Cell));
 static List   local checkExportTycon	Args((List,Text,Cell,Tycon));
 static List   local checkExportClass	Args((List,Text,Cell,Class));
 static List   local checkExportModule	Args((List,Text,Cell));
@@ -435,7 +437,8 @@ Name n; {
      */
     return (isTycon(name(n).parent) &&
 	    (!(tc = findTycon(name(n).text)) ||
-	     tycon(tc).what != SYNONYM));
+	     (tycon(tc).what != SYNONYM &&
+	      tycon(tc).what != RESTRICTSYN)));
 }
 
 static Name local lookupName(t,nms)    /* find text t in list of Names     */
@@ -629,6 +632,7 @@ Cell   entity; { /* Entry from import/hiding list */
 			    }
 			    break;
 			case SYNONYM:
+			case RESTRICTSYN:
 			    imports=addEntity(f,DOTDOT,imports);
 			    break;
 			default:;
@@ -640,7 +644,9 @@ Cell   entity; { /* Entry from import/hiding list */
 		    if (!lookForDataCon) break;
 		}
 		/* check the data constructors or field labels for match */
-		if (tycon(f).what != SYNONYM && (lookForVar || lookForDataCon)) {
+		if (tycon(f).what != SYNONYM     && 
+		    tycon(f).what != RESTRICTSYN &&
+		    (lookForVar || lookForDataCon)) {
 		    /* The type's exported dcons/fields */
 		    Cell dcons;
 		    if (snd(e) == DOTDOT) {
@@ -1090,11 +1096,90 @@ Class c; {
     }
 }
 
+static Module local modOfEntity(ent) /* get at the module of name/tycon/class */
+Cell ent; {
+  if (isName(ent)) {
+      return name(ent).mod;
+  } else if (isTycon(ent)) {
+      return tycon(ent).mod;
+  } else if (isClass(ent)) {
+      return cclass(ent).mod;
+  }
+  return NIL;
+}
+
+static Void local checkExportDistinct(exports,ent) /* verify that the entity is unique in unqualified form */
+List exports;
+Cell ent; {
+  Name  clashNm;
+  Tycon clashTc;
+  Class clashCc;
+  Module mod1,mod2;
+  Text txt;
+  Bool inConflict = FALSE;
+
+  if ( isName(ent) && 
+       (clashNm = nameInIEList(ent,exports)) &&
+       (name(clashNm).mod != name(ent).mod) ) {
+      txt  = name(ent).text;
+      mod1 = name(ent).mod;
+      mod2 = name(clashNm).mod;
+      inConflict = TRUE;
+  } else if ( isTycon(ent) &&
+	      (clashTc = tyconInIEList(tycon(ent).text,exports)) &&
+	      (tycon(clashTc).mod != tycon(ent).mod) ) {
+      txt  = tycon(ent).text;
+      mod1 = tycon(ent).mod;
+      mod2 = tycon(clashTc).mod;
+      inConflict = TRUE;
+  } else if ( isClass(ent) &&
+	      (clashCc = classInIEList(cclass(ent).text,exports)) &&
+	      (cclass(clashCc).mod != cclass(ent).mod) ) {
+      txt  = cclass(ent).text;
+      mod1 = cclass(ent).mod;
+      mod2 = cclass(clashCc).mod;
+      inConflict = TRUE;
+  } else if (isPair(ent)) {
+      List subs = NIL;
+      checkExportDistinct(exports, fst(ent));
+      if (snd(ent) == DOTDOT) {
+	if (isTycon(fst(ent))) {
+	  if (tycon(fst(ent)).what == SYNONYM ||
+	      tycon(fst(ent)).what == RESTRICTSYN) {
+	    subs = NIL;
+	  } else {
+	    subs = tycon(fst(ent)).defn;
+	  }
+	} else if (isClass(fst(ent))) {
+	  subs = cclass(fst(ent)).members;
+	} 
+      } else {
+	subs = snd(ent);
+      }
+      map1Proc(checkExportDistinct,exports,subs);
+      return;
+  } else {
+    return;
+  }
+
+  if (inConflict) {
+      ERRMSG(0) "Duplicate export of entity \"%s\"",
+                textToStr(txt) ETHEN
+      ERRTEXT "\n*** Could refer to %s.%s or %s.%s",
+	      textToStr(module(mod1).text),
+    	      textToStr(txt),
+	      textToStr(module(mod2).text),
+	      textToStr(txt)
+      EEND;
+  }
+}
+
 static List local checkExportTycon(exports,mt,spec,tc)
 List  exports;
 Text  mt;
 Cell  spec; 
 Tycon tc; {
+    checkExportDistinct(exports,pair(tc,spec));
     if (DOTDOT == spec || SYNONYM == tycon(tc).what) {
 	return addEntity(tc,DOTDOT,exports);
     } else {
@@ -1107,6 +1192,7 @@ List  exports;
 Text  mt;
 Class cl;
 Cell  spec; {
+    checkExportDistinct(exports,pair(cl,spec));
     if (DOTDOT == spec) {
 	return addEntity(cl,DOTDOT,exports);
     } else {
@@ -1146,9 +1232,10 @@ Cell e; {
 	     }
 	     for(xs=module(m).names; nonNull(xs); xs=tl(xs)) {
 	         if (name(hd(xs)).mod==m && 
-		     /* don't add the dcons - real cheesy way of
-			testing for a dcon-like name. */
-		     !startsQual(textToStr(name(hd(xs)).text)[0])) {
+		     /* don't add dcons or class members */
+		     (!isTycon(name(hd(xs)).parent) &&
+		      !isClass(name(hd(xs)).parent))) {
+		     checkExportDistinct(exports,hd(xs));
 		     exports = cons(hd(xs),exports);
 		 }
 	     }
@@ -1173,9 +1260,11 @@ Cell e; {
 	     for(;nonNull(ents);ents=tl(ents)) {
 	       Cell  qid;
 	       Text  txtNm;
-	       Name  nm1, nm2;
-	       Tycon tc1, tc2;
-	       Class cc1, cc2;
+	       Cell ent = NIL;
+	       Name  nm;
+	       Tycon tc;
+	       Class cc;
+	       List clashes = NIL;
 	       
 	       /* Build the (alias) qualified entity and
 		  test whether it's in scope - ugly. */
@@ -1211,15 +1300,38 @@ Cell e; {
 		*    alias used in the module re-exportation.)
 		*  - the two names refer to the same (declared) name.
 		*/
-	       if ( ( (nm1 = findName(txtNm))             && 
-		      !isNull((nm2 = findQualName(qid)))  &&
-		      name(nm1).mod == name(nm2).mod)         ||
-		    ( (tc1 = findTycon(txtNm))            &&
-		      !isNull((tc2 = findQualTycon(qid))) &&
-		      tycon(tc1).mod == tycon(tc2).mod)       ||
-		    ( (cc1 = findClass(txtNm))            && 
-		      !isNull((cc2 = findQualClass(qid))) &&
-		      cclass(cc1).mod == cclass(cc2).mod)      ) {
+	       if ( ( (ent = findName(txtNm))            && 
+		      !isNull((nm = findQualName(qid)))  &&
+		      (nonNull((clashes = name(ent).clashes)) ||
+		       name(ent).mod == name(nm).mod))        ||
+		    ( (ent = findTycon(txtNm))           &&
+		      !isNull((tc = findQualTycon(qid))) &&
+		      (nonNull((clashes = tycon(ent).clashes)) ||
+		       tycon(ent).mod == tycon(tc).mod))       ||
+		    ( (ent = findClass(txtNm))           && 
+		      !isNull((cc = findQualClass(qid))) &&
+		      (nonNull((clashes = cclass(ent).clashes)) ||
+		       cclass(ent).mod == cclass(cc).mod))   ) {
+		   if (nonNull(clashes)) {
+		     Module m1 = modOfEntity(ent);
+		     ERRMSG(0) "Ambiguous export of entity \"%s\"",
+		               textToStr(txtNm) ETHEN
+                     ERRTEXT "\n*** Could refer to: %s.%s ",
+		             textToStr(module(m1).text),
+			     textToStr(txtNm) ETHEN
+		     for(;nonNull(clashes);clashes=tl(clashes)) {
+		       m1 = modOfEntity(hd(clashes));
+
+		       if (m1) {
+		          ERRTEXT "%s.%s ", 
+			          textToStr(module(m1).text),
+				  textToStr(txtNm)
+			  ETHEN
+			}
+		     }
+	             ERRTEXT "\n" EEND;
+		   }
+		   checkExportDistinct(exports,hd(ents));
 		   exports=cons(hd(ents),exports);
 	       }
 	     }
@@ -1233,7 +1345,7 @@ List exports;
 Text mt; 
 Cell e; {
     if (isIdent(e)) {
-	Cell export = NIL;
+	Name export, nm;
 	Bool expFound = FALSE;
 
 	if (nonNull(export=findQualName(e))) {
@@ -1252,6 +1364,7 @@ Cell e; {
 	        EEND;
 	    }
 	    expFound = TRUE;
+	    checkExportDistinct(exports,export);
 	    exports=cons(export,exports);
 	} 
 	if (isQCon(e) && nonNull(export=findQualTycon(e))) {
@@ -7681,6 +7794,9 @@ Bool check; {
 #if MUDO
 	    mdepends = cons(isVar(fst(n)) ? fst(n) : e,mdepends);
 #endif
+	    if (check) {
+	      checkNameAmbig(line,t,(isVar(fst(n)) ? fst(n) : e));
+	    }
 	    return (isVar(fst(n)) ? fst(n) : e);
 	}
 
