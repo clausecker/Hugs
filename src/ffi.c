@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: ffi.c,v $
- * $Revision: 1.19 $
- * $Date: 2002/08/10 11:23:48 $
+ * $Revision: 1.20 $
+ * $Date: 2002/08/25 16:48:07 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -52,15 +52,28 @@ Int what; {
     }
 }
 
-static String ffiFlags;  /* extra flags for compilation command line */
+static String ffiFlags = 0; /* extra flags for compilation command line */
 
 Void ffiSetFlags(s) 
 String s; {
+    if (s == 0) return;
     if (ffiFlags) {
-        ERRMSG(0) "-L can only be specified once"
-        EEND;
+        Int l = strlen(ffiFlags);
+        ffiFlags=(char *)realloc(ffiFlags,l+strlen(s)+2);
+	if (ffiFlags==0) {
+	    ERRMSG(0) "String storage space exhausted"
+	    EEND;
+	}
+	ffiFlags[l] = ' ';
+	strcpy(ffiFlags+l+1,s);
+    } else {
+        ffiFlags=(char *)malloc(strlen(s)+1);
+	if (ffiFlags==0) {
+	    ERRMSG(0) "String storage space exhausted"
+	    EEND;
+	}
+	strcpy(ffiFlags,s);
     }
-    ffiFlags = s;
 }
 
 Void foreignHeader() {
