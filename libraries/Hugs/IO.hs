@@ -28,6 +28,7 @@ module Hugs.IO (
     hGetPosn,		    -- :: Handle -> IO HandlePosn
     hSetPosn,               -- :: HandlePosn -> IO ()
     hSeek,                  -- :: Handle -> SeekMode -> Integer -> IO ()
+    hTell,                  -- :: Handle -> IO Integer
 
     hLookAhead,             -- :: Handle -> IO Char
 
@@ -128,6 +129,11 @@ hGetPosn :: Handle -> IO HandlePosn
 hGetPosn h = do
   p <- hGetPosnPrim h
   return (HandlePosn h p)
+
+hTell :: Handle -> IO Integer
+hTell h = do
+  p <- hGetPosnPrim h
+  return (toInteger p)
 
 primitive hGetPosnPrim :: Handle -> IO Int
 
