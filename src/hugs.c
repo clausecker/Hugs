@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.43 $
- * $Date: 2001/08/10 00:29:21 $
+ * $Revision: 1.44 $
+ * $Date: 2001/08/11 01:54:35 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -133,6 +133,7 @@ static Bool   showStats    = FALSE;     /* TRUE => print stats after eval  */
 static Bool   listScripts  = TRUE;      /* TRUE => list scripts after loading*/
 static Bool   addType      = FALSE;     /* TRUE => print type with value   */
 static Bool   useShow      = TRUE;      /* TRUE => use Text/show printer   */
+static Bool   displayIO    = FALSE;     /* TRUE => use printer for IO result*/
 static Bool   chaseImports = TRUE;      /* TRUE => chase imports on load   */
 static Bool   useDots      = RISCOS;    /* TRUE => use dots in progress    */
 static Bool   quiet        = FALSE;     /* TRUE => don't show progress     */
@@ -925,6 +926,11 @@ struct options toggle[] = {             /* List of command line toggles    */
              1,
 #endif
              "Use \"show\" to display results",       &useShow},
+    {'I',
+#if !HASKELL_98_ONLY
+             1,
+#endif
+             "Display results of IO programs",        &displayIO},
     {'i',
 #if !HASKELL_98_ONLY
              1,
@@ -1409,23 +1415,23 @@ static Void local evaluator() {        /* evaluate expr and print value    */
 #endif
 #if IO_MONAD
     if (t = getProgType(ks,type)) {
-	Cell printer = namePrint;
-	if (useShow) {
-	    Cell d = resolvePred(ks,ap(classShow,t));
-	    if (isNull(d)) {
-		printing = FALSE;
-		ERRMSG(0) "Cannot find \"show\" function for IO result:" ETHEN
-		ERRTEXT   "\n*** Expression : "   ETHEN ERREXPR(inputExpr);
-		ERRTEXT   "\n*** Of type    : "   ETHEN ERRTYPE(type);
-		ERRTEXT   "\n"
-		EEND;
-	    }
-	    printer = ap(nameShowsPrec,d);
-	}
-	printer = ap(ap(nameFlip,ap(printer,mkInt(MIN_PREC))),nameNil);
-	printer = ap(ap(nameComp,namePutStr),printer);
-	if (t != typeUnit) {
-	  inputExpr = ap(ap(nameIOBind,inputExpr),printer);
+        if (displayIO) {
+            Cell printer = namePrint;
+            if (useShow) {
+                Cell d = resolvePred(ks,ap(classShow,t));
+                if (isNull(d)) {
+                    printing = FALSE;
+                    ERRMSG(0) "Cannot find \"show\" function for IO result:" ETHEN
+                    ERRTEXT   "\n*** Expression : "   ETHEN ERREXPR(inputExpr);
+                    ERRTEXT   "\n*** Of type    : "   ETHEN ERRTYPE(type);
+                    ERRTEXT   "\n"
+                    EEND;
+                }
+                printer = ap(nameShowsPrec,d);
+            }
+            printer = ap(ap(nameFlip,ap(printer,mkInt(MIN_PREC))),nameNil);
+            printer = ap(ap(nameComp,namePutStr),printer);
+            inputExpr = ap(ap(nameIOBind,inputExpr),printer);
 	}
     }
     else
