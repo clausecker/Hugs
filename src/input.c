@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: input.c,v $
- * $Revision: 1.11 $
- * $Date: 2000/05/27 07:36:00 $
+ * $Revision: 1.12 $
+ * $Date: 2000/07/28 04:23:46 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -822,6 +822,51 @@ static Cell local readString() {       /* read string literal              */
     return mkStr(findText(tokenStr));
 }
 
+#if HERE_DOC
+enum { START = 0,
+       FIRST_DOLLAR,
+       HERE_VAR,
+       SECOND_DOLLAR,
+       KEEP_GOING };
+static Int hereState = START;
+
+static Cell local readHereString() {       /* read fragment of here doc    */
+    startToken();
+    while ((c0!='\'' || c1!='\'') && c0!=EOF) {
+	if (c0 == '$') {
+	    if (c1 == '$')
+		skip();
+	    else
+		hereState = FIRST_DOLLAR;
+		break;
+	}
+	saveTokenChar(c0);
+	skip();
+    }
+
+    if (c0=='\'' && c1=='\'') {
+	skip(); skip();
+    } else if (c0 != '$') {
+	ERRMSG(row) "Improperly terminated here document"
+	EEND;
+    }
+    endToken();
+    return mkStr(findText(tokenStr));
+}
+
+static Void local hereDollar() {
+    Text plusplus = findText("++");
+    skipWhitespace();
+    if (c0!='$') {
+	hereState = START;
+	ERRMSG(row) "improperly escaped variable in here document"
+	EEND;
+    }
+    skip();
+    push(yylval = ap(VAROPCELL,plusplus));
+}
+#endif
+
 static Void local saveStrChr(c)        /* save character in string         */
 Char c; {
     if (c!='\0' && c!='\\') {          /* save non null char as single char*/
@@ -1297,6 +1342,33 @@ static Int local yylex() {             /* Read next input token ...        */
 	return '{';
     }
 
+#if HERE_DOC
+    if (hereState) {
+	switch (hereState) {
+	case FIRST_DOLLAR :
+	{
+	    hereDollar();
+	    hereState = HERE_VAR;
+	    return VAROP;
+	}
+	case HERE_VAR :
+	    hereState = SECOND_DOLLAR;
+	    /* will parse and return id, and come back in the right state */
+	    break;
+        case SECOND_DOLLAR :
+	{
+	    hereDollar();
+	    hereState = KEEP_GOING;
+	    return VAROP;
+	}
+        case KEEP_GOING :
+	    hereState = START;
+	    push(yylval = readHereString());
+	    return STRINGLIT;
+	}
+    }
+#endif
+
     /* ----------------------------------------------------------------------
      * Skip white space, and insert tokens to support layout rules as reqd.
      * --------------------------------------------------------------------*/
@@ -1318,6 +1390,14 @@ static Int local yylex() {             /* Read next input token ...        */
 		insertedToken = TRUE;
 		return ';';
 	    }
+
+#if HERE_DOC && !HASKELL_98_ONLY
+    if (c0=='\'' && c1=='\'' && !haskell98) {
+	skip(); skip();
+	top() = yylval = readHereString();
+	return STRINGLIT;
+    }
+#endif
 
     /* ----------------------------------------------------------------------
      * Now try to identify token type:
