@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: storage.c,v $
- * $Revision: 1.28 $
- * $Date: 2002/02/23 15:27:06 $
+ * $Revision: 1.29 $
+ * $Date: 2002/02/28 03:25:42 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -423,7 +423,6 @@ Cell defn; {
 
 #if !IGNORE_MODULES
     tycon(tc).mod    = currentModule;
-    module(currentModule).tycons=cons(tc,module(currentModule).tycons);
 #endif
     return tc;
 }
