@@ -1,9 +1,25 @@
 # Top-level Makefile for Hugs
-# (mostly portable, except for the use of include)
+# (this should be a POSIX 1003.2-1992 Makefile)
 
-# include isn't 1003.2-1992, but is widely understood.
-# If necessary, replace the line with the contents of the file.
-include Defs.mk
+# Start of general settings (leave this line unchanged)
+
+NAME = hugs98
+
+# Set to 0 if a snapshot release.
+MAJOR_RELEASE = 0
+
+# Release number of RPM.
+RELEASE = 1
+
+TAG = HEAD
+HSLIBSTAG = HEAD
+LIBRARIESTAG = HEAD
+
+HSLIBSDIRS = concurrent data hssource lang net text util posix
+LIBRARIESDIRS = base haskell98 haskell-src network parsec QuickCheck unix \
+	GLUT OpenGL fgl
+
+# End of general settings (leave this line unchanged)
 
 # General targets:
 #
@@ -41,11 +57,16 @@ veryclean:
 
 # Building distributions
 
-tar:
+tar: Defs.mk
 	$(MAKE) -f RPM.mk tar
 
-rpm:
+rpm: Defs.mk
 	$(MAKE) -f RPM.mk rpm
+
+Defs.mk: Makefile
+	( echo '# Automatically extracted from Makefile (so edit that instead)';\
+	  sed -n '/^# Start of general settings/,/^# End of general settings/p' Makefile;\
+	) >$@
 
 # Build phases:
 
