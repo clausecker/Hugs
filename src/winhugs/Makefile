@@ -64,7 +64,7 @@ SOURCES		= $(HFILES) $(CFILES) $(INCFILES) $(YFILES)
 OBJECTS		= storage.obj input.obj static.obj type.obj subst.obj \
                   compiler.obj plugin.obj builtin.obj machine.obj output.obj \
 
-WOBJECTS        = winhugs.obj winframe.obj wintext.obj  winhint.obj \
+WOBJECTS        = winhugs.obj winframe.obj wintext.obj winhint.obj \
                   winstln.obj wintoolb.obj winutils.obj 
 
 OBJECTS		= storage.obj input.obj static.obj type.obj subst.obj \
@@ -159,6 +159,29 @@ static.obj	: static.c
 # veryclean	::
 # 		  $(RM) parser.c
 
+#dependencies for these files are incomplete
+
+wintext.obj	: $(HFILES) "winhugs\wintext.c"
+		  $(CC) -c $(CFLAGS) $(OPTFLAGS)  "winhugs\wintext.c" 
+
+winframe.obj    : $(HFILES) "winhugs\winframe.c"
+	          $(CC) -c $(CFLAGS) $(OPTFLAGS) "winhugs\winframe.c" 
+
+winhint.obj	: $(HFILES) "winhugs\winhint.c"
+		  $(CC) -c $(CFLAGS) $(OPTFLAGS) "winhugs\winhint.c" 
+
+winstln.obj	: $(HFILES) "winhugs\winstln.c"
+	          $(CC) -c $(CFLAGS) $(OPTFLAGS) "winhugs\winstln.c" 
+
+wintoolb.obj    : $(HFILES) "winhugs\wintoolb.c"
+	          $(CC) -c $(CFLAGS) $(OPTFLAGS) "winhugs\wintoolb.c" 
+
+winutils.obj    : $(HFILES) "winhugs\winutils.c"
+	          $(CC) -c $(CFLAGS) $(OPTFLAGS) "winhugs\winutils.c" 
+
+winhugs.obj    : $(HFILES) "winhugs\winhugs.c"
+	          $(CC) -c $(CFLAGS) $(OPTFLAGS) "winhugs\winhugs.c" 
+
 winhugs.res     : "winhugs\winhugs.rc"
                   $(RC) -fowinhugs.res "winhugs\winhugs.rc"
 
@@ -226,7 +249,13 @@ subst.$(OBJEXT): subst.c prelude.h config.h platform.h options.h storage.h \
   HsFFI.h connect.h errors.h output.h opts.h subst.h
 type.$(OBJEXT): type.c prelude.h config.h platform.h options.h storage.h HsFFI.h \
   connect.h errors.h output.h subst.h goal.h opts.h preds.c scc.c
-version.$(OBJEXT): version.c prelude.h config.h platform.h options.h
+version.$(OBJEXT): today version.c prelude.h config.h platform.h options.h 
+
+today: echodate.exe
+	$(PWD)/echodate.exe > echodate.h
+
+echodate.exe: msc/echodate.c
+	$(CC) $(LDFLAGS) msc/echodate.c -o $@
 
 ################################################################
 # End of generated object dependencies (Don't change or delete this line)
@@ -237,7 +266,7 @@ version.$(OBJEXT): version.c prelude.h config.h platform.h options.h
 # The dependencies could be made tighter by not using HFILES throughout,
 # but individually naming the header files needed by each file. Elect
 # not to do this due to the overhead of having to keep it up-to-date.
-Winhugs.$(OBJEXT): $(HFILES) \
+winhugs.$(OBJEXT): $(HFILES) \
   winhugs/winhugs.c winhugs/menusbm.c winhugs/WinBrows.c winhugs/WinHugs.h \
   winhugs/WinFrame.h winhugs/WinToolB.h winhugs/WinSTLN.h winhugs/WinUtils.h
 winframe.$(OBJEXT): $(HFILES) winhugs/winframe.c \
