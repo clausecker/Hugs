@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.65 $
- * $Date: 2002/02/25 22:20:33 $
+ * $Revision: 1.66 $
+ * $Date: 2002/02/26 05:33:47 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -528,27 +528,45 @@ static Void local optionInfo() {        /* Print information about command */
     Putchar('\n');
 }
 
-#if USE_REGISTRY || HUGS_FOR_WINDOWS
 #define PUTC(c)                         \
-    *next++=(c)
+    if (charsLeft > 1) {                \
+      *next++=(c);charsLeft--;          \
+    } else {                            \
+      *next='\0';return buffer;         \
+    }
 
 #define PUTS(s)                         \
-    strcpy(next,s);                     \
-    next+=strlen(next)
+    if ( charsLeft > strlen(s) ) {      \
+      strcpy(next,s);                   \
+      next+=strlen(next);               \
+    } else {                            \
+      *next = '\0';                     \
+    }
 
 #define PUTInt(optc,i)                  \
-    sprintf(next,"-%c%d",optc,i);       \
-    next+=strlen(next)
+    if ( charsLeft > 20 /*conservative*/ ) { \
+      sprintf(next,"-%c%d",optc,i);     \
+      next+=strlen(next);               \
+    } else {                            \
+      *next = '\0';                     \
+    }
 
 #define PUTStr(c,s)                     \
-    next=PUTStr_aux(next,c,s)
+    next=PUTStr_aux(next,charsLeft,c,s)
 
-static String local PUTStr_aux Args((String,Char, String));
+static String local PUTStr_aux Args((String,Int,Char, String));
 
-static String local PUTStr_aux(next,c,s)
+static String local PUTStr_aux(next,charsLeft,c,s)
 String next;
 Char   c;
 String s; {
+    if ( strlen(s) > charsLeft ) {
+      *next = '\0';
+      /* optionsToStr() will not to break off immediately,
+       * but soon enough. 
+       */
+      return next;
+    }
     if (s) { 
 	String t = 0;
 	sprintf(next,"-%c\"",c); 
@@ -565,6 +583,7 @@ String s; {
 static String local optionsToStr() {          /* convert options to string */
     static char buffer[2000];
     String next = buffer;
+    Int charsLeft = 2000;
 
     Int i;
     for (i=0; toggle[i].c; ++i) {
@@ -590,7 +609,7 @@ static String local optionsToStr() {          /* convert options to string */
     PUTC('\0');
     return buffer;
 }
-#endif /* USE_REGISTRY */
+
 
 #undef PUTC
 #undef PUTS
