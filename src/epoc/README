@@ -2,7 +2,7 @@ Hugs for EPOC
 -------------
 
 Port by Glenn Strong (Glenn.Strong@cs.tcd.ie)
-Integrated by Reuben Thomas (rrt@sc3d.org), so blame him if it doesn't work.
+Integrated by Reuben Thomas (rrt@sc3d.org)
 
 
 Hugs for EPOC should be built with the Symbian SDK. This directory contains
