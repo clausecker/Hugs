@@ -130,8 +130,6 @@ AC_CHECK_FUNCS(gettimeofday)
 AC_CHECK_FUNCS(time)
 AC_CHECK_FUNCS(times)
 
-AC_CHECK_LIB([dl], [dlopen])
-
 dnl Definitions computed by ../configure, for insertion into Makefile
 MkDefs=../MkDefs
 AC_SUBST_FILE(MkDefs)  
