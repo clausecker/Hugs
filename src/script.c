@@ -60,9 +60,10 @@ static Void local freeScript    Args((Int));
  * Initialising / freeing script stacks:
  * ------------------------------------------------------------------------*/
 Void initScripts() {
-  scriptFile = 0;
-  numScripts = 0;
-  namesUpto  = 0;
+  scriptFile    = 0;
+  numScripts    = 0;
+  namesUpto     = 0;
+  scriptsStable = 0;
 }
 
 Void stopScripts() {
