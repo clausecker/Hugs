@@ -463,10 +463,10 @@ Also, when <option>+k</option> is given,
 the output of the <command>:info</command> will include kind information
 for classes and type constructors:
 <screen>
-  Hugs> :info Monad
+  Hugs.Base> :info Monad
   -- constructor class with arity * -> *
   ...
-  Hugs> :info Int
+  Hugs.Base> :info Int
   -- type constructor with kind *
 </screen>
 </para>
@@ -483,18 +483,18 @@ Apply defaulting rules to types before printing (default: off).
 When printing out types, the interpreter will normally not try to
 simplify types by applying defaulting rules, e.g.,
 <screen>
-  Hugs> :t 1
+  Hugs.Base> :t 1
   1 :: Num a => a
-  Hugs>
+  Hugs.Base>
 </screen>
 With the <option>+T</option> option,
 the interpreter attempts to <quote>default</quote> types first,
 using the same rules as for expressions (see <xref linkend="basic-commands"/>):
 <screen>
-  Hugs> :set +T
-  Hugs> :t 1
+  Hugs.Base> :set +T
+  Hugs.Base> :t 1
   1 :: Integer
-  Hugs>
+  Hugs.Base>
 </screen>
 </para>
 </listitem>
@@ -528,13 +528,13 @@ Print the type of each expression evaluated (default: off).
 <para>
 Normally Hugs merely prints the value of each expression evaluated:
 <screen>
-  Hugs> 1+2
+  Hugs.Base> 1+2
   3
 </screen>
 With the <option>+t</option> option, it also adds the type of the expression:
 <screen>
-  Hugs> :set +t
-  Hugs> 1+2
+  Hugs.Base> :set +t
+  Hugs.Base> 1+2
   3 :: Integer
 </screen>
 Note that defaulting has been applied to the type of the expression in order
@@ -543,7 +543,7 @@ to evaluate it, so the type differs from that reported by the
 <link linkend="option-default-types"><option>+T</option></link> option
 is not used):
 <screen>
-  Hugs> :type 1+2
+  Hugs.Base> :type 1+2
   1 + 2 :: Num a => a
 </screen>
 </para>
@@ -561,14 +561,14 @@ Use <literal>show</literal> to display results (default: on).
 By default, the values of expressions typed at the prompt are printed using
 the <literal>show</literal> member of the <literal>Show</literal> class:
 <screen>
-  Hugs> [Just (2+3), Nothing]
+  Hugs.Base> [Just (2+3), Nothing]
   [Just 5,Nothing]
 </screen>
 You can define this function as desired for any new datatype.
 If the type of the expression is not an instance of the
 <literal>Show</literal> class, an error results:
 <screen>
-  Hugs> id
+  Hugs.Base> id
   ERROR - Cannot find "show" function for:
   *** Expression : id
   *** Of type    : a -> a
@@ -576,37 +576,37 @@ If the type of the expression is not an instance of the
 With the <option>-u</option> option, a built-in printer is used instead,
 and this works for any type:
 <screen>
-  Hugs> :set -u
-  Hugs> id
+  Hugs.Base> :set -u
+  Hugs.Base> id
   id
-  Hugs> \x -> x
+  Hugs.Base> \x -> x
   v1497
-  Hugs> [Just (2+3), Nothing]
+  Hugs.Base> [Just (2+3), Nothing]
   [Maybe_Just 5,Maybe_Nothing]
 </screen>
 Another feature of the built-in printer is its treatment of failures
 (or exceptions).
 Normally, an exception causes immediate failure of the expression:
 <screen>
-  Hugs> :set +u
-  Hugs> 1 + 2/0
+  Hugs.Base> :set +u
+  Hugs.Base> 1 + 2/0
 
   Program error: divide by zero
 
-  Hugs> [1, 2 + error "foo", 3]
+  Hugs.Base> [1, 2 + error "foo", 3]
   [1,
   Program error: foo
 </screen>
 However the built-in printer prints the whole value, with embedded exceptions:
 <screen>
-  Hugs> :set -u
-  Hugs> [1, 2 + error "foo", 3]
+  Hugs.Base> :set -u
+  Hugs.Base> [1, 2 + error "foo", 3]
   [1,{error "foo"},3]
 </screen>
 Sometimes a component could produce one of two or more exceptions,
 but the built-in printer shows only one of them:
 <screen>
-  Hugs> 1 + error "foo" + error "bar"
+  Hugs.Base> 1 + error "foo" + error "bar"
   {error "foo"}
 </screen>
 </para>
@@ -625,10 +625,10 @@ is executed for effect, but the final value it produces is discarded.
 When <option>+I</option> is used, such an expression is evaluated,
 and then its result is printed with <literal>Prelude.print</literal>:
 <screen>
-  Hugs> :set +I
-  Hugs> (return 'a' :: IO Char)
+  Hugs.Base> :set +I
+  Hugs.Base> (return 'a' :: IO Char)
   'a'
-  Hugs>
+  Hugs.Base>
 </screen>
 i.e., evaluating an IO action <replaceable>m</replaceable>
 with <option>+I</option> in effect is equivalent to evaluating
@@ -697,7 +697,7 @@ Note that even the most trivial evaluation involves several reductions and
 cells, because Hugs wraps the expression in code to print the value and
 catch exceptions:
 <screen>
-  Hugs> True
+  Hugs.Base> True
   True
   (25 reductions, 46 cells)
 </screen>
@@ -722,8 +722,8 @@ This can be useful for analysing the <emphasis>residency</emphasis> of an
 algorithm, the amount of memory is is actually using at each point in time.
 For example,
 <screen>
-  Hugs> :set +g
-  Hugs> length [1..60000]
+  Hugs.Base> :set +g
+  Hugs.Base> length [1..60000]
   {{Gc:237618}}{{Gc:237617}}{{Gc:237616}}{{Gc:237623}}{{Gc:237621}}
   {{Gc:237628}}{{Gc:237623}}{{Gc:237618}}60000
 </screen>
@@ -731,7 +731,7 @@ We see that the computation creates a lot of cells, but the number recovered
 on each garbage collection is roughly the same, so its residency is constant.
 In contrast, with
 <screen>
-  Hugs> let xs = [1..60000] in sum xs `div` length xs
+  Hugs.Base> let xs = [1..60000] in sum xs `div` length xs
   {{Gc:237510}}{{Gc:213862}}{{Gc:190948}}{{Gc:170500}}{{Gc:152225}}
   {{Gc:135925}}{{Gc:121350}}{{Gc:108350}}{{Gc:96750}}{{Gc:86375}}
   {{Gc:77125}}{{Gc:68860}}{{Gc:61490}}{{Gc:72948}}{{Gc:97265}}{{Gc:129688}}
