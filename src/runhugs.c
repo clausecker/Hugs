@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: runhugs.c,v $
- * $Revision: 1.3 $
- * $Date: 1999/09/13 11:01:06 $
+ * $Revision: 1.4 $
+ * $Date: 2001/02/17 04:05:50 $
  * ------------------------------------------------------------------------*/
 
 #include <stdio.h>
@@ -18,8 +18,8 @@
 #include "options.h"
 #include "server.h"
 
-#if HAVE_CONSOLE_H
-# include <console.h>
+#if __MWERKS__ && macintosh
+#include <SIOUX.h>
 #endif
 
 extern int  main      Args((int, char**));
@@ -62,27 +62,15 @@ char* argv[]; {
     char** hugs_argv;
     int    hugs_argc;
 
-#ifdef HAVE_CONSOLE_H /* Macintosh port */
-    _ftype = 'TEXT';
-    _fcreator = 'R*ch';		/* // 'KAHL';	//'*TEX';	//'ttxt'; */
-
-    console_options.top = 40;
-    console_options.left = 6;
-
-    /* Example of combinations (nrows, ncols, txFont, txSize):
-	(35, 100, 22, 10)
-	(38, 120, 22, 9)
-    */
-    console_options.nrows = 34;
-    console_options.ncols = 80;
-
-    console_options.pause_atexit = 1;
-    console_options.title = "\pHugs" HUGS_VERSION;
-
-    console_options.txFont = 22;	/* 22 = Courier			   */
-    console_options.txSize = 10;
-
-    /* console_options.procID = 5; */
+#if __MWERKS__ && macintosh
+    strcpy(macHugsDir,currentDir());
+    SIOUXSettings.autocloseonquit   = true;
+    SIOUXSettings.asktosaveonclose  = false;
+    SIOUXSettings.columns           = 80;
+    SIOUXSettings.rows              = 40; 
+    SIOUXSettings.tabspaces         = 8;
+    SIOUXSettings.enabledraganddrop = true;
+    SIOUXSetTitle("\pHugs 98");
     argc = ccommand(&argv);
 #endif
 
@@ -115,7 +103,7 @@ char* argv[]; {
 
     hugs->setHugsArgs(argc,argv);
 
-    hugs->lookupName("Main","main");
+    hugs->pushHVal(hugs->compileExpr("Main","main >> return ()"));
     exitCode = hugs->doIO();
     check();
 
