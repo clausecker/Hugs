@@ -43,19 +43,33 @@ AC_DEFINE_UNQUOTED(HOST_OS, "$host_os")
 # ToDo: We should probably use AS_TR_CPP here, but this changes case, too, and
 # I'm a bit reluctant to do this without closer inspection of the Hugs code.
 fp_tr_cpp="sed s%[[^_abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789]]%_%g"
-HostPlatform_CPP=`echo $HostPlatform | $fp_tr_cpp`
-TargetPlatform_CPP=`echo $TargetPlatform | $fp_tr_cpp`
-BuildPlatform_CPP=`echo $BuildPlatform | $fp_tr_cpp`
 
-AC_SUBST(HostPlatform,   $HostPlatform_CPP)
-AC_SUBST(TargetPlatform, $TargetPlatform_CPP)
-AC_SUBST(BuildPlatform,  $BuildPlatform_CPP)
-AC_SUBST(HostOS, $host_os)
-AC_SUBST(HostArch, $host_cpu)
-AC_SUBST(TargetOS, $target_os)
-AC_SUBST(TargetArch, $target_cpu)
-AC_SUBST(BuildOS, $build_os)
-AC_SUBST(BuildArch, $build_cpu)
+HostPlatform_CPP=`echo $HostPlatform | $fp_tr_cpp`
+AC_SUBST([HostPlatform], [$HostPlatform_CPP])
+
+TargetPlatform_CPP=`echo $TargetPlatform | $fp_tr_cpp`
+AC_SUBST([TargetPlatform], [$TargetPlatform_CPP])
+
+BuildPlatform_CPP=`echo $BuildPlatform | $fp_tr_cpp`
+AC_SUBST([BuildPlatform], [$BuildPlatform_CPP])
+
+HostOS_CPP=`echo $host_os | $fp_tr_cpp`
+AC_SUBST([HostOS], [$HostOS_CPP])
+
+HostArch_CPP=`echo $host_cpu | $fp_tr_cpp`
+AC_SUBST([HostArch], [$HostArch_CPP])
+
+TargetOS_CPP=`echo $target_os | $fp_tr_cpp`
+AC_SUBST([TargetOS], [$TargetOS_CPP])
+
+TargetArch_CPP=`echo $target_cpu | $fp_tr_cpp`
+AC_SUBST([TargetArch], [$TargetArch_CPP])
+
+BuildOS_CPP=`echo $build_os | $fp_tr_cpp`
+AC_SUBST([BuildOS], [$BuildOS_CPP])
+
+BuildArch_CPP=`echo $build_cpu | $fp_tr_cpp`
+AC_SUBST([BuildArch], [$BuildArch_CPP])
 
 dnl--------------------------------------------------------------------
 dnl

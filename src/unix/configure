@@ -1435,27 +1435,41 @@ _ACEOF
 # ToDo: We should probably use AS_TR_CPP here, but this changes case, too, and
 # I'm a bit reluctant to do this without closer inspection of the Hugs code.
 fp_tr_cpp="sed s%[^_abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789]%_%g"
-HostPlatform_CPP=`echo $HostPlatform | $fp_tr_cpp`
-TargetPlatform_CPP=`echo $TargetPlatform | $fp_tr_cpp`
-BuildPlatform_CPP=`echo $BuildPlatform | $fp_tr_cpp`
 
+HostPlatform_CPP=`echo $HostPlatform | $fp_tr_cpp`
 HostPlatform=$HostPlatform_CPP
 
+
+TargetPlatform_CPP=`echo $TargetPlatform | $fp_tr_cpp`
 TargetPlatform=$TargetPlatform_CPP
 
+
+BuildPlatform_CPP=`echo $BuildPlatform | $fp_tr_cpp`
 BuildPlatform=$BuildPlatform_CPP
 
-HostOS=$host_os
 
-HostArch=$host_cpu
+HostOS_CPP=`echo $host_os | $fp_tr_cpp`
+HostOS=$HostOS_CPP
 
-TargetOS=$target_os
 
-TargetArch=$target_cpu
+HostArch_CPP=`echo $host_cpu | $fp_tr_cpp`
+HostArch=$HostArch_CPP
 
-BuildOS=$build_os
 
-BuildArch=$build_cpu
+TargetOS_CPP=`echo $target_os | $fp_tr_cpp`
+TargetOS=$TargetOS_CPP
+
+
+TargetArch_CPP=`echo $target_cpu | $fp_tr_cpp`
+TargetArch=$TargetArch_CPP
+
+
+BuildOS_CPP=`echo $build_os | $fp_tr_cpp`
+BuildOS=$BuildOS_CPP
+
+
+BuildArch_CPP=`echo $build_cpu | $fp_tr_cpp`
+BuildArch=$BuildArch_CPP
 
 
 
@@ -4025,7 +4039,7 @@ else
 ac_save_LIBS="$LIBS"
 LIBS="";
 cat > conftest.$ac_ext <<EOF
-#line 4028 "configure"
+#line 4042 "configure"
 #include "confdefs.h"
 main() { extern char dlopen(); dlopen();; exit(0); }
 int t() { return 0; }
@@ -4068,7 +4082,7 @@ else
 ac_save_LIBS="$LIBS"
 LIBS="-ldl";
 cat > conftest.$ac_ext <<EOF
-#line 4071 "configure"
+#line 4085 "configure"
 #include "confdefs.h"
 main() { extern char dlopen(); dlopen();; exit(0); }
 int t() { return 0; }
@@ -4123,7 +4137,7 @@ else
 ac_save_LIBS="$LIBS"
 LIBS="";
 cat > conftest.$ac_ext <<EOF
-#line 4126 "configure"
+#line 4140 "configure"
 #include "confdefs.h"
 main() { extern char shl_load(); shl_load();; exit(0); }
 int t() { return 0; }
@@ -4166,7 +4180,7 @@ else
 ac_save_LIBS="$LIBS"
 LIBS="-ldld";
 cat > conftest.$ac_ext <<EOF
-#line 4169 "configure"
+#line 4183 "configure"
 #include "confdefs.h"
 main() { extern char shl_load(); shl_load();; exit(0); }
 int t() { return 0; }
@@ -4221,7 +4235,7 @@ else
 ac_save_LIBS="$LIBS"
 LIBS="";
 cat > conftest.$ac_ext <<EOF
-#line 4224 "configure"
+#line 4238 "configure"
 #include "confdefs.h"
 main() { extern char atan(); atan();; exit(0); }
 int t() { return 0; }
@@ -4264,7 +4278,7 @@ else
 ac_save_LIBS="$LIBS"
 LIBS="-lm";
 cat > conftest.$ac_ext <<EOF
-#line 4267 "configure"
+#line 4281 "configure"
 #include "confdefs.h"
 main() { extern char atan(); atan();; exit(0); }
 int t() { return 0; }
@@ -24572,7 +24586,7 @@ _ACEOF
 ac_save_LIBS="$LIBS"
 LIBS=;
 cat > conftest.$ac_ext <<EOF
-#line 24575 "configure"
+#line 24589 "configure"
 #include "confdefs.h"
 
 #if HAVE_WINDOWS_H
@@ -24613,7 +24627,7 @@ fi
 ac_save_LIBS="$LIBS"
 LIBS=;
 cat > conftest.$ac_ext <<EOF
-#line 24616 "configure"
+#line 24630 "configure"
 #include "confdefs.h"
 
 #if HAVE_WINDOWS_H
