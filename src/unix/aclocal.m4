@@ -868,4 +868,9 @@ dnl and we don't want to be global namespace polluters.
   AC_LANG_RESTORE
 ])
 
+dnl Simplistic implementation of autoconf 2.50 macros for earlier versions
+
+ifndef([AC_HELP_STRING],
+  AC_DEFUN(AC_HELP_STRING, [  $1	  $2]))
+
 dnl End of file
