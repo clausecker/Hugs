@@ -12,6 +12,8 @@ AC_INIT(src/hugs.c)
 
 AC_CONFIG_AUX_DIR(ac_aux)
 
+AC_CONFIG_SUBDIRS([fptools/libraries])
+
 AC_CONFIG_HEADER(src/config.h src/options.h)
 AH_TOP([/* platform-specific defines */
 #include "platform.h"])

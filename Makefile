@@ -76,12 +76,10 @@ src/Makefile: configure src/config.h.in
 	$(RM) -r config.cache autom4te.cache
 	LIBS=$(GNULIBS) ./configure $(EXTRA_CONFIGURE_OPTS)
 
-configure: configure.ac aclocal.m4
-	-autoconf
-
-src/config.h.in: src/stamp-h.in
-src/stamp-h.in: configure.ac aclocal.m4
-	-autoheader
+configure src/config.h.in: src/stamp-h.in
+src/stamp-h.in: configure.ac aclocal.m4 fptools
+	-cp ac_aux/install-sh fptools	# kludge to keep configure happy
+	-autoreconf
 	echo timestamp for config.h.in >$@
 
 # fetching library sources
