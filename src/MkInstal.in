@@ -71,7 +71,7 @@ install_notes	::
 		$(INSTALL_DATA) ../License $(hugsdir)
 		$(INSTALL_DATA) ../Credits $(hugsdir)
 
-BUILD_FFI_OLD = ./ffihugs -P'{Hugs}/lib:{Hugs}/lib/exts:{Hugs}/lib/hugs' +G
+BUILD_FFI_OLD = ./ffihugs -N +G
 
 install_libexts_ffi :: install_libexts install_include ffihugs$(EXE)
 		$(BUILD_FFI_OLD) +L"../lib/exts/Storable_aux.c" HugsStorable 
@@ -86,7 +86,7 @@ install_oldlib :: $(LIBRARIES)
 		$(INSTALL) -d $(hugsdir)/oldlib
 		$(INSTALL_DATA) ../oldlib/*.* $(hugsdir)/oldlib
 
-BUILD_FFI_NEW = ./ffihugs -P'{Hugs}/libraries:{Hugs}/oldlib' +G
+BUILD_FFI_NEW = ./ffihugs +N +G
 
 install_libraries_ffi :: install_libraries install_include ffihugs$(EXE)
 		$(BUILD_FFI_NEW) +L"../libraries/Hugs/Storable_aux.c" Hugs.Storable 
