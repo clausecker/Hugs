@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: ffi.c,v $
- * $Revision: 1.34 $
- * $Date: 2003/12/18 05:29:16 $
+ * $Revision: 1.35 $
+ * $Date: 2004/04/13 23:26:36 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -538,9 +538,13 @@ Int  id; {
  *
  * For example:
  * 
- *     foreign import "static fn cid" name :: Int -> Float -> IO Char
+ *     foreign import "static fn ext_nm" name :: Int -> Float -> IO Char
  * ==>
- *     
+ *
+ *     #ifndef ENABLE_MACRO_INTERFACE
+ *     #undef ext_nm
+ *     #endif
+ *
  *     static void hugsprim_extnm(HugsStackPtr);
  *     static void hugsprim_extnm(HugsStackPtr hugs_root)
  *     {
@@ -603,6 +607,11 @@ Type resultTy; {
 #endif
 
     ffiInclude(fn);
+
+    /* Prevent the cid from matching a C macro */
+    fprintf(out,"\n#ifndef ENABLE_MACRO_INTERFACE\n");
+    fprintf(out,"#undef %s\n", textToStr(cid));
+    fprintf(out,"#endif\n");
 
     ffiPrimProto(cid,id);
     ffiPrimHeader(cid,id);
@@ -825,7 +834,11 @@ Type resultTy; {
  * 
  *     foreign import "static & cid" name :: Addr
  * ==>
- *     
+ *
+ *     #ifndef ENABLE_MACRO_INTERFACE
+ *     #undef cid
+ *     #endif
+ *
  *     static void hugsprim_name(HugsStackPtr);
  *     static void hugsprim_name(HugsStackPtr hugs_root)
  *     {
@@ -842,6 +855,12 @@ Text cid;  /* Function name */
 Text n;    /* Haskell name */
 Type ty; {
     ffiInclude(fn);
+
+    /* Prevent the cid from matching a C macro */
+    fprintf(out,"\n#ifndef ENABLE_MACRO_INTERFACE\n");
+    fprintf(out,"#undef %s\n", textToStr(cid));
+    fprintf(out,"#endif\n");
+
     ffiPrimProto(cid,id);
     ffiPrimHeader(cid,id);
     fprintf(out,"{\n");
