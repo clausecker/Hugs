@@ -3,11 +3,14 @@
 #ifndef __HSFFI_H__
 #define __HSFFI_H__
 
+// The ifdef Args is a crude way of testing whether this file is
+// #included into Hugs.  Use it to eliminate non-portable stuff.
+
+#ifndef Args
 typedef unsigned char      uint8_t;
 typedef unsigned short     uint16_t;
 typedef unsigned int       uint32_t;
 typedef unsigned long long uint64_t;
-#ifndef Args
 typedef signed   char      int8_t;
 typedef signed   short     int16_t;
 typedef signed   int       int32_t;
@@ -19,6 +22,20 @@ typedef unsigned char HsChar;
 #else
 typedef char HsChar;
 #endif
+#ifdef Args
+typedef Int          HsInt;        
+typedef Int8         HsInt8;         
+typedef Int16        HsInt16;        
+typedef Int          HsInt32;        
+typedef signed long long  HsInt64;        
+typedef unsigned int   HsWord;       
+typedef unsigned char  HsWord8;        
+typedef unsigned short HsWord16;       
+typedef unsigned int   HsWord32;       
+typedef unsigned long long  HsWord64;        
+typedef float        HsFloat;      
+typedef double       HsDouble;     
+#else
 typedef int          HsInt;        
 typedef int8_t       HsInt8;         
 typedef int16_t      HsInt16;        
@@ -31,6 +48,7 @@ typedef uint32_t     HsWord32;
 typedef uint64_t     HsWord64;       
 typedef float        HsFloat;      
 typedef double       HsDouble;     
+#endif
 typedef int          HsBool;         
 typedef void*        HsAddr;       
 typedef void*        HsPtr;          
