@@ -1,4 +1,4 @@
-INSTALL		= ../../ac_aux/install-sh
+INSTALL		= ../../install-sh
 CP		= @CP@
 RM		= @RM@
 DOCBOOK2HTML	= @DOCBOOK2HTML@

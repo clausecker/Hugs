@@ -1,7 +1,7 @@
 # Makefile for Documentation
 # Note that some documentation is in other directories.
 
-INSTALL		= ../ac_aux/install-sh
+INSTALL		= ../install-sh
 RM		= @RM@
 CP		= @CP@
 

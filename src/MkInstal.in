@@ -10,7 +10,7 @@
 # multiple files at once.
 ################################################################
 
-INSTALL		= ../ac_aux/install-sh
+INSTALL		= ../install-sh
 INSTALL_DATA	= /bin/cp
 
 install		:: install_bin install_libraries      # the bare minimum

@@ -10,8 +10,6 @@ AC_PREREQ(2.50)
 
 AC_INIT(src/hugs.c)
 
-AC_CONFIG_AUX_DIR(ac_aux)
-
 AC_CONFIG_SUBDIRS([fptools/libraries])
 
 AC_CONFIG_HEADER(src/config.h src/options.h)
@@ -31,9 +29,9 @@ if test "x$host" = xNONE ; then
 fi
 
 dnl ** canonicalize platform names
-BuildPlatform=`/bin/sh $ac_aux_dir/config.sub $build` || exit 1
-HostPlatform=`/bin/sh $ac_aux_dir/config.sub $host` || exit 1
-TargetPlatform=`/bin/sh $ac_aux_dir/config.sub $target` || exit 1
+BuildPlatform=`/bin/sh config.sub $build` || exit 1
+HostPlatform=`/bin/sh config.sub $host` || exit 1
+TargetPlatform=`/bin/sh config.sub $target` || exit 1
 
 if test x"$TargetPlatform" != x"$HostPlatform" ; then
   AC_MSG_ERROR([Hugs98 does not yet support differing host/target (i.e., cross-compiling)])
