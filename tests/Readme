@@ -1,3 +1,8 @@
+WARNING: 
+  You cannot use the readline or editline library with the testsuite.
+  It gives lots of spurious errors.  Reconfigure with the library off
+  and recompile before testing.
+
 This directory tree contains the Hugs testsuite.
 
 The testsuite is used to detect differences between Hugs' documented
