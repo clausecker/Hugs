@@ -19,8 +19,8 @@
  * included in the distribution.
  *
  * $RCSfile: iomonad.c,v $
- * $Revision: 1.18 $
- * $Date: 2001/12/20 10:07:32 $
+ * $Revision: 1.19 $
+ * $Date: 2002/01/01 17:46:04 $
  * ------------------------------------------------------------------------*/
  
 Name nameIORun;			        /* run IO code                     */
@@ -30,7 +30,6 @@ Name namePutStr;		        /* Prelude.putStr                  */
 static Name namePass;			/* auxiliary:: \f b c a -> f a b c */
 #if IO_HANDLES
 static Name nameHreader;	        /* auxiliary function		   */
-static FILE *writingFile = 0;		/* points to file open for writing */
 #endif
 
 #if IO_HANDLES
@@ -66,12 +65,6 @@ Int what; {
 		       break;
 
 	case RESET   : 
-#if IO_HANDLES
-		       if (writingFile) {
-			   fclose(writingFile);
-			   writingFile = 0;
-		       }
-#endif
 		       break;
     }
 }
@@ -1354,9 +1347,10 @@ StackPtr root;			 /* writing/appending to    */
 Bool     append; 		 /* an output file	    */
 Bool     binary;
 String   loc; {
-    String mode = binary ? (append ? "ab" : "wb")
-			 : (append ? "a"  : "w");
     String s    = evalName(IOArg(2));		/* Eval and check filename */
+    Cell hnd    = 0;
+    FILE* wfp;
+
     if (!s) {
         IOFail(mkIOError(nameIllegal,
 			 loc,
@@ -1368,27 +1362,26 @@ String   loc; {
 			 loc,
 		         "file name does not exist",
 			 IOArg(2)));
-    }
-    else if ((writingFile=fopen(s,mode))==0) {	/* Open file for writing   */
-        IOFail(mkIOError(toIOError(errno),
-			 loc,
-			 toIOErrorDescr(errno,TRUE),
-			 IOArg(2)));
-    }
-    else {					/* Output characters	   */
-	blackHoleRoot();
+    } else {
+      hnd = openHandle(root,IOArg(2),HWRITE,binary,loc);
+      if ( !isPair(hnd) || isNull(fst(hnd)) ) {
+	IOFail(snd(hnd));
+      } else { 
+        wfp = handles[intValOf(snd(hnd))].hfp;
+	handles[intValOf(snd(hnd))].hmode = HSEMICLOSED;
+      }
+      blackHoleRoot();
+      drop();
+      eval(pop());
+      while (whnfHead==nameCons) {
+	eval(top());
+	checkChar();
+	fputc(charOf(whnfHead),wfp);
 	drop();
 	eval(pop());
-	while (whnfHead==nameCons) {
-	    eval(top());
-	    checkChar();
-	    fputc(charOf(whnfHead),writingFile);
-	    drop();
-	    eval(pop());
-	}
-	fclose(writingFile);
-	writingFile = 0;
-	IOReturn(nameUnit);
+      }
+      fclose(wfp);
+      IOReturn(nameUnit);
     }
 }
 
