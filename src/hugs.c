@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.90 $
- * $Date: 2002/09/09 14:45:01 $
+ * $Revision: 1.91 $
+ * $Date: 2002/09/09 15:16:54 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -56,6 +56,7 @@ static Bool printTypeUseDefaults = FALSE;
 #if !defined(HUGS_SERVER)
 static Void   local initialize        Args((Int,String []));
 #endif /* !HUGS_SERVER */
+static Void   local initializePrelude Args((Void));
 static Void   local promptForInput    Args((String));
 #if !defined(HUGS_SERVER)
 static Void   local interpreter       Args((Int,String []));
@@ -274,18 +275,56 @@ char *argv[]; {
     exit(0);
     MainDone();
 }
+#endif
 
 /* --------------------------------------------------------------------------
  * Initialization, interpret command line args and read prelude:
  * ------------------------------------------------------------------------*/
+ 
+static Void local initializePrelude() { 
+/* add the Prelude modules to to-be-loaded-scripts stack */
+    String prelName;
+    String prelLocation;
+    /* Figure out whether we're using the 'new' Prelude
+     * or not -- if STD_PRELUDE_IMPL is reachable via the search
+     * path, we are.
+     */
 
+    /* sigh, findMPathname() mutates its module/name arg*/
+    prelName = strCopy(STD_PRELUDE_HUGS); 
+    if ( ( prelLocation = findMPathname(NULL, prelName, hugsPath)) ) {
+      newPrelude = TRUE;
+      scriptName[0] = strCopy(prelLocation);
+      /* Hackily add 'Prelude' onto the script stack. */
+      scriptName[1] = strCopy (findPathname(NULL,STD_PRELUDE));
+      scriptReal[1] = strCopy(RealPath(scriptName[1]));
+      chased[1]     = FALSE;
+    } else {
+      newPrelude = FALSE;
+      scriptName[0] = strCopy(findMPathname(NULL, STD_PRELUDE,hugsPath));
+      /* Using the old Prelude, so the room we tentatively 
+         made available on the script stack needs to be 
+	 taken back. */
+      scriptName[1] = 0;
+      scriptReal[1] = 0;
+      forgetAScript(1,FALSE);
+    }
+    free(prelName);
+
+    if (!scriptName[0]) {
+	Printf("Prelude not found on current path: \"%s\"\n",
+	       hugsPath ? hugsPath : "");
+	fatal("Unable to load prelude");
+    }
+    scriptReal[0] = strCopy(RealPath(scriptName[0]));
+}
+
+#if !defined(HUGS_SERVER)
 static Void local initialize(argc,argv)/* Interpreter initialization       */
 Int    argc;
 String argv[]; {
     Script i;
     String proj = 0;
-    String prelLocation;
-    String prelName;
 #if USE_PREFERENCES_FILE
     FILE *f;
     FileName hugsPrefsFile = "\0";
@@ -386,38 +425,8 @@ String argv[]; {
 	}
     }
 
-    /* Figure out whether we're using the 'new' Prelude
-     * or not -- if STD_PRELUDE_IMPL is reachable via the search
-     * path, we are.
-     */
-
-    /* sigh, findMPathname() mutates its module/name arg*/
-    prelName = strCopy(STD_PRELUDE_HUGS); 
-    if ( ( prelLocation = findMPathname(NULL, prelName, hugsPath)) ) {
-      newPrelude = TRUE;
-      scriptName[0] = strCopy(prelLocation);
-      /* Hackily add 'Prelude' onto the script stack. */
-      scriptName[1] = strCopy (findPathname(NULL,STD_PRELUDE));
-      scriptReal[1] = strCopy(RealPath(scriptName[1]));
-      chased[1]     = FALSE;
-    } else {
-      newPrelude = FALSE;
-      scriptName[0] = strCopy(findMPathname(NULL, STD_PRELUDE,hugsPath));
-      /* Using the old Prelude, so the room we tentatively 
-         made available on the script stack needs to be 
-	 taken back. */
-      scriptName[1] = 0;
-      scriptReal[1] = 0;
-      forgetAScript(1,FALSE);
-    }
-    free(prelName);
-
-    if (!scriptName[0]) {
-	Printf("Prelude not found on current path: \"%s\"\n",
-	       hugsPath ? hugsPath : "");
-	fatal("Unable to load prelude");
-    }
-    scriptReal[0] = strCopy(RealPath(scriptName[0]));
+    /* Set up the Prelude modules */
+    initializePrelude();
 
 #if !HASKELL_98_ONLY
     if (haskell98) {

@@ -10,8 +10,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: server.c,v $
- * $Revision: 1.18 $
- * $Date: 2002/08/28 18:01:17 $
+ * $Revision: 1.19 $
+ * $Date: 2002/09/09 15:16:54 $
  * ------------------------------------------------------------------------*/
 
 #define HUGS_SERVER
@@ -204,7 +204,7 @@ String argv[]; {
       setLastEdit((String)0,0);
       scriptFile    = 0;		/* Name of current script (if any) */
       numScripts    = 0;		/* Number of scripts loaded	   */
-      namesUpto     = 0;		/* Number of script names set	   */
+      namesUpto     = 2;		/* Number of script names set	   */
       hugsPath      = strCopy(HUGSPATH);
 
       if (argc == -1) {
@@ -223,8 +223,9 @@ String argv[]; {
 	  }
 	}
       }
+      initializePrelude();
       everybody(INSTALL);
-      addScriptName(STD_PRELUDE,TRUE);
+
 #ifndef NO_DYNAMIC_TYPES
       addScriptName("HugsDynamic",TRUE);
 #endif
