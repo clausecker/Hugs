@@ -11,8 +11,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.45 $
- * $Date: 2002/05/15 18:11:22 $
+ * $Revision: 1.46 $
+ * $Date: 2002/05/17 14:19:56 $
  * ------------------------------------------------------------------------*/
 #include <math.h>
 
@@ -290,6 +290,30 @@ FileName macHugsDir; /* Directory where Hugs was found. */
 # define DLL_ENDING              ".so"
 #endif
 
+#if HAVE_GETMODULEFILENAME && !DOS && !__CYGWIN32__
+static HMODULE hugsModule = (HMODULE)0;
+static String  hugsRoot   = 0;
+
+Void setHugsModule(hmod)
+HMODULE hmod; {
+    hugsModule = hmod;
+}
+
+Bool setHugsRoot(s)
+String s; {
+    String newRoot = malloc(strlen(s) + 1);
+    
+    if (!newRoot) return FALSE;
+    
+    strcpy(newRoot,s);
+    
+    if (hugsRoot) free(hugsRoot);
+    hugsRoot = newRoot;
+    return TRUE;
+}
+
+#endif
+
 
 static String local hugsdir() {     /* directory containing lib/Prelude.hs */
 #if HSCRIPT
@@ -314,9 +338,13 @@ static String local hugsdir() {     /* directory containing lib/Prelude.hs */
      * conventional to put the libraries in the same place.
      */
     static char dir[FILENAME_MAX+1] = "";
+    
+    if (hugsRoot)
+	return hugsRoot;
+
     if (dir[0] == '\0') { /* not initialised yet */
 	String slash = NIL;
-	GetModuleFileName((HMODULE)0,dir,FILENAME_MAX+1);
+	GetModuleFileName(hugsModule,dir,FILENAME_MAX+1);
 	if (dir[0] == '\0') { /* GetModuleFileName must have failed */
 	    return HUGSDIR;
 	}
