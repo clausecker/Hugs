@@ -80,8 +80,6 @@ struct CharBlock {
 /* properties for an character not covered by the table */
 static const struct CharProperties null_properties = { GENCAT_Cn, 0, 0, 0 };
 
-const Char max_uni_char = MAX_UNI_CHAR;
-
 #endif
 
 /* --------------------------------------------------------------------------
@@ -449,7 +447,7 @@ static Int local utfcodelen(Char c) {
 
 #define NUM_LEVEL3 256		/* size of subarrays at the bottom level */
 #define NUM_LEVEL2 256		/* size of subarrays at the middle level */
-#define NUM_LEVEL1 (MAX_UNI_CHAR / (NUM_LEVEL3 * NUM_LEVEL2) + 1)
+#define NUM_LEVEL1 (MAXCHARVAL / (NUM_LEVEL3 * NUM_LEVEL2) + 1)
 
 /* To speed up a common case (i.e. ASCII), a small initial subset of
  * chars have pre-built conses, so that they can be accessed directly,

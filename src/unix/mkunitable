@@ -75,7 +75,6 @@ function endblock() {
 }
 END {
 	endblock()
-	print "#define MAX_UNI_CHAR " hex_code
 	print "#define NUM_BLOCKS " num_blocks
 	print ""
 	for (p in props)

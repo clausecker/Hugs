@@ -28,8 +28,8 @@ extern	Bool		charTabBuilt;
 extern  unsigned char   charTable[];
 
 #if UNICODE_CHARS
-extern const Char	max_uni_char;
-#define	MAXCHARVAL	max_uni_char
+/* cf HS_CHAR_MAX in HsFFI.h */
+#define	MAXCHARVAL	0x10FFFF
 #else
 #define	MAXCHARVAL	(NUM_LAT1_CHARS-1)
 #endif
