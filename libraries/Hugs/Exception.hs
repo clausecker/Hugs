@@ -55,7 +55,7 @@ throwIO :: Exception -> IO a
 throwIO exn = IO (\f s -> throw exn)
 
 evaluate :: a -> IO a
-evaluate x = IO (\ f s -> x `seq` hugsReturn x)
+evaluate x = IO (\ f s -> x `seq` s x)
 
 ----------------------------------------------------------------
 -- dummy implementations of block and unblock
