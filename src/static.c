@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.164 $
- * $Date: 2004/01/08 14:36:29 $
+ * $Revision: 1.165 $
+ * $Date: 2004/01/10 01:12:13 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -712,7 +712,7 @@ Cell  cd; {				/* definitions (w or w/o deriving) */
 	    }
 	    if (nonNull(scs)) {
 		ERRMSG(line)
-		   "Illegal strictess annotation for newtype constructor"
+		   "Illegal strictness annotation for newtype constructor"
 		EEND;
 	    }
 	    name(n).defn = nameId;
