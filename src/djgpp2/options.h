@@ -7,8 +7,8 @@
  * in the distribution for details.
  *
  * $RCSfile: options.h,v $
- * $Revision: 1.2 $
- * $Date: 1999/07/28 18:48:31 $
+ * $Revision: 1.3 $
+ * $Date: 1999/09/10 22:57:49 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -97,12 +97,6 @@
 /* --------------------------------------------------------------------------
  * Fancy features
  * ------------------------------------------------------------------------*/
-
-/* Define if T-REX; Typed Rows and EXtension should be enabled             */
-#define TREX 1
-
-/* Define if implicit parameters should be enabled			   */
-#define IPARAM 1
 
 /* Define if heap profiling should be used                                 */
 #define PROFILING 0

@@ -7,8 +7,8 @@
  * in the distribution for details.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.6 $
- * $Date: 1999/08/16 17:55:57 $
+ * $Revision: 1.7 $
+ * $Date: 1999/09/10 22:57:49 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -24,7 +24,9 @@
 
 Bool haskell98 = TRUE;			/* TRUE => Haskell 98 compatibility*/
 
+#if EXPLAIN_INSTANCE_RESOLUTION
 Bool showInstRes = FALSE;
+#endif
 #if MULTI_INST
 Bool multiInstRes = FALSE;
 #endif
@@ -612,7 +614,9 @@ static struct cmd cmds[] = {
  {":module",SETMODULE}, 
 #endif
  {":browse", BROWSE},
+#if EXPLAIN_INSTANCE_RESOLUTION
  {":xplain", XPLAIN},
+#endif
  {":version", PNTVER},
  {"",      EVAL},
  {0,0}
@@ -638,8 +642,10 @@ static Void local menu() {
     Printf(":set                help on command line options\n");
     Printf(":names [pat]        list names currently in scope\n");
     Printf(":info <names>       describe named objects\n");
-    Printf(":browse <name>	browse module <name>\n");
-    Printf(":xplain <context>	explain instance resolution for <context>\n");
+    Printf(":browse <modules>   browse names defined in <modules>\n");
+#if EXPLAIN_INSTANCE_RESOLUTION
+    Printf(":xplain <context>   explain instance resolution for <context>\n");
+#endif
     Printf(":find <name>        edit module containing definition of name\n");
     Printf(":!command           shell escape\n");
     Printf(":cd dir             change directory\n");
@@ -675,7 +681,9 @@ struct options toggle[] = {             /* List of command line toggles    */
     {'o', "Allow overlapping instances",           &allowOverlap},
     {'u', "Use \"show\" to display results",       &useShow},
     {'i', "Chase imports while loading modules",   &chaseImports},
+#if EXPLAIN_INSTANCE_RESOLUTION
     {'x', "Explain instance resolution",           &showInstRes},
+#endif
 #if MULTI_INST
     {'m', "Use multi instance resolution",         &multiInstRes},
 #endif
@@ -1204,6 +1212,7 @@ static Void local browse() {            /* browse modules                  */
     }
 }
 
+#if EXPLAIN_INSTANCE_RESOLUTION
 static Void local xplain() {         /* print type of expression (if any)*/
     Cell type;
     Cell d;
@@ -1223,6 +1232,7 @@ static Void local xplain() {         /* print type of expression (if any)*/
     }
     showInstRes = sir;
 }
+#endif
 
 /* --------------------------------------------------------------------------
  * Enhanced help system:  print current list of scripts or give information
@@ -1621,8 +1631,10 @@ String argv[]; {
 			  break;
 	    case BROWSE : browse();
 			  break;
+#if EXPLAIN_INSTANCE_RESOLUTION
 	    case XPLAIN : xplain();
 			  break;
+#endif
 	    case NAMES  : listNames();
 			  break;
 	    case HELP   : menu();

@@ -7,8 +7,8 @@
  * in the distribution for details.
  *
  * $RCSfile: type.c,v $
- * $Revision: 1.5 $
- * $Date: 1999/09/09 22:57:18 $
+ * $Revision: 1.6 $
+ * $Date: 1999/09/10 22:57:49 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -968,7 +968,7 @@ Cell e; {				/* requires polymorphism, qualified*/
 		}
 	    }
 	    else {				/* Not a poly/qual type	   */
-		check(l,hd(as),e,app,expect,alpha);
+		spCheck(l,hd(as),e,app,expect,alpha);
 	    }
 	    h = ap(h,hd(as));			/* Save checked argument   */
 	}

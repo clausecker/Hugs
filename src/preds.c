@@ -7,8 +7,8 @@
  * in the distribution for details.
  *
  * $RCSfile: preds.c,v $
- * $Revision: 1.4 $
- * $Date: 1999/08/16 15:25:20 $
+ * $Revision: 1.5 $
+ * $Date: 1999/09/10 22:57:49 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -445,14 +445,41 @@ Int  o;
 Int  d; {
     auto int i;
     auto int k = 0;
-    Cell ins = findInstsFor(pi,o);	/* Class predicates		   */
+    Cell ins;				/* Class predicates		   */
     Inst in, in_;
     Cell pi_;
     Cell e_;
 
+#if TREX
+    if (isAp(pi) && isExt(fun(pi))) {	/* Lacks predicates		   */
+	Cell e  = fun(pi);
+	Cell l;
+	l  = lacksNorm(arg(pi),o,e);
+	if (isNull(l) || isInt(l))
+	    return l;
+	else {
+	    List qs = ps;
+	    for (; nonNull(qs); qs=tl(qs)) {
+		Cell qi = fst3(hd(qs));
+		if (isAp(qi) && fun(qi)==e) {
+		    Cell lq = lacksNorm(arg(qi),intOf(snd3(hd(qs))),e);
+		    if (isAp(lq) && intOf(fst(l))==intOf(fst(lq))) {
+			Int f = intOf(snd(l)) - intOf(snd(lq));
+			return (f==0) ? thd3(hd(qs)) : ap2(nameAddEv,
+							   mkInt(f),
+							   thd3(hd(qs)));
+		    }
+		}
+	    }
+	    return NIL;
+	}
+    }
+    else {
+#endif
     if (d++ >= cutoff)
 	cutoffExceeded(pi,o,NIL,0,ps);
 
+#if EXPLAIN_INSTANCE_RESOLUTION
     if (showInstRes) {
 	pi_ = copyPred(pi, o);
 	for (i = 0; i < d; i++)
@@ -461,7 +488,9 @@ Int  d; {
 	printPred(stdout, pi_);
 	fputc('\n', stdout);
     }
+#endif
 
+    ins = findInstsFor(pi,o);
     for (; nonNull(ins); ins=tl(ins)) {
         in = snd(hd(ins));
 	if (nonNull(in)) {
@@ -470,6 +499,7 @@ Int  d; {
 	    Cell es   = inst(in).specifics;
 	    Cell es_  = es;
 
+#if EXPLAIN_INSTANCE_RESOLUTION
 	    if (showInstRes) {
 		for (i = 0; i < d; i++)
 		  fputc(' ', stdout);
@@ -479,6 +509,7 @@ Int  d; {
 		printPred(stdout, inst(in).head);
 		fputc('\n', stdout);
 	    }
+#endif
 
 	    for (; nonNull(es); es=tl(es)) {
 		Cell ev = entail(ps,hd(es),beta,d);
@@ -489,12 +520,16 @@ Int  d; {
 		    break;
 		}
 	    }
+#if EXPLAIN_INSTANCE_RESOLUTION
 	    if (showInstRes)
 		for (i = 0; i < d; i++)
 		  fputc(' ', stdout);
+#endif
 	    if (nonNull(e)) {
+#if EXPLAIN_INSTANCE_RESOLUTION
 		if (showInstRes)
 		    fprintf(stdout, "Sat\n");
+#endif
 		if (k > 0) {
 		    if (instCompare (in_, in)) {
 		        ERRMSG(0) "Multiple satisfiable instances for "
@@ -512,25 +547,34 @@ Int  d; {
 		}
 		continue;
 	    } else {
+#if EXPLAIN_INSTANCE_RESOLUTION
 		if (showInstRes)
 		    fprintf(stdout, "not Sat\n");
+#endif
 		continue;
 	    }
 	}
+#if EXPLAIN_INSTANCE_RESOLUTION
 	if (showInstRes) {
 	    for (i = 0; i < d; i++)
 	      fputc(' ', stdout);
 	    fprintf(stdout, "not Sat.\n");
 	}
+#endif
     }
     if (k > 0)
 	return e_;
+#if EXPLAIN_INSTANCE_RESOLUTION
     if (showInstRes) {
 	for (i = 0; i < d; i++)
 	  fputc(' ', stdout);
 	fprintf(stdout, "all not Sat.\n");
     }
+#endif
     return NIL;
+#if TREX
+    }
+#endif
 }
 
 static Bool local instComp_(ia,ib)	/* See if ia is an instance of ib  */

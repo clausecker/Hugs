@@ -8,8 +8,8 @@
  * in the distribution for details.
  *
  * $RCSfile: prelude.h,v $
- * $Revision: 1.3 $
- * $Date: 1999/08/12 17:45:56 $
+ * $Revision: 1.4 $
+ * $Date: 1999/09/10 22:57:49 $
  * ------------------------------------------------------------------------*/
 
 #include "config.h"
@@ -66,6 +66,9 @@
  * and demos and therefore cannot be modified using the configure script.
  * Most users should leave them alone!
  *
+ *   TREX	    to include support for Typed Rows and EXtensions.
+ *   IPARAM	    to include support for Implicit Parameters.
+ *   MULTI_INST	    to include support for Multi-Instance Resolution.
  *   HASKELL_ARRAYS to include support for Haskell array primitives.
  *   IO_MONAD	    to include the IO monad primitives and support.
  *   IO_HANDLES     to include the IO file operations.
@@ -101,6 +104,9 @@
  *                    rationalToDouble (fromDouble {dict} x) -> x
  *-------------------------------------------------------------------------*/
 
+#define TREX		1
+#define IPARAM		1
+#define MULTI_INST	1
 #define HASKELL_ARRAYS	1
 #define IO_MONAD	1
 #define IO_HANDLES      1
