@@ -10,8 +10,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: parser.y,v $
- * $Revision: 1.41 $
- * $Date: 2003/09/18 18:02:24 $
+ * $Revision: 1.42 $
+ * $Date: 2003/09/25 09:20:26 $
  * ------------------------------------------------------------------------*/
 
 %{
@@ -91,7 +91,7 @@ static Void   local noMDo	 Args((String));
 
 %}
 
-%token EXPR       CONTEXT    SCRIPT
+%token EXPR       CTXT       SCRIPT
 %token CASEXP     OF         DATA       TYPE       IF
 %token THEN       ELSE       WHERE      LET        IN
 %token INFIXN     INFIXL     INFIXR     PRIMITIVE  TNEWTYPE
@@ -117,7 +117,7 @@ static Void   local noMDo	 Args((String));
 /*- Top level script/module structure -------------------------------------*/
 
 start	  : EXPR exp lwherePart		{inputExpr = letrec($3,$2); sp-=2;}
-	  | CONTEXT context		{inputContext = $2;	    sp-=1;}
+	  | CTXT context		{inputContext = $2;	    sp-=1;}
 	  | SCRIPT topModule		{valDefns  = $2;	    sp-=1;}
 	  | error			{syntaxError("input");}
 	  ;

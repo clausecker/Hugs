@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: input.c,v $
- * $Revision: 1.67 $
- * $Date: 2003/09/18 18:02:23 $
+ * $Revision: 1.68 $
+ * $Date: 2003/09/25 09:20:26 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1925,7 +1925,7 @@ Void parseExp() {                      /* Read an expression to evaluate   */
 
 #if EXPLAIN_INSTANCE_RESOLUTION
 Void parseContext() {                  /* Read a context to prove   */
-    parseInput(CONTEXT);
+    parseInput(CTXT);
 }
 #endif
 
