@@ -24,17 +24,17 @@ as well as as any modules specified on the command line.
 <para>
 Hugs starts with a banner like
 <screen>
-  __   __ __  __  ____   ___      _________________________________________
-  ||   || ||  || ||  || ||__      Hugs 98: Based on the Haskell 98 standard
-  ||___|| ||__|| ||__||  __||     Copyright (c) 1994-2003
-  ||---||         ___||           World Wide Web: http://haskell.org/hugs
-  ||   ||                         Report bugs to: hugs-bugs@haskell.org
-  ||   || Version: November 2003  _________________________________________
+__   __ __  __  ____   ___      _________________________________________
+||   || ||  || ||  || ||__      Hugs 98: Based on the Haskell 98 standard
+||___|| ||__|| ||__||  __||     Copyright (c) 1994-2003
+||---||         ___||           World Wide Web: http://haskell.org/hugs
+||   ||                         Report bugs to: hugs-bugs@haskell.org
+||   || Version: November 2003  _________________________________________
 
-  Haskell 98 mode: Restart with command line option -98 to enable extensions
+Haskell 98 mode: Restart with command line option -98 to enable extensions
 
-  Type :? for help
-  Hugs.Base>
+Type :? for help
+Hugs.Base>
 </screen>
 The prompt string <literal>Hugs.Base></literal> indicates that the current
 module is an empty module called <literal>Hugs.Base</literal>
@@ -63,8 +63,8 @@ The expression cannot be broken over multiple lines.
 Usually, the value is simply converted to a string
 (using <function>show</function>) and printed:
 <screen>
-  Hugs.Base> 1+2
-  3
+Hugs.Base> 1+2
+3
 </screen>
 The printing style can be changed with the
 <link linkend="option-use-show"><option>-u</option></link> option
@@ -77,9 +77,9 @@ However, if <replaceable>expr</replaceable> has type
 for some type <replaceable>t</replaceable>,
 the resulting IO action is performed:
 <screen>
-  Hugs.Base> print (1+2) >> putStrLn "bye"
-  3
-  bye
+Hugs.Base> print (1+2) >> putStrLn "bye"
+3
+bye
 </screen>
 Usually the value produced by this action is ignored,
 but this can be changed with the
@@ -103,8 +103,8 @@ in modules, which requires a numeric class.)
 It is an error if any ambiguous type variables cannot be handled in this way.
 For example, consider
 <screen>
-  Hugs.Base> reverse []
-  []
+Hugs.Base> reverse []
+[]
 </screen>
 Here a <literal>Show</literal> constraint on the list elements arises
 from Hugs's use of <function>show</function> to display the result,
@@ -272,8 +272,8 @@ the importing module was found relative to that directory.
 <para>
 This fits nicely with the scenario where you load a module
 <screen>
-  Hugs.Base> :load /path/to/my/project/code.hs
-  Main>
+Hugs.Base> :load /path/to/my/project/code.hs
+Main>
 </screen>
 where the directory <literal>/path/to/my/project</literal> contains other
 modules used directly or indirectly by the module <literal>Main</literal>
@@ -471,8 +471,8 @@ If no modules are given, it describes the current module.
 Print the version of the Hugs interpreter.
 Major releases of Hugs are identified by a month and year:
 <screen>
-  Hugs.Base> :version
-  -- Hugs Version November 2003
+Hugs.Base> :version
+-- Hugs Version November 2003
 </screen>
 Development snapshots are identified by a date in
 <replaceable>YYYYMMDD</replaceable> form.
