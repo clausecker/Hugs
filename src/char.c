@@ -123,6 +123,9 @@ Void initCharTab() {			/* Initialize char decode table    */
     setRange(DIGIT,     '0','9');	/* ASCII decimal digits		   */
 
     setRange(SMALL,     'a','z');	/* ASCII lower case letters	   */
+    setChar (SMALL,     170);		/* Feminine ordinal indicator      */
+    setChar (SMALL,     181);		/* Micro sign                      */
+    setChar (SMALL,     186);		/* Masculine ordinal indicator     */
     setRange(SMALL,     223,246);	/* Latin-1 lower case letters	   */
     setRange(SMALL,     248,255);	/* (omits division symbol, 247)	   */
     setChar (SMALL,     '_');
@@ -143,9 +146,9 @@ Void initCharTab() {			/* Initialize char decode table    */
     setChar (SPACE,     160);		/* Latin-1 non breaking space	   */
     setRange(SPACE,     9,13);		/* special whitespace: \t\n\v\f\r  */
 
-    setChars(PRINT,     "(),;[]_`{}");  /* Special characters		   */
-    setChars(PRINT,     " '\"");        /* Space and quotes		   */
-    setCopy (PRINT,     (DIGIT|SMALL|LARGE|SYMBOL));
+    setRange(PRINT,     32,126);
+    setRange(PRINT,     160,172);
+    setRange(PRINT,     174,255);	/* (omits soft hyphen)             */
     
 #undef setRange
 #undef setChar
