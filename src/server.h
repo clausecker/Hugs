@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: server.h,v $
- * $Revision: 1.3 $
- * $Date: 1999/09/13 11:01:06 $
+ * $Revision: 1.4 $
+ * $Date: 2002/02/24 04:54:23 $
  * ------------------------------------------------------------------------*/
 
 #ifndef Args
@@ -31,17 +31,27 @@ typedef struct _HugsServerAPI {
     void  (*changeDir      ) Args((char*));
     void  (*loadProject    ) Args((char*));
     void  (*loadFile       ) Args((char*));
+    void  (*loadString     ) Args((char*));
+    void  (*setOptions     ) Args((char*));
+    char* (*getOptions     ) Args((void));
     HVal  (*compileExpr    ) Args((char*,char*));
+    void  (*garbageCollect ) Args((void));
 
     void  (*lookupName     ) Args((char*,char*)); /* push values onto stack*/
+
     void  (*mkInt          ) Args((int));
+    void  (*mkAddr         ) Args((void*));
     void  (*mkString       ) Args((char*));
 
     void  (*apply          ) Args((void));      /* manipulate top of stack */
 
     int   (*evalInt        ) Args((void));      /* evaluate top of stack   */
+    void* (*evalAddr       ) Args((void));
     char* (*evalString     ) Args((void));
+
     int   (*doIO           ) Args((void));
+    int   (*doIO_Int       ) Args((int*));
+    int   (*doIO_Addr      ) Args((void**));
 
     HVal  (*popHVal        ) Args((void));      /* pop stack               */
     void  (*pushHVal       ) Args((HVal));      /* push back onto stack    */

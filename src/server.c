@@ -1,7 +1,7 @@
 /* --------------------------------------------------------------------------
  * Implementation of the Hugs server API.
  *
- * The Hugs server allows you to write batch-mode programs that load 
+ * The Hugs server allows you to write batch-mode programs that load
  * scripts and build/evaluate terms.
  *
  * The Hugs 98 system is Copyright (c) Mark P Jones, Alastair Reid, the
@@ -11,8 +11,8 @@
  * included in the distribution.
  *
  * $RCSfile: server.c,v $
- * $Revision: 1.7 $
- * $Date: 2001/12/09 23:55:09 $
+ * $Revision: 1.8 $
+ * $Date: 2002/02/24 04:54:23 $
  * ------------------------------------------------------------------------*/
 
 #define NO_MAIN
@@ -25,10 +25,12 @@ DLLEXPORT(Void) shutdownHugsServer Args((HugsServerAPI*));
 
 static Void   setError     Args((String));
 static Void   setHugsAPI   Args((Void));
-static Bool   linkDynamic  Args((Void));
 static Void   startEval    Args((Void));
 static Bool   SetModule    Args((String));
+#ifndef NO_DYNAMIC_TYPES
+static Bool   linkDynamic  Args((Void));
 static Cell   getDictFor   Args((Class,Type));
+#endif
 
 /* --------------------------------------------------------------------------
  * Dynamic linking
@@ -49,14 +51,21 @@ static Void   SetOutputEnable Args((Bool));
 static Void   ChangeDir       Args((String));
 static Void   LoadProject     Args((String));
 static Void   LoadFile        Args((String));
+static Void   SetOptions      Args((String));
+static String GetOptions      Args((Void));
 static HVal   CompileExpr     Args((String, String));
+static Void   GarbageCollect  Args((void));
 static Void   LookupName      Args((String, String));
 static Void   MkInt           Args((Int));
+static Void   MkAddr          Args((void*));
 static Void   MkString        Args((String));
 static Void   Apply           Args((Void));
 static Int    EvalInt         Args((Void));
+static void*  EvalAddr        Args((void));
 static String EvalString      Args((Void));
 static Int    DoIO            Args((Void));
+static Int    DoIO_Int        Args((int*));
+static Int    DoIO_Addr       Args((void*));
 static HVal   PopHVal         Args((Void));
 static Void   PushHVal        Args((HVal));
 static Void   FreeHVal        Args((HVal));
@@ -64,31 +73,38 @@ static Void   FreeHVal        Args((HVal));
 static HugsServerAPI hugs;             /* virtual function table            */
 
 static Void setHugsAPI() {       /* initialise virtual function table */
-    hugs.clearError      = ClearError; 
-    hugs.setHugsArgs     = setHugsArgs;        
-    hugs.getNumScripts   = GetNumScripts;        
-    hugs.reset           = Reset;         
+    hugs.clearError      = ClearError;
+    hugs.setHugsArgs     = setHugsArgs;
+    hugs.getNumScripts   = GetNumScripts;
+    hugs.reset           = Reset;
     hugs.setOutputEnable = SetOutputEnable;
-    hugs.changeDir       = ChangeDir;     
-    hugs.loadProject     = LoadProject;   
-    hugs.loadFile        = LoadFile;    
+    hugs.changeDir       = ChangeDir;
+    hugs.loadProject     = LoadProject;
+    hugs.loadFile        = LoadFile;
+    hugs.setOptions      = SetOptions;
+    hugs.getOptions      = GetOptions;
     hugs.compileExpr     = CompileExpr;
-    hugs.lookupName      = LookupName;    
-    hugs.mkInt           = MkInt;         
-    hugs.mkString        = MkString;      
-    hugs.apply           = Apply;         
-    hugs.evalInt         = EvalInt;       
-    hugs.evalString      = EvalString;    
-    hugs.doIO            = DoIO;          
-    hugs.popHVal         = PopHVal;       
-    hugs.pushHVal        = PushHVal;       
-    hugs.freeHVal        = FreeHVal;      
+    hugs.garbageCollect  = GarbageCollect;
+    hugs.lookupName      = LookupName;
+    hugs.mkInt           = MkInt;
+    hugs.mkAddr          = MkAddr;
+    hugs.mkString        = MkString;
+    hugs.apply           = Apply;
+    hugs.evalInt         = EvalInt;
+    hugs.evalAddr        = EvalAddr;
+    hugs.evalString      = EvalString;
+    hugs.doIO            = DoIO;
+    hugs.doIO_Int        = DoIO_Int;
+    hugs.doIO_Addr       = DoIO_Addr;
+    hugs.popHVal         = PopHVal;
+    hugs.pushHVal        = PushHVal;
+    hugs.freeHVal        = FreeHVal;
 }
 
 /* --------------------------------------------------------------------------
  * Error handling
  *
- * We buffer error messages and refuse to execute commands until 
+ * We buffer error messages and refuse to execute commands until
  * the error is cleared.
  * ------------------------------------------------------------------------*/
 
@@ -102,6 +118,12 @@ static String ClearError()
     String err = lastError;
     lastError  = NULL;
     ClearOutputBuffer();
+
+    if (err && (numScripts > 0)) 
+    {
+        everybody(RESET);        
+        dropScriptsFrom(numScripts-1);  /* remove partially loaded scripts */
+    }
     return err;
 }
 
@@ -109,6 +131,7 @@ static Void setError(s)            /* Format an error message        */
 String s; {
     Int    n = 0;
     String err = ClearOutputBuffer();
+
     if (NULL == err) {
 	n = snprintf(serverErrMsg, ErrorBufferSize, "%s\n", s);
     } else {
@@ -129,27 +152,27 @@ String s; {
  *   T1 arg1;
  *   T2 arg2;
  *   T3 *result;
- *   {   
+ *   {
  *       protect(doNothing(),
  *           ...
  *       );
  *   }
  *
- * Macro decomposed into BEGIN_PROTECT and END_PROTECT pieces so that it
+ * Macro decomposed into BEGIN_PROTECT and END_PROTECT pieces so that i
  * can be used on some compilers (Mac?) that have limits on the size of
  * macro arguments.
  */
 #define BEGIN_PROTECT \
-  if (NULL == lastError) {                                                   \
-      Cell dummy;                                                            \
+  if (NULL == lastError) { \
+      Cell dummy; \
       CStackBase = &dummy;              /* Save stack base for use in gc  */ \
       consGC = TRUE;                    /* conservative GC is the default */ \
       if (!setjmp(catch_error)) {
 #define END_PROTECT \
-      } else {								     \
-	setError("Error occurred");					     \
-	normalTerminal();						     \
-      }									     \
+      } else { \
+	setError("Error occurred"); \
+	normalTerminal(); \
+      }	\
   }
 #define protect(s)	BEGIN_PROTECT s; END_PROTECT
 
@@ -168,47 +191,56 @@ DLLEXPORT(HugsServerAPI*) initHugsServer(argc, argv) /*server initialisation*/
 Int    argc;
 String argv[]; {
 
-    setHugsAPI();
+    static Bool is_initialized = FALSE;
 
-    BEGIN_PROTECT			/* Too much text for protect()	   */
-	Int i;
-	lastEdit      = 0;
-	setLastEdit((String)0,0);
-	scriptFile    = 0;		/* Name of current script (if any) */
-	numScripts    = 0;		/* Number of scripts loaded	   */
-	namesUpto     = 0;		/* Number of script names set	   */
-	hugsPath      = strCopy(HUGSPATH);
-	if (argc == -1) {
-	    readOptions(argv[0],FALSE);
-	} else {
+    if (!is_initialized) {
+      is_initialized = TRUE;
+      setHugsAPI();
+
+      BEGIN_PROTECT			/* Too much text for protect()	   */
+      Int i;
+
+      lastEdit      = 0;
+      setLastEdit((String)0,0);
+      scriptFile    = 0;		/* Name of current script (if any) */
+      numScripts    = 0;		/* Number of scripts loaded	   */
+      namesUpto     = 0;		/* Number of script names set	   */
+      hugsPath      = strCopy(HUGSPATH);
+
+      if (argc == -1) {
+	readOptions(argv[0],FALSE);
+      } else {
 #if USE_REGISTRY
-	    projectPath = readRegChildStrings(HKEY_LOCAL_MACHINE,
-					      ProjectRoot, "HUGSPATH", PATHSEP, "");
-	    readOptions(readRegString(HKEY_LOCAL_MACHINE,HugsRoot,"Options",""), TRUE);
-	    readOptions(readRegString(HKEY_CURRENT_USER,HugsRoot,"Options",""),TRUE);
+	projectPath = readRegChildStrings(HKEY_LOCAL_MACHINE, ProjectRoot, "HUGSPATH", PATHSEP, "");
+	readOptions(readRegString(HKEY_LOCAL_MACHINE,HugsRoot,"Options",""), TRUE);
+	readOptions(readRegString(HKEY_CURRENT_USER,HugsRoot,"Options",""),TRUE);
 #endif /* USE_REGISTRY */
-	    readOptions(fromEnv("HUGSFLAGS",""),FALSE);
-	    for (i=1; i<argc; ++i) {
-		if (!readOptions2(argv[i])) {
-		    setError("Unrecognised option");
-		    return NULL;
-		}
-	    }
-	}
-	everybody(INSTALL);
-	addScriptName(STD_PRELUDE,TRUE);
-	addScriptName("HugsDynamic",TRUE);
-
-	EnableOutput(FALSE);
-
-	readScripts(0);
-	everybody(RESET);
-	if (!linkDynamic()) {
-	    setError("module HugsDynamic doesn't define correct functions");
+	readOptions(fromEnv("HUGSFLAGS",""),FALSE);
+	for (i=1; i<argc; ++i) {
+	  if (!readOptions2(argv[i])) {
+	    setError("Unrecognised option");
 	    return NULL;
+	  }
 	}
-    END_PROTECT
-    return &hugs;  /* error must have occurred */
+      }
+      everybody(INSTALL);
+      addScriptName(STD_PRELUDE,TRUE);
+#ifndef NO_DYNAMIC_TYPES
+      addScriptName("HugsDynamic",TRUE);
+#endif
+      EnableOutput(FALSE);
+
+      readScripts(0);
+      everybody(RESET);
+#ifndef NO_DYNAMIC_TYPES
+      if (!linkDynamic()) {
+	setError("module HugsDynamic doesn't define correct functions");
+	return NULL;
+      }
+#endif
+      END_PROTECT
+   }
+   return &hugs;  /* error must have occurred */
 }
 
 DLLEXPORT(Void) shutdownHugsServer(hserv) /* server shutdown */
@@ -226,10 +258,19 @@ HugsServerAPI* hserv; {
  * on the stack have type "Dynamic" and we check the real type on function
  * application and evaluation.  This requires on functions and a class
  * defined in the HugsDynamic library.
+ *
+ * sof 2001 - interposing a Dynamic-typed layer sometimes gets in the way
+ *            (missing Typeable instances, extra loading of modules), as
+ *            has proven the case when using the HugsServerAPI by HaskellScript,
+ *            Lambada, and mod_haskell. So, by defining NO_DYNAMIC_TYPES,
+ *            you turn this feature off.
  * ------------------------------------------------------------------------*/
 
+#ifndef NO_DYNAMIC_TYPES
 static Name  nameIntToDyn;
 static Name  nameFromDynInt;
+static Name  nameAddrToDyn;
+static Name  nameFromDynAddr;
 static Name  nameStringToDyn;
 static Name  nameFromDynString;
 static Name  nameRunDyn;
@@ -241,6 +282,8 @@ static Bool linkDynamic()
 {
     nameIntToDyn      = findName(findText("intToDyn"));
     nameFromDynInt    = findName(findText("fromDynInt"));
+    nameAddrToDyn     = findName(findText("addrToDyn"));
+    nameFromDynAddr   = findName(findText("fromDynAddr"));
     nameStringToDyn   = findName(findText("strToDyn"));
     nameFromDynString = findName(findText("fromDynStr"));
     nameRunDyn        = findName(findText("runDyn"));
@@ -249,14 +292,17 @@ static Bool linkDynamic()
     classTypeable     = findClass(findText("Typeable"));
 
     return (   nonNull(nameIntToDyn      )
-	    && nonNull(nameFromDynInt    )           
-	    && nonNull(nameStringToDyn   )           
-	    && nonNull(nameFromDynString )           
-	    && nonNull(nameRunDyn        )           
-	    && nonNull(nameDynApp        )           
-	    && nonNull(nameToDynamic     )           
+	    && nonNull(nameFromDynInt    )
+	    && nonNull(nameAddrToDyn     )
+	    && nonNull(nameFromDynAddr   )
+	    && nonNull(nameStringToDyn   )
+	    && nonNull(nameFromDynString )
+	    && nonNull(nameRunDyn        )
+	    && nonNull(nameDynApp        )
+	    && nonNull(nameToDynamic     )
 	    && nonNull(classTypeable     ));
 }
+#endif
 
 /* --------------------------------------------------------------------------
  * Miscellaneous:
@@ -305,15 +351,39 @@ String fn;
 	);
 }
 
-static Void LoadFile(fn)          /* load a module into the system   */
+static Void LoadFile(fn)          /* load a module (from a file) into the system   */
 String fn;
 {
+  /*
+   * The meaning of load file 
+   */
     protect(
 	addScriptName(fn,TRUE);
 	readScripts(numScripts);
 	everybody(RESET);
 	);
 }
+
+static Void LoadStringF(mod)      /* load a module (from a string) into the system   */
+String mod;
+{
+    protect(
+	addScriptName(mod,TRUE);
+	readScripts(numScripts);
+	everybody(RESET);
+	);
+}
+
+static Void SetOptions(opt)
+String opt; {
+  readOptions2(opt);
+  return;
+}
+
+static String GetOptions() {
+  return strCopy(optionsToStr());
+}
+
 
 static Bool SetModule(m)
 String m; {
@@ -330,7 +400,7 @@ String m; {
 static HVal CompileExpr(m,e)    /* compile expression e wrt module m */
 String m;
 String e; {
-    protect(
+    BEGIN_PROTECT
 	Type type = NIL;
 	Cell d    = NIL;
 	HVal r    = 0;
@@ -341,22 +411,22 @@ String e; {
 	}
 	scriptFile = 0;
 	stringInput(e);                /* Put expression into input buffer */
-				       
+				
 	startNewScript(0);             /* Enables recovery of storage      */
 				       /* allocated during evaluation      */
 	parseExp();
 	checkExp();
 	defaultDefns = evalDefaults;
 	type         = typeCheckExp(TRUE);
-
+#ifndef NO_DYNAMIC_TYPES
 	d = getDictFor(classTypeable,type);
 	if (isNull(d)) {
 	    setError("compileExpr: can't create Typeable instance");
 	    return 0;
 	}
 	inputExpr = ap(ap(nameToDynamic,d),inputExpr);
-
-	compileExp();                       
+#endif
+	compileExp();
 	run(inputCode,sp);  /* Build graph for redex */
 
 	r = mkStablePtr(pop());
@@ -365,8 +435,13 @@ String e; {
 	    return 0;
 	}
 	return r;
-    );
+    END_PROTECT
     return 0;
+}
+
+static Void GarbageCollect()
+{
+    garbageCollect();
 }
 
 /* --------------------------------------------------------------------------
@@ -376,36 +451,58 @@ String e; {
 static Void LookupName(m,v) /*Push value of qualified name onto stack*/
 String m,v;
 {
-    protect(
+    BEGIN_PROTECT
 	Name   n;
 	Cell   d;
+        char   errbuf[256];
+
 	if (!SetModule(m)) {
-	    setError("lookupName: invalid module");
+	    snprintf(errbuf, 255, "lookupName: invalid module '%s'", m);
+	    setError(errbuf);
 	    return;
 	}
 	if (isNull(n = findName(findText(v)))) {
-	    setError("lookupName: invalid name");
+            snprintf( errbuf, 255, "lookupName: invalid name '%s.%s'", m, v );
+	    setError(errbuf);
 	    return;
 	}
+#ifndef NO_DYNAMIC_TYPES
 	d = getDictFor(classTypeable,name(n).type);
 	if (isNull(d)) {
 	    setError("lookupName: can't create Typeable instance");
 	    return;
 	}
 	push(ap(ap(nameToDynamic,d),n));
-	);
+#else
+	push(n);
+#endif
+    END_PROTECT
 }
 
 static Void MkInt(i)              /* Push an Int onto the stack      */
 Int i;
 {
+#ifndef NO_DYNAMIC_TYPES
     protect(push(ap(nameIntToDyn,mkInt(i))));
+#else
+    protect(push(mkInt(i)));
+#endif
+}
+
+static Void MkAddr(a)              /* Push an Addr onto the stack      */
+void* a;
+{
+#ifdef USE_DYNAMIC_TYPES
+    protect(push(ap(nameAddrToDyn,mkPtr(a))));
+#else
+    protect(push(mkPtr(a)));
+#endif
 }
 
 static Void MkString(s)           /* Push a String onto the stack    */
 String s;
 {
-    protect(
+    BEGIN_PROTECT
 	Cell   r = NIL;
 	String t = s;
 	push(nameNil);
@@ -414,18 +511,24 @@ String s;
 	    Cell ss = pop();
 	    push(ap(consChar(*t),ss));
 	}
+#ifndef NO_DYNAMIC_TYPES
 	r = pop();
 	push(ap(nameStringToDyn,r));
-	);
+#endif
+    END_PROTECT
 }
 
 static Void Apply()              /* Apply stack[sp-1] to stack[sp]   */
 {
-    protect(
+    BEGIN_PROTECT
 	Cell x = pop();
 	Cell f = pop();
+#ifndef NO_DYNAMIC_TYPES
 	push(ap(ap(nameDynApp,f),x));
-	);
+#else
+	push(ap(f,x));
+#endif
+    END_PROTECT
 }
 
 /* --------------------------------------------------------------------------
@@ -443,34 +546,107 @@ static Void startEval()
     noechoTerminal();
 }
 
+static void evalError(Cell e)
+{
+#define MAXLEN 255
+  char message[MAXLEN] = ""; /* "error called: "; */
+  int  len;
+  len = strlen(message);
+
+  push( arg(e) );
+
+  while(1) {
+    if (nonNull(evalWithNoError(pop())))  break; /* error in error ! */
+    
+    if (whnfHead!=nameCons) break;  /* end of string */
+    if (nonNull(evalWithNoError(pop())))  break; /* error in error ! */
+
+    message[len] = charOf(whnfHead);
+    len++;
+    if (len >= MAXLEN)      break;
+  }
+
+  message[len] = '\0';
+  setError(message);
+}
+
+static BOOL tryEval(Cell c)
+{
+    Cell temp = evalWithNoError(c);
+    if (nonNull(temp))
+    {
+        evalError(temp);
+        return FALSE;
+    }
+    else return TRUE;
+}
+
+
+static BOOL safeEval(Cell c)
+{
+        BOOL ok;
+        startEval();
+        ok = tryEval(c);
+        normalTerminal();
+        return ok;
+}
+
+
 static Int EvalInt()            /* Evaluate a cell (:: Int)         */
 {
-    protect(
+    BEGIN_PROTECT
 	startEval();
-	eval(ap(nameFromDynInt,pop()));
+#ifndef NO_DYNAMIC_TYPES
+	safeEval(ap(nameFromDynInt,pop()));
+#else
+	safeEval(pop());
+#endif
 	normalTerminal();
 	return whnfInt;
-	);
+    END_PROTECT
+    return 0;
+}
+
+static void* EvalAddr()          /* Evaluate a cell (:: Addr)         */
+{
+    BEGIN_PROTECT
+	startEval();
+#ifndef NO_DYNAMIC_TYPES
+	safeEval(ap(nameFromDynAddr,pop()));
+#else
+	safeEval(pop());
+#endif
+	normalTerminal();
+	return ptrOf(whnfHead);
+    END_PROTECT
     return 0;
 }
 
 static String EvalString()      /* Evaluate a cell (:: String)      */
 {
-    protect(
+    BEGIN_PROTECT
 	Int      len = 0;
 	String   s;
+	BOOL     ok;
 	StackPtr oldsp = sp;
 
 	startEval();
 
 	/* Evaluate spine of list onto stack */
-	eval(ap(nameFromDynString,pop()));
+#ifndef NO_DYNAMIC_TYPES
+	ok = tryEval(ap(nameFromDynString,pop()));
+#else
+	ok = tryEval(pop());
+#endif
+        if (!ok) { sp = oldsp-1; return NULL; }
+
 	while (whnfHead==nameCons && whnfArgs==2) {
 	    Cell e  = pop();
 	    Cell es = pop();
 	    len++;
 	    push(e);
-	    eval(es);
+	    ok = tryEval(es);
+            if (!ok) { sp = oldsp-1; return NULL; }
 	}
 	normalTerminal();
 
@@ -490,7 +666,8 @@ static String EvalString()      /* Evaluate a cell (:: String)      */
 	}
 	s[len] = '\0';
 	while (--len >= 0) {
-	   eval(pop()); 
+	   ok = tryEval(pop());
+	   if (!ok) { sp  = oldsp; free(s); return NULL; }
 	   s[len] = charOf(whnfHead);
 	}
 	if (sp+1 != oldsp) {
@@ -498,19 +675,28 @@ static String EvalString()      /* Evaluate a cell (:: String)      */
 	    return NULL;
 	}
 	return s;
-	);
+    END_PROTECT
     return NULL;
 }
 
 static Int DoIO()        /* Evaluate a cell (:: IO ()) return exit status */
 {
-    protect(
+    BEGIN_PROTECT
 	Int exitCode = 0;
+        BOOL ok;
 	StackPtr oldsp = sp;
 	startEval();
-	eval(ap(nameIORun,ap(nameRunDyn,pop())));
-	if (whnfHead == nameLeft) { /* Left exitCode -> return exitCode */
-	    eval(pop());
+#ifndef NO_DYNAMIC_TYPES
+	ok = safeEval(ap(nameIORun,ap(nameRunDyn,pop())));
+#else
+	ok = safeEval(ap(nameIORun,pop()));
+#endif
+        if (!ok)
+        {
+            sp = oldsp-1;   
+            exitCode = 1;
+        } else if (whnfHead == nameLeft) { /* Left exitCode -> return exitCode */
+	    safeEval(pop());
 	    exitCode = whnfInt;
 	} else {                    /* Right void    -> return 0        */
 	    drop();
@@ -522,7 +708,89 @@ static Int DoIO()        /* Evaluate a cell (:: IO ()) return exit status */
 	    return 1;
 	}
 	return exitCode;
-	);
+    END_PROTECT
+    return -1; /* error code */
+}
+
+/* 
+ * Evaluate a cell (:: IO Int) return exit status
+ */
+static Int DoIO_Int(int* phval)
+{
+    BEGIN_PROTECT
+        Int exitCode = 0;
+        BOOL ok = TRUE;
+        StackPtr oldsp = sp;
+        startEval();
+#ifndef NO_DYNAMIC_TYPES
+        ok = safeEval(ap(nameIORun,ap(nameRunDyn,pop())));
+#else
+        ok = safeEval(ap(nameIORun,pop()));
+#endif
+        if (!ok)
+        {
+            sp = oldsp-1;   
+            exitCode = E_UNEXPECTED;
+        } else if (whnfHead == nameLeft) { 
+            safeEval(pop());
+            exitCode = whnfInt;
+        } else {   
+	    if (phval) {
+	      safeEval(pop());
+	      *phval = whnfInt;
+	    } else {
+	      drop();
+	    }
+            exitCode = 0; 
+        }
+        normalTerminal();
+        if (sp != oldsp-1) {
+            setError("doIO: unbalanced stack");
+            return 1;
+        }
+        return exitCode;
+    END_PROTECT;
+    return -1; /* error code */
+}
+
+/* 
+ * Evaluate a cell (:: IO Addr) return exit status
+ */
+static Int DoIO_Addr(void** phval)
+{
+    BEGIN_PROTECT
+        Int exitCode = 0;
+        BOOL ok;
+        StackPtr oldsp = sp;
+        startEval();
+#ifndef NO_DYNAMIC_TYPES
+        ok = safeEval(ap(nameIORun,ap(nameRunDyn,pop())));
+#else
+        ok = safeEval(ap(nameIORun,pop()));
+#endif
+        if (!ok)
+        {
+            sp = oldsp-1;   
+            exitCode = E_UNEXPECTED;
+	} else if (whnfHead == nameLeft) { 
+            safeEval(pop());
+            exitCode = whnfInt;
+        } else {   
+	    if (phval) {
+	      safeEval(pop());
+	      *phval = (void*)ptrOf(whnfHead);
+	    } else {
+	      drop();
+	    }
+            exitCode = 0; 
+        }
+        normalTerminal();
+        if (sp != oldsp-1) {
+            setError("doIO: unbalanced stack");
+            return 1;
+        }
+        return exitCode;
+    END_PROTECT;
     return -1; /* error code */
 }
 
@@ -563,7 +831,7 @@ HVal   hval;
 {
     protect(freeStablePtr(hval));
 }
-
+#ifndef NO_DYNAMIC_TYPES
 /* --------------------------------------------------------------------------
  * Testing for class membership:
  * ------------------------------------------------------------------------*/
@@ -584,5 +852,6 @@ Type  t; {
     }
     return provePred(ks,NIL,ap(c,t));
 }
+#endif
 
 /* ----------------------------------------------------------------------- */

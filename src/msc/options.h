@@ -9,8 +9,8 @@
  * included in the distribution.
  *
  * $RCSfile: options.h,v $
- * $Revision: 1.4 $
- * $Date: 1999/09/15 20:06:45 $
+ * $Revision: 1.5 $
+ * $Date: 2002/02/24 04:54:23 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -29,7 +29,7 @@
  * for HUGSFLAGS in the registry (Win32 only).  In all cases, use a 
  * string of the form -P"...".  
  */
-#define HUGSPATH "{Hugs}\\lib;{Hugs}\\lib\\hugs;{Hugs}\\lib\\exts;{Hugs}\\lib\\win32"
+#define HUGSPATH "{Hugs}\\lib:{Hugs}\\lib\\hugs:{Hugs}\\lib\\exts:{Hugs}\\lib\\win32"
 
 /* The directory name which is substituted for the string "{Hugs}"
  * in a path variable.  This normally points to where the Hugs libraries
@@ -130,6 +130,16 @@
  */
 /* #undef WANT_TIMER */
 
+/*
+ * By default, the Hugs Server API wraps up each value pushed on the stack
+ * as a Dynamic, achieving some run-time type safety when applying these
+ * arguments to a function. This Dynamic layer sometimes gets in the way
+ * for low-level consumers of the Server API (e.g, HaskellScript, Lambada,
+ * mod_haskell), so by setting NO_DYNAMIC_TYPES to 1 you turn off the
+ * use of Dynamics (and assume all the responsibility of debugging any
+ * bad crashes you might see as a result!)
+ */
+/* #undef NO_DYNAMIC_TYPES */
 
 /* --------------------------------------------------------------------------
  * Debugging options (intended for use by maintainers)
