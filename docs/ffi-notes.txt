@@ -39,7 +39,7 @@ Known limitations:
 
 o foreign export is not implemented
 
-o We are still working on porting teh ffi support to a full range of
+o We are still working on porting the ffi support to a full range of
   architectures.  That said, it will probably work if you are on
   Windows or a 32-bit unix box with gcc installed.
 
