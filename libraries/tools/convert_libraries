@@ -158,7 +158,7 @@ CYGWIN*|MINGW32*) ;;
 esac
 
 # crude check whether HOpenGL was enabled in configure
-if grep '^#define HTYPE_GLBOOLEAN ' ../include/ghcconfig.h >/dev/null
+if grep '^#define HTYPE_GLBOOLEAN ' libraries/include/ghcconfig.h >/dev/null
 then	extra_packages="$extra_packages OpenGL GLUT"
 fi
 
@@ -168,7 +168,7 @@ CYGWIN*|MINGW32*)
 	extra_packages="$extra_packages Win32"
 	have_graphics=yes ;;
 *)
-	if grep '^#define X_DISPLAY_MISSING' ../include/ghcconfig.h >/dev/null
+	if grep '^#define X_DISPLAY_MISSING' libraries/include/ghcconfig.h >/dev/null
 	then	:
 	else	extra_packages="$extra_packages X11"
 		have_graphics=yes
