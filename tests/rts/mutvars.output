@@ -1,5 +1,4 @@
-Type :? for help
-"'a'"
-"'b'"
-"(True,False,True)"
-[Leaving Hugs]
+Hugs:"'a'"
+Hugs:"'b'"
+Hugs:"(True,False,True)"
+Hugs:[Leaving Hugs]

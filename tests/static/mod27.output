@@ -1,2 +1,2 @@
 ERROR "static/mod27.hs":2 - Type synonyms "T1" and "T2" are mutually recursive
-[Leaving Hugs]
+Hugs:[Leaving Hugs]

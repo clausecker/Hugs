@@ -1,32 +1,32 @@
 Type :? for help
-"hand written instances"
-True
-True
-True
-True
-True
-True
-True
-True
-True
-True
-True
-True
-True
-"derived instances - tuples"
-True
-True
-True
-True
-True
-"derived instances - datatypes"
-True
-True
-True
-"random assortment"
-True
-False
--2.6226e-06
-False
--2.6226e-06
-[Leaving Hugs]
+Hugs:"hand written instances"
+Hugs:True
+Hugs:True
+Hugs:True
+Hugs:True
+Hugs:True
+Hugs:True
+Hugs:True
+Hugs:True
+Hugs:True
+Hugs:True
+Hugs:True
+Hugs:True
+Hugs:True
+Hugs:"derived instances - tuples"
+Hugs:True
+Hugs:True
+Hugs:True
+Hugs:True
+Hugs:True
+Hugs:"derived instances - datatypes"
+Hugs:True
+Hugs:True
+Hugs:True
+Hugs:"random assortment"
+Hugs:True
+Hugs:False
+Hugs:-2.6226e-06
+Hugs:False
+Hugs:-2.6226e-06
+Hugs:[Leaving Hugs]

@@ -1,17 +1,16 @@
-Type :? for help
-Just (1,2)
-Just (2,1)
-Just (1,2)
-Just (2,1)
-storing f
+Hugs:Just (1,2)
+Hugs:Just (2,1)
+Hugs:Just (1,2)
+Hugs:Just (2,1)
+Hugs:storing f
 storing g
 Just (1,2)
 Just (2,1)
 
-storing f and g
+Hugs:storing f and g
 Constructed environment
 [("g",(2,1)),("f",(1,2))]
 Just (1,2)
 Just (2,1)
 
-[Leaving Hugs]
+Hugs:[Leaving Hugs]

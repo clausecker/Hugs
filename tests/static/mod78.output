@@ -1,2 +1,2 @@
 ERROR "static/mod78.hs":3 - No top level binding of "x" for restricted synonym "T"
-[Leaving Hugs]
+Hugs:[Leaving Hugs]

@@ -1,2 +1,2 @@
 ERROR "tcheck/ty1.hs":3 - Explicit overloaded type for "f" not permitted in restricted binding
-[Leaving Hugs]
+Hugs:[Leaving Hugs]

@@ -1,4 +1,3 @@
-Type :? for help
-Music_Scale (Music_Note Music_:+: Music_Note)
-"Scale (Note :+: Note)"
-[Leaving Hugs]
+Hugs:Music_Scale (Music_Note Music_:+: Music_Note)
+Hugs:"Scale (Note :+: Note)"
+Hugs:[Leaving Hugs]

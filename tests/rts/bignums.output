@@ -1,6 +1,5 @@
-Type :? for help
-True
--10 -9 -8 -7 -6 -5 -4 -3 -2 -1 0
+Hugs:True
+Hugs:-10 -9 -8 -7 -6 -5 -4 -3 -2 -1 0
 -9 -8 -7 -6 -5 -4 -3 -2 -1 0 1
 -8 -7 -6 -5 -4 -3 -2 -1 0 1 2
 -7 -6 -5 -4 -3 -2 -1 0 1 2 3
@@ -12,7 +11,7 @@ True
 -1 0 1 2 3 4 5 6 7 8 9
 0 1 2 3 4 5 6 7 8 9 10
 
-0 1 2 3 4 5 6 7 8 9 10
+Hugs:0 1 2 3 4 5 6 7 8 9 10
 -1 0 1 2 3 4 5 6 7 8 9
 -2 -1 0 1 2 3 4 5 6 7 8
 -3 -2 -1 0 1 2 3 4 5 6 7
@@ -24,7 +23,7 @@ True
 -9 -8 -7 -6 -5 -4 -3 -2 -1 0 1
 -10 -9 -8 -7 -6 -5 -4 -3 -2 -1 0
 
-25 20 15 10 5 0 -5 -10 -15 -20 -25
+Hugs:25 20 15 10 5 0 -5 -10 -15 -20 -25
 20 16 12 8 4 0 -4 -8 -12 -16 -20
 15 12 9 6 3 0 -3 -6 -9 -12 -15
 10 8 6 4 2 0 -2 -4 -6 -8 -10
@@ -36,7 +35,7 @@ True
 -20 -16 -12 -8 -4 0 4 8 12 16 20
 -25 -20 -15 -10 -5 0 5 10 15 20 25
 
-1 0 0 0 0 0 -1 -1 -1 -1 -1
+Hugs:1 0 0 0 0 0 -1 -1 -1 -1 -1
 1 1 0 0 0 0 -1 -1 -1 -1 -2
 1 1 1 0 0 0 -1 -1 -1 -2 -2
 2 2 1 1 0 0 -1 -1 -2 -2 -3
@@ -47,7 +46,7 @@ True
 -2 -1 -1 -1 -1 0 0 0 0 1 1
 -1 -1 -1 -1 -1 0 0 0 0 0 1
 
-0 -4 -3 -2 -1 0 -4 -3 -2 -1 0
+Hugs:0 -4 -3 -2 -1 0 -4 -3 -2 -1 0
 -1 0 -3 -2 -1 0 -3 -2 -1 0 -3
 -2 -1 0 -2 -1 0 -2 -1 0 -2 -1
 -1 0 -1 0 -1 0 -1 0 -1 0 -1
@@ -58,7 +57,7 @@ True
 3 0 1 2 3 0 1 2 3 0 1
 0 1 2 3 4 0 1 2 3 4 0
 
-1 0 0 0 0 0 0 0 0 0 -1
+Hugs:1 0 0 0 0 0 0 0 0 0 -1
 1 1 0 0 0 0 0 0 0 -1 -1
 1 1 1 0 0 0 0 0 -1 -1 -1
 2 2 1 1 0 0 0 -1 -1 -2 -2
@@ -69,7 +68,7 @@ True
 -1 -1 0 0 0 0 0 0 0 1 1
 -1 0 0 0 0 0 0 0 0 0 1
 
-0 -4 -3 -2 -1 0 1 2 3 4 0
+Hugs:0 -4 -3 -2 -1 0 1 2 3 4 0
 -1 0 -3 -2 -1 0 1 2 3 0 1
 -2 -1 0 -2 -1 0 1 2 0 1 2
 -1 0 -1 0 -1 0 1 0 1 0 1
@@ -80,7 +79,7 @@ True
 -1 0 -3 -2 -1 0 1 2 3 0 1
 0 -4 -3 -2 -1 0 1 2 3 4 0
 
-True False False False False False False False False False False
+Hugs:Hugs:True False False False False False False False False False False
 False True False False False False False False False False False
 False False True False False False False False False False False
 False False False True False False False False False False False
@@ -92,7 +91,7 @@ False False False False False False False False True False False
 False False False False False False False False False True False
 False False False False False False False False False False True
 
-False True True True True True True True True True True
+Hugs:False True True True True True True True True True True
 True False True True True True True True True True True
 True True False True True True True True True True True
 True True True False True True True True True True True
@@ -104,7 +103,7 @@ True True True True True True True True False True True
 True True True True True True True True True False True
 True True True True True True True True True True False
 
-True False False False False False False False False False False
+Hugs:True False False False False False False False False False False
 True True False False False False False False False False False
 True True True False False False False False False False False
 True True True True False False False False False False False
@@ -116,7 +115,7 @@ True True True True True True True True True False False
 True True True True True True True True True True False
 True True True True True True True True True True True
 
-False False False False False False False False False False False
+Hugs:False False False False False False False False False False False
 True False False False False False False False False False False
 True True False False False False False False False False False
 True True True False False False False False False False False
@@ -128,7 +127,7 @@ True True True True True True True True False False False
 True True True True True True True True True False False
 True True True True True True True True True True False
 
-False True True True True True True True True True True
+Hugs:False True True True True True True True True True True
 False False True True True True True True True True True
 False False False True True True True True True True True
 False False False False True True True True True True True
@@ -140,7 +139,7 @@ False False False False False False False False False True True
 False False False False False False False False False False True
 False False False False False False False False False False False
 
-True True True True True True True True True True True
+Hugs:True True True True True True True True True True True
 False True True True True True True True True True True
 False False True True True True True True True True True
 False False False True True True True True True True True
@@ -152,95 +151,95 @@ False False False False False False False False True True True
 False False False False False False False False False True True
 False False False False False False False False False False True
 
-19998 19999 20000 100009998 100009999 100010000
+Hugs:Hugs:19998 19999 20000 100009998 100009999 100010000
 19999 20000 20001 100009999 100010000 100010001
 20000 20001 20002 100010000 100010001 100010002
 100009998 100009999 100010000 199999998 199999999 200000000
 100009999 100010000 100010001 199999999 200000000 200000001
 100010000 100010001 100010002 200000000 200000001 200000002
 
-0 1 2 99990000 99990001 99990002
+Hugs:0 1 2 99990000 99990001 99990002
 -1 0 1 99989999 99990000 99990001
 -2 -1 0 99989998 99989999 99990000
 -99990000 -99989999 -99989998 0 1 2
 -99990001 -99990000 -99989999 -1 0 1
 -99990002 -99990001 -99990000 -2 -1 0
 
-99980001 99990000 99999999 999899990001 999900000000 999900009999
+Hugs:99980001 99990000 99999999 999899990001 999900000000 999900009999
 99990000 100000000 100010000 999999990000 1000000000000 1000000010000
 99999999 100010000 100020001 1000099989999 1000100000000 1000100010001
 999899990001 999999990000 1000099989999 9999999800000001 9999999900000000 9999999999999999
 999900000000 1000000000000 1000100000000 9999999900000000 10000000000000000 10000000100000000
 999900009999 1000000010000 1000100010001 9999999999999999 10000000100000000 10000000200000001
 
-1 1 1 10001 10001 10001
+Hugs:1 1 1 10001 10001 10001
 0 1 1 9999 10000 10000
 0 0 1 9999 9999 9999
 0 0 0 1 1 1
 0 0 0 0 1 1
 0 0 0 0 0 1
 
-0 1 2 0 1 2
+Hugs:0 1 2 0 1 2
 9999 0 1 9999 0 1
 9999 10000 0 0 1 2
 9999 10000 10001 0 1 2
 9999 10000 10001 99999999 0 1
 9999 10000 10001 99999999 100000000 0
 
-1 1 1 10001 10001 10001
+Hugs:1 1 1 10001 10001 10001
 0 1 1 9999 10000 10000
 0 0 1 9999 9999 9999
 0 0 0 1 1 1
 0 0 0 0 1 1
 0 0 0 0 0 1
 
-0 1 2 0 1 2
+Hugs:0 1 2 0 1 2
 9999 0 1 9999 0 1
 9999 10000 0 0 1 2
 9999 10000 10001 0 1 2
 9999 10000 10001 99999999 0 1
 9999 10000 10001 99999999 100000000 0
 
-True False False False False False
+Hugs:Hugs:True False False False False False
 False True False False False False
 False False True False False False
 False False False True False False
 False False False False True False
 False False False False False True
 
-False True True True True True
+Hugs:False True True True True True
 True False True True True True
 True True False True True True
 True True True False True True
 True True True True False True
 True True True True True False
 
-True False False False False False
+Hugs:True False False False False False
 True True False False False False
 True True True False False False
 True True True True False False
 True True True True True False
 True True True True True True
 
-False False False False False False
+Hugs:False False False False False False
 True False False False False False
 True True False False False False
 True True True False False False
 True True True True False False
 True True True True True False
 
-False True True True True True
+Hugs:False True True True True True
 False False True True True True
 False False False True True True
 False False False False True True
 False False False False False True
 False False False False False False
 
-True True True True True True
+Hugs:True True True True True True
 False True True True True True
 False False True True True True
 False False False True True True
 False False False False True True
 False False False False False True
 
-[Leaving Hugs]
+Hugs:Hugs:[Leaving Hugs]

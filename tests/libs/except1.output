@@ -1,67 +1,66 @@
-Type :? for help
-True
+Hugs:True
 
-"Foo"
+Hugs:"Foo"
 "Bar"
 
-
+Hugs:
 IO Error: User error
 Reason: x
 
-
+Hugs:
 Program error: x
 
-y
+Hugs:y
 
-a worked
+Hugs:Hugs:a worked
 a worked
 a worked
 y
 y
 b worked
 b failed
-b failed
-
-a worked
-a worked
-a worked
-y
-a worked
-b worked
-y
-b worked
-a worked
-b worked
-b failed
-a worked
-b worked
 b failed
 
-b failed
+Hugs:a worked
 a worked
-b failed
 a worked
+y
+a worked
+b worked
 y
 b worked
 a worked
-y
+b worked
+b failed
+a worked
+b worked
+b failed
 
-b failed
-a worked
-b worked
+Hugs:Hugs:b failed
 a worked
 b failed
-a worked
-b worked
 a worked
 y
-b worked
-a worked
 b worked
 a worked
 y
 
+Hugs:b failed
 a worked
+b worked
+a worked
+b failed
+a worked
+b worked
+a worked
+y
+b worked
+a worked
+b worked
+a worked
+y
+
+Hugs:Hugs:a worked
 a worked
 a worked
 y
@@ -74,7 +73,7 @@ IO Error: User error
 Reason: x
 
 
-a worked
+Hugs:a worked
 a worked
 a worked
 y
@@ -90,4 +89,4 @@ IO Error: User error
 Reason: x
 
 
-[Leaving Hugs]
+Hugs:Hugs:[Leaving Hugs]

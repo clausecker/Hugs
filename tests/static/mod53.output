@@ -1,2 +1,2 @@
 ERROR "static/mod53.hs":4 - Cannot derive instances of class "C"
-[Leaving Hugs]
+Hugs:[Leaving Hugs]

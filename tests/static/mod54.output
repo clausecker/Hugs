@@ -3,4 +3,4 @@ ERROR "static/mod54.hs":3 - Cannot build superclass instance
 *** Context supplied    : ()
 *** Required superclass : Eq T
 
-[Leaving Hugs]
+Hugs:[Leaving Hugs]

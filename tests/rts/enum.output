@@ -1,3 +1,18 @@
+      ___    ___   ___    ___   __________   __________
+     /  /   /  /  /  /   /  /  /  _______/  /  _______/   The Haskell User's
+    /  /___/  /  /  /   /  /  /  / _____   /  /______        Gofer System
+   /  ____   /  /  /   /  /  /  / /_   /  /______   /
+  /  /   /  /  /  /___/  /  /  /___/  /  _______/  /          Version 1.3
+ /__/   /__/  /_________/  /_________/  /_________/          Yale Release 8
+
+Copyright (c) The University of Nottingham and Yale University, 1994-1996.
+
+Reading script file "../lib/Prelude.hs":
+Parsing       Dependency analysis                   Type checking             Compiling         Reading script file "Tests/enum.hs":
+Parsing       Dependency analysis                   Type checking             Compiling         
+Hugs:Hugs:session for:
+../lib/Prelude.hs
+Tests/enum.hs
 Type :? for help
 ?"[C1,C2,C3,C4,C5,C6,C7]"
 ?"[C1,C2,C3,C4]"

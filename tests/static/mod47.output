@@ -3,4 +3,4 @@ ERROR "static/mod47.hs":6 - Cannot build superclass instance
 *** Context supplied    : (Eq a, Enum a)
 *** Required superclass : Foo [a]
 
-[Leaving Hugs]
+Hugs:[Leaving Hugs]

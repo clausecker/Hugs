@@ -3,4 +3,4 @@ ERROR "static/mod52.hs":3 - Overlapping instances for class "Eq"
 *** Overlaps with   : Eq T
 *** Common instance : Eq T
 
-[Leaving Hugs]
+Hugs:[Leaving Hugs]

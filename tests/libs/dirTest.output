@@ -1,23 +1,22 @@
-Type :? for help
-Does the 'dir1_test_file' file exist? False
+Hugs:Does the 'dir1_test_file' file exist? False
 Does the 'dir1_test_file' file exist? False
 Does the 'dir1_test_file' directory exist? True
 
-got expected IO error
+Hugs:got expected IO error
 
-got expected IO error
+Hugs:got expected IO error
 
-got expected IO error
+Hugs:got expected IO error
 
-[".","..","a","b"]
+Hugs:[".","..","a","b"]
 [".","..","a"]
 [".",".."]
 
-"dir6_test_dir"
+Hugs:"dir6_test_dir"
 
-Permissions{readable=True,writable=True,executable=False,searchable=True}
+Hugs:Permissions{readable=True,writable=True,executable=False,searchable=True}
 Permissions{readable=True,writable=True,executable=False,searchable=False}
 Permissions{readable=False,writable=True,executable=False,searchable=False}
 got expected IO error
 
-[Leaving Hugs]
+Hugs:[Leaving Hugs]

@@ -3,4 +3,4 @@ ERROR "tcheck/ty2.hs":2 - Inferred type is not general enough
 *** Expected type : a
 *** Inferred type : Char
 
-[Leaving Hugs]
+Hugs:[Leaving Hugs]

@@ -1,8 +1,7 @@
-Type :? for help
-
+Hugs:
 Testing puts (and withString0)
 Test successful
 
 Testing peekArray0
 Test successful
-[Leaving Hugs]
+Hugs:[Leaving Hugs]

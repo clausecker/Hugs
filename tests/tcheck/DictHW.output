@@ -1,7 +1,6 @@
-Type :? for help
-ERROR "DictHW.hs":4 - Unresolved top-level overloading
+Hugs:Hugs:ERROR "DictHW.hs":4 - Unresolved top-level overloading
 *** Binding             : g
 *** Outstanding context : Fractional Int
 
-"(1,1,1)"
-[Leaving Hugs]
+Hugs:Hugs:Hugs:"(1,1,1)"
+Hugs:Hugs:[Leaving Hugs]

@@ -1,2 +1,2 @@
 ERROR "static/qual2.hs":5 - Syntax error in type signature (unexpected symbol "A.a")
-[Leaving Hugs]
+Hugs:[Leaving Hugs]
