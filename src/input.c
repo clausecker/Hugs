@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: input.c,v $
- * $Revision: 1.36 $
- * $Date: 2002/02/24 04:36:02 $
+ * $Revision: 1.37 $
+ * $Date: 2002/03/01 18:49:46 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1493,6 +1493,7 @@ static Int  firstTokenIs;              /* ... with token value stored here */
 
 static Int local yylex() {             /* Read next input token ...        */
     static Bool insertOpen    = FALSE;
+    static Bool insertClose   = FALSE;
     static Bool insertedToken = FALSE;
     static Text textRepeat;
 
@@ -1508,12 +1509,31 @@ static Int local yylex() {             /* Read next input token ...        */
 	return firstTokenIs;
     }
     
-    if (insertOpen) {                  /* insert `soft' opening brace      */
+    if ( insertOpen ) { /* insert `soft' opening brace      */
 	insertOpen    = FALSE;
 	insertedToken = TRUE;
-	goOffside(column);
+	/* If the indentation of a nested layout context is
+	   not more indented than the current/enclosing, 
+	   empty braces are inserted.
+	   
+	   cf. of Section B.3 (note 2) of the Haskell98 report.
+	*/
+	insertClose = 
+	    (indentDepth >=0 &&
+	     column <= layout[indentDepth] );
+	if (!insertClose) {
+	    goOffside(column);
+	}
 	push(yylval = mkInt(row));
 	return '{';
+    }
+    
+    if ( insertClose ) {
+	insertOpen    = FALSE;
+	insertClose   = FALSE;
+	insertedToken = FALSE;
+	push(yylval = mkInt(row));
+	return '}';
     }
 
 #if HERE_DOC
