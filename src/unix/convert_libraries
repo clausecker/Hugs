@@ -6,7 +6,7 @@
 #	use with Hugs.  Note that some of the libraries require extensions
 #	to Haskell 98 and have to be run with the -98 flag.
 # ../../oldlib:
-#	compatability stubs for old Hugs libraries
+#	compatibility stubs for old Hugs libraries
 #
 # A HUGSPATH consisting of both of these should approximate the old libs,
 # and be fairly compatible with GHC.  If you're completely switched over,
@@ -32,14 +32,14 @@ esac
 
 src=$1/libraries
 if [ ! -d $src ]; then
-  echo "Can't find libraries in directory '$1'"
-  exit 1
+	echo "Can't find libraries in directory '$1'" >&2
+	exit 1
 fi
 
 hs_src=$1/hslibs
 if [ ! -d $hs_src ]; then
-  echo "Can't find hslibs in directory '$1'"
-  exit 1
+	echo "Can't find hslibs in directory '$1'" >&2
+	exit 1
 fi
 
 # Convert a hierarchical library module for use with Hugs
@@ -123,7 +123,7 @@ nocvt() {
 		exit 1 ;;
 	esac
 
-	echo "Creating $1/$2 from $3"
+	echo "Replacing $1/$2 with $3"
 	dstdir=`dirname $dst/$2`
 	mkdir -p $dstdir
 
@@ -153,35 +153,7 @@ nocvt() {
 		" $hugs_src/$3 >$dst/$new_stem$old_extension
 }
 
-# Create a dummy hierarchical library module for use with Hugs
-# (to be fixed)
-
-dummy() {
-	case $# in
-	[01])	echo "usage: dummy package file [module ...]" >&2
-		exit 1 ;;
-	esac
-
-	echo "Creating a dummy for $1/$2"
-	target=$2
-	shift
-	shift
-	module=`echo $target | cut -d. -f1 | tr / .`
-	mkdir -p `dirname $dst/$target`
-	(
-		echo "module $module("
-		for real
-		do	echo "	module $real,"
-		done
-		echo '    ) where'
-		echo
-		for real
-		do	echo "import $real"
-		done
-	) >$dst/$target
-}
-
-# Create a compatability stub of a Hugs extension module
+# Create a compatibility stub for a Hugs extension module
 
 stub() {
 	case $# in
@@ -585,7 +557,7 @@ mkdir -p $compat
   hslibs util Unique.lhs
 
   hslibs util/check QuickCheck.hs
-# hslibs util/check QuickCheckBatch.hs
+# hslibs util/check QuickCheckBatch.hs	# -> Debug.QuickCheck.Batch
   hslibs util/check QuickCheckPoly.hs
   hslibs util/check QuickCheckUtils.hs
 
