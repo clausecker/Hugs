@@ -24,7 +24,7 @@
 # TAGS:           build emacs TAGS table
 
 # This rule goes first to make it the default choice
-default		:: hugs.exe dotnet\HugsWrapper.dll runhugs.exe hugsscript.dll
+default		:: hugs.exe runhugs.exe hugsscript.dll
 
 CC		= cl /nologo
 CFLAGS		= -clr -DDOTNET -DMONTH_YEAR="\"Nov 2002\""
@@ -50,7 +50,7 @@ CP		= copy
 HFILES		= prelude.h config.h options.h storage.h connect.h \
 		  errors.h command.h server.h HsFFI.h module.h machdep.h \
 		  script.h opts.h strutil.h evaluator.h goal.h observe.h
-DOTNET_FILES    = dotnet\Invoker.cpp dotnet\prim.cpp dotnet\HugsServ.cpp
+DOTNET_FILES    = dotnet\Invoker.cpp dotnet\prim.cpp dotnet\HugsServ.cpp dotnet\HugsWrapper.cpp
 CFILES		= hugs.c storage.c input.c static.c type.c subst.c \
 		  output.c compiler.c machine.c interp.c builtin.c \
 		  server.c ffi.c module.c machdep.c script.c opts.c \
@@ -65,7 +65,7 @@ OBJECTS		= storage.obj input.obj static.obj type.obj subst.obj \
 		  ffi.obj version.obj module.obj machdep.obj script.obj \
 		  opts.obj strutil.obj errors.obj evaluator.obj goal.obj
 
-DOBJECTS        = dotnet\Invoker.obj dotnet\HugsServ.obj dotnet\prim.obj 
+DOBJECTS        = dotnet\Invoker.obj dotnet\HugsServ.obj dotnet\HugsWrapper.obj dotnet\prim.obj 
 		  
 IOBJECTS	= hugs.obj server.obj observe.obj hugs.res $(OBJECTS) $(DOBJECTS)
 PRELUDE		= config.h options.h prelude.h
@@ -169,8 +169,15 @@ dotnet\HugsServ.obj : dotnet\HugsServ.cpp
 
 dotnet\HugsServ.cpp : dotnet\HugsServ.h
 
-dotnet\HugsWrapper.dll : hugs.exe dotnet\HugsWrapper.cs
-		  csc /t:library /unsafe /out:dotnet\HugsWrapper.dll dotnet\HugsWrapper.cs  /r:hugs.exe
+dotnet\HugsWrapper.obj : dotnet\HugsWrapper.cpp
+		  $(CC) -c $(CFLAGS) $(OPTFLAGS) -I. dotnet\HugsWrapper.cpp /Fodotnet\HugsWrapper.obj
+
+dotnet\HugsWrapper.cpp : dotnet\HugsWrapper.h
+
+# Old & unused, but keep it around for now.
+#dotnet\HugsWrapper.dll : hugs.exe dotnet\HugsWrapper.cs
+#		  csc /t:library /unsafe /out:dotnet\HugsWrapper.dll dotnet\HugsWrapper.cs  /r:hugs.exe
+#dotnet\HugsWrapper.dll: $(PRELUDE) dotnet\HugsWrapper.cs
 
 # These are compiled with less optimisation to avoid optimisation bugs in
 # certain compilers.  This may be overly conservative on some compilers.
@@ -233,7 +240,6 @@ observe.obj	: $(PRELUDE) storage.h connect.h errors.h command.h \
 evaluator.obj	: $(PRELUDE) storage.h connect.h errors.h script.h \
 		  output.h strutil.h opts.h machdep.h evaluator.h
 
-dotnet\HugsWrapper.dll: $(PRELUDE) dotnet\HugsWrapper.cs
 dotnet\prim.obj : $(PRELUDE) dotnet\prim.cpp dotnet\Invoker.h dotnet\Invoker.cpp
 
 ################################################################
