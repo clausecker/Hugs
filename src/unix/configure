@@ -308,7 +308,7 @@ ac_includes_default="\
 # include <unistd.h>
 #endif"
 
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS build build_cpu build_vendor build_os host host_cpu host_vendor host_os target target_cpu target_vendor target_os HostPlatform TargetPlatform BuildPlatform HostOS HostArch TargetOS TargetArch BuildOS BuildArch FPTOOLS YACC CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT CPP EGREP PTHREAD_CC PTHREAD_LIBS PTHREAD_CFLAGS RM CP LD PERL SET_MAKE have_hp2ps DOCBOOK2HTML DOCBOOK2DVI DOCBOOK2PDF DOCBOOK2PS fp_prog_find FindCmd fp_prog_sort SortCmd DIFF CONTEXT_DIFF GL_CFLAGS GL_LIBS GLU_CFLAGS GLU_LIBS X_CFLAGS X_PRE_LIBS X_LIBS X_EXTRA_LIBS GLUT_CFLAGS GLUT_LIBS FFI_LIBRARIES HavePosixRegex HAVE_STRUCT_MSGHDR_MSG_ACCRIGHTS HAVE_STRUCT_MSGHDR_MSG_CONTROL ALLOCA OPTFLAGS DEBUGFLAGS LDDEBUGFLAGS HUGSPATH HUGSSUFFIXES hugsdir HUGSDIR BINDIR EXE OBJ DLL DLL_ENDING DEV_NULL WOBJECTS RC_FILES STRIP LIBOBJS LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS build build_cpu build_vendor build_os host host_cpu host_vendor host_os target target_cpu target_vendor target_os HostPlatform_CPP TargetPlatform_CPP BuildPlatform_CPP HostArch_CPP TargetArch_CPP BuildArch_CPP HostOS_CPP TargetOS_CPP BuildOS_CPP FPTOOLS YACC CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT CPP EGREP PTHREAD_CC PTHREAD_LIBS PTHREAD_CFLAGS RM CP LD PERL SET_MAKE have_hp2ps DOCBOOK2HTML DOCBOOK2DVI DOCBOOK2PDF DOCBOOK2PS fp_prog_find FindCmd fp_prog_sort SortCmd DIFF CONTEXT_DIFF GL_CFLAGS GL_LIBS GLU_CFLAGS GLU_LIBS X_CFLAGS X_PRE_LIBS X_LIBS X_EXTRA_LIBS GLUT_CFLAGS GLUT_LIBS FFI_LIBRARIES HavePosixRegex HAVE_STRUCT_MSGHDR_MSG_ACCRIGHTS HAVE_STRUCT_MSGHDR_MSG_CONTROL ALLOCA OPTFLAGS DEBUGFLAGS LDDEBUGFLAGS HUGSPATH HUGSSUFFIXES hugsdir HUGSDIR BINDIR EXE OBJ DLL DLL_ENDING DEV_NULL WOBJECTS RC_FILES STRIP LIBOBJS LTLIBOBJS'
 ac_subst_files='MkInstall MkDepend'
 
 # Initialize some variables set by options.
@@ -1464,40 +1464,25 @@ _ACEOF
 # I'm a bit reluctant to do this without closer inspection of the Hugs code.
 fp_tr_cpp="sed s%[^_abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789]%_%g"
 
-HostPlatform_CPP=`echo $HostPlatform | $fp_tr_cpp`
-HostPlatform=$HostPlatform_CPP
-
+HostPlatform_CPP=`echo $HostPlatform   | $fp_tr_cpp`
 
 TargetPlatform_CPP=`echo $TargetPlatform | $fp_tr_cpp`
-TargetPlatform=$TargetPlatform_CPP
+
+BuildPlatform_CPP=`echo $BuildPlatform  | $fp_tr_cpp`
 
 
-BuildPlatform_CPP=`echo $BuildPlatform | $fp_tr_cpp`
-BuildPlatform=$BuildPlatform_CPP
-
-
-HostOS_CPP=`echo $host_os | $fp_tr_cpp`
-HostOS=$HostOS_CPP
-
-
-HostArch_CPP=`echo $host_cpu | $fp_tr_cpp`
-HostArch=$HostArch_CPP
-
-
-TargetOS_CPP=`echo $target_os | $fp_tr_cpp`
-TargetOS=$TargetOS_CPP
-
+HostArch_CPP=`echo $host_cpu   | $fp_tr_cpp`
 
 TargetArch_CPP=`echo $target_cpu | $fp_tr_cpp`
-TargetArch=$TargetArch_CPP
+
+BuildArch_CPP=`echo $build_cpu  | $fp_tr_cpp`
 
 
-BuildOS_CPP=`echo $build_os | $fp_tr_cpp`
-BuildOS=$BuildOS_CPP
+HostOS_CPP=`echo $host_os   | $fp_tr_cpp`
 
+TargetOS_CPP=`echo $target_os | $fp_tr_cpp`
 
-BuildArch_CPP=`echo $build_cpu | $fp_tr_cpp`
-BuildArch=$BuildArch_CPP
+BuildOS_CPP=`echo $build_os  | $fp_tr_cpp`
 
 
 
@@ -4079,7 +4064,7 @@ else
 ac_save_LIBS="$LIBS"
 LIBS="";
 cat > conftest.$ac_ext <<EOF
-#line 4082 "configure"
+#line 4067 "configure"
 #include "confdefs.h"
 main() { extern char dlopen(); dlopen();; exit(0); }
 int t() { return 0; }
@@ -4122,7 +4107,7 @@ else
 ac_save_LIBS="$LIBS"
 LIBS="-ldl";
 cat > conftest.$ac_ext <<EOF
-#line 4125 "configure"
+#line 4110 "configure"
 #include "confdefs.h"
 main() { extern char dlopen(); dlopen();; exit(0); }
 int t() { return 0; }
@@ -4177,7 +4162,7 @@ else
 ac_save_LIBS="$LIBS"
 LIBS="";
 cat > conftest.$ac_ext <<EOF
-#line 4180 "configure"
+#line 4165 "configure"
 #include "confdefs.h"
 main() { extern char shl_load(); shl_load();; exit(0); }
 int t() { return 0; }
@@ -4220,7 +4205,7 @@ else
 ac_save_LIBS="$LIBS"
 LIBS="-ldld";
 cat > conftest.$ac_ext <<EOF
-#line 4223 "configure"
+#line 4208 "configure"
 #include "confdefs.h"
 main() { extern char shl_load(); shl_load();; exit(0); }
 int t() { return 0; }
@@ -4275,7 +4260,7 @@ else
 ac_save_LIBS="$LIBS"
 LIBS="";
 cat > conftest.$ac_ext <<EOF
-#line 4278 "configure"
+#line 4263 "configure"
 #include "confdefs.h"
 main() { extern char atan(); atan();; exit(0); }
 int t() { return 0; }
@@ -4318,7 +4303,7 @@ else
 ac_save_LIBS="$LIBS"
 LIBS="-lm";
 cat > conftest.$ac_ext <<EOF
-#line 4321 "configure"
+#line 4306 "configure"
 #include "confdefs.h"
 main() { extern char atan(); atan();; exit(0); }
 int t() { return 0; }
@@ -24877,7 +24862,7 @@ _ACEOF
 ac_save_LIBS="$LIBS"
 LIBS=;
 cat > conftest.$ac_ext <<EOF
-#line 24880 "configure"
+#line 24865 "configure"
 #include "confdefs.h"
 
 #if HAVE_WINDOWS_H
@@ -24918,7 +24903,7 @@ fi
 ac_save_LIBS="$LIBS"
 LIBS=;
 cat > conftest.$ac_ext <<EOF
-#line 24921 "configure"
+#line 24906 "configure"
 #include "confdefs.h"
 
 #if HAVE_WINDOWS_H
@@ -32225,15 +32210,15 @@ s,@target@,$target,;t t
 s,@target_cpu@,$target_cpu,;t t
 s,@target_vendor@,$target_vendor,;t t
 s,@target_os@,$target_os,;t t
-s,@HostPlatform@,$HostPlatform,;t t
-s,@TargetPlatform@,$TargetPlatform,;t t
-s,@BuildPlatform@,$BuildPlatform,;t t
-s,@HostOS@,$HostOS,;t t
-s,@HostArch@,$HostArch,;t t
-s,@TargetOS@,$TargetOS,;t t
-s,@TargetArch@,$TargetArch,;t t
-s,@BuildOS@,$BuildOS,;t t
-s,@BuildArch@,$BuildArch,;t t
+s,@HostPlatform_CPP@,$HostPlatform_CPP,;t t
+s,@TargetPlatform_CPP@,$TargetPlatform_CPP,;t t
+s,@BuildPlatform_CPP@,$BuildPlatform_CPP,;t t
+s,@HostArch_CPP@,$HostArch_CPP,;t t
+s,@TargetArch_CPP@,$TargetArch_CPP,;t t
+s,@BuildArch_CPP@,$BuildArch_CPP,;t t
+s,@HostOS_CPP@,$HostOS_CPP,;t t
+s,@TargetOS_CPP@,$TargetOS_CPP,;t t
+s,@BuildOS_CPP@,$BuildOS_CPP,;t t
 s,@FPTOOLS@,$FPTOOLS,;t t
 s,@YACC@,$YACC,;t t
 s,@CC@,$CC,;t t
