@@ -94,7 +94,6 @@ extern String preprocessor;             /* preprocessor command            */
 #endif
 
 #if DEBUG_SHOWSC
-extern Bool  debugSC;			/* TRUE => print SC to screen  */
 extern Void  printSc Args((FILE*, Text, Int, Cell));
 #endif
 
