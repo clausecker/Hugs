@@ -433,7 +433,7 @@ int fgetc_mb(FILE *f) {
     for (;;) {
 	int c = fgetc(f);
 	if (c == EOF)
-	    return EOF;
+	    return n == 0 ? EOF : BAD_CHAR;
 	buf[n++] = c;
 	if (mbtowc(&wc, buf, n) >= 0)
 	    return wc;
