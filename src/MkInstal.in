@@ -53,5 +53,5 @@ install_man	::
 
 install_include	::
 		$(INSTALL) -d $(hugsdir)/include
-		$(INSTALL_DATA) GreenCard.h     $(hugsdir)/include
+		$(INSTALL_DATA) ../include/GreenCard.h  $(hugsdir)/include
 
