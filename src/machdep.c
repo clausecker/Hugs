@@ -12,8 +12,8 @@
  * included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.24 $
- * $Date: 2001/08/14 00:32:28 $
+ * $Revision: 1.25 $
+ * $Date: 2001/08/14 23:07:02 $
  * ------------------------------------------------------------------------*/
 
 #ifdef HAVE_SIGNAL_H
@@ -1089,8 +1089,8 @@ Int readTerminalChar() {                /* read character from terminal    */
  	HANDLE hIn;
 	static int isEmacs = -1;
  
- 	/* Cannot claim to fully understand, but if the FILE*s underling
-	   file derscriptor is in text mode, we seem to lose the first
+ 	/* Cannot claim to fully understand, but if the FILE*s underlying
+	   file descriptor is in text mode, we seem to lose the first
 	   carriage return.
  	 */
  	setmode(fileno(stdin), _O_BINARY);
