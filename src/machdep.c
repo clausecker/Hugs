@@ -11,8 +11,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.108 $
- * $Date: 2003/12/02 18:50:56 $
+ * $Revision: 1.109 $
+ * $Date: 2003/12/04 18:01:33 $
  * ------------------------------------------------------------------------*/
 #include "prelude.h"
 #include "storage.h"
@@ -558,7 +558,39 @@ String sep; {
 */
 	  
 
-#if HAVE_WINDOWS_H
+#if HAVE_DIRENT_H
+
+static Bool scanSubDirs(s)
+String s;
+{
+    DIR *dir;
+    struct dirent *entry;
+    struct stat statb;
+    int save;
+
+    if ((dir = opendir(searchBuf)) == NULL)
+	errno = 0;
+    else {
+	searchChr(SLASH);
+	save = searchPos;
+	while ((entry = readdir(dir)) != NULL)
+            if (entry->d_name[0] != '.') {
+		searchStr(entry->d_name);
+		if (stat(searchBuf, &statb)==0 && S_ISDIR(statb.st_mode)) {
+		    searchChr(SLASH);
+		    if (find2(s)) {
+			closedir(dir);
+			return TRUE;
+		    }
+		}
+		searchReset(save);
+	    }
+	closedir(dir);
+    }
+    return FALSE;
+}
+
+#elif HAVE_WINDOWS_H
 
 static Bool scanSubDirs(s)
 String s;
@@ -591,38 +623,6 @@ String s;
     } while (_findnext( handle, &findInfo ) == 0);
     
     _findclose( handle );
-    return FALSE;
-}
-
-#elif defined(HAVE_DIRENT_H)
-
-static Bool scanSubDirs(s)
-String s;
-{
-    DIR *dir;
-    struct dirent *entry;
-    struct stat statb;
-    int save;
-
-    if ((dir = opendir(searchBuf)) == NULL)
-	errno = 0;
-    else {
-	searchChr(SLASH);
-	save = searchPos;
-	while ((entry = readdir(dir)) != NULL)
-            if (entry->d_name[0] != '.') {
-		searchStr(entry->d_name);
-		if (stat(searchBuf, &statb)==0 && S_ISDIR(statb.st_mode)) {
-		    searchChr(SLASH);
-		    if (find2(s)) {
-			closedir(dir);
-			return TRUE;
-		    }
-		}
-		searchReset(save);
-	    }
-	closedir(dir);
-    }
     return FALSE;
 }
 
