@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.113 $
- * $Date: 2003/01/23 17:47:07 $
+ * $Revision: 1.114 $
+ * $Date: 2003/02/13 10:57:38 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -33,8 +33,6 @@
 #if !HASKELL_98_ONLY
 Bool haskell98 = TRUE;			/* TRUE => Haskell 98 compatibility*/
 #endif
-
-Bool wantNewLibraries = FALSE;  /* unused: kill option later */
 
 #if EXPLAIN_INSTANCE_RESOLUTION
 Bool showInstRes = FALSE;
@@ -1114,7 +1112,6 @@ struct options toggle[] = {             /* List of command line toggles    */
     Option('W', 0, "Enable 'with' and 'dlet' implicit param binding forms", &oldIParamSyntax),
 #endif
     Option('X', 1, "Implicitly add path of importing module to search path", &optImplicitImportRoot),
-    Option('N', 0, "Use hierarchical libraries",            &wantNewLibraries),
     Option(0, 0, 0, 0)
 };
 

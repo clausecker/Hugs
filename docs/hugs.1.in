@@ -3,7 +3,6 @@
 .ds LB @HUGSDIR@
 .ds BN @BINDIR@
 .ds HP @HUGSPATH@
-.ds NP {Hugs}/libraries:{Hugs}/oldlib
 .ds HS @HUGSSUFFIXES@
 .ds VI vi
 .SH NAME
@@ -103,9 +102,6 @@ Chase imports while loading files (default: on)
 .TP
 .B +X
 Implicitly add path of importing module to search path (default: on)
-.TP
-.B +N
-Use the hierarchical libraries (default: off)
 .SS "Expression evaluation"
 .TP
 .B +s
@@ -156,16 +152,10 @@ A null entry in this list will be replaced by the previous search path;
 a null \fIstr\fP means the default path.
 Any occurrence of \fB{Hugs}\fP in this string is expanded to
 the Hugs library directory, namely \fB\*(LB\fP.
-With \fB\-N\fP, the default value is
+The default value is
 .RS
 .IP
 \fB\*(HP\fP
-.RE
-.IP
-With \fB\+N\fP, the default value is
-.RS
-.IP
-\fB\*(NP\fP
 .RE
 .TP
 .BI \-S str

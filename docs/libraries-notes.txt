@@ -1,36 +1,32 @@
 Using Hugs with the new hierarchical libraries
 
-The Hugs libraries are in transition between an old version and a new
-one, which offers greater more modules, greater Haskell 98 compliance,
-a non-flat module namespace, and greater compatibility with other Haskell
-implementations.  For more details on this transition, which affects all
-Haskell implementations, see
+Hugs98 now uses the new, hierarchical Haskell libraries (as also provided
+by NHC and GHC.)  This setup offers more flexibility and functionality
+over the flat module structure provided by Haskell 98.  For example, the
+old library setup provides a module Parsec; in the new setup, its name is
+
+	Text.ParserCombinators.Parsec
+
+but there is also a module called Parsec that merely imports and
+re-exports this module, so your old source code should still work.
+This is one major exception to this: in previous Hugs releases, the
+Prelude exported several names not listed in the Haskell 98 Prelude.
+The Prelude now complies with the Haskell 98 Report.
+
+For more details on the library transition, which affects all Haskell
+implementations, see
 
 	http://www.haskell.org/~simonmar/libraries/libraries.html
 
-Old library setup: As in previous releases, Hugs is supplied with
-the following collections of modules, and is configured to use them
-by default:
-
-  {Hugs}/lib: the Prelude and Haskell 98 modules
-
-  {Hugs}/lib/exts: a collection of additional modules, mostly shared
-	with older versions of GHC and documented at:
-
-	http://www.haskell.org/ghc/docs/5.02.3/set/book-hslibs.html
-
-  {Hugs}/lib/hugs: a collection of Hugs-specific modules.
-
-New library setup: This release includes a second, alternative, set of
-libraries, comprising
+The new library setup comprises the directories
 
   {Hugs}/libraries: new hierarchical libraries, covering most of the
 	packages base, haskell98 and haskell-src shipped with GHC 5.04
 	and documented at:
 
-	http://www.haskell.org/ghc/docs/5.04.1/html/base/index.html
-	http://www.haskell.org/ghc/docs/5.04.1/html/haskell98/index.html
-	http://www.haskell.org/ghc/docs/5.04.1/html/haskell-src/index.html
+	http://www.haskell.org/ghc/docs/latest/html/base/index.html
+	http://www.haskell.org/ghc/docs/latest/html/haskell98/index.html
+	http://www.haskell.org/ghc/docs/latest/html/haskell-src/index.html
 
 	(Unlike GHC, Hugs does not use packages: all these modules are
 	placed in the same hierarchy.)
@@ -39,28 +35,23 @@ libraries, comprising
 	(unlike the old setup).  For example, functions like isDigit
 	are no longer exported by the Prelude.
 
-  {Hugs}/oldlib: a collection of stub modules with the same names
-	as the old lib/exts modules, but implemented by importing
-	hierarchical modules.  For example there is a module MonadReader
-	that merely imports and re-exports the hierarchical module
-	Control.Monad.Reader.  It also includes versions of the old
-	lib/hugs modules.
+  {Hugs}/oldlib: a collection of stub modules with the same names as
+	the old Hugs modules, but implemented by importing hierarchical
+	modules.  For example there is a module MonadReader that merely
+	imports and re-exports the hierarchical module Control.Monad.Reader.
+	This includes the old modules documented at
 
-The old library setup will disappear when this new setup has had more
-testing, though the compatibility stubs will be kept for a while.
+	http://www.haskell.org/ghc/docs/5.02.3/set/book-hslibs.html
 
-To use the new setup, set HUGSFLAGS to
-
-	+N -W -P
-
-(The -W option disables the old syntax for implicit parameters using
-"with" and "dlet" -- some modules use "with" as an identifier.)Some
-modules also require the -98 option.
+With these compatibility stubs most old code should still work.  However,
+you might well wish to use the new, longer module names in new code.
+Eventually the compatibility stubs will disappear.
 
 More details on the new setup:
 
-o The Int and Word modules contain deprecated conversion functions, which
-  will disappear in future releases.
+o Some modules require the -W option (which disables the old syntax for
+  implicit parameters using "with" and "dlet").  Others also require
+  the -98 option.
 
 o the Hugs.* packages (in libraries/Hugs) provide Hugs-specific
   implementations of standard features, as well as some Hugs-only
@@ -72,24 +63,21 @@ o As noted above, the Prelude is now Haskell 98-compliant.  Most of the
   Char, Ix, Numeric and Ratio.  The Hugs-specific names may be accessed
   by importing the prelude implementation module Hugs.Prelude.
 
-o Everything under libraries except the Hugs part, and all of oldlib, are
-  created by the src/unix/convert_libraries script (so don't edit them).
+o Everything under hugslib is created by the src/unix/convert_libraries
+  script (so don't edit them).
 
 o To check the status of each hierarchical module, run
 
-	src/unix/test_libraries <directory where libraries lives>
+	make check_libraries
 
 o Some libraries are present, but Hugs does not implement all operations,
   or does not provide the same semantics as GHC:
     Control.Concurrent.MVar: Hugs provides only co-operative multitasking,
     	which affects their behaviour.  Also finalizers are not implemented.
-    Control.Exception: non-IO exceptions are not broken down as in the
-	libraries, but treated as a type HugsException handled by the
-	module Hugs.Exception.	The arbitrary throw is not available.
-	Nonetheless, the bracket and bracket_ functions in this module
-	should be used instead of the IO versions.
-    Foreign.Ptr: not all functions are provided.
     System.Mem.Weak: finalizers must be run explicitly.
+
+o Old versions of the Int and Word modules had lots of specific conversion
+  functions, which are now gone.  Use fromIntegral instead.
 
 o to see what's handled and what's not, have a look at the conversion script
   src/unix/convert_libraries.  It's quite a kludge, but it mostly works,
