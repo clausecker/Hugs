@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: plugin.c,v $
- * $Revision: 1.8 $
- * $Date: 2003/10/14 13:56:23 $
+ * $Revision: 1.9 $
+ * $Date: 2003/10/16 03:17:55 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -26,7 +26,7 @@
 
 struct pluginInfo {
     String         nm;            /* Name of plugin module                 */
-    InitModuleFun4 initModule;    /* Initialisation code for the plugin    */
+    InitModuleFun5 initModule;    /* Initialisation code for the plugin    */
 };
 
 static struct pluginInfo pluginList[] = { /* hardwired list of all plugins */
