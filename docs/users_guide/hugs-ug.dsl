@@ -10,9 +10,7 @@
 (define %section-autolabel% #t)
 (define (toc-depth nd) 3)
 
-(define %html-pubid% "-//W3C//DTD HTML 4.01 Transitional//EN")
 (define %html40% #t)
-(define %admon-graphics% #t)
 (define %generate-book-titlepage% #t)
 (define %generate-book-toc% #t)
 (define ($generate-chapter-toc$) #f)
@@ -21,6 +19,7 @@
 (define %output-dir% "users_guide")
 (define %use-id-as-filename% #t)
 (define %root-filename% "index")
+(define %html-ext% ".html")
 (define %stylesheet% "hugs-ug.css")
  
 </style-specification-body>

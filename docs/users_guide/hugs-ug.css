@@ -1,47 +1,54 @@
-body {
+BODY {
 	font-family: sans-serif;
 	color: black;
 	background: white
 }
 
-div.navheader, div.navfooter {
+DIV.NAVHEADER, DIV.NAVFOOTER {
 	padding-left: 3px;
 	padding-right: 3px;
 	background: #ddeeff
 }
-div.navheader td, div.navfooter td {
+DIV.NAVHEADER TD, DIV.NAVFOOTER TD {
 	color: #000099;
 	font-size: 80%
 }
 
-h1, h2, h3, h4, div.question, div.navheader th {
+H1, H2, H3, H4, DIV.QUESTION, DIV.NAVHEADER TH {
 	color: #000099
 }
-h1, h2, h3, h4 { font-weight: bold }
-div.question { font-style: italic }
+H1, H2, H3, H4 { font-weight: bold }
+DIV.QUESTION { font-style: italic }
 
-h1.title { font-size: 200% }
-h1 { font-size: 150% }
-h2 { font-size: 130% }
-h3 { font-size: 115% }
-h4 { font-size: 100% }
+H1.TITLE { font-size: 200% }
+H1 { font-size: 150% }
+H2 { font-size: 130% }
+H3 { font-size: 115% }
+H4 { font-size: 100% }
 
-var, code.function, span.systemitem {
+VAR, CODE.FUNCTION, SPAN.SYSTEMITEM {
 	font-family: monospace; font-style: normal
 }
-b.command, var.option {
+B.COMMAND, VAR.OPTION {
 	font-family: monospace; font-weight: bold
 }
-var.replaceable {
+VAR.REPLACEABLE {
 	font-family: sans-serif; font-style: italic
 }
 
-pre {
+PRE {
 	font-family: monospace;
 	border-width: 2px;
 	border-style: outset;
 	padding: 0.3em
 }
 
-pre.screen         { color: #002211; background-color: #F5FDF5 }
-pre.programlisting { color: #442200; background-color: #FDF5E6 }
+BLOCKQUOTE.NOTE {
+	border-width: 1px;
+	border-style: solid;
+	margin-right: 0em;
+	padding: 0em 0.3em 0.3em
+}
+
+PRE.SCREEN         { color: #002211; background-color: #F5FDF5 }
+PRE.PROGRAMLISTING { color: #442200; background-color: #FDF5E6 }
