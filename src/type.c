@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: type.c,v $
- * $Revision: 1.21 $
- * $Date: 2000/08/11 22:34:35 $
+ * $Revision: 1.22 $
+ * $Date: 2000/08/14 20:23:45 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1286,8 +1286,12 @@ List qs; {
  * ------------------------------------------------------------------------*/
 
 static List gatheredAss;
+static List gatheredDefns;
 static List gatheredTyvars;
 static List gatheredPTyvars;
+
+#define enterGathering() List svGA = gatheredAss, svGD = gatheredDefns, svGT = gatheredTyvars, svGP = gatheredPTyvars; gatheredAss = gatheredDefns = gatheredTyvars = gatheredPTyvars = NIL
+#define leaveGathering() gatheredAss = svGA; gatheredDefns = svGD; gatheredTyvars = svGT; gatheredPTyvars = svGP
 
 static List local getPats(bs)
 List bs; {
@@ -1301,6 +1305,7 @@ List bs; {
 static Text local zipName(n)
 Int n; {
     static char zip[14];
+    /* n >= 2, enforced by the parser */
     if (n == 2)
 	strcpy(zip, "zip");
     else
@@ -1326,36 +1331,64 @@ Int l;
 Type m;					/* monad (mkOffset(0))		   */
 Cell e;
 List qss; {
-    List pss = qss, ass;
+    List pss, ass;
     List zpat, zexp;
 #if IPARAM
     List svPreds;
 #endif
-    saveVarsAss();
-    gatheredAss = NIL;
-    gatheredTyvars = NIL;
-    gatheredPTyvars = NIL;
-    for (;nonNull(pss);pss=tl(pss)) {
+    enterGathering();
+    printf("typeZComp!\n");
+    enterBindings();
+    for (pss = qss;nonNull(pss);pss=tl(pss)) {
 	gatheredAss = cons(NIL,gatheredAss);
+	gatheredDefns = cons(NIL,gatheredDefns);
 	typeCompy(l,m,hd(pss));
+	/* reset for next list of qualifiers */
+	hd(varsBounds) = NIL;
     }
     /* add gathered vars */
     hd(varsBounds) = revOnto(concat(gatheredAss),hd(varsBounds));
+    enterBindings();
+    hd(defnBounds) = revOnto(concat(gatheredDefns),hd(defnBounds));
     enterPendingBtyvs();
     hd(btyvars) = gatheredTyvars;
     hd(pendingBtyvs) = gatheredPTyvars;
     spTypeExpr(l,fst(e));
     leavePendingBtyvs();
-    restoreVarsAss();
+    leaveBindings();
+    leaveBindings();
 
+    { List q = gatheredAss;
+      Int n = 0;
+    for (; nonNull(q); q=tl(q), ++n) {
+	printf("gatheredAss %d: ", n);
+	print(hd(q),50);
+	printf("\n");
+    }
+    }
     /* now, we construct a regular comprehension out of the parallel one */
     zpat = mkTuple(length(qss));
     zexp = mkVar(zipName(length(qss)));
-    for (pss = qss, ass = rev(gatheredAss);nonNull(pss);pss=tl(pss), ass=tl(ass)) {
+    for (pss=qss, ass=rev(gatheredAss);nonNull(pss);pss=tl(pss), ass=tl(ass)) {
 	List ps = tupleUp(getPats(hd(ass)));
 	zpat = ap(zpat, ps);
-	/* zexp = ap(zexp, ap(COMP,pair(ps, hd(pss)))); */
 	zexp = ap(zexp, ap(MONADCOMP,pair(nameListMonad,pair(ps, hd(pss)))));
+    }
+    Printf("zpat: ");
+    printExp(stdout,zpat);
+    Printf("\n");
+    Printf("zexp: ");
+    printExp(stdout,zexp);
+    Printf("\n");
+    leaveGathering();
+    { List q = gatheredAss;
+      Int n = 0;
+      printf("after leaving\n");
+    for (; nonNull(q); q=tl(q), ++n) {
+	printf("gatheredAss %d: ", n);
+	print(hd(q),50);
+	printf("\n");
+    }
     }
     return pair(fst(e),singleton(ap(FROMQUAL,pair(zpat,zexp))));
 }
@@ -1369,6 +1402,15 @@ List qs; {
 #if IPARAM
     List svPreds;
 #endif
+    { List q = gatheredAss;
+      Int n = 0;
+      printf("typeCompy\n");
+    for (; nonNull(q); q=tl(q), ++n) {
+	printf("gatheredAss %d: ", n);
+	print(hd(q),50);
+	printf("\n");
+    }
+    }
 
     STACK_CHECK
     if (!isNull(qs)) {			/* no qualifiers left		   */
@@ -1382,24 +1424,52 @@ List qs; {
 	    case QWHERE   : enterBindings();
 			    enterSkolVars();
 			    mapProc(typeBindings,snd(q));
+			    hd(gatheredAss) = dupOnto(hd(varsBounds),hd(gatheredAss));
+			    /* ZZ what is gatheredDefns used for ??? */
+			    hd(gatheredDefns) = dupOnto(hd(defnBounds),hd(gatheredDefns));
 			    typeCompy(l,m,qs1);
 			    leaveBindings();
 			    leaveSkolVars(l,typeIs,typeOff,0);
 			    break;
 
 	    case FROMQUAL : {   Int beta = newTyvars(1);
-				saveVarsAss();
 				enterPendingBtyvs();
 				spCheck(l,snd(snd(q)),NIL,genQual,m,beta);
 				enterSkolVars();
 				fst(snd(q))
 				    = typeFreshPat(l,patBtyvs(fst(snd(q))));
 				shouldBe(l,fst(snd(q)),NIL,genQual,aVar,beta);
-				hd(gatheredAss) = revOnto(dupUpto(hd(varsBounds),saveAssump),hd(gatheredAss));
+    { List q = varsBounds;
+      Int n = 0;
+      printf("varsBounds\n");
+    for (; nonNull(q); q=tl(q), ++n) {
+	printf("varsBounds %d: ", n);
+	print(hd(q),50);
+	printf("\n");
+    }
+    }
+    { List q = gatheredAss;
+      Int n = 0;
+      printf("gatheredAss bf\n");
+    for (; nonNull(q); q=tl(q), ++n) {
+	printf("gatheredAss %d: ", n);
+	print(hd(q),50);
+	printf("\n");
+    }
+    }
+				hd(gatheredAss) = dupOnto(hd(varsBounds),hd(gatheredAss));
+    { List q = gatheredAss;
+      Int n = 0;
+      printf("gatheredAss af\n");
+    for (; nonNull(q); q=tl(q), ++n) {
+	printf("gatheredAss %d: ", n);
+	print(hd(q),50);
+	printf("\n");
+    }
+    }
 				gatheredTyvars = dupOnto(hd(btyvars),gatheredTyvars);
 				gatheredPTyvars = dupOnto(hd(pendingBtyvs),gatheredPTyvars);
 				typeCompy(l,m,qs1);
-				restoreVarsAss();
 			        leavePendingBtyvsQuietly();
 				leaveSkolVars(l,typeIs,typeOff,0);
 			    }

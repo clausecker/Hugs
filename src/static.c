@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.22 $
- * $Date: 2000/08/11 22:34:34 $
+ * $Revision: 1.23 $
+ * $Date: 2000/08/14 20:23:45 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -5652,14 +5652,16 @@ List qs; {
 static List gatheredVars;
 static List gatheredBinds;
 static List gatheredTyvars;
+
+#define enterGathering() List svGVs = gatheredVars, svGBs = gatheredBinds, svGTs = gatheredTyvars; gatheredVars = gatheredBinds = gatheredTyvars = NIL
+#define leaveGathering() gatheredVars = svGVs; gatheredBinds = svGBs; gatheredTyvars = svGTs
+
 static Void local depZComp(l,e,qss)
 Int l;
 Cell e;
 List qss; {
+    enterGathering();
     withinScope(NIL);
-    gatheredVars = NIL;
-    gatheredBinds = NIL;
-    gatheredTyvars = NIL;
     for (;nonNull(qss);qss=tl(qss)) {
 	depCompy(l,hd(qss));
 	/* reset for next list of qualifiers */
@@ -5678,6 +5680,7 @@ List qss; {
     bindings = tl(bindings);
     depends  = tl(depends);
     leaveScope();
+    leaveGathering();
 }
 
 static Void local depCompy(l,qs)	/* find dependents of comprehension*/
