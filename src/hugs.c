@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.107 $
- * $Date: 2002/11/09 04:44:37 $
+ * $Revision: 1.108 $
+ * $Date: 2002/11/18 16:36:59 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -105,11 +105,11 @@ static String local optionsToStr      Args((Void));
 #endif
 static Void   local readOptions       Args((String,Bool));
 static Bool   local readOptions2      Args((String));
-static Bool   local isOption          Args((String));
 static Bool   local processOption     Args((String));
 static Void   local setHeapSize       Args((String));
 static Int    local argToInt          Args((String));
 #if !defined(HUGS_SERVER)
+static Bool   local isOption          Args((String));
 static Void   local expandPath        Args((String,String,unsigned int));
 #endif /* !HUGS_SERVER */
 
@@ -824,10 +824,12 @@ Bool   freeUp; {
     }
 }
 
+#if !defined(HUGS_SERVER)
 static Bool local isOption(s)
 String s; {                     /* return TRUE if 's' looks like an option */
   return ( s && (s[0] == '-' || s[0] == '+') );
 }
+#endif
 
 static Bool local processOption(s)      /* process string s for options,   */
 String s; {                             /* return FALSE if none found.     */

@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.127 $
- * $Date: 2002/11/18 06:27:23 $
+ * $Revision: 1.128 $
+ * $Date: 2002/11/18 16:37:00 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1327,7 +1327,7 @@ List exports;
 Text mt; 
 Cell e; {
     if (isIdent(e)) {
-	Name export, nm;
+	Name export;
 	Bool expFound = FALSE;
 
 	if (isQCon(e) && nonNull(export=findQualTycon(e))) {
