@@ -1,5 +1,5 @@
 ROOT := ${subst /src/unix,,${shell pwd}}
-OPTS =  \
+OPTS =  --enable-ffi
 #	--disable-large-banner
 GNULIBS = 
 
