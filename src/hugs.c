@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.61 $
- * $Date: 2002/01/24 07:36:15 $
+ * $Revision: 1.62 $
+ * $Date: 2002/01/31 05:09:26 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -2261,7 +2261,7 @@ String argv[]; {
 			  break;
 	    case SET    : set();
 			  break;
-  	    case SYSTEM : if (shellEsc(readLine(),TRUE,FALSE))
+  	    case SYSTEM : if (shellEsc(readLine(),TRUE,TRUE))
 			      Printf("Warning: Shell escape terminated abnormally\n");
 			  break;
 	    case CHGDIR : changeDir();
