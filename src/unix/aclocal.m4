@@ -245,7 +245,7 @@ AC_DEFUN(FPTOOLS_HAVE_TIMEZONE,
 #  include <time.h>
 # endif
 #endif
-], [return timezone;], 
+], [return timezone/1;], 
 fptools_cv_have_timezone=yes, fptools_cv_have_timezone=no)])
 if test "$fptools_cv_have_timezone" = yes; then
   AC_DEFINE(HAVE_TIMEZONE)

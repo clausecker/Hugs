@@ -302,6 +302,9 @@
 /* Define if you have the <io.h> header file.  */
 #undef HAVE_IO_H
 
+/* Define if you have the <mach-o/dyld.h> header file.  */
+#undef HAVE_MACH_O_DYLD_H
+
 /* Define if you have the <nlist.h> header file.  */
 #undef HAVE_NLIST_H
 

@@ -2,8 +2,8 @@ dnl ################################################################
 dnl Process this file with autoconf to produce a configure script.
 dnl
 dnl $RCSfile: configure.in,v $
-dnl $Revision: 1.14 $
-dnl $Date: 2001/07/31 17:27:54 $
+dnl $Revision: 1.15 $
+dnl $Date: 2001/08/10 01:08:09 $
 dnl ################################################################
 
 AC_INIT(../hugs.c)
@@ -71,7 +71,7 @@ dnl Windows include files
 AC_CHECK_HEADERS(windows.h)
 
 dnl dynamic loading include files
-AC_CHECK_HEADERS(dlfcn.h dl.h) 
+AC_CHECK_HEADERS(dlfcn.h dl.h mach-o/dyld.h) 
 
 dnl Checks for:
 dnl   farcalloc (in bcc), 
