@@ -472,6 +472,7 @@ else AC_MSG_RESULT(failed)
 The argument to --with-fptools must be a directory containing copies of
 hslibs and libraries from the Haskell CVS repository.])
 fi
+FPTOOLS=`cd $FPTOOLS; pwd`
 
 if test "$enable_ffi" = yes; then
   FFI_LIBRARIES=ffi_libraries
