@@ -10,8 +10,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: server.c,v $
- * $Revision: 1.22 $
- * $Date: 2002/10/01 03:48:58 $
+ * $Revision: 1.23 $
+ * $Date: 2002/10/01 19:07:42 $
  * ------------------------------------------------------------------------*/
 
 #define HUGS_SERVER
@@ -228,12 +228,12 @@ String argv[]; {
 	  }
 	}
       }
+      EnableOutput(FALSE);
       loadPrelude();
 
 #ifndef NO_DYNAMIC_TYPES
       addScriptName("HugsDynamic",TRUE);
 #endif
-      EnableOutput(FALSE);
 
       readScripts(0);
       everybody(RESET);
