@@ -107,7 +107,11 @@ namespace HsWrapGen
                 OutputHaskellType(sb,ps[i].ParameterType,i);
                 sb.Append(" -> ");
             }
-            sb.AppendFormat("{0} obj -> IO (", mi.DeclaringType.Name);
+	    if (m.IsStatic) {
+	      sb.Append("IO (");
+	    } else {
+	      sb.AppendFormat("{0} obj -> IO (", mi.DeclaringType.Name);
+	    }
             OutputHaskellType(sb,m.ReturnType,i);
             sb.AppendFormat("){0}",System.Environment.NewLine);
         }
@@ -137,12 +141,14 @@ namespace HsWrapGen
             switch (mi.MemberType) {
                 case System.Reflection.MemberTypes.Method:
                     System.String methName = ToHaskellName(mi.Name);
-                    sb.AppendFormat("{0} :: ", methName);
-                    OutputMethodSig(sb,mi);
-                    sb.AppendFormat("{0} ", methName);
-                    OutputArgs(sb,mi,false);
-                    sb.AppendFormat(" = invoke \"{0}\" ", mi.Name);
-                    OutputArgs(sb,mi,true);
+		    System.Reflection.MethodInfo m = (System.Reflection.MethodInfo)mi;
+		    sb.Append("foreign import dotnet");
+                    sb.AppendFormat("{0}",System.Environment.NewLine);
+		    // the 'method' bit is really optional.
+		    sb.AppendFormat("  \"{0}method {1}.{2}\"", (m.IsStatic ? "static " : ""), mi.DeclaringType, mi.Name);
+                    sb.AppendFormat("{0}",System.Environment.NewLine);
+		    sb.AppendFormat("  {0} :: ", methName);
+		    OutputMethodSig(sb,mi);
                     // the mind boggles, System.Environment ?
                     sb.AppendFormat("{0}",System.Environment.NewLine);
                     break;
