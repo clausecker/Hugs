@@ -117,7 +117,7 @@ cd `pwd`
 " >BuildFFI
 chmod 755 BuildFFI
 
-packages='base haskell98 haskell-src network unix'
+packages='base haskell98 haskell-src network parsec unix'
 test -d $1/libraries/OpenGL && packages="$packages OpenGL"
 test -d $1/libraries/GLUT   && packages="$packages GLUT"
 
