@@ -9,8 +9,8 @@
  * included in the distribution.
  *
  * $RCSfile: output.c,v $
- * $Revision: 1.13 $
- * $Date: 2001/01/08 21:43:06 $
+ * $Revision: 1.14 $
+ * $Date: 2001/02/10 01:20:47 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1386,27 +1386,32 @@ String t;  {
     String s;
 
     if (! (i=firstObserve())) return;
-    
+
     printingObservations = TRUE;
     outputStream = stdout;
-
+#if HUGS_FOR_WINDOWS
+    { INT svColor = SetForeColor(MAGENTA);
+#endif
     putStr("\n>>>>>>> Observations <<<<<<");
     newLine(0);
-    
+
     while(i != NIL){
-     	    newLine(0);
-	    s = textToStr(observe(i).tag);
-	    if (*t==0 || strcmp(s,t)==0){
+          newLine(0);
+     s = textToStr(observe(i).tag);
+     if (*t==0 || strcmp(s,t)==0){
                 putStr(s);
-	        newLine(2);
-	        if (printObsList(observe(i).head,2,FALSE)) 
-	            newLine(0);
-	    }
-	    i = nextObserve();
-    }    
-    
+         newLine(2);
+         if (printObsList(observe(i).head,2,FALSE))
+             newLine(0);
+     }
+     i = nextObserve();
+    }
+
     newLine(0);
     printingObservations = FALSE;
+#if HUGS_FOR_WINDOWS
+    SetForeColor(svColor); }
+#endif
 }
 
 Bool printObsList(header, indent, funPrint)

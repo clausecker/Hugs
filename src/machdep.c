@@ -12,8 +12,8 @@
  * included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.11 $
- * $Date: 2001/01/31 21:10:38 $
+ * $Revision: 1.12 $
+ * $Date: 2001/02/10 01:20:47 $
  * ------------------------------------------------------------------------*/
 
 #ifdef HAVE_SIGNAL_H
@@ -1121,8 +1121,12 @@ String nm; {                            /* or just line may be zero        */
 			sprintf(ec,"%d",line);
 			he++;
 		    }
-		    else if (*he=='s' && (size_t)n>strlen(nm)) {
-			strcpy(ec,nm);
+		    else if (*he=='s' && (size_t)n>(strlen(nm)+2)) {
+	                /* Protect the filename by putting quotes around it */
+		        *ec++='\"';
+			strcpy(ec,nm); ec += strlen(nm);
+		        *ec++='\"';
+			*ec='\0';
 			rd = NULL;
 			he++;
 		    }
@@ -1150,9 +1154,17 @@ String nm; {                            /* or just line may be zero        */
 	}
 
 	if (nm && line==0 && n>1) {     /* Name, but no line ...           */
-	    *ec++ = ' ';
-	    for (; n>0 && *nm; n--)     /* ... just copy file name         */
-		*ec++ = *nm++;
+	  *ec++ = ' '; 
+	  /* Protect the filename by putting quotes around it */
+	  if (n>0) {
+	    *ec++ = '\"'; n--;
+	  }
+	  for (; n>0 && *nm; n--)     /* ... just copy file name         */
+	    *ec++ = *nm++;
+	  if (n>0) {
+	    *ec++ = '\"';
+	    n--;
+	  }
 	}
 
 	*ec = '\0';                     /* Add terminating null byte       */

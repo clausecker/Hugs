@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.32 $
- * $Date: 2001/02/10 01:07:53 $
+ * $Revision: 1.33 $
+ * $Date: 2001/02/10 01:20:47 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -983,24 +983,28 @@ Bool   sch; {                           /* TRUE => requires pathname search*/
 	namesUpto++;
 }
 
-static Bool local addScript(fname,len)  /* read single script file         */
-String fname;                           /* name of script file             */
-Long   len; {                           /* length of script file           */
+static Bool local addScript(fname,len)  /* read single script file
+*/
+String fname;                           /* name of script file
+*/
+Long   len; {                           /* length of script file
+*/
     scriptFile = fname;
 
-#if HUGS_FOR_WINDOWS		       /* Set clock cursor while loading   */
+#if HUGS_FOR_WINDOWS         /* Set clock cursor while loading   */
     allowBreak();
     SetCursor(LoadCursor(NULL, IDC_WAIT));
-    AddFileToFileNamesMenu(&FilesMenu, fname);
+    AddFileToFileNamesMenu(&FilesMenu, RealPath(fname));
 #endif
 
     Printf("Reading file \"%s\":\n",fname);
     setLastEdit(fname,0);
 
     needsImports = FALSE;
-    parseScript(fname,len);             /* process script file             */
+    parseScript(fname,len);             /* process script file
+*/
     if (needsImports)
-	return FALSE;
+ return FALSE;
     checkDefns();
     typeCheckDefns();
     compileDefns();
@@ -1212,17 +1216,18 @@ static Void local runEditor() {         /* run editor on script lastEdit   */
 	readScripts(1);
 }
 
-static Void local setLastEdit(fname,line)/* keep name of last file to edit */
+static Void local setLastEdit(fname,line)/* keep name of last file to edit
+*/
 String fname;
 Int    line; {
     if (lastEdit)
-	free(lastEdit);
+ free(lastEdit);
     lastEdit = strCopy(fname);
     lastLine = line;
 #if HUGS_FOR_WINDOWS
     /* Add file to Edit menu */
     if (lastEdit)
-      AddFileToFileNamesMenu(&EditMenu, lastEdit);
+      AddFileToFileNamesMenu(&EditMenu, RealPath(lastEdit));
 #endif
 }
 
@@ -2421,6 +2426,7 @@ static struct cmd brkCmds[] =
     , {"c",   BRK_CONTINUE}
     , {"s",   BRK_SET}
     , {"r",   BRK_RESET}
+    , {0,0}
     };
 
 Void breakDialogue(s)

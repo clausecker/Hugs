@@ -681,13 +681,15 @@ static CHAR* local GetaFileName(HWND hWnd, UINT Mask)
 {
   #define MAXEXTENSIONS 15
 
-  static CHAR 		Extensions[MAXEXTENSIONS][_MAX_EXT+1];
-  static  OPENFILENAME 	ofn;
-  static  CHAR 		szFileName[_MAX_PATH];
-  CHAR    		szFile[_MAX_PATH], szFileTitle[_MAX_PATH];
-  UINT    		i, j, cbString, n;
-  CHAR    		chReplace;    /* Separator between different filters in szFilter */
-  CHAR    		szFilter[300];
+  static CHAR   Extensions[MAXEXTENSIONS][_MAX_EXT+1];
+  static  OPENFILENAME  ofn;
+  static  CHAR   szFileName[_MAX_PATH];
+  CHAR      szFile[_MAX_PATH], szFileTitle[_MAX_PATH];
+  UINT      i, j, cbString, n;
+  CHAR      chReplace;    /* Separator between different filters in szFilter
+*/
+  CHAR      szFilter[300];
+  char                  currentDir[_MAX_PATH];
 
   szFile[0] = '\0';
 
@@ -707,7 +709,7 @@ static CHAR* local GetaFileName(HWND hWnd, UINT Mask)
       i++;
       j=0;
       while ((szFilter[i] != ';')&&(szFilter[i] != chReplace)){
-	Extensions[n][j++] = szFilter[i++];
+ Extensions[n][j++] = szFilter[i++];
       }
       Extensions[n++][j] = (CHAR) 0;
     } while (szFilter[i] == ';');
@@ -734,8 +736,12 @@ static CHAR* local GetaFileName(HWND hWnd, UINT Mask)
   ofn.nMaxFile = sizeof(szFile);
   ofn.lpstrFileTitle = szFileTitle;
   ofn.nMaxFileTitle = sizeof(szFileTitle);
-  ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY | OFN_ENABLEHOOK | OFN_EXPLORER;;
-  ofn.lpfnHook = (LPOFNHOOKPROC)MakeProcInstance((FARPROC) FileOpenHookProc, hThisInstance);
+  ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY |
+OFN_ENABLEHOOK | OFN_EXPLORER;;
+  ofn.lpfnHook = (LPOFNHOOKPROC)MakeProcInstance((FARPROC) FileOpenHookProc,
+hThisInstance);
+  GetCurrentDirectory(_MAX_PATH,currentDir);
+  ofn.lpstrInitialDir = currentDir;
 
 
   if (GetOpenFileName(&ofn)) {
@@ -746,7 +752,6 @@ static CHAR* local GetaFileName(HWND hWnd, UINT Mask)
     return NULL;
   }
 }
-
 
 
 /* Construct hugs_argc and hugs_argv from lpszCmdLine */
@@ -1236,32 +1241,33 @@ static Void local SmAddScr(HWND hDlg, CHAR *s) {
 
 
 LRESULT CALLBACK ScriptManDlgProc(HWND hDlg, UINT msg,
-			       WPARAM wParam, LPARAM lParam) {
+          WPARAM wParam, LPARAM lParam) {
     switch (msg) {
-	case WM_INITDIALOG: {
-	    Int i;
-	    smLoaded = numScripts;
-	    smUpto   = 0;
+ case WM_INITDIALOG: {
+     Int i;
+     smLoaded = numScripts;
+     smUpto   = 0;
 
             CenterDialogInParent(hDlg);
             SetDialogFont (hDlg, hDialogFont);
 
-            SendDlgItemMessage(hDlg, LB_SCRIPTS, LB_SETHORIZONTALEXTENT, (WPARAM)1000, 0L);
+            SendDlgItemMessage(hDlg, LB_SCRIPTS, LB_SETHORIZONTALEXTENT,
+(WPARAM)1000, 0L);
 
-	    SendDlgItemMessage(hDlg, LB_SCRIPTS, WM_SETREDRAW,FALSE,0L);
+     SendDlgItemMessage(hDlg, LB_SCRIPTS, WM_SETREDRAW,FALSE,0L);
 
-	    for (i=0; i<namesUpto; i++)
-		SmAddScr(hDlg,scriptName[i]);
-	    SmSelScr(hDlg,0);
-	    SendDlgItemMessage(hDlg,LB_SCRIPTS,LB_SETCURSEL, 0, 0L);
-	    SendDlgItemMessage(hDlg,LB_SCRIPTS,WM_SETREDRAW,TRUE,0L);
-	    return TRUE;
-	}
+     for (i=0; i<namesUpto; i++)
+  SmAddScr(hDlg,scriptReal[i]);
+     SmSelScr(hDlg,0);
+     SendDlgItemMessage(hDlg,LB_SCRIPTS,LB_SETCURSEL, 0, 0L);
+     SendDlgItemMessage(hDlg,LB_SCRIPTS,WM_SETREDRAW,TRUE,0L);
+     return TRUE;
+ }
         case WM_PAINT: {
-              HDC 	        hDC;
+              HDC          hDC;
               PAINTSTRUCT   Ps;
-              HBITMAP      	hBitmap;
-              RECT         	aRect, DlgRect;
+              HBITMAP       hBitmap;
+              RECT          aRect, DlgRect;
 
               BeginPaint(hDlg, &Ps);
               hDC = Ps.hdc;
@@ -1272,125 +1278,132 @@ LRESULT CALLBACK ScriptManDlgProc(HWND hDlg, UINT msg,
 
               hBitmap = LoadMappedBitmap(hThisInstance, "SCRIPTMANDLGBMP");
               DrawBitmap(hDC, hBitmap,
-	  	         aRect.left-DlgRect.left-GetSystemMetrics(SM_CXDLGFRAME),
-		         aRect.top-DlgRect.top-GetSystemMetrics(SM_CYDLGFRAME)-GetSystemMetrics(SM_CYCAPTION));
+             aRect.left-DlgRect.left-GetSystemMetrics(SM_CXDLGFRAME),
+
+aRect.top-DlgRect.top-GetSystemMetrics(SM_CYDLGFRAME)-GetSystemMetrics(SM_CY
+CAPTION));
               DeleteObject(hBitmap);
               EndPaint(hDlg, &Ps);
         }
         break;
 
-	case WM_COMMAND:
-	    switch (CMDitem(wParam,lParam)) {
-		case ID_ADDSCRIPT:
-		    if (smUpto>=NUM_SCRIPTS)
-			MessageBox(hDlg,"Too many script files",
-				   "Add script", MB_ICONEXCLAMATION|MB_OK);
-		    else {
-			String s = GetaFileName(hDlg,IDS_FILTERFILE);
-			if (s)
-			    SmAddScr(hDlg,s);
-		    }
-		    return TRUE;
+ case WM_COMMAND:
+     switch (CMDitem(wParam,lParam)) {
+  case ID_ADDSCRIPT:
+      if (smUpto>=NUM_SCRIPTS)
+   MessageBox(hDlg,"Too many script files",
+       "Add script", MB_ICONEXCLAMATION|MB_OK);
+      else {
+   String s = GetaFileName(hDlg,IDS_FILTERFILE);
+   if (s)
+       SmAddScr(hDlg,s);
+      }
+      return TRUE;
 
-		case ID_DELSCRIPT:
-		    if (selScr < 0)
-			MessageBox(hDlg,"No script file selected",
-				   "Remove script", MB_ICONEXCLAMATION|MB_OK);
-		    else if (selScr == 0)
-			MessageBox(hDlg,"Cannot remove prelude file",
-				   "Remove script", MB_ICONEXCLAMATION|MB_OK);
-		    else {
-			Int i;
-			SendDlgItemMessage(hDlg, LB_SCRIPTS, LB_DELETESTRING,
-					   selScr, 0L);
-			if (selScr<smLoaded)
-			    smLoaded = selScr;
-			if (smFile[selScr]) {
-			    free(smFile[selScr]);
-			    smFile[selScr] = 0;
-			}
-			for (i=selScr+1; i<smUpto; ++i)
-			    smFile[i-1] = smFile[i];
-			smUpto--;
-			SmSelScr(hDlg,-1);
-		    }
-		    return TRUE;
+  case ID_DELSCRIPT:
+      if (selScr < 0)
+   MessageBox(hDlg,"No script file selected",
+       "Remove script", MB_ICONEXCLAMATION|MB_OK);
+      else if (selScr == 0)
+   MessageBox(hDlg,"Cannot remove prelude file",
+       "Remove script", MB_ICONEXCLAMATION|MB_OK);
+      else {
+   Int i;
+   SendDlgItemMessage(hDlg, LB_SCRIPTS, LB_DELETESTRING,
+        selScr, 0L);
+   if (selScr<smLoaded)
+       smLoaded = selScr;
+   if (smFile[selScr]) {
+       free(smFile[selScr]);
+       smFile[selScr] = 0;
+   }
+   for (i=selScr+1; i<smUpto; ++i)
+       smFile[i-1] = smFile[i];
+   smUpto--;
+   SmSelScr(hDlg,-1);
+      }
+      return TRUE;
 
-		case ID_EDITSCRIPT:
-		    if (selScr >= 0)
-		        DlgSendMessage(hDlg, WM_COMMAND, LB_SCRIPTS, MAKELONG(0, LBN_DBLCLK));
-		    else
-			MessageBox(hDlg,"No file selected","Edit",
-				   MB_ICONEXCLAMATION|MB_OK);
-		    return TRUE;
+  case ID_EDITSCRIPT:
+      if (selScr >= 0)
+          DlgSendMessage(hDlg, WM_COMMAND, LB_SCRIPTS, MAKELONG(0,
+LBN_DBLCLK));
+      else
+   MessageBox(hDlg,"No file selected","Edit",
+       MB_ICONEXCLAMATION|MB_OK);
+      return TRUE;
 
-		case ID_CLEARSCRIPTS: {
-		    Int i;
-		    for (i=1; i<smUpto; ++i)
-			if (smFile[i])
-			    free(smFile[i]);
-		    smUpto = smLoaded = 1;
-		    SendDlgItemMessage(hDlg,LB_SCRIPTS,LB_RESETCONTENT,0,0L);
-		    fprintf(stdstr,"%s\n",smFile[0]);
-		    SendDlgItemMessage(hDlg, LB_SCRIPTS, LB_ADDSTRING, 0,
-				       (LONG) (LPSTR) stdstrbuff);
-		    SmSelScr(hDlg,-1);
-		    return TRUE;
-		}
+  case ID_CLEARSCRIPTS: {
+      Int i;
+      for (i=1; i<smUpto; ++i)
+   if (smFile[i])
+       free(smFile[i]);
+      smUpto = smLoaded = 1;
+      SendDlgItemMessage(hDlg,LB_SCRIPTS,LB_RESETCONTENT,0,0L);
+      fprintf(stdstr,"%s\n",smFile[0]);
+      SendDlgItemMessage(hDlg, LB_SCRIPTS, LB_ADDSTRING, 0,
+           (LONG) (LPSTR) stdstrbuff);
+      SmSelScr(hDlg,-1);
+      return TRUE;
+  }
 
-		case LB_SCRIPTS:
-		    switch (CMDdata(wParam,lParam)) {
-			case LBN_SELCHANGE:
-			    SmSelScr(hDlg,(Int)SendDlgItemMessage(hDlg,
-								  LB_SCRIPTS,
-								  LB_GETCURSEL,
-								  0, 0L));
-			    return TRUE;
+  case LB_SCRIPTS:
+      switch (CMDdata(wParam,lParam)) {
+   case LBN_SELCHANGE:
+       SmSelScr(hDlg,(Int)SendDlgItemMessage(hDlg,
+          LB_SCRIPTS,
+          LB_GETCURSEL,
+          0, 0L));
+       return TRUE;
 
-			case LBN_DBLCLK: {
-			    char buffer[_MAX_PATH];
-			    SendDlgItemMessage(hDlg,
-					       LB_SCRIPTS,
-					       LB_GETTEXT,
-					       selScr,
-					       (LPARAM) (LPSTR) buffer);
-			    setLastEdit((String)buffer,0);
-			    runEditor();
-			    return TRUE;
-			}
-		    }
-		    break;
+   case LBN_DBLCLK: {
+       char buffer[_MAX_PATH];
+       SendDlgItemMessage(hDlg,
+            LB_SCRIPTS,
+            LB_GETTEXT,
+            selScr,
+            (LPARAM) (LPSTR) buffer);
+       setLastEdit((String)buffer,0);
+       runEditor();
+       return TRUE;
+   }
+      }
+      break;
 
-		case IDOK: {
-		    Int i;
-		    for (i=0; i<namesUpto; i++)
-			if (scriptName[i])
-			    free(scriptName[i]);
-		    for (i=0; i<smUpto; i++) {
-			scriptName[i] = smFile[i];
-			smFile[i]     = 0;
-		    }
-		    namesUpto  = smUpto;
-		    numScripts = smLoaded;
-		    dropScriptsFrom(numScripts-1);
-		    PostMessage(hWndMain,WM_COMMAND,ID_COMPILE,0L);
-		    EndDialog(hDlg,TRUE);
-		    return TRUE;
-		}
+  case IDOK: {
+      Int i;
+      for (i=0; i<namesUpto; i++)
+   if (scriptName[i]) {
+       free(scriptName[i]);
+       free(scriptReal[i]);
+      }
+      for (i=0; i<smUpto; i++) {
+   scriptName[i] = smFile[i];
+   scriptReal[i] = strCopy(RealPath(scriptName[i]));
+   smFile[i]     = 0;
+      }
+      namesUpto  = smUpto;
+      numScripts = smLoaded;
+      dropScriptsFrom(numScripts-1);
+      PostMessage(hWndMain,WM_COMMAND,ID_COMPILE,0L);
+      EndDialog(hDlg,TRUE);
+      return TRUE;
+  }
 
-		case IDCANCEL: {
-		    Int i;
-		    for (i=0; i<smUpto; i++)
-			if (smFile[i])
-			    free(smFile[i]);
-		    EndDialog(hDlg, TRUE);
-		    return TRUE;
-		}
-	    }
-	    break;
+  case IDCANCEL: {
+      Int i;
+      for (i=0; i<smUpto; i++)
+   if (smFile[i])
+       free(smFile[i]);
+      EndDialog(hDlg, TRUE);
+      return TRUE;
+  }
+     }
+     break;
     }
     return FALSE;
 }
+
 
 /* --------------------------------------------------------------------------
  * Manages Adding file names to Menus:
