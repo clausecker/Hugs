@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.58 $
- * $Date: 2002/04/09 22:36:35 $
+ * $Revision: 1.59 $
+ * $Date: 2002/04/11 22:55:31 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -4120,8 +4120,8 @@ Int  a; {
 	     *				 showsPrec rp b)
 	     */
 	    Int  p   = precOf(s);
-	    Int  lp  = (assocOf(s)==LEFT_ASS)  ? p : (p+1);
-	    Int  rp  = (assocOf(s)==RIGHT_ASS) ? p : (p+1);
+	    Int  lp  = (p+1); /* how it was in Haskell from Day 1 until 11/4/2002:  (assocOf(s)==LEFT_ASS)  ? p : (p+1); */
+	    Int  rp  = (p+1); /* ditto:  (assocOf(s)==RIGHT_ASS) ? p : (p+1); */
 	    Cell rhs = ap(showsSP,ap2(nameShowsPrec,mkInt(rp),arg(pat)));
 	    if (defaultSyntax(name(h).text)==APPLIC) {
 		rhs = ap(showsBQ,
@@ -4304,8 +4304,8 @@ Cell con;
 {
     Syntax s  = syntaxOf(con);
     Int    p  = precOf(s); 
-    Int    lp = assocOf(s)==LEFT_ASS  ? p : (p+1);
-    Int    rp = assocOf(s)==RIGHT_ASS ? p : (p+1);
+    Int    lp = (p+1); /* how it was in Haskell from Day 1 until 11/4/2002: assocOf(s)==LEFT_ASS  ? p : (p+1); */
+    Int    rp = (p+1); /* ditto: assocOf(s)==RIGHT_ASS ? p : (p+1); */
     Cell   cn = mkStr(name(con).text);  
     Cell   r  = inventVar();
     Cell   s0 = inventVar();
