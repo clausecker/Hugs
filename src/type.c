@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: type.c,v $
- * $Revision: 1.15 $
- * $Date: 1999/11/16 22:59:57 $
+ * $Revision: 1.16 $
+ * $Date: 1999/12/21 21:45:24 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1190,15 +1190,18 @@ Cell e;
 List qs; {
     static String boolQual = "boolean qualifier";
     static String genQual  = "generator";
+#if IPARAM
+    List svPreds;
+#endif
 
     STACK_CHECK
-    if (isNull(qs))			/* no qualifiers left		   */
-	fst(e) = typeExpr(l,fst(e));
-    else {
+    if (isNull(qs)) {			/* no qualifiers left		   */
+	spTypeExpr(l,fst(e));
+    } else {
 	Cell q   = hd(qs);
 	List qs1 = tl(qs);
 	switch (whatIs(q)) {
-	    case BOOLQUAL : check(l,snd(q),NIL,boolQual,typeBool,0);
+	    case BOOLQUAL : spCheck(l,snd(q),NIL,boolQual,typeBool,0);
 			    typeComp(l,m,e,qs1);
 			    break;
 
@@ -1212,7 +1215,7 @@ List qs; {
 
 	    case FROMQUAL : {   Int beta = newTyvars(1);
 				saveVarsAss();
-				check(l,snd(snd(q)),NIL,genQual,m,beta);
+				spCheck(l,snd(snd(q)),NIL,genQual,m,beta);
 				enterSkolVars();
 				fst(snd(q))
 				    = typeFreshPat(l,patBtyvs(fst(snd(q))));
@@ -1224,7 +1227,7 @@ List qs; {
 			    }
 			    break;
 
-	    case DOQUAL   : check(l,snd(q),NIL,genQual,m,newTyvars(1));
+	    case DOQUAL   : spCheck(l,snd(q),NIL,genQual,m,newTyvars(1));
 			    typeComp(l,m,e,qs1);
 			    break;
 	}
@@ -1275,6 +1278,9 @@ Cell e; {
     Int  to;
     Int  tf;
     Int  i;
+#if IPARAM
+    List svPreds;
+#endif
 
     instantiate(name(c).type);
     for (; nonNull(predsAre); predsAre=tl(predsAre))
@@ -1293,7 +1299,7 @@ Cell e; {
 	if (isPolyOrQualType(t))
 	    snd(hd(fs)) = typeExpected(l,conExpr,snd(hd(fs)),t,to,tf,TRUE);
 	else {
-	    check(l,snd(hd(fs)),e,conExpr,t,to);
+	    spCheck(l,snd(hd(fs)),e,conExpr,t,to);
 	}
     }
     for (i=name(c).arity; i>0; i--)
@@ -1312,10 +1318,13 @@ Cell e; {				/* bizarre manner for the benefit  */
     Int  alpha = newTyvars(2+n);
     Int  i;
     List fs1;
+#if IPARAM
+    List svPreds;
+#endif
 
     /* Calculate type and translation for each expr in the field list	   */
     for (fs1=fs, i=alpha+2; nonNull(fs1); fs1=tl(fs1), i++) {
-	snd(hd(fs1)) = typeExpr(line,snd(hd(fs1)));
+	spTypeExpr(line,snd(hd(fs1)));
 	bindTv(i,typeIs,typeOff);
     }
 
@@ -1332,7 +1341,7 @@ Cell e; {				/* bizarre manner for the benefit  */
     ts = rev(ts);
 
     /* Type check expression to be updated				   */
-    fst3(snd(e)) = typeExpr(line,fst3(snd(e)));
+    spTypeExpr(line,fst3(snd(e)));
     bindTv(alpha,typeIs,typeOff);
 
     for (; nonNull(cs); cs=tl(cs)) {	/* Loop through constrs		   */
@@ -1514,6 +1523,7 @@ List bs; {
     normPreds(line);
     elimTauts();
     preds = revOnto(preds,savePreds);
+
 
     clearMarks();			/* Mark fixed variables		   */
     mapProc(markAssumList,tl(defnBounds));
@@ -2189,10 +2199,13 @@ Cell gded; {			       /*	      ex :: (var,beta)	   */
     static String guarded = "guarded expression";
     static String guard   = "guard";
     Int line = intOf(fst(gded));
+#if IPARAM
+    List svPreds;
+#endif
 
     gded     = snd(gded);
-    check(line,fst(gded),NIL,guard,typeBool,0);
-    check(line,snd(gded),NIL,guarded,aVar,beta);
+    spCheck(line,fst(gded),NIL,guard,typeBool,0);
+    spCheck(line,snd(gded),NIL,guarded,aVar,beta);
 }
 
 Cell rhsExpr(rhs)		       /* find first expression on a rhs   */

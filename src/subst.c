@@ -9,8 +9,8 @@
  * included in the distribution.
  *
  * $RCSfile: subst.c,v $
- * $Revision: 1.14 $
- * $Date: 1999/11/17 01:31:56 $
+ * $Revision: 1.15 $
+ * $Date: 1999/12/21 21:45:24 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1515,6 +1515,9 @@ Int o; {
     }
     return improved;
 }
+
+/* should emulate findInsts behavior of shorting out if the
+   predicate would match a more general signature... */
 
 Bool instImprove(line,c,pi,o)
 Int line;
