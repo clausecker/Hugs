@@ -563,7 +563,7 @@ main()
     HINSTANCE instance;
     void* sym;
 
-    instance = LoadLibrary("conftest_dl.dll");
+    instance = LoadLibrary("conftest_dl.so");
     if (instance ==0) exit(CANTOPEN);
 
     sym = (void*)GetProcAddress(instance,SYMBOL1);
