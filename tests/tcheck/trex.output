@@ -1,6 +1,6 @@
 Type :? for help
-Hugs:(a=True, b="Hello", c=12)
-Hugs:(a=True, b="Hello", c=12)
+Hugs:(a = True, b = "Hello", c = 12)
+Hugs:(a = True, b = "Hello", c = 12)
 Hugs:True
 Hugs:True
 Hugs:"Hello"
@@ -12,8 +12,8 @@ Program error: Prelude.undefined
 
 Hugs:eg1 :: Rec (a :: Bool, b :: [Char], c :: Int)
 Hugs:eg2 :: Rec (a :: Bool, b :: [Char], c :: Int)
-Hugs:(a=2, b=3)
+Hugs:(a = 2, b = 3)
 Hugs:True
-Hugs:(2,(b=3))
+Hugs:(2,(b = 3))
 Hugs:(2,emptyRec)
 Hugs:[Leaving Hugs]
