@@ -316,6 +316,9 @@
 /* Define if you have the <pascal.h> header file.  */
 /* #undef HAVE_PASCAL_H */
 
+/* Define if you have the rindex function.  */
+/* #undef HAVE_RINDEX */
+
 /* Define if you have the <sgtty.h> header file.  */
 /* #undef HAVE_SGTTY_H */
 
@@ -336,6 +339,9 @@
 
 /* Define if you have the <string.h> header file.  */
 #define HAVE_STRING_H 1
+
+/* Define if you have the strrchr function.  */
+#define HAVE_STRRCHR 1
 
 /* Define if you have the <sys/ioctl.h> header file.  */
 /* #undef HAVE_SYS_IOCTL_H */
