@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.111 $
- * $Date: 2002/12/10 00:00:37 $
+ * $Revision: 1.112 $
+ * $Date: 2002/12/10 16:14:56 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -373,7 +373,7 @@ String argv[]; {
 #else
     hugsEdit      = strCopy(fromEnv("EDITOR",NULL));
 #endif
-    hugsPath      = strCopy(HUGSPATH2);
+    hugsPath      = strCopy(HUGSPATH);
     hugsSuffixes  = strCopy(HUGSSUFFIXES);
 #if HSCRIPT
     hscriptSuffixes();
@@ -839,7 +839,7 @@ String s; {                             /* return FALSE if none found.     */
 			   
 			   savedPath = hugsPath;
 			   if (*(s+1) == '\0') {
-			     hugsPath = strCopy(HUGSPATH2);
+			     hugsPath = strCopy(HUGSPATH);
 			   } else {
 			     hugsPath  = substPath(s+1,hugsPath ? hugsPath : "");
 			   }
