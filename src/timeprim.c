@@ -94,7 +94,7 @@ primFun(primGetClockTime) { /* :: IO (Int,Int) */
 #endif
 }
 
-#if defined(_WIN32)
+#if IS_WINDOWS
 # define timezone _timezone
 #endif
 
@@ -123,7 +123,7 @@ primFun(primGetCalTime) { /* Int   -> Int -> IO (.....) */
   /* Warning - ugliness. */
 # ifdef HAVE_TM_ZONE
   zoneNm = (char*)tm->tm_zone;
-# elif HAVE_TZNAME || defined(_WIN32)
+# elif HAVE_TZNAME || IS_WINDOWS
   /* ToDo: fix autoconf macro AC_STRUCT_TIMEZONE so that it will recognise
    *       mingw's _tzname global. For now, force it.
    */
@@ -257,7 +257,7 @@ CAFInt(primClockTicks, sysconf(_SC_CLK_TCK))
 primFun(primGetCPUUsage) { /* IO (Int,Int,Int,Int) */
   int userSec, userNSec;
   int sysSec,  sysNSec;
-#ifndef _WIN32
+#if !IS_WINDOWS
 #if defined(HAVE_GETRUSAGE) /* && ! irix_TARGET_OS && ! solaris2_TARGET_OS */
     struct rusage t;
 

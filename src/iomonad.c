@@ -19,8 +19,8 @@
  * included in the distribution.
  *
  * $RCSfile: iomonad.c,v $
- * $Revision: 1.19 $
- * $Date: 2002/01/01 17:46:04 $
+ * $Revision: 1.20 $
+ * $Date: 2002/01/21 04:25:29 $
  * ------------------------------------------------------------------------*/
  
 Name nameIORun;			        /* run IO code                     */
@@ -1239,7 +1239,7 @@ primFun(primHIsWritable) {		/* Test is handle writable         */
     IOBoolResult(handles[h].hmode&(HWRITE|HREADWRITE|HAPPEND));
 }
 
-#if defined(_WIN32) && !defined(S_ISREG)
+#if defined(IS_WINDOWS) && !defined(S_ISREG)
 #define S_ISREG(x)  ((x) & _S_IFREG)
 #endif
 
@@ -1408,7 +1408,7 @@ primFun(primHWaitForInput) { /* Check whether a character can be read
   HandleArg(h,4);
   IntArg(msecs,3);
   
-#if defined(HAVE_SELECT) && !(defined(_WIN32) && !defined(__CYGWIN__))
+#if defined(HAVE_SELECT)
   if (handles[h].hmode&(HREAD|HREADWRITE)) {
     /* Implementation is a rip-off of GHC's inputReady.c */
     int maxfd, fd;

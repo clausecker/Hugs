@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: input.c,v $
- * $Revision: 1.34 $
- * $Date: 2001/12/20 10:06:05 $
+ * $Revision: 1.35 $
+ * $Date: 2002/01/21 04:25:30 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -21,11 +21,8 @@
 #if HAVE_GETDELIM_H
 #include "getdelim.h"
 #endif
-#if IS_WIN32
+#if IS_WINDOWS
 #include <windows.h>
-#endif
-
-#if IS_WIN32 | HUGS_FOR_WINDOWS
 #undef IN
 #endif
 
@@ -601,7 +598,7 @@ static Void local skip() {              /* move forward one char in input  */
 		c1 = EOF;
 	    else {
 		c1 = nextConsoleChar();
-#if IS_WIN32 && !HUGS_FOR_WINDOWS
+#if IS_WINDOWS && !HUGS_FOR_WINDOWS
 		Sleep(0);
 #endif
 		/* On Win32, hitting ctrl-C causes the next getchar to
