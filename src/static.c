@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.16 $
- * $Date: 1999/11/16 22:59:55 $
+ * $Revision: 1.17 $
+ * $Date: 2000/01/04 17:17:13 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -3234,7 +3234,6 @@ Inst in; {				/* of the context for a derived	   */
 
 	if (its++ >= factor*cutoff) {
 	    Cell bpi = inst(in).head;
-	    Cell pi  = copyPred(fun(p),intOf(snd(p)));
 	    ERRMSG(inst(in).line) "\n*** Cannot derive " ETHEN ERRPRED(bpi);
 	    ERRTEXT " after %d iterations.", its-1   ETHEN
 	    ERRTEXT
@@ -5990,9 +5989,13 @@ Void checkDefns() {			/* Top level static analysis	   */
     checkSynonyms(tyconDefns);		/* check synonym definitions	   */
     mapProc(checkClassDefn,classDefns);	/* process class definitions	   */
     mapProc(kindTCGroup,tcscc(tyconDefns,classDefns)); /* attach kinds	   */
-    mapProc(extendFundeps,classDefns);  /* finish class definitions	   */
     mapProc(addMembers,classDefns);	/* add definitions for member funs */
     mapProc(visitClass,classDefns);	/* check class hierarchy	   */
+    mapProc(extendFundeps,classDefns);  /* finish class definitions	   */
+					/* (convenient if we do this after */
+					/* calling `visitClass' so that we */
+					/* know the class hierarchy is     */
+					/* acyclic)                        */
     linkPreludeCM();			/* Get prelude cfuns and mfuns	   */
 
     mapOver(checkPrimDefn,primDefns);	/* check primitive declarations	   */
