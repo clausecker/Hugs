@@ -788,6 +788,7 @@ if test "x$target_os" = "xmingw32"; then
     DLL=".dll"          
     DLL_ENDING="-dll"   
     DEV_NULL="nul"
+    hugsdir_deflt='${libdir}/hugs'
     HUGSPATH=".;{Hugs}\\\\libraries;{Hugs}\\\\packages\\\\*;{Hugs}\\\\oldlib;{Hugs}\\\\lib\\\\win32"
     HUGSSUFFIXES=".hs;.lhs"
     MkInstall="src/MkInstal.in"
