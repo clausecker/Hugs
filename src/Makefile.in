@@ -40,7 +40,6 @@ CP		= @CP@
 EXE		= @EXE@
 
 FPTOOLS		= @FPTOOLS@
-INSTALL_FFI	= @INSTALL_FFI@
 
 BUILD_DIR	= ../hugsdir
 
@@ -127,11 +126,11 @@ EXTRA_FFI_LIBRARIES = \
 		$(BUILD_DIR)/libraries/Network/Socket@DLL@ \
 		$(BUILD_DIR)/libraries/Network/BSD@DLL@
 
-FFI_LIBRARIES = $(BASIC_FFI_LIBRARIES) $(EXTRA_FFI_LIBRARIES)
+ffi_libraries	: $(BASIC_FFI_LIBRARIES) $(EXTRA_FFI_LIBRARIES)
 
-ffi_libraries	: $(FFI_LIBRARIES)
+$(BASIC_FFI_LIBRARIES) : $(LIBRARIES) ffihugs$(EXE) $(INCLUDE)
 
-$(FFI_LIBRARIES) : $(LIBRARIES) ffihugs$(EXE) $(INCLUDE)
+$(EXTRA_FFI_LIBRARIES) : $(BASIC_FFI_LIBRARIES)
 
 BUILD_FFI = env HUGSDIR='$(BUILD_DIR)' HUGSFLAGS='-W' ./ffihugs +G
 
@@ -153,13 +152,13 @@ $(BUILD_DIR)/libraries/Foreign/C/Error@DLL@ : \
 			$(BUILD_DIR)/libraries/Hugs/Storable@DLL@
 		  $(BUILD_FFI) +L'$(BUILD_DIR)/libraries/Foreign/C/errno.c' Foreign.C.Error  
 
-$(BUILD_DIR)/libraries/Text/Regex/Posix@DLL@ : $(BASIC_FFI_LIBRARIES)
+$(BUILD_DIR)/libraries/Text/Regex/Posix@DLL@ :
 		  $(BUILD_FFI) Text.Regex.Posix
 
-$(BUILD_DIR)/libraries/Network/Socket@DLL@ : $(BASIC_FFI_LIBRARIES)
+$(BUILD_DIR)/libraries/Network/Socket@DLL@ :
 		  $(BUILD_FFI) +L'$(BUILD_DIR)/libraries/Network/HsNet.c' +L'$(BUILD_DIR)/libraries/Network/initWinSock.c' +L'$(BUILD_DIR)/libraries/Network/ancilData.c' Network.Socket
 
-$(BUILD_DIR)/libraries/Network/BSD@DLL@ : $(BASIC_FFI_LIBRARIES) \
+$(BUILD_DIR)/libraries/Network/BSD@DLL@ : \
 			$(BUILD_DIR)/libraries/Network/Socket@DLL@
 		  $(BUILD_FFI) Network.BSD
 
