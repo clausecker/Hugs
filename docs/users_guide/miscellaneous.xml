@@ -347,7 +347,7 @@ modules, but users are encouraged to migrate to the new libraries.
 
 <listitem><para>
 Full support for imprecise exceptions (but not asynchronous ones).
-Most runtime errors are now reported by applying <literal>print</literal>
+Most runtime errors are now reported by applying <function>print</function>
 to an <literal>Exception</literal>
 (formerly the built-in printer was applied to the faulty redex).
 </para></listitem>

@@ -39,12 +39,12 @@ and this extension provides the necessary syntactic support.
 <para>
 Here is a simple (yet contrived) example:
 <programlisting><![CDATA[
-  import Control.Monad.Fix
+import Control.Monad.Fix
 
-  justOnes = mdo xs <- Just (1:xs)
-                 return xs
+justOnes = mdo xs <- Just (1:xs)
+               return xs
 ]]></programlisting>
-As you can guess <literal>justOnes</literal> will evaluate to
+As you can guess <function>justOnes</function> will evaluate to
 <literal>Just [1,1,1,...</literal>
 </para>
 
@@ -52,10 +52,10 @@ As you can guess <literal>justOnes</literal> will evaluate to
 The <literal>Control.Monad.Fix</literal> module introduces
 the <literal>MonadFix</literal> class, defined as
 <programlisting>
-  class Monad m => MonadFix m where
-      mfix :: (a -> m a) -> m a
+class Monad m => MonadFix m where
+    mfix :: (a -> m a) -> m a
 </programlisting>
-The function <literal>mfix</literal> dictates how the required recursion
+The function <function>mfix</function> dictates how the required recursion
 operation should be performed.
 If recursive bindings are required for a monad, then that
 monad must be declared an instance of the <literal>MonadFix</literal> class.
@@ -64,7 +64,7 @@ For details, see the above mentioned reference.
 
 <para>
 The <literal>Control.Monad.Fix</literal> module also defines instances of
-<literal>MonadFix</literal> for <literal>List</literal>,
+<literal>MonadFix</literal> for lists,
 <literal>Maybe</literal> and <literal>IO</literal>.
 Furthermore, several other monad modules provide instances of the
 <literal>MonadFix</literal> class, including
@@ -108,7 +108,7 @@ for the class and the corresponding library.
 Parallel list comprehensions are a natural extension to list comprehensions.
 List comprehensions can be thought of as a nice syntax for writing maps and
 filters.
-Parallel comprehensions extend this to include the <literal>zipWith</literal>
+Parallel comprehensions extend this to include the <function>zipWith</function>
 family.
 </para>
 
@@ -117,10 +117,10 @@ A parallel list comprehension has multiple independent branches of qualifier
 lists, each separated by a <quote><literal>|</literal></quote> symbol.
 For example, the following zips together two lists:
 <programlisting><![CDATA[
-   [ (x, y) | x <- xs | y <- ys ]
+[ (x, y) | x <- xs | y <- ys ]
 ]]></programlisting>
 The behavior of parallel list comprehensions follows that
-of <literal>zip</literal>, in that
+of <function>zip</function>, in that
 the resulting list will have the same length as the shortest branch.
 </para>
 
@@ -129,17 +129,17 @@ We can define parallel list comprehensions by translation to regular
 comprehensions.
 Given a parallel comprehension of the form:
 <programlisting><![CDATA[
-   [ e | p1 <- e11, p2 <- e12, ...
-       | q1 <- e21, q2 <- e22, ...
-       ...
-   ]
+[ e | p1 <- e11, p2 <- e12, ...
+    | q1 <- e21, q2 <- e22, ...
+    ...
+]
 ]]></programlisting>
 This will be translated to:
 <programlisting><![CDATA[
-   [ e | ((p1,p2), (q1,q2), ...) <- zipN [(p1,p2) | p1 <- e11, p2 <- e12, ...]
-                                         [(q1,q2) | q1 <- e21, q2 <- e22, ...]
-                                         ...
-   ]
+[ e | ((p1,p2), (q1,q2), ...) <- zipN [(p1,p2) | p1 <- e11, p2 <- e12, ...]
+                                      [(q1,q2) | q1 <- e21, q2 <- e22, ...]
+                                      ...
+]
 ]]></programlisting>
 where <quote><replaceable>zipN</replaceable></quote>
 is the appropriate zip for the given number of branches.
@@ -158,13 +158,13 @@ is the appropriate zip for the given number of branches.
 <para>In Haskell 98, contexts consist of class constraints
 on type variables applied to zero or more types, as in
 <programlisting>
-  f :: (Functor f, Num (f Int)) => f String -> f Int -> f Int
+f :: (Functor f, Num (f Int)) => f String -> f Int -> f Int
 </programlisting>
 In class and instance declarations only type variables may be constrained.
 With the <option>-98</option> option,
 any type may be constrained by a class, as in
 <programlisting>
-  g :: (C [a], D (a -> b)) => [a] -> b
+g :: (C [a], D (a -> b)) => [a] -> b
 </programlisting>
 Classes are not limited to a single argument either
 (see <xref linkend="multi-param"/>).
@@ -180,10 +180,10 @@ a <literal>data</literal> or <literal>newtype</literal> type constructor
 applied to type variables.
 With the <option>-98</option> option, any type may be made an instance:
 <programlisting>
-  instance Monoid (a -> a) where ...
-  instance Show (Tree Int) where ...
-  instance MyClass a where ...
-  instance C String where
+instance Monoid (a -> a) where ...
+instance Show (Tree Int) where ...
+instance MyClass a where ...
+instance C String where
 </programlisting>
 This relaxation, together with the relaxation of contexts mentioned above,
 makes the checking of constraints undecidable in general
@@ -211,27 +211,27 @@ turn these off, in which case a depth limit like that in Hugs is used.
 With the relaxation on the form of instances discussed in the previous
 section, it seems we could write
 <programlisting>
-  class C a where c :: a
-  instance C (Bool,a) where ...
-  instance C (a,Char) where ...
+class C a where c :: a
+instance C (Bool,a) where ...
+instance C (a,Char) where ...
 </programlisting>
 but then in the expression <literal>c :: (Bool,Char)</literal>,
 either instance could be chosen.
 For this reason, overlapping instances are forbidden:
 <screen>
-  ERROR "Test.hs":4 - Overlapping instances for class "C"
-  *** This instance   : C (a,Char)
-  *** Overlaps with   : C (Bool,a)
-  *** Common instance : C (Bool,Char)
+ERROR "Test.hs":4 - Overlapping instances for class "C"
+*** This instance   : C (a,Char)
+*** Overlaps with   : C (Bool,a)
+*** Common instance : C (Bool,Char)
 </screen>
 However if the
 <link linkend="option-overlapping"><option>+o</option></link> option is set,
 they are permitted when one of the types is a substitution instance of
 the other (but not equivalent to it), as in
 <programlisting>
-  class C a where toString :: a -> String
-  instance C [Char] where ...
-  instance C a => C [a] where ...
+class C a where toString :: a -> String
+instance C [Char] where ...
+instance C a => C [a] where ...
 </programlisting>
 Now for the type <literal>[Char]</literal>, the first instance is used;
 for any type <literal>[<replaceable>t</replaceable>]</literal>,
@@ -245,8 +245,8 @@ or in the choice of which to use.
 The above analysis omitted one case, where the type <literal>t</literal> is
 a type variable, as in
 <programlisting>
-  f :: C a => [a] -> String
-  f xs = toString xs
+f :: C a => [a] -> String
+f xs = toString xs
 </programlisting>
 We cannot decide which instance to choose, so Hugs rejects this definition.
 However if the
@@ -269,7 +269,7 @@ Sometimes one can avoid overlapping instances.
 The particular example discussed above is similar to the situation described
 by the <literal>Show</literal> class in the <literal>Prelude</literal>.
 However there overlapping instances are avoided by adding the method
-<literal>showList</literal> to the class
+<function>showList</function> to the class
 </para>
 
 </sect2>
@@ -283,7 +283,7 @@ they may be thought of as sets of types.
 In Hugs, they may have one or more parameters,
 corresponding to relations between types, e.g.
 <programlisting>
-  class Isomorphic a b where
+class Isomorphic a b where
     from :: a -> b
     to :: b -> a
 </programlisting>
@@ -307,7 +307,7 @@ Mark P. Jones, In
 <para>
 Functional dependencies are introduced by a vertical bar:
 <programlisting>
-  class MyClass a b c | a -> b where
+class MyClass a b c | a -> b where
 </programlisting>
 This says that the <literal>b</literal> parameter is determined by the
 <literal>a</literal> parameter;
@@ -317,15 +317,15 @@ The type inference system then uses this information to resolve many
 ambiguities.
 You can have several dependencies:
 <programlisting>
-  class MyClass a b c | a -> b, a -> c where
+class MyClass a b c | a -> b, a -> c where
 </programlisting>
 This example could also be written
 <programlisting>
-  class MyClass a b c | a -> b c where
+class MyClass a b c | a -> b c where
 </programlisting>
 Similarly more than one type parameter may appear to the left of the arrow:
 <programlisting>
-  class MyClass a b c | a b -> c where
+class MyClass a b c | a b -> c where
 </programlisting>
 This says that the <literal>c</literal> parameter is determined by the
 <literal>a</literal> and <literal>b</literal> parameters together;
@@ -346,21 +346,21 @@ first parameter and second parameters, but different third parameters.
 <para>In Haskell 98, all type signatures are implicitly universally
 quantified at the outer level, for example
 <programlisting>
-  id :: a -> a
+id :: a -> a
 </programlisting>
 Variables bound with a <literal>let</literal> or <literal>where</literal>
 may be polymorphic, as in
 <programlisting>
-  let f x = x in (f True, f 'a')
+let f x = x in (f True, f 'a')
 </programlisting>
 but function arguments may not be: Haskell 98 rejects
 <programlisting>
-  g f = (f True, f 'a')
+g f = (f True, f 'a')
 </programlisting>
 However, with the <option>-98</option>, the function <literal>g</literal>
 may be given the signature
 <programlisting>
-  g :: (forall a. a -> a) -> (Bool, Char)
+g :: (forall a. a -> a) -> (Bool, Char)
 </programlisting>
 This is called a <emphasis>rank 2</emphasis> type, because a function
 argument is polymorphic, as indicated by the <literal>forall</literal>
@@ -372,15 +372,15 @@ Now the function <literal>g</literal> may be applied to expression whose
 generalized type is at least as general as that declared.
 In this case the choice is limited: we can write
 <screen>
-  g id
-  g undefined
-  g (const undefined)
+g id
+g undefined
+g (const undefined)
 </screen>
 or various equivalent forms
 <screen>
-  g (\x -&gt; x)
-  g (id . id . id)
-  g (id id id)
+g (\x -&gt; x)
+g (id . id . id)
+g (id id id)
 </screen>
 There are a number of restrictions on such functions:
 <itemizedlist>
@@ -412,34 +412,34 @@ is unused in the enclosed type.
 <para>
 An important application of rank 2 types is the primitive
 <programlisting>
-  runST :: (forall s. ST s a) -> a
+runST :: (forall s. ST s a) -> a
 </programlisting>
 in the module <literal>Control.Monad.ST</literal>.
 Here the type signature ensures that objects created by the state monad,
 whose types all refer to the parameter <literal>s</literal>,
-are unused outside the application of <literal>runST</literal>.
+are unused outside the application of <function>runST</function>.
 Thus to use this module you need the <option>-98</option> option.
 Also, from the restrictions above,
-it follows that <literal>runST</literal> must always
+it follows that <function>runST</function> must always
 be applied to its polymorphic argument.
 Hugs does not permit either of
 <programlisting>
-  myRunST :: (forall s. ST s a) -> a
-  myRunST = runST
+myRunST :: (forall s. ST s a) -> a
+myRunST = runST
 
-  f x = runST $ do
-        ...
-        return y
+f x = runST $ do
+      ...
+      return y
 </programlisting>
 (though GHC does).
 Instead, you can write
 <programlisting>
-  myRunST :: (forall s. ST s a) -> a
-  myRunST x = runST x
+myRunST :: (forall s. ST s a) -> a
+myRunST x = runST x
 
-  f x = runST (do
-        ...
-        return y)
+f x = runST (do
+      ...
+      return y)
 </programlisting>
 </para>
 
@@ -450,19 +450,19 @@ Instead, you can write
 
 <para>Similarly, components of a constructor may be polymorphic:
 <programlisting>
-  newtype List a = MkList (forall r. r -> (a -> r -> r) -> r)
-  newtype NatTrans f g = MkNT (forall a. f a -> g a)
-  data MonadT m = MkMonad {
-                  my_return :: forall a. a -> m a,
-                  my_bind :: forall a b. m a -> (a -> m b) -> m b
-                }
+newtype List a = MkList (forall r. r -> (a -> r -> r) -> r)
+newtype NatTrans f g = MkNT (forall a. f a -> g a)
+data MonadT m = MkMonad {
+                my_return :: forall a. a -> m a,
+                my_bind :: forall a b. m a -> (a -> m b) -> m b
+              }
 </programlisting>
 So that the constructors have rank 2 types:
 <programlisting>
-  MkList :: (forall r. r -> (a -> r -> r) -> r) -> List a
-  MkNT :: (forall a. f a -> g a) -> NatTrans f g
-  MkMonad :: (forall a. a -> m a) ->
-             (forall a b. m a -> (a -> m b) -> m b) -> MonadT m
+MkList :: (forall r. r -> (a -> r -> r) -> r) -> List a
+MkNT :: (forall a. f a -> g a) -> NatTrans f g
+MkMonad :: (forall a. a -> m a) ->
+           (forall a b. m a -> (a -> m b) -> m b) -> MonadT m
 </programlisting>
 As with functions having rank 2 types, such a constructor must be supplied
 with any polymorphic arguments when it is used in an expression.
@@ -482,26 +482,26 @@ polymorphic components.
 somewhat confusingly also specified with <literal>forall</literal>,
 but before the constructor, as in
 <programlisting>
-  data Accum a = forall s. MkAccum s (a -> s -> s) (s -> a)
+data Accum a = forall s. MkAccum s (a -> s -> s) (s -> a)
 </programlisting>
 This type describes objects with a state of an abstract type
 <literal>s</literal>,
 together with functions to update and query the state.
 The <literal>forall</literal> is somewhat motivated by the polymorphic
 type of the constructor <literal>MkAccum</literal>, which is
-<programlisting>
-  s -> (a -> s -> s) -> (s -> a) -> Accum a
-</programlisting>
+<screen>
+s -> (a -> s -> s) -> (s -> a) -> Accum a
+</screen>
 because it must be able to operate on any state.
 </para>
 
 <para>
 Some sample values of the <literal>Accum</literal> type are:
 <programlisting>
-  adder = MkAccum 0 (+) id
-  averager = MkAccum (0,0)
-                     (\x (t,n) -> (t+x,n+1))
-                     (uncurry (/))
+adder = MkAccum 0 (+) id
+averager = MkAccum (0,0)
+                   (\x (t,n) -> (t+x,n+1))
+                   (uncurry (/))
 </programlisting>
 Unfortunately, existentially quantified constructors may not contain
 named fields.
@@ -512,19 +512,19 @@ types.
 <para>
 When we match against an existentially quantified constructor, as in
 <programlisting>
-  runAccum (MkAccum s add get) [] = ??
+runAccum (MkAccum s add get) [] = ??
 </programlisting>
 we do not know the type of <literal>s</literal>,
 only that <literal>add</literal> and <literal>get</literal>
 take arguments of the same type as <literal>s</literal>.
 So our options are limited.  One possibility is
 <programlisting>
-  runAccum (MkAccum s add get) [] = get s
+runAccum (MkAccum s add get) [] = get s
 </programlisting>
 Similarly we can also write
 <programlisting>
-  runAccum (MkAccum s add get) (x:xs) =
-      runAccum (MkAccum (add x v) add get) xs
+runAccum (MkAccum s add get) (x:xs) =
+    runAccum (MkAccum (add x v) add get) xs
 </programlisting>
 </para>
 
@@ -532,7 +532,7 @@ Similarly we can also write
 This particular application of existentials &ndash; modelling objects &ndash;
 may also be done with a Haskell 98 recursive type:
 <programlisting>
-  data Accum a = MkAccum { add_value :: a -> Accum a, get_value :: a}
+data Accum a = MkAccum { add_value :: a -> Accum a, get_value :: a}
 </programlisting>
 but other applications do require existentials.
 </para>
@@ -549,13 +549,13 @@ Haskell 98 allows expressions to be annotated with type signatures.
 With the <option>-98</option> option,
 these annotations are also allowed on patterns:
 <programlisting>
-  f (x::Int) = fromIntegral x :: Double
+f (x::Int) = fromIntegral x :: Double
 </programlisting>
 Moreover type variables in pattern annotations are treated specially:
 unless the type variable is already bound (by another pattern annotation),
 it is universally quantified over the pattern and its scope, e.g.
 <programlisting>
-  snoc (xs::[a]) (x::a) = xs++[x] :: [a]
+snoc (xs::[a]) (x::a) = xs++[x] :: [a]
 </programlisting>
 Occurrences of the type variable in type signatures within this scope
 are bound to this type variable.
@@ -564,19 +564,19 @@ are bound by the first.
 This permits locally defined variables to be given signatures in situations
 where it would be impossible in Haskell 98:
 <programlisting>
-  sortImage :: Ord b => (a -> b) -> [a] -> [a]
-  sortImage (f::a->b) = sortBy cmp
-      where
-          cmp :: a -> a -> Ordering
-          cmp x y = compare (f x) (f y)
+sortImage :: Ord b => (a -> b) -> [a] -> [a]
+sortImage (f::a->b) = sortBy cmp
+    where
+        cmp :: a -> a -> Ordering
+        cmp x y = compare (f x) (f y)
 </programlisting>
 Note that the relationship between signature declarations and pattern
 annotations is asymmetrical: pattern annotations may capture type variables
 in signature declarations, but not vice versa.
 There is no connection between the type variables in the type signature
-of <literal>sortImage</literal> and those in its definition,
+of <function>sortImage</function> and those in its definition,
 but the occurrence of <literal>a</literal> in the signature of
-<literal>cmp</literal> is bound by the pattern <literal>(f::a-&gt;b)</literal>.
+<function>cmp</function> is bound by the pattern <literal>(f::a-&gt;b)</literal>.
 </para>
 
 <para>
@@ -584,7 +584,7 @@ In GHC, type variables bound by pattern annotations are existentially
 quantified, and so may be instantiated.
 Thus the following is accepted by GHC but not Hugs:
 <programlisting>
-  g (xs::[a]) = xs ++ "\n"
+g (xs::[a]) = xs ++ "\n"
 </programlisting>
 GHC also allows <emphasis>result type signatures</emphasis>,
 where a type signature is attached to the left side of a function definition,
@@ -632,10 +632,10 @@ which says
 <quote>this function uses a dynamically-bound variable <literal>?x</literal>
 of type <literal>t'</literal></quote>.
 For example,
-the following expresses the type of a <literal>sort</literal> function,
+the following expresses the type of a <function>sort</function> function,
 implicitly parameterized by a comparison function named <literal>cmp</literal>.
 <programlisting>
-  sort :: (?cmp :: a -> a -> Bool) => [a] -> [a]
+sort :: (?cmp :: a -> a -> Bool) => [a] -> [a]
 </programlisting>
 The dynamic binding constraints are just a new form of predicate
 in the type class system.
@@ -650,12 +650,12 @@ Use of this construct also introduces a new
 dynamic-binding constraint in the type of the expression.
 For example, the following definition
 shows how we can define an implicitly parameterized sort function in
-terms of an explicitly parameterized <literal>sortBy</literal> function:
+terms of an explicitly parameterized <function>sortBy</function> function:
 <programlisting>
-  sortBy :: (a -> a -> Bool) -> [a] -> [a]
+sortBy :: (a -> a -> Bool) -> [a] -> [a]
 
-  sort   :: (?cmp :: a -> a -> Bool) => [a] -> [a]
-  sort    = sortBy ?cmp
+sort   :: (?cmp :: a -> a -> Bool) => [a] -> [a]
+sort    = sortBy ?cmp
 </programlisting>
 </para>
 
@@ -667,14 +667,14 @@ Dynamic binding constraints behave just like other type class
 constraints in that they are automatically propagated.
 Thus, when a function is used,
 its implicit parameters are inherited by the function that called it.
-For example, our <literal>sort</literal> function might be used
+For example, our <function>sort</function> function might be used
 to pick out the least value in a list:
 <programlisting>
-  least   :: (?cmp :: a -> a -> Bool) => [a] -> a
-  least xs = fst (sort xs)
+least   :: (?cmp :: a -> a -> Bool) => [a] -> a
+least xs = fst (sort xs)
 </programlisting>
 Without lifting a finger, the <literal>?cmp</literal> parameter is
-propagated to become a parameter of <literal>least</literal> as well.
+propagated to become a parameter of <function>least</function> as well.
 With explicit parameters,
 the default is that parameters must always be explicit propagated.
 With implicit parameters, the default is to always propagate them.
@@ -694,8 +694,8 @@ class constraints.
 You can't have an implicit parameter in the context of a class or instance
 declaration.  For example, both these declarations are illegal:
 <programlisting>
-  class (?x::Int) => C a where ...
-  instance (?x::a) => Foo [a] where ...
+class (?x::Int) => C a where ...
+instance (?x::a) => Foo [a] where ...
 </programlisting>
 Reason: exactly which implicit parameter you pick up depends on exactly where
 you invoke a function.
@@ -709,11 +709,11 @@ The easiest thing is to outlaw the offending types.
 Implicit-parameter constraints do not cause ambiguity.
 For example, consider:
 <programlisting>
-  f :: (?x :: [a]) => Int -> Int
-  f n = n + length ?x
+f :: (?x :: [a]) => Int -> Int
+f n = n + length ?x
 
-  g :: (Read a, Show a) => String -> String
-  g s = show (read s)
+g :: (Read a, Show a) => String -> String
+g s = show (read s)
 </programlisting>
 Here, <literal>g</literal> has an ambiguous type, and is rejected,
 but <literal>f</literal> is fine.
@@ -729,11 +729,11 @@ quite unambiguous, and fixes the type <literal>a</literal>.
 <para>
 An implicit parameter is <emphasis>bound</emphasis> using the standard
 <literal>let</literal> or <literal>where</literal> binding forms.
-For example, we define the <literal>min</literal> function by binding
+For example, we define the <function>min</function> function by binding
 <literal>cmp</literal>:
 <programlisting><![CDATA[
-  min :: [a] -> a
-  min  = let ?cmp = (<=) in least
+min :: [a] -> a
+min  = let ?cmp = (<=) in least
 ]]></programlisting>
 </para>
 
@@ -770,13 +770,13 @@ The bindings are not nested, and may be re-ordered without changing
 the meaning of the program.
 For example, consider:
 <programlisting>
-  f t = let { ?x = t; ?y = ?x+(1::Int) } in ?x + ?y
+f t = let { ?x = t; ?y = ?x+(1::Int) } in ?x + ?y
 </programlisting>
 The use of <literal>?x</literal> in the binding for <literal>?y</literal>
 does not <quote>see</quote> the binding for <literal>?x</literal>,
 so the type of <literal>f</literal> is
 <programlisting>
-  f :: (?x::Int) => Int -> Int
+f :: (?x::Int) => Int -> Int
 </programlisting>
 </para></listitem>
 </itemizedlist>

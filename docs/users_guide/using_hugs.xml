@@ -61,7 +61,7 @@ where <replaceable>cmd</replaceable> may be abbreviated to a single letter.
 Evaluate a Haskell expression.
 The expression cannot be broken over multiple lines.
 Usually, the value is simply converted to a string
-(using <literal>show</literal>) and printed:
+(using <function>show</function>) and printed:
 <screen>
   Hugs.Base> 1+2
   3
@@ -107,7 +107,7 @@ For example, consider
   []
 </screen>
 Here a <literal>Show</literal> constraint on the list elements arises
-from Hugs's use of <literal>show</literal> to display the result,
+from Hugs's use of <function>show</function> to display the result,
 so the type of the elements defaults to <literal>Integer</literal>,
 removing the ambiguity.
 </para>
@@ -150,7 +150,7 @@ On Win32, the new option settings are saved to the registry
 under the <literal>HKEY_CURRENT_USER</literal> key,
 and so persist across Hugs sessions.
 To make settings persistent on other systems,
-put them in the <literal>HUGSFLAGS</literal> environment variable.
+put them in the <envar>HUGSFLAGS</envar> environment variable.
 </para>
 <para>
 If no options are given, list the available options and their current settings.

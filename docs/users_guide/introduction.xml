@@ -73,7 +73,7 @@ and it should be consulted in several areas that this Guide does not cover well.
 The manual is available in several formats:
 <ulink url="http://cvs.haskell.org/Hugs/pages/hugsman/index.html">HTML</ulink>,
 <ulink url="http://cvs.haskell.org/Hugs/downloads/hugs.pdf">PDF</ulink>,
-<ulink url="http://cvs.haskell.org/Hugs/downloads/hugs.ps.gz">gzipped Postscript</ulink>, 
+<ulink url="http://cvs.haskell.org/Hugs/downloads/hugs.ps.gz">gzipped Postscript</ulink>,
 <ulink url="http://cvs.haskell.org/Hugs/downloads/html.tar.gz">gzipped tar-ed html</ulink>,
 <ulink url="http://cvs.haskell.org/Hugs/downloads/hugs.dvi">dvi</ulink>,
 <ulink url="http://cvs.haskell.org/Hugs/downloads/hugs-hlp.zip">WinHelp(zipped)</ulink> and

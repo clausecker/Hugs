@@ -231,9 +231,9 @@ An entry of the form
 <quote><replaceable>directory</replaceable><literal>/*</literal></quote>
 means all the immediate subdirectories of <replaceable>directory</replaceable>.
 The default value is
-<programlisting>
+<screen>
 .:{Hugs}/libraries:{Hugs}/oldlib
-</programlisting>
+</screen>
 </para>
 <para>
 The interpreter won't let you change the search path if that would
@@ -302,9 +302,9 @@ Specify the editor used by the <literal>:edit</literal> command
 (see <xref linkend="module-commands"/>).
 For example, to have Hugs invoke <literal>vi</literal> to edit your files,
 use
-<programlisting>
-  -Evi
-</programlisting>
+<screen>
+-Evi
+</screen>
 The argument string is actually a template string that gets expanded
 by Hugs, via the following rules:
 <itemizedlist>
@@ -368,34 +368,37 @@ then the filename is appended before invoking the editor.
 
 <para>
 Here are some example editor configurations:
-<itemizedlist>
-<listitem>
-<para>
+<variablelist>
+<varlistentry>
+<term>
 TextPad
-<programlisting>
-  -E"c:/Program Files/TextPad 4/textpad \"%s\"(%d)"
-</programlisting>
-</para>
+</term><listitem>
+<screen>
+-E"c:/Program Files/TextPad 4/textpad \"%s\"(%d)"
+</screen>
 </listitem>
-       
-<listitem>
-<para>
-vi and clones
-<programlisting>
-  -E"vi +%d %s"
-</programlisting>
-</para>
-</listitem>
+</varlistentry>
 
-<listitem>
-<para>
-gnuclient (for use with (X)Emacs)
-<programlisting>
-  -E"gnuclient +%d %s"
-</programlisting>
-</para>
+<varlistentry>
+<term>
+vi and clones
+</term><listitem>
+<screen>
+-E"vi +%d %s"
+</screen>
 </listitem>
-</itemizedlist>
+</varlistentry>
+
+<varlistentry>
+<term>
+gnuclient (for use with (X)Emacs)
+</term><listitem>
+<screen>
+-E"gnuclient +%d %s"
+</screen>
+</listitem>
+</varlistentry>
+</variablelist>
 
 </para>
 </listitem>
@@ -444,30 +447,30 @@ but they are checked for consistency.
 By default, Hugs reports such errors as an <literal>Illegal type</literal>.
 For example, the declaration
 <programlisting>
-  instance Monad Int
+instance Monad Int
 </programlisting>
 gives rise to the error
 <screen>
-  ERROR "Test.hs":4 - Illegal type in class constraint
+ERROR "Test.hs":4 - Illegal type in class constraint
 </screen>
 However if <option>+k</option> is given,
 the error message is identified as a <literal>Kind error</literal>,
 and is expanded to include the conflicting kinds:
 <screen>
-  ERROR "Test.hs":4 - Kind error in class constraint
-  *** constructor    : Int
-  *** kind           : *
-  *** does not match : * -> *
+ERROR "Test.hs":4 - Kind error in class constraint
+*** constructor    : Int
+*** kind           : *
+*** does not match : * -> *
 </screen>
 Also, when <option>+k</option> is given,
 the output of the <command>:info</command> will include kind information
 for classes and type constructors:
 <screen>
-  Hugs.Base> :info Monad
-  -- constructor class with arity * -> *
-  ...
-  Hugs.Base> :info Int
-  -- type constructor with kind *
+Hugs.Base> :info Monad
+-- constructor class with arity * -> *
+...
+Hugs.Base> :info Int
+-- type constructor with kind *
 </screen>
 </para>
 </listitem>
@@ -483,18 +486,18 @@ Apply defaulting rules to types before printing (default: off).
 When printing out types, the interpreter will normally not try to
 simplify types by applying defaulting rules, e.g.,
 <screen>
-  Hugs.Base> :t 1
-  1 :: Num a => a
-  Hugs.Base>
+Hugs.Base> :t 1
+1 :: Num a => a
+Hugs.Base>
 </screen>
 With the <option>+T</option> option,
 the interpreter attempts to <quote>default</quote> types first,
 using the same rules as for expressions (see <xref linkend="basic-commands"/>):
 <screen>
-  Hugs.Base> :set +T
-  Hugs.Base> :t 1
-  1 :: Integer
-  Hugs.Base>
+Hugs.Base> :set +T
+Hugs.Base> :t 1
+1 :: Integer
+Hugs.Base>
 </screen>
 </para>
 </listitem>
@@ -528,14 +531,14 @@ Print the type of each expression evaluated (default: off).
 <para>
 Normally Hugs merely prints the value of each expression evaluated:
 <screen>
-  Hugs.Base> 1+2
-  3
+Hugs.Base> 1+2
+3
 </screen>
 With the <option>+t</option> option, it also adds the type of the expression:
 <screen>
-  Hugs.Base> :set +t
-  Hugs.Base> 1+2
-  3 :: Integer
+Hugs.Base> :set +t
+Hugs.Base> 1+2
+3 :: Integer
 </screen>
 Note that defaulting has been applied to the type of the expression in order
 to evaluate it, so the type differs from that reported by the
@@ -543,8 +546,8 @@ to evaluate it, so the type differs from that reported by the
 <link linkend="option-default-types"><option>+T</option></link> option
 is not used):
 <screen>
-  Hugs.Base> :type 1+2
-  1 + 2 :: Num a => a
+Hugs.Base> :type 1+2
+1 + 2 :: Num a => a
 </screen>
 </para>
 </listitem>
@@ -554,60 +557,60 @@ is not used):
 <term><option>+u</option></term>
 <listitem>
 <para>
-Use <literal>show</literal> to display results (default: on).
+Use <function>show</function> to display results (default: on).
 </para>
 
 <para>
 By default, the values of expressions typed at the prompt are printed using
-the <literal>show</literal> member of the <literal>Show</literal> class:
+the <function>show</function> member of the <literal>Show</literal> class:
 <screen>
-  Hugs.Base> [Just (2+3), Nothing]
-  [Just 5,Nothing]
+Hugs.Base> [Just (2+3), Nothing]
+[Just 5,Nothing]
 </screen>
 You can define this function as desired for any new datatype.
 If the type of the expression is not an instance of the
 <literal>Show</literal> class, an error results:
 <screen>
-  Hugs.Base> id
-  ERROR - Cannot find "show" function for:
-  *** Expression : id
-  *** Of type    : a -> a
+Hugs.Base> id
+ERROR - Cannot find "show" function for:
+*** Expression : id
+*** Of type    : a -> a
 </screen>
 With the <option>-u</option> option, a built-in printer is used instead,
 and this works for any type:
 <screen>
-  Hugs.Base> :set -u
-  Hugs.Base> id
-  id
-  Hugs.Base> \x -> x
-  v1497
-  Hugs.Base> [Just (2+3), Nothing]
-  [Maybe_Just 5,Maybe_Nothing]
+Hugs.Base> :set -u
+Hugs.Base> id
+id
+Hugs.Base> \x -> x
+v1497
+Hugs.Base> [Just (2+3), Nothing]
+[Maybe_Just 5,Maybe_Nothing]
 </screen>
 Another feature of the built-in printer is its treatment of failures
 (or exceptions).
 Normally, an exception causes immediate failure of the expression:
 <screen>
-  Hugs.Base> :set +u
-  Hugs.Base> 1 + 2/0
+Hugs.Base> :set +u
+Hugs.Base> 1 + 2/0
 
-  Program error: divide by zero
+Program error: divide by zero
 
-  Hugs.Base> [1, 2 + error "foo", 3]
-  [1,
-  Program error: foo
+Hugs.Base> [1, 2 + error "foo", 3]
+[1,
+Program error: foo
 </screen>
 However the built-in printer prints the whole value, with embedded exceptions:
 <screen>
-  Hugs.Base> :set -u
-  Hugs.Base> [1, 2 + error "foo", 3]
-  [1,{error "foo"},3]
+Hugs.Base> :set -u
+Hugs.Base> [1, 2 + error "foo", 3]
+[1,{error "foo"},3]
 </screen>
 Sometimes a component could produce one of two or more exceptions,
 but the built-in printer shows only one of them:
 <screen>
-  Hugs.Base> 1 + error "foo" + error "bar"
-  {error "foo"}
+Hugs.Base> 1 + error "foo" + error "bar"
+{error "foo"}
 </screen>
 </para>
 </listitem>
@@ -623,12 +626,12 @@ Display results of IO programs (default: off).
 By default, an expression of <literal>IO</literal> type typed at the prompt
 is executed for effect, but the final value it produces is discarded.
 When <option>+I</option> is used, such an expression is evaluated,
-and then its result is printed with <literal>Prelude.print</literal>:
+and then its result is printed with <function>Prelude.print</function>:
 <screen>
-  Hugs.Base> :set +I
-  Hugs.Base> (return 'a' :: IO Char)
-  'a'
-  Hugs.Base>
+Hugs.Base> :set +I
+Hugs.Base> (return 'a' :: IO Char)
+'a'
+Hugs.Base>
 </screen>
 i.e., evaluating an IO action <replaceable>m</replaceable>
 with <option>+I</option> in effect is equivalent to evaluating
@@ -697,9 +700,9 @@ Note that even the most trivial evaluation involves several reductions and
 cells, because Hugs wraps the expression in code to print the value and
 catch exceptions:
 <screen>
-  Hugs.Base> True
-  True
-  (25 reductions, 46 cells)
+Hugs.Base> True
+True
+(25 reductions, 46 cells)
 </screen>
 Note that the cell count measures the total amount of allocation,
 rather than the number of cells in use at any time
@@ -722,20 +725,20 @@ This can be useful for analysing the <emphasis>residency</emphasis> of an
 algorithm, the amount of memory is is actually using at each point in time.
 For example,
 <screen>
-  Hugs.Base> :set +g
-  Hugs.Base> length [1..60000]
-  {{Gc:237618}}{{Gc:237617}}{{Gc:237616}}{{Gc:237623}}{{Gc:237621}}
-  {{Gc:237628}}{{Gc:237623}}{{Gc:237618}}60000
+Hugs.Base> :set +g
+Hugs.Base> length [1..60000]
+{{Gc:237618}}{{Gc:237617}}{{Gc:237616}}{{Gc:237623}}{{Gc:237621}}
+{{Gc:237628}}{{Gc:237623}}{{Gc:237618}}60000
 </screen>
 We see that the computation creates a lot of cells, but the number recovered
 on each garbage collection is roughly the same, so its residency is constant.
 In contrast, with
 <screen>
-  Hugs.Base> let xs = [1..60000] in sum xs `div` length xs
-  {{Gc:237510}}{{Gc:213862}}{{Gc:190948}}{{Gc:170500}}{{Gc:152225}}
-  {{Gc:135925}}{{Gc:121350}}{{Gc:108350}}{{Gc:96750}}{{Gc:86375}}
-  {{Gc:77125}}{{Gc:68860}}{{Gc:61490}}{{Gc:72948}}{{Gc:97265}}{{Gc:129688}}
-  {{Gc:172916}}{{Gc:230551}}30000
+Hugs.Base> let xs = [1..60000] in sum xs `div` length xs
+{{Gc:237510}}{{Gc:213862}}{{Gc:190948}}{{Gc:170500}}{{Gc:152225}}
+{{Gc:135925}}{{Gc:121350}}{{Gc:108350}}{{Gc:96750}}{{Gc:86375}}
+{{Gc:77125}}{{Gc:68860}}{{Gc:61490}}{{Gc:72948}}{{Gc:97265}}{{Gc:129688}}
+{{Gc:172916}}{{Gc:230551}}30000
 </screen>
 we see that the amount reclaimed by each garbage collection is steadily
 falling until a certain point (because the original list is retained).
@@ -819,8 +822,8 @@ To include a literal space in an option, either precede it with a backslash
 or wrap the whole option in double quotes.
 The following example assumes a shell compatible with the Unix Bourne shell:
 <programlisting>
-  HUGSFLAGS='+k -E"vi +%d"'
-  export HUGSFLAGS
+HUGSFLAGS='+k -E"vi +%d"'
+export HUGSFLAGS
 </programlisting>
 Double quoted options may also contain the escape sequences
 <quote><literal>\ </literal></quote>,
@@ -884,16 +887,16 @@ The <command>runhugs</command> command is an interpreter for an executable Hugs
 script, which must be a file containing a Haskell
 <literal>Main</literal> module.
 For example, an executable file might contain the lines
-<programlisting> 
-  #!/usr/local/bin/runhugs +l
+<programlisting>
+#!/usr/local/bin/runhugs +l
 
-  > module Main where
-  > main = putStr "Hello, World\n"
-</programlisting> 
+> module Main where
+> main = putStr "Hello, World\n"
+</programlisting>
 When this file is executed, <command>runhugs</command> will invoke
-the <literal>main</literal> function.
+the <function>main</function> function.
 Any arguments given on the command line will be available through
-the <literal>getArgs</literal> action.
+the <function>getArgs</function> action.
 </para>
 
 </sect1>
@@ -918,7 +921,7 @@ to generate <literal>Test.c</literal>, compile it and link it against
 <literal>test.c</literal> with <option>-lm</option> to produce
 <literal>Test.so</literal>:
 <programlisting>
-  ffihugs +G +L"test.c" +L"-lm" Test.hs 
+ffihugs +G +L"test.c" +L"-lm" Test.hs
 </programlisting>
 (If <literal>Test.hs</literal> depends on other ffi modules,
 you'll have to compile them first.)
@@ -926,7 +929,7 @@ Now you can run Hugs as normal;
 when <literal>Test.hs</literal> is loaded,
 Hugs will load <literal>Test.so</literal>.)
 <programlisting>
-  hugs Test.hs
+hugs Test.hs
 </programlisting>
 and then use the imported or exported functions.
 </para>

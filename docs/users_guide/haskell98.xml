@@ -59,7 +59,7 @@ because it doesn't look far enough ahead.
 Hugs doesn't use the fixity of operators until after parsing, and so
 fails to accept legal (but weird) Haskell 98 expressions like
 <programlisting>
-  let x = True in x == x == True
+let x = True in x == x == True
 </programlisting>
 </para></listitem>
 </varlistentry>
@@ -90,35 +90,35 @@ Hugs's treatment of polymorphic recursion is less restrictive than Haskell 98
 when the functions involved are mutually recursive.
 Consider the following example:
 <programlisting>
-  data BalancedTree a = Zero a | Succ (BalancedTree (a,a))
+data BalancedTree a = Zero a | Succ (BalancedTree (a,a))
 
-  zig :: BalancedTree a -> a
-  zig (Zero a) = a
-  zig (Succ t) = fst (zag t)
+zig :: BalancedTree a -> a
+zig (Zero a) = a
+zig (Succ t) = fst (zag t)
 
-  zag (Zero a) = a
-  zag (Succ t) = snd (zig t)
+zag (Zero a) = a
+zag (Succ t) = snd (zig t)
 </programlisting>
 As with many operations on non-regular (or nested) types,
-<literal>zig</literal> and <literal>zag</literal>
+<function>zig</function> and <function>zag</function>
 need to be polymorphic in the element type.
 In Haskell 98, the bindings of the two functions are interdependent,
 and thus constitute a single binding group.
 When type inference is performed on this group,
-<literal>zig</literal> may be used at different types,
+<function>zig</function> may be used at different types,
 because it has a user-supplied polymorphic signature.
-However, <literal>zag</literal> may not, and the example is rejected,
-unless we add an explicit type signature for <literal>zag</literal>.
+However, <function>zag</function> may not, and the example is rejected,
+unless we add an explicit type signature for <function>zag</function>.
 (It could be argued that this is a bug in Haskell 98.)
 </para>
 
 <para>
-In Hugs, the binding of <literal>zig</literal> depends on that of
-<literal>zag</literal>, but not vice versa.
-(The binding of <literal>zag</literal> is considered to depend only on
-the explicit signature of <literal>zig</literal>.)
-It is possible to infer a polymorphic type for <literal>zag</literal>,
-and from that for <literal>zig</literal>.
+In Hugs, the binding of <function>zig</function> depends on that of
+<function>zag</function>, but not vice versa.
+(The binding of <function>zag</function> is considered to depend only on
+the explicit signature of <function>zig</function>.)
+It is possible to infer a polymorphic type for <function>zag</function>,
+and from that for <function>zig</function>.
 This type matches the declared signature, so Hugs accepts this example.
 </para></listitem>
 </varlistentry>
@@ -130,7 +130,7 @@ Contrary to the the Report (4.3.1), Hugs allows the types of the member
 functions of a class <replaceable>C</replaceable> <replaceable>a</replaceable>
 to impose further constraints on <replaceable>a</replaceable>, as in
 <programlisting>
-  class Foo a where
+class Foo a where
     op :: Num a => a -> a -> a
 </programlisting>
 </para></listitem>
@@ -142,30 +142,31 @@ to impose further constraints on <replaceable>a</replaceable>, as in
 For example, Hugs rejects the following example from the
 Haskell 98 Report, 4.5.5:
 <programlisting>
-  module M where
-    import List
-    len1 = genericLength "Hello"
-    len2 = (2*len1) :: Rational
+module M where
+import List
+len1 = genericLength "Hello"
+len2 = (2*len1) :: Rational
 </programlisting>
-This module consists of two binding groups, containing <literal>len1</literal>
-and <literal>len2</literal> respectively.
-Type inference on the first (<literal>len1</literal>) triggers the monomorphism
-restriction, so that <literal>len1</literal> is assigned the monomorphic type
-<literal>(Num a => a)</literal>.
+This module consists of two binding groups,
+containing <function>len1</function> and
+<function>len2</function> respectively.
+Type inference on the first (<function>len1</function>) triggers the
+monomorphism restriction, so that <function>len1</function> is assigned
+the monomorphic type <literal>(Num a => a)</literal>.
 The next step differs between Haskell 98 and Hugs:
 <itemizedlist>
 <listitem><para>
 In Haskell 98,
-type inference is then performed on <literal>len2</literal>,
+type inference is then performed on <function>len2</function>,
 resolving the type variable <literal>a</literal>
 to <literal>Rational</literal>, and the module is legal.
 </para></listitem>
 
 <listitem><para>
-In Hugs, the defaulting rule is applied to <literal>len1</literal>,
+In Hugs, the defaulting rule is applied to <function>len1</function>,
 instantiating the type variable <literal>a</literal> to
 <literal>Integer</literal>.
-Then type inference on <literal>len2</literal> fails.
+Then type inference on <function>len2</function> fails.
 </para></listitem>
 </itemizedlist>
 <!--
@@ -233,9 +234,9 @@ The Hugs prelude exports <literal>(:)</literal> as if it were an identifier,
 even though this is not permitted in user-defined modules.
 This means that Hugs incorrectly rejects the following:
 <programlisting>
-  module Foo where
-  import Prelude()
-  cs = 'a':cs
+module Foo where
+import Prelude()
+cs = 'a':cs
 </programlisting>
 </para></listitem>
 </varlistentry>
@@ -267,7 +268,7 @@ it usually denotes the same number, but some precision may be lost.
 Floating point values are printed differently
 </term>
 <listitem><para>
-Haskell 98 specifies that <literal>show</literal> for floating point numbers
+Haskell 98 specifies that <function>show</function> for floating point numbers
 is the function <literal>Numeric.showFloat</literal>,
 but Hugs uses an internal function with slightly different semantics.
 </para></listitem>
