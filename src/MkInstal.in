@@ -77,6 +77,7 @@ install_libexts_ffi :: install_libexts install_include ffihugs$(EXE)
 		$(BUILD_FFI_OLD) +L"../lib/exts/Storable_aux.c" HugsStorable 
 		$(BUILD_FFI_OLD) MarshalAlloc
 		$(BUILD_FFI_OLD) MarshalUtils
+		$(BUILD_FFI_OLD) ForeignPtr
 
 install_libraries :: $(LIBRARIES)
 		$(INSTALL) -d $(hugsdir)
@@ -86,12 +87,13 @@ install_oldlib :: $(LIBRARIES)
 		$(INSTALL) -d $(hugsdir)/oldlib
 		$(INSTALL_DATA) ../oldlib/*.* $(hugsdir)/oldlib
 
-BUILD_FFI_NEW = ./ffihugs -P'{Hugs}/libraries:{Hugs}/oldlib:{Hugs}/lib/hugs' +G
+BUILD_FFI_NEW = ./ffihugs -P'{Hugs}/libraries:{Hugs}/oldlib' +G
 
 install_libraries_ffi :: install_libraries install_include ffihugs$(EXE)
 		$(BUILD_FFI_NEW) +L"../libraries/Hugs/Storable_aux.c" Hugs.Storable 
 		$(BUILD_FFI_NEW) Foreign.Marshal.Alloc 
 		$(BUILD_FFI_NEW) Foreign.Marshal.Utils 
+		$(BUILD_FFI_NEW) Foreign.ForeignPtr
 		$(BUILD_FFI_NEW) +L"../libraries/Foreign/C/errno.c" Foreign.C.Error  
 		$(RM) $(hugsdir)/libraries/Hugs/*.[ch]
 		$(RM) $(hugsdir)/libraries/Foreign/*.[ch]
