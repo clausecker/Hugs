@@ -9,8 +9,8 @@
  * included in the distribution.
  *
  * $RCSfile: output.c,v $
- * $Revision: 1.10 $
- * $Date: 2000/09/14 05:49:36 $
+ * $Revision: 1.11 $
+ * $Date: 2000/09/21 01:13:19 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -154,7 +154,6 @@ Cell e; {
 	case DICTVAR    :
 	case CONIDCELL  :
 	case CONOPCELL  : 
-	                  putModule(name(e).mod);
 	                  unlexVar(textOf(e));
 			  break;
 #if IPARAM
