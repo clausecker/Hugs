@@ -27,10 +27,14 @@ default		:: hugs.exe runhugs.exe hugsscript.dll
 
 CC		= cl /nologo
 CFLAGS		= -ML
+# When debugging:
+#CFLAGS		= -ML -Zi
 OPTFLAGS	= -O2
 
 LD		= ld
 LDFLAGS    	= 
+# When debugging:
+#LDFLAGS	= -Zi
 DLL_FLAGS	= /LD
 PIC_FLAGS	= 
 LIBS		=  kernel32.lib advapi32.lib
