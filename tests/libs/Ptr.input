@@ -1,0 +1,1 @@
+[plusPtr nullPtr i | i <- [-100..100]]

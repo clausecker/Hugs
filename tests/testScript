@@ -398,7 +398,7 @@ test_libs() {
 --   -- !!! Testing the IO module
 --   -- !!! Testing the Directory module
 --   -- !!! Testing IOExts.fixIO
---   -- !!! Testing Addr arithmetic and shows
+--   -- !!! Testing Ptr arithmetic and shows
 --   -- !!! Testing derived Concurrency primitives and producer-consumer code
 --   -- !!! Testing interaction of exception handling with threads
 -- 
@@ -482,7 +482,7 @@ test_libs() {
   perl runstdtest $HUGS $STDOPTS IO      "-Olibs/ioTest1.hs" "-ilibs/ioTest1.input" "-o1libs/ioTest1.output"
   perl runstdtest $HUGS $STDOPTS Directory        "-Olibs/dirTest.hs" "-ilibs/dirTest.input" "-o1libs/dirTest.output"
   perl runstdtest $HUGS $STDOPTS libs/FixIO.lhs   "-ilibs/FixIO.input" "-o1libs/FixIO.output"
-  perl runstdtest $HUGS $STDOPTS libs/testAddr.hs "-ilibs/Addr.input" "-o1libs/Addr.output"
+  perl runstdtest $HUGS $STDOPTS libs/testPtr.hs  "-ilibs/Ptr.input"   "-o1libs/Ptr.output"
   perl runstdtest $HUGS $STDOPTS libs/prodcon.hs  "-ilibs/prodcon.input" "-o1libs/prodcon.output"
   perl runstdtest $HUGS $STDOPTS libs/except1.hs  "-ilibs/except1.input" "-o1libs/except1.output"
 
