@@ -61,6 +61,17 @@ Long version:
       run "make hugs.exe -n" to get a list of the files we compile
       and add them to your project.
 
+    On MacOS:
+
+      Open CodeWarrior Pro 5 and choose [File->Import Project...].
+      Select the file ":hugs98:src:machugs:hugs.mcp.xml".  When the file
+      dialog appears, name the new project "hugs.mcp", and save it in the
+      same folder as the imported xml file.  Then choose [Project->Make].
+      The Hugs 98 application will be created in the hugs98 folder.
+
+      Preferences in the form of a Hugs command line string can be saved
+      in a file "Hugs Preferences" in the same folder as the application.
+
     On another platform:
 
       If you can't run the configure script, pick one of the Windows
