@@ -178,21 +178,21 @@ BEGIN
     CONTROL         "&q Print nothing to show progress",ID_OP+8,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,12,99,135,10
     CONTROL         "&Q Qualify names when printing",ID_OP+9,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,160,19,147,10
+                    BS_AUTOCHECKBOX | WS_TABSTOP,160,19,140,10
     CONTROL         "&w Always show which files loaded",ID_OP+10,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,160,29,147,10
+                    BS_AUTOCHECKBOX | WS_TABSTOP,160,29,140,10
     CONTROL         "&k Show kind errors in full",ID_OP+11,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,160,39,147,10
+                    BS_AUTOCHECKBOX | WS_TABSTOP,160,39,140,10
     CONTROL         "&o Allow overlapping instances",ID_OP+12,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,160,49,147,10
+                    BS_AUTOCHECKBOX | WS_TABSTOP,160,49,140,10
     CONTROL         "&u Use ""show"" to display results",ID_OP+13,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,160,59,147,10
+                    BS_AUTOCHECKBOX | WS_TABSTOP,160,59,140,10
     CONTROL         "&i Chase imports while loading files",ID_OP+14,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,160,69,147,10
+                    BS_AUTOCHECKBOX | WS_TABSTOP,160,69,140,10
     CONTROL         "&A Auto load files",ID_OP+15,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,160,79,147,10
+                    BS_AUTOCHECKBOX | WS_TABSTOP,160,79,140,10
     CONTROL         "&m Use multi instance resolution ",ID_OP+16,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,160,89,147,10
+                    BS_AUTOCHECKBOX | WS_TABSTOP,160,89,140,10
     LTEXT           "Path:",-1,12,129,22,8
     EDITTEXT        ID_PATH,37,127,183,12,ES_AUTOHSCROLL
     LTEXT           "Preprocessor filter:",-1,12,143,62,8
