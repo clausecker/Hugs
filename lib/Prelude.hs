@@ -531,8 +531,8 @@ instance Bounded Char where
 isAscii, isControl, isPrint, isSpace            :: Char -> Bool
 isUpper, isLower, isAlpha, isDigit, isAlphaNum  :: Char -> Bool
 isAscii c              =  fromEnum c < 128
-isControl c            =  c < ' ' ||  c == '\DEL'
-isPrint c              =  c >= ' ' &&  c <= '~'
+isControl c            =  c < ' ' || c >= '\DEL' && c <= '\x9f'
+isPrint c              =  not (isControl c)
 isSpace c              =  c == ' '  ||
 			  c == '\t' ||
 			  c == '\n' ||
