@@ -8728,9 +8728,9 @@ hslibs and libraries from the Haskell CVS repository." 1>&2; exit 1; }
 fi
 
 if test "$enable_ffi" = yes; then
-  INSTALL_FFI=install_ffi
+  FFI_LIBRARIES=ffi_libraries
 else
-  INSTALL_FFI=""
+  FFI_LIBRARIES=
 fi
 
 # Check whether --enable-double-precision or --disable-double-precision was given.
@@ -10462,7 +10462,7 @@ s%@DIFF@%$DIFF%g
 s%@CONTEXT_DIFF@%$CONTEXT_DIFF%g
 s%@ALLOCA@%$ALLOCA%g
 s%@FPTOOLS@%$FPTOOLS%g
-s%@INSTALL_FFI@%$INSTALL_FFI%g
+s%@FFI_LIBRARIES@%$FFI_LIBRARIES%g
 s%@OPTFLAGS@%$OPTFLAGS%g
 s%@DEBUGFLAGS@%$DEBUGFLAGS%g
 s%@LDDEBUGFLAGS@%$LDDEBUGFLAGS%g
