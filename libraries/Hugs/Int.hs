@@ -17,6 +17,7 @@ import Hugs.Prelude ( Ix(..) )
 import Hugs.Prelude ( (%) )
 import Hugs.Prelude ( readDec, showInt )
 import Hugs.Prelude ( Num(fromInt), Integral(toInt) )
+import Hugs.Bits
 import Data.Bits
 
 -----------------------------------------------------------------------------
@@ -98,7 +99,7 @@ instance Bits Int8 where
   x `xor` y     = int32ToInt8 (binop8 xor x y)
   complement    = int32ToInt8 . complement . int8ToInt32
   x `shift` i   = int32ToInt8 (int8ToInt32 x `shift` i)
---  rotate      
+  rotate        = rotateSigned
   bit           = int32ToInt8 . bit
   setBit x i    = int32ToInt8 (setBit (int8ToInt32 x) i)
   clearBit x i  = int32ToInt8 (clearBit (int8ToInt32 x) i)
@@ -172,7 +173,7 @@ instance Bits Int16 where
   x `xor` y     = int32ToInt16 (binop16 xor x y)
   complement    = int32ToInt16 . complement . int16ToInt32
   x `shift` i   = int32ToInt16 (int16ToInt32 x `shift` i)
---  rotate      
+  rotate        = rotateSigned
   bit           = int32ToInt16 . bit
   setBit x i    = int32ToInt16 (setBit (int16ToInt32 x) i)
   clearBit x i  = int32ToInt16 (clearBit (int16ToInt32 x) i)
@@ -240,50 +241,48 @@ instance Show Int32 where
     showsPrec p = showsPrec p . int32ToInt
 
 instance Bits Int32 where
-  (.&.)       	= primAndInt
-  (.|.)       	= primOrInt
-  xor         	= primXorInt
-  complement  	= primComplementInt
-  shift       	= primShiftInt
---  rotate    	   
-  bit         	= primBitInt
-  setBit x i    = x .|. bit i
-  clearBit x i  = x .&. complement (bit i)
-  complementBit x i = x `xor` bit i
-  testBit       = primTestInt
-  bitSize  _    = 32
-  isSigned _    = True
+    x .&. y       = intToInt32 (binop32 (.&.) x y)
+    x .|. y       = intToInt32 (binop32 (.|.) x y)
+    x `xor` y     = intToInt32 (binop32 xor x y)
+    complement    = intToInt32 . complement . int32ToInt
+    x `shift` i   = intToInt32 (int32ToInt x `shift` i)
+    rotate        = rotateSigned
+    bit           = intToInt32 . bit
+    setBit x i    = intToInt32 (setBit (int32ToInt x) i)
+    clearBit x i  = intToInt32 (clearBit (int32ToInt x) i)
+    complementBit x i = intToInt32 (complementBit (int32ToInt x) i)
+    testBit x i   = testBit (int32ToInt x) i
+    bitSize  _    = 32
+    isSigned _    = True
 
 -----------------------------------------------------------------------------
 -- Int64
---
--- This is not ideal, but does have the advantage that you can 
--- now typecheck generated code that include Int64 statements.
---
 -----------------------------------------------------------------------------
+
+-- Assume a 2s-complement representation, and that this function
+-- separates the top 32 bits from the lower 32.
 
 primitive int64ToInt32 "primInt64ToInt32" :: Int64 -> (Int32,Int32)
 primitive int32ToInt64 "primInt32ToInt64" :: Int32 -> Int32 -> Int64
 
 integerToI64 :: Integer -> Int64
 integerToI64 x = case x `divMod` 0x100000000 of
-	(hi,lo) -> int32ToInt64 (fromInteger hi)
-		(fromInteger (lo + toInteger (minBound::Int32)))
+    (hi,lo) -> int32ToInt64 (fromInteger hi) (fromInteger lo)
 
 i64ToInteger :: Int64 -> Integer
 i64ToInteger x = case int64ToInt32 x of
-	(hi,lo) -> toInteger hi * 0x100000000 +
-		toInteger lo - toInteger (minBound::Int32)
+    (hi,lo) -> (if lo<0 then toInteger hi+1 else toInteger hi)*0x100000000 +
+	toInteger lo
 
 instance Eq Int64 where
-    x == y = toInteger x == toInteger y
+    x == y = int64ToInt32 x == int64ToInt32 y
 
 instance Ord Int64 where
     compare x y = compare (toInteger x) (toInteger y)
 
 instance Bounded Int64 where
-    minBound = int32ToInt64 minBound minBound
-    maxBound = int32ToInt64 maxBound maxBound
+    minBound = int32ToInt64 minBound 0
+    maxBound = int32ToInt64 maxBound (-1)
 
 instance Show Int64 where
     showsPrec p = showsPrec p . toInteger
@@ -302,6 +301,13 @@ instance Num Int64 where
 instance Real Int64 where
     toRational x = toInteger x % 1
 
+instance Ix Int64 where
+    range (m,n)          = [m..n]
+    index b@(m,n) i
+	      | inRange b i = toInt (i - m)
+	      | otherwise   = error "index: Index out of range"
+    inRange (m,n) i      = m <= i && i <= n
+
 instance Enum Int64 where
     toEnum           = fromInt
     fromEnum         = toInt
@@ -318,6 +324,36 @@ instance Integral Int64 where
     x `quotRem` y = (fromInteger q, fromInteger r)
 	where (q,r) = toInteger x `quotRem` toInteger y
     toInteger     = i64ToInteger
+
+instance Bits Int64 where
+    x .&. y       = liftBinary (.&.) x y
+    x .|. y       = liftBinary (.|.) x y
+    x `xor` y     = liftBinary xor x y
+    complement    = liftUnary complement
+    x `shift` i   = fromInteger (toInteger x `shift` i)
+    rotate        = rotateSigned
+    bit i | i `mod` 64 < 32 = int32ToInt64 0 (bit i)
+          | otherwise       = int32ToInt64 (bit i) 0
+    bitSize  _    = 64
+    isSigned _    = True
+
+liftBinary :: (Int32 -> Int32 -> Int32) -> Int64 -> Int64 -> Int64
+liftBinary op x y = int32ToInt64 (op xhi yhi) (op xlo ylo)
+	where	(xhi,xlo) = int64ToInt32 x
+		(yhi,ylo) = int64ToInt32 y
+
+liftUnary :: (Int32 -> Int32) -> Int64 -> Int64
+liftUnary op x = int32ToInt64 (op xhi) (op xlo)
+	where	(xhi,xlo) = int64ToInt32 x
+
+rotateSigned :: (Bits a, Ord a) => a -> Int -> a
+rotateSigned x i | i<0 && x<0
+                        = let left = i+bitSize x in
+                          ((x `shift` i) .&. complement ((-1) `shift` left))
+                          .|. (x `shift` left)
+                 | i<0  = (x `shift` i) .|. (x `shift` (i+bitSize x))
+                 | i==0 = x
+                 | i>0  = (x `shift` i) .|. (x `shift` (i-bitSize x))
 
 -----------------------------------------------------------------------------
 -- End of exported definitions
@@ -357,18 +393,6 @@ to2' (x,y) = (intToInt32 x, intToInt32 y)
 
 binop32 :: (Int -> Int -> a) -> (Int32 -> Int32 -> a)
 binop32 op x y = int32ToInt x `op` int32ToInt y
-
------------------------------------------------------------------------------
--- Extra primitives
------------------------------------------------------------------------------
-
-primitive primAndInt        :: Int32 -> Int32 -> Int32
-primitive primOrInt         :: Int32 -> Int32 -> Int32
-primitive primXorInt        :: Int32 -> Int32 -> Int32
-primitive primComplementInt :: Int32 -> Int32
-primitive primShiftInt      :: Int32 -> Int -> Int32
-primitive primBitInt        :: Int -> Int32
-primitive primTestInt       :: Int32 -> Int -> Bool
 
 -----------------------------------------------------------------------------
 -- Code copied from the Prelude

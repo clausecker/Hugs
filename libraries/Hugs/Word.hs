@@ -290,17 +290,17 @@ primitive word32ToWord64 "primWord32ToWord64" :: Word32 -> Word32 -> Word64
 
 integerToW64 :: Integer -> Word64
 integerToW64 x = case x `quotRem` 0x100000000 of
-	(hi,lo) -> word32ToWord64 (fromInteger lo) (fromInteger hi)
+	(hi,lo) -> word32ToWord64 (fromInteger hi) (fromInteger lo)
 
 w64ToInteger :: Word64 -> Integer
 w64ToInteger x = case word64ToWord32 x of
 	(hi,lo) -> toInteger hi * 0x100000000 + toInteger lo
 
 instance Eq Word64 where
-    x == y = toInteger x == toInteger y
+    x == y = word64ToWord32 x == word64ToWord32 y
 
 instance Ord Word64 where
-    compare x y = compare (toInteger x) (toInteger y)
+    compare x y = compare (word64ToWord32 x) (word64ToWord32 y)
 
 instance Bounded Word64 where
     minBound = word32ToWord64 minBound minBound
@@ -323,6 +323,13 @@ instance Num Word64 where
 instance Real Word64 where
     toRational x = toInteger x % 1
 
+instance Ix Word64 where
+    range (m,n)          = [m..n]
+    index b@(m,n) i
+	   | inRange b i = toInt (i - m)
+	   | otherwise   = error "index: Index out of range"
+    inRange (m,n) i      = m <= i && i <= n
+
 instance Enum Word64 where
     toEnum           = fromInt
     fromEnum         = toInt
@@ -339,6 +346,29 @@ instance Integral Word64 where
     x `quotRem` y = (fromInteger q, fromInteger r)
 	where (q,r) = toInteger x `quotRem` toInteger y
     toInteger     = w64ToInteger
+
+instance Bits Word64 where
+    x .&. y       = liftBinary (.&.) x y
+    x .|. y       = liftBinary (.|.) x y
+    x `xor` y     = liftBinary xor x y
+    complement    = liftUnary complement
+    x `shift` i   = fromInteger (toInteger x `shift` i)
+    x `rotate` i  | i<0  = (x `shift` i) .|. (x `shift` (i+bitSize x))
+		  | i==0 = x
+		  | i>0  = (x `shift` i) .|. (x `shift` (i-bitSize x))
+    bit i | i `mod` 64 < 32 = word32ToWord64 0 (bit i)
+          | otherwise       = word32ToWord64 (bit i) 0
+    bitSize  _    = 64
+    isSigned _    = False
+
+liftBinary :: (Word32 -> Word32 -> Word32) -> Word64 -> Word64 -> Word64
+liftBinary op x y = word32ToWord64 (op xhi yhi) (op xlo ylo)
+	where	(xhi,xlo) = word64ToWord32 x
+		(yhi,ylo) = word64ToWord32 y
+
+liftUnary :: (Word32 -> Word32) -> Word64 -> Word64
+liftUnary op x = word32ToWord64 (op xhi) (op xlo)
+	where	(xhi,xlo) = word64ToWord32 x
 
 -----------------------------------------------------------------------------
 -- End of exported definitions
