@@ -307,7 +307,8 @@ instance (Typeable a, Typeable b) => Typeable (a,b) where
       snd :: (a,b) -> b
       snd = undefined
 
-      tup2Tc = mkTyCon ","
+tup2Tc :: TyCon
+tup2Tc = mkTyCon ","
 
 instance ( Typeable a
          , Typeable b
@@ -324,7 +325,8 @@ instance ( Typeable a
       thd :: (a,b,c) -> c
       thd = undefined
 
-      tup3Tc = mkTyCon ",,"
+tup3Tc :: TyCon
+tup3Tc = mkTyCon ",,"
 
 instance ( Typeable a
 	 , Typeable b
@@ -345,7 +347,8 @@ instance ( Typeable a
       fth :: (a,b,c,d) -> d
       fth = undefined
 
-      tup4Tc = mkTyCon ",,,"
+tup4Tc :: TyCon
+tup4Tc = mkTyCon ",,,"
 
 instance ( Typeable a
 	 , Typeable b
@@ -370,7 +373,8 @@ instance ( Typeable a
       ffth :: (a,b,c,d,e) -> e
       ffth = undefined
 
-      tup5Tc = mkTyCon ",,,,"
+tup5Tc :: TyCon
+tup5Tc = mkTyCon ",,,,"
 
 \end{code}
 
