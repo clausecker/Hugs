@@ -261,7 +261,7 @@ builtin@OBJ@	: $(PRELUDE) storage.h connect.h errors.h machdep.h \
 ffi@OBJ@	: $(PRELUDE) storage.h connect.h errors.h output.h strutil.h
 module@OBJ@	: $(PRELUDE) storage.h connect.h errors.h module.h
 machdep@OBJ@	: $(PRELUDE) storage.h connect.h errors.h command.h \
-		  opts.h machdep.h
+		  opts.h machdep.h strutil.h
 script@OBJ@	: $(PRELUDE) storage.h connect.h errors.h machdep.h \
 		  opts.h strutil.h script.h 
 strutil@OBJ@	: $(PRELUDE) storage.h connect.h errors.h strutil.h

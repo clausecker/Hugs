@@ -75,4 +75,6 @@ extern  Void   needPrims        Args((Int));
 extern  String fromEnv		Args((String,String));
 extern  Bool   initSystem       Args((Void));
 
+extern	String dirname		Args((String));
+
 #endif /* __MACHDEP_H__ */

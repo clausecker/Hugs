@@ -189,25 +189,18 @@ Module m; {        /* evaluate expr and print value    */
  * Read in prelude module(s):
  * ------------------------------------------------------------------------*/
 Void loadPrelude() {  /* load in the Prelude module(s). */
-    String prelName;
     String prelLocation;
     Bool   listFlg;
 
-    /* Sigh, findMPathname() mutates its module/name arg, so 
-     * create a (temporary and short-lived) copy of the constant
-     * string.
-     */
-    prelName = strCopy(STD_PRELUDE_HUGS); 
-    if (!( prelLocation = findMPathname(NULL, prelName, hugsPath)) ) {
+    if (!( prelLocation = findMPathname(STD_PRELUDE_HUGS)) ) {
 	Printf("Prelude not found on current path: \"%s\"\n",
 	       hugsPath ? hugsPath : "");
 	fatal("Unable to load prelude");
     }
     addScriptName(prelLocation, FALSE);
-    free(prelName);
     
     /* add the H98 Prelude module to the stack */
-    addScriptName(findMPathname(NULL, STD_PRELUDE,hugsPath), FALSE);
+    addScriptName(findMPathname(STD_PRELUDE), FALSE);
 
     everybody(INSTALL);
 

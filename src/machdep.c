@@ -11,8 +11,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.84 $
- * $Date: 2003/03/14 11:59:37 $
+ * $Revision: 1.85 $
+ * $Date: 2003/03/14 13:31:42 $
  * ------------------------------------------------------------------------*/
 #include <math.h>
 #include "prelude.h"
@@ -21,6 +21,7 @@
 #include "command.h"
 #include "errors.h"
 #include "opts.h"
+#include "strutil.h"
 #include "machdep.h"
 
 #ifdef HAVE_SIGNAL_H
@@ -236,8 +237,8 @@ static String local normPath      Args((String));
 static Void   local searchChr     Args((Int));
 static Void   local searchStr     Args((String));
 static Bool   local tryEndings    Args((String));
-static Bool   local find1	  Args((String, String, String));
-static Bool   local find2	  Args((String, String, String));
+static Bool   local find1	  Args((String));
+static Bool   local find2	  Args((String));
 #if DOS_FILENAMES
 static Bool   local isPathSep     Args((String));
 #endif
@@ -663,102 +664,61 @@ String s;
 #endif /* HAVE_WINDOWS_H || HAVE_FTW_H || (__MWERKS__ && macintosh) */
 #endif /* SEARCH_DIR */
 
+/*
+    findPathname nm = [ nm ++ e | e <- "" : hugsSuffixes ]
+*/
 
-String findPathname(along,nm)   /* Look for a file or module along suggested path */
-String along;                   /* Return ***input name*** if no file was found */
-String nm; {
-    if (!find1(along,nm,hugsPath)) {
-        searchReset(0);
-        searchStr(nm);
-    }
+String findPathname(filename)   /* Look for a file, trying various extensions */
+String filename; {              /* Return ***input name*** if no file was found */
+    searchReset(0);
+    searchStr(filename);
+    if (!readable(searchBuf,TRUE) && !tryEndings(""))
+	searchStr("");
     return normPath(searchBuf);
 }
 
-/*
-    find along nm hugspath
-      | isModuleId nm = [ d++f++e | f <- files, d <- dirs, e <- exts ]
-      | otherwise     = [ nm ++ e | e <- "" : exts ]
+/* Finding the filename corresponding to a module name:
+
+    find maybe_dir nm = [ d++f++e | d <- dirs, f <- files, e <- exts ]
       where 
-        dirs          = addAlong ("" : hugspath)
-        files         = [mod2dir nm, nm]
+        dirs          = maybeToList maybe_dir ++ "" : hugsPath
+        files         = [map dot2slash nm, nm]
         exts          = hugsSuffixes		-- default: [".hs",".lhs"]
-	
-         -- you can optionally turn on/off the feature of adding the
-         -- 'along' directory (i.e., the directory of the importing module,
-         -- most likely) to the search path. [use the 'X' toggle.]
-	addAlong 
-	 | wantImplicitRoot = (along:)
-	 | otherwise        = id
 
-        isModuleId s  = all isConid (splitAt '.' s)
-        mod2dir s     = map (\c -> if c=='.' then slash else c) s
+	-- the dir is added if the importing module was found there, or
+	-- was specified as an explicit filename.
 
+        dot2slash c   = if c=='.' then slash else c
 */
 
-String findMPathname(along,nm,path) /* Look for a file or module along suggested path */
-String along;                       /* Return NULL if no file was found               */
-String nm;			        
-String path; {
-    if (find1(along,nm,path)) {
+String findMInDir(dir,nm)       /* Look for a module in the suggested dir */
+String dir;                     /* Return NULL if no file was found       */
+String nm; {
+    searchReset(0);
+    searchStr(dir);
+    searchChr(SLASH);
+    if (find2(nm)) {
         return normPath(searchBuf);
     } else {
         return NULL;
     }
 }
 
-static Bool find1(along,nm,path)
-String along;
-String nm;
-String path; {
-    searchReset(0);
-    if (isModuleId(nm)) {	 	/* Is nm a module ident? */
-        String s;
-        Bool r;
-	Bool conv = FALSE;
-        for (s=nm; *s; s++)	   	/* Convert nm to directory prefix */
-            if (*s == '.') { *s = SLASH; conv = TRUE; }
-        r = find2(along,nm,path);
-	if (conv) {
-	    for (s=nm; *s; s++)	   	/* Convert back */
-		if (*s == SLASH) *s = '.';
-	} else {
-	    return r;
-	}
-        if (r)
-            return TRUE;
-        return find2(along,nm,path); 	/* Also try nm as-is */
+String findMPathname(name)	    /* Look for a module                      */
+String name; {                      /* Return NULL if no file was found       */
+    if (find1(name)) {
+        return normPath(searchBuf);
     } else {
-        searchStr(nm);			/* Assume nm is a filename */
-	if (!readable(searchBuf,TRUE)) {
-	  /* Final attempt, assume its a filename sans recognised file extensions. */
-	  return tryEndings("");
-	}
-	return TRUE;
+        return NULL;
     }
 }
 
-static Bool find2(along,name,path)
-String along;
-String name;
-String path; {
-    String pathpt = path;
+static Bool find1(name)		/* Search each directory of the path */
+String name; {
+    String pathpt = hugsPath;
 
-    searchReset(0);		/* First search directory of importing module */
-    if (optImplicitImportRoot && along) {
-	Int last = (-1);
-	Int i    = 0;
-	for (; along[i]; i++) {
-	    searchChr(along[i]);
-	    if (isSLASH(along[i]))
-		last = i;
-	}
-	searchReset(last+1);
-        if (tryEndings(name))
-            return TRUE;
-    }
-
-    searchReset(0);		/* Next step: search current directory */
-    if (tryEndings(name))
+    searchReset(0);		/* First, search current directory */
+    if (find2(name))
         return TRUE;
 
     searchReset(0);		/* Otherwise, we look along the HUGSPATH */
@@ -804,17 +764,49 @@ String path; {
 		more = FALSE;
 	    }
 #if SEARCH_DIR
-	    if (recurse ? scanSubDirs(name) : tryEndings(name)) {
+	    if (recurse ? scanSubDirs(name) : find2(name)) {
 		return TRUE;
 	    }
 #else   
-	    if (tryEndings(name)) {
+	    if (find2(name)) {
 		return TRUE;
 	    }
 #endif
 	} while (more);
     } 
     return FALSE;    
+}
+
+static Bool local find2(s)	/* Turn module name into a filename */
+String s; {
+    Int save;
+    Bool dots = FALSE;
+    String sp;
+
+    /* first, try the module name with dots replaced by slashes */
+    save = searchPos;
+    for (sp = s; *sp; sp++) {
+	if (*sp == '.') {
+	    searchBuf[searchPos++] = SLASH;
+	    dots = TRUE;
+	} else
+	    searchBuf[searchPos++] = *sp;
+    }
+    if (tryEndings(""))
+	return TRUE;
+    searchReset(save);
+
+    /* then try the module name as-is (if different) */
+    return dots && tryEndings(s);
+}
+
+String dirname(filename)	/* Return the directory part of the filename */
+String filename; {		/* or NULL if no directory.                  */
+    String slash = strrchr(filename,SLASH);
+
+    if (!slash)
+	return NULL;
+    return strnCopy(filename, slash - filename);
 }
 
 /* --------------------------------------------------------------------------

@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: storage.c,v $
- * $Revision: 1.69 $
- * $Date: 2003/03/14 11:59:37 $
+ * $Revision: 1.70 $
+ * $Date: 2003/03/14 13:31:43 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1710,7 +1710,7 @@ String fileOfModule(m)
 Module m; {
     Script s;
     if (m == modulePrelude) {
-	return findMPathname(NULL,textToStr(textPrelude),hugsPath);
+	return findMPathname(STD_PRELUDE_HUGS);
     }
     for(s=0; s<scriptHw; ++s) {
 	if ( scripts[s].moduleHw == m ) {

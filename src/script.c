@@ -32,6 +32,7 @@
 struct strScript {
     String fileName;			/* Script file name                */
     String realName;			/* Full path to canonical name     */
+    String directory;			/* Directory module was found in   */
     Time lastChange;			/* Time of last change to script   */
     Bool postponed;			/* Indicates postponed load        */
     Bool chased;			/* Added by import chasing?        */
@@ -77,6 +78,8 @@ Int i; {
     free(scriptTable[i].fileName);
   if (scriptTable[i].realName)
     free(scriptTable[i].realName);
+  if (scriptTable[i].directory)
+    free(scriptTable[i].directory);
 }
 
 /* We record the number of scripts that loading the Prelude
@@ -156,9 +159,25 @@ Bool   sch; {              /* TRUE => requires pathname search*/
 	EEND;
 	return;
     }
-    scriptTable[namesUpto].fileName = strCopy(sch ? findPathname(NULL,s) : s);
-    scriptTable[namesUpto].realName = strCopy(RealPath(scriptTable[namesUpto].fileName));
-    scriptTable[namesUpto].chased   = !sch;
+    if (sch) {
+	if (isModuleId(s)) {
+	    String location = findMPathname(s);
+	    if (!location) {
+		ERRMSG(0) "Can't find module \"%s\"", s
+		EEND;
+	    }
+	    scriptTable[namesUpto].fileName  = strCopy(location);
+	    scriptTable[namesUpto].directory = NULL;
+	} else {
+	    scriptTable[namesUpto].fileName  = strCopy(findPathname(s));
+	    scriptTable[namesUpto].directory = dirname(scriptTable[namesUpto].fileName);
+	}
+    } else {
+	scriptTable[namesUpto].fileName  = strCopy(s);
+	scriptTable[namesUpto].directory = NULL;
+    }
+    scriptTable[namesUpto].realName   = strCopy(RealPath(scriptTable[namesUpto].fileName));
+    scriptTable[namesUpto].chased     = !sch;
     namesUpto++;
 }
 
@@ -177,6 +196,7 @@ Long   len; {                           /* length of script file   */
     setLastEdit(fname,0);
 
     needsImports = FALSE;
+    scriptFile = 0;
     if (!parseScript(fname,len)) {   /* process script file */
 	/* file or parse error, drop the script */ 
 	forgetAScript(numScripts);
@@ -193,12 +213,28 @@ Long   len; {                           /* length of script file   */
 
 Bool chase(imps)                 /* Process list of import requests */
 List imps; {
-    Int    origPos  = numScripts;   /* keep track of original position */
-    String origName = scriptTable[origPos].fileName;
+    Int    origPos = numScripts; /* keep track of original position */
+    String origDir = scriptTable[origPos].directory;
     for (; nonNull(imps); imps=tl(imps)) {
-	String iname = findPathname(origName,textToStr(textOf(hd(imps))));
-	String rname = RealPath(iname);
+	String modname = textToStr(textOf(hd(imps)));
+	String iname = NULL;
+	String rname;
+	Bool   inOrigDir = FALSE;
 	Int    i     = 0;
+
+	if (origDir) {
+	    iname = findMInDir(origDir,modname);
+	    if (iname)
+		inOrigDir = TRUE;
+	}
+	if (iname == NULL)
+	    iname = findMPathname(modname);
+	if (iname == NULL) {
+	    ERRMSG(0) "Can't find imported module \"%s\"", modname
+	    EEND;
+	}
+
+	rname = RealPath(iname);
 	for (; i<namesUpto; i++)
 	    if (filenamecmp(scriptTable[i].realName,rname)==0)
 		break;
@@ -208,9 +244,11 @@ List imps; {
 	    scriptTable[origPos].postponed = TRUE;
 	    needsImports           = TRUE;
 
-	    if (i>=namesUpto)       /* Name not found (i==namesUpto)   */
+	    if (i>=namesUpto) {     /* Name not found (i==namesUpto)   */
 		addScriptName(iname,FALSE);
-	    else if (scriptTable[i].postponed) {/* Check for recursive dependency */
+		if (inOrigDir)
+		    scriptTable[i].directory = strCopy(origDir);
+	    } else if (scriptTable[i].postponed) {/* imported by itself? */
 		ERRMSG(0)
 		  "Recursive import dependency between \"%s\" and \"%s\"",
 		  scriptTable[origPos].fileName, iname

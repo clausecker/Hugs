@@ -462,7 +462,7 @@ String s; {              /* return FALSE if none found.     */
 			   } else {
 			     hugsPath  = substPath(s+1,hugsPath ? hugsPath : "");
 			   }
-			   prelLoc = findMPathname(NULL,STD_PRELUDE, hugsPath);
+			   prelLoc = findMPathname(STD_PRELUDE);
 			   /* prelLoc points to static storage, don't free. */
 			   if (!prelLoc) {
 			       Printf("ERROR: unable to locate Prelude along new path: \"%s\" - ignoring it.\n", hugsPath);
@@ -480,7 +480,7 @@ String s; {              /* return FALSE if none found.     */
 			       hugsSuffixes = strCopy(HUGSSUFFIXES);
 			   else
 			       hugsSuffixes = substPath(s+1,hugsSuffixes);
-			   if ( !findMPathname(NULL,STD_PRELUDE,hugsPath) ) {
+			   if ( !findMPathname(STD_PRELUDE) ) {
 			       Printf("ERROR: unable to locate Prelude with new suffix list: \"%s\" - ignoring it.\n", hugsSuffixes);
 			       free(hugsSuffixes);
 			       hugsSuffixes = saveSuffixes;

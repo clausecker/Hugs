@@ -10,8 +10,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: parser.y,v $
- * $Revision: 1.38 $
- * $Date: 2003/03/05 15:21:47 $
+ * $Revision: 1.39 $
+ * $Date: 2003/03/14 13:31:42 $
  * ------------------------------------------------------------------------*/
 
 %{
@@ -157,7 +157,7 @@ startMain : /* empty */			{startModule(conMain);
 modname	  : qconid			{startModule(mkCon(mkNestedQual($1))); $$ = gc1(NIL);}
 	  ;
 modid	  : qconid			{$$ = mkCon(mkNestedQual($1));}
-	  | STRINGLIT			{ String modName = findPathname(scriptFile,textToStr(textOf($1)));
+	  | STRINGLIT			{ String modName = findPathname(textToStr(textOf($1)));
 					  if (modName) { /* fillin pathname if known */
 					      $$ = mkStr(findText(modName));
 					  } else {
