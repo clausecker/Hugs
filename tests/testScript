@@ -478,6 +478,11 @@ test_temp() {
 ----------------------------------------------------------------"
 } # End of test temp
 
+# default: test everything (except temp)
+case $# in
+0) set static tcheck rts ffi libs demos ;;
+esac
+
 for arg
 do
   case "$arg" in
