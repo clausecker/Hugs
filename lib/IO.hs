@@ -1,9 +1,6 @@
 -----------------------------------------------------------------------------
 -- Standard Library: IO operations, beyond those included in the prelude
 --
--- WARNING: The names and semantics of functions defined in this module
--- may change as the details of the IO standard are clarified.
---
 -- Suitable for use with Hugs 98
 -----------------------------------------------------------------------------
 
