@@ -183,7 +183,7 @@ typedef struct _HugsStream {
 } HugsStream;
 
 static Void   local vBufferedPrintf  Args((HugsStream*, const char*, va_list));
-static Void   local bufferedPutchar  Args((HugsStream*, Char));
+static Void   local bufferedPutchar  Args((HugsStream*, int));
 static String local bufferClear      Args((HugsStream *stream));
 
 static Void local vBufferedPrintf(stream, fmt, ap)
@@ -203,7 +203,7 @@ va_list     ap; {
 
 static Void local bufferedPutchar(stream, c)
 HugsStream *stream;
-Char        c; {
+int         c; {
     if (BufferSize - stream->next >= 2) {
 	stream->buffer[stream->next++] = c;
 	stream->buffer[stream->next] = '\0';
@@ -265,7 +265,7 @@ va_dcl {
 Void hugsPutchar(c)
 int c; {
     if (!disableOutput) {
-	FPutChar(c, stdout);
+	putchar(c);
     } else {
 	bufferedPutchar(&outputStream, c);
     }
@@ -315,7 +315,7 @@ Void hugsPutc(c, fp)
 int   c;
 FILE* fp; {
     if (!disableOutput) {
-	FPutChar(c,fp);
+	fputc(c,fp);
     } else {
 	bufferedPutchar(&outputStream, c);
     }
