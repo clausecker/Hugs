@@ -1,22 +1,24 @@
 #!/bin/sh
 
-# Test the status within Hugs of each module in the hierarchical libraries.
+# Test the status within Hugs of each module in the following packages
+# of the hierarchical libraries.
 
 packages='haskell98 base haskell-src mtl network parsec QuickCheck unix OpenGL GLUT X11 HGL HUnit'
 
-this_dir="`dirname $0`"
-: ${this_dir:-.}
-hugs_root_dir="$this_dir/../.."
+# This script contains paths relative to its own location, but should
+# be independent of the current directory.
 
-hugs_src_dir="$hugs_root_dir/src"
-hugs=$hugs_src_dir/hugs
+this_dir="`dirname $0`"
+hugs_root_dir="${this_dir:-.}/../.."
+
+hugs="$hugs_root_dir/src/hugs -P{Hugs}/libraries:{Hugs}/packages"
 
 HUGSDIR=$hugs_root_dir/hugsdir
 export HUGSDIR
 
 case $# in
 1)	;;
-*)	echo "usage: $0 <directory where libraries lives>"
+*)	echo "usage: $0 <fptools directory>"
 	exit 1 ;;
 esac
 

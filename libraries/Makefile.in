@@ -95,4 +95,4 @@ install: all
 		done
 
 LibStatus: all
-	(cd ..; libraries/tools/test_libraries fptools) >$@
+	tools/test_libraries ../fptools >$@
