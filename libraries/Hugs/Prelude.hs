@@ -1359,7 +1359,9 @@ showParen    :: Bool -> ShowS -> ShowS
 showParen b p = if b then showChar '(' . p . showChar ')' else p
 
 showField    :: Show a => String -> a -> ShowS
-showField m v = showString m . showString " = " . shows v
+showField m@(c:_) v
+  | isAlpha c = showString m . showString " = " . shows v
+  | otherwise = showChar '(' . showString m . showString ") = " . shows v
 
 readParen    :: Bool -> ReadS a -> ReadS a
 readParen b g = if b then mandatory else optional
@@ -1369,9 +1371,16 @@ readParen b g = if b then mandatory else optional
 					     (")",u) <- lex t    ]
 
 readField    :: Read a => String -> ReadS a
-readField m s0 = [ r | (t,  s1) <- lex s0, t == m,
+readField m s0 = [ r | (t,  s1) <- readFieldName m s0,
                        ("=",s2) <- lex s1,
                        r        <- reads s2 ]
+
+readFieldName :: String -> ReadS String
+readFieldName m@(c:_) s0
+  | isAlpha c = [ (f,s1) | (f,s1) <- lex s0, f == m ]
+  | otherwise = [ (f,s3) | ("(",s1) <- lex s0,
+			   (f,s2)   <- lex s1, f == m,
+			   (")",s3) <- lex s2 ]
 
 lex                    :: ReadS String
 lex ""                  = [("","")]
