@@ -11,8 +11,8 @@
  * included in the distribution.
  *
  * $RCSfile: server.c,v $
- * $Revision: 1.10 $
- * $Date: 2002/02/26 05:34:49 $
+ * $Revision: 1.11 $
+ * $Date: 2002/02/28 02:05:19 $
  * ------------------------------------------------------------------------*/
 
 #define NO_MAIN
@@ -492,7 +492,7 @@ Int i;
 static Void MkAddr(a)              /* Push an Addr onto the stack      */
 void* a;
 {
-#ifdef USE_DYNAMIC_TYPES
+#ifndef NO_DYNAMIC_TYPES
     protect(push(ap(nameAddrToDyn,mkPtr(a))));
 #else
     protect(push(mkPtr(a)));
