@@ -327,10 +327,8 @@ AC_HEADER_SYS_WAIT
 AC_CHECK_HEADERS(
   stdarg.h stdlib.h unistd.h assert.h ctype.h string.h limits.h \
   fcntl.h sgtty.h termio.h termios.h signal.h \
-  arpa/inet.h \
-  netdb.h netinet/tcp.h \
   sys/stat.h sys/types.h sys/ioctl.h sys/resource.h sys/param.h \
-  sys/socket.h sys/timers.h sys/uio.h sys/un.h sys/utsname.h \
+  sys/timers.h sys/utsname.h \
   console.h pascal.h Files.h errno.h stat.h nlist.h ftw.h direct.h \
   grp.h pwd.h \
   dirent.h utime.h vfork.h
@@ -376,17 +374,6 @@ if test x"$enable_opengl" != x"no"; then
   fi
   CPPFLAGS="$fp_save_cppflags"
 fi
-
-dnl --------------------------------------------------
-dnl * test for netinet/in.h and in_addr_t
-dnl --------------------------------------------------
-AC_CHECK_HEADERS(netinet/in.h,
- [AC_MSG_CHECKING(for in_addr_t in netinet/in.h)
- AC_EGREP_HEADER(in_addr_t, netinet/in.h,
-  [AC_DEFINE(HAVE_IN_ADDR_T, [1],
-     [Define to 1 if netinet/in.h defines the in_addr type.])
-   AC_MSG_RESULT(yes)],
-  [AC_MSG_RESULT(no)])])
 
 dnl used by System.Posix.Signals
 dnl --------------------------------------------------
@@ -438,10 +425,6 @@ dnl--------------------------------------------------------------------
 
 dnl ** do we have long longs?
 FPTOOLS_C_LONG_LONG
-
-dnl ** check what fields struct msghdr contains
-FPTOOLS_MSGHDR_MSG_ACCRIGHTS
-FPTOOLS_MSGHDR_MSG_CONTROL
 
 dnl ** what are the sizes of various types
 AC_CHECK_SIZEOF(char,               1)
