@@ -591,11 +591,11 @@ then dnl compiling and linking loader succeeded
   ./conftest 2>/dev/null
   ac_result=$?
   if test $ac_result = 3; then
-    ac_cv_dll_flags=$1
+    ac_cv_dll_flags='$1'
     ac_cv_leading_underscore=no
   fi
   if test $ac_result = 4; then
-    ac_cv_dll_flags=$1
+    ac_cv_dll_flags='$1'
     ac_cv_leading_underscore=yes
   fi
 

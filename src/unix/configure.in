@@ -612,32 +612,32 @@ dnl
 dnl--------------------------------------------------------------------
 
 dnl Try the MS Visual C flags
-HUGS_TRY_DYNLINK("/LD")                
-HUGS_TRY_DYNLINK("/LD /ML /nologo")                
+HUGS_TRY_DYNLINK([/LD])
+HUGS_TRY_DYNLINK([/LD /ML /nologo])
 
 dnl Try the gcc flags
-HUGS_TRY_DYNLINK("-shared")            
+HUGS_TRY_DYNLINK([-shared -fPIC])
 
 dnl Try the MacOS X flags
-HUGS_TRY_DYNLINK("-bundle")        
+HUGS_TRY_DYNLINK(-bundle)
 
 dnl Try the MacOS X flags
-HUGS_TRY_DYNLINK("-bundle -lc")        
+HUGS_TRY_DYNLINK([-bundle -lc])        
 
 dnl Try the gcc flags
-dnl HUGS_TRY_DYNLINK("-shared -nostdlib")  
+dnl HUGS_TRY_DYNLINK([-shared -nostdlib])
 
 dnl Some other gcc flags
-HUGS_TRY_DYNLINK("-r")                 
+HUGS_TRY_DYNLINK(-r)
 
 dnl Some other gcc flags
-dnl HUGS_TRY_DYNLINK("-rdynamic")          
+dnl HUGS_TRY_DYNLINK(-rdynamic)
 
 dnl Try the SunOS flags
-dnl HUGS_TRY_DYNLINK("-G")                 
+dnl HUGS_TRY_DYNLINK(-G)
 
 dnl Try the HPUX flags
-dnl HUGS_TRY_DYNLINK("-Aa +z")             
+dnl HUGS_TRY_DYNLINK([-Aa +z])             
 
 AC_DEFINE_UNQUOTED(MKDLL_CMD, "${CC-cc} $ac_cv_dll_flags")
 if test "$ac_cv_leading_underscore" = "yes"; then

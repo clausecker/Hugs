@@ -10379,8 +10379,8 @@ fi
 
 
 
-echo $ac_n "checking if '"/LD"' builds loadable libraries""... $ac_c" 1>&6
-echo "configure:10384: checking if '"/LD"' builds loadable libraries" >&5
+echo $ac_n "checking if '/LD' builds loadable libraries""... $ac_c" 1>&6
+echo "configure:10384: checking if '/LD' builds loadable libraries" >&5
 if eval "test \"`echo '$''{'ac_cv_dll_flags'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -10393,7 +10393,7 @@ static int test2() { return (test() + x + y + z); }
 int test() { return test2(); }
 EOF
 
-  ac_mkdll='${CC-cc} "/LD" conftest_dl.c -o conftest_dl.so 1>&5'
+  ac_mkdll='${CC-cc} /LD conftest_dl.c -o conftest_dl.so 1>&5'
 
   if { (eval echo configure:10399: \"$ac_mkdll\") 1>&5; (eval $ac_mkdll) 2>&5; } && test -s conftest_dl.so 
   then 
@@ -10519,11 +10519,11 @@ then
   ./conftest 2>/dev/null
   ac_result=$?
   if test $ac_result = 3; then
-    ac_cv_dll_flags="/LD"
+    ac_cv_dll_flags='/LD'
     ac_cv_leading_underscore=no
   fi
   if test $ac_result = 4; then
-    ac_cv_dll_flags="/LD"
+    ac_cv_dll_flags='/LD'
     ac_cv_leading_underscore=yes
   fi
 
@@ -10532,9 +10532,9 @@ rm -fr conftest* a.out
 
 fi
  echo "$ac_t""$ac_cv_dll_flags" 1>&6
-                
-echo $ac_n "checking if '"/LD /ML /nologo"' builds loadable libraries""... $ac_c" 1>&6
-echo "configure:10538: checking if '"/LD /ML /nologo"' builds loadable libraries" >&5
+
+echo $ac_n "checking if '/LD /ML /nologo' builds loadable libraries""... $ac_c" 1>&6
+echo "configure:10538: checking if '/LD /ML /nologo' builds loadable libraries" >&5
 if eval "test \"`echo '$''{'ac_cv_dll_flags'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -10547,7 +10547,7 @@ static int test2() { return (test() + x + y + z); }
 int test() { return test2(); }
 EOF
 
-  ac_mkdll='${CC-cc} "/LD /ML /nologo" conftest_dl.c -o conftest_dl.so 1>&5'
+  ac_mkdll='${CC-cc} /LD /ML /nologo conftest_dl.c -o conftest_dl.so 1>&5'
 
   if { (eval echo configure:10553: \"$ac_mkdll\") 1>&5; (eval $ac_mkdll) 2>&5; } && test -s conftest_dl.so 
   then 
@@ -10673,11 +10673,11 @@ then
   ./conftest 2>/dev/null
   ac_result=$?
   if test $ac_result = 3; then
-    ac_cv_dll_flags="/LD /ML /nologo"
+    ac_cv_dll_flags='/LD /ML /nologo'
     ac_cv_leading_underscore=no
   fi
   if test $ac_result = 4; then
-    ac_cv_dll_flags="/LD /ML /nologo"
+    ac_cv_dll_flags='/LD /ML /nologo'
     ac_cv_leading_underscore=yes
   fi
 
@@ -10686,10 +10686,10 @@ rm -fr conftest* a.out
 
 fi
  echo "$ac_t""$ac_cv_dll_flags" 1>&6
-                
 
-echo $ac_n "checking if '"-shared"' builds loadable libraries""... $ac_c" 1>&6
-echo "configure:10693: checking if '"-shared"' builds loadable libraries" >&5
+
+echo $ac_n "checking if '-shared -fPIC' builds loadable libraries""... $ac_c" 1>&6
+echo "configure:10693: checking if '-shared -fPIC' builds loadable libraries" >&5
 if eval "test \"`echo '$''{'ac_cv_dll_flags'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -10702,7 +10702,7 @@ static int test2() { return (test() + x + y + z); }
 int test() { return test2(); }
 EOF
 
-  ac_mkdll='${CC-cc} "-shared" conftest_dl.c -o conftest_dl.so 1>&5'
+  ac_mkdll='${CC-cc} -shared -fPIC conftest_dl.c -o conftest_dl.so 1>&5'
 
   if { (eval echo configure:10708: \"$ac_mkdll\") 1>&5; (eval $ac_mkdll) 2>&5; } && test -s conftest_dl.so 
   then 
@@ -10828,11 +10828,11 @@ then
   ./conftest 2>/dev/null
   ac_result=$?
   if test $ac_result = 3; then
-    ac_cv_dll_flags="-shared"
+    ac_cv_dll_flags='-shared -fPIC'
     ac_cv_leading_underscore=no
   fi
   if test $ac_result = 4; then
-    ac_cv_dll_flags="-shared"
+    ac_cv_dll_flags='-shared -fPIC'
     ac_cv_leading_underscore=yes
   fi
 
@@ -10841,10 +10841,10 @@ rm -fr conftest* a.out
 
 fi
  echo "$ac_t""$ac_cv_dll_flags" 1>&6
-            
 
-echo $ac_n "checking if '"-bundle"' builds loadable libraries""... $ac_c" 1>&6
-echo "configure:10848: checking if '"-bundle"' builds loadable libraries" >&5
+
+echo $ac_n "checking if '-bundle' builds loadable libraries""... $ac_c" 1>&6
+echo "configure:10848: checking if '-bundle' builds loadable libraries" >&5
 if eval "test \"`echo '$''{'ac_cv_dll_flags'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -10857,7 +10857,7 @@ static int test2() { return (test() + x + y + z); }
 int test() { return test2(); }
 EOF
 
-  ac_mkdll='${CC-cc} "-bundle" conftest_dl.c -o conftest_dl.so 1>&5'
+  ac_mkdll='${CC-cc} -bundle conftest_dl.c -o conftest_dl.so 1>&5'
 
   if { (eval echo configure:10863: \"$ac_mkdll\") 1>&5; (eval $ac_mkdll) 2>&5; } && test -s conftest_dl.so 
   then 
@@ -10983,11 +10983,11 @@ then
   ./conftest 2>/dev/null
   ac_result=$?
   if test $ac_result = 3; then
-    ac_cv_dll_flags="-bundle"
+    ac_cv_dll_flags='-bundle'
     ac_cv_leading_underscore=no
   fi
   if test $ac_result = 4; then
-    ac_cv_dll_flags="-bundle"
+    ac_cv_dll_flags='-bundle'
     ac_cv_leading_underscore=yes
   fi
 
@@ -10996,10 +10996,10 @@ rm -fr conftest* a.out
 
 fi
  echo "$ac_t""$ac_cv_dll_flags" 1>&6
-        
 
-echo $ac_n "checking if '"-bundle -lc"' builds loadable libraries""... $ac_c" 1>&6
-echo "configure:11003: checking if '"-bundle -lc"' builds loadable libraries" >&5
+
+echo $ac_n "checking if '-bundle -lc' builds loadable libraries""... $ac_c" 1>&6
+echo "configure:11003: checking if '-bundle -lc' builds loadable libraries" >&5
 if eval "test \"`echo '$''{'ac_cv_dll_flags'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -11012,7 +11012,7 @@ static int test2() { return (test() + x + y + z); }
 int test() { return test2(); }
 EOF
 
-  ac_mkdll='${CC-cc} "-bundle -lc" conftest_dl.c -o conftest_dl.so 1>&5'
+  ac_mkdll='${CC-cc} -bundle -lc conftest_dl.c -o conftest_dl.so 1>&5'
 
   if { (eval echo configure:11018: \"$ac_mkdll\") 1>&5; (eval $ac_mkdll) 2>&5; } && test -s conftest_dl.so 
   then 
@@ -11138,11 +11138,11 @@ then
   ./conftest 2>/dev/null
   ac_result=$?
   if test $ac_result = 3; then
-    ac_cv_dll_flags="-bundle -lc"
+    ac_cv_dll_flags='-bundle -lc'
     ac_cv_leading_underscore=no
   fi
   if test $ac_result = 4; then
-    ac_cv_dll_flags="-bundle -lc"
+    ac_cv_dll_flags='-bundle -lc'
     ac_cv_leading_underscore=yes
   fi
 
@@ -11154,8 +11154,8 @@ fi
         
 
 
-echo $ac_n "checking if '"-r"' builds loadable libraries""... $ac_c" 1>&6
-echo "configure:11159: checking if '"-r"' builds loadable libraries" >&5
+echo $ac_n "checking if '-r' builds loadable libraries""... $ac_c" 1>&6
+echo "configure:11159: checking if '-r' builds loadable libraries" >&5
 if eval "test \"`echo '$''{'ac_cv_dll_flags'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -11168,7 +11168,7 @@ static int test2() { return (test() + x + y + z); }
 int test() { return test2(); }
 EOF
 
-  ac_mkdll='${CC-cc} "-r" conftest_dl.c -o conftest_dl.so 1>&5'
+  ac_mkdll='${CC-cc} -r conftest_dl.c -o conftest_dl.so 1>&5'
 
   if { (eval echo configure:11174: \"$ac_mkdll\") 1>&5; (eval $ac_mkdll) 2>&5; } && test -s conftest_dl.so 
   then 
@@ -11294,11 +11294,11 @@ then
   ./conftest 2>/dev/null
   ac_result=$?
   if test $ac_result = 3; then
-    ac_cv_dll_flags="-r"
+    ac_cv_dll_flags='-r'
     ac_cv_leading_underscore=no
   fi
   if test $ac_result = 4; then
-    ac_cv_dll_flags="-r"
+    ac_cv_dll_flags='-r'
     ac_cv_leading_underscore=yes
   fi
 
@@ -11307,7 +11307,7 @@ rm -fr conftest* a.out
 
 fi
  echo "$ac_t""$ac_cv_dll_flags" 1>&6
-                 
+
 
 
 
