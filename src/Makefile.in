@@ -73,11 +73,11 @@ hugs@EXE@	: $(IOBJECTS) @WOBJECTS@ @RC_FILES@
 		  @STRIP@
 
 SERVER_OBJECTS	= server@OBJ@ $(OBJECTS) 
-runhugs@OBJ@	: $(PRELUDE) hugs.c machdep.c timer.c runhugs.c
+runhugs@OBJ@	: $(PRELUDE) runhugs.c server.h
 runhugs@EXE@	: runhugs@OBJ@ $(SERVER_OBJECTS)
 		  $(CC) $(LDFLAGS) runhugs@OBJ@ $(SERVER_OBJECTS) $(LIBS) -o runhugs@EXE@
 
-ffihugs@OBJ@	: $(PRELUDE) hugs.c machdep.c timer.c runhugs.c
+ffihugs@OBJ@	: $(PRELUDE) runhugs.c server.h
 ffihugs@EXE@	: ffihugs@OBJ@ $(SERVER_OBJECTS)
 		  $(CC) $(LDFLAGS) ffihugs@OBJ@ $(SERVER_OBJECTS) $(LIBS) -o ffihugs@EXE@
 
@@ -184,6 +184,7 @@ machine@OBJ@	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h
 plugin@OBJ@	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h
 builtin@OBJ@	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h \
 		  bignums.c printer.c iomonad.c interns.c stmonad.c array.c dirprim.c timeprim.c
+ffi@OBJ@	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h
 
 ################################################################
 # Regression tests (none supplied)
