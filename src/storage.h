@@ -8,8 +8,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: storage.h,v $
- * $Revision: 1.65 $
- * $Date: 2004/02/21 01:32:41 $
+ * $Revision: 1.66 $
+ * $Date: 2004/11/11 20:52:05 $
  * ------------------------------------------------------------------------*/
 #ifndef __STORAGE_H__
 #define __STORAGE_H__
@@ -1171,6 +1171,9 @@ struct strHandle {		/* Handle description and status flags	   */
     Char  hLookAhead;		/* Char read by hLookAhead (or <0 if none) */
     				/* This is only used in text mode.         */
 #endif
+#if IO_HANDLES
+    Int   hRWState;		/* Current state of r/w stream: see below   */
+#endif
 };
 
 #define HCLOSED		0000	/* no I/O permitted			   */
@@ -1186,6 +1189,10 @@ struct strHandle {		/* Handle description and status flags	   */
 #define HANDLE_NOTBUFFERED    1
 #define HANDLE_LINEBUFFERED   2
 #define HANDLE_BLOCKBUFFERED  3
+
+#define RW_READING            0 /* last operation on r/w stream was reading */
+#define RW_WRITING            1 /* last operation on r/w stream was writing */
+#define RW_NEUTRAL            2 /* r/w stream was just opened/at EOF/seeked */
 
 #if !WANT_FIXED_SIZE_TABLES
 extern unsigned long     num_handles;
