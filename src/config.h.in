@@ -254,9 +254,6 @@
 /* Define if you have the <nlist.h> header file.  */
 #undef HAVE_NLIST_H
 
-/* Define if you have the <pascal.h> header file.  */
-#undef HAVE_PASCAL_H
-
 /* Define if you have the <sgtty.h> header file.  */
 #undef HAVE_SGTTY_H
 
@@ -328,5 +325,3 @@
 
 /* Define if you have the editline library (-leditline).  */
 #undef HAVE_LIBREADLINE
-
-

@@ -9,8 +9,8 @@
  * included in the distribution.
  *
  * $RCSfile: output.c,v $
- * $Revision: 1.15 $
- * $Date: 2001/02/14 00:25:26 $
+ * $Revision: 1.16 $
+ * $Date: 2001/02/14 12:15:05 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1398,12 +1398,16 @@ Kinds ks; {
 #define DELTA 2
 
 Bool printingObservations = FALSE;
-void newLine(indent){
+Void newLine   Args((Int));
+
+Void newLine(indent)
+Int indent; {
     putChr('\n');
     outColumn = 0;
     while (indent--) putChr(' ');
 }
 
+Int countObsList   Args((Cell));
 Int countObsList(header)
 Cell header;
 {

@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: storage.c,v $
- * $Revision: 1.13 $
- * $Date: 2001/01/02 18:21:41 $
+ * $Revision: 1.14 $
+ * $Date: 2001/02/14 12:15:05 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1107,7 +1107,6 @@ Cell new; {
 
 static Breakpt breakptHw;                          /* next unused Breakpt  */
 struct Breakpt DEFTABLE(tabBreakpt,NUM_BRKPTS);    /* Breakpt storage      */
-static Breakpt currentObs;			   /* for table iterators  */
 
 Void    clearAllBreak(){
     breakptHw = BRKMIN;

@@ -19,8 +19,8 @@
  * included in the distribution.
  *
  * $RCSfile: iomonad.c,v $
- * $Revision: 1.10 $
- * $Date: 2000/10/06 00:45:07 $
+ * $Revision: 1.11 $
+ * $Date: 2001/02/14 12:15:05 $
  * ------------------------------------------------------------------------*/
  
 Name nameIORun;			        /* run IO code                     */
@@ -450,7 +450,11 @@ primFun(primSystem) {                   /* primSystem :: String -> IO Int  */
     String s = evalName(IOArg(1));	/* Eval name	                   */
     Int r;
     if (s) {				/* check for valid string          */
+#if HAVE_MACSYSTEM
+        r = macsystem(s);
+#else
 	r = system(s);
+#endif
 	IOReturn(mkInt(WEXITSTATUS(r)));
     } else {
 	IOFail(ap(nameNameErr,IOArg(1)));
@@ -494,12 +498,18 @@ primFun(primGetCh) {			/* Get character from stdin wo/echo*/
     IOReturn(mkChar(readTerminalChar()));
 }
 
+#if __MWERKS__ && macintosh
+primFun(primGetChar) {			 /* Metrowerks console has no NO_ECHO mode. */
+    IOReturn(mkChar(readTerminalChar()));
+}
+#else
 primFun(primGetChar) {			/* Get character from stdin w/ echo*/
     Char c = readTerminalChar();
     putchar(c);
     fflush(stdout);
     IOReturn(mkChar(c));
 }
+#endif
 
 primFun(primPutChar) {			/* print character on stdout	   */
     eval(pop());
@@ -817,6 +827,10 @@ primFun(primWriteBinaryFile) {		/* write string to specified file  */
 primFun(primAppendBinaryFile) {		/* append string to specified file */
     fwritePrim(root,TRUE,TRUE);
 }
+
+#if HAVE_GETFINFO
+extern int access(char *fileName, int dummy);
+#endif
 
 static Void local fwritePrim(root,append,binary)/* Auxiliary function for  */
 StackPtr root;					/* writing/appending to	   */

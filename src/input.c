@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: input.c,v $
- * $Revision: 1.22 $
- * $Date: 2001/02/01 00:03:33 $
+ * $Revision: 1.23 $
+ * $Date: 2001/02/14 12:15:05 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -129,11 +129,11 @@ static Text textBang,    textDot,      textAll,	   textImplies;
 
 static Text textModule,  textImport;
 static Text textHiding,  textQualified, textAsMod;
-static Text textExport, textDynamic, textCCall, textStdCall;
+static Text textDynamic, textCCall, textStdCall;
 static Text textUnsafe, textLabel;
 static Text textWildcard;
 static Text textNeedPrims;
-static Text textForeign, textExport,   textDynamic,textUnsafe, textLabel;
+static Text textForeign, textExport;
 
 Text   textCcall;                       /* ccall                           */
 Text   textStdcall;                     /* stdcall                         */

@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.34 $
- * $Date: 2001/02/14 00:25:26 $
+ * $Revision: 1.35 $
+ * $Date: 2001/02/14 12:15:05 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -102,7 +102,16 @@ static Void   local setLastEdit       Args((String,Int));
 static Void   local failed            Args((Void));
 static String local strCopy           Args((String));
 static Void   local browseit	      Args((Module,String,Bool));
-static Void   local browse	      Args((Void));
+static Void   local browse	          Args((Void));
+
+#if USE_PREFERENCES_FILE
+static Void    readPrefsFile          Args((FILE *));
+typedef char GVarname[2000];
+static GVarname hugsFlags = "";
+int  iniArgc;
+char iniArgv[10][33];
+#endif
+
 
 /* --------------------------------------------------------------------------
  * Machine dependent code for Hugs interpreter:
@@ -152,6 +161,10 @@ String hugsPath		 = 0;		/* String for file search path     */
 String projectPath	 = 0;		/* String for project search path  */
 Bool   preludeLoaded	 = FALSE;
 
+#if __MWERKS__ && macintosh
+#include <SIOUX.h>
+#endif
+
 #if REDIRECT_OUTPUT
 static Bool disableOutput = FALSE;      /* redirect output to buffer?      */
 #endif
@@ -168,28 +181,15 @@ Main main(argc,argv)
 int  argc;
 char *argv[]; {
 
-#ifdef HAVE_CONSOLE_H /* Macintosh port */
-    _ftype = 'TEXT';
-    _fcreator = 'R*ch';		/* // 'KAHL';	//'*TEX';	//'ttxt'; */
-
-    console_options.top = 40;
-    console_options.left = 6;
-
-    /* Example of combinations (nrows, ncols, txFont, txSize):
-	(35, 100, 22, 10)
-	(38, 120, 22, 9)
-    */
-    console_options.nrows = 34;
-    console_options.ncols = 80;
-
-    console_options.pause_atexit = 1;
-    console_options.title = "\pHugs" HUGS_VERSION;
-
-    console_options.txFont = 22;	/* 22 = Courier			   */
-    console_options.txSize = 10;
-
-    /* console_options.procID = 5; */
-    argc = ccommand(&argv);
+#if __MWERKS__ && macintosh
+    strcpy(macHugsDir,currentDir());
+    SIOUXSettings.autocloseonquit   = true;
+    SIOUXSettings.asktosaveonclose  = false;
+    SIOUXSettings.columns           = 80;
+    SIOUXSettings.rows              = 40; 
+    SIOUXSettings.tabspaces         = 8;
+    SIOUXSettings.enabledraganddrop = true;
+    SIOUXSetTitle("\pHugs 98");
 #endif
 
     CStackBase = &argc;                 /* Save stack base for use in gc   */
@@ -222,13 +222,6 @@ char *argv[]; {
     Printf("||   || Version: %-14s _________________________________________\n\n",HUGS_VERSION);
 #endif
 
-#if SYMANTEC_C
-    Printf("   Ported to Macintosh by Hans Aberg, compiled " __DATE__ ".\n\n");
-#endif
-#if HUGS_FOR_WINDOWS
-    Printf("   Windows interface by José E. Gallardo, 2001\n\n");
-#endif
-
     FlushStdout();
     interpreter(argc,argv);
     Printf("[Leaving Hugs]\n");
@@ -254,6 +247,10 @@ Int    argc;
 String argv[]; {
     Script i;
     String proj = 0;
+#if USE_PREFERENCES_FILE
+    FILE *f;
+    FileName hugsPrefsFile = "\0";
+#endif
 
     setLastEdit((String)0,0);
     lastEdit      = 0;
@@ -285,7 +282,7 @@ String argv[]; {
 	hugsEdit = strCopy(notePadLoc);
       }
     }
-#elif SYMANTEC_C
+#elif __MWERKS__ && macintosh
     hugsEdit      = "";
 #else
     hugsEdit      = strCopy(fromEnv("EDITOR",NULL));
@@ -298,10 +295,27 @@ String argv[]; {
     readOptions(readRegString(HKEY_LOCAL_MACHINE,HugsRoot,"Options",""));
     readOptions(readRegString(HKEY_CURRENT_USER, HugsRoot,"Options",""));
 #endif /* USE_REGISTRY */
-#if HUGS_FOR_WINDOWS
+#if USE_PREFERENCES_FILE
+    if (f=fopen(PREFS_FILE_NAME,"r")) { /* is preferences file in the {Current} folder? */
+	  readPrefsFile(f);
+	} else {                               /* is preferences file in the {Hugs} folder? */
+        strcpy(hugsPrefsFile,macHugsDir);
+        strcat(hugsPrefsFile,":");
+        strcat(hugsPrefsFile,PREFS_FILE_NAME);
+        if (f=fopen(hugsPrefsFile,"r"))
+          readPrefsFile(f);
+	  }                                              /* else: take default preferences */
+    readOptions(hugsFlags);
+    if (iniArgc > 0)            /* load additional files found in the preferences file */
+	  for (i=0; i<iniArgc; i++) {
+	    addScriptName(iniArgv[i],TRUE);
+      }
+#else
+# if HUGS_FOR_WINDOWS
     ReadGUIOptions();
-#endif
+# endif
     readOptions(fromEnv("HUGSFLAGS",""));
+#endif
 
     for (i=1; i<argc; ++i) {            /* process command line arguments  */
 	if (strcmp(argv[i],"+")==0 && i+1<argc) {
@@ -347,6 +361,45 @@ String argv[]; {
     }
     readScripts(0);
 }
+
+#if USE_PREFERENCES_FILE
+static Void readPrefsFile(FILE *f)
+{ GVarname line  = "";
+  int      linep = 0;
+
+  char c;
+      
+  while ( (c=fgetc(f)) != EOF && c != '\n') {     /* read HUGSFLAGS          */
+    if ((c != '\t') && (c != '\r')) {             /* skip some control chars */
+      line[linep++] = c;
+      line[linep]   = '\0';
+    }
+  }
+  strcpy(hugsFlags,line);
+    
+  iniArgc = 0;
+  do  {                                  /* read input command line files   */
+    while ((c == '\n') || (c == '\t') || (c == ' '))  /* skip blank spaces  */
+      c=fgetc(f);    
+    if (c == '"') {                      /* filename found                  */
+      linep = 0;
+      iniArgv[iniArgc][0] = '\0';
+      while ((c=fgetc(f)) != EOF && c != '"') {
+        if (linep <= 32) {              /* filename limit on a mac 32 chars */
+          iniArgv[iniArgc][linep++] = c;
+          iniArgv[iniArgc][linep]   = '\0';
+        }
+      }
+      if (c == EOF) {
+        ERRMSG(0) "Incorrect name specification in preferences file"
+		EEND;
+      } else {
+		  iniArgc++;
+	    }
+    }
+  } while ( (c = fgetc(f)) != EOF );
+}
+#endif
 
 /* --------------------------------------------------------------------------
  * Command line options:
@@ -435,6 +488,10 @@ static Void local optionInfo() {        /* Print information about command */
     Printf(" -c%d",cutoff);
     Printf("\nSearch path     : -P");
     printString(hugsPath);
+#if __MWERKS__ && macintosh
+    Printf("\n{Hugs}          : %s",hugsdir());
+    Printf("\n{Current}       : %s",currentDir());
+#endif
     if (projectPath!=NULL) {
 	Printf("\nProject Path    : %s",projectPath);
     }
@@ -2121,8 +2178,10 @@ Void done() {                          /* Goal has now been achieved       */
     else
 	for (; charCount>0; charCount--) {
 	    Putchar('\b');
+#if !(__MWERKS__ && macintosh)
 	    Putchar(' ');
 	    Putchar('\b');
+#endif
 	}
     aiming = FALSE;
     FlushStdout();

@@ -9,8 +9,8 @@
  * included in the distribution.
  *
  * $RCSfile: storage.h,v $
- * $Revision: 1.15 $
- * $Date: 2001/01/08 21:43:06 $
+ * $Revision: 1.16 $
+ * $Date: 2001/02/14 12:15:05 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -894,7 +894,7 @@ extern	StackPtr sp;
 
 extern  Void hugsStackOverflow Args((Void));
 
-#if SYMANTEC_C
+#if __MWERKS__ && macintosh
 #include <Memory.h>
 #define STACK_HEADROOM 16384
 #define STACK_CHECK if (StackSpace() <= STACK_HEADROOM) \

@@ -12,8 +12,8 @@
  * included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.12 $
- * $Date: 2001/02/10 01:20:47 $
+ * $Revision: 1.13 $
+ * $Date: 2001/02/14 12:15:05 $
  * ------------------------------------------------------------------------*/
 
 #ifdef HAVE_SIGNAL_H
@@ -78,9 +78,6 @@ extern unsigned _stklen = 8000;         /* Allocate an 8k stack segment    */
 #ifdef HAVE_CONSOLE_H
 # include <console.h>
 #endif
-#ifdef HAVE_PASCAL_H
-# include <pascal.h>
-#endif
 #ifdef HAVE_FILES_H
 # include <Files.h>
 #endif
@@ -96,7 +93,11 @@ extern unsigned _stklen = 8000;         /* Allocate an 8k stack segment    */
 #ifdef HAVE_UNIX_H
 #include <unix.h>
 #endif
-#if SYMANTEC_C
+#if __MWERKS__ && macintosh
+/*	The variable time_release should be set to a value which gives
+	good cooperative multitasking.
+*/
+int time_release = 20000;
 int allow_break_count = 0;
 #endif
 
@@ -174,7 +175,7 @@ Long   *sz; {
 #endif
 }
 
-#if defined HAVE_GETFINFO               /* Mac971031 */
+#if HAVE_GETFINFO               /* Mac971031 */
 /* --------------------------------------------------------------------------
  * Define a MacOS version of access():
  *   If the file is not accessible, -1 is returned and errno is set to
@@ -186,6 +187,8 @@ Long   *sz; {
  *   Warnings: Use with caution. UNIX access do no translate to Macs.
  * Check of write access is not implemented (same as read).
  * ------------------------------------------------------------------------*/
+
+int access(char *fileName, int dummy);
 
 int access(char *fileName, int dummy) { 
 	FInfo   fi;
@@ -210,12 +213,12 @@ int access(char *fileName, int dummy) {
 
 static Bool local readable(f)           /* is f a regular, readable file   */
 String f; {
-#if DJGPP2 || defined HAVE_GETFINFO /* stat returns bogus mode bits on djgpp2 */
+#if DJGPP2 || HAVE_GETFINFO /* stat returns bogus mode bits on djgpp2 */
     return (0 == access(f,4));
 #elif defined HAVE_SYS_STAT_H || defined HAVE_STAT_H
     struct stat scbuf;
     return (  !stat(f,&scbuf) 
-#ifndef __SYMBIAN32__
+#if !(defined macintosh)	/* Macintosh files always have read permission */
 	   && (scbuf.st_mode & S_IREAD) /* readable     */
 #endif
 	   && (scbuf.st_mode & S_IFREG) /* regular file */
@@ -245,6 +248,11 @@ static String local normPath      Args((String));
 static Void   local searchChr     Args((Int));
 static Void   local searchStr     Args((String));
 static Bool   local tryEndings    Args((String));
+
+#if __MWERKS__ && macintosh
+typedef char FileName[FILENAME_MAX + 1];
+FileName macHugsDir; /* Directory where Hugs was found. */
+#endif
 
 #if DOS_FILENAMES
 # define SLASH                   '\\'
@@ -292,6 +300,10 @@ static String local hugsdir() {     /* directory containing lib/Prelude.hs */
 	}
     }
     return dir;
+#elif __MWERKS__ && macintosh
+    static FileName dir = "\0"; /* Directory containing lib: Prelude.hs */
+    strcpy(dir,macHugsDir);
+    return dir;
 #else
     /* On Unix systems, we can't find the binary we're running and
      * the libraries may not be installed near the binary anyway.
@@ -301,6 +313,15 @@ static String local hugsdir() {     /* directory containing lib/Prelude.hs */
     return HUGSDIR;
 #endif
 }
+
+#if __MWERKS__ && macintosh
+static String currentDir() {
+    static FileName dir = "\0";
+    getcwd(dir, FILENAME_MAX);
+    dir[strlen(dir) - 1] = '\0';
+    return dir;
+}
+#endif
 
 #if HSCRIPT    
 static String local hscriptDir() {  /* Directory containing hscript.dll	   */
@@ -500,8 +521,70 @@ String s;
     return (r > 0);
 }
 
-#endif /* HAVE_WINDOWS_H || HAVE_FTW_H */
+#elif __MWERKS__ && macintosh  /* Macintosh subscan */
+
+#include <Files.h>
+#include "MoreFilesExtras.h"
+#include <Errors.h>
+
+#define MAXSPECS 50
+
+extern StringPtr c2pstr(char *aStr);
+extern char *p2cstr(StringPtr aStr);
+
+static Bool scanSubDirs(s)
+String s;
+{   FileName name  = "\0";
+    ConstStr255Param pname = "\p";
+    String subdir = "\0";
+    OSErr error;
+
+    FSSpec specs[MAXSPECS];
+    short found = 0;
+    short start = 1;
+    int i, save;
+    
+    save = searchPos;
+    
+    /* is it in the current directory ? */
+    if (tryEndings(s)) return TRUE;
+
+    searchReset(save);
+    
+    /* initiate the search */
+    
+    /* the complete path to the directory is in searchBuf */
+    strncpy(name,searchBuf,FILENAME_MAX);  /* do not mess up :-) */
+    pname = c2pstr(name);
+ 
+    /* get all subdirectories in path */
+    error = GetDirItems( 0, 0, pname, false, true, specs
+                       , MAXSPECS, &found, &start );
+    
+    /* search over the found directories */
+    if ((error != noErr) && (error != fnfErr))
+    { errno = 0;
+      return FALSE;
+    }
+    else
+    { if (found > 0)
+        for (i = 0; i < found; i++)
+        { subdir = p2cstr(specs[i].name);
+
+          searchStr(subdir);
+          searchChr(SLASH);
+
+          if (tryEndings(s))
+             return TRUE;
+          searchReset(save);
+        }
+    }
+
+    return FALSE;
+}
+#endif /* HAVE_WINDOWS_H || HAVE_FTW_H || (__MWERKS__ && macintosh) */
 #endif /* SEARCH_DIR */
+
 
 String findPathname(along,nm)   /* Look for a file along specified path    */
 String along;                   /* Return NULL if file does not exist      */ 
@@ -549,6 +632,13 @@ String path; {
 			searchStr(hugsdir());
 			pathpt += 6;
 		    }
+#if __MWERKS__ && macintosh
+                    else if (strncmp(pathpt,"{Current}",9)==0) {
+                        searchStr(currentDir());
+                        pathpt += 9;
+                    }
+#endif
+
 #if HSCRIPT
 		    /* And another - we ought to generalise this stuff */
 		    else if (strncmp(pathpt,"{HScript}",9)==0) {
@@ -868,22 +958,36 @@ Int readTerminalChar() {                /* read character from terminal    */
     return getchar();                   /* without echo, assuming that     */
 }                                       /* noechoTerminal() is active...   */
 
-#elif SYMANTEC_C
+#elif __MWERKS__ && macintosh
+#include <limits.h>
+static Bool terminalEchoReqd = TRUE;
 
-Int readTerminalChar() {                /* read character from terminal    */
-    return getchar();                   /* without echo, assuming that     */
-}                                       /* noechoTerminal() is active...   */
- 
 Int getTerminalWidth() {
-    return console_options.ncols;
+    /* Never insert extra '\n' in output, as the console softwraps. */
+    return INT_MAX;
 }
 
 Void normalTerminal() {
-    csetmode(C_ECHO, stdin);
+    terminalEchoReqd = TRUE;
 }
 
 Void noechoTerminal() {
-    csetmode(C_NOECHO, stdin);
+    terminalEchoReqd = FALSE;
+}
+
+Int readTerminalChar() {               /* read character from terminal    */
+Int ac, bc;
+
+  if (terminalEchoReqd) {
+    return getchar();
+  } else {
+      ac = getc(stdin);
+/*    bc = ac;                       /* eat all subsequent chars until EOF or EOL
+      while ((bc != EOF) && (bc != '\n')) {
+        bc = getc(stdin);
+      }*/
+      return ac;
+  }
 }
 
 #else /* no terminal driver - eg DOS, RISCOS */
@@ -1075,7 +1179,7 @@ Int    line;                            /* given line.  Both name and line */
 String nm; {                            /* or just line may be zero        */
     static char editorCmd[FILENAME_MAX+1];
 
-#if !SYMANTEC_C
+#if !(defined macintosh)
     if (hugsEdit && *hugsEdit) {        /* Check that editor configured    */
 #else
     /* On a Mac, files have creator information, telling which program
@@ -1201,25 +1305,6 @@ String s; {
 #if RISCOS                              /* RISCOS also needs a chdir()     */
 int chdir(char *s) {                    /* RISCOS PRM p. 885    -- JBS     */
     return os_swi2(OS_FSControl + XOS_Bit, 0, (int)s) != NULL;
-}
-#elif defined HAVE_PBHSETVOLSYNC        /* Macintosh */
-int chdir(const char *s) {      
-    char* str;
-    WDPBRec wd;
-    wd.ioCompletion = 0;
-    str = (char*)malloc(strlen(s) + 1);
-    if (str == 0) return -1;
-    strcpy(str, s);
-    wd.ioNamePtr = C2PStr(str);
-    wd.ioVRefNum = 0;
-    wd.ioWDDirID = 0;
-    errno = PBHSetVolSync(&wd);
-    free(str);
-    if (errno == 0) {
-	return 0;
-    } else {
-	return -1;
-    }
 }
 #endif
 
@@ -1348,6 +1433,7 @@ String s; {
  *-------------------------------------------------------------------------*/
 
 #if !defined(HAVE_VSNPRINTF)
+int vsnprintf(char* buffer, int count, const char* fmt, va_list ap);
 int vsnprintf(buffer, count, fmt, ap)
 char*       buffer;
 int         count;
@@ -1362,6 +1448,7 @@ va_list     ap; {
 #endif /* HAVE_VSNPRINTF */
 
 #if !defined(HAVE_SNPRINTF)
+int snprintf(char* buffer, int count, const char* fmt, ...);
 int snprintf(char* buffer, int count, const char* fmt, ...) {
 #if defined(HAVE__VSNPRINTF)
     int r;

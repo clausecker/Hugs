@@ -9,8 +9,8 @@
  * included in the distribution.
  *
  * $RCSfile: prelude.h,v $
- * $Revision: 1.14 $
- * $Date: 2001/02/12 19:53:46 $
+ * $Revision: 1.15 $
+ * $Date: 2001/02/14 12:15:05 $
  * ------------------------------------------------------------------------*/
 
 #include "config.h"
@@ -153,6 +153,11 @@
 /*---------------------------------------------------------------------------
  * Platform-dependent settings:
  *-------------------------------------------------------------------------*/
+
+#ifdef HAVE_MACSYSTEM	/* Macintosh system() prototype. */
+int macsystem(char *filenames);
+#endif
+
 
 /*---------------------------------------------------------------------------
  * Include windows.h and friends:
@@ -331,11 +336,19 @@ extern  int     stricmp	   Args((const char *, const char*));
 #endif
 
 #if !defined(HAVE_SNPRINTF)
+# if __MWERKS__ && macintosh
+extern int snprintf  Args((char*, unsigned long, const char*, va_list));
+# else
 extern int snprintf   Args((char*, int, const char*, ...));
+# endif
 #endif
 
 #if !defined(HAVE_VSNPRINTF)
+# if __MWERKS__ && macintosh
+extern int vsnprintf  Args((char*, unsigned long, const char*, va_list));
+# else
 extern int vsnprintf  Args((char*, int, const char*, va_list));
+# endif
 #endif
 
 /*---------------------------------------------------------------------------
@@ -418,12 +431,8 @@ extern  int  kbhit	Args((void));
 # else
 #  define ctrlbrk(bh)	signal(SIGINT,bh)
 # endif
-#if SYMANTEC_C
-extern int time_release;
-extern int allow_break_count;
-# define allowBreak()	if (time_release !=0 && \
-			    (++allow_break_count % time_release) == 0) \
-			    ProcessEvent();
+#if __MWERKS__ && macintosh
+# define allowBreak()   doNothing()
 #else
 # define allowBreak()   doNothing()
 #endif
@@ -561,7 +570,9 @@ extern int allow_break_count;
  *-------------------------------------------------------------------------*/
 
 #if HAVE_UNISTD_H
+# ifdef HAVE_SYS_TYPES_H
 # include <sys/types.h>
+# endif
 # include <unistd.h>
 #elif !HUGS_FOR_WINDOWS
 extern int 	chdir 	   Args((const char*));
@@ -592,7 +603,7 @@ extern void     exit       Args((int));
 #define DOS_FILENAMES 1
 #endif
 /* ToDo: can we replace this with a feature test? */
-#define MAC_FILENAMES              SYMANTEC_C
+#define MAC_FILENAMES              macintosh
 
 #define CASE_INSENSITIVE_FILENAMES (DOS_FILENAMES | RISCOS)
 

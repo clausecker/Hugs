@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: connect.h,v $
- * $Revision: 1.18 $
- * $Date: 2001/02/14 00:25:26 $
+ * $Revision: 1.19 $
+ * $Date: 2001/02/14 12:15:05 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -438,6 +438,7 @@ extern Int    obsCount;			/* sanity counter for observations */
 extern Void   breakDialogue    Args((String));
 extern Bool   isWhnf           Args((Cell));
 extern Cell   getCaf           Args((Cell));
+extern Int    countObserve     Args((Void));
 #endif
 
 
