@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.61 $
- * $Date: 2002/04/16 16:02:56 $
+ * $Revision: 1.62 $
+ * $Date: 2002/04/16 17:35:44 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -963,9 +963,7 @@ Cell e; {
 				    if (isPair(hd(ns)) && 
 					isTycon(fst(hd(ns))) &&
 					fst(hd(ns)) == nm) {
-					List xs;
 					stuff = snd(hd(ns));
-					xs = stuff;
 					break;
 				    }
 				}

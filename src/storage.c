@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: storage.c,v $
- * $Revision: 1.33 $
- * $Date: 2002/04/16 16:02:58 $
+ * $Revision: 1.34 $
+ * $Date: 2002/04/16 17:35:45 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -556,14 +556,20 @@ Cell id; {				/* in name table		   */
 		Cell e = hd(es);
 		if (isName(e) && name(e).text==t) 
 		    return e;
-		else if (isPair(e) && DOTDOT==snd(e)) {
+		if (isTycon(e) && tycon(e).text==t) 
+		    return e;
+		else if (isPair(e)) {
 		    List subentities = NIL;
 		    Cell c = fst(e);
-		    if (isTycon(c)
-			&& (tycon(c).what==DATATYPE || tycon(c).what==NEWTYPE))
-			subentities = tycon(c).defn;
-		    else if (isClass(c))
-			subentities = cclass(c).members;
+		    if (snd(e) == DOTDOT) {
+			if (isTycon(c)
+			    && (tycon(c).what==DATATYPE || tycon(c).what==NEWTYPE)) {
+			    subentities = tycon(c).defn;
+			} else if (isClass(c))
+			    subentities = cclass(c).members;
+		    } else {
+			subentities = snd(e);
+		    }
 		    for(; nonNull(subentities); subentities=tl(subentities)) {
 			if (name(hd(subentities)).text == t)
 			    return hd(subentities);
