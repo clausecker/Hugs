@@ -10,11 +10,16 @@
 typedef unsigned char      uint8_t;
 typedef unsigned short     uint16_t;
 typedef unsigned int       uint32_t;
-typedef unsigned long long uint64_t;
 typedef signed   char      int8_t;
 typedef signed   short     int16_t;
 typedef signed   int       int32_t;
+# ifndef _MSC_VER
+typedef unsigned long long uint64_t;
 typedef signed   long long int64_t;
+# else
+typedef unsigned __int64 uint64_t;
+typedef          __int64 int64_t;
+# endif
 #endif
 
 #if 0
@@ -23,18 +28,23 @@ typedef unsigned char HsChar;
 typedef char HsChar;
 #endif
 #ifdef Args
-typedef Int          HsInt;        
-typedef Int8         HsInt8;         
-typedef Int16        HsInt16;        
-typedef Int          HsInt32;        
-typedef signed long long  HsInt64;        
+typedef Int            HsInt;        
+typedef Int8           HsInt8;         
+typedef Int16          HsInt16;        
+typedef Int            HsInt32;        
 typedef unsigned int   HsWord;       
 typedef unsigned char  HsWord8;        
 typedef unsigned short HsWord16;       
 typedef unsigned int   HsWord32;       
+typedef float          HsFloat;      
+typedef double         HsDouble;     
+# ifndef _MSC_VER
 typedef unsigned long long  HsWord64;        
-typedef float        HsFloat;      
-typedef double       HsDouble;     
+typedef signed long long    HsInt64;        
+# else
+typedef unsigned __int64 HsWord64;        
+typedef          __int64 HsInt64;        
+# endif
 #else
 typedef int          HsInt;        
 typedef int8_t       HsInt8;         
