@@ -10,8 +10,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: server.c,v $
- * $Revision: 1.16 $
- * $Date: 2002/05/15 22:24:21 $
+ * $Revision: 1.17 $
+ * $Date: 2002/07/05 12:55:48 $
  * ------------------------------------------------------------------------*/
 
 #define HUGS_SERVER
@@ -248,6 +248,7 @@ HugsServerAPI* hserv; {
   /* The 'hserv' argument isn't actually used */
   clearStack();
   stopAnyPrinting();
+  everybody(EXIT);
   shutdownHugs();
   return;
 }
