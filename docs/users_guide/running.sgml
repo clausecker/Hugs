@@ -129,7 +129,7 @@ and should be imported if you use the
 <listitem>
 <para>
 Use old implicit parameter syntax
-(a Hugs extension; default: on)
+(a Hugs extension; default: off)
 </para>
 <para>
 With the <option>-98</option> option, Hugs supports implicit parameters,
@@ -142,11 +142,10 @@ and <literal>with</literal>, is now deprecated in favour of the form
 <programlisting>
   let ?var = exp in exp
 </programlisting>
-The old syntax is still supported,
-unless the <option>-W</option> option is given.
+The old syntax is still supported if the <option>+W</option> option is given.
 (If <option>+98</option> is in effect, neither syntax is available.)
-This frees <literal>dlet</literal> and <literal>with</literal>
-for use by programs, and is required by some libraries,
+This makes <literal>dlet</literal> and <literal>with</literal> into keywords,
+which will cause some libraries to fail,
 e.g. <literal>Foreign</literal>.
 </para>
 </listitem>

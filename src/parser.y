@@ -10,8 +10,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: parser.y,v $
- * $Revision: 1.39 $
- * $Date: 2003/03/14 13:31:42 $
+ * $Revision: 1.40 $
+ * $Date: 2003/03/18 15:19:26 $
  * ------------------------------------------------------------------------*/
 
 %{
@@ -1117,7 +1117,7 @@ static String local unexpected() {     /* find name for unexpected token   */
 	case WITH      : 
 	  if (oldIParamSyntax) {
 	      sprintf(buffer,
-		      "keyword \"%s\"; possible cause: -W option not used.)",
+		      "keyword \"%s\"; possible cause: +W option used.)",
 		      (yychar == DLET ? "dlet" : "with"));
 	      return buffer;
 	  } else {

@@ -43,7 +43,7 @@ Bool multiInstRes = FALSE;
 #endif
 
 #if IPARAM
-Bool oldIParamSyntax = TRUE;
+Bool oldIParamSyntax = FALSE;
 #endif
 
 Bool optImplicitImportRoot = TRUE;      
