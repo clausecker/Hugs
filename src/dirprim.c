@@ -269,7 +269,7 @@ primFun(primFileExist) { /* FilePath -> IO Bool - check to see if file exists. *
   if (rc < 0) {
     IOReturn(nameFalse);
   } else {
-    IOBoolResult(((st.st_mode & S_IFDIR) != S_IFDIR));
+    IOBoolResult(!S_ISDIR(st.st_mode));
   }
 }
 
@@ -290,11 +290,10 @@ primFun(primDirExist) { /* FilePath -> IO Bool - check to see if directory exist
   if (rc < 0) {
     IOReturn(nameFalse);
   } else {
-    IOBoolResult(((st.st_mode & S_IFDIR) == S_IFDIR));
+    IOBoolResult(S_ISDIR(st.st_mode));
   }
 }
 
-#define IS_FLAG_SET(x,flg) ((x.st_mode & flg) == flg)
 #define ToBool(v) ( (v) ? nameTrue : nameFalse)
 
 #ifdef _MSC_VER
@@ -344,8 +343,8 @@ primFun(primGetPermissions) { /* FilePath -> IO (Bool,Bool,Bool,Bool) */
     IOReturn(ap(ap(ap(ap( mkTuple(4),
 			  ToBool(isR == 0)),
 		      ToBool(isW == 0)),
-		   ToBool(isX == 0 && !IS_FLAG_SET(st,S_IFDIR))),
-		ToBool(isX == 0 && !IS_FLAG_SET(st,S_IFREG))));
+		   ToBool(isX == 0 && !S_ISDIR(st.st_mode))),
+		ToBool(isX == 0 && S_ISDIR(st.st_mode))));
   }
 #endif
 }
@@ -455,7 +454,7 @@ primFun(primGetDirContents) { /* FilePath -> IO [FilePath] */
   }
   
   /* First, check whether the directory exists... */
-  if ( (stat(fName, &st) < 0) || ((st.st_mode & S_IFDIR) != S_IFDIR) ) {
+  if ( (stat(fName, &st) < 0) || (!S_ISDIR(st.st_mode)) ) {
     IOFail(mkIOError(toIOError(errno),
 		     "Directory.getDirectoryContents",
 		     toIOErrorDescr(errno,FALSE),
