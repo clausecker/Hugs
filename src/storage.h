@@ -9,8 +9,8 @@
  * included in the distribution.
  *
  * $RCSfile: storage.h,v $
- * $Revision: 1.23 $
- * $Date: 2001/12/13 03:19:27 $
+ * $Revision: 1.24 $
+ * $Date: 2002/01/01 22:39:12 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -274,6 +274,27 @@ extern  FloatPro	floatFromParts	Args((Cell,Cell));
 #define isPtr(c)        (isPair(c) && fst(c)==PTRCELL)
 extern  Cell            mkPtr           Args((Pointer));
 extern  Pointer         ptrOf           Args((Cell));
+
+/* --------------------------------------------------------------------------
+ * Resizeable table struct type.
+ * ------------------------------------------------------------------------*/
+typedef struct strDynTable {
+  /* "data" holds "maxIdx*eltSize" bytes, "eltSize*max(0,idx-1)" of which are
+   * currently in use. "maxIdx" may not grow beyond "hWater". If
+   * "hWater" is 0, "maxIdx" does not have an upper bound.
+   */
+  unsigned long idx;
+  unsigned long maxIdx;
+  unsigned long hWater;
+  unsigned long eltSize;
+  const char*   tabName;
+  void*         data;
+} DynTable;
+
+#define IdxDynTable(eltTy,tab,idx)  (((eltTy *)(tab->data))[idx])
+extern DynTable* allocDynTable Args((unsigned long,unsigned long,unsigned long,const char*));
+extern void freeDynTable       Args((DynTable*));
+extern void growDynTable       Args((DynTable*));
 
 /* --------------------------------------------------------------------------
  * Constructor cell tags are used as the fst element of a pair to indicate
@@ -735,8 +756,13 @@ struct strClass {
     List   instances;			/* :: [Inst]			   */
 };
 
+#if WANT_FIXED_SIZE_TABLES
 extern struct strClass    DECTABLE(tabClass);
 extern struct strInst far *tabInst;
+#else
+extern struct strClass    DYNDECTABLE(tabClass);
+extern struct strInst     DYNDECTABLE(tabInst);
+#endif
 
 extern Class newClass	    Args((Text));
 extern Class classMax	    Args((Void));

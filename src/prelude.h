@@ -9,8 +9,8 @@
  * included in the distribution.
  *
  * $RCSfile: prelude.h,v $
- * $Revision: 1.28 $
- * $Date: 2001/12/06 22:05:57 $
+ * $Revision: 1.29 $
+ * $Date: 2002/01/01 22:39:12 $
  * ------------------------------------------------------------------------*/
 
 #include "config.h"
@@ -133,12 +133,12 @@
 #define IO_REFS		 1 /* Experimental IO Ref type			   */
 #define FLUSHEVERY	 1
 #define LAZY_ST		 (IO_MONAD)
-#define NPLUSK		 1 /* Warning: There are those that would prefer 0  */
-#define BIGNUMS		 1 /* Experimental bignum implementation		   */
-#define FIXED_SUBST	 0 /* Warning: This may not be appropriate for PCs  */
+#define NPLUSK		 1 /* Warning: There are those that would prefer 0 */
+#define BIGNUMS		 1 /* Experimental bignum implementation           */
+#define FIXED_SUBST	 0 /* Warning: This may not be appropriate for PCs */
 #define DYN_TABLES	 SMALL_HUGS /* For dynamically allocated tables	   */
-#define GC_STABLEPTRS    1 /* May be required by external libraries         */
-#define GC_MALLOCPTRS    1 /* May be required by external libraries         */
+#define GC_STABLEPTRS    1 /* May be required by external libraries        */
+#define GC_MALLOCPTRS    1 /* May be required by external libraries        */
 #define GC_WEAKPTRS      1
 #define STABLE_NAMES     1
 #define EVAL_INSTANCES   0
@@ -150,6 +150,8 @@
 #define DIRECTORY_MODULE 1
 #define MULTI_LINEFEED   1 /* Platform-independent linefeed handling        */
 #define MULTI_INST       0
+#define WANT_FIXED_SIZE_TABLES 0 /* use fixed-size tables for internal structs */
+                                 /* (as opposed to dynamically growable ones)  */
 
 #define SHORT_CIRCUIT_COERCIONS 1
 
@@ -758,9 +760,11 @@ typedef void*    Pointer;
 
 #if DYN_TABLES				/* Tables may be alloc'd at runtime*/
 #define DECTABLE(tab)	   far *tab	/* macros for declaration & defn   */
+#define DYNDECTABLE(tab)   DECTABLE(tab)
 #define DEFTABLE(tab,sz)   far *tab = 0
 #else					/* or at compile-time:		   */
 #define DECTABLE(tab)	   tab[]
+#define DYNDECTABLE(tab)   far *tab
 #define DEFTABLE(tab,sz)   tab[sz]
 #endif
 

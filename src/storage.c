@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: storage.c,v $
- * $Revision: 1.24 $
- * $Date: 2001/12/24 08:00:59 $
+ * $Revision: 1.25 $
+ * $Date: 2002/01/01 22:39:11 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -866,15 +866,32 @@ static Class classHw;                  /* next unused class                */
 static List  classes;                  /* list of classes in current scope */
 static Inst  instHw;                   /* next unused instance record      */
 
+#if WANT_FIXED_SIZE_TABLES
 struct strClass DEFTABLE(tabClass,NUM_CLASSES); /* table of class records  */
-struct strInst far *tabInst;           /* (pointer to) table of instances  */
+#else
+/* (Dynamically) growable tables holding the class and instance info */
+static DynTable* dynTabClass = NULL;
+static DynTable* dynTabInst = NULL;
+
+struct strClass *tabClass;
+#endif
+struct strInst  *tabInst;           /* (pointer to) table of instances  */
+
 
 Class newClass(t)                      /* add new class to class table     */
 Text t; {
+#if WANT_FIXED_SIZE_TABLES
     if (classHw-CLASSMIN >= NUM_CLASSES) {
 	ERRMSG(0) "Class storage space exhausted"
 	EEND;
     }
+#else
+    if (dynTabClass->idx >= dynTabClass->maxIdx) {
+      growDynTable(dynTabClass);
+      tabClass = (struct strClass*)(dynTabClass->data);
+    }
+#endif
+
     cclass(classHw).text      = t;
     cclass(classHw).line      = 0;
     cclass(classHw).arity     = 0;
@@ -895,6 +912,10 @@ Text t; {
 #if !IGNORE_MODULES
     cclass(classHw).mod       = currentModule;
     module(currentModule).classes=cons(classHw,module(currentModule).classes);
+#endif
+
+#if !WANT_FIXED_SIZE_TABLES
+    dynTabClass->idx++;
 #endif
     return classHw++;
 }
@@ -960,16 +981,26 @@ Cell c; {				/* class in class list		   */
 }
 
 Inst newInst() {                       /* Add new instance to table        */
+#if WANT_FIXED_SIZE_TABLES
     if (instHw-INSTMIN >= NUM_INSTS) {
 	ERRMSG(0) "Instance storage space exhausted"
 	EEND;
     }
+#else
+    if (dynTabInst->idx >= dynTabInst->maxIdx) {
+        growDynTable(dynTabInst);
+	tabInst = (struct strInst*)(dynTabInst->data);
+    }
+#endif
     inst(instHw).kinds	    = NIL;
     inst(instHw).head	    = NIL;
     inst(instHw).specifics  = NIL;
     inst(instHw).implements = NIL;
     inst(instHw).builder    = NIL;
 
+#if !WANT_FIXED_SIZE_TABLES
+    dynTabInst->idx++;
+#endif
     return instHw++;
 }
 
@@ -1353,14 +1384,26 @@ Int val, mx; {
 #endif
 
 static Script scriptHw;                 /* next unused script number       */
+#if WANT_FIXED_SIZE_TABLES
 static script scripts[NUM_SCRIPTS];     /* storage for script records      */
+#else
+static script* scripts = NULL;
+static DynTable* dynTabScripts = NULL;  /* storage for script records      */
+#endif
 
 Script startNewScript(f)                /* start new script, keeping record */
 String f; {                             /* of status for later restoration  */
+#if WANT_FIXED_SIZE_TABLES
     if (scriptHw >= NUM_SCRIPTS) {
 	ERRMSG(0) "Too many script files in use"
 	EEND;
     }
+#else
+    if (dynTabScripts->idx >= dynTabScripts->maxIdx) {
+      growDynTable(dynTabScripts);
+      scripts = (script*)(dynTabScripts->data);
+    }
+#endif
 #ifdef DEBUG_SHOWUSE
     showUse("Text",   textHw,           NUM_TEXT);
     showUse("Addr",   addrHw,           NUM_ADDRS);
@@ -1369,8 +1412,13 @@ String f; {                             /* of status for later restoration  */
 #endif
     showUse("Tycon",  tyconHw-TYCMIN,   NUM_TYCON);
     showUse("Name",   nameHw-NAMEMIN,   NUM_NAME);
+#if WANT_FIXED_SIZE_TABLES
     showUse("Class",  classHw-CLASSMIN, NUM_CLASSES);
     showUse("Inst",   instHw-INSTMIN,   NUM_INSTS);
+#else
+    showUse("Class",  classHw-CLASSMIN, dynTabClass->maxIdx);
+    showUse("Inst",   instHw-INSTMIN,   dynTabInst->maxIdx);
+#endif
 #if TREX
     showUse("Ext",    extHw-EXTMIN,     NUM_EXT);
 #endif
@@ -1391,6 +1439,10 @@ String f; {                             /* of status for later restoration  */
 #if TREX
     scripts[scriptHw].extHw        = extHw;
 #endif
+
+#if !WANT_FIXED_SIZE_TABLES
+    dynTabScripts->idx++;
+#endif
     return scriptHw++;
 }
 
@@ -1409,14 +1461,16 @@ Module lastModule() {              /* Return module in current script file */
 }
 #endif /* !IGNORE_MODULES */
 
-#define scriptThis(nm,t,tag)            Script nm(x)                       \
-					t x; {                             \
-					    Script s=0;                    \
-					    while (s<scriptHw              \
-						   && x>=scripts[s].tag)   \
-						s++;                       \
-					    return s;                      \
-					}
+#define scriptThis(nm,t,tag) \
+        Script nm(x)                   \
+  	t x; {                         \
+	  Script s=0;                  \
+	  while (s<scriptHw            \
+	       && x>=scripts[s].tag)   \
+  	    s++;                       \
+          return s;                    \
+	}
+
 scriptThis(scriptThisName,Name,nameHw)
 scriptThis(scriptThisTycon,Tycon,tyconHw)
 scriptThis(scriptThisInst,Inst,instHw)
@@ -1436,7 +1490,7 @@ Module m; {
 	return findMPathname(NULL,STD_PRELUDE,hugsPath);
     }
     for(s=0; s<scriptHw; ++s) {
-	if (scripts[s].moduleHw == m) {
+	if ( scripts[s].moduleHw == m ) {
 	    return textToStr(scripts[s].file);
 	}
     }
@@ -1460,7 +1514,7 @@ Text f; {
 
 Void dropScriptsFrom(sno)               /* Restore storage to state prior  */
 Script sno; {                           /* to reading script sno           */
-    if (sno<scriptHw) {                 /* is there anything to restore?   */
+    if (sno < scriptHw) {               /* is there anything to restore?   */
 	int i;
 	textHw       = scripts[sno].textHw;
 	nextNewText  = scripts[sno].nextNewText;
@@ -1525,6 +1579,9 @@ Script sno; {                           /* to reading script sno           */
 	    cclass(i).instances = rev(is);
 	}
 
+#if !WANT_FIXED_SIZE_TABLES
+	dynTabScripts->idx = sno;
+#endif
 	scriptHw = sno;
     }
 }
@@ -3007,6 +3064,79 @@ Int n, s; {                             /* for non-null return             */
 #define TABALLOC(v,t,n)
 #endif
 
+DynTable* allocDynTable(eltSize, maxIdx, hWater, tabName)
+unsigned long eltSize;
+unsigned long maxIdx;
+unsigned long hWater;
+const char* tabName; {
+   DynTable *tab = (DynTable*)malloc(sizeof(struct strDynTable));
+
+   if ( tab != NULL ) {
+     tab->idx     = 0;
+     tab->maxIdx  = maxIdx;
+     tab->hWater  = hWater;
+     tab->tabName = tabName;
+     tab->eltSize = eltSize;
+     tab->data    = (void*)malloc(eltSize * maxIdx);
+   }
+   
+   if (tab == NULL || tab->data == NULL) {
+       ERRMSG(0) "Cannot allocate dynamic table \"%s\"", tabName
+       EEND;
+   }
+   return tab;
+}
+
+void freeDynTable(tab)
+DynTable* tab; {
+   if (tab) {
+     free(tab->data);
+     free(tab);
+   }
+   return;
+}
+
+void growDynTable(tab)
+DynTable* tab; {
+   unsigned long newSize;
+   void*         newData;
+
+   if ( tab == NULL )  {
+       ERRMSG(0) "growDynTable: null table"
+       EEND;
+   }
+
+   /* Are we already at the limit? */
+   if ( tab->hWater != 0 && tab->maxIdx == tab->hWater ) {
+       ERRMSG(0) "growDynTable: unable to grow table \"%s\" further (reached limit: %d)", 
+                 tab->tabName, tab->hWater
+       EEND;
+   }
+   /* Growing currently means doubling. */   
+    newSize = 2*tab->maxIdx;
+
+    /* don't grow beyond hWater */
+   if (tab->hWater != 0 && tab->hWater < newSize) {
+     newSize = tab->hWater;
+   } else if ( newSize == 0 ) {
+     newSize = 1;
+   }
+#if 0
+   fprintf(stderr, "growing \"%s\" from %d to %d elements\n", tab->tabName, tab->maxIdx, newSize);
+   fflush(stderr); 
+#endif
+   newData = (void*)realloc(tab->data, newSize*tab->eltSize);
+   
+   if ( newData == NULL ) {
+       ERRMSG(0) "growDynTable: unable to grow table \"%s\" (limit: %d)", 
+                 tab->tabName, tab->hWater
+       EEND;
+   } else {
+     tab->maxIdx = newSize;
+     tab->data   = newData;
+   }
+}
+
 Void storage(what)
 Int what; {
     Int i;
@@ -3190,7 +3320,16 @@ Int what; {
 			   ERRMSG(0) "Unable to allocate gc markspace"
 			   EEND;
 		       }
+		       
+#if !WANT_FIXED_SIZE_TABLES
+		       dynTabScripts = allocDynTable(sizeof(script),10,0,"scripts");
+		       scripts = (script*)(dynTabScripts->data);
+		       dynTabClass = allocDynTable(sizeof(struct strClass),10,0,"class");
+		       tabClass = (struct strClass*)(dynTabClass->data);
 
+		       dynTabInst = allocDynTable(sizeof(struct strInst),50,0,"instance");
+		       tabInst = (struct strInst*)(dynTabInst->data);
+#endif
 		       TABALLOC(text,      char,             NUM_TEXT)
 		       TABALLOC(tyconHash, Tycon,            TYCONHSZ)
 		       TABALLOC(tabTycon,  struct strTycon,  NUM_TYCON)
@@ -3255,15 +3394,14 @@ Int what; {
 #if TREX
 		       extHw	= EXTMIN;
 #endif
-
 		       nameHw	= NAMEMIN;
 		       for (i=0; i<NAMEHSZ; ++i)
 			   nameHash[i] = NIL;
 
 		       classHw  = CLASSMIN;
-
 		       instHw   = INSTMIN;
 
+#if WANT_FIXED_SIZE_TABLES
 		       tabInst  = (struct strInst far *)
 				    farCalloc(NUM_INSTS,sizeof(struct strInst));
 
@@ -3271,6 +3409,7 @@ Int what; {
 			   ERRMSG(0) "Cannot allocate instance tables"
 			   EEND;
 		       }
+#endif
 
 		       scriptHw = 0;
 
