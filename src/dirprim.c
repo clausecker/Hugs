@@ -490,8 +490,14 @@ primFun(primGetDirContents) { /* FilePath -> IO [FilePath] */
 		     IOArg(1)));
   }
   
-  strcpy(buffer, fName);
-  strcat(buffer, "\\*.*");
+  if (snprintf(buffer,sizeof(buffer)-1,"%s\\*.*",fName) < 0) {
+    IOFail(mkIOError(nameIllegal,
+		     "Directory.getDirectoryContents",
+		     "illegal directory name",
+		     IOArg(1)));
+  } else {
+      buffer[sizeof(buffer)-1] = '\0';
+  }
 
   dirHandle = _findfirst(buffer, &fData);
   rc = dirHandle;
