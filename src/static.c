@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.80 $
- * $Date: 2002/08/03 17:00:47 $
+ * $Revision: 1.81 $
+ * $Date: 2002/08/25 20:53:37 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1712,7 +1712,7 @@ Type t; {				/* assuming that all relevant type */
 	    }
 	    fun(p) = instantiateSyn(tycon(h).defn,fun(p));
 	}
-    } else if (isNewtype(h) && n==tycon(h).arity) {
+    } else if (isNewtype(h) && n==tycon(h).arity && h != typeIO) {
         if (n != 0) {
             /* Not supported because I don't understand the typechecker
              * well enough.  For those that grok the data structures, it
@@ -4939,16 +4939,14 @@ Name p; {
                                 "foreign import declaration",
                                 p,
                                 name(p).type);
-    /* We don't expand synonyms here because we don't want the IO
-     * part to be expanded.
-     */
 
     t = name(p).type;
     if (isPolyType(t)) {
         t = monotypeOf(t);
     }
+    t = fullerExpand(t);
     while (getHead(t)==typeArrow && argCount==2) {
-        Type ta = fullerExpand(arg(fun(t)));
+        Type ta = arg(fun(t));
         Type tr = arg(t);
         argTys = cons(ta,argTys);
         t = tr;
@@ -4984,7 +4982,6 @@ Name p; {
             isIO = TRUE;
             t = hd(getArgs(t));
         }
-        t = fullerExpand(t);
 
         if (generate_ffi) {
             name(p).arity = 1 + length(argTys) + (isIO ? 2 : 0);
@@ -5012,7 +5009,7 @@ Name p; {
 
         argTys = NIL;
         while (getHead(t)==typeArrow && argCount==2) {
-            Type ta = fullerExpand(arg(fun(t)));
+            Type ta = arg(fun(t));
             Type tr = arg(t);
             argTys = cons(ta,argTys);
             t = tr;
@@ -5024,7 +5021,6 @@ Name p; {
             isIO = TRUE;
             t = hd(getArgs(t));
         }
-        t = fullerExpand(t);
 
         if (generate_ffi) {
             name(p).arity = 3;
@@ -5097,7 +5093,6 @@ Name p; {
                 isIO = TRUE;
                 t = hd(getArgs(t));
             }
-            t = fullerExpand(t);
 
             if (generate_ffi) {
                 name(p).arity 
@@ -5143,13 +5138,11 @@ Name p; {
                                 "foreign export declaration",
                                 p,
                                 name(p).type);
-    /* We don't expand synonyms here because we don't want the IO
-     * part to be expanded.
-     */
     t = name(p).type;
+    t = fullerExpand(t);
 
     while (getHead(t)==typeArrow && argCount==2) {
-        Type ta = fullerExpand(arg(fun(t)));
+        Type ta = arg(fun(t));
         Type tr = arg(t);
         argTys = cons(ta,argTys);
         t = tr;
@@ -5160,7 +5153,6 @@ Name p; {
         t = hd(getArgs(t));
         isIO = TRUE;
     }
-    t = fullerExpand(t);
 
     if (generate_ffi) {
         name(p).arity 
