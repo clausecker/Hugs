@@ -1,9 +1,9 @@
-#
-# A (GNU) Makefile for checking out libraries + buildings RPMs
-#
-include Defs.mk
+# Top-level Makefile for Hugs
+# (mostly portable, except for the use of include)
 
-CVS=cvs
+# include isn't 1003.2-1992, but is widely understood.
+# If necessary, replace the line with the contents of the file.
+include Defs.mk
 
 all: fptools src/Makefile
 	cd src; $(MAKE)
@@ -20,7 +20,16 @@ src/config.h.in: configure.ac
 
 fptools:
 	-mkdir fptools
-	$(CVS) -d ${CVSROOT} export -r${HSLIBSTAG} $(addprefix fptools/hslibs/,${HSLIBSDIRS})
-	$(CVS) -d ${CVSROOT} export -r${LIBRARIESTAG} $(addprefix fptools/libraries/,${LIBRARIESDIRS})
+	cvs -d `cat CVS/Root` get -r${HSLIBSTAG} `for d in ${HSLIBSDIRS}; do echo fptools/hslibs/$$d; done`
+	cvs -d `cat CVS/Root` get -r${LIBRARIESTAG} `for d in ${LIBRARIESDIRS}; do echo fptools/hslibs/$$d; done`
 
-include RPM.mk
+clean:
+	-cd src; if test -f Makefile; then $(MAKE) veryclean; fi
+	-cd docs; if test -f Makefile; then $(MAKE) veryclean; fi
+	-rm -f *.tar.gz *.rpm
+
+tar:
+	$(MAKE) -f RPM.mk tar
+
+rpm:
+	$(MAKE) -f RPM.mk rpm

@@ -1,4 +1,23 @@
-# This Makefile is for building RPM distributions.
+# A (GNU) Makefile for building source and RPM distributions.
+
+include Defs.mk
+
+MONTH_YEAR = ${shell date +"%B %Y"}
+MON_YEAR = ${shell date +"%b%Y"}
+YEAR_MONTH_DAY = ${shell date +"%Y%m%d"}
+
+# convention: a release uses the MON_YEAR form of version,
+# while a snapshot uses the YEAR_MONTH_DAY form.
+# this should be sync'd with src/version.c
+ifeq "$(MAJOR_RELEASE)" "1"
+VERSION=${MON_YEAR}
+else
+VERSION=${YEAR_MONTH_DAY}
+endif
+
+PACKAGE=${NAME}-${VERSION}
+
+CVSROOT = ${shell cat CVS/Root}
 
 # Starting with Red Hat 8.0, the build functionality was removed from rpm, so
 # one has to use rpmbuild instead. SuSE didn't follow this change, so there is
@@ -90,9 +109,3 @@ rpm: tar rpm-dirs
 
 rc-rpm:
 	${MAKE} VERSION_SUBSTS='${RC_VERSION_SUBSTS}' rpm
-
-clean:
-	-cd src; if test -f Makefile; then $(MAKE) veryclean; fi
-	-cd docs; if test -f Makefile; then $(MAKE) veryclean; fi
-	-rm -f ${PACKAGE}.tar.gz
-	-rm -f ${PACKAGE}-*.rpm

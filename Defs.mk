@@ -1,6 +1,5 @@
-MONTH_YEAR = ${shell date +"%B %Y"}
-MON_YEAR = ${shell date +"%b%Y"}
-YEAR_MONTH_DAY = ${shell date +"%Y%m%d"}
+# General settings
+# (this file should work with any make)
 
 NAME=hugs98
 
@@ -9,19 +8,8 @@ NAME=hugs98
 #
 MAJOR_RELEASE=0
 
-# convention: a release uses the MON_YEAR form of version,
-# while a snapshot uses the YEAR_MONTH_DAY form.
-# this should be sync'd with src/version.c
-ifeq "$(MAJOR_RELEASE)" "1"
-VERSION=${MON_YEAR}
-else
-VERSION=${YEAR_MONTH_DAY}
-endif
-
 # Release number of RPM.
 RELEASE=1
-
-PACKAGE=${NAME}-${VERSION}
 
 # TAG=Dec2001
 # HSLIBSTAG=hugs-Dec2001
@@ -32,5 +20,3 @@ LIBRARIESTAG=HEAD
 HSLIBSDIRS = concurrent data hssource lang net text util posix
 LIBRARIESDIRS = base haskell98 haskell-src network parsec QuickCheck unix \
 	GLUT OpenGL fgl
-
-CVSROOT = ${shell cat CVS/Root}
