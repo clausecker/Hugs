@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: connect.h,v $
- * $Revision: 1.26 $
- * $Date: 2001/12/20 20:38:48 $
+ * $Revision: 1.27 $
+ * $Date: 2002/02/24 04:36:28 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -212,7 +212,7 @@ extern Bool  hereDocs;                  /* TRUE => enable `here documents' */
 
 extern Int   cutoff;			/* Constraint Cutoff depth	   */
 
-#if USE_PREPROCESSOR
+#if SUPPORT_PREPROCESSOR
 extern String preprocessor;             /* preprocessor command            */
 #endif
 
@@ -251,13 +251,14 @@ extern  Bool   chase		Args((List));
 
 extern  Void   storage          Args((Int));
 
-extern  Bool   startsQual       Args((Char));
-extern  Void   input            Args((Int));
-extern  Void   consoleInput     Args((String));
-extern  Void   projInput	Args((String));
-extern  Void   stringInput      Args((String));
-extern  Void   parseScript      Args((String,Long));
-extern  Void   parseExp         Args((Void));
+extern  Bool   startsQual        Args((Char));
+extern  Void   input             Args((Int));
+extern  Void   consoleInput      Args((String));
+extern  Void   projInput	 Args((String));
+extern  Void   stringInput       Args((String));
+extern  Void   parseScript       Args((String,Long));
+extern  Void   parseScriptString Args((String));
+extern  Void   parseExp          Args((Void));
 #if EXPLAIN_INSTANCE_RESOLUTION
 extern  Void   parseContext     Args((Void));
 #endif
