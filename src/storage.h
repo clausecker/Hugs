@@ -9,8 +9,8 @@
  * included in the distribution.
  *
  * $RCSfile: storage.h,v $
- * $Revision: 1.13 $
- * $Date: 2000/12/13 09:01:54 $
+ * $Revision: 1.14 $
+ * $Date: 2001/01/02 18:21:41 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -48,6 +48,10 @@ typedef Cell	     Bignum;			 /* bignum integer	   */
 typedef FloatImpType Float;			 /* implementation of Float*/
 #if TREX
 typedef Cell	     Ext;			 /* extension label	   */
+#endif
+#if OBSERVATIONS
+typedef Int          Observe;                    /* observation            */
+typedef Int          Breakpt;                    /* Breakpoint             */
 #endif
 
 /* --------------------------------------------------------------------------
@@ -347,6 +351,12 @@ extern  Pointer         ptrOf           Args((Cell));
 #define HIDDEN       81           /* hiding import list    snd :: [Entity] */
 #define MODULEENT    82           /* module in export list snd :: con      */
 
+#if OBSERVATIONS
+#define OBSERVEHEAD  83           /* obs. list; snd ::(first,last)         */
+#define OBSERVE      84           /* observe marker; snd :: (Cell,observe) */
+#define OBSERVESTK   85           /* observe marker on stack               */
+#endif
+
 #define INFIX	     90		  /* INFIX	snd :: (see tidyInfix)	   */
 #define ONLY	     91		  /* ONLY	snd :: Exp		   */
 #define NEG	     92		  /* NEG	snd :: Exp		   */
@@ -449,10 +459,63 @@ extern Ext           mkExt Args((Text));
 #define mkOffset(o)  (OFFMIN+(o))
 
 /* --------------------------------------------------------------------------
+ * Observations
+ * ------------------------------------------------------------------------*/
+
+#if OBSERVATIONS
+#define OBSMIN	      (OFFMIN+NUM_OFFSETS)
+#define observe(n)    tabObserve[(n)-OBSMIN]
+
+struct Observe {
+	Text tag;		/* tag in observe primitive		*/
+	Cell head;
+};
+
+#define firstObs(c) snd3(c)
+#define lastObs(c)  thd3(c)
+
+#define nextObs(c)  fst3(c)
+#define seqObs(c)   snd3(c)
+#define exprObs(c)  thd3(c)
+
+#define markedExpr(c) snd3(c)
+#define markedObs(c)  thd3(c)
+
+extern struct    Observe          DECTABLE(tabObserve);
+extern Observe   firstObserve	  Args((Void));
+extern Observe   nextObserve	  Args((Void));
+extern Void      clearObserve	  Args((Void));
+extern Cell      addObsInstance	  Args((String,Cell,Int));
+extern Void      insertAfterObs   Args((Cell,Cell));
+
+/* --------------------------------------------------------------------------
+ * Breakpoints
+ * ------------------------------------------------------------------------*/
+
+#define BRKMIN	      (OBSMIN+NUM_OBS_TAGS)
+#define breakpt(n)    tabBreakpt[(n)-BRKMIN]
+
+struct Breakpt {
+	Text tag;
+	Bool enabled;
+	Int  count;			/* number of breaks to skip 	   */
+};
+
+extern Void     clearAllBreak   Args((Void));
+extern Bool     breakNow	Args((String));
+extern Void     setBreakpt	Args((String,Bool)); 
+extern Void     setBreakCount   Args((String,Int));
+#endif
+
+/* --------------------------------------------------------------------------
  * Modules:
  * ------------------------------------------------------------------------*/
 
-#define MODMIN	      (OFFMIN+NUM_OFFSETS)
+#if OBSERVATIONS
+#define MODMIN        (BRKMIN+NUM_BRKPTS)
+#else
+#define MODMIN        (OFFMIN+NUM_OFFSETS)
+#endif
 
 #if IGNORE_MODULES
 #define setCurrModule(m) doNothing()

@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: input.c,v $
- * $Revision: 1.16 $
- * $Date: 2000/12/13 09:36:05 $
+ * $Revision: 1.17 $
+ * $Date: 2001/01/02 18:21:40 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1183,7 +1183,12 @@ Char   sys; {                          /* character for shell escape       */
     }
 
     startToken();                      /* All cmds start with start        */
+#if OBSERVATIONS
+    if (c0==start || (start==0 && c0!=EOF))
+                                       /* except cmds without start char   */
+#else
     if (c0==start)                     /* except default (usually EVAL)    */
+#endif
 	do {                           /* which is empty                   */
 	    saveTokenChar(c0);
 	    skip();

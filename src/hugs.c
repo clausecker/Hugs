@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.26 $
- * $Date: 2000/12/13 09:36:05 $
+ * $Revision: 1.27 $
+ * $Date: 2001/01/02 18:21:40 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1249,6 +1249,10 @@ static Void local evaluator() {        /* evaluate expr and print value    */
     numReductions = 0;
     numGcs        = 0;
     printing      = TRUE;
+#if OBSERVATIONS
+    appNum        = 0;
+    clearAllBreak();
+#endif
 #if 1 /* Arguably not Haskell 1.4 compliant */
     noechoTerminal();
 #endif
@@ -1285,6 +1289,15 @@ static Void local stopAnyPrinting() {  /* terminate printing of expression,*/
 	    Printf(")\n");
 #undef plural
 	}
+#if OBSERVATIONS
+        printObserve(ALLTAGS);
+        if (obsCount) printf("Warning: observation sanity counter > 0\n");
+        if (1){
+            Int n=countObserve();
+            printf("%d observations recorded\n", n);
+        }
+        clearObserve();
+#endif
 	FlushStdout();
 	garbageCollect();
     }
@@ -2180,6 +2193,57 @@ FILE* fp; {
 }
     
 #endif /* REDIRECT_OUTPUT && !HUGS_FOR_WINDOWS */
+
+/* --------------------------------------------------------------------------
+ * Break dialogue code
+ * ------------------------------------------------------------------------*/
+#if OBSERVATIONS
+static struct cmd brkCmds[] =
+    { {"p",   BRK_DISPLAY}
+    , {"c",   BRK_CONTINUE}
+    , {"s",   BRK_SET}
+    , {"r",   BRK_RESET}
+    };
+
+Void breakDialogue(s)
+String s;{
+    String arg;
+    Int n;
+    char cmdstr[80];
+    Command cmd;
+
+    normalTerminal();
+    do {
+	strcpy(cmdstr,"Break @ ");
+	promptForInput(strcat(cmdstr,s));
+	cmd = readCommand(brkCmds, (Char)0, (Char)'!');
+	switch (cmd){
+	    case BRK_DISPLAY:	
+	       			if ((arg=readFilename())!=0)
+				    printObserve(arg);
+				else
+				    printObserve(ALLTAGS);
+	    			break;
+	    case BRK_CONTINUE:	
+	    			if ((arg=readFilename())!=0){
+				    n = atoi(arg);
+				    if (n>0) n--;
+				    setBreakCount(s,n);
+				}
+	    			break;
+	    case BRK_SET:	if ((arg=readFilename())!=0)
+	    			    setBreakpt(arg,TRUE);
+				break;
+	    case BRK_RESET:	if ((arg=readFilename())==0)
+	    			    setBreakpt(s,FALSE);
+				else
+	    			    setBreakpt(arg,FALSE);
+				break;
+	}
+    } while (cmd!=BRK_CONTINUE);
+    noechoTerminal();
+}
+#endif
 
 /* --------------------------------------------------------------------------
  * Send message to each component of system:

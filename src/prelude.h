@@ -9,8 +9,8 @@
  * included in the distribution.
  *
  * $RCSfile: prelude.h,v $
- * $Revision: 1.9 $
- * $Date: 2000/08/11 22:34:34 $
+ * $Revision: 1.10 $
+ * $Date: 2001/01/02 18:21:40 $
  * ------------------------------------------------------------------------*/
 
 #include "config.h"
@@ -71,6 +71,7 @@
  * and demos and therefore cannot be modified using the configure script.
  * Most users should leave them alone!
  *
+ *   OBSERVATIONS   to include support for `observe' and friends
  *   TREX	    to include support for Typed Rows and EXtensions.
  *   IPARAM	    to include support for Implicit Parameters.
  *   MULTI_INST	    to include support for Multi-Instance Resolution.
@@ -115,10 +116,12 @@
 #define ZIP_COMP	1
 #define HERE_DOC	1
 #define MULTI_INST	1
+#define OBSERVATIONS    1
 #else
-#define TREX        0
-#define IPARAM      0
-#define MULTI_INST  0
+#define TREX            0
+#define IPARAM          0
+#define MULTI_INST      0
+#define OBSERVATIONS    0
 #endif
 #define HASKELL_ARRAYS	1
 #define IO_MONAD	1
@@ -661,6 +664,12 @@ typedef void*    Pointer;
 #if TREX
 #define NUM_EXT		   100
 #endif
+
+#if OBSERVATIONS
+#define NUM_OBS_TAGS       200
+#define NUM_BRKPTS         200
+#endif
+
 #define CHAR_MASK          0xff
 
 #if PROFILING

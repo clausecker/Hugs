@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: builtin.c,v $
- * $Revision: 1.7 $
- * $Date: 2000/12/13 08:28:57 $
+ * $Revision: 1.8 $
+ * $Date: 2001/01/02 18:21:40 $
  * ------------------------------------------------------------------------*/
 
 /* We include math.h before prelude.h because SunOS 4's cpp incorrectly
@@ -603,6 +603,12 @@ PROTO_PRIM(primRecShw);
 PROTO_PRIM(primRecEq);
 #endif
 
+#if OBSERVATIONS
+PROTO_PRIM(primObserve);
+PROTO_PRIM(primBkpt);
+PROTO_PRIM(primSetBkpt);
+#endif
+
 PROTO_PRIM(primPtrEq);
 PROTO_PRIM(primPtrToInt);
 
@@ -778,7 +784,13 @@ static struct primitive builtinPrimTable[] = {
   {"recShw",            5, primRecShw},
   {"recEq",		6, primRecEq},
 #endif		        
-			
+
+#if OBSERVATIONS
+  {"observe",           2, primObserve},
+  {"bkpt",              2, primBkpt},
+  {"setBkpt",           4, primSetBkpt},
+#endif
+
   {"unsafePtrEq",       2, primPtrEq},          /* breaks the semantics  */
   {"unsafePtrToInt",    1, primPtrToInt},       /* breaks the semantics  */
 
@@ -1466,6 +1478,74 @@ FILE *fp; {                             /* and print it on fp              */
 #endif
 
 /* --------------------------------------------------------------------------
+ * Observations & breakpoints
+ * ------------------------------------------------------------------------*/
+
+#if OBSERVATIONS
+#define MAXTAGLENGTH 80
+static char obsTag[MAXTAGLENGTH+1];
+
+primFun(primObserve) {			/* the observe primitive for       */
+    Cell exp, obsCell;			/* debugging purposes              */
+    int i=0;				/*  :: String -> a -> a            */
+    fflush(stdout);
+    eval(pop());
+    while (whnfHead==nameCons) {
+	eval(pop());
+	if (i<MAXTAGLENGTH) obsTag[i++]=charOf(whnfHead);
+	eval(pop());
+    }
+    obsTag[i]=0;
+    				/* create OBSERVE graph marker		   */
+    exp  = pop();
+    exp  = triple(OBSERVE,exp,0);
+    updateRoot(exp);
+    /* root is now an INDIRECT node which points to an OBSERVE node 	   */
+    /* next create observation list cell for the expression		   */
+    obsCell = addObsInstance(obsTag,stack(root),-1);
+    /* finally update the OBSERVE node to point to the ons. list cell  	   */
+    markedObs(snd(stack(root))) = obsCell;
+}
+
+primFun(primBkpt) {			/* check if break enabled          */
+    Cell exp, obsCell;                  /* initiate dialogue               */
+    Int i=0;
+    fflush(stdout);
+    eval(pop());
+    while (whnfHead==nameCons) {
+	eval(pop());
+	if (i<MAXTAGLENGTH) obsTag[i++]=charOf(whnfHead);
+	eval(pop());
+    }
+    obsTag[i]=0;
+
+    if (breakNow(obsTag)) breakDialogue(obsTag);
+    updateRoot(pop());
+}
+
+#if !LAZY_ST
+#error primitive "setBkpt" unavailable as LAZY_ST not enabled 
+#else
+primFun(primSetBkpt) {			
+    int i=0;
+    eval(pop());
+    while (whnfHead==nameCons) {
+	eval(top());
+	checkChar();
+	if (i<MAXTAGLENGTH) obsTag[i++]=charOf(whnfHead);
+	eval(pop());
+    }
+    obsTag[i]=0;
+    eval(IOArg(1));
+    checkBool();
+    setBreakpt(obsTag, whnfHead == nameTrue);
+    IOReturn(nameUnit);
+}
+#endif
+
+#endif
+
+/* --------------------------------------------------------------------------
  * Extensible records: (Gaster and Jones, 1996)
  * ------------------------------------------------------------------------*/
 
@@ -1581,6 +1661,10 @@ Cell c; {
 	switch (whatIs(c)) {
 	case INDIRECT : c = snd(c);
 		break;
+#if OBSERVATIONS
+        case OBSERVE  : c = markedExpr(c);
+                break;
+#endif
 	case NAME     : if (isCfun(c)
 		|| name(c).arity != 0 
 		|| isNull(name(c).defn)) {

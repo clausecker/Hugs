@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: errors.h,v $
- * $Revision: 1.3 $
- * $Date: 1999/09/13 11:01:01 $
+ * $Revision: 1.4 $
+ * $Date: 2001/01/02 18:21:40 $
  * ------------------------------------------------------------------------*/
 
 extern Void internal	 Args((String)) HUGS_noreturn;
@@ -52,5 +52,10 @@ extern Void printPred    Args((FILE *,Cell));
 extern Void printKind	 Args((FILE *,Kind));
 extern Void printKinds	 Args((FILE *,Kinds));
 extern Void printFD	 Args((FILE *,Pair));
+
+#if OBSERVATIONS
+#define ALLTAGS ""
+extern Void printObserve Args((String));
+#endif
 
 /*-------------------------------------------------------------------------*/

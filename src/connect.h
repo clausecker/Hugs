@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: connect.h,v $
- * $Revision: 1.14 $
- * $Date: 2000/12/13 09:36:05 $
+ * $Revision: 1.15 $
+ * $Date: 2001/01/02 18:21:40 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -415,5 +415,19 @@ extern  Inst   findInstFor      Args((Cell,Int));
 #if MULTI_INST
 extern  List   findInstsFor     Args((Cell,Int));
 #endif
+
+#if OBSERVATIONS
+#define NUMARGS         16               /* max num of args; must be 2^n    */
+#define appId(seq,arg)  (seq)*NUMARGS+(arg)
+#define argNum(n)       (n)%NUMARGS
+#define seqNum(n)       (n)/NUMARGS
+extern Bool   printingObservations;     /* TRUE => print observed exprs    */
+extern Int    appNum;                   /* for counting applications       */
+extern Int    obsCount;
+extern Void   breakDialogue    Args((String));
+extern Bool   isWhnf           Args((Cell));
+extern Cell   getCaf           Args((Cell));
+#endif
+
 
 /*-------------------------------------------------------------------------*/

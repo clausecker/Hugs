@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: command.h,v $
- * $Revision: 1.7 $
- * $Date: 2000/03/08 14:31:10 $
+ * $Revision: 1.8 $
+ * $Date: 2001/01/02 18:21:40 $
  * ------------------------------------------------------------------------*/
 
 typedef Int Command;
@@ -45,6 +45,16 @@ extern Command readCommand Args((struct cmd *, Char, Char));
 #define NOCMD   21
 #ifdef __SYMBIAN32__
 #define PRNDIR 22
+#endif
+
+#if OBSERVATIONS
+/*-------------------------------------------------------------------------*
+ * Commands available after breakpoint                                     *
+ *-------------------------------------------------------------------------*/
+#define BRK_DISPLAY     0
+#define BRK_CONTINUE    1
+#define BRK_SET         2
+#define BRK_RESET       3
 #endif
 
 /*-------------------------------------------------------------------------*/

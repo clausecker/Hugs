@@ -9,8 +9,8 @@
  * included in the distribution.
  *
  * $RCSfile: output.c,v $
- * $Revision: 1.11 $
- * $Date: 2000/09/21 01:13:19 $
+ * $Revision: 1.12 $
+ * $Date: 2001/01/02 18:21:40 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -19,7 +19,11 @@
 #include "errors.h"
 #include <ctype.h>
 
+#if OBSERVATIONS
+#define DEPTH_LIMIT     125
+#else
 #define DEPTH_LIMIT     15
+#endif
 
 /* --------------------------------------------------------------------------
  * Local function prototypes:
@@ -58,12 +62,17 @@ static Void local putApType      Args((Type,Int,Int));
 static Void local putKind        Args((Kind));
 static Void local putKinds	 Args((Kinds));
 
+#if OBSERVATIONS
+static Bool local printObsList   Args((Cell,Int,Bool));
+static Void local printArg       Args((FILE *,Cell));
+#endif
+
 /* --------------------------------------------------------------------------
  * Basic output routines:
  * ------------------------------------------------------------------------*/
 
 static FILE *outputStream;             /* current output stream        	   */
-#if DEBUG_SHOWSC		       				       
+#if DEBUG_SHOWSC || OBSERVATIONS
 static Int  outColumn = 0;             /* current output column number 	   */
 #endif				       				       
 								       
@@ -73,7 +82,7 @@ static Int  outColumn = 0;             /* current output column number 	   */
 static Void local putChr(c)            /* print single character       	   */
 Int c; {			       				       
     Putc(c,outputStream);	       				       
-#if DEBUG_SHOWSC		       				       
+#if DEBUG_SHOWSC || OBSERVATIONS		       				       
     outColumn++;		       				       
 #endif				       				       
 }				       				       
@@ -82,7 +91,7 @@ static Void local putStr(s)            /* print string                 	   */
 String s; {			       				       
     for (; *s; s++) {		       				       
 	Putc(*s,outputStream);	       				       
-#if DEBUG_SHOWSC		       				       
+#if DEBUG_SHOWSC || OBSERVATIONS
 	outColumn++;		       				       
 #endif				       				       
     }				       				       
@@ -127,6 +136,23 @@ Cell e; {
     }
     else
 	putDepth++;
+
+#if OBSERVATIONS
+    if (printingObservations) {
+        Cell caf;
+
+        if (!isWhnf(e)) {
+            putStr("_");
+            putDepth--;
+            return;
+        }
+        if ((caf = getCaf(e)) && !isNull(name(caf).defn)) {
+            put(d, name(caf).defn);
+            putDepth--;
+            return;
+        }
+    }
+#endif
 
     switch (whatIs(e)) {
 	case FINLIST    : putChr('[');
@@ -302,10 +328,26 @@ Cell e; {
 	case UPDFLDS    : putFlds(fst3(snd(e)),thd3(snd(e)));
 			  break;
 
+#if OBSERVATIONS
+        case INDIRECT   : if(printingObservations)
+                              put(d, snd(e));
+                          else {
+                              putChr('^');
+                              put(ALWAYS,snd(e));
+                          }
+                          break;
+        case OBSERVE    : if(printingObservations)
+                              put(d, markedExpr(e));
+                          else{
+                              putChr('='); putChr('>');
+                              put(ALWAYS,markedExpr(e));
+                          }
+                          break;
+#else
 	case INDIRECT   : putChr('^');
 			  put(ALWAYS,snd(e));
 			  break;
-
+#endif
 	default         : /*internal("put");*/
 			  putChr('$');
 			  putInt(e);
@@ -381,7 +423,7 @@ Cell q; {
 
 static Bool local isDictVal(e)          /* Look for dictionary value       */
 Cell e; {
-#if !DEBUG_CODE
+#if !DEBUG_CODE || OBSERVATIONS         /* code definitely needed for obs. */
     Cell h = getHead(e);
     switch (whatIs(h)) {
 	case DICTVAR : return TRUE;
@@ -1291,6 +1333,132 @@ Kinds ks; {
 }
 
 /* --------------------------------------------------------------------------
+ * Print observations
+ * ------------------------------------------------------------------------*/
+#if OBSERVATIONS
+#define DELTA 2
+
+Bool printingObservations = FALSE;
+void newLine(indent){
+    putChr('\n');
+    outColumn = 0;
+    while (indent--) putChr(' ');
+}
+
+Int countObsList(header)
+Cell header;
+{
+    Int seq, n=0;
+    Cell j;
+
+    for (j=firstObs(header); j!=header; j=nextObs(j)){
+        seq  = intOf(seqObs(j));
+        if (seq < 0)            /* non-functional value            */
+            n++;    
+        else if (seq!=0)                /* a function observation  */
+            if (whatIs(exprObs(j)) == OBSERVEHEAD)
+                n += countObsList(exprObs(j));
+            else
+                n++;
+    }
+    return n;
+}
+Int countObserve(){
+    Observe i;
+    Int     n=0;
+
+    i=firstObserve();
+    while(i != NIL){
+	    n += countObsList(observe(i).head); 
+	    i =  nextObserve();
+    }    
+    return n;
+}
+
+Void printObserve(t)
+String t;  {
+    Observe i;
+    String s;
+
+    if (! (i=firstObserve())) return;
+    
+    printingObservations = TRUE;
+    outputStream = stdout;
+
+    putStr("\n>>>>>>> Observations <<<<<<");
+    newLine(0);
+    
+    while(i != NIL){
+     	    newLine(0);
+	    s = textToStr(observe(i).tag);
+	    if (*t==0 || strcmp(s,t)==0){
+                putStr(s);
+	        newLine(2);
+	        if (printObsList(observe(i).head,2,FALSE)) 
+	            newLine(0);
+	    }
+	    i = nextObserve();
+    }    
+    
+    newLine(0);
+    printingObservations = FALSE;
+}
+
+Bool printObsList(header, indent, funPrint)
+Cell header;
+Int  indent;
+Bool funPrint; 
+{
+    Cell j, resultExp;
+    Int seq, appN, argN, i;
+    Bool firstApp = 1;
+
+	    for (j=firstObs(header); j!=header; j=nextObs(j)){
+	        seq  = intOf(seqObs(j));
+		appN = seqNum(seq);
+		argN = argNum(seq);
+
+		if (seq < 0){		/* non-functional value		   */
+		     printArg(stdout, exprObs(j));
+		     if (!funPrint) newLine(indent);
+		}
+		else if (seq!=0) {		/* a function observation  */
+		    funPrint =1;
+		    if (argN == 0){		/* the result expr	   */
+		        if (firstApp){ 		/* print previous result   */
+			    firstApp = 0;
+			    indent   = outColumn;
+			    putStr("{ ");
+			}
+			else { 
+			    putStr(" -> ");
+			    printExp(stdout,resultExp);
+			    newLine(indent); 
+			    putStr(", ");
+			}
+		        resultExp = exprObs(j);
+			putStr ("\\ ");
+		    }
+		    else {			/* an arg expr		   */
+			if (whatIs(exprObs(j)) == OBSERVEHEAD)
+			    printObsList(exprObs(j), indent, TRUE);
+			else
+			    printArg(stdout,exprObs(j));
+			putStr(" ");
+		    }
+		}
+	    }
+	    if (seq >= 0){ 	/* print result of last fun. obs. in list  */
+	        putStr(" -> ");
+		printExp(stdout,resultExp);
+		newLine(indent);
+		putStr("}");
+	    }
+	    return(funPrint);
+}
+#endif
+
+/* --------------------------------------------------------------------------
  * Print qualified module name (if wanted):
  * ------------------------------------------------------------------------*/
 Bool useQualifiedNames = FALSE;
@@ -1313,6 +1481,16 @@ Cell e; {
     putDepth     = 0;
     put(NEVER,e);
 }
+
+#if OBSERVATIONS
+static Void printArg(fp,e)              /* print expr on specified stream  */
+FILE *fp;
+Cell e; {
+    outputStream = fp;
+    putDepth     = 0;
+    put(ALWAYS,e);
+}
+#endif
 
 Void printType(fp,t)			/* print type on specified stream  */
 FILE *fp;

@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: storage.c,v $
- * $Revision: 1.12 $
- * $Date: 2000/12/13 09:01:54 $
+ * $Revision: 1.13 $
+ * $Date: 2001/01/02 18:21:41 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -47,6 +47,13 @@ static Void local freeHandle            Args((Int));
 #endif
 #if GC_STABLEPTRS
 static Void local resetStablePtrs       Args((Void));
+#endif
+#if OBSERVATIONS
+static Observe  local newObserve        Args((Text));
+static Void     local appendObs         Args((Cell,Cell));
+static Breakpt  local addBreakpt        Args((String));
+static Breakpt  local findBreakpt       Args((String));
+static Bool     local isBrkEnabled      Args((String));
 #endif
 
 /* --------------------------------------------------------------------------
@@ -1021,6 +1028,170 @@ Void hugsStackOverflow() {          /* Report stack overflow               */
 }
 
 #endif /* !GIMME_STACK_DUMPS */
+
+/* --------------------------------------------------------------------------
+ * Observation storage
+ * ------------------------------------------------------------------------*/
+
+#if OBSERVATIONS
+static Observe observeHw;                          /* next unused Observe  */
+struct Observe DEFTABLE(tabObserve,NUM_OBS_TAGS);  /* Observe storage      */
+static Observe currentObs;			   /* for table iterators  */
+
+Observe newObserve(t)
+Text t; {
+    if (observeHw-OBSMIN >= NUM_OBS_TAGS) {
+	ERRMSG(0) "Observation storage space exhausted"
+	EEND;
+    }
+    observe(observeHw).tag  = t;
+    observe(observeHw).head = triple(OBSERVEHEAD,NIL,NIL);
+    return observeHw++;
+}
+
+Observe firstObserve(){
+    if (observeHw==OBSMIN) return currentObs=0;
+    else 		   return currentObs=OBSMIN;
+}
+
+Observe nextObserve(){
+    if (currentObs && ++currentObs < observeHw)
+        return currentObs;
+    else
+    	return currentObs=0;
+}
+
+Void    clearObserve(){
+    observeHw = OBSMIN;
+}
+
+Cell addObsInstance(s,e,id)
+String s;					/* the tag                 */
+Cell   e; 					/* observed expr           */
+Int    id; 					/* identifying number      */
+{
+    Observe i;
+    Triple obsCell = triple(NIL, mkInt(id), e);
+    Text t         = findText(s); 
+
+    for (i=OBSMIN; i<observeHw && t != observe(i).tag; i++)  
+        ;
+    if (i==observeHw) i=newObserve(t);
+    appendObs(observe(i).head, obsCell);
+    return obsCell;
+}
+
+Void appendObs(header, obsCell)
+Cell header;
+Cell obsCell; {
+    if (firstObs(header) == NIL)
+        firstObs(header) = obsCell;
+    else
+         nextObs(lastObs(header)) = obsCell;
+    lastObs(header) = obsCell;
+    nextObs(obsCell) = header;         		/* last cell point to header*/
+}
+
+Void insertAfterObs(old, new)
+Cell old;
+Cell new; {
+    if (whatIs(nextObs(old)) == OBSERVEHEAD)
+        lastObs(nextObs(old)) = new;		/* reset header's last ptr   */
+    nextObs(new) = nextObs(old);
+    nextObs(old) = new;
+}
+
+/* --------------------------------------------------------------------------
+ * Breakpoint storage
+ * ------------------------------------------------------------------------*/
+
+static Breakpt breakptHw;                          /* next unused Breakpt  */
+struct Breakpt DEFTABLE(tabBreakpt,NUM_BRKPTS);    /* Breakpt storage      */
+static Breakpt currentObs;			   /* for table iterators  */
+
+Void    clearAllBreak(){
+    breakptHw = BRKMIN;
+}
+
+Breakpt addBreakpt(s)		/* Add to table if absent; state= disabled */
+String s; {			/* Return breakpt index			   */
+    Breakpt i=BRKMIN;
+    Breakpt j;
+    Text t = findText(s);
+
+    while (i<breakptHw && breakpt(i).tag<=t) i++;
+    /* tag found /\ next highest found /\ end of table			   */
+    if (i == breakptHw){			   /* end of table reached */
+        breakpt(i).tag     = t;
+	breakpt(i).enabled = FALSE;
+	breakpt(i).count   = 0;
+	return breakptHw++;
+    }
+    else if (breakpt(i).tag==t){		   /* match		   */
+        return i;
+    }
+    else {					   /* shift and insert	   */
+        for (j=breakptHw-1; j>=i; j--)
+	    breakpt(j+1) = breakpt(j);
+	breakpt(i).tag = t;
+	breakpt(i).enabled = FALSE;
+	breakptHw++;
+	return i;
+    }
+}
+
+Breakpt findBreakpt(s)		/* return index of breakpt name		   */
+String s; {			/* return BRKMIN-1 if not found		   */
+    Breakpt lower, upper, i;
+    Text t = findText(s);
+
+    lower = BRKMIN;
+    upper = breakptHw-1;
+    while (lower <= upper) {
+        i = (lower+upper) / 2;
+	if      (t < breakpt(i).tag)	upper = i - 1;
+	else if (t > breakpt(i).tag)	lower = i + 1;
+	else				return i;
+    }
+    return BRKMIN-1;
+}
+
+Bool isBrkEnabled(s)		/* FALSE if disabled or not present	   */ 
+String s; {
+    Breakpt b = findBreakpt(s);
+    return (b >= BRKMIN) && breakpt(b).enabled;  
+}
+
+Bool breakNow(s)		/* break enabled && no skips 		   */
+String s; {			/* decrements skip counter		   */
+    Breakpt b = findBreakpt(s);
+    if ((b >= BRKMIN) && breakpt(b).enabled)
+        if (breakpt(b).count){ 
+	    breakpt(b).count--;
+	    return FALSE;
+	}
+	else
+	    return TRUE;
+    else
+        return FALSE;
+}
+
+
+Void setBreakpt(s,v)		/* enable breakpt; may create a table entry*/
+String s;
+Bool v; {
+    Breakpt b = findBreakpt(s);
+    if (b < BRKMIN) b = addBreakpt(s);
+    breakpt(b).enabled = v;
+}
+	
+Void setBreakCount(s,n)		/* set skip count value for breakpoint	   */
+String s;
+Int n; {
+    Breakpt b = findBreakpt(s);
+    if (b >= BRKMIN) breakpt(b).count = n;
+}
+#endif
 
 /* --------------------------------------------------------------------------
  * Module storage:
@@ -2051,6 +2222,26 @@ Int  depth; {
 	      print(snd(snd(c)),depth-1);
 	      Putchar(')');
 	      break;
+#if OBSERVATIONS
+          case INDIRECT:
+              Printf("->");
+              print(snd(c),depth);
+              break;
+          case OBSERVE:
+              Printf("{==>"); print(snd3(c),depth); Putchar('|');
+              Printf("cell = %d=(", thd3(c));
+              Printf("next= %d,", nextObs(thd3(c)));
+              Printf("seq= %d,", intOf(seqObs(thd3(c))));
+              Printf("expr= %d)}", exprObs(thd3(c)));
+              break;
+          case OBSERVESTK:
+              Printf("{=STK=>{");
+              Printf("cell = %d=(", thd3(c));
+              Printf("next= %d,", nextObs(thd3(c)));
+              Printf("seq= %d,", intOf(seqObs(thd3(c))));
+              Printf("expr= %d)}", exprObs(thd3(c)));
+              break;
+#endif
 	  case BIGLAM:
 	      Printf("BigLam(");
 	      printList(fst(snd(c)),depth-1);
@@ -2871,7 +3062,11 @@ Int what; {
 			   mark(name(i).type);
 		       }
 		       end("Names", nameHw-NAMEMIN);
-
+#if OBSERVATIONS
+                       start();
+                       for (i=OBSMIN; i<observeHw; ++i) mark(firstObs(observe(i).head));
+                       end("Observations", observeHw=OBSMIN);
+#endif
 #if !IGNORE_MODULES
 		       start();
 		       for (i=MODMIN; i<moduleHw; ++i) {
@@ -3003,6 +3198,10 @@ Int what; {
 #if TREX
 		       TABALLOC(tabExt,	   Text,	     NUM_EXT)
 #endif
+#if OBSERVATIONS
+                       TABALLOC(tabObserve,struct Observe,   NUM_OBS_TAGS)
+                       TABALLOC(tabBreakpt,struct Breakpt,   NUM_BRKPTS)
+#endif
 		       clearStack();
 
 #if IO_HANDLES
@@ -3027,6 +3226,10 @@ Int what; {
 
 
 		       addrHw   = 0;
+#if OBSERVATIONS
+                       observeHw = OBSMIN;
+                       breakptHw = BRKMIN;
+#endif
 
 #if !IGNORE_MODULES
 		       moduleHw = MODMIN;

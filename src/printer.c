@@ -9,8 +9,8 @@
  * included in the distribution.
  *
  * $RCSfile: printer.c,v $
- * $Revision: 1.3 $
- * $Date: 1999/09/13 11:01:05 $
+ * $Revision: 1.4 $
+ * $Date: 2001/01/02 18:21:41 $
  * ------------------------------------------------------------------------*/
 
 static Void   local printer		Args((Name,Int));
@@ -306,6 +306,11 @@ Int  d; {				/* precedence level		   */
 	case HANDCELL : outStr("{handle}");
 			pr = nameNPrint;
 			break;
+#endif
+
+#if OBSERVATIONS
+        case OBSERVE  : outStr("printer.c: printer(): OBSERVE");
+                        break;
 #endif
 
 	default       : internal("Error in graph");
