@@ -40,6 +40,8 @@ ${PACKAGE}.tar.gz:
 		xargs -l happy
 	find ${TARTMP}/hugs98/fptools/libraries -name "*.hsc" |\
 		xargs -l hsc2hs --no-compile
+	find ${TARTMP}/hugs98/fptools/libraries -name "*_hsc_make.c" |\
+		xargs src/unix/hsc_kludge
 	cp ${TARTMP}/hugs98/src/version.c /tmp/mktar
 	cd ${TARTMP}/hugs98/src; sed ${VERSION_SUBSTS} < ${TARTMP}/version.c > ${TARTMP}/hugs98/src/version.c
 	# using `make parser.c' would be best, but by default yacc
