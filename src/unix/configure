@@ -1661,28 +1661,23 @@ else
   enable_unicode_chars=no
 fi;
 
-
-
-echo "$as_me:$LINENO: checking directory $FPTOOLS" >&5
-echo $ECHO_N "checking directory $FPTOOLS... $ECHO_C" >&6
-if test -d "$FPTOOLS/hslibs" && test -d "$FPTOOLS/libraries"
-then echo "$as_me:$LINENO: result: looks ok" >&5
+# make FPTOOLS an absolute path (for MkInstal's sake)
+FPTOOLS=`cd $FPTOOLS; pwd`
+echo "$as_me:$LINENO: checking for hslibs and libraries in $FPTOOLS" >&5
+echo $ECHO_N "checking for hslibs and libraries in $FPTOOLS... $ECHO_C" >&6
+if test -d "$FPTOOLS/hslibs" && test -d "$FPTOOLS/libraries"; then
+  echo "$as_me:$LINENO: result: looks ok" >&5
 echo "${ECHO_T}looks ok" >&6
-else echo "$as_me:$LINENO: result: failed" >&5
+else
+  echo "$as_me:$LINENO: result: failed" >&5
 echo "${ECHO_T}failed" >&6
-     { { echo "$as_me:$LINENO: error:
-The argument to --with-fptools must be a directory containing copies of
-hslibs and libraries from the Haskell CVS repository." >&5
-echo "$as_me: error:
-The argument to --with-fptools must be a directory containing copies of
-hslibs and libraries from the Haskell CVS repository." >&2;}
+  { { echo "$as_me:$LINENO: error: The argument to --with-fptools must be a directory
+containing copies of hslibs and libraries from the Haskell CVS repository." >&5
+echo "$as_me: error: The argument to --with-fptools must be a directory
+containing copies of hslibs and libraries from the Haskell CVS repository." >&2;}
    { (exit 1); exit 1; }; }
 fi
-FPTOOLS=`cd $FPTOOLS; pwd`
 
-case $host_os in
-  cygwin*|mingw*) FPTOOLS=`cygpath -w $FPTOOLS | sed -e 's@\\\\@/@g'`;;
-esac
 
 
 for ac_prog in 'bison -y' byacc
@@ -4064,7 +4059,7 @@ else
 ac_save_LIBS="$LIBS"
 LIBS="";
 cat > conftest.$ac_ext <<EOF
-#line 4067 "configure"
+#line 4062 "configure"
 #include "confdefs.h"
 main() { extern char dlopen(); dlopen();; exit(0); }
 int t() { return 0; }
@@ -4107,7 +4102,7 @@ else
 ac_save_LIBS="$LIBS"
 LIBS="-ldl";
 cat > conftest.$ac_ext <<EOF
-#line 4110 "configure"
+#line 4105 "configure"
 #include "confdefs.h"
 main() { extern char dlopen(); dlopen();; exit(0); }
 int t() { return 0; }
@@ -4162,7 +4157,7 @@ else
 ac_save_LIBS="$LIBS"
 LIBS="";
 cat > conftest.$ac_ext <<EOF
-#line 4165 "configure"
+#line 4160 "configure"
 #include "confdefs.h"
 main() { extern char shl_load(); shl_load();; exit(0); }
 int t() { return 0; }
@@ -4205,7 +4200,7 @@ else
 ac_save_LIBS="$LIBS"
 LIBS="-ldld";
 cat > conftest.$ac_ext <<EOF
-#line 4208 "configure"
+#line 4203 "configure"
 #include "confdefs.h"
 main() { extern char shl_load(); shl_load();; exit(0); }
 int t() { return 0; }
@@ -4260,7 +4255,7 @@ else
 ac_save_LIBS="$LIBS"
 LIBS="";
 cat > conftest.$ac_ext <<EOF
-#line 4263 "configure"
+#line 4258 "configure"
 #include "confdefs.h"
 main() { extern char atan(); atan();; exit(0); }
 int t() { return 0; }
@@ -4303,7 +4298,7 @@ else
 ac_save_LIBS="$LIBS"
 LIBS="-lm";
 cat > conftest.$ac_ext <<EOF
-#line 4306 "configure"
+#line 4301 "configure"
 #include "confdefs.h"
 main() { extern char atan(); atan();; exit(0); }
 int t() { return 0; }
@@ -24862,7 +24857,7 @@ _ACEOF
 ac_save_LIBS="$LIBS"
 LIBS=;
 cat > conftest.$ac_ext <<EOF
-#line 24865 "configure"
+#line 24860 "configure"
 #include "confdefs.h"
 
 #if HAVE_WINDOWS_H
@@ -24903,7 +24898,7 @@ fi
 ac_save_LIBS="$LIBS"
 LIBS=;
 cat > conftest.$ac_ext <<EOF
-#line 24906 "configure"
+#line 24901 "configure"
 #include "confdefs.h"
 
 #if HAVE_WINDOWS_H
