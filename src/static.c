@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.8 $
- * $Date: 1999/09/13 11:01:06 $
+ * $Revision: 1.9 $
+ * $Date: 1999/09/13 15:06:12 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -5294,7 +5294,7 @@ Cell e; {
 			  break;
 
 #if IPARAM
-	case DWHRE	: depWith(line,e);
+	case WITHEXP	: depWith(line,e);
 			  break;
 #endif
 

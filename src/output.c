@@ -9,8 +9,8 @@
  * included in the distribution.
  *
  * $RCSfile: output.c,v $
- * $Revision: 1.4 $
- * $Date: 1999/09/13 11:01:04 $
+ * $Revision: 1.5 $
+ * $Date: 1999/09/13 15:06:12 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -157,7 +157,7 @@ Cell e; {
 			  unlexVar(textOf(e));
 			  break;
 
-	case DWHRE	: OPEN(d>WHERE_PREC);
+	case WITHEXP	: OPEN(d>WHERE_PREC);
 			  putStr("dlet {...} in ");
 			  put(WHERE_PREC+1,fst(snd(e)));
 			  CLOSE(d>WHERE_PREC);

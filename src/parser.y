@@ -10,8 +10,8 @@
  * in the distribution for details.
  *
  * $RCSfile: parser.y,v $
- * $Revision: 1.5 $
- * $Date: 1999/09/09 22:57:17 $
+ * $Revision: 1.6 $
+ * $Date: 1999/09/13 15:06:12 $
  * ------------------------------------------------------------------------*/
 
 %{
@@ -690,7 +690,7 @@ exp	  : exp_err			{$$ = $1;}
 exp_err	  : exp0a COCO sigType		{$$ = gc3(ap(ESIGN,pair($1,$3)));}
 	  | exp0a WITH dbinds		{
 #if IPARAM
-					 $$ = gc3(ap(DWHRE,pair($1,$3)));
+					 $$ = gc3(ap(WITHEXP,pair($1,$3)));
 #else
 					 noIP("an expression");
 #endif
@@ -731,7 +731,7 @@ exp10b	  : '\\' pats ARROW exp		{$$ = gc4(ap(LAMBDA,
 	  | IF exp THEN exp ELSE exp	{$$ = gc6(ap(COND,triple($2,$4,$6)));}
 	  | DLET dbinds IN exp		{
 #if IPARAM
-					 $$ = gc4(ap(DWHRE,pair($4,$2)));
+					 $$ = gc4(ap(WITHEXP,pair($4,$2)));
 #else
 					 noIP("an expression");
 #endif

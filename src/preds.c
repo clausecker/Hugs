@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: preds.c,v $
- * $Revision: 1.6 $
- * $Date: 1999/09/13 11:01:04 $
+ * $Revision: 1.7 $
+ * $Date: 1999/09/13 15:06:12 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -100,29 +100,20 @@ Text t; {
 	}
 }
 
-static Void local matchupIPs(ps1,ps2)
-List ps1, ps2; {
-    List p, q;
-    for (p = ps1; nonNull(p); p=tl(p)) {
-	Cell pi1 = fst3(hd(p));
-	if (isIP(fun(pi1))) {
-	    for (q = ps2; nonNull(q); q=tl(q)) {
-		Cell pi2 = fst3(hd(q));
-		if (isIP(fun(pi2)) && ipVar(pi1)==ipVar(pi2)) {
-		    Int o1 = intOf(snd3(hd(p)));
-		    Int o2 = intOf(snd3(hd(q)));
-		    if (!unifyPred(pi1,o1,pi2,o2)) {
-			ERRMSG(0) "Mismatching signature using implicit parameters\n" ETHEN
-			ERRPRED(copyPred(pi1,o1));
-			ERRTEXT      "\n" ETHEN
-			ERRPRED(copyPred(pi2,o2));
-			ERRTEXT      "\n"
-			EEND;
-		    }
-		}
-	    }
-	}
+static List local splitOutIPs() {
+    List ps = preds;
+    List *prev = &preds;
+    List ips = NIL;
+    for (; nonNull(ps); ps = tl(ps)) {
+	Cell pi = fst3(hd(ps));
+	if (isIP(fun(pi))) {
+	    ips = cons(hd(ps),ips);
+	    *prev = tl(ps);
+	} else {
+	    prev = &tl(ps);
+	}	
     }
+    return ips;
 }
 #endif
 
@@ -267,26 +258,13 @@ Int  d; {
     Class h1 = getHead(pi1);
     Class h  = getHead(pi);
 
-#if IPARAM
-    if (isIP(h1) && isIP(h)) {
-        if (textOf(h1) == textOf(h)) {
-	    if (unify(arg(pi1),o1,arg(pi),o)) {
-		return e;
-	    } else {
-	        ERRMSG(0) "Mismatching uses of implicit parameter\n" ETHEN
-		ERRPRED(copyPred(pi1,o1));
-		ERRTEXT      "\n" ETHEN
-		ERRPRED(copyPred(pi,o));
-		ERRTEXT      "\n"
-		EEND;
-	    }
-	}
-    } else
-#endif
-    if (h==h1 && samePred(pi1,o1,pi,o))
+    if (/* h==h1 && */ samePred(pi1,o1,pi,o))
 	return e;
 
+    /* this doesn't make any sense to me...
     if (isClass(h1) && (!isClass(h) || cclass(h).level<cclass(h1).level)) {
+    */
+    if (isClass(h1) && isClass(h) && cclass(h).level<cclass(h1).level) {
 	Int  beta  = newKindedVars(cclass(h1).kinds);
 	List scs   = cclass(h1).supers;
 	List dsels = cclass(h1).dsels;
@@ -320,6 +298,37 @@ Int  d; {
     }
     return NIL;
 }
+
+#if IPARAM
+static Cell local ipEntail(ps,ip,o)	/* Find evidence for (ip,o) from ps*/
+List ps;
+Cell ip;
+Int  o; {
+    Class h  = getHead(ip);
+    auto int i;
+    for (; nonNull(ps); ps=tl(ps)) {
+	Cell pr1 = hd(ps);
+	Cell pi1 = fst3(pr1);
+	Int o1 = intOf(snd3(pr1));
+	Class h1 = getHead(pi1);
+	if (isIP(h1)) {
+	    if (textOf(h1) == textOf(h)) {
+		if (unify(arg(pi1),o1,arg(ip),o)) {
+		    return thd3(pr1);
+		} else {
+		    ERRMSG(0) "Mismatching uses of implicit parameter\n" ETHEN
+		    ERRPRED(copyPred(pi1,o1));
+		    ERRTEXT      "\n" ETHEN
+		    ERRPRED(copyPred(ip,o));
+		    ERRTEXT      "\n"
+		    EEND;
+		}
+	    }
+	}
+    }
+    return NIL;
+}
+#endif
 
 /* --------------------------------------------------------------------------
  * Now we reach the main entailment routine:
@@ -754,6 +763,24 @@ static List local elimPredsUsing(ps,sps)/* Try to discharge or defer preds,*/
 List ps;				/* splitting if necessary to match */
 List sps; {				/* context ps.  sps = savePreds.   */
     List rems = NIL;
+#if IPARAM
+    /* with IPs, we need to unify instead of match, so do IPs first	   */
+    /* do we need to do something similar for elimOuterPreds?		   */
+    List ips = splitOutIPs();
+    while (nonNull(ips)) {
+	Cell ip = fst3(hd(ips));
+	Int  o  = intOf(snd3(hd(ips)));
+	Cell ev = ipEntail(ps,ip,o);
+
+	if (nonNull(ev)) {		/* Discharge if ps ||- (ip,o)	   */
+	    overEvid(thd3(hd(ips)),ev);
+	} else {
+	    preds = revOnto(ips, preds);
+	    return NIL;
+	}
+	ips = tl(ips);
+    }
+#endif
     while (nonNull(preds)) {		/* Pick a predicate from preds	   */
 	Cell p  = preds;
 	Cell pi = fst3(hd(p));
@@ -761,10 +788,10 @@ List sps; {				/* context ps.  sps = savePreds.   */
 	Cell ev = entail(ps,pi,o,0);
 	preds   = tl(preds);
 
-	if (nonNull(ev))		/* Discharge if ps ||- (pi,o)	   */
+	if (nonNull(ev)) {		/* Discharge if ps ||- (pi,o)	   */
 	    overEvid(thd3(hd(p)),ev);
-	else if (!isAp(pi) || (!anyGenerics(pi,o) && !isIP(fun(pi)))) {
-	    tl(p) = sps;		/* Defer if no generics and no IP  */
+	} else if (!isAp(pi) || (!anyGenerics(pi,o))) {
+	    tl(p) = sps;		/* Defer if no generics		   */
 	    sps   = p;
 	}
 	else {				/* Try to split generics and fixed */

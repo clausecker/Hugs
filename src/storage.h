@@ -9,8 +9,8 @@
  * included in the distribution.
  *
  * $RCSfile: storage.h,v $
- * $Revision: 1.7 $
- * $Date: 1999/09/13 11:01:10 $
+ * $Revision: 1.8 $
+ * $Date: 1999/09/13 15:06:13 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -321,7 +321,7 @@ extern  Pointer         ptrOf           Args((Cell));
 #endif
 
 #if IPARAM
-#define DWHRE        59 	  /* DLET	snd :: [(Var,Exp)]	   */
+#define WITHEXP      59 	  /* WITH	snd :: [(Var,Exp)]	   */
 #endif
 
 #define POLYTYPE     60		  /* POLYTYPE	snd :: (Kind,Type)	   */

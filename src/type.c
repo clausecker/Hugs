@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: type.c,v $
- * $Revision: 1.7 $
- * $Date: 1999/09/13 11:01:12 $
+ * $Revision: 1.8 $
+ * $Date: 1999/09/13 15:06:13 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -626,6 +626,7 @@ Cell e; {
     static int number = 0;
     Cell retv;
     int  mynumber = number++;
+    List ps;
     STACK_CHECK
     Printf("%d) to check: ",mynumber);
     printExp(stdout,e);
@@ -633,6 +634,9 @@ Cell e; {
     retv = mytypeExpr(l,e);
     Printf("%d) result: ",mynumber);
     printType(stdout,debugType(typeIs,typeOff));
+    Printf("\n%d) preds: ",mynumber);
+    ps = copyPreds(preds);
+    printContext(stdout,ps);
     Putchar('\n');
     return retv;
 }
@@ -724,7 +728,7 @@ Cell e; {
 			  break;
 
 #if IPARAM
-	case DWHRE	: return typeWith(l,e);
+	case WITHEXP	: return typeWith(l,e);
 #endif
 
 	case COND	: {   Int beta = newTyvars(1);
@@ -1721,9 +1725,6 @@ List bs; {
 	    typeAlt(extbind,fst(b),hd(alts),t,o,m);
 	improve(line,preds);
 	leavePendingBtyvs();
-#if IPARAM
-	matchupIPs(ps,preds);
-#endif
 
 	if (nonNull(ps))		/* Add dict params, if necessary   */
 	    qualifyBinding(ps,b);

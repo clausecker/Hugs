@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: input.c,v $
- * $Revision: 1.6 $
- * $Date: 1999/09/13 11:01:02 $
+ * $Revision: 1.7 $
+ * $Date: 1999/09/13 15:06:12 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1434,7 +1434,7 @@ static Int local yylex() {             /* Read next input token ...        */
 	if (it==textAll && !haskell98) return ALL;
 #if IPARAM
 	if (it==textWith && !haskell98) lookAhead(WITH);
-	if (it==textDlet   && !haskell98) lookAhead(DLET);
+	if (it==textDlet && !haskell98) lookAhead(DLET);
 #endif
 	if (it==textRepeat && reading==KEYBOARD)
 	    return repeatLast();

@@ -9,8 +9,8 @@
  * included in the distribution.
  *
  * $RCSfile: subst.c,v $
- * $Revision: 1.5 $
- * $Date: 1999/09/13 11:01:11 $
+ * $Revision: 1.6 $
+ * $Date: 1999/09/13 15:06:13 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1419,6 +1419,33 @@ List ps; {
 		    }
 		}
 	    }
+#if IPARAM
+	    else if (isIP(c)) {
+		List qs = tl(ps1);
+		for (; nonNull(qs); qs=tl(qs)) {
+		    Cell pi1 = fst3(hd(qs));
+		    Cell d   = fun(pi1);
+		    if (isIP(d) && textOf(c)==textOf(d)) {
+		        Type t  = arg(pi);
+		        Type t1 = arg(pi1);
+			Int  o1 = intOf(snd3(hd(qs)));
+			if (!sameType(t,o,t1,o1)) {
+			    if (!unify(t,o,t1,o1)) {
+				ERRMSG(line) "Mismatching uses of implicit parameter\n"
+				ETHEN
+				ERRTEXT "\n***  "
+				ETHEN ERRPRED(copyPred(pi1,o1));
+				ERRTEXT "\n***  "
+				ETHEN ERRPRED(copyPred(pi,o));
+				ERRTEXT "\n"
+				EEND;
+			    }
+			    improved = TRUE;
+			}
+		    }
+		}
+	    }
+#endif
 	}
     } while (improved);
 }
