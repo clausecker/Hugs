@@ -11,8 +11,8 @@
  * included in the distribution.
  *
  * $RCSfile: server.c,v $
- * $Revision: 1.5 $
- * $Date: 2001/07/02 15:38:26 $
+ * $Revision: 1.6 $
+ * $Date: 2001/10/27 15:12:26 $
  * ------------------------------------------------------------------------*/
 
 #define NO_MAIN
@@ -194,7 +194,7 @@ String argv[]; {
 #endif /* USE_REGISTRY */
 	    readOptions(fromEnv("HUGSFLAGS",""));
 	    for (i=1; i<argc; ++i) {
-		if (!processOption(argv[i])) {
+		if (!readOptions2(argv[i])) {
 		    setError("Unrecognised option");
 		    return NULL;
 		}

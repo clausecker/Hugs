@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.47 $
- * $Date: 2001/09/26 18:22:17 $
+ * $Revision: 1.48 $
+ * $Date: 2001/10/27 15:12:25 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -605,6 +605,19 @@ String options; {
 	    }
 	}
     }
+}
+
+static Bool local readOptions2(options)         /* read options from string */
+String options; {
+    String s;
+    if (options) {
+	stringInput(options);
+	while ((s=readFilename())!=0) {
+	    if (*s && !processOption(s))
+		return FALSE;
+	}
+    }
+    return TRUE;
 }
 
 static Bool local processOption(s)      /* process string s for options,   */
