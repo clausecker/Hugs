@@ -12,7 +12,7 @@ compiled with -lm.  You can use these with Hugs as follows:
   #
   # [If Test.hs depends on other ffi modules, you'll have to compile
   # them first.]
-  ffihugs +G +L"test.c -lm" Test.hs 
+  ffihugs +G +L"test.c" +L"-lm" Test.hs 
 
   # Run Hugs as normal - when Test.hs is loaded, it will load Test.so
   hugs Test.hs

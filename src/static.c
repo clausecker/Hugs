@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.82 $
- * $Date: 2002/08/25 22:08:57 $
+ * $Revision: 1.83 $
+ * $Date: 2002/08/26 23:12:34 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -4946,8 +4946,8 @@ Name p; {
     }
     t = fullerExpand(t);
     while (getHead(t)==typeArrow && argCount==2) {
-        Type ta = arg(fun(t));
-        Type tr = arg(t);
+        Type ta = fullerExpand(arg(fun(t)));
+        Type tr = fullerExpand(arg(t));
         argTys = cons(ta,argTys);
         t = tr;
     }
@@ -4980,7 +4980,7 @@ Name p; {
 
         if (getHead(t) == typeIO && argCount==1) {
             isIO = TRUE;
-            t = hd(getArgs(t));
+            t = fullerExpand(hd(getArgs(t)));
         }
 
         if (generate_ffi) {
@@ -5000,10 +5000,10 @@ Name p; {
         ta = hd(argTys);
 
         if (getHead(t) != typeIO || argCount!=1) goto wraperr;
-        t = hd(getArgs(t));
+        t = fullerExpand(hd(getArgs(t)));
 
         if (getHead(t) != typeFunPtr) goto wraperr;
-        t = hd(getArgs(t));
+        t = fullerExpand(hd(getArgs(t)));
 
         /* ToDo: check that ta == t */
 
@@ -5011,7 +5011,7 @@ Name p; {
         argTys = NIL;
         while (getHead(t)==typeArrow && argCount==2) {
             Type ta = fullerExpand(arg(fun(t)));
-            Type tr = arg(t);
+            Type tr = fullerExpand(arg(t));
             argTys = cons(ta,argTys);
             t = tr;
         }
@@ -5020,7 +5020,7 @@ Name p; {
 
         if (getHead(t) == typeIO && argCount==1) {
             isIO = TRUE;
-            t = hd(getArgs(t));
+            t = fullerExpand(hd(getArgs(t)));
         }
 	t = fullerExpand(t);
 
@@ -5093,7 +5093,7 @@ Name p; {
 
             if (getHead(t) == typeIO && argCount==1) {
                 isIO = TRUE;
-                t = hd(getArgs(t));
+                t = fullerExpand(hd(getArgs(t)));
             }
 
             if (generate_ffi) {
@@ -5144,15 +5144,15 @@ Name p; {
     t = fullerExpand(t);
 
     while (getHead(t)==typeArrow && argCount==2) {
-        Type ta = arg(fun(t));
-        Type tr = arg(t);
+        Type ta = fullerExpand(arg(fun(t)));
+        Type tr = fullerExpand(arg(t));
         argTys = cons(ta,argTys);
         t = tr;
     }
     argTys = rev(argTys);
 
     if (getHead(t) == typeIO && argCount==1) {
-        t = hd(getArgs(t));
+        t = fullerExpand(hd(getArgs(t)));
         isIO = TRUE;
     }
 
