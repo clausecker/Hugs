@@ -12,7 +12,7 @@ they require the <option>-98</option> option.
 <para>
 <literal>Trex</literal> is a very powerful and flexible record system.
 See
-<ulink url="http://cvs.haskell.org/Hugs/pages/hugsman/exts.html#sect7.2">Section 7.2 of the <citetitle pubwork=article>Hugs 98 User Manual</citetitle></ulink>
+<ulink url="http://cvs.haskell.org/Hugs/pages/hugsman/exts.html#sect7.2">Section 7.2 of the <citetitle pubwork="article">Hugs 98 User Manual</citetitle></ulink>
 for details.
 </para>
 
@@ -62,7 +62,7 @@ or equivalently
   ...
 </programlisting>
 See
-<ulink url="http://cvs.haskell.org/Hugs/pages/hugsman/exts.html#sect7.3.5">Section 7.3.5 of the <citetitle pubwork=article>Hugs 98 User Manual</citetitle></ulink>
+<ulink url="http://cvs.haskell.org/Hugs/pages/hugsman/exts.html#sect7.3.5">Section 7.3.5 of the <citetitle pubwork="article">Hugs 98 User Manual</citetitle></ulink>
 for details.
 </para>
 
@@ -284,7 +284,7 @@ is encountered. The optional numeric argument will skip
 <varlistentry>
 <term>
 <cmdsynopsis>
-<command>s</command> <arg choice=plain><replaceable>bkpt_name</replaceable></arg>
+<command>s</command> <arg choice="plain"><replaceable>bkpt_name</replaceable></arg>
 </cmdsynopsis>
 </term>
 <listitem>

@@ -105,7 +105,7 @@ or maintainers of Hugs.
 We do read this mailing list &mdash; but so do many other people,
 who might be able to give you more appropriate or timely advice than us!
 Before reporting a bug, check the list of known deviations from Haskell 98
-(see <xref linkend="bugs-haskell98">).
+(see <xref linkend="bugs-haskell98"/>).
 </para>
 </listitem>
 </varlistentry>

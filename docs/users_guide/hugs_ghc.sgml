@@ -4,7 +4,7 @@
 <para>These experimental features are enabled with the <option>-98</option>
 option.
 Most are described in
-<ulink url="http://cvs.haskell.org/Hugs/pages/hugsman/exts.html">Section 7 of the <citetitle pubwork=article>Hugs 98 User Manual</citetitle></ulink>.
+<ulink url="http://cvs.haskell.org/Hugs/pages/hugsman/exts.html">Section 7 of the <citetitle pubwork="article">Hugs 98 User Manual</citetitle></ulink>.
 Those described in this chapter are also supported by
 <ulink url="http://www.haskell.org/ghc/">GHC</ulink>
 with appropriate options,
@@ -21,9 +21,9 @@ though in some cases the GHC versions are more general
 The recursive do-notation (also known as mdo-notation) is implemented
 as described in:
 
-    <citetitle pubwork=article>A recursive do for Haskell</citetitle>,
+    <citetitle pubwork="article">A recursive do for Haskell</citetitle>,
     Levent Erk&ouml;k and John Launchbury,
-    <citetitle pubwork=book>Haskell Workshop 2002</citetitle>,
+    <citetitle pubwork="book">Haskell Workshop 2002</citetitle>,
     pages: 29&ndash;37. Pittsburgh, Pennsylvania.
 </para>
 
@@ -167,7 +167,7 @@ any type may be constrained by a class, as in
   g :: (C [a], D (a -> b)) => [a] -> b
 </programlisting>
 Classes are not limited to a single argument either
-(see <xref linkend="multi-param">).
+(see <xref linkend="multi-param"/>).
 </para>
 
 </sect2>
@@ -299,9 +299,9 @@ Multiple parameter type classes often lead to ambiguity.
 Functional dependencies (inspired by relational databases)
 provide a partial solution,
 and were introduced in
-<citetitle pubwork=article>Type Classes with Functional Dependencies</citetitle>,
+<citetitle pubwork="article">Type Classes with Functional Dependencies</citetitle>,
 Mark P. Jones, In
-<citetitle pubwork=book>Proceedings of the 9th European Symposium on Programming</citetitle>, LNCS vol. 1782, Springer 2000.
+<citetitle pubwork="book">Proceedings of the 9th European Symposium on Programming</citetitle>, LNCS vol. 1782, Springer 2000.
 </para>
 
 <para>
@@ -597,9 +597,9 @@ but Hugs does not.
 <title>Implicit parameters</title>
 
 <para> Implicit parameters are implemented as described in
-<citetitle pubwork=article>Implicit parameters: dynamic scoping with static types</citetitle>,
+<citetitle pubwork="article">Implicit parameters: dynamic scoping with static types</citetitle>,
 J Lewis, MB Shields, E Meijer, J Launchbury,
-<citetitle pubwork=book>27th ACM Symposium on Principles of Programming Languages (POPL'00)</citetitle>,
+<citetitle pubwork="book">27th ACM Symposium on Principles of Programming Languages (POPL'00)</citetitle>,
 Boston, Jan 2000.
 Note however that the binding syntax in that paper,
 using keywords <literal>dlet</literal> and <literal>with</literal>,
