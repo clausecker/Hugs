@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: connect.h,v $
- * $Revision: 1.60 $
- * $Date: 2003/01/23 17:47:07 $
+ * $Revision: 1.61 $
+ * $Date: 2003/01/26 01:03:58 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -98,6 +98,8 @@ extern Name   namePermDenied;
 extern Name   nameAlreadyExists, nameAlreadyInUse, nameDoesNotExist, nameIsFull;
 extern Name   nameIllegal;
 #endif
+
+#define IOArity		2		/* arity of IO actions             */
 
 #if IO_HANDLES
 extern Name   nameEOFErr;
@@ -496,6 +498,5 @@ extern Bool   isWhnf           Args((Cell));
 extern Cell   getCaf           Args((Cell));
 extern Int    countObserve     Args((Void));
 #endif
-
 
 /*-------------------------------------------------------------------------*/

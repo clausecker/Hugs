@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: builtin.c,v $
- * $Revision: 1.44 $
- * $Date: 2003/01/26 00:44:44 $
+ * $Revision: 1.45 $
+ * $Date: 2003/01/26 01:03:58 $
  * ------------------------------------------------------------------------*/
 
 /* We include math.h before prelude.h because SunOS 4's cpp incorrectly
@@ -803,7 +803,7 @@ static struct primitive builtinPrimTable[] = {
   {"primWord64ToWord32",1, primW64toW32},
 #endif
 
-  {"freeHaskellFunPtr", 3, primFreeHFunPtr},
+  {"freeHaskellFunPtr", 1+IOArity, primFreeHFunPtr},
 
 #if !BIGNUMS                            /* Implement Integer as Int        */
   {"primPlusInteger",   2, primPlusInt},
@@ -2118,7 +2118,7 @@ int          n; {
 	drop();
     }
     }
-    updapRoot(primArg(1),top());
+    IOReturn(top());
 }
 
 static void returnId(root,n) /* return in identity monad */
@@ -2439,9 +2439,9 @@ static void freeHaskellFunctionPtr(void* t) {
     freeThunkAux(thunk);
 }
 
-primFun(primFreeHFunPtr) {
+primFun(primFreeHFunPtr) {		/*  :: FunPtr a -> IO ()           */
     Pointer x;
-    PtrArg(x,3);
+    PtrArg(x,1+IOArity);
     freeHaskellFunctionPtr(x);
     IOReturn(nameUnit);
 }

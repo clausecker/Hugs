@@ -2,8 +2,7 @@
  * Implementation of the Haskell IO monad.
  *
  * The primitives below implement the standard IO monad for Haskell 1.3
- * using a continuation passing bimonad (two streams of processing for
- * `exceptional' and `normal' I/O respectively).  The primitives are
+ * using a continuation passing monad for sequencing.  The primitives are
  * believed to give a reasonably good implementation of the semantics
  * specified by the Haskell 1.3 report.  There are also some additional
  * primitives, particularly for dealing with IOError and Handle values
@@ -18,8 +17,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: iomonad.c,v $
- * $Revision: 1.39 $
- * $Date: 2003/01/23 17:47:07 $
+ * $Revision: 1.40 $
+ * $Date: 2003/01/26 01:03:58 $
  * ------------------------------------------------------------------------*/
  
 Name nameIORun;			        /* run IO code                     */
@@ -182,108 +181,108 @@ PROTO_PRIM(primGetCurrentScript);
 #endif
 
 static struct primitive iomonadPrimTable[] = {
-  {"lunitIO",		3, primLunit},
-  {"runitIO",		3, primRunit},
-  {"lbindIO",		4, primLbind},
-  {"rbindIO",		4, primRbind},
-  {"passIO",		4, primPass},
+  {"lunitIO",		1+IOArity, primLunit},
+  {"runitIO",		1+IOArity, primRunit},
+  {"lbindIO",		2+IOArity, primLbind},
+  {"rbindIO",		2+IOArity, primRbind},
+  {"passIO",		2+IOArity, primPass},
 
-  {"primGC",	        2, primGC},
-  {"getEnv",	        3, primGetEnv},
-  {"primSystem",	3, primSystem},
-  {"getRandomSeed",	2, primGetRandomSeed},
+  {"primGC",	        0+IOArity, primGC},
+  {"getEnv",	        1+IOArity, primGetEnv},
+  {"primSystem",	1+IOArity, primSystem},
+  {"getRandomSeed",	0+IOArity, primGetRandomSeed},
 
-  {"primArgc",	        2, primArgc},
-  {"primArgv",	        3, primArgv},
+  {"primArgc",	        0+IOArity, primArgc},
+  {"primArgv",	        1+IOArity, primArgv},
 
-  {"getCh",		2, primGetCh},
-  {"getChar",		2, primGetChar},
-  {"putChar",		3, primPutChar},
-  {"putStr",		3, primPutStr},
+  {"getCh",		0+IOArity, primGetCh},
+  {"getChar",		0+IOArity, primGetChar},
+  {"putChar",		1+IOArity, primPutChar},
+  {"putStr",		1+IOArity, primPutStr},
 
 #if IO_HANDLES
-  {"hGetChar",		3, primHGetChar},
-  {"hPutChar",		4, primHPutChar},
-  {"hPutStr",		4, primHPutStr},
+  {"hGetChar",		1+IOArity, primHGetChar},
+  {"hPutChar",		2+IOArity, primHPutChar},
+  {"hPutStr",		2+IOArity, primHPutStr},
   {"hreader",		1, primHreader},
-  {"hGetContents",	3, primHContents},
-  {"getContents",	2, primContents},
-  {"openFile",          4, primOpenFile},
-  {"openBinaryFile",    4, primOpenBinaryFile},
+  {"hGetContents",	1+IOArity, primHContents},
+  {"getContents",	0+IOArity, primContents},
+  {"openFile",          2+IOArity, primOpenFile},
+  {"openBinaryFile",    2+IOArity, primOpenBinaryFile},
   {"stdin",		0, primStdin},
   {"stdout",		0, primStdout},
   {"stderr",		0, primStderr},
-  {"hIsEOF",		3, primHIsEOF},
-  {"hugsHIsEOF",	3, primHugsHIsEOF},
-  {"hFlush",		3, primHFlush},
-  {"hClose",		3, primHClose},
-  {"hGetPosnPrim",	3, primHGetPosn},
-  {"hSetPosnPrim",	4, primHSetPosn},
-  {"hSetBuff",          5, primHSetBuffering},
-  {"hGetBuff",          3, primHGetBuffering},
-  {"hSeekPrim",         5, primHSeek},
-  {"hLookAhead",        3, primHLookAhead},
-  {"hIsOpen",		3, primHIsOpen},
-  {"hIsClosed",		3, primHIsClosed},
-  {"hIsReadable",	3, primHIsReadable},
-  {"hIsWritable",	3, primHIsWritable},
-  {"hIsSeekable",       3, primHIsSeekable},
-  {"hFileSize",         3, primHFileSize},
-  {"hWaitForInput",     4, primHWaitForInput},
+  {"hIsEOF",		1+IOArity, primHIsEOF},
+  {"hugsHIsEOF",	1+IOArity, primHugsHIsEOF},
+  {"hFlush",		1+IOArity, primHFlush},
+  {"hClose",		1+IOArity, primHClose},
+  {"hGetPosnPrim",	1+IOArity, primHGetPosn},
+  {"hSetPosnPrim",	2+IOArity, primHSetPosn},
+  {"hSetBuff",          3+IOArity, primHSetBuffering},
+  {"hGetBuff",          1+IOArity, primHGetBuffering},
+  {"hSeekPrim",         3+IOArity, primHSeek},
+  {"hLookAhead",        1+IOArity, primHLookAhead},
+  {"hIsOpen",		1+IOArity, primHIsOpen},
+  {"hIsClosed",		1+IOArity, primHIsClosed},
+  {"hIsReadable",	1+IOArity, primHIsReadable},
+  {"hIsWritable",	1+IOArity, primHIsWritable},
+  {"hIsSeekable",       1+IOArity, primHIsSeekable},
+  {"hFileSize",         1+IOArity, primHFileSize},
+  {"hWaitForInput",     2+IOArity, primHWaitForInput},
   {"primEqHandle",	2, primEqHandle},
   {"primGetHandleNumber", 1, primGetHandleNumber},
-  {"readFile",		3, primReadFile},
-  {"writeFile",		4, primWriteFile},
-  {"appendFile",	4, primAppendFile},
-  {"readBinaryFile",	3, primReadBinaryFile},
-  {"writeBinaryFile",	4, primWriteBinaryFile},
-  {"appendBinaryFile",	4, primAppendBinaryFile},
+  {"readFile",		1+IOArity, primReadFile},
+  {"writeFile",		2+IOArity, primWriteFile},
+  {"appendFile",	2+IOArity, primAppendFile},
+  {"readBinaryFile",	1+IOArity, primReadBinaryFile},
+  {"writeBinaryFile",	2+IOArity, primWriteBinaryFile},
+  {"appendBinaryFile",	2+IOArity, primAppendBinaryFile},
 #endif
 
 #if IO_REFS
-  {"newRef",            3, primNewRef},
-  {"getRef",		3, primDerefRef},
-  {"setRef",		4, primAssignRef},
+  {"newRef",            1+IOArity, primNewRef},
+  {"getRef",		1+IOArity, primDerefRef},
+  {"setRef",		2+IOArity, primAssignRef},
   {"eqRef",		2, primEqRef},
 #endif
 
-  {"makeStablePtr",	3, primMakeSP},
-  {"deRefStablePtr",	3, primDerefSP},
-  {"freeStablePtr",	3, primFreeSP},
+  {"makeStablePtr",	1+IOArity, primMakeSP},
+  {"deRefStablePtr",	1+IOArity, primDerefSP},
+  {"freeStablePtr",	1+IOArity, primFreeSP},
   {"castStablePtrToPtr",1, primCastSPToP},
   {"castPtrToStablePtr",1, primCastPToSP},
 
-  {"makeForeignObj",	4, primNewFP},
-  {"writeForeignObj",	4, primWriteFP},
+  {"makeForeignObj",	2+IOArity, primNewFP},
+  {"writeForeignObj",	2+IOArity, primWriteFP},
   {"eqForeignObj",	2, primEqFP},
 
-  {"newForeignPtr",	4, primNewFP},
-  {"addForeignPtrFinalizer", 4, primAddFPF},
+  {"newForeignPtr",	2+IOArity, primNewFP},
+  {"addForeignPtrFinalizer", 2+IOArity, primAddFPF},
   {"eqForeignPtr",	2, primEqFP},
-  {"touchForeignPtr",	3, primTouchFP},
+  {"touchForeignPtr",	1+IOArity, primTouchFP},
   {"foreignPtrToPtr",	1, primFPToP},
 
 #if GC_WEAKPTRS
-  {"makeWeakPtr",       3, primMakeWeakPtr},
-  {"derefWeakPtr",      3, primDerefWeakPtr},
+  {"makeWeakPtr",       1+IOArity, primMakeWeakPtr},
+  {"derefWeakPtr",      1+IOArity, primDerefWeakPtr},
   {"weakPtrEq",		2, primWeakPtrEq},
-  {"mkWeak",		5, primMkWeak},
-  {"deRefWeak",		3, primDeRefWeak},
-  {"replaceFinalizer",	4, primReplaceFinalizer},
-  {"finalize",		3, primFinalize},
-  {"runFinalizer",	2, primRunFinalizer},
-  {"finalizerWaiting",	2, primFinalizerWaiting},
+  {"mkWeak",		3+IOArity, primMkWeak},
+  {"deRefWeak",		1+IOArity, primDeRefWeak},
+  {"replaceFinalizer",	2+IOArity, primReplaceFinalizer},
+  {"finalize",		1+IOArity, primFinalize},
+  {"runFinalizer",	0+IOArity, primRunFinalizer},
+  {"finalizerWaiting",	0+IOArity, primFinalizerWaiting},
 #endif
 
 #if STABLE_NAMES
-  {"makeStableName",	3, primMakeSN},
+  {"makeStableName",	1+IOArity, primMakeSN},
   {"deRefStableName",	1, primDerefSN},
   {"hashStableName",	1, primHashSN},
   {"eqStableName",	2, primEqSN},
 #endif
   
 #ifdef HSCRIPT
-  {"getCurrentScript",  2, primGetCurrentScript},
+  {"getCurrentScript",  0+IOArity, primGetCurrentScript},
 #endif
 
   {0,			0, 0}
@@ -301,7 +300,7 @@ static struct primInfo iomonadPrims = { iomonadControl, iomonadPrimTable, 0 };
  * errors can be fixed by adding braces round the call.  Blech!
  * ------------------------------------------------------------------------*/
 
-#define IOArg(n)    primArg((n)+2)
+#define IOArg(n)    primArg((n)+IOArity)
 #define IOReturn(r) { updapRoot(primArg(1),r); return; }
 #define IOFail(r)   { throwException(ap(nameIOException,r)); return; }
 
@@ -619,7 +618,7 @@ primFun(primArgc) {                     /* primArgc :: IO Int              */
     
 primFun(primArgv) {                     /* primArgv :: Int -> IO String    */
     Int i;
-    IntArg(i,3);
+    IntArg(i,1+IOArity);
     if (0 <= i && i < hugsArgc) {
 	pushString(hugsArgv[i]);
 	IOReturn(pop());
@@ -722,7 +721,7 @@ primFun(primPutStr) {			/* print string on stdout	   */
 
 primFun(primHGetChar) {			/* Read character from handle	   */
     Int h;
-    HandleArg(h,3);
+    HandleArg(h,1+IOArity);
     
     /* Flush output buffer for R/W handles */
     if (handles[h].hmode&HREADWRITE && !handles[h].hHaveRead) {
@@ -752,8 +751,8 @@ primFun(primHGetChar) {			/* Read character from handle	   */
 primFun(primHPutChar) {			/* print character on handle	   */
     Char c = 0;
     Int  h;
-    HandleArg(h,4);
-    CharArg(c,3);
+    HandleArg(h,2+IOArity);
+    CharArg(c,1+IOArity);
 
     /* Flush input buffer for R/W handles */
     if (handles[h].hmode&HREADWRITE && handles[h].hHaveRead) {
@@ -779,9 +778,9 @@ primFun(primHPutChar) {			/* print character on handle	   */
 
 primFun(primHPutStr) {			/* print string on handle	   */
     Int h;
-    HandleArg(h,4);
-    push(primArg(3));
-    primArg(3) = NIL;
+    HandleArg(h,2+IOArity);
+    push(primArg(1+IOArity));
+    primArg(1+IOArity) = NIL;
 
     /* Make sure the input buffer is flushed for R/W handles */
     if (handles[h].hmode&HREADWRITE && handles[h].hHaveRead) {
@@ -831,7 +830,7 @@ primFun(primHreader) {			/* read String from a handle 	   */
 
 primFun(primHContents) {		/* hGetContents :: Handle -> IO Str*/
     Int h;
-    HandleArg(h,3);
+    HandleArg(h,1+IOArity);
     if ((handles[h].hmode&(HREAD|HREADWRITE))==0) { /* must have readable handle	   */
         IOFail(mkIOError(handles[h].hcell,
 			 nameIllegal,
@@ -919,7 +918,7 @@ primFun(primStderr) {			/* Standard error handle	   */
 /* NOTE: this doesn't implement the Haskell 1.3 semantics */
 primFun(primHugsHIsEOF) {		/* Test for end of file on handle  */
     Int h;
-    HandleArg(h,3);
+    HandleArg(h,1+IOArity);
     if (handles[h].hmode!=HCLOSED) {
         IOBoolResult(feof(handles[h].hfp));
     } else {
@@ -935,7 +934,7 @@ primFun(primHIsEOF) {	/* Test for end of file on handle  */
                         /* :: Handle -> IO Bool */
     Int h;
     FILE* fp;
-    HandleArg(h,3);
+    HandleArg(h,1+IOArity);
     if (handles[h].hmode&(HREAD|HREADWRITE)) {
       Bool isEOF;
       fp = handles[h].hfp;
@@ -966,7 +965,7 @@ primFun(primHIsEOF) {	/* Test for end of file on handle  */
 
 primFun(primHFlush) {			/* Flush handle			   */
     Int h;
-    HandleArg(h,3);
+    HandleArg(h,1+IOArity);
     if (handles[h].hmode&(HWRITE|HAPPEND|HREADWRITE)) { /* Only allow flushing writable handles */
 	fflush(handles[h].hfp);
 	if (handles[h].hmode&HREADWRITE) {
@@ -984,7 +983,7 @@ primFun(primHFlush) {			/* Flush handle			   */
 
 primFun(primHClose) {			/* Close handle                   */
     Int h;
-    HandleArg(h,3);
+    HandleArg(h,1+IOArity);
 
     /* Disallow closing any of the standard handles */
     if (!IS_STANDARD_HANDLE(h) && handles[h].hmode!=HCLOSED) {
@@ -1000,7 +999,7 @@ primFun(primHClose) {			/* Close handle                   */
 
 primFun(primHGetPosn) {			/* Get file position               */
     Int h;
-    HandleArg(h,3);
+    HandleArg(h,1+IOArity);
     if (handles[h].hmode!=HCLOSED) {
 #if HAVE_FTELL
 	long pos = ftell(handles[h].hfp);
@@ -1021,8 +1020,8 @@ primFun(primHSetPosn) {			/* Set file position               */
     long   pos = 0;
 #endif
     Int    h;
-    HandleArg(h,4);
-    IntArg(pos,3);
+    HandleArg(h,2+IOArity);
+    IntArg(pos,1+IOArity);
     if (handles[h].hmode!=HCLOSED) {
 #if HAVE_FSEEK
         fflush(handles[h].hfp);
@@ -1046,9 +1045,9 @@ primFun(primHSeek) {	/* Seek to new file posn */
   Int sMode;
   Int off;
   
-  HandleArg(h,5);
-  IntArg(sMode, 4);
-  IntArg(off, 3);
+  HandleArg(h,3+IOArity);
+  IntArg(sMode, 2+IOArity);
+  IntArg(off, 1+IOArity);
   
   if (sMode == 0) 
     sMode = SEEK_SET;
@@ -1085,7 +1084,7 @@ primFun(primHLookAhead) { /* Peek at the next char */
   Int h;
   Int c;
   
-  HandleArg(h,3);
+  HandleArg(h,1+IOArity);
 
   if (handles[h].hmode&(HREAD|HREADWRITE)) {
     if (!feof(handles[h].hfp)) {
@@ -1130,9 +1129,9 @@ primFun(primHSetBuffering) {	/* Change a Handle's buffering */
     Int ty;
     Int sz;
     int rc;
-    HandleArg(h,5);
-    IntArg(ty,4);
-    IntArg(sz,3);
+    HandleArg(h,3+IOArity);
+    IntArg(ty,2+IOArity);
+    IntArg(sz,1+IOArity);
 
     if (handles[h].hmode!=HCLOSED) {
         switch(ty) {
@@ -1185,7 +1184,7 @@ primFun(primHSetBuffering) {	/* Change a Handle's buffering */
 primFun(primHGetBuffering) {	/* Return buffering info of a handle. */
                                 /*  Handle :: IO (Int,Int)            */
   Int h;
-  HandleArg(h,3);
+  HandleArg(h,1+IOArity);
 
   if (handles[h].hmode != HCLOSED) {
     if (handles[h].hbufMode == HUNKNOWN_BUFFERING) {
@@ -1217,26 +1216,26 @@ primFun(primHGetBuffering) {	/* Return buffering info of a handle. */
 
 primFun(primHIsOpen) {			/* Test is handle open             */
     Int h;
-    HandleArg(h,3);
+    HandleArg(h,1+IOArity);
     IOBoolResult(handles[h].hmode!=HCLOSED 
 		 && handles[h].hmode!=HSEMICLOSED);
 }
 
 primFun(primHIsClosed) {		/* Test is handle closed           */
     Int h;
-    HandleArg(h,3);
+    HandleArg(h,1+IOArity);
     IOBoolResult(handles[h].hmode==HCLOSED);
 }
 
 primFun(primHIsReadable) {		/* Test is handle readable         */
     Int h;
-    HandleArg(h,3);
+    HandleArg(h,1+IOArity);
     IOBoolResult(handles[h].hmode&HREAD || handles[h].hmode&HREADWRITE);
 }
 
 primFun(primHIsWritable) {		/* Test is handle writable         */
     Int h;
-    HandleArg(h,3);
+    HandleArg(h,1+IOArity);
     IOBoolResult(handles[h].hmode&(HWRITE|HREADWRITE|HAPPEND));
 }
 
@@ -1251,7 +1250,7 @@ primFun(primHIsSeekable) {		/* Test if handle is writable   */
   struct stat sb;
 #endif
   
-  HandleArg(h,3);
+  HandleArg(h,1+IOArity);
     
 
   okHandle = (handles[h].hmode&(HREAD|HWRITE|HREADWRITE|HAPPEND));
@@ -1278,7 +1277,7 @@ primFun(primHFileSize) {  /* If handle points to a regular file,
   struct stat sb;
 #endif
 
-  HandleArg(h,3);
+  HandleArg(h,1+IOArity);
   
   okHandle = (handles[h].hmode&(HREAD|HWRITE|HREADWRITE|HAPPEND));
 #if HAVE_FSTAT
@@ -1404,8 +1403,8 @@ primFun(primHWaitForInput) { /* Check whether a character can be read
   Int h;
   Int msecs;
   
-  HandleArg(h,4);
-  IntArg(msecs,3);
+  HandleArg(h,2+IOArity);
+  IntArg(msecs,1+IOArity);
   
 #if defined(HAVE_SELECT)
   if (handles[h].hmode&(HREAD|HREADWRITE)) {
@@ -1529,14 +1528,14 @@ primFun(primMakeSP) {			/* a -> IO (StablePtr a)	   */
 
 primFun(primDerefSP) {			/* StablePtr a -> IO a   	   */
     HugsStablePtr x;
-    SPArg(x,3);
+    SPArg(x,1+IOArity);
     
     IOReturn(derefStablePtr(x));
 }
 
 primFun(primFreeSP) {			/* StablePtr a -> IO ()   	   */
     HugsStablePtr x;
-    SPArg(x,3);
+    SPArg(x,1+IOArity);
     freeStablePtr(x);
     IOReturn(nameUnit);
 }

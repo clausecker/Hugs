@@ -34,19 +34,19 @@ PROTO_PRIM(primGetDirContents);
 PROTO_PRIM(primGetModTime);
 
 static struct primitive dirPrimTable[] = {
-  {"createDirectory",      3, primCreateDirectory},
-  {"removeDirectory",      3, primRemoveDirectory},
-  {"removeFile",           3, primRemoveFile},
-  {"renameDirectory",      4, primRenameDirectory},
-  {"renameFile",           4, primRenameFile},
-  {"getCurrentDirectory",  2, primGetDirectory},
-  {"setCurrentDirectory",  3, primSetDirectory},
-  {"doesFileExist",        3, primFileExist},
-  {"doesDirectoryExist",   3, primDirExist},
-  {"getPerms",             3, primGetPermissions},
-  {"setPerms",             7, primSetPermissions},
-  {"getDirContents",       3, primGetDirContents},
-  {"getModTime",           3, primGetModTime},
+  {"createDirectory",      1+IOArity, primCreateDirectory},
+  {"removeDirectory",      1+IOArity, primRemoveDirectory},
+  {"removeFile",           1+IOArity, primRemoveFile},
+  {"renameDirectory",      2+IOArity, primRenameDirectory},
+  {"renameFile",           2+IOArity, primRenameFile},
+  {"getCurrentDirectory",  0+IOArity, primGetDirectory},
+  {"setCurrentDirectory",  1+IOArity, primSetDirectory},
+  {"doesFileExist",        1+IOArity, primFileExist},
+  {"doesDirectoryExist",   1+IOArity, primDirExist},
+  {"getPerms",             1+IOArity, primGetPermissions},
+  {"setPerms",             5+IOArity, primSetPermissions},
+  {"getDirContents",       1+IOArity, primGetDirContents},
+  {"getModTime",           1+IOArity, primGetModTime},
 
   {0,			0, 0}
 };

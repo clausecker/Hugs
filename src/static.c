@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.134 $
- * $Date: 2003/01/22 19:15:22 $
+ * $Revision: 1.135 $
+ * $Date: 2003/01/26 01:03:58 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -4314,7 +4314,7 @@ Name p; {
         }
 
         if (generate_ffi) {
-            name(p).arity = 1 + length(argTys) + (isIO ? 2 : 0);
+            name(p).arity = 1 + length(argTys) + (isIO ? IOArity : 0);
             name(p).extFun = inventText();
             implementForeignImportDynamic(line,name(p).foreignId,name(p).extFun,argTys,isIO,t);
         }
@@ -4355,7 +4355,7 @@ Name p; {
 	t = fullerExpand(t);
 
         if (generate_ffi) {
-            name(p).arity = 3;
+            name(p).arity = 1+IOArity;
             name(p).extFun = inventText();
             implementForeignImportWrapper(line,name(p).foreignId,name(p).extFun,argTys,isIO,t);
         }
@@ -4429,7 +4429,7 @@ Name p; {
             if (generate_ffi) {
                 name(p).arity 
                     = length(argTys) 
-                    + (isIO ? 2 : 0);
+                    + (isIO ? IOArity : 0);
                 implementForeignImport(line,name(p).foreignId,fn,cid,argTys,isIO,t);
                 name(p).extFun = cid;
             }

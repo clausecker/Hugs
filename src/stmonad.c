@@ -10,8 +10,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: stmonad.c,v $
- * $Revision: 1.8 $
- * $Date: 2002/05/15 16:10:04 $
+ * $Revision: 1.9 $
+ * $Date: 2003/01/26 01:03:58 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -48,7 +48,7 @@ static struct primitive stmonadPrimTable[] = {
   {"runST",		1, primSTRun},
   {"unsafeRunST",	1, primUnsafeSTRun},
 #if IO_MONAD
-  {"primSTtoIO",	3, primSTtoIO},
+  {"primSTtoIO",	1+IOArity, primSTtoIO},
 #endif
   {"STFix",		2, primSTFix},
   {"STReturn",	        1, primSTReturn},
@@ -83,7 +83,7 @@ primFun(primUnsafeSTRun) {
 primFun(primSTtoIO) {			/* Embed state transformer in IO   */
     toparg(nameUnit);			/*  :: ST s a -> IO a		   */
     eval(pop());			/* Assume ST s a = State s ->	   */
-    updapRoot(primArg(1),top());	/*		      (a, State s) */
+    IOReturn(top());			/*		      (a, State s) */
 }					/* and that State s = ()	   */
 #endif
 

@@ -29,11 +29,11 @@ PROTO_PRIM(primMkTime);
 static struct primitive timePrimTable[] = {
   /* CPUTime primitives */
   {"clockTicks",           0, primClockTicks},
-  {"getCPUUsage",          2, primGetCPUUsage},
+  {"getCPUUsage",          0+IOArity, primGetCPUUsage},
   /* Time primitives */
-  {"getClockTimePrim",     2, primGetClockTime},        
-  {"toCalTimePrim",        4, primGetCalTime},        
-  {"toClockTimePrim",     10, primMkTime},
+  {"getClockTimePrim",     0+IOArity, primGetClockTime},        
+  {"toCalTimePrim",        2+IOArity, primGetCalTime},        
+  {"toClockTimePrim",      8+IOArity, primMkTime},
   {0,			0, 0}
 };
 
@@ -115,8 +115,8 @@ primFun(primGetCalTime) { /* Int   -> Int -> IO (.....) */
   Int utcOff;
   Cell zoneStr = NIL;
 
-  IntArg(isUTC,4);
-  IntArg(secs,3);
+  IntArg(isUTC,2+IOArity);
+  IntArg(secs,1+IOArity);
   
   if (isUTC) {
     tm=gmtime(&secs);
@@ -167,7 +167,7 @@ primFun(primGetCalTime) { /* Int   -> Int -> IO (.....) */
 	      mkInt(utcOff)));
 #else
 
-  IntArg(isUTC,4);
+  IntArg(isUTC,2+IOArity);
 
   IOFail(mkIOError(NIL,
 		   nameIllegal,
@@ -189,14 +189,14 @@ primFun(primMkTime) { /* Int{-year-}  -> Int{-month-} -> Int{-day-} ->
   struct tm tm;
   time_t t;
   
-  IntArg(year,10);
-  IntArg(month,9);
-  IntArg(day,8);
-  IntArg(hour,7);
-  IntArg(min,6);
-  IntArg(sec,5);
-  IntArg(tz,4);
-  IntArg(isDst,3);
+  IntArg(year,8+IOArity);
+  IntArg(month,7+IOArity);
+  IntArg(day,6+IOArity);
+  IntArg(hour,5+IOArity);
+  IntArg(min,4+IOArity);
+  IntArg(sec,3+IOArity);
+  IntArg(tz,2+IOArity);
+  IntArg(isDst,1+IOArity);
   
   tm.tm_year = year;
   tm.tm_mon  = month;

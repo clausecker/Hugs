@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: array.c,v $
- * $Revision: 1.6 $
- * $Date: 2003/01/23 17:47:07 $
+ * $Revision: 1.7 $
+ * $Date: 2003/01/26 01:03:57 $
  * ------------------------------------------------------------------------*/
 
 static Name nameEltUndef;		/* undefined element in array	   */
@@ -56,10 +56,10 @@ static struct primitive arrayPrimTable[] = {
   {"STArrEq",	        2, primSTArrEq},
 #endif
 #if IO_MONAD
-  {"IONewArr",		5, primIONewArr},
-  {"IOReadArr",		4, primIOReadArr},
-  {"IOWriteArr",	5, primIOWriteArr},
-  {"IOFreeze",		3, primIOFreeze},
+  {"IONewArr",		3+IOArity, primIONewArr},
+  {"IOReadArr",		2+IOArity, primIOReadArr},
+  {"IOWriteArr",	3+IOArity, primIOWriteArr},
+  {"IOFreeze",		1+IOArity, primIOFreeze},
   {"IOBounds",	        1, primBounds},
   {"IOArrEq",	        2, primIOArrEq},
 #endif
@@ -370,28 +370,28 @@ primFun(primSTArrEq) {		        /* :: MutArr s a b                 */
 #if IO_MONAD
 primFun(primIONewArr) {			/* :: (a,a)			   */
     declArr;				/*    -> Int			   */
-    aNewSet(5,4,primArg(3));		/*	 -> b			   */
+    aNewSet(3+IOArity,2+IOArity,IOArg(1));/*	 -> b			   */
     aRetForIO();			/*	    -> IO (IOArray a b)	   */
 }
 
 primFun(primIOReadArr) {		/* :: IOArray a b -> Int -> IO b   */
-    aEvalModel(4);
-    eval(primArg(3));
-    aGetElt(4);
-    updapRoot(primArg(1),top());
+    aEvalModel(2+IOArity);
+    eval(primArg(1+IOArity));
+    aGetElt(2+IOArity);
+    IOReturn(top());
 }
 
 primFun(primIOWriteArr) {		/* :: IOArray a b -> Int -> b	   */
-    aEvalModel(5);			/*    -> IO ()			   */
-    eval(primArg(4));
-    aPutElt(5,primArg(3));
-    updapRoot(primArg(1),nameUnit);
+    aEvalModel(3+IOArity);		/*    -> IO ()			   */
+    eval(primArg(2+IOArity));
+    aPutElt(3+IOArity,IOArg(1));
+    IOReturn(nameUnit);
 }
 
 primFun(primIOFreeze) {			/* :: IOArray a b		   */
     declArr;				/*    -> IO (Array a b)		   */
-    aEvalModel(3);
-    aNewCopy(3);
+    aEvalModel(1+IOArity);
+    aNewCopy(1+IOArity);
     aRetForIO();
 }
 

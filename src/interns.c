@@ -11,8 +11,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: interns.c,v $
- * $Revision: 1.8 $
- * $Date: 2002/12/10 00:00:37 $
+ * $Revision: 1.9 $
+ * $Date: 2003/01/26 01:03:58 $
  * ------------------------------------------------------------------------*/
  
 /* --------------------------------------------------------------------------
@@ -64,7 +64,7 @@ static struct primitive internalPrimTable[] = {
   {"getCell",       1, primGetCell},
   {"cellPtrEq",     2, primCellPtrEq},
   {"catchError2",   1, primCatchError2},
-  {"classifyCell",  4, primClassifyCell},
+  {"classifyCell",  2+IOArity, primClassifyCell},
   {"nameString",    1, primNameString},
   {"nameInfo",      1, primNameInfo},
   {"nameEq",        2, primNameEq},
@@ -225,7 +225,7 @@ primFun(primClassifyCell) {          /* classifyCell                       */
     Bool gc = consGC;                /*  :: Bool -> Cell -> IO CellKind    */
     Bool strict;
     Cell result = NIL;
-    BoolArg(strict,4);
+    BoolArg(strict,2+IOArity);
     if (strict) {
 	Cell temp;
 	eval(IOArg(1)); /* object */
