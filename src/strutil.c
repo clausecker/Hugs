@@ -72,11 +72,11 @@ String* pName; {
  * Note: I'm willfully breaking the convention of using K&R style
  * function declarations here. Their time has come and gone.
  */
-typedef struct StringBuilder {
+struct StringBuilder {
     unsigned int len;
     unsigned int size;
     char*        buf;
-} StringBuilder;
+};
 
 #define INITIAL_BUILDER_SIZE 200
 
@@ -245,7 +245,7 @@ appendStringFormat(StringBuilder* b, char* fmt, char* arg)
 	    switch (ptr[1]) {
 	    case 's': appendString(b, arg); ptr += 2; break;
 	    default:
-		fprintf(stderr,"Unsupported format specifier, %%c; ignoring", ptr[1]);
+		fprintf(stderr,"Unsupported format specifier, %%%c; ignoring", ptr[1]);
 		ptr += 2; break;
 	    }
 	} else {
