@@ -1,0 +1,33 @@
+Hugs:got expected IO error
+
+Hugs:
+Hugs:
+Hugs:got expected IO error
+
+Hugs:got expected IO error
+
+Hugs:File size: 5
+
+Hugs:('a',False)
+('b',False)
+('c',False)
+('d',False)
+('e',True)
+got expected IO error
+
+Hugs:BlockBuffering (Just 8192)
+NoBuffering
+LineBuffering
+BlockBuffering (Just 8192)
+BlockBuffering (Just 23)
+
+Hugs:got expected IO error
+got expected IO error
+'a'
+
+Hugs:'a'
+'b'
+'c'
+'c'
+
+Hugs:[Leaving Hugs]

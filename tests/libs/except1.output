@@ -4,7 +4,8 @@ Hugs:"Foo"
 "Bar"
 
 Hugs:
-User error: x
+IO Error: User error
+Reason: x
 Hugs:
 Program error: x
 
@@ -59,7 +60,9 @@ a worked
 y
 
 Hugs:Hugs:
-Thread raised error: User error: x
+Thread raised error:
+IO Error: User error
+Reason: x
 a worked
 
 Thread raised exception: x
@@ -69,7 +72,9 @@ a worked
 y
 
 Hugs:
-Thread raised error: User error: x
+Thread raised error:
+IO Error: User error
+Reason: x
 a worked
 a worked
 

@@ -2,7 +2,7 @@
 
 CONTEXT_DIFF='@CONTEXT_DIFF@'
 export CONTEXT_DIFF
-DEV_NULL='@DEV_NULL@'
+#DEV_NULL='@DEV_NULL@'
 export DEV_NULL
 HUGSFLAGS=-P../lib:../lib/hugs:../lib/exts
 export HUGSFLAGS
@@ -342,9 +342,12 @@ test_libs() {
 # Did I miss Quote being added to the library report???
 # And how come it requires -98 if it's standard??
   perl runstdtest $HUGS +q -98 -pHugs: Quote   -s16 "-o1libs/Loaded.output"
-  perl runstdtest $HUGS +q -pHugs: Random  -s35 "-o1libs/Loaded.output"
-  perl runstdtest $HUGS +q -pHugs: Ratio   -s16 "-o1libs/Loaded.output"
-  perl runstdtest $HUGS +q -pHugs: System  -s16 "-o1libs/Loaded.output"
+  perl runstdtest $HUGS +q -pHugs: Random    -s35 "-o1libs/Loaded.output"
+  perl runstdtest $HUGS +q -pHugs: Ratio     -s16 "-o1libs/Loaded.output"
+  perl runstdtest $HUGS +q -pHugs: System    -s16 "-o1libs/Loaded.output"
+  perl runstdtest $HUGS +q -pHugs: Directory -s16 "-o1libs/Loaded.output"
+  perl runstdtest $HUGS +q -pHugs: CPUTime   -s16 "-o1libs/Loaded.output"
+  perl runstdtest $HUGS +q -pHugs: Locale    -s16 "-o1libs/Loaded.output"
 
   echo "--!!! Performing static tests on GHC-compatible libraries"
   perl runstdtest $HUGS +q -pHugs: Addr       -s16 "-o1libs/Loaded.output"
@@ -378,6 +381,8 @@ test_libs() {
   perl runstdtest $HUGS +q -pHugs: System  -s18 "-Olibs/system1.hs" "-ilibs/system1.input" "-o1libs/system1.output"
   perl runstdtest $HUGS +q -pHugs: Complex -s16 "-ilibs/complex1.input" "-o1libs/complex1.output"
   perl runstdtest $HUGS +q -pHugs: Int     -s24 "-Olibs/intTest.hs" "-ilibs/intTest.input" "-o1libs/intTest.output"
+  perl runstdtest $HUGS +q -pHugs: IO      -s25 "-Olibs/ioTest1.hs" "-ilibs/ioTest1.input" "-o1libs/ioTest1.output"
+  perl runstdtest $HUGS +q -pHugs: Directory -s30 "-Olibs/dirTest.hs" "-ilibs/dirTest.input" "-o1libs/dirTest.output"
   perl runstdtest $HUGS +q -pHugs: libs/FixIO.lhs -s37 "-ilibs/FixIO.input" "-o1libs/FixIO.output"
   perl runstdtest $HUGS +q -pHugs: libs/testAddr.hs -s20 "-ilibs/Addr.input" "-o1libs/Addr.output"
   perl runstdtest $HUGS +q -pHugs: libs/prodcon.hs -s57 "-ilibs/prodcon.input" "-o1libs/prodcon.output"
