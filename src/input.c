@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: input.c,v $
- * $Revision: 1.82 $
- * $Date: 2003/12/04 18:14:45 $
+ * $Revision: 1.83 $
+ * $Date: 2003/12/18 17:05:29 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1826,7 +1826,8 @@ static Int local repeatLast() {         /* Obtain last expression entered  */
 Syntax defaultSyntax(t)			/* Find default syntax of var named*/
 Text t; {				/* by t ...			   */
     String s = textToStr(t);
-    return isIn(ExtractChar(s),SYMBOL) ? DEF_OPSYNTAX : APPLIC;
+    Char c = ExtractChar(s);
+    return isIn(c,SYMBOL) ? DEF_OPSYNTAX : APPLIC;
 }
 
 Syntax syntaxOf(n)			/* Find syntax for name		   */
