@@ -245,7 +245,7 @@ HUGS_MAKEFILES = Makefile dotnet/Makefile msc/Makefile winhugs/Makefile
 EXTRA_DEFINES = -DINTERNAL_PRIMS -DUNICODE_CHARS -DWANT_TIMER
 
 depend: $(SOURCES) parser.c
-	gcc -MM $(EXTRA_DEFINES) $(CFILES) | sed 's/\.o:/$$(OBJEXT):/' >TMP
+	gcc -MM $(EXTRA_DEFINES) $(CFILES) | sed 's/\.o:/.$$(OBJEXT):/' >TMP
 	if cmp -s TMP MkDepend.in; then : ; else \
 		$(CP) TMP MkDepend.in; \
 		for mfile in $(HUGS_MAKEFILES);\
