@@ -1675,6 +1675,7 @@ data IOErrorType
   | UserError
      -- GHC compatibility
   | UnsupportedOperation
+  | OtherError
      -- DOTNET only
   | DotNetException
     deriving (Eq)
@@ -1691,6 +1692,7 @@ instance Show IOErrorType where
       PermissionDenied  -> "permission denied"
       UserError         -> "user error"
       UnsupportedOperation -> "unsupported operation"
+      OtherError        -> "failed"
       DotNetException   -> ".NET exception"
 
 instance Show IOException where
