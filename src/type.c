@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: type.c,v $
- * $Revision: 1.39 $
- * $Date: 2002/01/09 14:10:05 $
+ * $Revision: 1.40 $
+ * $Date: 2002/02/15 01:42:19 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1346,7 +1346,9 @@ List bs; {
 static Cell local tupleUp(xs)
 List xs; {
     Int n = length(xs);
-    if (n == 1)
+    if (n == 0)
+	return nameUnit;
+    else if (n == 1)
 	return hd(xs);
     else {
 	Cell x = mkTuple(n);
@@ -1395,7 +1397,8 @@ List qss; {
     zpat  = mkTuple(len);
     zexp  = findQualFun(findText("List"),zName);
     if (isNull(zexp)) {
-      /* Why not just flag an error? [sof] */
+      /* if they don't have List loaded, we can still handle the most
+	 common cases, because `zip' and `zip3' are defined in the Prelude */
       zexp = findQualFun(findText(STD_PRELUDE),zName);
     }
     if (isNull(zexp)) {
