@@ -18,8 +18,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: iomonad.c,v $
- * $Revision: 1.34 $
- * $Date: 2002/09/25 13:49:46 $
+ * $Revision: 1.35 $
+ * $Date: 2002/10/31 01:44:25 $
  * ------------------------------------------------------------------------*/
  
 Name nameIORun;			        /* run IO code                     */
@@ -390,17 +390,17 @@ String loc; {
 			    nameNothing)));
     }
 
-    for (i=0; i<MAX_HANDLES && nonNull(handles[i].hcell); ++i)
+    for (i=0; i<(Int)MAX_HANDLES && nonNull(handles[i].hcell); ++i)
 	;                                       /* Search for unused handle*/
-    if (i>=MAX_HANDLES) {                       /* If at first we don't    */
+    if (i>=(Int)MAX_HANDLES) {              /* If at first we don't    */
 	garbageCollect();                       /* succeed, garbage collect*/
-	for (i=0; i<MAX_HANDLES && nonNull(handles[i].hcell); ++i)
+	for (i=0; i<(Int)MAX_HANDLES && nonNull(handles[i].hcell); ++i)
 	    ;                                   /* and try again ...       */
     }
     
 #if !WANT_FIXED_SIZE_TABLES
-    if (i >= MAX_HANDLES) {
-      int j;
+    if (i >= (Int)MAX_HANDLES) {
+      unsigned long j;
       growDynTable(dynTabHandles);
       handles=(struct strHandle*)(dynTabHandles->data);
       num_handles = dynTabHandles->maxIdx;
@@ -411,7 +411,7 @@ String loc; {
     }
 #endif
 
-    if (i>=MAX_HANDLES) {                       /* ... before we give up   */
+    if (i>=(Int)MAX_HANDLES) {                 /* ... before we give up   */
       return(pair(NIL,
 		  mkIOError(nameIllegal,
 			    loc,

@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.104 $
- * $Date: 2002/10/22 13:53:08 $
+ * $Revision: 1.105 $
+ * $Date: 2002/10/31 01:44:24 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -732,7 +732,7 @@ String s; {
     if (s) { 
 	String t = 0;
 
-	if ( strlen(s) + 10 > charsLeft ) {
+	if ( (Int)(strlen(s) + 10) > charsLeft ) {
 	    *next = '\0';
 	    /* optionsToStr() will not to break off immediately,
 	     * but soon enough. 
