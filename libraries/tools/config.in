@@ -5,9 +5,10 @@ cc=${CC-@CC@}
 : ${cpp='@CPP_TRADITIONAL@'}
 : ${happy=happy}
 : ${hsc2hs=hsc2hs}
-: ${greencard=greencard}
-: ${ffihugs=@BINDIR@/ffihugs}
-: ${runhugs=@BINDIR@/runhugs}
-: ${HUGSDIR=@HUGSDIR@}
 : ${SORT=@SortCmd@}
 : ${FIND=@FindCmd@}
+
+# whether to include various packages (YES or NO)
+LibsWithGLUT=@LibsWithGLUT@
+LibsWithOpenGL=@LibsWithOpenGL@
+LibsWithX11=@LibsWithX11@

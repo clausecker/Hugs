@@ -88,6 +88,27 @@ if test x"$enable_opengl" != x"no"; then
   CPPFLAGS="$fp_save_cppflags"
 fi
 
+LibsWithOpenGL=NO
+LibsWithGLUT=NO
+if test "$enable_opengl" != "no"; then
+  if test "$no_GLU" != yes; then
+    LibsWithOpenGL=YES
+    if test "$no_GLUT" != yes; then
+      LibsWithGLUT=YES
+    fi
+  fi
+fi
+AC_SUBST([LibsWithOpenGL])
+AC_SUBST([LibsWithGLUT])
+
+dnl The OpenGL test calls FP_PATH_XTRA, which checks for X11
+if test "$no_x" = yes; then
+  LibsWithX11=NO
+else
+  LibsWithX11=YES
+fi
+AC_SUBST([LibsWithX11])
+
 dnl ** check for POSIX regex
 HavePosixRegex=NO
 AC_CHECK_HEADERS([regex.h], [AC_CHECK_FUNCS(regcomp, [HavePosixRegex=YES])])
