@@ -1,96 +1,125 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <html> <head>
-<title>DotNet</title>
+<title>Dotnet library and tools</title>
 <link rel=stylesheet href="style.css">
 </head>
 
 <body>
 <!-- *********************************** -->
-<h1>The DotNet helper library</h1>
+<h1>The Dotnet library</h1>
 
-The <tt>DotNet</tt> library provides you with functions
-to help you create and manipulate .NET objects in Haskell.
+The <tt>Dotnet</tt> library provides you with miscellaneous
+auxillary functions to help you interoperate with .NET.
 
 <!-- *********************************** -->
 <h2>Representing object references</h2>
-At the base, it exports a typed representation of object
-references:
+
+<p>
+At the base, the library defines and exports the <tt>Object</tt> type
+which is used to represent .NET object references:
 
 <pre>
-newtype Object a = ...abstract...
+data Object a = ...abstract...
 
 instance Eq (Object a)   where {...}
 instance Show (Object a) where {...}
 </pre>
 
-The <tt>Object</tt> type is parameterised over a type that
-encodes the .NET class reference it is representing. To illustrate how,
-the <tt>System.Object</tt> and <tt>System.String</tt> modules define
-the following:
+The <tt>Object</tt> type is parameterised over a type that encodes the
+.NET class reference it is representing. To illustrate how, the
+<tt>Dotnet.System.Object</tt> and <tt>Dotnet.System.String</tt>
+modules define the following:
 
 <pre>
-module System.Object where 
+-- module providing the functionality of System.Object
+module Dotnet.System.Object 
+         ( Dotnet.Object
+	 , module Dotnet.System.Object
+	 ) where 
 
-import qualified DotNet ( Object )
-
-data Object_ a
-type Object a = DotNet.Object (Object_ a)
+import Dotnet ( Object )
 
 getHashCode :: Object a -> IO Int
 getHashCode = ...
 ...
 
-module System.String where
+-- module providing the functionality of System.Xml.XmlNode
+module Dotnet.System.Xml.XmlNode where
 
-import System.Object
+import Dotnet.System.Object
 ...
-data String_ a
-type StringTy a = System.Object.Object (String_ a)
+data XmlNode_ a
+type XmlNode a = Dotnet.System.Object.Object (XmlNode_ a)
 ...
-new :: String -> IO (StringTy ())
-new str = ...
+foreign import dotnet
+  "method System.Xml.XmlNode.get_InnerXml"
+  get_InnerXml :: XmlNode obj -> IO (String)
 
-lengthString :: StringTy a -> IO Int
-lengthString = ...
+...
+-- module providing the functionality of System.Xml.XmlDocument
+module Dotnet.System.Xml.XmlDocument where
+
+import Dotnet
+import Dotnet.System.Xml.XmlNode
+
+data XmlDocument_ a
+type XmlDocument a = XmlNode (XmlDocument_ a)
+
+...
+foreign import dotnet
+  "method System.Xml.XmlDocument.LoadXml"
+  loadXml :: String -> XmlDocument obj -> IO (())
+...
 </pre>
-
-Notice the type of <tt>System.String.new</tt> -- it returns a
-<tt>StringTy ()</tt>, capturing the fact that precisely a .NET
-<tt>System.String</tt> reference is returned as result of 
-instantiating a new character string. Given the type synonyms above,
-<tt>StringTy ()</tt> can be expanded to
-
-<pre>
-StringTy () == DotNet.Object (System.Object.Object_ (System.String.String_ ())
-</pre>
-
-Notice how the type argument to <tt>DotNet.Object</tt> encodes the inheritance
-structure, i.e., in the .NET framework, <tt>System.String</tt> is a
-subclass of <tt>System.Object</tt>. 
-<p>
-Polymorphism is used to constrain object references to a particular subtype:
-
-<pre>
-System.String.lengthString :: StringTy a -> IO Int
-System.Object.getHashCode  :: Object a -> IO Int
-</pre>
-
-So, if you've got a <tt>System.String</tt> or one of its sub-classes,
-you can safely apply <tt>System.String.lengthString</tt> -- the type
-variable <em>a</em> permitting the use of any subtype of <tt>System.String</tt>.
-
 
 <p>
-If you're already familiar with the work on
-<a href="http://haskell.org/hdirect/">integrating</a> COM with Haskell,
-the type encoding of .NET object references is identical to how COM
-interface pointers are typed in Haskell.
+[<em>The reason why <tt>Dotnet.</tt> is prefixed to each Haskell
+module is to avoid naming conflicts with other common Haskell modules.
+See the <a href="#tools">tools</a> for more details.
+</em>]
+
+<p>
+Notice the type given to
+<tt>Dotnet.System.Xml.XmlNode.get_InnerXml</tt>'s argument -- 
+<tt>XmlNode obj</tt> -- capturing precisely that the method
+<tt>get_InnerXml</tt> is supported on any object that is
+an instance of <tt>System.Xml.XmlNode</tt> or any of its 
+sub-classes (like XmlDocument.) If we expand a type
+like <tt>XmlDocument ()</tt>, we get:
+
+<pre>
+XmlDocument () == Dotnet.Object (XmlNode_ (XmlDocument_ ()))
+</pre>
+
+<p>
+Notice how the type argument to <tt>Dotnet.Object</tt> encodes the inheritance
+structure: <tt>System.Xml.XmlDocument</tt> is a sub-class of
+<tt>System.Xml.XmlNode</tt> which again is a sub-class of
+<tt>System.Object</tt>. The unit type, <tt>()</tt>, all the way to the
+right is used to terminate the chain and state that the type represent
+just <tt>XmlDocument</tt> (but none of its sub-classes.)
+
+<p>
+If instead of <tt>()</tt> a type variable had been used, like what was
+done for <tt>get_InnerXml</tt>'s argument type, the type is a subtype.
+So, if you've got a <tt>System.Xml.XmlNode</tt> or one of its
+sub-classes (like <tt>XmlDocument</tt>), you can safely invoke the
+method <tt>get_InnerXml</tt> -- the type variable <tt>obj</tt>
+permitting the use of any subtype of <tt>System.Xml.XmlNode</tt>.
+
+<p>
+This type trick is a good way to safely represent .NET object references
+using Haskell's type system. If you're already familiar with the work on
+<a href="http://haskell.org/hdirect/">integrating</a> COM with
+Haskell, you'll have already recognised that the type encoding used here
+mirrors that used for COM interface hierarchies.
 
 <!-- *********************************** -->
 <h2>OO-style application</h2>
 
+<p>
 To support the syntax for conventional OO-style method invocation, the 
-<tt>DotNet</tt> provides the following two combinators:
+<tt>Dotnet</tt> module exports the following two combinators:
 
 <pre>
 infix 8 #
@@ -106,31 +135,40 @@ mObj ## method = mObj >>= method
 Using these, method invocation can be expressed as follows:
 
 <pre>
-  l <- str # System.String.lengthString 
+  l <- str # Dotnet.System.String.lengthString 
   putStrLn ("Length of string: " ++ show l)
 </pre>
 
 <!-- *********************************** -->
 <h2>Supporting marshaling</h2>
 
+<p>
+The main way to bind to the .NET object model is to use <a
+href="dotnet-ffi.html">FFI declarations</a>, but the <tt>Dotnet</tt>
+library provides an alternate way (which used to be the only way prior
+to the integration of .NET interop into the FFI). This route is mainly
+provided for backwards compatibility, so unless you have a specific
+reason not to employ the FFI route, the next couple of sections
+of this document is of limited interest.
+
+<p>
 To support the automatic marshaling of values between the .NET and
-Haskell worlds, <tt>DotNet</tt> provides two Haskell type classes:
+Haskell worlds, <tt>Dotnet</tt> provides two Haskell type classes:
 
 <pre>
 class NetType a where
    arg    :: a -> InArg
-   result :: DotNetPtr -> IO a
+   result :: Object () -> IO a
 
-type InArg = IO DotNetPtr
+type InArg = IO (Object ())
 
 class NetArg a where
-  marshal :: a -> IO [DotNetPtr]
+  marshal :: a -> IO [Object ()]
 </pre>
 
 Both <tt>NetType</tt> and <tt>NetArg</tt> work in terms of
-<tt>DotNetPtr</tt> - the primitive, untyped representation of
-an object reference (which the <tt>DotNet.Object</tt> type just so
-happens to be defined in terms of.)
+<tt>Dotnet.Object ()</tt> -- an untyped representation of object
+references.
 <p>
 The following instances are provided:
 
@@ -164,6 +202,7 @@ instance (NetArg a1, NetArg a2, NetArg a3,
 	  NetArg a7) => NetArg (a1,a2,a3,a4,a5,a6,a7) -- 7 args
 </pre>
 
+<p>
 The idea is here to use tuples to do uncurried method application;
 details of which will be introduced in the next section.
 
@@ -188,9 +227,10 @@ To call the nullary constructor for an object, simply use <tt>new</tt>:
 <pre>
 main = do
    x <- new "System.Object"
-   print x -- under-the-hood, calls ToString() on 'x' 
+   print x -- under-the-hood this calls ToString() on 'x' 
 </pre>
 
+<p>
 To use a parameterised constructor instead, you can use
 <tt>newObj</tt> or <tt>createObject</tt>:
 
@@ -204,6 +244,7 @@ newBitmap :: Int -> Int -> IO (System.Drawing.Bitmap ())
 newBitmap w h = createObj "System.Drawing.Bitmap" [arg w, arg h]
 </pre>
 
+<p>
 <tt>createObj</tt> lets you pass a list of arguments, but you have to
 explicitly apply <tt>arg</tt> to each of them. <tt>newObj</tt> takes
 care of this automatically provided you 'tuple up' the arguments. 
@@ -221,9 +262,11 @@ new cls = newObj cls ()
 <strong>Note:</strong> the reason why both <tt>createObj</tt> and
 <tt>newObj</tt>, which perform identical functions, are provided,
 is to gain experience as to what is the preferred invocation
-style. Unsurprisingly, these two different forms of marshaling
-arguments are also used when dealing with method invocation, which we
-look at next.
+style.
+
+<p>
+Unsurprisingly, these two different forms of marshaling arguments are
+also used when dealing with method invocation, which we look at next.
 
 <!-- *********************************** -->
 <h2>Calling .NET methods</h2>
@@ -254,8 +297,8 @@ staticMethod_ :: ClassName
 to tuple the arguments you pass to the static method:
 
 <pre>
-getEnv :: String -> IO String
-getEnv var = invokeStatic "System.Environment" "GetEnvironmentVariable" var
+doFoo :: String -> Int -> IO String
+doFoo x y = invokeStatic "System.Bar" "Foo" (x,y)
 </pre>
 
 <tt>staticMethod</tt> uses a list to pass arguments to the static
@@ -269,7 +312,7 @@ urlEncode url = staticMethod "System.Web.HttpUtility"
 			     [arg url]
 </pre>
 
-Invoking instance methods is very similar, but of course requires
+Instance method invocation is similar, but of course requires
 an extra 'this' argument:
 
 <pre>
@@ -300,49 +343,32 @@ main = do
   print ("The hash code is: " ++ show (x::Int))
 </pre>
 
-As a convenience, the <tt>DotNet</tt> also provides an (uncurried)
-family of method invocating actions:
-
-<pre>
-method_1 :: (NetType a1, NetType res)
-	 => MethodName -> a1 -> Object c -> IO res
-method_2 :: (NetType a1, NetType a2, NetType res)
-	 => MethodName -> a1 -> a2 -> Object c -> IO res
-...
-method_7 :: (NetType a1, NetType a2, NetType a3, 
-	     NetType a4, NetType a5, NetType a6,
-	     NetType a7, NetType res)
-	 => MethodName -> a1 -> a2 -> a3 -> a4 
-	 -> a5 -> a6 -> a7 -> Object c -> IO res
-</pre>
-
-
 <!-- *********************************** -->
 <h2>Field access</h2>
 
-As with methods, the <tt>DotNet</tt> library provides access to both
+As with methods, the <tt>Dotnet</tt> library provides access to both
 static and instance fields:
 
 <pre>
 type FieldName = String
 
-getField :: (NetType a) => FieldName -> Object b -> IO a
-setField :: (NetType a) => FieldName -> Object b -> a -> IO ()
+fieldGet :: (NetType a) => FieldName -> Object b -> IO a
+fieldSet :: (NetType a) => FieldName -> Object b -> a -> IO ()
 
-getStaticField :: (NetType a) => ClassName -> FieldName -> IO a
-setStaticField :: (NetType a) => ClassName -> FieldName -> a -> IO ()
+staticFieldGet :: (NetType a) => ClassName -> FieldName -> IO a
+staticFieldSet :: (NetType a) => ClassName -> FieldName -> a -> IO ()
 </pre>
 
 <!-- *********************************** -->
 <h2>Using delegators</h2>
 
 To assist in the interoperation with the .NET framework (the UI
-bits, in particular), the <tt>DotNet</tt> library lets you
+bits, in particular), the <tt>Dotnet</tt> library lets you
 wrap up Haskell function values as .NET delegators:
 
 <pre>
 newDelegator :: (Object a -> Object b -> IO ())
-	     -> IO (Object (System (EventHandler ())))
+	     -> IO (Object (Dotnet.System.EventHandler ())))
 </pre>
 
 When the <tt>System.EventHandler</tt> object reference is passed to
@@ -351,14 +377,15 @@ another .NET method, it can invoke it just like any other
 function value you passed to <tt>newDelegator</tt> is invoked. (The
 way this is done under the hood is kind of funky, requiring some
 dynamic code (and class) generation, but I digress.)
+
 <p>
-To see the delegator support in action, have a look at the UI example
+To see the delegator support in action, have a look at the UI examples
 in the distribution.
 
 <!-- *********************************** -->
 <h2>Creating a Haskell-based .NET class</h2>
 
-The <tt>DotNet</tt> library provides experimental support for
+The <tt>Dotnet</tt> library provides experimental support for
 creating new classes that wrap up Haskell IO actions:
 
 <pre>
@@ -377,47 +404,53 @@ data Method
 	  (Maybe BaseType) -- result (Nothing => void).
 </pre>
 
-See the <tt>NewObj</tt> example in the distribution for more.
+See <tt>examples/class/</tt> in the distribution for more.
 
 <!-- *********************************** -->
-<h2>Interfacing with the .NET framework classes</h2>
+<h2 id="tools">Tool support for interfacing with .NET Framework classes</h2>
 
-One thing that immediately strikes most people when looking at the
-.NET Framework for the first time is its large size. Clearly, it
-wouldn't be practical to manually type out Haskell wrappers for each
-and everyone of the classes provided.
+One thing that immediately strikes you when looking at the .NET
+Framework for the first time is its size. Clearly, it wouldn't be
+practical to manually type out Haskell wrappers for each and every
+class that it provides.
+
 <p>
 To assist in the interfacing to .NET classes, a utility
 <tt>HsWrapGen</tt> is provided. Given the name of a .NET class,
-it generates a Haskell module wrapper for the class, containing method
-wrappers that use the <tt>DotNet</tt> library to call the .NET
-methods. See the <tt>tools/</tt> directory, if interested.
+it generates a Haskell module wrapper for the class, containing
+FFI declarations that lets you access the methods and fields of 
+a particular class. See the <tt>dotnet/tools/</tt> directory,
+if interested.
 
 <p>
 <strong>Note:</strong> Hugs98 for .NET makes good use of the
 hierarchical module extension to Haskell, so if you do write /
 generate your own class wrappers, you may want to consider putting
-them inside the (sparse) .NET module tree that Hugs98 for .NET
-provides.
+them inside the library tree that Hugs98 for .NET comes with.
+
 <p>
 To demonstrate where and how, supposing you had written a Haskell
 wrapper for <tt>System.Xml.Schema.XmlSchema</tt>, you need to name the
 Haskell module just that, i.e.,: 
 
 <pre>
-module System.Xml.Schema.XmlSchema where { .... }
+module Dotnet.System.Xml.Schema.XmlSchema where { .... }
 </pre>
 
-and place it in <tt>lib/dotnet/System/Xml/Schema/</tt> directory
+and place it in <tt>dotnet/lib/Dotnet/System/Xml/Schema/</tt> directory
 inside the Hugs98 for .NET installation tree. You can then utilise
 the wrapper module in your own code by importing it as
 
 <pre>
-import System.Xml.Schema.XmlSchema
+import Dotnet.System.Xml.Schema.XmlSchema
 </pre>
+
+<p>
+To avoid naming conflicts with Haskell's hierarchical library tree, we
+prefix each of the .NET specific modules with <tt>Dotnet.</tt>. 
 
 <hr>
 <address> 
-<!-- hhmts start --> Last modified: Wed Apr 10 00:26:03 Pacific Daylight Time 2002 <!-- hhmts end -->
+<!-- hhmts start --> Last modified: Wed Mar 12 19:18:34 Pacific Standard Time 2003 <!-- hhmts end -->
 </address>
 </body> </html>

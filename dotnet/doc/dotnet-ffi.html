@@ -17,7 +17,7 @@ declaration:
 
 <pre>
 module Env where
-import DotNet
+import Dotnet
 
 foreign import dotnet
   "static System.Environment.GetEnvironmentVariable"
@@ -51,7 +51,7 @@ write the following:
 
 <pre>
 module Math where
-import DotNet
+import Dotnet
 
 foreign import dotnet
   "static field System.Math.PI"
@@ -154,7 +154,7 @@ To return to the above FFI declaration, it also demonstrates how to
 bind to non-static methods. Apart from using the <tt>method</tt>
 qualifier in the specification string, method bindings take the
 'this' pointer as their last argument. This is so that you can
-write OO-looking code using the <tt>(#)</tt> from the <tt>DotNet</tt>
+write OO-looking code using the <tt>(#)</tt> from the <tt>Dotnet</tt>
 library:
 
 <pre>
@@ -249,5 +249,5 @@ references (<tt>Object</tt>) together with Haskell strings.
 <address>
 <a href="mailto:sof@galois.com">&lt;sof@galois.com&gt;</a>
 </address>
-<!-- hhmts start --> Last modified: Tue Mar 11 09:23:37 Pacific Standard Time 2003 <!-- hhmts end -->
+<!-- hhmts start --> Last modified: Wed Mar 12 07:51:36 Pacific Standard Time 2003 <!-- hhmts end -->
 </body> </html>

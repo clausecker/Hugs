@@ -38,9 +38,10 @@ To give a flavour of what's possible with Hugs98 for .NET, here's
 how to fetch a URL into a Haskell String:
 
 <pre>
+-- dotnet/examples/basic/Http.hs 
 module Main where
 
-import DotNet
+import Dotnet
 
 foreign import dotnet
   "static System.Net.WebRequest.Create"
@@ -77,7 +78,7 @@ The distribution includes documentation on how to interop with the
 
 <ul>
 <li>Accessing .NET via the <a href="dotnet-ffi.html">FFI</a>.
-<li>The DotNet library <a href="dotnet-lib.html">documentation</a>.
+<li>The Dotnet library <a href="dotnet-lib.html">documentation</a>.
 <li>Brief <a href="examples.html">overview</a> of the samples included 
 in distribution.
 </ul>
@@ -105,6 +106,6 @@ Hugs98 interpreter (see the file "License.net" included with the distribution.)
 
 <hr>
 <address>
-<!-- hhmts start --> Last modified: Tue Mar 11 19:02:11 Pacific Standard Time 2003 <!-- hhmts end -->
+<!-- hhmts start --> Last modified: Wed Mar 12 07:52:31 Pacific Standard Time 2003 <!-- hhmts end -->
 </address>
 </body> </html>
