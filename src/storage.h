@@ -9,8 +9,8 @@
  * included in the distribution.
  *
  * $RCSfile: storage.h,v $
- * $Revision: 1.25 $
- * $Date: 2002/01/08 00:26:31 $
+ * $Revision: 1.26 $
+ * $Date: 2002/02/03 19:00:11 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -996,7 +996,13 @@ struct strHandle {		/* Handle description and status flags	   */
 #define HANDLE_LINEBUFFERED   2
 #define HANDLE_BLOCKBUFFERED  3
 
+#if !WANT_FIXED_SIZE_TABLES
+extern unsigned long     num_handles;
+extern DynTable*         dynTabHandles;
+extern struct strHandle* handles;
+#else
 extern struct strHandle  DECTABLE(handles);
+#endif
 #endif
 
 /* --------------------------------------------------------------------------

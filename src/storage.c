@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: storage.c,v $
- * $Revision: 1.26 $
- * $Date: 2002/01/08 00:26:32 $
+ * $Revision: 1.27 $
+ * $Date: 2002/02/03 19:00:11 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1882,7 +1882,11 @@ Void garbageCollect()     {             /* Run garbage collector ...       */
     everybody(MARK);                    /* Mark all components of system   */
 
 #if IO_HANDLES
+#if WANT_FIXED_SIZE_TABLES
     for (i=0; i<NUM_HANDLES; ++i)       /* release any unused handles      */
+#else
+    for (i=0; i<num_handles; ++i)       /* release any unused handles      */
+#endif
 	if (nonNull(handles[i].hcell)) {
 	    register int place = placeInSet(handles[i].hcell);
 	    register int mask  = maskInSet(handles[i].hcell);
@@ -2836,14 +2840,25 @@ List args; {
  * ------------------------------------------------------------------------*/
 
 #if IO_HANDLES
+#if WANT_FIXED_SIZE_TABLES
 struct strHandle DEFTABLE(handles,NUM_HANDLES);
+#else
+DynTable* dynTabHandles = NULL;
+
+struct strHandle *handles;
+unsigned long     num_handles = 0;
+#endif
 
 /* --------------------------------------------------------------------------
  * Freeing a handle.
  * ------------------------------------------------------------------------*/
 static Void local freeHandle(n)         /* release handle storage when no  */
 Int n; {                                /* heap references to it remain    */
+#if WANT_FIXED_SIZE_TABLES
     if (0<=n && n<NUM_HANDLES && nonNull(handles[n].hcell)) {
+#else
+    if (0<=n && n< num_handles && nonNull(handles[n].hcell)) {
+#endif
 	if (n>HSTDERR && handles[n].hmode!=HCLOSED && handles[n].hfp) {
 	    fclose(handles[n].hfp);
 	    handles[n].hfp = 0;
@@ -3326,6 +3341,9 @@ Int what; {
 
 		       dynTabInst = allocDynTable(sizeof(struct strInst),50,0,"instance");
 		       tabInst = (struct strInst*)(dynTabInst->data);
+		       dynTabHandles = allocDynTable(sizeof(struct strHandle),NUM_HANDLES, 0, "handles");
+		       handles = (struct strHandle*)(dynTabHandles->data);
+		       num_handles = NUM_HANDLES;
 #endif
 		       TABALLOC(text,      char,             NUM_TEXT)
 		       TABALLOC(tyconHash, Tycon,            TYCONHSZ)
@@ -3346,8 +3364,10 @@ Int what; {
 
 #if IO_HANDLES
 		       TABALLOC(handles,   struct strHandle, NUM_HANDLES)
+#if WANT_FIXED_SIZE_TABLES
 		       for (i=0; i<NUM_HANDLES; i++)
 			   handles[i].hcell = NIL;
+#endif
 		       handles[HSTDIN].hcell  = ap(HANDCELL,HSTDIN);
 		       handles[HSTDIN].hfp    = stdin;
 		       handles[HSTDOUT].hcell = ap(HANDCELL,HSTDOUT);

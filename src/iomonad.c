@@ -19,8 +19,8 @@
  * included in the distribution.
  *
  * $RCSfile: iomonad.c,v $
- * $Revision: 1.20 $
- * $Date: 2002/01/21 04:25:29 $
+ * $Revision: 1.21 $
+ * $Date: 2002/02/03 19:00:12 $
  * ------------------------------------------------------------------------*/
  
 Name nameIORun;			        /* run IO code                     */
@@ -37,6 +37,14 @@ static String local toIOErrorDescr Args((int,Bool));
 static Name   local toIOError      Args((int));
 static Cell   local mkIOError      Args((Name,String,String,Cell));
 static Cell   local openHandle     Args((StackPtr,Cell,Int,Bool,String));
+#endif
+
+#if IO_HANDLES
+# if WANT_FIXED_SIZE_TABLES
+#  define MAX_HANDLES NUM_HANDLES
+# else
+#  define MAX_HANDLES num_handles
+# endif
 #endif
 
 static Void local pushString       Args((String));
@@ -370,22 +378,29 @@ String loc; {
 			    nameNothing)));
     }
 
-    for (i=0; i<NUM_HANDLES && nonNull(handles[i].hcell); ++i)
+    for (i=0; i<MAX_HANDLES && nonNull(handles[i].hcell); ++i)
 	;                                       /* Search for unused handle*/
-    if (i>=NUM_HANDLES) {                       /* If at first we don't    */
+    if (i>=MAX_HANDLES) {                       /* If at first we don't    */
 	garbageCollect();                       /* succeed, garbage collect*/
-	for (i=0; i<NUM_HANDLES && nonNull(handles[i].hcell); ++i)
+	for (i=0; i<MAX_HANDLES && nonNull(handles[i].hcell); ++i)
 	    ;                                   /* and try again ...       */
     }
+    
+#if !WANT_FIXED_SIZE_TABLES
+    if (i >= MAX_HANDLES) {
+      growDynTable(dynTabHandles);
+      handles=(struct strHandle*)(dynTabHandles->data);
+      num_handles = dynTabHandles->maxIdx;
+    }
+#endif
 
-    if (i>=NUM_HANDLES) {                       /* ... before we give up   */
+    if (i>=MAX_HANDLES) {                       /* ... before we give up   */
       return(pair(NIL,
 		  mkIOError(nameIllegal,
 			    loc,
 			    "too many handles open",
 			    sCell)));
-    }
-    else {                                      /* prepare to open file    */
+    } else {                                   /* prepare to open file    */
 	String stmode;
 	if (binary) {
 	    stmode = (hmode&HAPPEND)    ? "ab+" :
@@ -1363,25 +1378,32 @@ String   loc; {
 		         "file name does not exist",
 			 IOArg(2)));
     } else {
-      hnd = openHandle(root,IOArg(2),HWRITE,binary,loc);
-      if ( !isPair(hnd) || isNull(fst(hnd)) ) {
-	IOFail(snd(hnd));
-      } else { 
-        wfp = handles[intValOf(snd(hnd))].hfp;
-	handles[intValOf(snd(hnd))].hmode = HSEMICLOSED;
-      }
-      blackHoleRoot();
-      drop();
-      eval(pop());
-      while (whnfHead==nameCons) {
-	eval(top());
-	checkChar();
-	fputc(charOf(whnfHead),wfp);
+	String stmode;
+
+	if (binary) {
+	  stmode = append ? "ab+" : "wb+";
+	} else {
+	  stmode = append ? "a+" : "w+";
+	}
+	if  ( (wfp = fopen(s,stmode)) == NULL ) {
+	  IOFail (mkIOError(toIOError(errno),
+			    loc,
+			    toIOErrorDescr(errno,TRUE),
+			    IOArg(2)));
+	}
+	
+	blackHoleRoot();
 	drop();
 	eval(pop());
-      }
-      fclose(wfp);
-      IOReturn(nameUnit);
+	while (whnfHead==nameCons) {
+	  eval(top());
+	  checkChar();
+	  fputc(charOf(whnfHead),wfp);
+	  drop();
+	  eval(pop());
+	}
+	fclose(wfp);
+	IOReturn(nameUnit);
     }
 }
 
