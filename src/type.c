@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: type.c,v $
- * $Revision: 1.78 $
- * $Date: 2004/11/01 13:37:45 $
+ * $Revision: 1.79 $
+ * $Date: 2004/11/04 00:01:31 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -692,7 +692,6 @@ Cell e; {
     static int number = 0;
     Cell retv;
     int  mynumber = number++;
-    List ps;
     STACK_CHECK
     Printf("%d) to check: ",mynumber);
     printExp(stdout,e);
@@ -2755,11 +2754,11 @@ Type t; {				/* with qualifying preds qs	   */
 	}
 	t = mkPolyType(k,t);
 #if DEBUG_KINDS
-    Printf("Generalized type: ");
-    printType(stdout,t);
-    Printf(" ::: ");
-    printKind(stdout,k);
-    Printf("\n");
+	Printf("Generalized type: ");
+	printType(stdout,t);
+	Printf(" ::: ");
+	printKind(stdout,k);
+	Printf("\n");
 #endif
     }
     return t;

@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: subst.h,v $
- * $Revision: 1.10 $
- * $Date: 2004/11/01 13:37:45 $
+ * $Revision: 1.11 $
+ * $Date: 2004/11/04 00:01:31 $
  * ------------------------------------------------------------------------*/
 #ifndef __SUBST_H__
 #define __SUBST_H__
@@ -19,7 +19,6 @@
 /* #define DEBUG_SELS     1 */
 /* #define DEBUG_DEPENDS  1 */
 /* #define DEBUG_DERIVING 1 */
-/* #define DEBUG_CODE     1 */
 
 typedef struct {			/* Each type variable contains:	   */
     Type bound;				/* A type skeleton (unbound==NIL)  */
@@ -93,6 +92,8 @@ extern Type  liftRank1		Args((Type,Int,Int));
 #if DEBUG_TYPES
 extern Type  debugTyvar		Args((Int));
 extern Type  debugType		Args((Type,Int));
+extern List  debugContext	Args((List));
+extern Cell  debugPred		Args((Cell,Int));
 #endif
 extern Kind  copyKindvar	Args((Int));
 extern Kind  copyKind		Args((Kind,Int));
