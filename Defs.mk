@@ -30,6 +30,7 @@ HSLIBSTAG=HEAD
 LIBRARIESTAG=HEAD
 
 HSLIBSDIRS = concurrent data hssource lang net text util
-LIBRARIESDIRS = base haskell98 haskell-src network parsec unix
+LIBRARIESDIRS = base haskell98 haskell-src network parsec QuickCheck unix \
+	GLUT OpenGL
 
 CVSROOT = ${shell cat CVS/Root}
