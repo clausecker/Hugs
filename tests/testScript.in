@@ -109,7 +109,7 @@ test_static() {
   perl runstdtest $HUGS +q -pHugs: -s12 "-Ostatic/mod72.hs"  "-o1static/mod72.output"
   perl runstdtest $HUGS +q -pHugs: -s12 "-Ostatic/mod73.hs"  "-o1static/mod73.output"
   perl runstdtest $HUGS +q -pHugs: -s12 "-Ostatic/mod74.hs"  "-o1static/mod74.output"
-  perl runstdtest $HUGS +q -pHugs: -s12 "-Ostatic/mod75.hs"  "-o1static/mod75.output"
+  perl runstdtest $HUGS +q -pHugs: -s17 "-Ostatic/mod75.hs"  "-o1static/mod75.output"
   perl runstdtest $HUGS +q -pHugs: -s12 "-Ostatic/mod76.hs"  "-o1static/mod76.output"
   perl runstdtest $HUGS +q -pHugs: -s12 "-Ostatic/mod77.hs"  "-o1static/mod77.output"
   perl runstdtest $HUGS +q -98 -pHugs: -s12 "-Ostatic/mod78.hs"  "-o1static/mod78.output"
