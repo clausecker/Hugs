@@ -40,6 +40,7 @@ module Exception(
 		
 	bracket,  	-- :: IO a -> (a -> IO b) -> (a -> IO c) -> IO ()
 	bracket_, 	-- :: IO a -> IO b -> IO c -> IO ()
+        finally,        -- :: IO a -> IO b
   ) where
 
 import Prelude hiding (catch)
@@ -130,6 +131,9 @@ bracket before after m = do
 
 bracket_ :: IO a -> IO b -> IO c -> IO c
 bracket_ before after thing = bracket before (const after) (const thing)
+
+finally :: IO a -> IO b -> IO b
+finally m k = tryAllIO m >> k
 
 ----------------------------------------------------------------
 -- Exception Predicates
