@@ -8,8 +8,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: prelude.h,v $
- * $Revision: 1.59 $
- * $Date: 2003/12/02 18:50:57 $
+ * $Revision: 1.60 $
+ * $Date: 2003/12/04 18:09:40 $
  * ------------------------------------------------------------------------*/
 #ifndef __PRELUDE_H__
 #define __PRELUDE_H__
@@ -474,7 +474,7 @@ extern  int  kbhit	Args((void));
  * Floating point support
  *-------------------------------------------------------------------------*/
 
-#if defined(HAVE_LIBM) || defined(_WIN32)
+#if defined(HAVE_LIBM) || defined(_WIN32) || defined(__CYGWIN__)
 #define FLOATS_SUPPORTED 1
 #endif
 
