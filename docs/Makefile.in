@@ -1,0 +1,27 @@
+# Makefile for Documentation
+# Note that some documentation is in other directories.
+
+RM		= @RM@
+
+all::		server.ps hugs.man
+
+server.ps:	server.dvi
+		dvips server.dvi -o server.ps
+
+server.dvi:	server.tex 
+		latex server.tex
+
+hugs.man:	hugs.1
+		groff -Tascii -man hugs.1 | cat -s >$@
+
+hugs.ps:	hugs.1
+		groff -Tps -man hugs.1 >$@
+
+distclean:
+		$(RM) server.ps server.dvi
+		$(RM) hugs.man hugs.ps
+
+veryclean:	distclean
+		$(RM) Makefile hugs.1
+
+# End of Makefile

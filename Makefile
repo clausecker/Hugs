@@ -42,6 +42,7 @@ rpm: tar rpm-dirs
 	mv /tmp/rpm/SRPMS/${RELEASE}-${PATCHLEVEL}.src.rpm .
 
 clean:
-	-cd src; make veryclean
-	-rm ${RELEASE}.tar.gz
-	-rm ${RELEASE}-*.rpm
+	-cd src; if test -f Makefile; then make veryclean; fi
+	-cd docs; if test -f Makefile; then make veryclean; fi
+	-rm -f ${RELEASE}.tar.gz
+	-rm -f ${RELEASE}-*.rpm

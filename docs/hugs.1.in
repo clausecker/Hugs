@@ -1,0 +1,250 @@
+.\" @configure_input@
+.TH HUGS 1 "October 2000" "" ""
+.ds LB @HUGSDIR@
+.ds BN @BINDIR@
+.ds HP @HUGSPATH@
+.ds VI vi
+.SH NAME
+hugs \- Hugs 98, functional programming system
+.SH SYNOPSIS
+.B hugs
+[
+.I options
+]
+[
+.I modules
+]
+.SH DESCRIPTION
+Hugs is an interpreter for Haskell, a standard non-strict functional
+programming language.  Hugs implements almost all of the
+Haskell 98 standard, except for mutually recursive modules.
+The name \fBHugs\fP is
+a mnemonic for the \fBHaskell User's Gofer System\fP.
+.PP
+The interpreter is started using the
+.I hugs
+command.
+After processing options, it loads the standard module \fBPrelude\fP
+and any other modules listed on the command line.
+.PP
+Each Haskell module is stored in a separate file.
+When loading a module \fIname\fP, \fIHugs\fP looks in each of the directories
+on its search path (see \fB\-P\fP under \fBOPTIONS\fP)
+for the files \fIname\fP, \fIname\fP\fB.hs\fP and \fIname\fP\fB.lhs\fP.
+Files ending in "\fB.lhs\fP" are treated as literate scripts.
+.PP
+Once the interpreter has been loaded, the following commands are available:
+.TP 18
+\fB:load\fP [\fImodules\fP]
+clear all modules except the prelude,
+and load the specified modules.
+.TP
+\fB:also\fP \fImodules\fP
+read additional modules.
+.TP
+.B :reload
+repeat last load command.
+.TP
+\fB:project\fP \fIfile\fP
+load the modules listed in \fIfile\fP,
+which contains module names separated by whitespace,
+possibly with Haskell-style comments.
+.TP
+\fB:edit\fP \fIfile\fP
+edit \fIfile\fP.
+.TP
+.B :edit
+edit last file.
+.TP
+\fB:module\fP \fImodule\fP
+set module for evaluating expressions.
+.TP
+\fIexpr\fP
+evaluate expression.
+.TP
+\fB:type\fP \fIexpr\fP
+print type of expression.
+.TP
+.B :?
+display this list of commands.
+.TP
+\fB:set\fP \fIoptions\fP
+set command line options.
+.TP
+.B :set
+help on command line options.
+.TP
+\fB:names\fP [\fIpatterns\fP]
+list names currently in scope matching any of the shell-style patterns.
+.TP
+\fB:info\fP \fInames\fP
+describe named objects.
+.TP
+\fB:browse\fP \fImodules\fP
+browse names defined in \fImodules\fP.
+.TP
+\fB:find\fP \fIname\fP
+edit file containing definition of \fIname\fP.
+.TP
+.BI :! command
+shell escape.
+.TP
+\fB:cd\fP \fIdir\fP
+change directory.
+.TP
+.B :gc
+force garbage collection.
+.TP
+.B :version
+print Hugs version.
+.TP
+.B :quit
+exit Hugs interpreter.
+.PP
+Any command may be abbreviated to \fB:\fIc\fR where
+\fIc\fP is the first character in the full name.
+On most systems, you can also
+exit from \fIHugs\fP by typing the end-of-file character (^D).
+.PP
+Note that the interrupt key (^C on most systems) can  be  used  at  any
+time whilst using \fIHugs\fP to abandon the process of reading in a file  of
+function definitions or the evaluation  of  an  expression.  When the
+interrupt key is detected, \fIHugs\fP prints the string "\fB{Interrupted!}\fP"
+and prints the prompt so that further commands can be entered.
+
+.SH OPTIONS
+One group of options are toggled with \fB+\fP or \fB\-\fP to turn them on or
+off, respectively:
+.TP
+.B +98
+Accept only Haskell 98
+(cannot be changed within \fIHugs\fP; default: on).
+Turning this off enables several special Hugs extensions,
+which are described in the \fIHugs 98 User Manual\fP.
+.TP
+.B +s
+Print number of reductions/cells after each evaluation (default: off)
+.TP
+.B +t
+Print type after each evaluation (default: off)
+.TP
+.B +f
+Terminate evaluation on first error (default: on)
+.TP
+.B +g
+Print number of cells recovered after gc (default: off)
+.TP
+.B +l
+Literate scripts as default (default: off)
+.TP
+.B +e
+Warn about errors in literate scripts (default: on)
+.TP
+.B +\&.
+Print dots to show progress while loading modules (default: off)
+.TP
+.B +q
+Print nothing to show progress while loading modules (default: off)
+.TP
+.B +Q
+Qualify names when printing (default: off)
+.TP
+.B +w
+Always show which files loaded (default: on)
+.TP
+.B +k
+Show kind errors in full (default: off)
+.TP
+.B +u
+Use "show" to display results (default: on)
+.TP
+.B +i
+Chase imports while loading files (default: on)
+.TP
+.B +o
+Allow overlapping instances (a Hugs extension; default: off)
+.TP
+.B +m
+Use multi instance resolution (a Hugs extension; default: off)
+.LP
+Other options (in which \fB\-\fP could be replaced by \fB+\fP,
+the choice making no difference) are:
+.TP
+.BI \-h num
+Set heap size (cannot be changed within \fIHugs\fP; default: 250K)
+.TP
+.BI \-p str
+Set prompt string to \fIstr\fP (default: `\fB%s> \fP').
+Any \fB%s\fP in the prompt will be replaced by the current module name.
+.TP
+.BI \-r str
+Set repeat last expression string to \fIstr\fP (default: \fB$$\fP).
+.TP
+.BI \-P str
+Set search path for source files to \fIstr\fP,
+which should be a colon-separated list of directories.
+A null entry in this list will be replaced by the previous search path.
+Any occurrence of \fB{Hugs}\fP in this string is expanded to
+the Hugs library directory, namely \fB\*(LB\fP.
+The default value is
+.IP
+\fB\*(HP\fP
+.TP
+.BI \-E str
+Use editor setting given by \fIstr\fP (unset by default).
+Any occurrences of \fB%d\fP and \fB%s\fP in the editor option are replaced
+by the start line number and the name of the file to be edited, respectively.
+A common setting is "\fI\*(VI +%d %s\fP".
+.TP
+.BI \-c num
+Set constraint cutoff limit in the type checker to \fInum\fP (default: 40).
+.TP
+.BI \-F cmd
+Set preprocessor filter for source files to \fIcmd\fP (unset by default).
+Instead of reading a source file directly,
+\fIHugs\fP will read the standard output of
+\fIcmd\fP run with the source file name as argument.
+.SH ENVIRONMENT
+.TP
+.B HUGSFLAGS
+Additional options for \fIhugs\fP,
+processed before any given on the command line.
+.TP
+.B EDITOR
+The default editor, if \fB-E\fP is not given.
+.TP
+.B SHELL
+Used to specify shell that is invoked by the \fB:!\fP command.
+.SH FILES
+.TP
+.I \*(BN/hugs
+executable binary.
+.TP
+.I \*(LB
+directory containing support files.
+.TP
+.I \*(LB/Prelude.hs
+standard prelude, loaded when \fIhugs\fP starts.
+.SH "WEB REFERENCES"
+.TP
+.I http://www.haskell.org/hugs/
+The Hugs home page.
+.TP
+.I http://www.haskell.org/
+The Haskell home page, including the language definition,
+various mailing lists and much more.
+.SH "SEE ALSO"
+Mark P. Jones et al. \fIHugs 98 User Manual\fP, June 1999.
+.PP
+S. Peyton Jones and J. Hughes (editors).  \fIReport on the Programming
+Language Haskell 98, A Non-strict Purely Functional Language\fP.
+February 1999.
+.PP
+Paul Hudak & Joseph H. Fasel.  A gentle introduction to Haskell.
+\fIACM SIGPLAN Notices\fP, 27(5), May 1992.
+.SH AUTHOR
+Hugs 98: Mark Jones and others, June 1999.
+.PP
+Manual page: Jonathan Bowen, modified by Gary Leavens, and then
+(with apologies to the original authors) by Mark Jones.
+Updated for Hugs 98 by Antti-Juhani Kaijanaho and Ross Paterson.
