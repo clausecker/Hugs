@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: type.c,v $
- * $Revision: 1.28 $
- * $Date: 2001/01/08 21:43:06 $
+ * $Revision: 1.29 $
+ * $Date: 2001/01/30 15:05:12 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1521,10 +1521,12 @@ List qs; {
     static String boolQual = "boolean qualifier";
     static String genQual  = "generator";
     static String letQual  = "mdo-transformed let generator";
-    String mesg	   = genQual;
+    String mesg		   = genQual;
+
 #if IPARAM
     List svPreds;
 #endif
+
 
     STACK_CHECK
     if (isNull(qs)) {			/* no qualifiers left		   */
@@ -1537,12 +1539,13 @@ List qs; {
 			    typeRecComp(l,m,e,qs1);
 			    break;
 
-	    case QWHERE	  : fst(q) = FROMQUAL;
-			    mesg = letQual; 
+	    case QWHERE	  : mesg = letQual;
+			    fst(q) = FROMQUAL;
+			    
 			    /* intentional fall-thru */
-
 	    case FROMQUAL : {   Int beta = newTyvars(1);
 				saveVarsAss();
+				enterPendingBtyvs();
 				spCheck(l,snd(snd(q)),NIL,mesg,m,beta);
 				enterSkolVars();
 
@@ -1554,7 +1557,7 @@ List qs; {
 				shouldBe(l,fst(snd(q)),NIL,mesg,aVar,beta);
 				typeRecComp(l,m,e,qs1);
 				restoreVarsAss();
-				doneBtyvs(l);
+				leavePendingBtyvs();
 				leaveSkolVars(l,typeIs,typeOff,0);
 			    }
 			    break;
@@ -1604,7 +1607,7 @@ Cell e; {
 	    1 = expression
 	    2 = rec vars of the segment
 	    3 = exported vars of the segment
-	    4 = defined vars of the segment, but not let-bound's
+	    4 = defined vars of the segment
 	    5 = qualifiers
     */
     static String finGen = "final generator";

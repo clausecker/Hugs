@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.28 $
- * $Date: 2001/01/18 17:32:13 $
+ * $Revision: 1.29 $
+ * $Date: 2001/01/30 15:05:12 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -227,7 +227,7 @@ static Cell   local depRecord		Args((Int,Cell));
 #if MUDO
 static List   local mdoGetPatVarsLet	Args((Int,List,List));
 static List   local mdoBVars		Args((Int,List));
-static List   local mdoUsedVars		Args((List,Cell,List));
+static List   local mdoUsedVars		Args((List,Cell,List,List));
 static Void   local depRecComp		Args((Int,Cell,List));
 static Void   local mdoExpandQualifiers Args((Int,Cell,List,List));
 static Bool   local mdoIsConnected	Args((Cell,List));
@@ -6024,7 +6024,7 @@ List defs; {
     if (isNull(qs)) {
 	List currDeps = mdepends;
 	fst(e)	      = depExpr(l,fst(e));
-	fst(e)	      = pair(fst(e),mdoUsedVars(mdepends,currDeps,defs));
+	fst(e)	      = pair(fst(e),mdoUsedVars(mdepends,currDeps,defs,NIL));
     } else {
 	Cell q   = hd(qs);
 	List qs1 = tl(qs);
@@ -6036,8 +6036,7 @@ List defs; {
 				fst(snd(q)) = bindPat(l,fst(snd(q)));
 				snd(snd(q)) = depExpr(l,snd(snd(q)));
 				snd3(hd(qs)) = getPatVars(l,fst(snd(q)),NIL); 
-				thd3(hd(qs)) = mdoUsedVars(mdepends,
-								currDeps,defs);
+				thd3(hd(qs)) = mdoUsedVars(mdepends,currDeps,defs,NIL);
 				mdoExpandQualifiers(l,e,qs1,defs);
 				fst(snd(q)) = applyBtyvs(fst(snd(q)));
 				restoreBvars(obvs);
@@ -6050,8 +6049,7 @@ List defs; {
 				withinScope(snd(q));
 				snd(q)      = dependencyAnal(snd(q));
 				hd(depends) = snd(q);
-				thd3(hd(qs)) = mdoUsedVars(mdepends,
-								currDeps,defs);
+				thd3(hd(qs)) = mdoUsedVars(mdepends,currDeps,defs,snd3(hd(qs)));
 				mdoExpandQualifiers(l,e,qs1,defs);
 				leaveScope();
 			    }
@@ -6060,8 +6058,7 @@ List defs; {
 	    case DOQUAL	  : /* fall-thru */
 	    case BOOLQUAL : {	List currDeps = mdepends;
 				snd(q) = depExpr(l,snd(q));
-				thd3(hd(qs)) = mdoUsedVars(mdepends,
-								currDeps,defs);
+				thd3(hd(qs)) = mdoUsedVars(mdepends,currDeps,defs,NIL);
 				mdoExpandQualifiers(l,e,qs1,defs);
 				break;
 			    }
@@ -6069,15 +6066,16 @@ List defs; {
     }
 }
 
-static List local mdoUsedVars(xs,c,ys)	/* copy elements of xs until the */
-List xs;                          	/* sublist pointed to by c,      */
+static List local mdoUsedVars(xs,c,ys,ls)/* copy elements of xs until the */
+List xs;                          	 /* sublist pointed to by c,      */
 Cell c; 
-List ys; {				/* if they are in ys		 */
+List ys; 				 /* if they are in ys		  */
+List ls; {				 /* but not in ls		  */
     List zs = NIL;
     List rs = NIL;
     List final = NIL;
     for(; nonNull(xs) && xs != c; xs = tl(xs)) {
-	if(varIsMember(textOf(hd(xs)),ys)) {
+	if(cellIsMember(hd(xs),ys) && !varIsMember(textOf(hd(xs)),ls)) {
 	    zs = cons(hd(xs), zs);
 	}
     }
@@ -6212,20 +6210,22 @@ Triple seg; {
 	    case DOQUAL   :
 	    case BOOLQUAL : break;
 	    case QWHERE	  : 
-		{   Cell p;
+		{   Cell p1,p2;
 		    Cell rhs;
 		    if(length(defs)==1) {
-			p = hd(defs);
+			p1 = p2 = hd(defs);
 		    } else {
 			List tmp;
-			p = pair(mkTuple(length(defs)),hd(defs));
+			p1 = pair(mkTuple(length(defs)),hd(defs));
+			p2 = pair(mkTuple(length(defs)),hd(defs));
 			for(tmp = tl(defs); nonNull(tmp); tmp=tl(tmp)) {
-			    p = pair(p,hd(tmp));
+			    p1 = pair(p1,hd(tmp));
+			    p2 = pair(p2,hd(tmp));
 			}
 		    }
 		    rhs = ap(mkVar(findText("return")),
-			      ap(LETREC,pair(snd(q),p)));
-		    qualBody(hd(qs)) = ap(QWHERE,pair(p,rhs));
+			      ap(LETREC,pair(snd(q),p2)));
+		    qualBody(hd(qs)) = ap(QWHERE,pair(p1,rhs));
 		}
 		break;
 	}
@@ -6265,12 +6265,18 @@ static Void local depRecComp(l,e,qs)	/* find dependents of a recursive */
 Int  l;					/* comprehension */
 Cell e;
 List qs; {
-    List mdoBounds = mdoBVars(l, qs);
-    List obvs = saveBvars();
+    List mdoBounds;
+    List obvs;
 
-    hd(bounds) = revOnto(dupList(mdoBounds), hd(bounds));
+    withinScope(NIL);
+    mdoBounds = mdoBVars(l, qs);
+    enterBtyvs();
+    obvs = saveBvars(); 
+    hd(bounds) = mdoBounds;
     mdoExpandQualifiers(l,e,qs,mdoBounds);
     restoreBvars(obvs);
+    leaveBtyvs();
+    leaveScope();
 
     mdoSCC(qs);
     mapOver(rev,qs);	/* qualifiers are reversed after SCC */
@@ -6311,6 +6317,8 @@ List qs; {
     ****************************************************************/
 
 #ifdef DEBUG_MDO_SEGMENTS
+
+#define DBL(s,w)	printf(s); printList(w,50); printf("\n")
     printf("\nAfter SCC, The segments:\n");
     {   List tmp;
 	Int i = 0;
@@ -6318,18 +6326,20 @@ List qs; {
 	    List tmp2;
 	    printf("Segment %d:\n----------------------\n", i);
 	    for(tmp2 = segQuals(hd(tmp)); nonNull(tmp2); tmp2 = tl(tmp2)) {
-		printf("Defines: "); print(qualDefs(hd(tmp2)),50); printf("\n");
-		printf("Uses   : "); print(qualUses(hd(tmp2)),50); printf("\n");
+		DBL("Defines     : ", qualDefs(hd(tmp2)));
+		DBL("Uses        : ", qualUses(hd(tmp2)));
 	    }
-	    printf("Segment recs: "); print(segRecs(hd(tmp)),50); printf("\n");
-	    printf("Segment uses: "); print(segUses(hd(tmp)),50); printf("\n");
-	    printf("Segment defs: "); print(segDefs(hd(tmp)),50); printf("\n");
-	    printf("Segment exps: "); print(segExps(hd(tmp)),50); printf("\n");
+	    DBL("Segment recs: ", segRecs(hd(tmp)));
+	    DBL("Segment uses: ", segUses(hd(tmp)));
+	    DBL("Segment defs: ", segDefs(hd(tmp)));
+	    DBL("Segment exps: ", segExps(hd(tmp)));
 	}
 	printf("Final Segment:\n----------------------\n");
 	printf("e      : "); printExp(stdout,fst(fst(e))); printf("\n");
-	printf("E uses : "); print(snd(fst(e)),50); printf("\n");
+	DBL("E uses : ", snd(fst(e)));
     }
+#undef DBL
+
 #endif
 
     /* 	Now do a real clean up: all we need is rec vars and exp vars
@@ -6338,13 +6348,15 @@ List qs; {
     for(; nonNull(qs); qs = tl(qs)) {
 	/* get rid of qual defines and uses of each qual: */
 	mapOver(fst3,segQuals(hd(qs)));
-	/* get rid of seg uses: */
-	hd(qs) = pair(triple(segRecs(hd(qs)), segExps(hd(qs)), segDefs(hd(qs))),
-		      segQuals(hd(qs)));
-	/* if recs is NIL, the exps is irrelevant: */
-	if(isNull(fst3(fst(hd(qs))))) {
-	    snd3(fst(hd(qs))) = NIL;
+
+	/* if recs is NIL, exps is irrelevant: */
+	if(isNull(segRecs(hd(qs)))) {
+	    segExps(hd(qs)) = NIL;
 	}
+
+	/* get rid of seg uses: */
+	hd(qs) = pair(triple(segRecs(hd(qs)),segExps(hd(qs)),segDefs(hd(qs))),
+		      segQuals(hd(qs)));
     }
    
     fst(e) = fst(fst(e));	/* clean up e, completes depRecComp */
