@@ -55,9 +55,8 @@ module Hugs.Prelude (
     readDec, readOct, readHex, readSigned,
     readFloat, lexDigits, 
 --  module Ratio,
-    Ratio, Rational, (%), numerator, denominator,
+    Ratio((:%)), (%), numerator, denominator,
 --  Non-standard exports
-    Ratio((:%)),
     IO(..), IOResult(..), primExitWith, 
     FunPtr, Ptr, Addr,
     Word, StablePtr, ForeignObj, ForeignPtr,
@@ -71,7 +70,7 @@ module Hugs.Prelude (
     Maybe(Nothing, Just),
     Either(Left, Right),
     Ordering(LT, EQ, GT),
-    Char, String, Int, Integer, Float, Double, IO,
+    Char, String, Int, Integer, Float, Double, Rational, IO,
 --  List type: []((:), [])
     (:),
 --  Tuple types: (,), (,,), etc.
