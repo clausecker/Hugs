@@ -183,6 +183,19 @@ namespace HsWrapGen
             sb.AppendFormat("){0}",System.Environment.NewLine);
         }
 
+        protected void OutputCtorSig(System.Text.StringBuilder sb,
+				     System.Reflection.ConstructorInfo ci) {
+            System.Reflection.ParameterInfo[] ps = ci.GetParameters();
+            int i;
+
+            for (i=0; i < ps.Length; i++) {
+                OutputHaskellType(sb,ps[i].ParameterType,i);
+                sb.Append(" -> ");
+            }
+	    sb.AppendFormat("IO ({0} ())", ci.DeclaringType.Name);
+            sb.Append(System.Environment.NewLine);
+        }
+
         protected void OutputFieldSig(System.Text.StringBuilder sb,
 				      System.Reflection.FieldInfo fi,
 				      bool isSetter) {
@@ -231,17 +244,20 @@ namespace HsWrapGen
 	    case System.Reflection.MemberTypes.Method:
 	      System.String methName = ToHaskellName(mi.Name);
 	      System.Reflection.MethodInfo m = (System.Reflection.MethodInfo)mi;
-	      sb.Append("foreign import dotnet");
-	      sb.AppendFormat("{0}",System.Environment.NewLine);
+	      sb.Append("foreign import dotnet"); sb.Append(System.Environment.NewLine);
 	      // the 'method' bit is really optional.
 	      sb.AppendFormat("  \"{0}method {1}.{2}\"", (m.IsStatic ? "static " : ""), mi.DeclaringType, mi.Name);
-	      sb.AppendFormat("{0}",System.Environment.NewLine);
+	      sb.Append(System.Environment.NewLine);
 	      sb.AppendFormat("  {0} :: ", methName);
 	      OutputMethodSig(sb,mi);
 	      // the mind boggles, System.Environment ?
 	      sb.Append(System.Environment.NewLine);
 	      /* old habit ;) */
 	      break;
+	    case System.Reflection.MemberTypes.Constructor:
+	      OutputCtor(sb,(System.Reflection.ConstructorInfo)mi);
+	      break;
+
 	    case System.Reflection.MemberTypes.Field:
 	      System.String fieldName = mi.Name;
 	      System.Reflection.FieldInfo f = (System.Reflection.FieldInfo)mi;
@@ -267,6 +283,18 @@ namespace HsWrapGen
 	      break;
             }
         }
+	
+	protected void OutputCtor(System.Text.StringBuilder sb,
+				  System.Reflection.ConstructorInfo ci) {
+	  System.String ctorName = ToHaskellName("new"+ci.DeclaringType.Name);
+	  sb.Append("foreign import dotnet");
+	  sb.Append(System.Environment.NewLine);
+	  sb.AppendFormat("  \"ctor {0}\"", ci.DeclaringType);
+	  sb.AppendFormat("{0}",System.Environment.NewLine);
+	  sb.AppendFormat("  {0} :: ", ctorName);
+	  OutputCtorSig(sb,ci);
+	  sb.Append(System.Environment.NewLine);
+	}
         
         protected void OutputField(System.Text.StringBuilder sb,
 				   System.Reflection.MemberInfo mi) {
@@ -313,6 +341,10 @@ namespace HsWrapGen
 	      foreach (System.Reflection.MemberInfo mem in m_members) {
                 OutputMember(sb,mem);
 	      }
+	      foreach (System.Reflection.ConstructorInfo ci in m_type.GetConstructors()) {
+                OutputCtor(sb,ci);
+	      }
+	      
 	    }
             OutputHeader(st);
             st.WriteLine(sb.ToString());
