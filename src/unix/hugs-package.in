@@ -137,7 +137,7 @@ do	echo "Converting $modname"
 
 		# don't run hsc2hs if its output is already present
 		hsc_make="${target_stem}_hsc_make"
-		$cc $cpp_flags $includes -I. -o "$hsc_make" "${stem}_hsc_make.c"
+		$cc $cpp_flags $includes -o "$hsc_make" "${stem}_hsc_make.c"
 		$hsc_make | hack_foreign $header >$target_stem.hs
 		rm "$hsc_make"
 

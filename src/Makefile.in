@@ -76,7 +76,7 @@ OBJECTS		= builtin@OBJ@ compiler@OBJ@ errors@OBJ@ evaluator@OBJ@ \
 IOBJECTS	= hugs@OBJ@ edit@OBJ@ observe@OBJ@ $(OBJECTS)
 PRELUDE		= config.h options.h prelude.h script.h
 
-HEADERS		= HsFFI.h config.h unix/MachDeps.h
+HEADERS		= HsFFI.h config.h unix/MachDeps.h unix/template-hsc.h
 
 TOOLS		= ../tools/Package.hs ../tools/ParsePkgConf.hs \
 		  ../tools/get_ld_options ../tools/get_libraries
