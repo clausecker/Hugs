@@ -18,8 +18,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: iomonad.c,v $
- * $Revision: 1.28 $
- * $Date: 2002/08/04 23:58:37 $
+ * $Revision: 1.29 $
+ * $Date: 2002/08/19 15:30:30 $
  * ------------------------------------------------------------------------*/
  
 Name nameIORun;			        /* run IO code                     */
@@ -657,20 +657,12 @@ primFun(primGetEnv) {                 /* primGetEnv :: String -> IO String */
 #ifndef WEXITSTATUS
 # define WEXITSTATUS(stat_val) ((unsigned)(stat_val) >> 8)
 #endif
-#ifndef WIFEXITED
-# define WIFEXITED(stat_val) (((stat_val) & 255) == 0)
-#endif
-
 					 
 primFun(primSystem) {                   /* primSystem :: String -> IO Int  */
     String s = evalName(IOArg(1));	/* Eval name	                   */
     Int r;
     if (s) {				/* check for valid string          */
-#if HAVE_MACSYSTEM
-        r = macsystem(s);
-#else
-	r = system(s);
-#endif
+	r = shellEsc(s, TRUE/*synchronous*/, TRUE/*use shell*/);
 	IOReturn(mkInt(WEXITSTATUS(r)));
     } else {
 	IOFail(mkIOError(nameIllegal,
