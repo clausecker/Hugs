@@ -5,7 +5,6 @@ Prototype Cabal setup script for Hugs
 	* then reads build parameters from Setup.buildinfo, if present
 	* user packages go in $HOME/hugs/packages/<pkg>
 		(add {Home}/hugs/packages/* to your path)
-		(don't know the equivalent of $HOME on Windows)
 	* probably doesn't work on Windows, and assumes gcc
 
 Not yet implemented:
@@ -53,7 +52,7 @@ defaultPackageDesc :: FilePath
 defaultPackageDesc = "Setup.description"
 
 installSuffixes :: [String]
-installSuffixes = ["hs", "lhs", "so"]
+installSuffixes = ["hs", "lhs", drop 1 dllExtension]
 
 -- main skeleton, copied from Distribution.Simple with minor changes
 
@@ -194,7 +193,7 @@ unregister pkg lbi = do
 
 hugsPackageDir :: PackageDescription -> LocalBuildInfo -> Bool -> IO FilePath
 hugsPackageDir pkg lbi uInst = do
-	dir <- if uInst then getEnv "HOME"
+	dir <- if uInst then getHomeDirectory
 	    else return (prefix lbi `joinFileName` "lib")
 	return $ dir `joinFileName` "hugs" `joinFileName` "packages"
 		`joinFileName` pkgName (package pkg)
