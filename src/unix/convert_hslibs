@@ -182,23 +182,6 @@ cvt data/edison EdisonPrelude.hs
 
 # cvt text Pretty.lhs
 
-# Note that we are forced to rename the "with" combinator to avoid a clash
-# with implicit parameter syntax.
-cvt text/HaXml/lib Haskell2Xml.hs
-cvt text/HaXml/lib IsPrefixOf.hs
-cvt text/HaXml/lib IsSuffixOf.hs
-cvt text/HaXml/lib ParseSTLib.hs
-cvt text/HaXml/lib Xml2Haskell.hs
-cvt text/HaXml/lib XmlCombinators.hs -Dwith=not_with
-cvt text/HaXml/lib XmlHtmlGen.hs
-cvt text/HaXml/lib XmlHtmlPP.hs
-cvt text/HaXml/lib XmlHtmlParse.hs
-cvt text/HaXml/lib XmlLex.hs
-cvt text/HaXml/lib XmlLib.hs
-cvt text/HaXml/lib XmlPP.hs
-cvt text/HaXml/lib XmlParse.hs
-cvt text/HaXml/lib XmlTypes.hs
-
 #cvt text/html Html.lhs
 #cvt text/html HtmlBlockTable.lhs
 

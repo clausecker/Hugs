@@ -109,18 +109,3 @@ import SimpleQueue
 import SizedSeq
 import TestSeq
 import EdisonPrelude
-
-import Haskell2Xml
-import IsPrefixOf
-import IsSuffixOf
-import ParseSTLib
-import Xml2Haskell
-import XmlCombinators
-import XmlHtmlGen
-import XmlHtmlPP
-import XmlHtmlParse
-import XmlLex
-import XmlLib
-import XmlPP
-import XmlParse
-import XmlTypes

@@ -515,21 +515,6 @@ hugslibs ForeignObj			# uses Hugs primitives
   hslibs text/parsec ParsecPrim.hs
   hslibs text/parsec ParsecToken.hs
 
-  hslibs text/HaXml/lib Haskell2Xml.hs
-  hslibs text/HaXml/lib IsPrefixOf.hs
-  hslibs text/HaXml/lib IsSuffixOf.hs
-  hslibs text/HaXml/lib ParseSTLib.hs
-  hslibs text/HaXml/lib Xml2Haskell.hs
-  hslibs text/HaXml/lib XmlCombinators.hs
-  hslibs text/HaXml/lib XmlHtmlGen.hs
-  hslibs text/HaXml/lib XmlHtmlPP.hs
-  hslibs text/HaXml/lib XmlHtmlParse.hs
-  hslibs text/HaXml/lib XmlLex.hs
-  hslibs text/HaXml/lib XmlLib.hs
-  hslibs text/HaXml/lib XmlPP.hs
-  hslibs text/HaXml/lib XmlParse.hs
-  hslibs text/HaXml/lib XmlTypes.hs
-
   hslibs util GetOpt.lhs
 # hslibs util MD5.lhs			# needs PackedString, etc
 # hslibs util Memo.lhs			# Hugs module is different
