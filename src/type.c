@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: type.c,v $
- * $Revision: 1.53 $
- * $Date: 2002/09/30 04:44:30 $
+ * $Revision: 1.54 $
+ * $Date: 2002/10/02 00:32:42 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -98,10 +98,10 @@ Name nameMFail;
 Name nameGt;				/* for readsPrec		   */
 
 #if MUDO
-Class classMonadRec;			/* Recursive monads		   */
+Class classMonadFix;			/* Recursive monads		   */
 Name nameMFix;
-static Cell monadRecHandle = NIL;	/* Used to keep track whether 	   */
-static Cell mfixNameHandle = NIL;	/* MonadRec.hs is loaded/unloaded  */
+static Cell monadFixHandle = NIL;	/* Used to keep track whether 	   */
+static Cell mfixNameHandle = NIL;	/* Monad.Fix is loaded/unloaded  */
 #endif
 
 #if EVAL_INSTANCES
@@ -237,7 +237,7 @@ static Cell  predIntegral;		/* Integral (mkOffset(0))	   */
 static Kind  starToStar;		/* Type -> Type			   */
 static Cell  predMonad;			/* Monad (mkOffset(0))		   */
 #if MUDO
-static Cell  predMonadRec;		/* MonadRec (mkOffset(0))	   */
+static Cell  predMonadFix;		/* MonadFix (mkOffset(0))	   */
 #endif
 
 /* --------------------------------------------------------------------------
@@ -1606,26 +1606,25 @@ List qs; {
 static Void local typeMDo(l,e)		/* type check recursive-do	   */
 Int l;
 Cell e; {
-    /*  We need to make sure that the MonadRec library is in scope whenever
+    /*  We need to make sure that the MonadFix library is in scope whenever
      *	someone uses an mdo expression. This is achieved by the global
-     *	variables monadRecHandle and mfixNameHandle. This is necessary since
-     *	MonadRec class and the mfix function are not part of the standard 
+     *	variables monadFixHandle and mfixNameHandle. This is necessary since
+     *	MonadFix class and the mfix function are not part of the standard 
      *	prelude. (Similar problem occurs with Trex show classes, and this
      *	solution is adapted from the solution devised by Mark P Jones for that
-     *	problem.) This will greatly simplify if MonadRec becomes part of the
-     *	standard prelude.
+     *	problem.) 
      */
 
-    if(!(classMonadRec = findQualClass(monadRecHandle))) {
-	ERRMSG(0) "MonadRec class not defined" ETHEN
-	ERRTEXT   "\n*** Possible cause: \"MonadRec\" library not loaded"
+    if(!(classMonadFix = findQualClass(monadFixHandle))) {
+	ERRMSG(0) "MonadFix class not defined" ETHEN
+	ERRTEXT   "\n*** Possible cause: \"Control.Monad.Fix\" library not loaded"
 	EEND;
     }
 
-    predMonadRec = ap(classMonadRec,aVar);                                      
+    predMonadFix = ap(classMonadFix,aVar);                                      
 
     if(!(nameMFix = findQualName(mfixNameHandle))) {
-	ERRMSG(0) "MonadRec class does not define the mfix method"
+	ERRMSG(0) "MonadFix class does not define the mfix method"
 	EEND;
     }
     /* Now we're safe: do the actual type-checking now: */
@@ -1649,7 +1648,7 @@ Cell e; {
     Int beta		 = newTyvars(1);
     Cell mon		 = ap(mkInt(beta),aVar);
     Cell monDict         = assumeEvid(predMonad,beta); 
-    Cell m		 = assumeEvid(predMonadRec,beta);
+    Cell m		 = assumeEvid(predMonadFix,beta);
     List tmp;
     List whole		 = NIL;
 
@@ -3085,8 +3084,8 @@ Int what; {
 		       mark(starToStar);
 		       mark(predMonad);
 #if MUDO
-		       mark(predMonadRec);
-		       mark(monadRecHandle);
+		       mark(predMonadFix);
+		       mark(monadFixHandle);
 		       mark(mfixNameHandle);
 #endif
 
@@ -3153,15 +3152,13 @@ Int what; {
 #endif
 
 #if MUDO
-		       {   /* This isn't quite right. t must be the text
-			    * for the known name of MonadRec, i.e. if it
-			    * is imported qualified with some other name,
+		       {   /* This isn't quite right. If Control.Monad.Fix 
+			    * is imported qualified with some other name, 
 			    * this will fail. The implementation of TREX
 			    * suffers from the same problem too.
 			    */
-			   Text t = findText("MonadRec");
-			   monadRecHandle = mkQCon(t,findText("MonadRec"));
-			   mfixNameHandle = mkQCon(t,findText("mfix"));
+			   monadFixHandle = mkCon(findText("MonadFix"));
+			   mfixNameHandle = mkCon(findText("mfix"));
 		       }
 #endif
 		       break;
