@@ -44,7 +44,7 @@ install_notes	::
 		$(INSTALL_DATA) ../License $(hugsdir)
 		$(INSTALL_DATA) ../Credits $(hugsdir)
 
-install_libraries :: $(LIBRARIES)
+install_libraries :: libraries
 		$(INSTALL) -d $(hugsdir)
 		$(INSTALL_DATA) -R $(BUILD_DIR)/* $(hugsdir)
 		$(RM) $(hugsdir)/libraries/Hugs/*.[ch]
