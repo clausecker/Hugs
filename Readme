@@ -19,15 +19,12 @@ __   __ __  __  ____   ___      _________________________________________
      have been fixed, and binaries for the HGL are now available on the 
      Hugs download page.
 
-   - The missing standard libraries Directory and Time have been 
-     implemented.
+   - The missing standard libraries Directory, CPUTime, Time and Locale have
+     now been implemented + Hugs implements all of Haskell 98's IO interface.
 
    - Hugs is now delivered with most of the hslibs libraries installed
      in the lib/exts/ directory.
 
-   - A new command :regsave is available under Windows, which persists 
-     the current settings to the Registry.
-     
    - Hugs now falls back to using the default HUGSPATH on Windows
      systems, should the user-specified path in the Registry not 
      contain a valid Prelude.
