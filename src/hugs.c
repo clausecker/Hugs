@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.51 $
- * $Date: 2001/11/14 17:58:02 $
+ * $Revision: 1.52 $
+ * $Date: 2001/12/06 17:23:08 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -290,7 +290,7 @@ String argv[]; {
       }
     }
 #elif __MWERKS__ && macintosh
-    hugsEdit      = "";
+    hugsEdit      = NULL;
 #else
     hugsEdit      = strCopy(fromEnv("EDITOR",NULL));
 #endif
