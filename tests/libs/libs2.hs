@@ -1,0 +1,46 @@
+module Libs2 where
+
+import Assoc
+import AssocDefaults
+import AssocList
+import PatriciaLoMap
+import Collection
+import CollectionDefaults
+import CollectionUtils
+import LazyPairingHeap
+import LeftistHeap
+import MinHeap
+import SkewHeap
+import SplayHeap
+import TestOrdBag
+import TestOrdSet
+import UnbalancedSet
+import BankersQueue
+import BinaryRandList
+import BraunSeq
+import JoinList
+import ListSeq
+import MyersStack
+import RandList
+import RevSeq
+import Sequence
+import SequenceDefaults
+import SimpleQueue
+import SizedSeq
+import TestSeq
+import EdisonPrelude
+
+import Haskell2Xml
+import IsPrefixOf
+import IsSuffixOf
+import ParseSTLib
+import Xml2Haskell
+import XmlCombinators
+import XmlHtmlGen
+import XmlHtmlPP
+import XmlHtmlParse
+import XmlLex
+import XmlLib
+import XmlPP
+import XmlParse
+import XmlTypes
