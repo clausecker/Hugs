@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.101 $
- * $Date: 2002/10/16 14:56:29 $
+ * $Revision: 1.102 $
+ * $Date: 2002/10/21 13:30:42 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -874,7 +874,11 @@ String s; {                             /* return FALSE if none found.     */
 			   /* tiresome code duplication */
 			   if (hugsPath) {
 			       savedPath = hugsPath;
-			       hugsPath  = substPath(s+1,hugsPath ? hugsPath : "");
+			       if (*(s+1) == '\0') {
+				 hugsPath = strCopy(newLibraries ? HUGSPATH2 : HUGSPATH);
+			       } else {
+				 hugsPath  = substPath(s+1,hugsPath ? hugsPath : "");
+			       }
 			       prelLoc = findMPathname(NULL,STD_PRELUDE, hugsPath);
 			       /* prelLoc points to static storage, don't free. */
 			       if (!prelLoc) {
@@ -887,7 +891,11 @@ String s; {                             /* return FALSE if none found.     */
 			       
 			   } else {
 			       savedPath = hugsPath_1;
-			       hugsPath_1 = substPath(s+1,hugsPath_1 ? hugsPath_1 : "");
+			       if (*(s+1) == '\0') {
+				 hugsPath_1 = strCopy(HUGSPATH);
+			       } else {
+				 hugsPath_1 = substPath(s+1,hugsPath_1 ? hugsPath_1 : "");
+			       }
 			       prelLoc = findMPathname(NULL,STD_PRELUDE, hugsPath_1);
 			       /* prelLoc points to static storage, don't free. */
 			       if (!prelLoc) {
@@ -897,7 +905,11 @@ String s; {                             /* return FALSE if none found.     */
 			       } else {
 				   if (savedPath) free(savedPath);
 				   savedPath = hugsPath_2;
-				   hugsPath_2 = substPath(s+1,hugsPath_2 ? hugsPath_2 : "");
+				   if (*(s+1) == '\0') {
+				     hugsPath_2 = strCopy(HUGSPATH2);
+				   } else {
+				     hugsPath_2 = substPath(s+1,hugsPath_2 ? hugsPath_2 : "");
+				   }
 				   if (savedPath) free(savedPath);
 			       }
 			   }
