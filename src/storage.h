@@ -9,8 +9,8 @@
  * included in the distribution.
  *
  * $RCSfile: storage.h,v $
- * $Revision: 1.28 $
- * $Date: 2002/04/04 06:52:42 $
+ * $Revision: 1.29 $
+ * $Date: 2002/04/09 19:02:47 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -1022,6 +1022,8 @@ extern struct strMallocPtr       mallocPtrs[];
 extern Cell   mkMallocPtr        Args((Void *, Void (*)(Void *)));
 extern Void   freeMallocPtr      Args((Cell));
 extern Void   incMallocPtrRefCnt Args((Int, Int));
+
+extern Int    mallocPtr_hw;
 
 #define mpOf(c)	   snd(c)
 #define derefMP(c) (mallocPtrs[(Int)mpOf(c)].ptr)

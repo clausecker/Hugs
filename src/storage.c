@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: storage.c,v $
- * $Revision: 1.30 $
- * $Date: 2002/04/04 06:52:42 $
+ * $Revision: 1.31 $
+ * $Date: 2002/04/09 19:02:46 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1924,13 +1924,14 @@ Void garbageCollect()     {             /* Run garbage collector ...       */
 	}
 #endif
 #if GC_MALLOCPTRS
-    for (i=0; i<NUM_MALLOCPTRS; ++i)	/* release any unused mallocptrs   */
+    for (i=mallocPtr_hw; i >= 0; i--) { /* release any unused mallocptrs   */
 	if (isPair(mallocPtrs[i].mpcell)) {
 	    register int place = placeInSet(mallocPtrs[i].mpcell);
 	    register int mask  = maskInSet(mallocPtrs[i].mpcell);
 	    if ((marks[place]&mask)==0)
 		incMallocPtrRefCnt(i,-1);
 	}
+    }
 #endif /* GC_MALLOCPTRS */
 #if GC_WEAKPTRS
     /* After GC completes, we scan the list of weak pointers that are
@@ -2905,6 +2906,9 @@ Int n; {                                /* heap references to it remain    */
 
 struct strMallocPtr mallocPtrs[NUM_MALLOCPTRS];
 
+/* Points to the next available slot in 'mallocPtrs'. */
+int mallocPtr_hw;
+
 /* It might GC (because it uses a table not a list) which will trash any
  * unstable pointers.  
  * (It happens that we never use it with unstable pointers.)
@@ -2927,6 +2931,11 @@ Void (*cleanup) Args((Pointer)); {
     mallocPtrs[i].ptr      = ptr;
     mallocPtrs[i].cleanup  = cleanup;
     mallocPtrs[i].refCount = 1;
+
+    /* adjust the high-water mark for the table. */
+    if (i >= mallocPtr_hw) {
+	mallocPtr_hw = i + 1;
+    }
     return (mallocPtrs[i].mpcell = ap(MPCELL,i));
 }
 
@@ -2937,12 +2946,19 @@ Int i; {
 	internal("freeMallocPtr");
     mallocPtrs[n].refCount += i;
     if (mallocPtrs[n].refCount <= 0) {
-	mallocPtrs[n].cleanup(mallocPtrs[n].ptr);
+	if (mallocPtrs[n].cleanup) {
+	    mallocPtrs[n].cleanup(mallocPtrs[n].ptr);
+	}
 
 	mallocPtrs[n].ptr      = 0;
 	mallocPtrs[n].cleanup  = 0;
 	mallocPtrs[n].refCount = 0;
 	mallocPtrs[n].mpcell   = NIL;
+	
+	/* Freed the slot next to the high-water mark; adjust the marker. */
+	if ((n+1) == mallocPtr_hw) {
+	    mallocPtr_hw = n;
+	}
     }
 }
 #endif /* GC_MALLOCPTRS */
@@ -3212,6 +3228,10 @@ Int what; {
 		       handles[HSTDERR].hbufMode = HUNKNOWN_BUFFERING;
 #endif
 #if GC_MALLOCPTRS
+		       /* The high-water mark for the table points at the
+		        * next available slot in the table
+		        */
+		       mallocPtr_hw = 0;
 		       for (i=0; i<NUM_MALLOCPTRS; i++)
 			   mallocPtrs[i].mpcell = NIL;
 #endif
