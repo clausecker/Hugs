@@ -27,6 +27,7 @@ To run the tests:
 
      cd hugs98/src/unix
      ./configure
+     ./convert_hslibs  ../../..
      cd ..
      make hugs
 

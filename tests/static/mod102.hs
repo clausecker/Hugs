@@ -1,4 +1,4 @@
--- !!! Re-exporting a subset of a class' methods
+-- !!! Fixed bug: Re-exporting a subset of a class' methods
 module Mod102 where
 
 import Mod102_AuxB
