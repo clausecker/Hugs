@@ -28,11 +28,9 @@ LIBRARIES	= $(BUILD_DIR)/libraries/Prelude.hs
 # a file created by make include
 INCLUDES	= $(BUILD_DIR)/include/HsFFI.h
 
-FFI_LIBRARIES	= $(BUILD_DIR)/libraries/Hugs/Storable$(DLL)
-
 CONVERTERS	= tools/convert_libraries tools/hugs-package
 
-all: $(LIBRARIES) $(FFI_LIBRARIES)
+all: $(LIBRARIES)
 
 $(LIBRARIES): Hugs/*.* $(CONVERTERS) $(TOOLS) $(INCLUDES)
 	mkdir -p $(BUILD_DIR)/tools
@@ -54,17 +52,6 @@ distclean: clean
 	$(RM) tools/config tools/hugs-package
 
 veryclean: distclean
-
-################################################################
-# Library modules that use the Foreign Function Interface
-################################################################
-
-# The script BuildFFI is created by tools/convert_libraries,
-# and runs ffihugs on library modules that need it.
-
-$(FFI_LIBRARIES): $(LIBRARIES) $(INCLUDES)
-	cd ..; env HUGSDIR=hugsdir HUGSFLAGS='' src/ffihugs +G +L'hugsdir/libraries/Hugs/Storable_aux.c' Hugs.Storable
-	cd ..; env HUGSDIR=hugsdir HUGSFLAGS='' libraries/BuildFFI
 
 install: all
 	$(INSTALL) -c -m 0755 tools/hugs-package $(DESTDIR)$(bindir)

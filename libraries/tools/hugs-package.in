@@ -3,7 +3,7 @@
 
 # Convert a Haskell package for use by Hugs
 
-usage="$0 [-o script] source-dir [target-dir]"
+usage="$0 source-dir [target-dir]"
 
 # The source directory is assumed to be the root of a package hierarchy,
 # i.e. A/B/C.hs contains the module A.B.C
@@ -22,8 +22,8 @@ cc=${CC-@CC@}
 : ${happy=happy}
 : ${hsc2hs=hsc2hs}
 : ${greencard=greencard}
-: ${ffihugs=@BINDIR@/ffihugs}
-: ${runhugs=@BINDIR@/runhugs}
+: ${ffihugs=ffihugs}
+: ${runhugs=runhugs}
 : ${HUGSDIR=@HUGSDIR@}
 : ${SORT=@SortCmd@}
 : ${FIND=@FindCmd@}
@@ -46,13 +46,8 @@ Win32)	CALLCONV=stdcall
 	tmpdir_root="/tmp" ;;
 esac
 
-script=
 while [ $# -gt 0 ]
 do	case $1 in
-	-o)	shift		# don't execute FFI commands:
-		script="$1"	# append them to the named script
-		shift
-		;;
 	-*)	echo "$0: unrecognized option '$1'" >&2
 		echo "usage: $usage" >&2
 		exit 1 ;;
@@ -181,6 +176,7 @@ through_cpp() {
 
 module_list=$tmpdir/list.1
 all_modules=$tmpdir/list.2
+ffi_modules=$tmpdir/list.3
 
 (
 	cd $source_dir
@@ -257,7 +253,34 @@ do	echo "Converting $modname"
 	fi
 done <$module_list
 
-# Pass 2: compile FFI modules (or save commands in a script)
+# Pass 2: compile FFI modules
+
+# Pass 2a: identify possible FFI modules
+
+while read modname
+do
+	stem=$target_dir/$modname
+	if [ -f $stem.lhs ]
+	then	filename=$stem.lhs
+	else	filename=$stem.hs
+	fi
+
+	# Crude test for foreign declarations.
+	# Running ffihugs on a few extras does no harm.
+
+	if grep '^>*[ 	]*foreign[ 	][ 	]*[ei][mx]port' $filename >/dev/null
+	then	echo $filename
+	fi
+done <$module_list >$ffi_modules
+
+# Pass 2b: convert FFI modules to standard form
+
+while read filename
+do
+	hack_foreign $filename
+done <$ffi_modules
+
+# Pass 2c: compile FFI modules
 
 conf_in=$source_dir/package.conf.in
 
@@ -286,61 +309,32 @@ then	extra_libraries=`get_pkg_field extra-libs | sed 's/HS[^ ]*_cbits *//'`
 	extra_frameworks=`get_pkg_field extra-frameworks`
 fi
 
-while read modname
+while read filename
 do
-	stem=$target_dir/$modname
-	dstdir=`dirname $stem`
-	basename=`basename $stem`
-	if [ -f $stem.lhs ]
-	then	filename=$stem.lhs
-	else	filename=$stem.hs
-	fi
+	dstdir=`dirname $filename`
 
-	# Crude test for foreign declarations.
-	# Running ffihugs on a few extras does no harm.
+	cmd="$ffihugs +G -98 -P$target_dir:"
+	for flag in -I$dstdir -I$source_dir/include
+	do	cmd="$cmd +L$flag"
+	done
+	for file in `sed -n 's/{-# CBITS \(.*\) #-}/\1/p' $filename`
+	do	cmd="$cmd +L$source_dir/cbits/$file"
+	done
+	for flag in $extra_ld_opts $extra_cc_opts
+	do	cmd="$cmd +L$flag"
+	done
+	for lib in $extra_libraries
+	do	if test "$platform" = Win32 && test "$cc" != gcc; then
+			cmd="$cmd +L$lib.lib"
+		else
+			cmd="$cmd +L-l$lib"
+		fi
+	done
+	for framework in $extra_frameworks
+	do	cmd="$cmd +L-framework +L$framework"
+	done
+	cmd="$cmd $filename"
 
-	if grep '^>*[ 	]*foreign[ 	][ 	]*[ei][mx]port' $filename >/dev/null
-	then
-		hack_foreign $filename
-
-		cmd="$ffihugs +G -98 -P$target_dir:"
-		for flag in -I$dstdir -I$source_dir/include
-		do	cmd="$cmd +L$flag"
-		done
-		for file in ${stem}_stub_ffi.c ${stem}_hsc.c
-		do	if [ -f $file ]
-			then	cmd="$cmd +L$file"
-			fi
-		done
-		for file in `sed -n 's/{-# CBITS \(.*\) #-}/\1/p' $filename`
-		do	cmd="$cmd +L$source_dir/cbits/$file"
-		done
-		for flag in $extra_ld_opts $extra_cc_opts
-		do	cmd="$cmd +L$flag"
-		done
-		for lib in $extra_libraries
-		do	case $platform in
-			Win32)	
-			        if test "x$cc" = xgcc; then
-			           cmd="$cmd +L-l$lib"
-				else
-				   cmd="$cmd +L$lib.lib"
-				fi ;;
-			*)	cmd="$cmd +L-l$lib" ;;
-			esac
- 		done
-		for framework in $extra_frameworks
-		do	cmd="$cmd +L-framework +L$framework"
-		done
-		cmd="$cmd `echo $modname | tr / .`"
-
-		case "$script" in
-		'')
-			echo "Compiling $filename"
-			$cmd ;;
-		*)
-			echo "echo 'Compiling $filename'" >>$script
-			echo $cmd >>$script ;;
-		esac
-	fi
-done <$module_list
+	echo "Compiling $filename"
+	$cmd
+done <$ffi_modules

@@ -134,14 +134,7 @@ ffihugs=src/ffihugs
 runhugs=src/runhugs
 export HUGSDIR ffihugs runhugs
 
-BuildFFI=libraries/BuildFFI
 HugsPackage=libraries/tools/hugs-package
-
-echo "#! /bin/sh
-
-cd `pwd`
-" >$BuildFFI
-chmod 755 $BuildFFI
 
 # Distinguish two classes of package:
 # core_packages - released with Hugs and not independently updated
@@ -171,10 +164,13 @@ done
 
 for package in $core_packages
 do
-	sh $HugsPackage -o $BuildFFI $src/$package
+	sh $HugsPackage $src/$package
 	copy_examples $src/$package $HUGSDIR/demos/$package
 done
 cp $src/base/LICENSE $HUGSDIR/libraries
+
+echo Compiling $HUGSDIR/libraries/Hugs/Storable.hs
+HUGSFLAGS='' $ffihugs +G +L$HUGSDIR/libraries/Hugs/Storable_aux.c Hugs.Storable
 
 for package in $extra_packages
 do
@@ -184,7 +180,7 @@ do
 	else
 		package_src=$src/$package
 	fi
-	sh $HugsPackage -o $BuildFFI $package_src $HUGSDIR/packages/$package
+	sh $HugsPackage $package_src $HUGSDIR/packages/$package
 	copy_examples $src/$package $HUGSDIR/packages/$package/examples
 	for name in $src/$package/LICEN[CS]E* $src/$package/COPYING* $src/$package/COPYRIGHT* $src/$package/copyright; do
 		if test -f $name; then
