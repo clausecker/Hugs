@@ -11,8 +11,8 @@
  * included in the distribution.
  *
  * $RCSfile: parser.y,v $
- * $Revision: 1.15 $
- * $Date: 2001/03/19 17:51:53 $
+ * $Revision: 1.16 $
+ * $Date: 2001/04/03 02:56:36 $
  * ------------------------------------------------------------------------*/
 
 %{
@@ -643,10 +643,10 @@ funlhs1	  : '(' funlhs0 ')' apat	{$$ = gc4(ap($2,$4));}
 qfunlhs	  : qfunlhs0			{$$ = $1;}
 	  | qfunlhs1			{$$ = $1;}
 	  ;
-qfunlhs0  : pat10_vI qvarop    pat0	{$$ = gc3(ap2($2,$1,$3));}
-	  | infixPat qvarop    pat0	{$$ = gc3(ap2($2,$1,$3));}
-	  | NUMLIT   qvarop    pat0	{$$ = gc3(ap2($2,$1,$3));}
-	  | var      qvarop_mi pat0	{$$ = gc3(ap2($2,$1,$3));}
+qfunlhs0  : pat10_vI qvarop      pat0	{$$ = gc3(ap2($2,$1,$3));}
+	  | infixPat qvarop      pat0	{$$ = gc3(ap2($2,$1,$3));}
+	  | NUMLIT   qvarop      pat0	{$$ = gc3(ap2($2,$1,$3));}
+	  | var      qvarop_mipl pat0	{$$ = gc3(ap2($2,$1,$3));}
 	  ;
 qfunlhs1  : '(' qfunlhs0 ')' apat	{$$ = gc4(ap($2,$4));}
 	  | '(' qfunlhs1 ')' apat	{$$ = gc4(ap($2,$4));}
@@ -1030,6 +1030,11 @@ qvarop	  : '-'				{$$ = gc1(varMinus);}
 	  | qvarop_mi			{$$ = $1;}
 	  ;
 qvarop_mi : QVAROP			{$$ = $1;}
+	  | '`' QVARID '`'		{$$ = gc3($2);}
+	  | varop_mi			{$$ = $1;}
+	  ;
+qvarop_mipl : QVAROP			{$$ = $1;}
+	  | '-'				{$$ = gc1(varMinus);}
 	  | '`' QVARID '`'		{$$ = gc3($2);}
 	  | varop_mi			{$$ = $1;}
 	  ;
