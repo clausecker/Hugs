@@ -744,12 +744,16 @@ instance Enum Int where
     enumFromThenTo = numericEnumFromThenTo
 
 instance Enum Integer where
+    succ x         = x + 1
+    pred x         = x - 1
+
     toEnum         = primIntToInteger
     fromEnum       = primIntegerToInt
     enumFrom       = numericEnumFrom
-    enumFromTo     = numericEnumFromTo
     enumFromThen   = numericEnumFromThen
+    enumFromTo     = numericEnumFromTo
     enumFromThenTo = numericEnumFromThenTo
+
 
 numericEnumFrom        :: Real a => a -> [a]
 numericEnumFromThen    :: Real a => a -> a -> [a]
