@@ -1,2 +1,2 @@
-ERROR static/mod49.hs:5 - No member "y" in class "C"
+ERROR "static/mod49.hs":5 - No member "y" in class "C"
 Hugs:[Leaving Hugs]

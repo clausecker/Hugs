@@ -1,2 +1,2 @@
-ERROR static/mod69.hs:3 - Illegal `@' in expression
+ERROR "static/mod69.hs":3 - Illegal `@' in expression
 Hugs:[Leaving Hugs]

@@ -1,2 +1,2 @@
-ERROR static/mod66.hs:3 - "f" multiply defined
+ERROR "static/mod66.hs":3 - "f" multiply defined
 Hugs:[Leaving Hugs]

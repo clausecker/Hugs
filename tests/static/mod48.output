@@ -1,2 +1,2 @@
-ERROR static/mod48.hs:5 - Pattern binding illegal in class declaration
+ERROR "static/mod48.hs":5 - Pattern binding illegal in class declaration
 Hugs:[Leaving Hugs]

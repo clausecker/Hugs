@@ -1,2 +1,2 @@
-ERROR static/mod24.hs:2 - Repeated type variable "a" on left hand side
+ERROR "static/mod24.hs":2 - Repeated type variable "a" on left hand side
 Hugs:[Leaving Hugs]

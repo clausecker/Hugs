@@ -1,2 +1,2 @@
-ERROR static/mod33.hs:4 - Definition of variable "id" clashes with import
+ERROR "static/mod33.hs":4 - Definition of variable "id" clashes with import
 Hugs:[Leaving Hugs]

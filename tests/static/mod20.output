@@ -1,2 +1,2 @@
-ERROR static/mod20.hs:2 - Repeated definition for member function "m"
+ERROR "static/mod20.hs":2 - Repeated definition for member function "m"
 Hugs:[Leaving Hugs]

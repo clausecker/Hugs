@@ -15,10 +15,9 @@ Hugs:('a',False)
 ('e',True)
 got expected IO error
 
-Hugs:BlockBuffering (Just 8192)
-NoBuffering
+Hugs:NoBuffering
 LineBuffering
-BlockBuffering (Just 8192)
+True
 BlockBuffering (Just 23)
 
 Hugs:got expected IO error

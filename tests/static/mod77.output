@@ -1,2 +1,2 @@
-ERROR static/mod77.hs:3 - Cannot find binding for operator "$$$" in fixity declaration
+ERROR "static/mod77.hs":3 - Cannot find binding for operator "$$$" in fixity declaration
 Hugs:[Leaving Hugs]

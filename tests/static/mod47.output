@@ -1,4 +1,4 @@
-ERROR static/mod47.hs:6 - Cannot build superclass instance
+ERROR "static/mod47.hs":6 - Cannot build superclass instance
 *** Instance            : Bar [a]
 *** Context supplied    : (Eq a, Enum a)
 *** Required superclass : Foo [a]

@@ -1,4 +1,4 @@
-ERROR static/mod46.hs:4 - Cannot build superclass instance
+ERROR "static/mod46.hs":4 - Cannot build superclass instance
 *** Instance            : Ord T
 *** Context supplied    : ()
 *** Required superclass : Eq T

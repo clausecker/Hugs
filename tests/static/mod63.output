@@ -1,2 +1,2 @@
-ERROR static/mod63.hs:3 - Equations give different arities for "f"
+ERROR "static/mod63.hs":3 - Equations give different arities for "f"
 Hugs:[Leaving Hugs]

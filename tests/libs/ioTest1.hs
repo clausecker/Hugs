@@ -19,6 +19,7 @@ exHandler pred x = x `catch` (\ err -> if pred err then
 io1 :: IO ()
 io1 = exHandler isDoesNotExistError $ do
   h <- openFile "some_non_existing_file" ReadMode
+  hClose h
   return ()
 
 io2 :: IO ()
@@ -43,6 +44,7 @@ io4 = exHandler (const False) $ do
   writeFile "io4_test_file" "ab"
   h <- openFile "io4_test_file" ReadMode
   exHandler isEOFError (loop h)
+  hClose h
   removeFile "io4_test_file"
  where
   loop h = do
@@ -75,6 +77,7 @@ io7 = exHandler (const False) $ do
   writeFile "io7_test_file" "abcde"
   h  <- openFile "io7_test_file" ReadMode
   exHandler isEOFError (loop h)
+  hClose h
   removeFile "io7_test_file"
   return ()
  where
@@ -88,8 +91,7 @@ io7 = exHandler (const False) $ do
 io8 :: IO ()
 io8 = exHandler (const False) $ do
   h   <- openFile "io8_test_file" WriteMode
-  buf <- hGetBuffering h
-  print buf
+  buf0 <- hGetBuffering h
   hSetBuffering h NoBuffering
   buf <- hGetBuffering h
   print buf
@@ -98,7 +100,7 @@ io8 = exHandler (const False) $ do
   print buf
   hSetBuffering h (BlockBuffering Nothing)
   buf <- hGetBuffering h
-  print buf
+  print (buf==buf0)
   hSetBuffering h (BlockBuffering (Just 23))
   buf <- hGetBuffering h
   print buf

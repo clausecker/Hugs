@@ -1,2 +1,2 @@
-ERROR static/mod1.hs - Module "N" not previously loaded
+ERROR "static/mod1.hs" - Module "N" not previously loaded
 Hugs:[Leaving Hugs]

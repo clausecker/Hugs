@@ -1,2 +1,2 @@
-ERROR static/mod73.hs:3 - Undefined qualified variable "Prelude.g"
+ERROR "static/mod73.hs":3 - Undefined qualified variable "Prelude.g"
 Hugs:[Leaving Hugs]

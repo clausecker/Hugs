@@ -1,2 +1,2 @@
-ERROR static/mod29.hs - Tycon "Int" imported from "Prelude" already defined in module "M"
+ERROR "static/mod29.hs" - Tycon "Int" imported from "Prelude" already defined in module "M"
 Hugs:[Leaving Hugs]

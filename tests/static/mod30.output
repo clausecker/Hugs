@@ -1,2 +1,2 @@
-ERROR static/mod30.hs - Class "Eq" imported from "Prelude" already defined in module "M"
+ERROR "static/mod30.hs" - Class "Eq" imported from "Prelude" already defined in module "M"
 Hugs:[Leaving Hugs]

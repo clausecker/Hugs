@@ -1,2 +1,2 @@
-ERROR static/mod45.hs:5 - Syntax error in declaration (unexpected `::')
+ERROR "static/mod45.hs":5 - Syntax error in declaration (unexpected `::')
 Hugs:[Leaving Hugs]

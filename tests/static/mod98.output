@@ -1,2 +1,2 @@
-ERROR static/mod98.hs:3 - Syntax error in input (unexpected symbol "M.x")
+ERROR "static/mod98.hs":3 - Syntax error in input (unexpected symbol "M.x")
 Hugs:[Leaving Hugs]

@@ -1,2 +1,2 @@
-ERROR static/mod87.hs:4 - Undefined constructor function "Left"
+ERROR "static/mod87.hs":4 - Undefined constructor function "Left"
 Hugs:[Leaving Hugs]

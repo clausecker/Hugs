@@ -1,2 +1,2 @@
-ERROR static/qual1.hs:5 - Syntax error in module definition (unexpected symbol "A.x")
+ERROR "static/qual1.hs":5 - Syntax error in module definition (unexpected symbol "A.x")
 Hugs:[Leaving Hugs]

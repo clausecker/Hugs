@@ -1,2 +1,2 @@
-ERROR static/mod21.hs:3 - Repeated definition of type constructor "T"
+ERROR "static/mod21.hs":3 - Repeated definition of type constructor "T"
 Hugs:[Leaving Hugs]

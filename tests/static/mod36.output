@@ -1,2 +1,2 @@
-ERROR static/mod36.hs:5 - Undefined variable "const"
+ERROR "static/mod36.hs":5 - Undefined variable "const"
 Hugs:[Leaving Hugs]

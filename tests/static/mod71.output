@@ -1,2 +1,2 @@
-ERROR static/mod71.hs:3 - Illegal `_' in expression
+ERROR "static/mod71.hs":3 - Illegal `_' in expression
 Hugs:[Leaving Hugs]

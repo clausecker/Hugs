@@ -1,2 +1,2 @@
-ERROR static/mod50.hs:3 - Unknown class "Foo" in derived instance
+ERROR "static/mod50.hs":3 - Unknown class "Foo" in derived instance
 Hugs:[Leaving Hugs]

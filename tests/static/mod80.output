@@ -1,2 +1,2 @@
-ERROR static/mod80.hs - Unknown entity "f" imported from module "Prelude"
+ERROR "static/mod80.hs" - Unknown entity "f" imported from module "Prelude"
 Hugs:[Leaving Hugs]

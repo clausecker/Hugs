@@ -69,7 +69,7 @@ test_static() {
   perl runstdtest $HUGS +q -pHugs: -s12 "-Ostatic/mod36.hs"  "-o1static/mod36.output"
   perl runstdtest $HUGS +q -pHugs: -s17 "-Ostatic/mod37.hs"  "-o1static/mod37.output"
   perl runstdtest $HUGS +q -pHugs: -s12 "-Ostatic/mod38.hs"  "-o1static/mod38.output"
-  perl runstdtest $HUGS +q -pHugs: -s12 "-Ostatic/mod39.hs"  "-o1static/mod39.output"
+  perl runstdtest $HUGS +q -pHugs: -s16 "-Ostatic/mod39.hs"  "-o1static/mod39.output"
 
   perl runstdtest $HUGS +q -pHugs: -s12 "-Ostatic/mod40.hs"  "-o1static/mod40.output"
   perl runstdtest $HUGS +q -pHugs: -s12 "-Ostatic/mod41.hs"  "-o1static/mod41.output"
@@ -260,7 +260,7 @@ test_rts() {
   perl runstdtest $HUGS +q -pHugs: -s23 "-Orts/ioerror1.hs" "-irts/ioerror1.input" "-o1rts/ioerror1.output"
   perl runstdtest $HUGS +q -pHugs: -s17 "-Orts/ioerror2.hs" "-irts/ioerror2.input" "-o1rts/ioerror2.output"
 
-  perl runstdtest $HUGS +q -pHugs: -s55 "-Orts/mvar.hs" "-irts/mvar.input" "-o1rts/mvar.output"
+  perl runstdtest $HUGS +q -pHugs: -s37 "-Orts/mvar.hs" "-irts/mvar.input" "-o1rts/mvar.output"
 
   # Old test code - it will probably get resurrected at some stage
   # 
@@ -341,14 +341,14 @@ test_libs() {
   perl runstdtest $HUGS +q -pHugs: Locale  -s16 "-o1libs/Loaded.output"
   perl runstdtest $HUGS +q -pHugs: Maybe   -s16 "-o1libs/Loaded.output"
   perl runstdtest $HUGS +q -pHugs: Monad   -s16 "-o1libs/Loaded.output"
-  perl runstdtest $HUGS +q -pHugs: Numeric -s29 "-o1libs/Loaded.output"
+  perl runstdtest $HUGS +q -pHugs: Numeric -s31 "-o1libs/Loaded.output"
 # Did I miss Quote being added to the library report???
 # And how come it requires -98 if it's standard??
-  perl runstdtest $HUGS +q -98 -pHugs: Quote   -s16 "-o1libs/Loaded.output"
-  perl runstdtest $HUGS +q -pHugs: Random    -s33 "-o1libs/Loaded.output"
+  perl runstdtest $HUGS +q -98 -pHugs: Quote -s22 "-o1libs/Loaded.output"
+  perl runstdtest $HUGS +q -pHugs: Random    -s40 "-o1libs/Loaded.output"
   perl runstdtest $HUGS +q -pHugs: Ratio     -s16 "-o1libs/Loaded.output"
   perl runstdtest $HUGS +q -pHugs: System    -s16 "-o1libs/Loaded.output"
-  perl runstdtest $HUGS +q -pHugs: Directory -s38 "-o1libs/Loaded.output"
+  perl runstdtest $HUGS +q -pHugs: Directory -s40 "-o1libs/Loaded.output"
   perl runstdtest $HUGS +q -pHugs: CPUTime   -s16 "-o1libs/Loaded.output"
   perl runstdtest $HUGS +q -pHugs: Locale    -s16 "-o1libs/Loaded.output"
 
@@ -368,7 +368,7 @@ test_libs() {
   perl runstdtest $HUGS +q -98 -pHugs: ST     -s34 "-o1libs/Loaded.output"
   perl runstdtest $HUGS +q -pHugs: Stable     -s16 "-o1libs/Loaded.output"
   perl runstdtest $HUGS +q -pHugs: Weak       -s16 "-o1libs/Loaded.output"
-  perl runstdtest $HUGS +q -pHugs: Word       -s21 "-o1libs/Loaded.output"
+  perl runstdtest $HUGS +q -pHugs: Word       -s38 "-o1libs/Loaded.output"
 
   echo "--!!! Performing static tests on other extension libraries"
   perl runstdtest $HUGS +q -98 -pHugs: Memo   -s37 "-o1libs/Loaded.output"
@@ -376,10 +376,10 @@ test_libs() {
   perl runstdtest $HUGS +q -pHugs: Observe    -s16 "-o1libs/Loaded.output"
 
   echo "--!!! Performing static tests on Hugs libraries"
-  perl runstdtest $HUGS +q -98 -pHugs: HugsLibs -s65 "-o1libs/HugsLibs.output"
+  perl runstdtest $HUGS +q -98 -pHugs: HugsLibs -s67 "-o1libs/HugsLibs.output"
 
   echo "--!!! Performing static tests on the hslibs libraries"
-  perl runstdtest $HUGS +q -98 -pHugs: ../lib/exts/*.hs ../lib/exts/*.lhs -s258 "-o1libs/Loaded.output"
+  perl runstdtest $HUGS +q -98 -pHugs: ../lib/exts/*.hs ../lib/exts/*.lhs -s261 "-o1libs/Loaded.output"
 
 
   echo "--!!! Performing dynamic tests on libraries"
@@ -387,9 +387,9 @@ test_libs() {
   perl runstdtest $HUGS +q -pHugs: List    -s21 "-Olibs/list1.hs" "-ilibs/list1.input" "-o1libs/list1.output"
   perl runstdtest $HUGS +q -pHugs: System  -s18 "-Olibs/system1.hs" "-ilibs/system1.input" "-o1libs/system1.output"
   perl runstdtest $HUGS +q -pHugs: Complex -s16 "-ilibs/complex1.input" "-o1libs/complex1.output"
-  perl runstdtest $HUGS +q -pHugs: Int     -s24 "-Olibs/intTest.hs" "-ilibs/intTest.input" "-o1libs/intTest.output"
-  perl runstdtest $HUGS +q -pHugs: IO      -s42 "-Olibs/ioTest1.hs" "-ilibs/ioTest1.input" "-o1libs/ioTest1.output"
-  perl runstdtest $HUGS +q -pHugs: Directory -s41 "-Olibs/dirTest.hs" "-ilibs/dirTest.input" "-o1libs/dirTest.output"
+  perl runstdtest $HUGS +q -pHugs: Int     -s42 "-Olibs/intTest.hs" "-ilibs/intTest.input" "-o1libs/intTest.output"
+  perl runstdtest $HUGS +q -pHugs: IO      -s44 "-Olibs/ioTest1.hs" "-ilibs/ioTest1.input" "-o1libs/ioTest1.output"
+  perl runstdtest $HUGS +q -pHugs: Directory -s43 "-Olibs/dirTest.hs" "-ilibs/dirTest.input" "-o1libs/dirTest.output"
   perl runstdtest $HUGS +q -pHugs: libs/FixIO.lhs -s35 "-ilibs/FixIO.input" "-o1libs/FixIO.output"
   perl runstdtest $HUGS +q -pHugs: libs/testAddr.hs -s20 "-ilibs/Addr.input" "-o1libs/Addr.output"
   perl runstdtest $HUGS +q -pHugs: libs/prodcon.hs -s55 "-ilibs/prodcon.input" "-o1libs/prodcon.output"
@@ -411,7 +411,7 @@ test_demos() {
 ----------------------------------------------------------------"
 
   echo "--!!! Performing static checks on demos"
-  perl runstdtest $HUGS -w +q -98 -pHugs: ../demos/Demos       -s58 "-o1demos/Loaded.output"
+  perl runstdtest $HUGS -w +q -98 -pHugs: ../demos/Demos       -s56 "-o1demos/Loaded.output"
   perl runstdtest $HUGS -w +q -pHugs: ../demos/prolog/Main -s22 "-o1demos/Loaded.output"
 
 } # End of test demos
