@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: ffi.c,v $
- * $Revision: 1.10 $
- * $Date: 2002/06/17 21:46:45 $
+ * $Revision: 1.11 $
+ * $Date: 2002/06/17 22:56:14 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -258,6 +258,7 @@ Type   t; {
     else if (t == typeFloat)  fprintf(out,"HsFloat");
     else if (t == typeDouble) fprintf(out,"HsDouble");
     else if (t == typeBool)   fprintf(out,"HsBool");
+    else if (t == typeAddr)   fprintf(out,"HsAddr");
     else if (getHead(t) == typePtr)    fprintf(out,"HsPtr");
     else if (getHead(t) == typeFunPtr) fprintf(out,"HsFunPtr");
     else if (getHead(t) == typeForeign)fprintf(out,"HsForeignPtr");
@@ -289,6 +290,7 @@ Int    num; {
     else if (t == typeFloat)  fprintf(out,"%s%d = hugs->getFloat();\n",      nm, num);
     else if (t == typeDouble) fprintf(out,"%s%d = hugs->getDouble();\n",     nm, num);
     else if (t == typeBool)   fprintf(out,"%s%d = hugs->getBool();\n",       nm, num);
+    else if (t == typeAddr)   fprintf(out,"%s%d = hugs->getAddr();\n",       nm, num);
     else if (getHead(t) == typePtr)    fprintf(out,"%s%d = hugs->getPtr();\n",        nm, num);
     else if (getHead(t) == typeFunPtr) fprintf(out,"%s%d = hugs->getFunPtr();\n",     nm, num);
     else if (getHead(t) == typeForeign)fprintf(out,"%s%d = hugs->getForeignPtr();\n", nm, num);
@@ -320,6 +322,7 @@ Int    num; {
     else if (t == typeFloat)  fprintf(out,"hugs->putFloat(%s%d);\n",      nm, num);
     else if (t == typeDouble) fprintf(out,"hugs->putDouble(%s%d);\n",     nm, num);
     else if (t == typeBool)   fprintf(out,"hugs->putBool(%s%d);\n",       nm, num);
+    else if (t == typeAddr)   fprintf(out,"hugs->putAddr(%s%d);\n",       nm, num);
     else if (getHead(t) == typePtr)    fprintf(out,"hugs->putPtr(%s%d);\n",        nm, num);
     else if (getHead(t) == typeFunPtr) fprintf(out,"hugs->putFunPtr(%s%d);\n",     nm, num);
     else if (getHead(t) == typeForeign)fprintf(out,"hugs->putForeignPtr(%s%d);\n", nm, num);
