@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: input.c,v $
- * $Revision: 1.27 $
- * $Date: 2001/08/20 13:24:35 $
+ * $Revision: 1.28 $
+ * $Date: 2001/09/19 19:14:07 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1664,6 +1664,22 @@ loop:	    skip();                     /* Skip qualifying dot             */
     ERRMSG(row) "Unrecognised character `\\%d' in column %d", ((int)c0), column
     EEND;
     return 0; /*NOTREACHED*/
+}
+
+Bool isQModId(s)
+String s; {
+    Bool hasDot = FALSE;
+    if (!isIn(*s,LARGE))
+        return FALSE;
+    while (isIn(*s,LARGE)) {
+        while (isIn(*s,IDAFTER))
+            s++;
+        if (*s == '.') {
+            hasDot = TRUE;
+            s++;
+        }
+    }
+    return (*s == '\0') && hasDot;
 }
 
 static Int local repeatLast() {         /* Obtain last expression entered  */

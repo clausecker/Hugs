@@ -12,8 +12,8 @@
  * included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.26 $
- * $Date: 2001/08/15 01:06:21 $
+ * $Revision: 1.27 $
+ * $Date: 2001/09/19 19:14:07 $
  * ------------------------------------------------------------------------*/
 
 #ifdef HAVE_SIGNAL_H
@@ -252,6 +252,9 @@ static String local normPath      Args((String));
 static Void   local searchChr     Args((Int));
 static Void   local searchStr     Args((String));
 static Bool   local tryEndings    Args((String));
+static Bool   local find0	  Args((String, String, String));
+static Bool   local find1	  Args((String, String, String));
+static Bool   local find2	  Args((String, String, String));
 
 #if __MWERKS__ && macintosh
 typedef char FileName[FILENAME_MAX + 1];
@@ -423,45 +426,29 @@ String s; {
     searchBuf[searchPos] = '\0';
 }
 
-/*
- * N.B Conversion from modid to filename syntax is done here instead of higher 
- * up in the call chain, as there seems to be no simple principle that explains 
- * when a string is intended as a module name or as the name of a file.  Maybe 
- * the option to use filenames in import and load commands should be nuked
- * altogether?
- */
-
 static Bool local tryEndings(s) /* Try each of the listed endings          */
 String s; {
+    String suf = rindex(s,'.');
     Int save = searchPos;
-    Int i = 0, j;
+    Int i;
+    
     searchStr(s);
+
+    if (suf) {
+        for (i=0; endings[i]; i++)
+            if (strcmp(suf,endings[i])==0) {
+                return readable(searchBuf);
+            }
+    }
     
-    for (j = save; searchBuf[j]; j++)
-        if (searchBuf[j] == '.' && !startsQual(searchBuf[j+1]))
-            break;	/* s can't be a modid, break */
-            
-    /* If s is a filename, don't try anything fancy */
-    if (searchBuf[j])
-        return readable(searchBuf);
-    
-    /* End of s reached, and s still seems to be a valid modid     */
-    for (j = save; searchBuf[j]; j++)
-        if (searchBuf[j] == '.')
-            searchBuf[j] = SLASH;
-    
-    for (; endings[i]; ++i) {
+    for (i=0; endings[i]; ++i) {
 	Int save = searchPos;
 	searchStr(endings[i]);
 	if (readable(searchBuf))
 	    return TRUE;
 	searchReset(save);
     }
-    
-    /* One last attempt: try using s as a plain filename */
-    searchReset(save);
-    searchStr(s);
-    return readable(searchBuf);
+    return FALSE;
 }
 
 
@@ -627,23 +614,77 @@ String nm; {
     /* AC, 1/21/99: modified to search hugsPath first, then projectPath */
     String s = findMPathname(along,nm,hugsPath);
 #if USE_REGISTRY
-    if (s==NULL) {
+    if (!s) {
 	s = findMPathname(along,nm,projectPath);
     }
 #endif /* USE_REGISTRY */
     return s ? s : normPath(searchBuf);
 }
 
-/* AC, 1/21/99: modified to pass in path to search explicitly */
-String findMPathname(along,nm,path)/* Look for a file along specified path   */
-String along;			/* If nonzero, a path prefix from along is */
-String nm;			/* used as the first prefix in the search. */
+/*
+    find along nm hugspath = [ d++f++e | f <- files, d <- dirs, e <- exts ]
+      where 
+        (pref,name) = rspan (/=slash) nm
+        dirs        = if null pref then along : hugspath ++ [""] else [pref]
+        files       = if isQModId name then [mod2dir name, name] else [name]
+        exts        = ["",".hs",".lhs"]
+
+        rspan p s   = let (a,b) = span p (reverse s) in (reverse b, reverse a)
+        mod2dir s   = map (\c -> if c=='.' then slash else c) s
+
+*/
+
+String findMPathname(along,nm,path)	
+String along;			        
+String nm;			        
+String path; {
+    if (find0(along,nm,path))
+        return normPath(searchBuf);
+    else
+        return NULL;
+}
+
+static Bool find0(along,nm,path)
+String along;			        
+String nm;			        
+String path; {
+    String name = rindex(nm,SLASH);
+    if (name) {		   /* Was an explicit pathname given as part of the name? */
+        *name++ = '\0';
+        if (find1(NULL,name,nm)) {
+            *--name = SLASH;
+            return TRUE;
+        }
+    } else 
+        return find1(along,nm,path) || find1(NULL,nm,NULL);
+}
+        
+static Bool find1(along,name,path)
+String along;
+String name;
+String path; {
+    if (isQModId(name)) { 	   /* Is name a hierarchical module ident? */
+        String s;
+        Bool r;
+        for (s=name; *s; s++)	   /* Convert to directory prefix */
+            if (*s == '.') *s = SLASH;
+        r = find2(along,name,path);
+        for (s=name; *s; s++)
+            if (*s == SLASH) *s = '.';
+        if (r)
+            return TRUE;
+    } 		   
+    return find2(along,name,path); /* Always search for name as-is */
+}
+
+static Bool find2(along,name,path)
+String along;
+String name;
 String path; {
     String pathpt = path;
 
-#if 0
     searchReset(0);
-    if (along) {                /* Was a path for an existing file given?  */
+    if (along) {                   /* Was a path for an existing file given?  */
 	Int last = (-1);
 	Int i    = 0;
 	for (; along[i]; i++) {
@@ -652,12 +693,11 @@ String path; {
 		last = i;
 	}
 	searchReset(last+1);
+        if (tryEndings(name))
+            return TRUE;
     }
-    if (tryEndings(nm))
-	return normPath(searchBuf);
-#endif
 
-    if (pathpt && *pathpt) {    /* Otherwise, we look along the HUGSPATH   */
+    if (pathpt && *pathpt) {       /* Otherwise, we look along the HUGSPATH   */
 	Bool more = TRUE;
 	do {
 	    Bool recurse = FALSE;   /* DL: shall we recurse ? */
@@ -699,19 +739,21 @@ String path; {
 		more = FALSE;
 	    }
 #if SEARCH_DIR
-	    if (recurse ? scanSubDirs(nm) : tryEndings(nm)) {
-		return normPath(searchBuf);
+	    if (recurse ? scanSubDirs(name) : tryEndings(name)) {
+		return TRUE;
 	    }
 #else   
-	    if (tryEndings(nm)) {
-		return normPath(searchBuf);
+	    if (tryEndings(name)) {
+		return TRUE;
 	    }
 #endif
 	} while (more);
+    } else {
+        /* As a last resort, look for file in the current dir.             */
+        searchReset(0);  
+        return tryEndings(name);  
     }
-
-    searchReset(0);  /* As a last resort, look for file in the current dir */
-    return (tryEndings(nm) ? normPath(searchBuf) : 0);
+    
 }
 
 /* --------------------------------------------------------------------------

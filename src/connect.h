@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: connect.h,v $
- * $Revision: 1.22 $
- * $Date: 2001/08/20 13:24:34 $
+ * $Revision: 1.23 $
+ * $Date: 2001/09/19 19:14:07 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -260,6 +260,7 @@ extern  Void   parseContext     Args((Void));
 #endif
 extern  String readFilename     Args((Void));
 extern  String readLine		Args((Void));
+extern  Bool   isQModId		Args((String));
 extern  Syntax defaultSyntax    Args((Text));
 extern  Syntax syntaxOf		Args((Name));
 extern  String unlexChar        Args((Char,Char));
