@@ -121,7 +121,9 @@ AC_ARG_ENABLE(ffi,
 
 AC_ARG_ENABLE(hopengl,
   AC_HELP_STRING([--enable-hopengl],
-                 [include HOpenGL, a Haskell binding for OpenGL/GLUT. On Mac OS X, use --enable-hopengl=x11 to use X11 instead of the "native" libraries]),
+                 [[include HOpenGL, a Haskell binding for OpenGL/GLUT.
+                          On Mac OS X, use --enable-hopengl=x11 to use X11
+                          instead of the "native" libraries]]),
   , [enable_hopengl=no])
 
 AC_SUBST(FPTOOLS)
