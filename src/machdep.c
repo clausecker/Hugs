@@ -12,8 +12,8 @@
  * included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.39 $
- * $Date: 2002/03/01 20:34:09 $
+ * $Revision: 1.40 $
+ * $Date: 2002/03/28 16:18:04 $
  * ------------------------------------------------------------------------*/
 #include <math.h>
 
@@ -94,7 +94,10 @@ extern unsigned _stklen = 8000;         /* Allocate an 8k stack segment    */
 #ifdef HAVE_UNIX_H
 #include <unix.h>
 #endif
+
 #if __MWERKS__ && macintosh
+#include <SIOUX.h>
+
 /*	The variable time_release should be set to a value which gives
 	good cooperative multitasking.
 */
@@ -2217,5 +2220,29 @@ Int what; {                             /* initialisation etc..            */
 		       break;
     }
 }
+
+/* --------------------------------------------------------------------------
+ * Platform initialisation 
+ * ------------------------------------------------------------------------*/
+static Bool local initSystem  Args((Void));
+static Bool local
+initSystem()
+{
+  /* Called right away by main()  */
+#if __MWERKS__ && macintosh
+    strcpy(macHugsDir,currentDir());
+    SIOUXSettings.autocloseonquit   = true;
+    SIOUXSettings.asktosaveonclose  = false;
+    SIOUXSettings.columns           = 80;
+    SIOUXSettings.rows              = 40; 
+    SIOUXSettings.tabspaces         = 8;
+    SIOUXSettings.enabledraganddrop = true;
+    SIOUXSetTitle("\pHugs 98");
+    
+#endif
+    return TRUE;
+}
+
+
 
 /*-------------------------------------------------------------------------*/

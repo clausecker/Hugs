@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.72 $
- * $Date: 2002/03/21 18:34:58 $
+ * $Revision: 1.73 $
+ * $Date: 2002/03/28 16:18:03 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -168,10 +168,6 @@ String hugsPath		 = 0;		/* String for file search path     */
 String projectPath	 = 0;		/* String for project search path  */
 Bool   preludeLoaded	 = FALSE;
 
-#if __MWERKS__ && macintosh
-#include <SIOUX.h>
-#endif
-
 #if REDIRECT_OUTPUT
 static Bool disableOutput = FALSE;      /* redirect output to buffer?      */
 #endif
@@ -181,31 +177,15 @@ Bool oldIParamSyntax = TRUE;
 #endif
 
 /* --------------------------------------------------------------------------
- * Hugs entry point:
+ * Printing the banner
  * ------------------------------------------------------------------------*/
+static Void printBanner Args((Void));
 
-#ifndef HUGS_SERVER /* we omit main when building the "Hugs server" */
- 
-Main main Args((Int, String []));       /* now every func has a prototype  */
-
-Main main(argc,argv)
-int  argc;
-char *argv[]; {
-
-#if __MWERKS__ && macintosh
-    strcpy(macHugsDir,currentDir());
-    SIOUXSettings.autocloseonquit   = true;
-    SIOUXSettings.asktosaveonclose  = false;
-    SIOUXSettings.columns           = 80;
-    SIOUXSettings.rows              = 40; 
-    SIOUXSettings.tabspaces         = 8;
-    SIOUXSettings.enabledraganddrop = true;
-    SIOUXSetTitle("\pHugs 98");
-#endif
-
-    CStackBase = &argc;                 /* Save stack base for use in gc   */
-
-#if HUGS_FOR_WINDOWS
+static Void printBanner()
+{
+#if SMALL_BANNER
+    Printf("Hugs98 - http://haskell.org/hugs - %s\n", HUGS_VERSION);
+#elif HUGS_FOR_WINDOWS
     { 
     INT svColor;
     svColor = SetForeColor(BLUE);    Printf( "__   __ __  __  ____   ___");
@@ -234,6 +214,30 @@ char *argv[]; {
 #endif
 
     FlushStdout();
+}
+
+/* --------------------------------------------------------------------------
+ * Hugs entry point:
+ * ------------------------------------------------------------------------*/
+
+#ifndef HUGS_SERVER /* we omit main when building the "Hugs server" */
+
+
+Main main Args((Int, String []));       /* now every func has a prototype  */
+
+Main main(argc,argv)
+int  argc;
+char *argv[]; {
+
+    CStackBase = &argc;                 /* Save stack base for use in gc   */
+
+    if (!initSystem()) {
+      Printf("%0: failed to initialize, exiting\n", (argv ? argv[0] : ""));
+      exit(0);
+    }
+    
+    printBanner();
+
     interpreter(argc,argv);
     Printf("[Leaving Hugs]\n");
 #if HUGS_FOR_WINDOWS
