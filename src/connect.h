@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: connect.h,v $
- * $Revision: 1.32 $
- * $Date: 2002/05/09 15:00:57 $
+ * $Revision: 1.33 $
+ * $Date: 2002/05/14 16:06:27 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -259,7 +259,7 @@ extern  Void   input             Args((Int));
 extern  Void   consoleInput      Args((String));
 extern  Void   projInput	 Args((String));
 extern  Void   stringInput       Args((String));
-extern  Void   parseScript       Args((String,Long));
+extern  Bool   parseScript       Args((String,Long));
 extern  Void   parseScriptString Args((String));
 extern  Void   parseExp          Args((Void));
 #if EXPLAIN_INSTANCE_RESOLUTION

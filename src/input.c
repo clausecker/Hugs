@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: input.c,v $
- * $Revision: 1.41 $
- * $Date: 2002/04/11 23:20:18 $
+ * $Revision: 1.42 $
+ * $Date: 2002/05/14 16:06:26 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -61,7 +61,7 @@ String preprocessor  = 0;
  * ------------------------------------------------------------------------*/
 
 static Void local initCharTab     Args((Void));
-static Void local fileInput       Args((String,Long));
+static Bool local fileInput       Args((String,Long));
 static Bool local literateMode    Args((String));
 static Bool local linecmp         Args((String,String));
 static Int  local nextLine        Args((Void));
@@ -399,7 +399,7 @@ String nm; {                           /* from named project file          */
     }
 }
 
-static Void local fileInput(nm,len)     /* prepare to input characters from*/
+static Bool local fileInput(nm,len)     /* prepare to input characters from*/
 String nm;                              /* named file (specified length is */
 Long   len; {                           /* used to set target for reading) */
 #if SUPPORT_PREPROCESSOR
@@ -408,7 +408,8 @@ Long   len; {                           /* used to set target for reading) */
 	char *cmd = malloc(reallen);
 	if (cmd == NULL) {
 	    ERRMSG(0) "Unable to allocate memory for filter command."
-	    EEND;
+	    EEND_NORET;
+	    return FALSE;
 	}
 	strcpy(cmd,preprocessor);
 	strcat(cmd," ");
@@ -440,8 +441,10 @@ Long   len; {                           /* used to set target for reading) */
     }
     else {
 	ERRMSG(0) "Unable to open file \"%s\"", nm
-	EEND;
+	EEND_NORET;
+	return FALSE;
     }
+    return TRUE;
 }
 
 Void stringInput(s)             /* prepare to input characters from string */
@@ -1863,12 +1866,15 @@ String buf; {
     parseInput(SCRIPT);
 }
 
-Void parseScript(nm,len)               /* Read a script                    */
+Bool parseScript(nm,len)               /* Read a script                    */
 String nm;
 Long   len; {                          /* Used to set a target for reading */
     input(RESET);
-    fileInput(nm,len);
-    parseInput(SCRIPT);
+    if (fileInput(nm,len)) {
+	parseInput(SCRIPT);
+	return TRUE;
+    }
+    return FALSE;
 }
 
 Void parseExp() {                      /* Read an expression to evaluate   */
