@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.74 $
- * $Date: 2002/04/11 23:20:18 $
+ * $Revision: 1.75 $
+ * $Date: 2002/04/11 23:50:44 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -185,7 +185,6 @@ static Void printBanner()
 #if SMALL_BANNER
     Printf("Hugs98 - http://haskell.org/hugs - %s\n", HUGS_VERSION);
 #elif HUGS_FOR_WINDOWS
-    { 
     INT svColor;
     svColor = SetForeColor(BLUE);    Printf( "__   __ __  __  ____   ___");
                                      Printf("      _______________________________________________\n");
@@ -202,7 +201,6 @@ static Void printBanner()
     SetForeColor(svColor);           Printf("Version: %-14s",HUGS_VERSION);
     svColor = SetForeColor(BLUE);    Printf(" _______________________________________________\n\n");
     SetForeColor(svColor);
-    }
 #else
     Printf("__   __ __  __  ____   ___      _________________________________________\n");
     Printf("||   || ||  || ||  || ||__      Hugs 98: Based on the Haskell 98 standard\n");
