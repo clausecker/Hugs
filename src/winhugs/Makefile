@@ -11,17 +11,15 @@
 
 # Targets:
 #
-# <default>:   	 make winhugs.exe
-# install:	 make and install programs/libraries
-# winhugs.exe: 	 make minimal working system
-# runhugs.exe:	 make batch-mode version of Hugs
-# clean:       	 delete files not required in running system
-# distclean:     delete files that can be regenerated using C compiler
-# veryclean:     delete all machine generated files 
-#                  (you need perl, bison/yacc, etc to rebuild these files)
-# check:	 run regression tests
-#                  (you need perl and /bin/sh to run these)
-# TAGS:          build emacs TAGS table
+# <default>:   	  make winhugs.exe
+# install:	  make and install programs/libraries
+# winhugs.exe: 	  make minimal working system
+# runhugs.exe:	  make batch-mode version of Hugs
+# clean:       	  delete files not required in running system
+# distclean:      delete files that can be regenerated using C compiler
+# veryclean:      delete all machine generated files 
+#                   (you need perl, bison/yacc, etc to rebuild these files)
+# TAGS:           build emacs TAGS table
 
 # This rule goes first to make it the default choice
 default		:: winhugs.exe 
@@ -29,13 +27,13 @@ default		:: winhugs.exe
 CC		= cl /nologo
 VERSTR          = -DMONTH_YEAR="\"Nov 2003\""
 CFLAGS		= -MD -I. $(VERSTR)
-#Debugging options:
+# When debugging:
 #CFLAGS		= -Zi -MDd -I. $(VERSTR)
 OPTFLAGS	= -O2
 RC		= rc
 
 LD		= ld
-LDFLAGS    	=   
+LDFLAGS    	= 
 DLL_FLAGS	= /LD
 PIC_FLAGS	= 
 LIBS		= kernel32.lib user32.lib gdi32.lib comdlg32.lib shell32.lib advapi32.lib
@@ -43,6 +41,7 @@ LIBS		= kernel32.lib user32.lib gdi32.lib comdlg32.lib shell32.lib advapi32.lib
 YACC		= bison
 RM		= -del
 CP		= copy
+EXEEXT		= .exe
 OBJEXT		= obj
 
 
@@ -130,13 +129,14 @@ distclean	:: clean
 distclean	::
 		  $(RM) winhugs.exe
 		  $(RM) runhugs.exe
+		  $(RM) ffihugs.exe
 		  $(RM) *.pdf
 		  $(RM) TAGS
 		  $(RM) *~
 veryclean	:: distclean
 veryclean	::
-		  $(RM) options.h
 		  $(RM) config.h
+		  $(RM) options.h
 TAGS		::
 		  etags *.[ych]
 
@@ -250,13 +250,15 @@ subst.$(OBJEXT): subst.c prelude.h config.h platform.h options.h storage.h \
   HsFFI.h connect.h errors.h output.h opts.h subst.h
 type.$(OBJEXT): type.c prelude.h config.h platform.h options.h storage.h HsFFI.h \
   connect.h errors.h output.h subst.h goal.h opts.h preds.c scc.c
-version.$(OBJEXT): today version.c prelude.h config.h platform.h options.h 
+version.$(OBJEXT): today version.c prelude.h config.h platform.h options.h
 
 ################################################################
 # End of generated object dependencies (Don't change or delete this line)
 ################################################################
 
-today: echodate.exe
+version.$(OBJEXT): echodate.h
+
+echodate.h: echodate.exe
 	$(PWD)/echodate.exe > echodate.h
 
 echodate.exe: msc/echodate.c
@@ -279,35 +281,6 @@ winstln.$(OBJEXT): $(HFILES) winhugs/winstln.c \
 wintoolb.$(OBJEXT): $(HFILES) winhugs/wintoolb.c \
   winhugs/WinToolB.h winhugs/WinHint.h winhugs/WinUtils.h
 winutils.$(OBJEXT): $(HFILES) winhugs/winutils.c winhugs/WinUtils.h
-
-################################################################
-# Regression tests (Unix only).  Run "make install" first
-# 
-# Uses runstdtest (from ghc-0.26/ghc/glafp-utils/scripts), perl 5
-# and /bin/sh (Bourne shell).
-#
-# "make check" generates a lot of output to explain what is going on
-# and reassure you that progress is being made.  This is great if you've
-# never run these tests before - but if you just want to reassure yourself
-# that nothing has broken since the last release, you might prefer to
-# run this command which removes all the explanations and success
-# stories - leaving just the useful output.
-#
-#  make check | grep -v "^--" -
-#
-################################################################
-
-check		: hugs
-		  - /bin/sh Tests/testScript static
-		  - /bin/sh Tests/testScript tcheck
-		  - /bin/sh Tests/testScript rts
-		  - /bin/sh Tests/testScript libs
-		  - /bin/sh Tests/testScript demos
-clean		::
-		  $(RM) testFile
-
-
-
 
 ################################################################
 # End of Makefile

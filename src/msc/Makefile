@@ -4,7 +4,7 @@
 #
 # The Hugs 98 system is Copyright (c) Mark P Jones, Alastair Reid, the
 # Yale Haskell Group, and the OGI School of Science & Engineering at OHSU,
-# 1994-2003, All rights reserved.  It is distributed as
+# 1994-2004, All rights reserved.  It is distributed as
 # free software under the license in the file "License", which is
 # included in the distribution.
 # --------------------------------------------------------------------------
@@ -20,7 +20,6 @@
 # distclean:      delete files that can be regenerated using C compiler
 # veryclean:      delete all machine generated files 
 #                   (you need perl, bison/yacc, etc to rebuild these files)
-# check:	  run regression tests
 # TAGS:           build emacs TAGS table
 
 # This rule goes first to make it the default choice
@@ -28,13 +27,13 @@ default		:: hugs.exe runhugs.exe ffihugs.exe hugsscript.dll
 
 CC		= cl /nologo
 VERSTR          = -DMONTH_YEAR="\"Nov 2003\""
-CFLAGS          = -MD $(VERSTR)
+CFLAGS		= -MD $(VERSTR)
 # When debugging:
 #CFLAGS		= -MDd -Zi $(VERSTR)
 OPTFLAGS	= -O2
 
 LD		= ld
-LDFLAGS    	=
+LDFLAGS    	= 
 # When debugging:
 #LDFLAGS	= -Zi -MDd
 DLL_FLAGS	= /LD
@@ -163,9 +162,6 @@ ffi-dlls: $(FFIHUGS)
 ################################################################
 
 clean		::
-		  $(RM) hugs.exe
-		  $(RM) runhugs.exe
-		  $(RM) ffihugs.exe
 		  $(RM) echodate.exe
 		  $(RM) *.o
 		  $(RM) *.O
@@ -189,6 +185,7 @@ distclean	:: clean
 distclean	::
 		  $(RM) hugs.exe
 		  $(RM) runhugs.exe
+		  $(RM) ffihugs.exe
 		  $(RM) *.pdf
 		  $(RM) TAGS
 		  $(RM) *~
@@ -290,24 +287,19 @@ subst.$(OBJEXT): subst.c prelude.h config.h platform.h options.h storage.h \
   HsFFI.h connect.h errors.h output.h opts.h subst.h
 type.$(OBJEXT): type.c prelude.h config.h platform.h options.h storage.h HsFFI.h \
   connect.h errors.h output.h subst.h goal.h opts.h preds.c scc.c
-version.$(OBJEXT): today version.c prelude.h config.h platform.h options.h
-
-today: echodate.exe
-	$(PWD)/echodate.exe > echodate.h
-
-echodate.exe: msc/echodate.c
-	$(CC) $(LDFLAGS) msc/echodate.c -o $@
+version.$(OBJEXT): version.c prelude.h config.h platform.h options.h
 
 ################################################################
 # End of generated object dependencies (Don't change or delete this line)
 ################################################################
 
-################################################################
-# Regression tests (none supplied)
-################################################################
+version.$(OBJEXT): echodate.h
 
-check		:
+echodate.h: echodate.exe
+	$(PWD)/echodate.exe > echodate.h
 
+echodate.exe: msc/echodate.c
+	$(CC) $(LDFLAGS) msc/echodate.c -o $@
 
 ################################################################
 # End of Makefile

@@ -4,7 +4,7 @@
 #
 # The Hugs 98 system is Copyright (c) Mark P Jones, Alastair Reid, the
 # Yale Haskell Group, and the OGI School of Science & Engineering at OHSU,
-# 1994-2003, All rights reserved.  It is distributed as
+# 1994-2004, All rights reserved.  It is distributed as
 # free software under the license in the file "License", which is
 # included in the distribution.
 # --------------------------------------------------------------------------
@@ -13,18 +13,17 @@
 #
 # <default>:   	  make hugs.exe and runhugs.exe
 # install:	  make and install programs/libraries
-# hugs.exe:    	  make minimal working system
+# hugs.exe:	  make minimal working system
 # runhugs.exe:	  make batch-mode version of Hugs
 # hugsscript.dll: make DLL version of Hugs
 # clean:       	  delete files not required in running system
 # distclean:      delete files that can be regenerated using C compiler
 # veryclean:      delete all machine generated files 
 #                   (you need perl, bison/yacc, etc to rebuild these files)
-# check:	  run regression tests
 # TAGS:           build emacs TAGS table
 
 # This rule goes first to make it the default choice
-default		:: hugs.exe runhugs.exe hugsscript.dll
+default		:: hugs.exe runhugs.exe ffihugs.exe hugsscript.dll
 
 CC		= cl /nologo
 CFLAGS		= -clr -DDOTNET -DMONTH_YEAR="\"Nov 2003\""
@@ -42,6 +41,7 @@ LIBS		=  kernel32.lib advapi32.lib
 YACC		= bison
 RM		= -del
 CP		= copy
+EXEEXT		= .exe
 OBJEXT		= obj
 
 
@@ -74,7 +74,7 @@ PRELUDE		= config.h options.h prelude.h
 # Hugs interpreter and standalone evaluator
 ################################################################
 
-hugs.exe	: $(IOBJECTS) 
+hugs.exe	: $(IOBJECTS)
 		  $(LD) $(LDFLAGS) $(IOBJECTS)  $(LIBS) -o hugs.exe  $(LINK_FLAGS)
 		  
 
@@ -132,21 +132,18 @@ clean		::
 		  $(RM) *.RES
 		  $(RM) *.aux
 		  $(RM) *.hp
-		  $(RM) hugs.exe
-		  $(RM) runhugs.exe
-		  $(RM) ffihugs.exe
-
 distclean	:: clean
 distclean	::
 		  $(RM) hugs.exe
 		  $(RM) runhugs.exe
+		  $(RM) ffihugs.exe
 		  $(RM) *.pdf
 		  $(RM) TAGS
 		  $(RM) *~
 veryclean	:: distclean
 veryclean	::
-		  $(RM) options.h
 		  $(RM) config.h
+		  $(RM) options.h
 TAGS		::
 		  etags *.[ych]
 
@@ -198,7 +195,7 @@ hugs.res	: msc\hugs.rc ..\icons\hugsicon.ico
 		rc /imsc /i..\icons /r /fo hugs.res msc\hugs.rc 
 
 runhugs.res	: msc\runhugs.rc ..\icons\hsxicon.ico
-		rc /imsc /I..\icons /r /fo runhugs.res msc\runhugs.rc 
+		rc /imsc /i..\icons /r /fo runhugs.res msc\runhugs.rc 
 
 ################################################################
 # Generated object dependencies (Don't change or delete this line)
@@ -269,13 +266,6 @@ version.$(OBJEXT): version.c prelude.h config.h platform.h options.h
 ################################################################
 # End of generated object dependencies (Don't change or delete this line)
 ################################################################
-
-################################################################
-# Regression tests (none supplied)
-################################################################
-
-check		:
-
 
 ################################################################
 # End of Makefile
