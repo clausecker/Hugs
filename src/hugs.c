@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.52 $
- * $Date: 2001/12/06 17:23:08 $
+ * $Revision: 1.53 $
+ * $Date: 2001/12/09 23:55:09 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -89,7 +89,7 @@ static Void   local optionInfo        Args((Void));
 #if USE_REGISTRY || HUGS_FOR_WINDOWS
 static String local optionsToStr      Args((Void));
 #endif
-static Void   local readOptions       Args((String));
+static Void   local readOptions       Args((String,Bool));
 static Bool   local processOption     Args((String));
 static Void   local setHeapSize       Args((String));
 static Int    local argToInt          Args((String));
@@ -255,10 +255,6 @@ String argv[]; {
     FileName hugsPrefsFile = "\0";
 #endif
 
-#if USE_REGISTRY
-    String regString;
-#endif 
-
     setLastEdit((String)0,0);
     lastEdit      = 0;
     scriptFile    = 0;
@@ -295,16 +291,13 @@ String argv[]; {
     hugsEdit      = strCopy(fromEnv("EDITOR",NULL));
 #endif
     hugsPath      = strCopy(HUGSPATH);
-    readOptions("-p\"%s> \" -r$$");
+    readOptions("-p\"%s> \" -r$$",FALSE);
 #if USE_REGISTRY
     projectPath   = readRegChildStrings(HKEY_LOCAL_MACHINE,ProjectRoot,
 				        "HUGSPATH", PATHSEP, "");
 
-    regString = readRegString(HKEY_LOCAL_MACHINE,HugsRoot,"Options","");
-    readOptions(regString); free(regString);
-
-    regString = readRegString(HKEY_CURRENT_USER, HugsRoot,"Options","");
-    readOptions(regString); free(regString);
+    readOptions(readRegString(HKEY_LOCAL_MACHINE,HugsRoot,"Options",""), TRUE);
+    readOptions(readRegString(HKEY_CURRENT_USER, HugsRoot,"Options",""), TRUE);
 #endif /* USE_REGISTRY */
 #if USE_PREFERENCES_FILE
     if (f=fopen(PREFS_FILE_NAME,"r")) { /* is preferences file in the {Current} folder? */
@@ -316,7 +309,7 @@ String argv[]; {
         if (f=fopen(hugsPrefsFile,"r"))
           readPrefsFile(f);
 	  }                                              /* else: take default preferences */
-    readOptions(hugsFlags);
+    readOptions(hugsFlags,FALSE);
     if (iniArgc > 0)            /* load additional files found in the preferences file */
 	  for (i=0; i<iniArgc; i++) {
 	    addScriptName(iniArgv[i],TRUE);
@@ -325,7 +318,7 @@ String argv[]; {
 # if HUGS_FOR_WINDOWS
     ReadGUIOptions();
 # endif
-    readOptions(fromEnv("HUGSFLAGS",""));
+    readOptions(fromEnv("HUGSFLAGS",""),FALSE);
 #endif
 
     for (i=1; i<argc; ++i) {            /* process command line arguments  */
@@ -595,20 +588,6 @@ static String local optionsToStr() {          /* convert options to string */
 #undef PUTInt
 #undef PUTStr
 
-static Void local readOptions(options)         /* read options from string */
-String options; {
-    String s;
-    if (options) {
-	stringInput(options);
-	while ((s=readFilename())!=0) {
-	    if (*s && !processOption(s)) {
-		ERRMSG(0) "Option string must begin with `+' or `-'"
-		EEND;
-	    }
-	}
-    }
-}
-
 static Bool local readOptions2(options)         /* read options from string */
 String options; {
     String s;
@@ -620,6 +599,17 @@ String options; {
 	}
     }
     return TRUE;
+}
+static Void local readOptions(options,freeUp)  /* read options from string */
+String options;
+Bool   freeUp; {
+    if (!readOptions2(options)) {
+        ERRMSG(0) "Option string must begin with `+' or `-'"
+	EEND;
+    }
+    if (options && freeUp) {
+	free(options);
+    }
 }
 
 static Bool local processOption(s)      /* process string s for options,   */

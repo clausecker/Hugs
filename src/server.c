@@ -11,8 +11,8 @@
  * included in the distribution.
  *
  * $RCSfile: server.c,v $
- * $Revision: 1.6 $
- * $Date: 2001/10/27 15:12:26 $
+ * $Revision: 1.7 $
+ * $Date: 2001/12/09 23:55:09 $
  * ------------------------------------------------------------------------*/
 
 #define NO_MAIN
@@ -167,9 +167,6 @@ String s; {
 DLLEXPORT(HugsServerAPI*) initHugsServer(argc, argv) /*server initialisation*/
 Int    argc;
 String argv[]; {
-#if USE_REGISTRY
-    String regString;
-#endif
 
     setHugsAPI();
 
@@ -182,17 +179,15 @@ String argv[]; {
 	namesUpto     = 0;		/* Number of script names set	   */
 	hugsPath      = strCopy(HUGSPATH);
 	if (argc == -1) {
-	    readOptions(argv[0]);
+	    readOptions(argv[0],FALSE);
 	} else {
 #if USE_REGISTRY
 	    projectPath = readRegChildStrings(HKEY_LOCAL_MACHINE,
 					      ProjectRoot, "HUGSPATH", PATHSEP, "");
-	    regString = readRegString(HKEY_LOCAL_MACHINE,HugsRoot,"Options","");
-	    readOptions(regString); free(regString);
-	    regString = readRegString(HKEY_CURRENT_USER,HugsRoot,"Options","");
-	    readOptions(regString); free(regString);
+	    readOptions(readRegString(HKEY_LOCAL_MACHINE,HugsRoot,"Options",""), TRUE);
+	    readOptions(readRegString(HKEY_CURRENT_USER,HugsRoot,"Options",""),TRUE);
 #endif /* USE_REGISTRY */
-	    readOptions(fromEnv("HUGSFLAGS",""));
+	    readOptions(fromEnv("HUGSFLAGS",""),FALSE);
 	    for (i=1; i<argc; ++i) {
 		if (!readOptions2(argv[i])) {
 		    setError("Unrecognised option");
