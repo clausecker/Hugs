@@ -9,8 +9,8 @@
  * included in the distribution.
  *
  * $RCSfile: prelude.h,v $
- * $Revision: 1.6 $
- * $Date: 2000/03/08 14:31:10 $
+ * $Revision: 1.7 $
+ * $Date: 2000/05/21 16:02:15 $
  * ------------------------------------------------------------------------*/
 
 #include "config.h"
@@ -109,7 +109,7 @@
  *                    rationalToDouble (fromDouble {dict} x) -> x
  *-------------------------------------------------------------------------*/
 
-#ifndef HASKELL_98_ONLY
+#if !HASKELL_98_ONLY
 #define TREX		1
 #define IPARAM		1
 #define MULTI_INST	1

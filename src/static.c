@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.19 $
- * $Date: 2000/03/08 14:31:10 $
+ * $Revision: 1.20 $
+ * $Date: 2000/05/21 16:02:15 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -2769,7 +2769,7 @@ Inst in; {
     List tvps = NIL, tvts = NIL;
     List fds = NIL;
 
-#ifndef HASKELL_98_ONLY
+#if !HASKELL_98_ONLY
     if (haskell98) {			/* Check for `simple' type	   */
 #endif
 	List tvs = NIL;
@@ -2786,7 +2786,7 @@ Inst in; {
 		EEND;
 	    }
 	    tvs = cons(arg(t),tvs);
-#ifndef HASKELL_98_ONLY
+#if !HASKELL_98_ONLY
 	}
 #endif
 	if (isVar(t)) {
@@ -2801,7 +2801,7 @@ Inst in; {
     tyvars = typeVarsIn(inst(in).specifics,NIL,NIL,tyvars);
     inst(in).head = depPredExp(line,tyvars,inst(in).head);
 
-#ifndef HASKELL_98_ONLY
+#if !HASKELL_98_ONLY
     if (haskell98)
 #endif
     {
@@ -2941,7 +2941,7 @@ Inst in; {
 	Int beta  = newKindedVars(inst(hd(ins)).kinds);
 	if (unifyPred(inst(in).head,alpha,inst(hd(ins)).head,beta)) {
 	    Cell pi  = copyPred(inst(in).head,alpha);
-#ifndef HASKELL_98_ONLY
+#if !HASKELL_98_ONLY
 	    if (allowOverlap && !haskell98) {
 		Bool bef = instCompare(in,hd(ins));
 		Bool aft = instCompare(hd(ins),in);
@@ -6158,7 +6158,7 @@ String wh;
 Bool   allowArgs;
 List   ps;
 Inst   in; {
-#ifndef HASKELL_98_ONLY
+#if !HASKELL_98_ONLY
     if (haskell98) {
 #endif
 	Cell pi = h98Context(allowArgs,ps);
@@ -6174,7 +6174,7 @@ Inst   in; {
 	    ERRTEXT	 "\n"
 	    EEND;
 	}
-#ifndef HASKELL_98_ONLY
+#if !HASKELL_98_ONLY
     }
 #endif
 }
@@ -6184,7 +6184,7 @@ Int    line;
 String wh;
 Cell   e;
 Type   t; {
-#ifndef HASKELL_98_ONLY
+#if !HASKELL_98_ONLY
     if (haskell98) {
 #endif
 	Type ty = t;
@@ -6201,7 +6201,7 @@ Type   t; {
 		EEND;
 	    }
 	}
-#ifndef HASKELL_98_ONLY
+#if !HASKELL_98_ONLY
     }
 #endif
 }
@@ -6209,12 +6209,12 @@ Type   t; {
 Void h98DoesntSupport(line,wh)		/* Report feature missing in H98   */
 Int    line;
 String wh; {
-#ifndef HASKELL_98_ONLY
+#if !HASKELL_98_ONLY
     if (haskell98) {
 #endif
 	ERRMSG(line) "Haskell 98 does not support %s", wh
 	EEND;
-#ifndef HASKELL_98_ONLY
+#if !HASKELL_98_ONLY
     }
 #endif
 }

@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: input.c,v $
- * $Revision: 1.9 $
- * $Date: 2000/03/08 14:31:10 $
+ * $Revision: 1.10 $
+ * $Date: 2000/05/21 16:02:15 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1431,7 +1431,7 @@ static Int local yylex() {             /* Read next input token ...        */
 	if (it==textNeedPrims)         return NEEDPRIMS;
 	if (it==textAsMod)             return ASMOD;
 	if (it==textWildcard)	       return '_';
-#ifndef HASKELL_98_ONLY
+#if !HASKELL_98_ONLY
 	if (it==textAll && !haskell98) return ALL;
 #if IPARAM
 	if (it==textWith && !haskell98) lookAhead(WITH);

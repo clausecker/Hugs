@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.21 $
- * $Date: 2000/05/05 15:49:52 $
+ * $Revision: 1.22 $
+ * $Date: 2000/05/21 16:02:15 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -23,7 +23,7 @@
 
 #include <stdio.h>
 
-#ifndef HASKELL_98_ONLY
+#if !HASKELL_98_ONLY
 Bool haskell98 = TRUE;			/* TRUE => Haskell 98 compatibility*/
 #endif
 
@@ -251,7 +251,7 @@ String argv[]; {
 	fatal("Unable to load prelude");
     }
 
-#ifndef HASKELL_98_ONLY
+#if !HASKELL_98_ONLY
     if (haskell98) {
 	Printf("Haskell 98 mode: Restart with command line option -98 to enable extensions\n\n");
     } else {
@@ -277,7 +277,7 @@ String argv[]; {
 
 struct options {                        /* command line option toggles     */
     char   c;                           /* table defined in main app.      */
-#ifndef HASKELL_98_ONLY
+#if !HASKELL_98_ONLY
     int    h98;
 #endif
     String description;
@@ -303,7 +303,7 @@ Bool state; {                           /* given state                     */
     Int count = 0;
     Int i;
     for (i=0; toggle[i].c; ++i)
-#ifdef HASKELL_98_ONLY
+#if HASKELL_98_ONLY
 	if (*toggle[i].flag == state) {
 #else
 	if (*toggle[i].flag == state && (!haskell98 || toggle[i].h98)) {
@@ -324,11 +324,11 @@ static Void local optionInfo() {        /* Print information about command */
 
     Printf("TOGGLES: groups begin with +/- to turn options on/off resp.\n");
     for (i=0; toggle[i].c; ++i) {
-#ifndef HASKELL_98_ONLY
+#if !HASKELL_98_ONLY
 	if (!haskell98 || toggle[i].h98) {
 #endif
 	    Printf(fmtc,toggle[i].c,toggle[i].description);
-#ifndef HASKELL_98_ONLY
+#if !HASKELL_98_ONLY
 	}
 #endif
     }
@@ -370,7 +370,7 @@ static Void local optionInfo() {        /* Print information about command */
 #if PROFILING
     Printf("\nProfile interval: -d%d", profiling ? profInterval : 0);
 #endif
-#ifdef HASKELL_98_ONLY
+#if HASKELL_98_ONLY
     Printf("\nCompatibility   : Haskell 98");
 #else
     Printf("\nCompatibility   : %s", haskell98 ? "Haskell 98 (+98)"
@@ -423,7 +423,7 @@ static String local optionsToStr() {          /* convert options to string */
 	PUTC(toggle[i].c);
 	PUTC(' ');
     }
-#ifndef HASKELL_98_ONLY
+#if !HASKELL_98_ONLY
     PUTS(haskell98 ? "+98 " : "-98 ");
 #endif
     PUTInt('h',hpSize);  PUTC(' ');
@@ -532,7 +532,7 @@ String s; {                             /* return FALSE if none found.     */
 		       }
 		       return TRUE;
         default  :
-#ifndef HASKELL_98_ONLY
+#if !HASKELL_98_ONLY
 	           if (strcmp("98",s)==0) {
 			   if (heapBuilt() && ((state && !haskell98) ||
 					       (!state && haskell98))) {
@@ -544,7 +544,7 @@ String s; {                             /* return FALSE if none found.     */
 		       } else {
 #endif
 			   toggleSet(*s,state);
-#ifndef HASKELL_98_ONLY
+#if !HASKELL_98_ONLY
                }
 #endif
 		       break;
@@ -706,73 +706,73 @@ static Void local forHelp() {
 
 struct options toggle[] = {             /* List of command line toggles    */
     {'s',
-#ifndef HASKELL_98_ONLY
+#if !HASKELL_98_ONLY
              1,
 #endif
              "Print no. reductions/cells after eval", &showStats},
     {'t',
-#ifndef HASKELL_98_ONLY
+#if !HASKELL_98_ONLY
              1,
 #endif
              "Print type after evaluation",           &addType},
     {'f',
-#ifndef HASKELL_98_ONLY
+#if !HASKELL_98_ONLY
              1,
 #endif
              "Terminate evaluation on first error",   &failOnError},
     {'g',
-#ifndef HASKELL_98_ONLY
+#if !HASKELL_98_ONLY
              1,
 #endif
              "Print no. cells recovered after gc",    &gcMessages},
     {'l',
-#ifndef HASKELL_98_ONLY
+#if !HASKELL_98_ONLY
              1, 
 #endif
              "Literate modules as default",           &literateScripts},
     {'e',
-#ifndef HASKELL_98_ONLY
+#if !HASKELL_98_ONLY
              1,
 #endif
              "Warn about errors in literate modules", &literateErrors},
     {'.',
-#ifndef HASKELL_98_ONLY
+#if !HASKELL_98_ONLY
              1,
 #endif
              "Print dots to show progress",           &useDots},
     {'q',
-#ifndef HASKELL_98_ONLY
+#if !HASKELL_98_ONLY
              1,
 #endif
              "Print nothing to show progress",        &quiet},
     {'w',
-#ifndef HASKELL_98_ONLY
+#if !HASKELL_98_ONLY
              1,
 #endif
              "Always show which modules are loaded",  &listScripts},
     {'k',
-#ifndef HASKELL_98_ONLY
+#if !HASKELL_98_ONLY
              1,
 #endif
              "Show kind errors in full",              &kindExpert},
     {'o',
-#ifndef HASKELL_98_ONLY
+#if !HASKELL_98_ONLY
              0,
 #endif
              "Allow overlapping instances",           &allowOverlap},
     {'u',
-#ifndef HASKELL_98_ONLY
+#if !HASKELL_98_ONLY
              1,
 #endif
              "Use \"show\" to display results",       &useShow},
     {'i',
-#ifndef HASKELL_98_ONLY
+#if !HASKELL_98_ONLY
              1,
 #endif
              "Chase imports while loading modules",   &chaseImports},
 #if EXPLAIN_INSTANCE_RESOLUTION
     {'x',   
-#ifndef HASKELL_98_ONLY
+#if !HASKELL_98_ONLY
              1,
 #endif
              "Explain instance resolution",           &showInstRes},
@@ -782,20 +782,20 @@ struct options toggle[] = {             /* List of command line toggles    */
 #endif
 #if DEBUG_CODE
     {'D',
-#ifndef HASKELL_98_ONLY
+#if !HASKELL_98_ONLY
           1,
 #endif
           "Debug: show generated G code",          &debugCode},
 #endif
 #if DEBUG_SHOWSC
     {'S',
-#ifndef HASKELL_98_ONLY
+#if !HASKELL_98_ONLY
           1,
 #endif
           "Debug: show generated SC code",         &debugSC},
 #endif
     {0,   
-#ifndef HASKELL_98_ONLY
+#if !HASKELL_98_ONLY
           0,
 #endif
           0}

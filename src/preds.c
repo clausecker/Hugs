@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: preds.c,v $
- * $Revision: 1.25 $
- * $Date: 2000/03/10 18:39:26 $
+ * $Revision: 1.26 $
+ * $Date: 2000/05/21 16:02:15 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -753,11 +753,11 @@ Int  o; {				/* superclass hierarchy		   */
  * ------------------------------------------------------------------------*/
 
 static Void local elimTauts() {		/* Remove tautological constraints */
-#ifndef HASKELL_98_ONLY
+#if !HASKELL_98_ONLY
     if (haskell98) {			/* from preds			   */
 #endif
 	reducePreds();			/* (or context reduce for Hask98)  */
-#ifndef HASKELL_98_ONLY
+#if !HASKELL_98_ONLY
     } else {
 	List ps = preds;
 	preds   = NIL;
