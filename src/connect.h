@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: connect.h,v $
- * $Revision: 1.86 $
- * $Date: 2004/02/16 11:09:51 $
+ * $Revision: 1.87 $
+ * $Date: 2004/09/13 10:36:09 $
  * ------------------------------------------------------------------------*/
 #ifndef __CONNECT_H__
 #define __CONNECT_H__
@@ -101,6 +101,7 @@ extern Name   nameIllegal;
 
 #if IO_HANDLES
 extern Name   nameEOFErr;
+extern Name   nameProtocolError;
 #endif
 
 #if DOTNET

@@ -14,8 +14,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: iomonad.c,v $
- * $Revision: 1.78 $
- * $Date: 2004/05/08 14:15:44 $
+ * $Revision: 1.79 $
+ * $Date: 2004/09/13 10:36:10 $
  * ------------------------------------------------------------------------*/
  
 Name nameIORun;			        /* run IO code                     */
@@ -36,7 +36,7 @@ static Int    local newHandle      Args((Cell,String));
 static String local modeString     Args((Int,Bool));
 static Cell   local openHandle     Args((StackPtr,Cell,Int,Bool,String));
 static Cell   local openFdHandle   Args((StackPtr,Int,Int,Bool,String));
-static Char   local hGetChar       Args((Int));
+static Char   local hGetChar       Args((Int,String));
 #endif
 
 #if IO_HANDLES
@@ -508,7 +508,7 @@ String loc; {
     return (handles[i].hcell = ap(HANDCELL,i));
 }
 
-static Char local hGetChar(Int h) {
+static Char local hGetChar(Int h, String fname) {
     Int c;
 #if CHAR_ENCODING
     if (handles[h].hLookAhead>=0) {
@@ -525,6 +525,22 @@ static Char local hGetChar(Int h) {
     else {
 	c = FGetChar(handles[h].hfp);
     }
+    if (c==EOF && !feof(handles[h].hfp)) {
+	IOFail(mkIOError(handles[h].hcell,
+			 toIOError(errno),
+			 fname,
+			 toIOErrorDescr(errno,TRUE),
+			 NIL));
+    }
+#if CHAR_ENCODING
+    else if (c==BAD_CHAR) {
+	IOFail(mkIOError(handles[h].hcell,
+			 nameProtocolError,
+			 fname,
+			 "invalid character encoding",
+			 NIL));
+    }
+#endif /* CHAR_ENCODING */
     return c;
 }
 
@@ -812,21 +828,13 @@ primFun(primHGetChar) {			/* Read character from handle	   */
 			 "handle is not readable",
 			 NIL));
     }
-    c = hGetChar(h);
+    c = hGetChar(h, "IO.hGetChar");
     if (c==EOF) {
-	if ( feof(handles[h].hfp) ) {
-	    IOFail(mkIOError(handles[h].hcell,
-			     nameEOFErr,
-			     "IO.hGetChar",
-			     "end of file",
-			     NIL));
-	} else {
-	    IOFail(mkIOError(handles[h].hcell,
-			     toIOError(errno),
-			     "IO.hGetChar",
-			     toIOErrorDescr(errno,TRUE),
-			     NIL));
-	}
+	IOFail(mkIOError(handles[h].hcell,
+			 nameEOFErr,
+			 "IO.hGetChar",
+			 "end of file",
+			 NIL));
     }
     IOReturn(mkChar(c));
 }
@@ -912,7 +920,7 @@ primFun(primHreader) {			/* read String from a handle 	   */
     Int h;                              /* Handle -> String                */
     HandleArg(h,1);
     if (handles[h].hmode&HSEMICLOSED) {	/* read requires semi-closed handle*/
-	Int c = hGetChar(h);
+	Int c = hGetChar(h, "IO.getContents");
 	if (c!=EOF && c>=0 && c<=MAXCHARVAL) {
 	    updapRoot(consChar(c),ap(nameHreader,primArg(1)));
 	    return;
@@ -1277,18 +1285,12 @@ primFun(primHLookAhead) { /* Peek at the next char */
 	return;
     }
 #endif
-    if (feof(handles[h].hfp)) {
+    if (feof(handles[h].hfp) ||
+	(c = hGetChar(h, "IO.hLookAhead")) == EOF) {
 	IOFail(mkIOError(handles[h].hcell,
 			 nameEOFErr,
 			 "IO.hLookAhead",
 			 "end of file",
-			 NIL));
-    }
-    if ((c = hGetChar(h)) == EOF) {
-	IOFail(mkIOError(handles[h].hcell,
-			 toIOError(errno),
-			 "IO.hLookAhead",
-			 toIOErrorDescr(errno,TRUE),
 			 NIL));
     }
 #if CHAR_ENCODING

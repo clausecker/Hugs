@@ -1663,6 +1663,7 @@ data IOErrorType
   | PermissionDenied
   | UserError
      -- GHC compatibility
+  | ProtocolError
   | UnsupportedOperation
   | OtherError
      -- DOTNET only
@@ -1680,6 +1681,7 @@ instance Show IOErrorType where
       IllegalOperation  -> "illegal operation"
       PermissionDenied  -> "permission denied"
       UserError         -> "user error"
+      ProtocolError     -> "protocol error"
       UnsupportedOperation -> "unsupported operation"
       OtherError        -> "failed"
       DotNetException   -> ".NET exception"

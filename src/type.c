@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: type.c,v $
- * $Revision: 1.75 $
- * $Date: 2003/11/01 17:02:50 $
+ * $Revision: 1.76 $
+ * $Date: 2004/09/13 10:36:11 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -116,6 +116,7 @@ Name   nameIllegal;
 #endif
 #if    IO_HANDLES
 Name   nameEOFErr;
+Name   nameProtocolError;
 #endif
 Name   nameArithException;
 Name   nameArrayException;
@@ -3326,6 +3327,7 @@ Void linkPreludeCM() {			/* Hook to cfuns and mfuns in	   */
 	nameAlreadyInUse   = linkName("ResourceBusy");
 	nameIsFull         = linkName("ResourceExhausted");
 	nameEOFErr         = linkName("EOF");
+	nameProtocolError  = linkName("ProtocolError");
 	nameIllegal        = linkName("IllegalOperation");
 	namePermDenied     = linkName("PermissionDenied");
 	nameUserErr        = linkName("UserError");
