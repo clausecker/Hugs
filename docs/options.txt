@@ -112,7 +112,7 @@ is in effect, neither syntax is available.)  This frees 'dlet' and 'with'
 for use by programs, and is required by some libraries, e.g. Foreign.
 
 Add loaded module's directory to search path: {+,-}X
-------------------------------------------------
+----------------------------------------------------
 
 By default, the interpreter adds the directory of the file being
 loaded to its import search path. This is so that when resolving
@@ -133,6 +133,12 @@ import of the Haskell98 module Char. When Hugs loads up
 A/B/C.hs, it adds A/B/ to its search path. This will cause
 the interpreter to resolve the import of 'Char' to 
 A/B/Char, which is wrong. 
+
+However the impact is slight, because hierarchical modules tend to
+import other modules with compound names. If the module A.B.C had
+imported the same module by its longer name Data.Char, no confusion
+would arise unless A/B/Data/Char.hs were found. In particular,
+the hierarchical libraries provided with Hugs are unaffected.
 
 Use hierarchical libraries: {+,-}N
 ----------------------------------
