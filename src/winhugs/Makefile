@@ -49,7 +49,7 @@ HFILES		= prelude.h config.h options.h storage.h connect.h \
 		  errors.h command.h server.h
 CFILES		= hugs.c storage.c input.c static.c type.c subst.c \
 		  output.c compiler.c machine.c interp.c builtin.c \
-		  server.c ffi.c
+		  server.c ffi.c module.c
 INCFILES	= parser.c preds.c bignums.c scc.c machdep.c timer.c \
 		  printer.c iomonad.c interns.c stmonad.c array.c
 YFILES		= parser.y
@@ -57,7 +57,8 @@ SOURCES		= $(HFILES) $(CFILES) $(INCFILES) $(YFILES)
 OBJECTS		= storage.obj input.obj static.obj type.obj subst.obj \
                   compiler.obj plugin.obj builtin.obj machine.obj output.obj \
                   winframe.obj wintext.obj  winhint.obj \
-                  winstln.obj wintoolb.obj winutils.obj ffi.obj version.obj
+                  winstln.obj wintoolb.obj winutils.obj ffi.obj version.obj \
+		  module.obj
 IOBJECTS	= hugs.obj $(OBJECTS)
 PRELUDE		= config.h options.h prelude.h "winhugs\wintext.h"
 
@@ -157,7 +158,7 @@ input.obj	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h \
 		  parser.c command.h   
 subst.obj	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h subst.h
 static.obj	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h subst.h \
-		  scc.c		       
+		  scc.c module.h
 type.obj	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h subst.h \
 		  preds.c scc.c	       
 output.obj	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h
@@ -167,6 +168,7 @@ plugin.obj	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h
 builtin.obj	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h \
 		  bignums.c printer.c iomonad.c interns.c stmonad.c array.c dirprim.c timeprim.c
 ffi.obj		: $(PRELUDE) storage.h HsFFI.h connect.h errors.h
+module.obj	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h module.h
 
 #dependencies for these files are incomplete
 

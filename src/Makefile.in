@@ -53,14 +53,14 @@ HFILES		= prelude.h config.h options.h storage.h connect.h \
 		  errors.h command.h server.h subst.h HsFFI.h
 CFILES		= hugs.c storage.c input.c static.c type.c subst.c \
 		  output.c compiler.c machine.c builtin.c server.c \
-		  ffi.c
+		  ffi.c module.c
 INCFILES	= parser.c preds.c bignums.c machdep.c timer.c scc.c \
 		  printer.c iomonad.c interns.c stmonad.c array.c
 YFILES		= parser.y
 SOURCES		= $(HFILES) $(CFILES) $(INCFILES) $(YFILES) 
 OBJECTS		= storage@OBJ@ input@OBJ@    static@OBJ@ type@OBJ@    \
 		  subst@OBJ@   compiler@OBJ@ plugin@OBJ@ builtin@OBJ@ \
-		  machine@OBJ@ output@OBJ@ ffi@OBJ@ version@OBJ@
+		  machine@OBJ@ output@OBJ@ ffi@OBJ@ version@OBJ@ module@OBJ@
 IOBJECTS	= hugs@OBJ@ $(OBJECTS)
 PRELUDE		= config.h options.h prelude.h
 
@@ -175,7 +175,7 @@ input@OBJ@	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h \
 		  parser.c command.h   
 subst@OBJ@	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h subst.h
 static@OBJ@	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h subst.h \
-		  scc.c		       
+		  scc.c module.h
 type@OBJ@	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h subst.h \
 		  preds.c scc.c	       
 output@OBJ@	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h
@@ -185,6 +185,7 @@ plugin@OBJ@	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h
 builtin@OBJ@	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h \
 		  bignums.c printer.c iomonad.c interns.c stmonad.c array.c dirprim.c timeprim.c
 ffi@OBJ@	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h
+module@OBJ@	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h module.h
 
 ################################################################
 # Regression tests (none supplied)

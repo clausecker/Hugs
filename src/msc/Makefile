@@ -28,7 +28,7 @@ default		:: hugs.exe runhugs.exe ffihugs.exe hugsscript.dll
 
 CC		= cl /nologo
 CFLAGS          = -ML
-#CFLAGS		= -ML -DMONTH_YEAR="\"Oct 2002 RC1\""
+#CFLAGS		= -ML -DMONTH_YEAR="\"Nov 2002"" -Zi
 # When debugging:
 #CFLAGS		= -ML -Zi
 OPTFLAGS	= -O2
@@ -53,14 +53,14 @@ HFILES		= prelude.h config.h options.h storage.h connect.h \
 		  errors.h command.h server.h
 CFILES		= hugs.c storage.c input.c static.c type.c subst.c \
 		  output.c compiler.c machine.c interp.c builtin.c \
-		  server.c ffi.c
+		  server.c ffi.c module.c
 INCFILES	= parser.c preds.c bignums.c scc.c machdep.c timer.c \
 		  printer.c iomonad.c interns.c stmonad.c array.c
 YFILES		= parser.y
 SOURCES		= $(HFILES) $(CFILES) $(INCFILES) $(YFILES) 
 OBJECTS		= storage.obj input.obj static.obj type.obj subst.obj \
 		  compiler.obj plugin.obj builtin.obj machine.obj output.obj \
-		  ffi.obj version.obj
+		  ffi.obj version.obj module.obj
 IOBJECTS	= hugs.obj hugs.res $(OBJECTS)
 PRELUDE		= config.h options.h prelude.h
 
@@ -159,7 +159,6 @@ compiler.obj	: compiler.c
 		  $(CC) -c $(CFLAGS) compiler.c
 static.obj	: static.c
 		  $(CC) -c $(CFLAGS) static.c
-
 parser.c	: parser.y
 		  -$(YACC) parser.y
 		  mv parser.tab.c parser.c
@@ -176,7 +175,7 @@ input.obj	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h \
 		  parser.c command.h   
 subst.obj	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h subst.h
 static.obj	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h subst.h \
-		  scc.c		       
+		  scc.c module.h
 type.obj	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h subst.h \
 		  preds.c scc.c	       
 output.obj	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h
@@ -186,6 +185,7 @@ plugin.obj	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h
 builtin.obj	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h \
 		  bignums.c printer.c iomonad.c interns.c stmonad.c array.c dirprim.c timeprim.c
 ffi.obj		: $(PRELUDE) storage.h HsFFI.h connect.h errors.h
+module.obj	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h module.h
 
 hugs.res	: msc\hugs.rc ..\icons\hugsicon.ico
 		rc /imsc /i..\icons /r /fo hugs.res msc\hugs.rc 

@@ -40,13 +40,13 @@ HFILES		= prelude.h config.h options.h storage.h connect.h \
 		  errors.h command.h server.h
 CFILES		= hugs.c storage.c input.c static.c type.c subst.c \
 		  output.c compiler.c machine.c interp.c builtin.c \
-		  server.c ffi.c
+		  server.c ffi.c module.c
 INCFILES	= parser.c preds.c bignums.c scc.c machdep.c timer.c \
 		  printer.c iomonad.c interns.c stmonad.c array.c
 YFILES		= parser.y
 SOURCES		= $(HFILES) $(CFILES) $(INCFILES) $(YFILES) 
 OBJECTS		= storage.o input.o static.o type.o subst.o compiler.o \
-		  plugin.o builtin.o machine.o output.o ffi.o version.o
+		  plugin.o builtin.o machine.o output.o ffi.o version.o module.o
 IOBJECTS	= hugs.o $(OBJECTS)
 PRELUDE		= config.h options.h prelude.h
 
@@ -123,13 +123,12 @@ server.o	: $(PRELUDE) storage.h connect.h errors.h \
 		  command.h machdep.c timer.c server.c server.h
 hugs.o		: $(PRELUDE) storage.h connect.h errors.h \
 		  command.h machdep.c timer.c
-ffi.o		: $(PRELUDE) storage.h connect.h errors.h
 storage.o	: $(PRELUDE) storage.h connect.h errors.h
 input.o		: $(PRELUDE) storage.h connect.h errors.h \
 		  parser.c command.h
 subst.o		: $(PRELUDE) storage.h connect.h errors.h subst.h
 static.o	: $(PRELUDE) storage.h connect.h errors.h subst.h \
-		  scc.c
+		  scc.c module.h
 type.o		: $(PRELUDE) storage.h connect.h errors.h subst.h \
 		  scc.c preds.c
 output.o	: $(PRELUDE) storage.h connect.h errors.h
@@ -139,6 +138,8 @@ machine.o	: $(PRELUDE) storage.h connect.h errors.h
 plugin.o	: $(PRELUDE) storage.h connect.h errors.h
 builtin.o	: $(PRELUDE) storage.h connect.h errors.h \
 		  bignums.c printer.c iomonad.c interns.c stmonad.c array.c
+ffi.o		: $(PRELUDE) storage.h connect.h errors.h
+module.o	: $(PRELUDE) storage.h connect.h errors.h module.h
 
 ################################################################
 # Regression tests (none supplied)
