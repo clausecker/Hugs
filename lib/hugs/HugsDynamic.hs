@@ -23,7 +23,7 @@ data Type  = App Tycon [Type] deriving Eq
 instance Show Type where
   showsPrec p (App tycon tys) 
     | tycon == listTC && onearg 
-    = showString "[" . shows arg1 . showString "]"
+    = showString "[" . showsPrec 0 arg1 . showString "]"
     | tycon == funTC && twoarg 
     = showParen (p > 8) $
       showsPrec 9 arg1 . showString " -> " . showsPrec 8 arg2
@@ -36,7 +36,8 @@ instance Show Type where
     = showParen (p > 9) $
       showsPrec p tycon . showArgs tys
    where
-    (arg1 : arg2 : _) = tys
+    arg1 = head tys
+    arg2 = head (tail tys)
     l = length tys
     zeroarg = l == 0
     onearg = l == 1
