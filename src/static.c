@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.62 $
- * $Date: 2002/04/16 17:35:44 $
+ * $Revision: 1.63 $
+ * $Date: 2002/04/16 20:01:24 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -7439,8 +7439,13 @@ Void checkDefns() {			/* Top level static analysis	   */
     /* A module's 'modImports' list is only used to construct a precise export
      * list in the presence of module re-exportation. We've now finished
      * computing the export list, so 'modImports' can then be stubbed out.
+     *
+     * 4/02: No longer true, 'modImports' is also used to lookup qual names
+     *       when evaluating expressions from the read-eval-loop, so we can't
+     *       stub out this list.
+     *
+     * module(thisModule).modImports = NIL;
      */
-    module(thisModule).modImports = NIL;
     staticAnalysis(RESET);
 }
 
@@ -7473,8 +7478,12 @@ Cell v; {
     if (isNull(n)) {
 	n            = newName(textOf(v),NIL);
 	name(n).defn = PREDEFINED;
-    } else if (name(n).defn!=PREDEFINED) {
+    } else if (name(n).defn!=PREDEFINED && name(n).mod == currentModule) {
+	/* A local repeated definition */
 	duplicateError(line,name(n).mod,name(n).text,"variable");
+    } else if (name(n).defn!=PREDEFINED) {
+	n            = newName(textOf(v),NIL);
+	name(n).defn = PREDEFINED;
     }
     name(n).line = line;
 }
