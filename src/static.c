@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.55 $
- * $Date: 2002/03/21 18:34:59 $
+ * $Revision: 1.56 $
+ * $Date: 2002/03/22 00:00:26 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1838,9 +1838,18 @@ Int o; {
     Cell this = NIL;
     /* alloc additional vars for any vars in supers not in the head */
     newKindvars(length(cclass(c).tyvars) - cclass(c).arity);
+
     /* better not fail ;-) */
-    if (!matchPred(pi,o,cclass(c).head,alpha))
-	internal("inheritFundeps - predicate failed to match it's own head!");
+    if (!matchPred(pi,o,cclass(c).head,alpha)) {
+	/* If the qualified type is not valid, for instance by
+	 * having type variables occurring free in the context,
+	 * but not in the head -- we will end up here. 
+	 *
+	 * Silently give up & assume that checkClassDefn2() will
+	 * catch the error condition.
+	 */
+	return xfds;
+    }
     this = copyPred(pi,o);
     for (; nonNull(scs); scs=tl(scs)) {
 	Class s = getHead(hd(scs));
