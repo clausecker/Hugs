@@ -1162,6 +1162,7 @@ Hugs search path (see <xref linkend="option-search-path"/>) includes
 You can remove the package by simply deleting this directory.
 </para>
 </listitem>
+</varlistentry>
 
 <varlistentry>
 <term><filename><replaceable>prefix</replaceable>/lib/hugs/programs/<replaceable>program</replaceable></filename></term>
