@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.151 $
- * $Date: 2003/04/28 17:15:24 $
+ * $Revision: 1.152 $
+ * $Date: 2003/05/12 08:14:47 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -4257,7 +4257,7 @@ Cell type; {
 static String skipSpaces  Args((String));
 static String matchToken  Args((String,String));
 static String skipToSpace Args((String));
-static String skipToChar  Args((String,char));
+static String skipToChar  Args((String,int));
 static String matchFname  Args((String));
 
 static String skipSpaces(s)
@@ -4278,7 +4278,7 @@ String s; {
 
 static String skipToChar(s,c)
 String s;
-char   c; {
+int    c; {
     while (*s != '\0' && *s != c) {
         ++s;
     }
