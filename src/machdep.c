@@ -11,8 +11,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.91 $
- * $Date: 2003/07/04 11:59:52 $
+ * $Revision: 1.92 $
+ * $Date: 2003/07/04 13:49:12 $
  * ------------------------------------------------------------------------*/
 #include "prelude.h"
 #include "storage.h"
@@ -227,6 +227,8 @@ Bool   isReg; {
  * Search for script files on the HUGS path:
  * ------------------------------------------------------------------------*/
 
+static String local homeDir	  Args((void));
+
 #if __MWERKS__ && macintosh
 static String local currentDir	  Args((void));
 #endif
@@ -359,6 +361,10 @@ String hugsdir() {		/* directory containing libraries/Prelude.hs */
     char *hugsdir = getenv("HUGSDIR");
     return hugsdir ? hugsdir : HUGSDIR;
 #endif
+}
+
+static String homeDir() {
+    return getenv("HOME");
 }
 
 #if __MWERKS__ && macintosh
@@ -678,6 +684,7 @@ struct shellVariable {
 
 static struct shellVariable shell_var[] = {
     { "Hugs",		&hugsdir },
+    { "Home",		&homeDir },
 #if __MWERKS__ && macintosh
     { "Current",	&currentDir },
 #endif

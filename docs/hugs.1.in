@@ -143,6 +143,8 @@ A null entry in this list will be replaced by the previous search path;
 a null \fIstr\fP means the default path.
 Any occurrence of \fB{Hugs}\fP in this string is expanded to
 the Hugs library directory, namely \fB\*(LB\fP.
+Similarly, \fB{Home}\fP is expanded to your home directory
+(the value of the \fBHOME\fP environment variable).
 An entry of the form `\fIdirectory\fP\fB/*\fP'
 means all the immediate subdirectories of
 .IR directory .
