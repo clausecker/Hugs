@@ -251,9 +251,11 @@ hslibs() {
   cvt base Foreign/C/Types.hs
   cvt base Foreign/C/TypesISO.hs
   cvt base Foreign/ForeignPtr.hs
+  cvt base Foreign/Marshal.hs
   cvt base Foreign/Marshal/Alloc.hs
   cvt base Foreign/Marshal/Array.hs
   cvt base Foreign/Marshal/Error.hs
+  cvt base Foreign/Marshal/Pool.hs
   cvt base Foreign/Marshal/Utils.hs
   cvt base Foreign/Ptr.hs
   cvt base Foreign/StablePtr.hs
