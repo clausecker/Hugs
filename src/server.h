@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: server.h,v $
- * $Revision: 1.6 $
- * $Date: 2002/04/11 23:20:21 $
+ * $Revision: 1.7 $
+ * $Date: 2002/07/05 12:54:25 $
  * ------------------------------------------------------------------------*/
 
 #ifndef Args
@@ -59,5 +59,7 @@ typedef struct _HugsServerAPI {
 
 /* type of "initHugsServer" function */
 typedef HugsServerAPI *(*HugsServerInitFun) Args((int, char**));
+/* type of "shutdownHugsServer" function */
+typedef void (*HugsServerShutdownFun) Args((HugsServerAPI*));
 
 /* ------------------------------------------------------------------------*/
