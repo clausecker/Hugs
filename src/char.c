@@ -14,6 +14,7 @@
 #include "connect.h"
 #include "errors.h"
 #include "char.h"
+#include <errno.h>
 
 /* --------------------------------------------------------------------------
  * Unicode character properties (cf http://www.unicode.org/ucd/)
@@ -415,8 +416,10 @@ Bool charIsRepresentable(Char c) {
 	if (mbtowc(&wc, buf, n) >= 0)
 	    return wc==c;
 	mbtowc(NULL, NULL, 0);			/* reset shift state */
-    } else
+    } else {
 	wctomb(NULL, 0);
+	errno = 0;
+    }
     return FALSE;
 }
 
@@ -438,8 +441,10 @@ int fgetc_mb(FILE *f) {
 	if (mbtowc(&wc, buf, n) >= 0)
 	    return wc;
 	mbtowc(NULL, NULL, 0);			/* reset shift state */
-	if (n == MAX_CHAR_ENCODING)
+	if (n == MAX_CHAR_ENCODING) {
+	    errno = 0;
 	    return BAD_CHAR;
+	}
     }
 }
 
@@ -451,6 +456,7 @@ Void addc_mb(Char c, String *sp) {
     else {
 	*(*sp)++ = '?';
 	wctomb(NULL, 0);
+	errno = 0;
     }
 }
 
@@ -463,9 +469,10 @@ Char extc_mb(String *sp) {
     else if (size==0)				/* string starts with \0 */
 	(*sp)++;
     else {
-	sp++;
+	(*sp)++;
 	c = BAD_CHAR;
 	mbtowc(NULL, NULL, 0);			/* reset shift state */
+	errno = 0;
     }
     return c;
 }
