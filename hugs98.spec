@@ -1,12 +1,12 @@
 Vendor:       Galois Connections, Portland, Oregon.
 Name:         hugs98
-Version:      Nov2001
+Version:      Dec2001
 License:      BSDish
 Release:      1
 Group:        Development/Languages/Haskell
 Packager:     jeff@galois.com
 URL:          http://www.haskell.org/hugs
-Source:       http://www.cse.ogi.edu/PacSoft/projects/Hugs/downloads/hugs98-Nov2001.tar.gz
+Source:       http://cvs.haskell.org/Hugs/downloads/hugs98-Dec2001.tar.gz
 Requires:     readline
 BuildRoot:    /tmp/hugs98
 Summary:      A Haskell Interpreter
