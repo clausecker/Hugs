@@ -25,12 +25,19 @@ export HUGSFLAGS
 
 test_module() {
 	module=$1
-	hugs +98 $module </dev/null >$tmpfile+
-	hugs -98 $module </dev/null >$tmpfile-
+	# The +. flag ensures that ERRORs will be at the start of a line
+	hugs +98 +. $module </dev/null >$tmpfile+
+	hugs -98 +. $module </dev/null >$tmpfile-
 	if grep "^ERROR \"$module\" - Unable to open file \"$module\"" $tmpfile- >/dev/null
 	then	echo "missing  $module"
 	elif grep ^ERROR $tmpfile- >/dev/null
-	then	echo "*ERROR*  $module"
+	then
+		module2="`grep '^ERROR ' $tmpfile- | sed -e 's:.*"[^"]*/[a-z][^"/]*/\([^".]*\)\.[a-z]*".*:\1:' -e 's:/:.:g'`"
+		if [ "$module" != "$module2" ]
+		then	reason="imports $module2"
+		else	reason="`sed -n '/^ERROR / s/.* - //p' $tmpfile-`"
+		fi
+		echo "*ERROR*  $module ($reason)"
 	elif grep ^ERROR $tmpfile+ >/dev/null
 	then
 		module2="`grep '^ERROR ' $tmpfile+ | sed -e 's:.*"[^"]*/[a-z][^"/]*/\([^".]*\)\.[a-z]*".*:\1:' -e 's:/:.:g'`"
