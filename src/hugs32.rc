@@ -158,21 +158,21 @@ FONT 8, "Arial"
  AUTOCHECKBOX "Show reduction and cell &statistics", ID_OP, 14, 14, 126, 10, BS_AUTOCHECKBOX | WS_TABSTOP
  AUTOCHECKBOX "Show &type after evaluation", ID_OP +1, 14, 28, 126, 10, BS_AUTOCHECKBOX | WS_TABSTOP
  AUTOCHECKBOX "Terminate evaluation on &first error", ID_OP +2, 14, 42, 126, 10, BS_AUTOCHECKBOX | WS_TABSTOP
- AUTOCHECKBOX "Show &kind errors in full", ID_OP +8, 14, 56, 126, 10, BS_AUTOCHECKBOX | WS_TABSTOP
+ AUTOCHECKBOX "Show &kind errors in full", ID_OP +9, 14, 56, 126, 10, BS_AUTOCHECKBOX | WS_TABSTOP
  AUTOCHECKBOX "Print no. cells recovered after &gc", ID_OP +3, 14, 70, 126, 10, BS_AUTOCHECKBOX | WS_TABSTOP
- AUTOCHECKBOX "&Use ""show"" to display results", ID_OP +10, 14, 84, 126, 10, BS_AUTOCHECKBOX | WS_TABSTOP
+ AUTOCHECKBOX "&Use ""show"" to display results", ID_OP +11, 14, 84, 126, 10, BS_AUTOCHECKBOX | WS_TABSTOP
  LTEXT "&Prompt string:", -1, 15, 101, 47, 8, NOT WS_GROUP
  EDITTEXT ID_PROMPT, 64, 99, 74, 12, WS_BORDER | WS_TABSTOP
  LTEXT "&Repeat last expression:", -1, 15, 116, 76, 8, NOT WS_GROUP
  EDITTEXT ID_LASTEXPR, 92, 114, 46, 12, WS_BORDER | WS_TABSTOP
  GROUPBOX " Loading S&cript Files: ", -1, 155, 4, 138, 88, BS_GROUPBOX | WS_GROUP
- AUTOCHECKBOX "Chase &imports while loading files", ID_OP +11, 161, 14, 126, 10
- AUTOCHECKBOX "Always show &which files loaded", ID_OP +7, 161, 30, 126, 10
- AUTOCHECKBOX "&Literate scripts as default", ID_OP +4, 161, 46, 126, 10
- AUTOCHECKBOX "Warn about &errors in literate scripts", ID_OP +5, 161, 62, 126, 10
+ AUTOCHECKBOX "Chase &imports while loading files", ID_OP +12, 161, 14, 126, 10
+ AUTOCHECKBOX "Always show &which files loaded", ID_OP +8, 161, 30, 126, 10
+ AUTOCHECKBOX "&Literate modules as default", ID_OP +4, 161, 46, 126, 10
+ AUTOCHECKBOX "Warn about &errors in literate modules", ID_OP +5, 161, 62, 126, 10
  AUTOCHECKBOX "Print dots (&.) to show progress", ID_OP +6, 161, 78, 126, 10
  GROUPBOX "La&nguage features", -1, 155, 100, 138, 32, BS_GROUPBOX | WS_GROUP
- AUTOCHECKBOX "Allow &overlapping instances", ID_OP +9, 161, 114, 126, 10, BS_AUTOCHECKBOX | WS_TABSTOP
+ AUTOCHECKBOX "Allow &overlapping instances", ID_OP +10, 161, 114, 126, 10, BS_AUTOCHECKBOX | WS_TABSTOP
  LTEXT "Search p&ath:", -1, 8, 140, 54, 8, WS_GROUP
  EDITTEXT ID_HUGSPATH, 53, 138, 240, 12, ES_AUTOHSCROLL | WS_BORDER | WS_TABSTOP
  LTEXT "E&ditor:", -1, 8, 157, 23, 8, NOT WS_GROUP
