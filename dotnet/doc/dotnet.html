@@ -31,15 +31,24 @@ the Hugs98 interpreter operates side-by-side with the .NET run-time,
 providing code in either world with just the ability to call code in
 the other.
 
+
 <h2>Example</h2>
 
 To give a flavour of what's possible with Hugs98 for .NET, here's 
 how to fetch a URL into a Haskell String:
 
 <pre>
+module Main where
+
+import DotNet
+
+foreign import dotnet
+  "static System.Net.WebRequest.Create"
+  createURL :: String -> IO (Object ())
+
 fetchURL :: String -> IO String
 fetchURL url = do
-  req <- invokeStatic "System.Net.WebRequest" "Create" url
+  req <- createURL url
   when (isNullObj req)
        (ioError (userError ("Unable to fetch " ++ show url)))
   rsp <- req # invoke "GetResponse" ()
@@ -54,10 +63,10 @@ example and many others, for details of what this code is doing.
 
 A Windows Installer containing Hugs98 and the .NET extensions is
 available via <a href="http://galois.com/~sof/hugs98.net/hugs98-net.msi">http</a>.
-You need to have either Visual Studio .NET or the .NET Framework SDK
-installed to use Hugs98 for .NET.
+To use it, you only need to have the .NET Framework installed on your
+machine (i.e., no need for Visual Studio .NET).
 <p>
-A source release is forthcoming.
+Sources are available via CVS.
 
 <h2>Documentation</h2>
 
@@ -67,8 +76,10 @@ The distribution includes documentation on how to interop with the
 .NET platform, but is also available in on-line form:
 
 <ul>
+<li>Accessing .NET via the <a href="dotnet-ffi.html">FFI</a>.
 <li>The DotNet library <a href="dotnet-lib.html">documentation</a>.
-<li>Brief <a href="examples.html">overview</a> of samples included in distribution.
+<li>Brief <a href="examples.html">overview</a> of the samples included 
+in distribution.
 </ul>
 
 <h2>Authors</h2>
@@ -78,7 +89,7 @@ its <a href="http://haskell.org/hugs">homepage</a>.
 
 <p>
 The .NET extensions are by <a href="http://galois.com/~sof/">Sigbjorn
-Finne</a>, with helpful input and encouragement from <a
+Finne</a>, with initial input and encouragement from
 href="http://research.microsoft.com/~emeijer/">Erik Meijer</a>.
 
 <h3>Copyright and License</h3>
@@ -89,12 +100,12 @@ Technology, 1994-2001, All rights reserved. It is distributed as free
 software under the license in the file "License", which is included in
 the distribution. 
 <p>
-The .NET extensions are Copyright Sigbjorn Finne, 2002, All rights
+The .NET extensions are Copyright Sigbjorn Finne, 2002-2003, All rights
 reserved. It is distributed as free software under the same license as the
-Hugs98 interpreter.
+Hugs98 interpreter (see the file "License.net" included with the distribution.)
 
 <hr>
 <address>
-<!-- hhmts start --> Last modified: Mon Apr 08 16:36:09 Pacific Daylight Time 2002 <!-- hhmts end -->
+<!-- hhmts start --> Last modified: Tue Mar 11 09:25:34 Pacific Standard Time 2003 <!-- hhmts end -->
 </address>
 </body> </html>
