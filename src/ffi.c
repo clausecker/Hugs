@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: ffi.c,v $
- * $Revision: 1.21 $
- * $Date: 2002/10/31 01:41:02 $
+ * $Revision: 1.22 $
+ * $Date: 2003/01/03 16:12:49 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -88,8 +88,9 @@ String fn; {
     fprintf(out,"static HugsAPI4 *hugs = 0;\n");
 }
 
-Void foreignFooter(fn,is,es)
+Void foreignFooter(fn,mn,is,es)
 String fn;
+Text mn;
 List is;
 List es; {
     List xs   = NIL;
@@ -144,6 +145,24 @@ List es; {
       fprintf(out,"    }\n");
     }
     fprintf(out, "}\n");
+
+    /* For use as a plugin, rename the initialization function with a name  */
+    /* derived from the module name, but abbreviated for limited linkers.   */
+    /* example: Foreign.Marshal.Alloc yields initFMAlloc()                  */
+    fprintf(out, "\n");
+    fprintf(out, "#ifdef STATIC_LINKAGE\n");
+    fprintf(out, "#define initModule init");
+    {
+	String s = textToStr(mn);
+	String next;
+	while ((next = strchr(s, '.')) != NULL) {
+	    fprintf(out, "%c", s[0]);
+	    s = next+1;
+	}
+	fprintf(out, "%s\n", s);
+    }
+    fprintf(out, "#endif\n");
+    fprintf(out, "\n");
 
     /* Boilerplate initialization function */
     fprintf(out,
