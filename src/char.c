@@ -441,10 +441,9 @@ int fgetc_mb(FILE *f) {
 	if (mbtowc(&wc, buf, n) >= 0)
 	    return wc;
 	mbtowc(NULL, NULL, 0);			/* reset shift state */
-	if (n == MAX_CHAR_ENCODING) {
-	    errno = 0;
+	errno = 0;
+	if (n == MAX_CHAR_ENCODING)
 	    return BAD_CHAR;
-	}
     }
 }
 
