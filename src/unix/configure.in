@@ -2,8 +2,8 @@ dnl ################################################################
 dnl Process this file with autoconf to produce a configure script.
 dnl
 dnl $RCSfile: configure.in,v $
-dnl $Revision: 1.7 $
-dnl $Date: 2001/04/07 19:09:19 $
+dnl $Revision: 1.8 $
+dnl $Date: 2001/06/04 23:24:08 $
 dnl ################################################################
 
 AC_INIT(../hugs.c)
@@ -314,6 +314,14 @@ GCC_LINT_FLAGS="-Wall \
 
 CFLAGS="-g"
 OPTFLAGS="-O2"
+
+dnl  The following patch avoids the outburst of (benign) error messages
+dnl  during compilation of machine.c under MacOS X/Darwin
+dnl
+case "`uname -s`" in
+  Darwin) CFLAGS="$CFLAGS -traditional-cpp" ;;
+  *) ;;
+esac
 
 dnl Lint flags
 dnl
