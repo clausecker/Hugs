@@ -27,6 +27,7 @@ import Distribution.Simple.Build
 import Distribution.Simple.Configure
 import Distribution.Simple.Install
 import Distribution.Simple.LocalBuildInfo
+import Distribution.Simple.Register
 import Distribution.Simple.Utils
 import Distribution.Version
 
@@ -60,7 +61,7 @@ main
 		whenM (doesFileExist "configure") $
 			rawSystem "./configure"
 				(maybe id prefix_opt mb_prefix args)
-		pkg_descr <- getBuildParams currentDir pkg_descr
+		pkg_descr <- getBuildParams pkg_descr
 		when (not (buildPackage pkg_descr))
 			exitFailure
 		localbuildinfo <- configure pkg_descr flags
@@ -69,18 +70,20 @@ main
 	    BuildCmd -> do
 		(_, args) <- parseBuildArgs args []
 		no_extra_flags args
-		pkg_descr <- getBuildParams currentDir pkg_descr
+		pkg_descr <- getBuildParams pkg_descr
 		localbuildinfo <- getPersistBuildConfig
 		build pkg_descr localbuildinfo knownSuffixHandlers
+		writeInstalledConfig pkg_descr localbuildinfo
 		return ()
 
 	    CleanCmd -> do
 		(_, args) <- parseCleanArgs args []
 		no_extra_flags args
-		pkg_descr <- getBuildParams currentDir pkg_descr
+		pkg_descr <- getBuildParams pkg_descr
 		localbuildinfo <- getPersistBuildConfig
 		let buildPref = buildDir localbuildinfo
 		try $ removeFileRecursive buildPref
+		try $ removeFile installedPkgConfigFile
 		try $ removeFile localBuildInfoFile
 		removePreprocessedPackage pkg_descr currentDir (ppSuffixes knownSuffixHandlers)
 		return ()
@@ -88,14 +91,14 @@ main
 	    CopyCmd mprefix -> do
 	        (mprefix, _, args) <- parseCopyArgs mprefix args []
 		no_extra_flags args
-		pkg_descr <- getBuildParams currentDir pkg_descr
+		pkg_descr <- getBuildParams pkg_descr
 		localbuildinfo <- getPersistBuildConfig
 		install pkg_descr localbuildinfo mprefix
 
 	    InstallCmd uInst -> do
 		(uInst, _, args) <- parseInstallArgs uInst args []
 		no_extra_flags args
-		pkg_descr <- getBuildParams currentDir pkg_descr
+		pkg_descr <- getBuildParams pkg_descr
 		localbuildinfo <- getPersistBuildConfig
 		install pkg_descr localbuildinfo Nothing
 		when (hasLibs pkg_descr)
@@ -104,20 +107,20 @@ main
 	    SDistCmd -> do
 		(_, args) <- parseSDistArgs args []
 		no_extra_flags args
-		pkg_descr <- getBuildParams currentDir pkg_descr
+		pkg_descr <- getBuildParams pkg_descr
 		sdist srcPref distPref pkg_descr
 
 	    RegisterCmd uInst -> do
 		(uInst, _, args) <- parseRegisterArgs uInst args []
 		no_extra_flags args
-		pkg_descr <- getBuildParams currentDir pkg_descr
+		pkg_descr <- getBuildParams pkg_descr
 		localbuildinfo <- getPersistBuildConfig
 		when (hasLibs pkg_descr) (register pkg_descr localbuildinfo uInst)
 
 	    UnregisterCmd -> do
 		(_, args) <- parseUnregisterArgs args []
 		no_extra_flags args
-		pkg_descr <- getBuildParams currentDir pkg_descr
+		pkg_descr <- getBuildParams pkg_descr
 		localbuildinfo <- getPersistBuildConfig
 		unregister pkg_descr localbuildinfo
 
@@ -137,38 +140,21 @@ sdist :: FilePath -> FilePath -> PackageDescription -> IO ()
 sdist srcPref distPref pkg_descr =
 	return ()	-- TODO
 
-register :: PackageDescription -> LocalBuildInfo -> Bool -> IO ()
-register pkg lbi uInst =
-	return ()	-- for Hugs, install means register
-
-unregister :: PackageDescription -> LocalBuildInfo -> IO ()
-unregister pkg lbi = do
-	let hugsDir = prefix lbi `joinFileName` "lib" `joinFileName` "hugs"
-	let pkg_name = pkgName (package pkg)
-	maybeRemoveFileRecursive (hugsDir `joinFileName` "packages" `joinFileName` pkg_name)
-	maybeRemoveFileRecursive (hugsDir `joinFileName` "programs" `joinFileName` pkg_name)
-
--- like removeFileRecursive, but don't complain if directory absent
-maybeRemoveFileRecursive dir =
-	whenM (doesDirectoryExist dir) $ removeFileRecursive dir
-
 -- Reading local build information from Setup.buildinfo (if present)
 
 buildInfoFile :: FilePath
 buildInfoFile = "Setup.buildinfo"
 
-getBuildParams :: FilePath -> PackageDescription -> IO PackageDescription
-getBuildParams srcDir pkg_descr = do
-	exists <- doesFileExist fpath
+getBuildParams :: PackageDescription -> IO PackageDescription
+getBuildParams pkg_descr = do
+	exists <- doesFileExist buildInfoFile
 	if exists then do
-		inp <- readFile fpath
+		inp <- readFile buildInfoFile
 		case parseBuildParameters pkg_descr inp of
-		    Left err -> die (fpath ++ ": " ++ showError err)
+		    Left err -> die (buildInfoFile ++ ": " ++ showError err)
 		    Right pkg_descr' -> return pkg_descr'
 	    else
 		return pkg_descr
-  where
-	fpath = srcDir `joinFileName` buildInfoFile
 
 parseBuildParameters :: PackageDescription -> String ->
 	Either PError PackageDescription
