@@ -14,8 +14,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: iomonad.c,v $
- * $Revision: 1.54 $
- * $Date: 2003/10/10 22:54:33 $
+ * $Revision: 1.55 $
+ * $Date: 2003/10/13 23:12:24 $
  * ------------------------------------------------------------------------*/
  
 Name nameIORun;			        /* run IO code                     */
@@ -30,8 +30,10 @@ static Name nameHreader;	        /* auxiliary function		   */
 #if IO_HANDLES
 static String local toIOErrorDescr Args((int,Bool));
 static Name   local toIOError      Args((int));
+static Int    local newHandle      Args((Cell,String));
+static String local modeString     Args((Int,Bool));
 static Cell   local openHandle     Args((StackPtr,Cell,Int,Bool,String));
-static Cell   local openFdHandle   Args((StackPtr,Int,Bool,Int,Bool,String));
+static Cell   local openFdHandle   Args((StackPtr,Int,Int,Bool,String));
 #endif
 
 #if IO_HANDLES
@@ -351,180 +353,127 @@ primFun(primPass) {			/* Auxiliary function		   */
 #if IO_HANDLES
 
 static
+Int local newHandle(sCell,loc) /* return a free Handle or throw an IOError */
+Cell   sCell;
+String loc; {
+    Int i;
+
+    for (i=0; i<(Int)MAX_HANDLES && nonNull(handles[i].hcell); ++i)
+	;                                       /* Search for unused handle*/
+    if (i>=(Int)MAX_HANDLES) {                  /* If at first we don't    */
+	garbageCollect();                       /* succeed, garbage collect*/
+	for (i=0; i<(Int)MAX_HANDLES && nonNull(handles[i].hcell); ++i)
+	    ;                                   /* and try again ...       */
+#if !WANT_FIXED_SIZE_TABLES
+	if (i >= (Int)MAX_HANDLES) {
+	    int j;
+	    growDynTable(dynTabHandles);
+	    handles = (struct strHandle*)(dynTabHandles->data);
+	    num_handles = dynTabHandles->maxIdx;
+	    /* Nil out the new entries in the table */
+	    for (j=i; j < num_handles; j++) {
+		handles[j].hcell = NIL;
+	    }
+	}
+#endif
+    }
+
+    if (i>=(Int)MAX_HANDLES) {                  /* ... before we give up   */
+	IOFail(mkIOError(NIL,
+			 nameIllegal,
+			 loc,
+			 "too many handles open",
+			 sCell));
+    }
+
+    return i;
+}
+
+static
+String local modeString(hmode,binary) /* return mode string for f(d)open */
+Int  hmode;
+Bool binary; {
+    if (binary) {
+	return (hmode&HAPPEND)    ? "ab+" :
+	       (hmode&HWRITE)     ? "wb+" :
+	       (hmode&HREADWRITE) ? "wb+" :
+	       (hmode&HREAD)      ? "rb"  : (String)0;
+    } else {
+	return (hmode&HAPPEND)     ? "a+" :
+	       (hmode&HWRITE)      ? "w+" :
+	       (hmode&HREADWRITE)  ? "w+" :
+	       (hmode&HREAD)       ? "r"  : (String)0;
+    }
+}
+
+static
 Cell local openHandle(root,sCell,hmode,binary,loc) /* open handle to file named s in  */
 StackPtr root;
-Cell   sCell;                                      /* the specified hmode             */
-Int    hmode; 
+Cell   sCell;                                      /* the specified hmode  */
+Int    hmode;
 Bool   binary;
 String loc; {
     Int i;
     String s = evalName(sCell);
+    String stmode = modeString(hmode,binary);
 
-    /* openHandle() returns a *pair*, the first component contains NIL if
-       opening the handle failed (and the second component contains the IOError
-       describing the error). If the handled was created successfully,
-       the second component contains the Handle.
-    */
+    /* openHandle() either returns a Handle or throws an IOError. */
 
     if (!s) {				/* check for valid name		   */
-      return(pair(NIL,
-		  mkIOError(NIL,
-			    nameIllegal,
-			    loc,
-			    "illegal file name",
-			    NIL)));
+	IOFail(mkIOError(NIL,
+			 nameIllegal,
+			 loc,
+			 "illegal file name",
+			 NIL));
     }
 
-    for (i=0; i<(Int)MAX_HANDLES && nonNull(handles[i].hcell); ++i)
-	;                                       /* Search for unused handle*/
-    if (i>=(Int)MAX_HANDLES) {              /* If at first we don't    */
-	garbageCollect();                       /* succeed, garbage collect*/
-	for (i=0; i<(Int)MAX_HANDLES && nonNull(handles[i].hcell); ++i)
-	    ;                                   /* and try again ...       */
-    }
-    
-#if !WANT_FIXED_SIZE_TABLES
-    if (i >= (Int)MAX_HANDLES) {
-      int j;
-      growDynTable(dynTabHandles);
-      handles=(struct strHandle*)(dynTabHandles->data);
-      num_handles = dynTabHandles->maxIdx;
-      /* Nil out the new entries in the table */
-      for (j=i; j < num_handles; j++) {
-	handles[j].hcell = NIL;
-      }
-    }
-#endif
+    i = newHandle(sCell,loc);
 
-    if (i>=(Int)MAX_HANDLES) {                 /* ... before we give up   */
-      return(pair(NIL,
-		  mkIOError(NIL,
-			    nameIllegal,
-			    loc,
-			    "too many handles open",
-			    sCell)));
-    } else {                                   /* prepare to open file    */
-	String stmode;
-	if (binary) {
-	    stmode = (hmode&HAPPEND)    ? "ab+" :
-		     (hmode&HWRITE)     ? "wb+" :
-		     (hmode&HREADWRITE) ? "wb+" :
-		     (hmode&HREAD)      ? "rb" : (String)0;
-	} else {
-	    stmode = (hmode&HAPPEND)     ? "a+"  :
-		     (hmode&HWRITE)      ? "w+"  :
-		     (hmode&HREADWRITE)  ? "w+"  :
-		     (hmode&HREAD)       ? "r"  : (String)0;
-	}
-	if (stmode && (handles[i].hfp=fopen(s,stmode))) {
-	    handles[i].hmode = hmode;
-	    handles[i].hbufMode = HUNKNOWN_BUFFERING;
-	    handles[i].hbufSize = (-1);
-	    if (hmode&HREADWRITE) {
-	      handles[i].hHaveRead = FALSE;
-	    }
-	    return (pair(nameNothing,handles[i].hcell = ap(HANDCELL,i)));
-	}
-	return (pair(NIL,
-		     mkIOError(NIL,
-			       toIOError(errno),
-			       loc,
-			       toIOErrorDescr(errno,TRUE),
-			       sCell)));
+    /* prepare to open file    */
+    if (!stmode || !(handles[i].hfp=fopen(s,stmode))) {
+	IOFail(mkIOError(NIL,
+			 toIOError(errno),
+			 loc,
+			 toIOErrorDescr(errno,TRUE),
+			 sCell));
     }
+
+    handles[i].hmode = hmode;
+    handles[i].hbufMode = HUNKNOWN_BUFFERING;
+    handles[i].hbufSize = (-1);
+    if (hmode&HREADWRITE) {
+	handles[i].hHaveRead = FALSE;
+    }
+    return (handles[i].hcell = ap(HANDCELL,i));
 }
 
-
 static
-Cell local openFdHandle(root,fd,isSock,hmode,binary,loc) /* open handle to file desc fd in  */
+Cell local openFdHandle(root,fd,hmode,binary,loc) /* open handle to file desc fd in  */
 StackPtr root;
-Int    fd;
-Bool   isSock;
-Int    hmode; 
+Int    fd;					  /* the specified hmode  */
+Int    hmode;
 Bool   binary;
 String loc; {
-    Int i;
-    Int tfd;
+    Int i = newHandle(NIL,loc);
+    String stmode = modeString(hmode,binary);
 
-    /* openFdHandle() returns a *pair*, just like openHandle(). */
+    /* openFdHandle() either returns a Handle or throws an IOError. */
 
-    for (i=0; i<(Int)MAX_HANDLES && nonNull(handles[i].hcell); ++i)
-	;                                       /* Search for unused handle*/
-    if (i>=(Int)MAX_HANDLES) {              /* If at first we don't    */
-	garbageCollect();                       /* succeed, garbage collect*/
-	for (i=0; i<(Int)MAX_HANDLES && nonNull(handles[i].hcell); ++i)
-	    ;                                   /* and try again ...       */
+    if (!stmode || !(handles[i].hfp=fdopen(fd,stmode))) {
+	IOFail(mkIOError(NIL,
+			 toIOError(errno),
+			 loc,
+			 toIOErrorDescr(errno,TRUE),
+			 NIL));
     }
-    
-#if !WANT_FIXED_SIZE_TABLES
-    if (i >= (Int)MAX_HANDLES) {
-      int j;
-      growDynTable(dynTabHandles);
-      handles=(struct strHandle*)(dynTabHandles->data);
-      num_handles = dynTabHandles->maxIdx;
-      /* Nil out the new entries in the table */
-      for (j=i; j < num_handles; j++) {
-	handles[j].hcell = NIL;
-      }
-    }
-#endif
 
-    if (i>=(Int)MAX_HANDLES) {                 /* ... before we give up   */
-      return(pair(NIL,
-		  mkIOError(NIL,
-			    nameIllegal,
-			    loc,
-			    "too many handles open",
-			    NIL)));
-    } else {                                   /* prepare to open file    */
-	String stmode;
-	if (binary) {
-	    stmode = (hmode&HAPPEND)    ? "ab+" :
-		     (hmode&HWRITE)     ? "wb+" :
-		     (hmode&HREADWRITE) ? "wb+" :
-		     (hmode&HREAD)      ? "rb" : (String)0;
-	} else {
-	    stmode = (hmode&HAPPEND)     ? "a+"  :
-		     (hmode&HWRITE)      ? "w+"  :
-		     (hmode&HREADWRITE)  ? "w+"  :
-		     (hmode&HREAD)       ? "r"  : (String)0;
-	}
-#ifdef _WIN32
-	if (isSock) {
-	  /* fd is a SOCKET, convert it to an FD.
-	   * Note: _open_osfhandle() will fail under
-	   * Win9x. ToDo: better on those plats.
-	   */
-	  tfd = _open_osfhandle(fd,
-				(hmode & HREAD      ? O_RDONLY : 0) |
-				(hmode & HWRITE     ? O_WRONLY : 0) |
-				(hmode & HREADWRITE ? O_RDWR : 0)   |
-				(hmode & HAPPEND    ? O_APPEND : 0) |
-				(binary ? O_BINARY : O_TEXT)
-				);
-	} else {
-	  tfd = fd;
-	}
-#else
-	tfd = fd;
-#endif
-
-	if (stmode && (handles[i].hfp=fdopen(tfd,stmode))) {
-	    handles[i].hmode = hmode;
-	    handles[i].hbufMode = HANDLE_NOTBUFFERED;
-	    handles[i].hbufSize = 0;
-	    if (hmode&HREADWRITE) {
-	      handles[i].hHaveRead = FALSE;
-	    }
-	    return (pair(nameNothing,handles[i].hcell = ap(HANDCELL,i)));
-	}
-	return (pair(NIL,
-		     mkIOError(NIL,
-			       toIOError(errno),
-			       loc,
-			       toIOErrorDescr(errno,TRUE),
-			       NIL)));
+    handles[i].hmode = hmode;
+    handles[i].hbufMode = HANDLE_NOTBUFFERED;
+    handles[i].hbufSize = 0;
+    if (hmode&HREADWRITE) {
+	handles[i].hHaveRead = FALSE;
     }
+    return (handles[i].hcell = ap(HANDCELL,i));
 }
 
 
@@ -992,20 +941,14 @@ String   loc; {
     Int    m;
 
     m = getIOMode(IOArg(1));
-    if (m!=HCLOSED) {			/* Only accept legal modes	   */
-	Cell hnd = openHandle(root,IOArg(2),m,binary,loc);
-	if (!isNull(fst(hnd))) {
-	   IOReturn(snd(hnd));
-        } else {
-	  IOFail(snd(hnd));
-	}
+    if (m==HCLOSED) {			/* Only accept legal modes	   */
+	IOFail(mkIOError(NIL,
+			 nameIllegal,
+			 loc,
+			 "unknown handle mode",
+			 IOArg(2)));
     }
-    
-   IOFail(mkIOError(NIL,
-		    nameIllegal,
-		    loc,
-		    "unknown handle mode",
-		    IOArg(2)));
+    IOReturn(openHandle(root,IOArg(2),m,binary,loc));
 }
 
 primFun(primOpenFile) {			/* open handle to a text file	   */
@@ -1029,29 +972,41 @@ primFun(primStderr) {			/* Standard error handle	   */
 }
 
 primFun(primOpenFd) {			/* open handle to file descriptor. */
-  Int  m;                               /* :: Int{-Fd-} -> Bool -> IOMode -> Bool -> IO Handle */
-  Int  fd;
-  Bool binary;
-  Bool isSock;
+    Int  m;                             /* :: Int{-Fd-} -> Bool -> IOMode -> Bool -> IO Handle */
+    Int  fd;
+    Bool binary;
+    Bool isSock;
 
-  IntArg(fd,4+IOArity);
-  BoolArg(isSock,3+IOArity);
-  BoolArg(binary,1+IOArity);
+    IntArg(fd,4+IOArity);
+    BoolArg(isSock,3+IOArity);
+    BoolArg(binary,1+IOArity);
 
-  m = getIOMode(IOArg(2));
-  if (m!=HCLOSED) {			/* Only accept legal modes	   */
-      Cell hnd = openFdHandle(root,fd,isSock,m,binary,"openFd");
-      if (!isNull(fst(hnd))) {
-	  IOReturn(snd(hnd));
-      } else {
-	IOFail(snd(hnd));
-      }
-  }
-  IOFail(mkIOError(NIL,
-		   nameIllegal,
-		   "openFd",
-		   "unknown handle mode",
-		   NIL));
+    m = getIOMode(IOArg(2));
+    if (m==HCLOSED) {			/* Only accept legal modes	   */
+        IOFail(mkIOError(NIL,
+		         nameIllegal,
+		         "openFd",
+		         "unknown handle mode",
+		         NIL));
+    }
+
+#ifdef _WIN32
+    if (isSock) {
+	/* fd is a SOCKET, convert it to an FD.
+	 * Note: _open_osfhandle() will fail under
+	 * Win9x. ToDo: better on those plats.
+	 */
+	fd = _open_osfhandle(fd,
+			     (m & HREAD      ? O_RDONLY : 0) |
+			     (m & HWRITE     ? O_WRONLY : 0) |
+			     (m & HREADWRITE ? O_RDWR : 0)   |
+			     (m & HAPPEND    ? O_APPEND : 0) |
+			     (binary ? O_BINARY : O_TEXT)
+			    );
+    }
+#endif
+
+    IOReturn(openFdHandle(root,fd,m,binary,"openFd"));
 }
 
 
@@ -1453,21 +1408,15 @@ primFun(primGetHandleNumber) {
 }
 
 primFun(primReadFile) {			/* read file as lazy string	   */
-  Cell hnd = openHandle(root,IOArg(1),HREAD,FALSE,"Prelude.readFile");
-  if (isNull(fst(hnd))) {
-    IOFail(snd(hnd));
-  }
-  handles[intValOf(snd(hnd))].hmode = HSEMICLOSED;
-  IOReturn(ap(nameHreader,snd(hnd)));
+    Cell hnd = openHandle(root,IOArg(1),HREAD,FALSE,"Prelude.readFile");
+    handles[intValOf(hnd)].hmode = HSEMICLOSED;
+    IOReturn(ap(nameHreader,hnd));
 }
 
 primFun(primReadBinaryFile) {		/* read file as lazy string	   */
-  Cell hnd = openHandle(root,IOArg(1),HREAD,TRUE,"IOExtensions.readBinaryFile");
-  if (isNull(fst(hnd))) {
-    IOFail(snd(hnd));
-  }
-  handles[intValOf(snd(hnd))].hmode = HSEMICLOSED;
-  IOReturn(ap(nameHreader,snd(hnd)));
+    Cell hnd = openHandle(root,IOArg(1),HREAD,TRUE,"IOExtensions.readBinaryFile");
+    handles[intValOf(hnd)].hmode = HSEMICLOSED;
+    IOReturn(ap(nameHreader,hnd));
 }
 
 primFun(primWriteFile) {		/* write string to specified file  */
