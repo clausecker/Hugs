@@ -183,7 +183,7 @@ function hugslibs {
 
 	name="`ls ../../lib/exts/$1.*hs`"
 	echo "Copy `basename $name`"
-	cp $name $compat
+	sed 's/import Prelude/import Hugs.Prelude/' $name >$compat/`basename $name`
 }
 
 # Convert the hslibs version to the compatibility lib
