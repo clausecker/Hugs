@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.32 $
- * $Date: 2001/03/19 17:43:40 $
+ * $Revision: 1.33 $
+ * $Date: 2001/03/19 17:51:53 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1985,22 +1985,30 @@ String where;				/* Check validity of bindings bs   */
 Class  c;				/* for class c (or an inst of c)   */
 List   bs; {				/* sort into approp. member order  */
     List nbs = NIL;
+    Text nm;
 
     for (; nonNull(bs); bs=tl(bs)) {
 	Cell b    = hd(bs);
 	Cell body = snd(snd(b));
 	Name mnm;
 
-	if (!isVar(fst(b))) {		/* Only allow function bindings    */
+	if ( !(isVar(fst(b)) || isQVar(fst(b))) ) { /* Only allow function bindings    */
 	    ERRMSG(rhsLine(snd(body)))
 		"Pattern binding illegal in %s declaration", where
 	    EEND;
 	}
+	
+	/* Get at the unqualified name of the method */
+	if (isVar(fst(b))) {
+	  nm = textOf(fst(b));
+	} else {
+	  nm = qtextOf(fst(b));
+	}
 
-	if (isNull(mnm=memberName(c,textOf(fst(b))))) {
+	if (isNull(mnm=memberName(c,nm))) {
 	    ERRMSG(rhsLine(snd(hd(body))))
 		"No member \"%s\" in class \"%s\"",
-		textToStr(textOf(fst(b))), textToStr(cclass(c).text)
+		textToStr(nm), textToStr(cclass(c).text)
 	    EEND;
 	}
 	snd(b) = body;
@@ -5082,7 +5090,7 @@ List ds; {				/* given list of equations	   */
 	    Cell lhs	= fst(snd(d));
 	    Cell v	= getHead(lhs);
 	    Cell newAlt = pair(getArgs(lhs),rhs);
-	    if (!isVar(v)) {
+	    if ( !(isVar(v) || isQVar(v)) ) {
 		internal("FUNBIND");
 	    }
 	    if (nonNull(lastVar) && textOf(v)==textOf(lastVar)) {
