@@ -1,0 +1,325 @@
+/* ----------------------------------------------------------------------------
+ * Resources for Hugs for Windows:
+ *
+ * Hugs for Windows is Copyright (c) José Enrique Gallardo, Mark P Jones,
+ * Alastair Reid and the Yale Haskell Group 1994-99, and is distributed as
+ * Open Source software under the Artistic License; see the file "Artistic"
+ * that is included in the distribution for details.
+ * --------------------------------------------------------------------------*/
+
+#ifndef __WIN_MENU_H
+#include "Win-Menu.h"
+#endif
+
+/* ----------------------------------------------------------------------------
+ * Icons:
+ * --------------------------------------------------------------------------*/
+
+Hugs     ICON "resource\hugs1.ico"
+Noass    ICON "resource\noassign.ico"
+Lambda   ICON "resource\lambda.ico"
+World    ICON "resource\world.ico"
+
+/* ----------------------------------------------------------------------------
+ * Accelerators:
+ * --------------------------------------------------------------------------*/
+
+HugsAccelerators ACCELERATORS 
+{
+ VK_F10, ID_SCRIPTMAN, VIRTKEY
+ VK_F9, ID_RELOAD, VIRTKEY
+ VK_F1, ID_HELPINDEX, VIRTKEY
+ "^X", ID_CUT, ASCII
+ "^C", ID_COPY, ASCII
+ "^V", ID_PASTE, ASCII
+}
+
+/* ----------------------------------------------------------------------------
+ * Menu:
+ * --------------------------------------------------------------------------*/
+
+HugsMenu MENU 
+{
+ POPUP "&File"
+ {
+  MENUITEM "&Script Manager...	F10", ID_SCRIPTMAN
+  MENUITEM "&Reload	F9", ID_RELOAD
+  MENUITEM SEPARATOR
+  MENUITEM "E&xit", ID_EXIT
+ }
+
+ POPUP "&Edit"
+ {
+  MENUITEM "Cu&t	Ctrl+X", ID_CUT
+  MENUITEM "&Copy	Ctrl+C", ID_COPY
+  MENUITEM "&Paste	Ctrl+V", ID_PASTE
+  MENUITEM "C&lear	Ctrl+Del", ID_CLEAR
+  MENUITEM SEPARATOR
+  MENUITEM "Text E&ditor", ID_GOEDIT
+ }
+
+ POPUP "&Run"
+ {
+  MENUITEM "&Run", ID_RUN
+  MENUITEM "&Stop program", ID_STOP
+ }
+
+ POPUP "&Options"
+ {
+  MENUITEM "&Set ...", ID_SETOPTIONS
+  MENUITEM "Sa&ve", ID_SAVEOPTIONS
+  MENUITEM "&Load", ID_LOADOPTIONS
+  MENUITEM "&Edit 'Hugs.Ini'", ID_EDITOPTIONS
+ }
+
+ POPUP "&Browse"
+ {
+  MENUITEM "&Names...", ID_BROWSENAMES
+  MENUITEM "&Type constructors...", ID_BROWSETYCONS
+  MENUITEM "&Classes...", ID_BROWSECLASSES
+  MENUITEM SEPARATOR
+  MENUITEM "&Hierarchy", ID_BROWSEHIERARCHY
+ }
+
+ POPUP "\a&Help"
+ {
+  MENUITEM "&Contents	F1 ", ID_HELPINDEX
+  MENUITEM "&Using help", ID_HELPUSE
+  MENUITEM SEPARATOR
+  MENUITEM "&About Hugs 98 for Windows...", ID_ABOUT
+ }
+
+}
+
+/* ----------------------------------------------------------------------------
+ * Strings:
+ * --------------------------------------------------------------------------*/
+
+STRINGTABLE 
+{
+ ID_SCRIPTMAN, "Enter Script Manager"
+ ID_RELOAD, "Reload script files"
+ ID_EXIT, "Exit Hugs interpreter"
+ ID_CUT, "Cut selected text"
+ ID_COPY, "Copy selected text to clipboard"
+ ID_PASTE, "Paste text from clipboard"
+ ID_CLEAR, "Clear selected text"
+ ID_GOEDIT, "Run text editor"
+ ID_SETOPTIONS, "Set Hugs interpreter options"
+ ID_SAVEOPTIONS, "Save options to  ""Hugs.Ini""  file"
+ ID_LOADOPTIONS, "Load options from  ""Hugs.Ini""  file"
+ ID_EDITOPTIONS, "Edit  \042Hugs.Ini\042  file"
+ ID_HELPINDEX, "Display help contents"
+ ID_HELPUSE, "Display help on help"
+ ID_ABOUT, "Display version information"
+ ID_FILESMENU, "Manage script files (Open, New...)"
+ ID_EDITMENU, "Cut, copy, paste and clear"
+ ID_RUNMENU, "Run or stop program"
+ ID_RUN, "Evaluate  ""main""  expression"
+ ID_STOP, "Stop program execution"
+ ID_OPTIONSMENU, "Manage interpreter options (Set, Save...)"
+ ID_BROWSEMENU, "Browse classes, instances, members, names and type constructors"
+ ID_BROWSECLASSES, "Browse current defined classes, instances and memebers"
+ ID_BROWSENAMES, "Browse current defined names"
+ ID_BROWSETYCONS, "Browse current defined type constructors"
+ ID_BROWSEHIERARCHY, "Show class hierarchy"
+ ID_HELPMENU, "View online help"
+ IDS_FILTERFILE, "Haskell files(*.hs *.lhs)|*.hs *.lhs|Gofer files(*.gs *.lgs)|*.gs *.lgs|Preludes(*.pre)|*.pre|All files(*.*)|*.*|"
+}
+
+/* ----------------------------------------------------------------------------
+ * Dialog boxes:
+ * --------------------------------------------------------------------------*/
+
+ABOUTDLGBOX DIALOG 88, 38, 175, 139
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION
+CAPTION "About Hugs 98 for Windows"
+FONT 8, "Arial"
+{
+ ICON "Hugs", -1, 74, 23, 21, 18, WS_CHILD | WS_VISIBLE
+ CTEXT "Based on a Windows interface", -1, 20, 79, 134, 8
+ CTEXT "by José Enrique Gallardo, 1995", -1, 25, 93, 124, 8
+ PUSHBUTTON "&Ok", IDOK, 67, 117, 37, 14
+ CONTROL "", -1, "static", SS_GRAYFRAME | WS_CHILD | WS_VISIBLE, 7, 7, 161, 60
+ CONTROL "", -1, "static", SS_GRAYFRAME | WS_CHILD | WS_VISIBLE, 7, 113, 161, 22
+ CTEXT "Hugs 98 for Windows", -1, 19, 11, 136, 8
+ CTEXT "Copyright (c) Mark P Jones, Alastair Reid", -1, 16, 45, 142, 8
+ CONTROL "", -1, "static", SS_GRAYFRAME | WS_CHILD | WS_VISIBLE, 7, 74, 161, 32
+ CTEXT "and the Yale Haskell Group, 1994-99", -1, 21, 55, 142, 8
+}
+
+OPTIONSDLGBOX DIALOG 64, 34, 298, 200
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION
+CAPTION "Interpreter Options"
+FONT 8, "Arial"
+{
+ GROUPBOX " Read-E&val-Print loop: ", -1, 8, 4, 138, 128, BS_GROUPBOX | WS_GROUP
+ AUTOCHECKBOX "Show reduction and cell &statistics", ID_OP, 14, 14, 126, 10, BS_AUTOCHECKBOX | WS_TABSTOP
+ AUTOCHECKBOX "Show &type after evaluation", ID_OP +1, 14, 28, 126, 10, BS_AUTOCHECKBOX | WS_TABSTOP
+ AUTOCHECKBOX "Terminate evaluation on &first error", ID_OP +2, 14, 42, 126, 10, BS_AUTOCHECKBOX | WS_TABSTOP
+ AUTOCHECKBOX "Show &kind errors in full", ID_OP +8, 14, 56, 126, 10, BS_AUTOCHECKBOX | WS_TABSTOP
+ AUTOCHECKBOX "Print no. cells recovered after &gc", ID_OP +3, 14, 70, 126, 10, BS_AUTOCHECKBOX | WS_TABSTOP
+ AUTOCHECKBOX "&Use ""show"" to display results", ID_OP +10, 14, 84, 126, 10, BS_AUTOCHECKBOX | WS_TABSTOP
+ LTEXT "&Prompt string:", -1, 15, 101, 47, 8, NOT WS_GROUP
+ EDITTEXT ID_PROMPT, 64, 99, 74, 12, WS_BORDER | WS_TABSTOP
+ LTEXT "&Repeat last expression:", -1, 15, 116, 76, 8, NOT WS_GROUP
+ EDITTEXT ID_LASTEXPR, 92, 114, 46, 12, WS_BORDER | WS_TABSTOP
+ GROUPBOX " Loading S&cript Files: ", -1, 155, 4, 138, 88, BS_GROUPBOX | WS_GROUP
+ AUTOCHECKBOX "Chase &imports while loading files", ID_OP +11, 161, 14, 126, 10
+ AUTOCHECKBOX "Always show &which files loaded", ID_OP +7, 161, 30, 126, 10
+ AUTOCHECKBOX "&Literate scripts as default", ID_OP +4, 161, 46, 126, 10
+ AUTOCHECKBOX "Warn about &errors in literate scripts", ID_OP +5, 161, 62, 126, 10
+ AUTOCHECKBOX "Print dots (&.) to show progress", ID_OP +6, 161, 78, 126, 10
+ GROUPBOX "La&nguage features", -1, 155, 100, 138, 32, BS_GROUPBOX | WS_GROUP
+ AUTOCHECKBOX "Allow &overlapping instances", ID_OP +9, 161, 114, 126, 10, BS_AUTOCHECKBOX | WS_TABSTOP
+ LTEXT "Search p&ath:", -1, 8, 140, 54, 8, WS_GROUP
+ EDITTEXT ID_HUGSPATH, 53, 138, 240, 12, ES_AUTOHSCROLL | WS_BORDER | WS_TABSTOP
+ LTEXT "E&ditor:", -1, 8, 157, 23, 8, NOT WS_GROUP
+ EDITTEXT ID_HUGSEDIT, 53, 155, 241, 12, WS_BORDER | WS_TABSTOP
+ LTEXT "N.B. Interpreter options can also be viewed and changed by using the :set command.", -1, 9, 176, 147, 16, NOT WS_GROUP
+ DEFPUSHBUTTON "Ok", IDOK, 192, 178, 40, 14, BS_DEFPUSHBUTTON | WS_GROUP | WS_TABSTOP
+ PUSHBUTTON "Cancel", IDCANCEL, 246, 178, 40, 14, WS_TABSTOP
+}
+
+BROWSECLASSESDLGBOX DIALOG -1, 18, 344, 168
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Browse Classes"
+FONT 8, "Arial"
+{
+ GROUPBOX " Classes: ", -1, 4, 1, 85, 85, BS_GROUPBOX
+ LISTBOX LB_CLASS, 11, 13, 71, 66, LBS_NOTIFY | WS_BORDER | LBS_OWNERDRAWFIXED | WS_BORDER | WS_VSCROLL | WS_TABSTOP
+ GROUPBOX " Instances: ", -1, 4, 90, 85, 74, BS_GROUPBOX
+ LISTBOX LB_INSTANCES, 11, 102, 71, 55, LBS_STANDARD | LBS_OWNERDRAWFIXED | WS_TABSTOP
+ GROUPBOX " Members: ", -1, 98, 1, 186, 129, BS_GROUPBOX
+ LISTBOX LB_MEMBERS, 106, 13, 171, 113, LBS_NOTIFY | WS_BORDER | LBS_OWNERDRAWFIXED | WS_BORDER | WS_VSCROLL | WS_TABSTOP
+ GROUPBOX " Superclasses: ", -1, 98, 134, 186, 30, BS_GROUPBOX
+ LISTBOX LB_CONTEXT, 106, 148, 172, 9, LBS_NOTIFY | WS_BORDER | WS_BORDER | WS_VSCROLL | WS_TABSTOP
+ PUSHBUTTON "C&lose", IDOK, 291, 4, 47, 14
+ PUSHBUTTON "&Hierarchy", ID_HIERARCHY, 291, 23, 47, 14
+ PUSHBUTTON "Edit &class", ID_EDITCLASS, 291, 42, 47, 14
+ PUSHBUTTON "Edit &instance", ID_EDITINSTANCE, 291, 62, 47, 14
+ LTEXT "", ID_BROWSEBMP, 291, 129, 49, 1, NOT WS_GROUP
+}
+
+BROWSENAMESDLGBOX DIALOG 26, 17, 288, 173
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Browse Names"
+FONT 8, "Arial"
+{
+ GROUPBOX " Names: ", -1, 4, 4, 228, 132, BS_GROUPBOX
+ CONTROL " Names: ", LB_NAMES, "LISTBOX", LBS_NOTIFY | WS_BORDER | LBS_OWNERDRAWFIXED | LBS_HASSTRINGS | LBS_NOINTEGRALHEIGHT | LBS_MULTICOLUMN | WS_BORDER | WS_HSCROLL | WS_TABSTOP, 11, 16, 214, 95
+ LTEXT "&Search:", -1, 11, 119, 27, 8
+ EDITTEXT IDC_SEARCHNAME, 39, 117, 186, 12, WS_BORDER | WS_TABSTOP
+ GROUPBOX " Notes: ", -1, 4, 139, 228, 28, BS_GROUPBOX
+ LISTBOX LB_NAMESNOTES, 11, 151, 214, 10, LBS_NOTIFY | WS_BORDER | WS_BORDER | WS_VSCROLL | WS_TABSTOP
+ PUSHBUTTON "C&lose", IDOK, 238, 8, 45, 14
+ PUSHBUTTON "Edit &name", ID_EDITNAME, 238, 29, 45, 14
+ LTEXT "", ID_BROWSEBMP, 238, 128, 41, 38, NOT WS_VISIBLE | WS_GROUP
+}
+
+BROWSETYCONSDLGBOX DIALOG 25, -1, 300, 212
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Browse Type Constructors"
+FONT 8, "Arial"
+{
+ GROUPBOX " &Type constructors: ", -1, 5, 4, 226, 104, BS_GROUPBOX
+ LISTBOX LB_TYCONS, 12, 15, 210, 72, LBS_NOTIFY | WS_BORDER | LBS_OWNERDRAWFIXED | LBS_HASSTRINGS | LBS_NOINTEGRALHEIGHT | LBS_MULTICOLUMN | WS_BORDER | WS_HSCROLL | WS_TABSTOP
+ LTEXT "&Search:", -1, 12, 94, 28, 8
+ EDITTEXT IDC_SEARCHTYCON, 39, 92, 183, 12, WS_BORDER | WS_TABSTOP
+ GROUPBOX " &Notes: ", -1, 5, 109, 226, 99, BS_GROUPBOX
+ LISTBOX LB_CONS, 12, 121, 210, 83, LBS_NOTIFY | WS_BORDER | LBS_OWNERDRAWFIXED | LBS_HASSTRINGS | WS_BORDER | WS_VSCROLL | WS_TABSTOP
+ PUSHBUTTON "C&lose", IDOK, 237, 9, 58, 14
+ PUSHBUTTON "&Edit", ID_EDITTYCON, 237, 28, 58, 14
+ LTEXT "", ID_BROWSEBMP, 232, 155, 63, 53, NOT WS_VISIBLE | WS_GROUP
+}
+
+SCRIPTMANDLGBOX DIALOG 84, 17, 188, 192
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Script Manager"
+FONT 8, "Arial"
+{
+ GROUPBOX "Script files: ", -1, 5, 5, 116, 184, BS_GROUPBOX
+ LISTBOX LB_SCRIPTS, 11, 20, 104, 165, LBS_NOTIFY | WS_BORDER | WS_BORDER | WS_VSCROLL | WS_TABSTOP
+ PUSHBUTTON "&Add script", ID_ADDSCRIPT, 130, 11, 53, 14
+ PUSHBUTTON "&Remove script", ID_DELSCRIPT, 130, 31, 53, 14
+ PUSHBUTTON "&Clear", ID_CLEARSCRIPTS, 130, 51, 53, 14
+ PUSHBUTTON "&Edit", ID_EDITSCRIPT, 130, 71, 53, 14
+ PUSHBUTTON "C&ancel", IDCANCEL, 130, 151, 53, 14
+ DEFPUSHBUTTON "&Ok", IDOK, 130, 171, 53, 14
+}
+
+OPENFILEDLGBOX DIALOG 5, 30, 335, 158
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Open"
+FONT 8, "Arial"
+{
+ GROUPBOX " File &Names: ", -1, 4, 2, 137, 105, BS_GROUPBOX
+ EDITTEXT 1152, 10, 15, 125, 12, ES_LEFT | ES_AUTOHSCROLL | ES_OEMCONVERT | WS_CHILD | WS_VISIBLE | WS_BORDER | WS_TABSTOP
+ LISTBOX 1120, 10, 28, 125, 68, LBS_STANDARD | LBS_OWNERDRAWFIXED | LBS_HASSTRINGS | LBS_DISABLENOSCROLL | WS_CHILD | WS_VISIBLE | WS_TABSTOP
+ GROUPBOX " &Directories: ", -1, 147, 2, 115, 105, BS_GROUPBOX
+ LTEXT "", 1088, 155, 15, 101, 10, SS_LEFT | SS_NOPREFIX | WS_CHILD | WS_VISIBLE | WS_GROUP
+ LISTBOX 1121, 155, 28, 101, 68, LBS_STANDARD | LBS_OWNERDRAWFIXED | LBS_HASSTRINGS | LBS_DISABLENOSCROLL | WS_CHILD | WS_VISIBLE | WS_TABSTOP
+ GROUPBOX " List files of &Type: ", -1, 4, 116, 137, 36, BS_GROUPBOX
+ COMBOBOX 1136, 10, 130, 125, 38, CBS_DROPDOWNLIST | CBS_AUTOHSCROLL | WS_CHILD | WS_VISIBLE | WS_BORDER | WS_VSCROLL | WS_TABSTOP
+ GROUPBOX " Dri&ves: ", -1, 147, 116, 115, 36, BS_GROUPBOX
+ COMBOBOX 1137, 155, 130, 101, 68, CBS_DROPDOWNLIST | CBS_OWNERDRAWFIXED | CBS_AUTOHSCROLL | CBS_SORT | CBS_HASSTRINGS | WS_CHILD | WS_VISIBLE | WS_BORDER | WS_VSCROLL | WS_TABSTOP
+ DEFPUSHBUTTON "&Ok", 1, 275, 13, 54, 14, BS_DEFPUSHBUTTON | WS_GROUP | WS_TABSTOP
+ PUSHBUTTON "&Cancel", 2, 275, 47, 54, 14, WS_GROUP | WS_TABSTOP
+ PUSHBUTTON "&Help", 1038, 275, 81, 54, 14, WS_GROUP | WS_TABSTOP
+ CHECKBOX "&Read only", 1040, 277, 112, 50, 12, BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP
+ CONTROL "", -1, "static", SS_GRAYFRAME | WS_CHILD | WS_VISIBLE, 270, 6, 62, 146
+}
+
+/* ----------------------------------------------------------------------------
+ * Cursors:
+ * --------------------------------------------------------------------------*/
+
+GARBAGECURSOR   CURSOR PRELOAD MOVEABLE DISCARDABLE IMPURE "resource/gc.cur"
+HANDCURSOR      CURSOR PRELOAD MOVEABLE DISCARDABLE IMPURE "resource/hand.cur"
+MOVECLASSCURSOR CURSOR PRELOAD MOVEABLE DISCARDABLE IMPURE "resource/move.cur"
+
+/* ----------------------------------------------------------------------------
+ * Bitmaps:
+ * --------------------------------------------------------------------------*/
+
+STATUSBAR	BITMAP "resource/statusb.bmp"
+STATUSBARLEFT	BITMAP "resource/statusl.bmp"
+STATUSBARRIGHT	BITMAP "resource/statusr.bmp"
+
+COMMDLG1	BITMAP "resource/commdlg1.bmp"
+COMMDLG2	BITMAP "resource/commdlg2.bmp"
+COMMDLG3	BITMAP "resource/commdlg3.bmp"
+
+CLASSESDLGBMP	BITMAP "resource/classes.bmp"
+NAMESDLGBMP	BITMAP "resource/names.bmp"
+TYCONSDLGBMP	BITMAP "resource/tycons.bmp"
+
+CLASSBMP	BITMAP "resource/class.bmp"
+INSTANCEBMP	BITMAP "resource/instance.bmp"
+MEMBERBMP	BITMAP "resource/member.bmp"
+DATACONSBMP	BITMAP "resource/datacons.bmp"
+SELECTORBMP	BITMAP "resource/selector.bmp"
+PRIMBMP		BITMAP "resource/primitiv.bmp"
+NAMEBMP		BITMAP "resource/name.bmp"
+TYPECONSBMP	BITMAP "resource/datatype.bmp"
+TYPESINBMP	BITMAP "resource/synonym.bmp"
+NEWTYPEBMP	BITMAP "resource/newtype.bmp"
+
+BUTTON		BITMAP "resource/button.bmp"
+PUSHEDBUTTON	BITMAP "resource/pushbutt.bmp"
+DISABLED	BITMAP "resource/disabled.bmp"
+
+CUTBUTTON	BITMAP "resource/cutbutt.bmp"
+DELETEBUTTON	BITMAP "resource/delebutt.bmp"
+COPYBUTTON	BITMAP "resource/copybutt.bmp"
+PASTEBUTTON	BITMAP "resource/pastbutt.bmp"
+
+SCRIPTMANBUTTON BITMAP "resource/smanbutt.bmp"
+RELOADBUTTON	BITMAP "resource/relobutt.bmp"
+EXITBUTTON	BITMAP "resource/exitbutt.bmp"
+OPTIONSBUTTON	BITMAP "resource/optsbutt.bmp"
+RUNBUTTON	BITMAP "resource/runbutt.bmp"
+HIERARCHYBUTTON BITMAP "resource/hierbutt.bmp"
+HELPBUTTON	BITMAP "resource/helpbutt.bmp"
+STOPBUTTON	BITMAP "resource/stopbutt.bmp"
+EDITBUTTON	BITMAP "resource/editbutt.bmp"
