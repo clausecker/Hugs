@@ -279,7 +279,7 @@ nocvt base Foreign/Ptr.hs		exts/Ptr.hs	# not quite right
   cvt base Foreign/StablePtr.hs
   cvt base Foreign/Storable.hs		
   cvt base Numeric.hs
-# cvt base Prelude.hs
+  cvt base Prelude.hs
 nocvt base System/CPUTime.hsc		CPUTime.hs	# Hugs primitives
   cvt base System/Cmd.hs
   cvt base System/Console/GetOpt.hs
