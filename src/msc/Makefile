@@ -101,7 +101,7 @@ ffi-dlls:
 	$(FFIHUGS) $(FFIHUGS_OPTS) Foreign.Marshal.Alloc
 	$(FFIHUGS) $(FFIHUGS_OPTS) Foreign.Marshal.Utils
 	$(FFIHUGS) $(FFIHUGS_OPTS) +L../libraries/Foreign/C/errno.c Foreign.C.Error
-	$(FFIHUGS) $(FFIHUGS_OPTS) +L../libraries/Network/initWinSock.c +Lwsock32.lib Network.Socket
+	$(FFIHUGS) $(FFIHUGS_OPTS) +L../libraries/Network/initWinSock.c +L../libraries/Network/winSockErr.c +Lwsock32.lib Network.Socket
 	$(FFIHUGS) $(FFIHUGS_OPTS) +Lwsock32.lib Network.BSD
 
 ################################################################

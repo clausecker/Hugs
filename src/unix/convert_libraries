@@ -381,6 +381,7 @@ hslibs() {
   cp $src/network/include/HsNet.h       $dst/Network
   cp $src/network/cbits/ancilData.c     $dst/Network
   cp $src/network/cbits/initWinSock.c   $dst/Network
+  cp $src/network/cbits/winSockErr.c    $dst/Network
   cp $src/network/cbits/HsNet.c         $dst/Network
 
 # Compatibility with lib/exts:
