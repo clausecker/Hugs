@@ -1,42 +1,85 @@
 Using Hugs with the new hierarchical libraries
 
-Hugs comes with its traditional libraries, and is configured to use
-these by default.  However it also comes with a second, alternative,
-set of libraries, comprising
-- most of the new hierarchical libraries shipped with GHC 5.04, and
-- a collection of stub modules providing the old interface, but
-  implemented by importing hierarchical modules.  For example there
-  is a module MonadReader that merely imports and re-exports the
-  hierarchical module Control.Monad.Reader.
-This version also features a Haskell 98-compliant Prelude (unlike the
-traditional libraries.)  For example, functions like isDigit are no
-longer exported by the Prelude.
+The Hugs libraries are in transition between an old version and a new
+one, which offers greater more modules, greater Haskell 98 compliance,
+a non-flat module namespace, and greater compatibility with other Haskell
+implementations.  For more details on this transition, which affects all
+Haskell implementations, see
 
-The traditional libraries will disappear when this new setup has had
-more testing, though the compatibility stubs will be kept for a while.
+	http://www.haskell.org/~simonmar/libraries/libraries.html
+
+Old library setup: As in previous releases, Hugs is supplied with
+the following collections of modules, and is configured to use them
+by default:
+
+  {Hugs}/lib: the Prelude and Haskell 98 modules
+
+  {Hugs}/lib/exts: a collection of additional modules, mostly shared
+	with older versions of GHC and documented at:
+
+	http://www.haskell.org/ghc/docs/5.02.3/set/book-hslibs.html
+
+  {Hugs}/lib/hugs: a collection of Hugs-specific modules.
+
+New library setup: This release includes a second, alternative, set of
+libraries, comprising
+
+  {Hugs}/libraries: new hierarchical libraries, covering most of the
+	packages base, haskell98 and haskell-src shipped with GHC 5.04
+	and documented at:
+
+	http://www.haskell.org/ghc/docs/5.04.1/html/base/index.html
+	http://www.haskell.org/ghc/docs/5.04.1/html/haskell98/index.html
+	http://www.haskell.org/ghc/docs/5.04.1/html/haskell-src/index.html
+
+	(Unlike GHC, Hugs does not use packages: all these modules are
+	placed in the same hierarchy.)
+
+	This version also features a Haskell 98-compliant Prelude
+	(unlike the old setup).  For example, functions like isDigit
+	are no longer exported by the Prelude.
+
+  {Hugs}/oldlib: a collection of stub modules with the same names
+	as the old lib/exts modules, but implemented by importing
+	hierarchical modules.  For example there is a module MonadReader
+	that merely imports and re-exports the hierarchical module
+	Control.Monad.Reader.
+
+The old {Hugs}/lib/hugs directory is also usable with these libraries.
+
+The old library setup will disappear when this new setup has had more
+testing, though the compatibility stubs will be kept for a while.
 
 To use the new setup, set HUGSFLAGS to
 
 	-W -P{Hugs}/libraries:{Hugs}/oldlib:{Hugs}/lib/hugs
 
 (The -W option disables the old syntax for implicit parameters using
-"with" and "dlet" -- some modules use "with" as an identifier.)
-Do not add {Hugs}/lib or {Hugs}/lib/exts to this path -- Hugs will
-become very confused by multiple versions of the same modules.
-Some modules also require the -98 option.
+"with" and "dlet" -- some modules use "with" as an identifier.)  Do not
+add {Hugs}/lib or {Hugs}/lib/exts to this path -- Hugs will become very
+confused by multiple versions of the same modules.  (NB: don't add a
+leading or trailing colon to the above -P option, as that will add the new
+directories to the old ones.)  Some modules also require the -98 option.
 
-More details:
-
-o To use TRex with the new setup, import Hugs.TRex
+More details on the new setup:
 
 o The Int and Word modules contain deprecated conversion functions, which
   will disappear in future releases.
 
-o libraries/Hugs contains some Hugs-only modules (e.g. Hugs.IO), mostly
-  modified versions of modules from lib.
+o the Hugs.* packages (in libraries/Hugs) provide Hugs-specific
+  implementations of standard features, as well as some Hugs-only
+  features.  Any program importing them (or modules in oldlib) will not
+  be portable to other implementations.
 
-o everything else under libraries, and all of oldlib, are created by the
-  src/unix/convert_libraries script (so don't edit them).
+o To use TRex with the new setup, import Hugs.TRex
+
+o As noted above, the Prelude is now Haskell 98-compliant.  Most of the
+  names formerly exported are available from library modules, including
+  Char, Ix, Numeric and Ratio.  The Hugs-specific names may be accessed
+  by importing the prelude implementation module Hugs.Prelude.
+
+o Everything under libraries except the Hugs part, and all of oldlib, are
+  created by the src/unix/convert_libraries script (so don't edit them).
 
 o To check the status of each hierarchical module, run
 
