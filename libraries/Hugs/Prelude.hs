@@ -44,7 +44,7 @@ module Hugs.Prelude (
     getChar, getLine, getContents, interact,
     readFile, writeFile, appendFile, readIO, readLn,
 --  module Ix,
-    Ix(range, index, inRange, rangeSize),
+    Ix(range, index, unsafeIndex, inRange, rangeSize, unsafeRangeSize),
 --  module Char,
     isSpace, isUpper, isLower,
     isAlpha, isDigit, isOctDigit, isHexDigit, isAlphaNum,
@@ -65,7 +65,6 @@ module Hugs.Prelude (
     basicIORun, blockIO, IOFinished(..),
     threadToIOResult,
     HugsException, catchHugsException, primThrowException,
-    unsafeIndex, unsafeRangeSize,
 
     Bool(False, True),
     Maybe(Nothing, Just),
