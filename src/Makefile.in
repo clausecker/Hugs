@@ -214,13 +214,13 @@ parser.c	: parser.y
 # Generating object dependencies (requires gcc)
 ################################################################
 
-MAKEFILES = Makefile dotnet/Makefile msc/Makefile winhugs/Makefile
+HUGS_MAKEFILES = Makefile dotnet/Makefile msc/Makefile winhugs/Makefile
 
 depend: $(SOURCES)
 	gcc -MM $(CFILES) | sed 's/\.o:/$$(OBJ):/' >TMP
 	if cmp -s TMP MkDepend.in; then : ; else \
 		$(CP) TMP MkDepend.in; \
-		for mfile in $(MAKEFILES);\
+		for mfile in $(HUGS_MAKEFILES);\
 		do	(echo '/^# Object dependencies/+++,/^# End of object dependencies/---d';\
 			 echo '-r MkDepend.in';\
 			 echo w) | ed - $$mfile; \
