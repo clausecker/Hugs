@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: machine.c,v $
- * $Revision: 1.23 $
- * $Date: 2004/01/06 19:45:11 $
+ * $Revision: 1.24 $
+ * $Date: 2004/10/22 12:38:45 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -208,6 +208,8 @@ static Void  local evalString   Args((Cell));
 static Addr  startInstr;                /* first instruction after START   */
 static Addr  lastInstr;                 /* last instr written (for peephole*/
 					/* optimisations etc.)             */
+static Bool  newBasicBlock;		/* lastInstr ends a basic block    */
+					/* (so no peeping at lastInstr)    */
 static Addr  noMatch;                   /* address of a single FAIL instr  */
 static Int   srsp;                      /* simulated runtime stack pointer */
 static Int   offsPosn[NUM_OFFSETS];     /* mapping from logical to physical*/
@@ -217,6 +219,7 @@ static Void local instrNone(opc)        /* Opcode with no operands         */
 Instr opc; {
     lastInstr          = getMem(1);
     instrAt(lastInstr) = opc;
+    newBasicBlock      = FALSE;
 }
 
 static Void local instrInt(opc,n)       /* Opcode with integer operand     */
@@ -225,6 +228,7 @@ Int   n; {
     lastInstr          = getMem(2);
     instrAt(lastInstr) = opc;
     intAt(lastInstr+1) = n;
+    newBasicBlock      = FALSE;
 }
 
 static Void local instrDouble(opc,fl)    /* Opcode with Double operand     */
@@ -234,6 +238,7 @@ DoublePro fl; {
     instrAt(lastInstr)   = opc;
     cellAt(lastInstr+1)  = part1Double(fl);
     cellAt(lastInstr+2)  = part2Double(fl);
+    newBasicBlock        = FALSE;
 }
 
 static Void local instrCell(opc,c)      /* Opcode with Cell operand        */
@@ -242,6 +247,7 @@ Cell  c; {
     lastInstr           = getMem(2);
     instrAt(lastInstr)  = opc;
     cellAt(lastInstr+1) = c;
+    newBasicBlock       = FALSE;
 }
 
 static Void local instrText(opc,t)      /* Opcode with Text operand        */
@@ -250,6 +256,7 @@ Text  t; {
     lastInstr           = getMem(2);
     instrAt(lastInstr)  = opc;
     textAt(lastInstr+1) = t;
+    newBasicBlock       = FALSE;
 }
 
 static Void local instrLab(opc,l)       /* Opcode with label operand       */
@@ -260,6 +267,7 @@ Label l; {
     labAt(lastInstr+1) = l;
     if (l<0)
 	internal("bad Label");
+    newBasicBlock      = FALSE;
 }
 
 static Void local instrCellLab(opc,c,l) /* Opcode with cell, label operands*/
@@ -272,6 +280,7 @@ Label l; {
     labAt(lastInstr+2)  = l;
     if (l<0)
 	internal("bad Label");
+    newBasicBlock       = FALSE;
 }
 
 /* --------------------------------------------------------------------------
@@ -290,7 +299,7 @@ static  Label         nextLab;         /* next label number to allocate    */
 #define UPDRET        (-3)
 #define VALRET        (-4)
 static  Addr          fixups[NUM_FIXUPS]; /* fixup table maps Label -> Addr*/
-#define atLabel(n)    fixups[n] = getMem(0)
+#define atLabel(n)    (newBasicBlock = TRUE, fixups[n] = getMem(0))
 #define endLabel(d,l) if (d==RUNON) atLabel(l)
 #define fix(a)        setAddrAt(a,fixups[labAt(a)])
 
@@ -302,6 +311,7 @@ static Void local asSTART() {          /* initialise assembler             */
     lengthAddr  = getMem(1);
     startInstr  = getMem(0);
     lastInstr   = startInstr-1;
+    newBasicBlock = TRUE;
     srsp        = 0;
     offsPosn[0] = 0;
 }
@@ -376,24 +386,22 @@ static Void local asEND() {            /* Fix addresses in assembled code  */
 #define asCELL(c)    instrCell(iCELL,c);        srsp++
 #define asFAIL()     instrNone(iFAIL)
 
-static Void local asEVAL() {            /* load and eval stack element     */
-#if 0
-  /* This optimisation is unsafe to do if we're at the start of a new
-     'basic block' -- e.g., 
-     
-         f a b = if (if a then True else b) then foo else bar
+/* Peephole optimisations are unsafe if we're at the start of a new
+   'basic block' (newBasicBlock is TRUE) -- e.g.,
 
-     After having emitted the code for the conditional, we want to evaluate
-     it, BUT we better _not_ look at the last instruction of the code comprising
-     the conditional expression and decide whether or not to peephole the
-     EVAL into an LEVAL.
-     
-     For now, I've disabled this optimisation.  [sof 5/2002.]
-  */
-     if (instrAt(lastInstr)==iLOAD)
-  	instrAt(lastInstr) = iLEVAL;
-     else
-#endif
+	f a b = if (if a then True else b) then foo else bar
+
+   After having emitted the code for the conditional, we want to evaluate
+   it, BUT we better _not_ look at the last instruction of the code
+   comprising the conditional expression and decide whether or not to
+   peephole the EVAL into an LEVAL.
+*/
+
+static Void local asEVAL() {            /* load and eval stack element     */
+    if (!newBasicBlock && instrAt(lastInstr)==iLOAD)
+					/* Peephole optimisation:          */
+	instrAt(lastInstr) = iLEVAL;	/* LOAD n; EVAL ===> LEVAL n       */
+    else
 	instrNone(iEVAL);
     srsp--;
 }
@@ -412,7 +420,8 @@ Label l; {
 
 static Void local asSLIDE(n)            /* Slide results down stack        */
 Int n; {
-    if (instrAt(lastInstr)==iSLIDE)     /* Peephole optimisation:          */
+    if (!newBasicBlock && instrAt(lastInstr)==iSLIDE)
+					/* Peephole optimisation:          */
 	intAt(lastInstr+1)+=n;          /* SLIDE n;SLIDE m ===> SLIDE (n+m)*/
     else
 	instrInt(iSLIDE,n);
@@ -421,7 +430,8 @@ Int n; {
 
 static Void local asMKAP(n)             /* Make application nodes ...      */
 Int n; {
-    if (instrAt(lastInstr)==iMKAP)      /* Peephole optimisation:          */
+    if (!newBasicBlock && instrAt(lastInstr)==iMKAP)
+					/* Peephole optimisation:          */
 	intAt(lastInstr+1)+=n;          /* MKAP n; MKAP m  ===> MKAP (n+m) */
     else
 	instrInt(iMKAP,n);
@@ -430,8 +440,8 @@ Int n; {
 
 static Void local asUPDATE(n)           /* Update node ...                 */
 Int n; {
-    if (instrAt(lastInstr)==iMKAP) {    /* Peephole optimisations:         */
-	Int m = intAt(lastInstr+1);
+    if (!newBasicBlock && instrAt(lastInstr)==iMKAP) {
+	Int m = intAt(lastInstr+1);	/* Peephole optimisations:         */
 	nextInstr(lastInstr);
 	if (m==1)                       /* MKAP 1; UPDATE p ===> UPDAP p   */
 	    instrInt(iUPDAP,n);
@@ -446,8 +456,8 @@ Int n; {
 }
 
 static Void local asRUPDATE() {         /* Update node and return ...      */
-    if (instrAt(lastInstr)==iMKAP) {    /* Peephole optimisations:         */
-	Int m = intAt(lastInstr+1);
+    if (!newBasicBlock && instrAt(lastInstr)==iMKAP) {
+	Int m = intAt(lastInstr+1);	/* Peephole optimisations:         */
 	nextInstr(lastInstr);
 	if (m==1)                       /* MKAP 1; RUPDATE ===> RUPDAP     */
 	    instrNone(iRUPDAP);
