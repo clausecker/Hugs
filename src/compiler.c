@@ -9,8 +9,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: compiler.c,v $
- * $Revision: 1.19 $
- * $Date: 2003/10/06 17:09:40 $
+ * $Revision: 1.20 $
+ * $Date: 2003/10/07 12:07:22 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -882,6 +882,10 @@ Cell pat;                         /* Produce list of definitions for eqn   */
 Cell expr;                        /* pat = expr, including a conformality  */
 List lds; {                       /* check if required.                    */
     Cell refPat = refutePat(pat);
+    Cell varPat = matchPat(pat);
+
+    if (varPat==WILDCARD)		     /* no vars => no equations    */
+	return lds;
 
     /* Conformality test (if required):
      *   pat = expr  ==>    nv = LETREC confCheck nv@pat = nv
@@ -903,9 +907,9 @@ List lds; {                       /* check if required.                    */
 	    nv   = inventVar();
 	}
 
-	if (whatIs(pat)==ASPAT) {            /* avoid using new variable if*/
-	    nv   = fst(snd(pat));            /* a variable is already given*/
-	    pat  = snd(snd(pat));            /* by an as-pattern           */
+	if (whatIs(varPat)==ASPAT) {         /* avoid using new variable if*/
+	    nv     = fst(snd(varPat));       /* a variable is already given*/
+	    varPat = snd(snd(varPat));       /* by an as-pattern           */
 	}
 
 	lds = addEqn(nv,                                /* nv =            */
@@ -913,10 +917,10 @@ List lds; {                       /* check if required.                    */
 				    ap(confVar,expr))), /* IN confVar expr */
 		     lds);
 
-	return remPat1(matchPat(pat),nv,lds);
+	return remPat1(varPat,nv,lds);
     }
 
-    return remPat1(matchPat(pat),expr,lds);
+    return remPat1(varPat,expr,lds);
 }
 
 static List local remPat1(pat,expr,lds)
