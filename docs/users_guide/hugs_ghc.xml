@@ -330,7 +330,7 @@ class MyClass a b c | a b -> c where
 This says that the <literal>c</literal> parameter is determined by the
 <literal>a</literal> and <literal>b</literal> parameters together;
 there cannot be two instances of <literal>MyClass</literal> with the same
-first parameter and second parameters, but different third parameters.
+first and second parameters, but different third parameters.
 </para>
 
 </sect2>
@@ -370,7 +370,7 @@ quantifier.
 <para>
 Now the function <literal>g</literal> may be applied to expression whose
 generalized type is at least as general as that declared.
-In this case the choice is limited: we can write
+In this particular example the choice is limited: we can write
 <screen>
 g id
 g undefined
