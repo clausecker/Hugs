@@ -2,7 +2,7 @@ Vendor:       PacSoft, Portland, Oregon.
 Name:         hugs98
 Version:      Feb2000
 License:      BSDish
-Release:      1
+Release:      2
 Group:        Development/Languages/Haskell
 Packager:     jlewis@cse.ogi.edu
 URL:          http://www.haskell.org/hugs
