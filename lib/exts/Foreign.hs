@@ -10,6 +10,7 @@ module Foreign (
         module MarshalArray,
         module MarshalError,
         module MarshalUtils,
+        unsafePerformIO,
 	) where
 
 import Bits
@@ -24,3 +25,4 @@ import MarshalArray
 import MarshalError
 import MarshalUtils
 
+import IOExts(unsafePerformIO)
