@@ -39,6 +39,10 @@ MonadFix are automatically provided: List, Maybe, IO, and state monads
 The web page: "http://www.cse.ogi.edu/PacSoft/projects/rmb" contains
 up to date information on recursive-monadic-bindings.
 
+Historical note: The old implementation of the mdo-notation (and most
+of the existing documents) used the name "MonadRec" for the class and 
+the corresponding library. This name is no longer supported.
+
 ------------------------------------------------------------------------------
 
 [EL00] Levent Erkök and John Launchbury. Recursive Monadic Bindings. In the
