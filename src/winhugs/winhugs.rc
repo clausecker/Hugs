@@ -155,7 +155,7 @@ BEGIN
 END
 
 OPTIONSDLGBOX DIALOG FIXED IMPURE  14, 24, 313, 241
-STYLE DS_MODALFRAME | DS_3DLOOK | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | 
+STYLE DS_MODALFRAME | DS_3DLOOK | DS_FIXEDSYS | WS_POPUP | WS_CAPTION |
     WS_SYSMENU
 CAPTION "Options"
 FONT 8, "Ms Sans Serif"
@@ -195,6 +195,8 @@ BEGIN
                     BS_AUTOCHECKBOX | WS_TABSTOP,160,79,140,10
     CONTROL         "&m Use multi instance resolution ",ID_OP+16,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,160,89,140,10
+    CONTROL         "&R Enable root optimisation",ID_OP+17,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,160,99,140,10
     LTEXT           "Path:",-1,12,129,22,8
     EDITTEXT        ID_PATH,37,127,183,12,ES_AUTOHSCROLL
     LTEXT           "Preprocessor filter:",-1,12,143,62,8
