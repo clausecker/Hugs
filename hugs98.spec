@@ -46,3 +46,4 @@ make prefix=$RPM_BUILD_ROOT/usr install
 %attr(-, root, root) /usr/bin/runhugs
 %attr(-, root, root) /usr/share/hugs/demos
 %attr(-, root, root) /usr/share/hugs/lib
+%attr(-, root, root) /usr/share/hugs/include
