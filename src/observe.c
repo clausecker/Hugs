@@ -114,8 +114,8 @@ extPrimFun(primBkpt) {			/* check if break enabled          */
     updateRoot(pop());
 }
 
-#if !LAZY_ST
-#error primitive "setBkpt" unavailable as LAZY_ST not enabled 
+#if !IO_REFS
+#error primitive "setBkpt" unavailable as IO_REFS not enabled 
 #else
 extPrimFun(primSetBkpt) {			
     String s = evalName(IOArg(2));

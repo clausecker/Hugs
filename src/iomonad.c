@@ -14,8 +14,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: iomonad.c,v $
- * $Revision: 1.48 $
- * $Date: 2003/03/09 23:53:05 $
+ * $Revision: 1.49 $
+ * $Date: 2003/05/12 08:48:14 $
  * ------------------------------------------------------------------------*/
  
 Name nameIORun;			        /* run IO code                     */
@@ -132,6 +132,9 @@ PROTO_PRIM(primAppendFile);
 PROTO_PRIM(primReadBinaryFile);
 PROTO_PRIM(primWriteBinaryFile);
 PROTO_PRIM(primAppendBinaryFile);
+
+PROTO_PRIM(primIOEql);
+PROTO_PRIM(primIOHash);
 #endif
 
 #if IO_REFS
@@ -320,6 +323,9 @@ static struct primitive iomonadPrimTable[] = {
   {"isNullPtr",          1+IOArity, primIsNullPtr},
   {"mkPrimVector",       2+IOArity, primMkPrimVector},
 #endif
+  {"IOEql",              2+IOArity, primIOEql},
+  {"IOHash",             1+IOArity, primIOHash},
+
   {0,			0, 0}
 };
 
@@ -1907,5 +1913,57 @@ primFun(primGetCurrentScript) {  /* IO Int */
 
 #endif /* EMBEDDED */
 #endif /* HSCRIPT */
+
+/* --------------------------------------------------------------------------
+ * Primitives for implementing disposable memo functions
+ * Byron Cook -- byron@cse.ogi.edu
+ *
+ * IOEql :: Eval a => a -> a -> IO Bool 
+ *   if argument is an Int or Char
+ *   then use ==
+ *   else use pointer identity
+ *
+ * IOHash :: Eval a => a -> IO Int
+ *   if a is an Int or Char
+ *   then use value cast as an Int
+ *   else use pointer identity
+ *
+ * (Earlier versions made Float a special case too - but that's not very
+ *  portable since it assumes that sizeof(FloatPro) == sizeof(Int).)
+ * ------------------------------------------------------------------------*/
+
+primFun(primIOEql) {		    /* :: Eval a => a -> a -> ST Mem Bool */
+    Cell x = IOArg(1);
+    Cell y = IOArg(2);
+    eval(x);
+    eval(y);
+    x = followInd(IOArg(1));
+    y = followInd(IOArg(2));
+
+    if (whatIs(x) == whatIs(y)) {
+	switch (whatIs(x)) {
+	   case INTCELL   : IOBoolResult(intOf(x)==intOf(y));
+			    return;
+	   case CHARCELL  : IOBoolResult(charOf(x)==charOf(y));
+			    return;
+	   /* deliberate fall through to end */
+	}
+    }
+    IOBoolResult(x==y);
+}
+
+primFun(primIOHash) {                      /* :: Eval a => a -> ST Mem Int */
+    Cell x = IOArg(1);
+    eval(x);
+    x = followInd(IOArg(1)); 
+
+    switch(whatIs(x)) {
+	case INTCELL   : IOBoolResult(x); 
+			 return;
+	case CHARCELL  : IOBoolResult(mkInt(charOf(x)));
+			 return;
+    }
+    IOBoolResult(mkInt((Int)x));
+}
 
 /*-------------------------------------------------------------------------*/

@@ -1,21 +1,18 @@
 -----------------------------------------------------------------------------
 -- Strict State Thread module
 -- 
--- This library provides support for both lazy and strict state threads,
--- as described in the PLDI '94 paper by John Launchbury and Simon Peyton
--- Jones.  In addition to the monad ST, it also provides mutable variables
--- STRef and mutable arrays STArray.  It is identical to the LazyST
--- module except that the ST instance is strict.
+-- This library provides support for strict state threads, as described
+-- in the PLDI '94 paper by John Launchbury and Simon Peyton Jones.
+-- In addition to the monad ST, it also provides mutable variables STRef
+-- and mutable arrays STArray.
 --
 -- Suitable for use with Hugs 98.
 -----------------------------------------------------------------------------
 
 module Hugs.ST 
-	( ST
+	( ST(..)
 	, runST
-	, thenLazyST, thenStrictST, returnST
-	, unsafeInterleaveST
-	, fixST 
+	, unsafeRunST
 	, RealWorld
 	, stToIO
 	, unsafeIOToST
@@ -25,7 +22,6 @@ module Hugs.ST
 	, newSTRef
 	, readSTRef
 	, writeSTRef 
-	, modifySTRef
 
         , STArray
           -- instance Eq (STArray s ix elt)
@@ -36,28 +32,39 @@ module Hugs.ST
         , thawSTArray
         , freezeSTArray
         , unsafeFreezeSTArray
-        , Ix
 
 	, unsafeReadSTArray
 	, unsafeWriteSTArray
 	) where
 
-import Hugs.Array(Array,Ix(index,rangeSize),bounds,assocs)
-import Hugs.IOExts(unsafePerformIO,RealWorld)
+import Hugs.Prelude(IO(..))
+import Hugs.Array(Array,Ix(index,rangeSize),bounds,elems)
+import Hugs.IOExts(unsafePerformIO)
 import Control.Monad   
 
 -----------------------------------------------------------------------------
 
-data ST s a      -- implemented as an internal primitive
+-- The ST representation generalizes that of IO (cf. Hugs.Prelude),
+-- so it can use IO primitives that manipulate local state.
 
-primitive runST                        :: (forall s . ST s a) -> a
-primitive returnST     "STReturn"      :: a -> ST s a
-primitive thenLazyST   "STLazyBind"    :: ST s a -> (a -> ST s b) -> ST s b
-primitive thenStrictST "STStrictBind"  :: ST s a -> (a -> ST s b) -> ST s b
-primitive unsafeInterleaveST "STInter" :: ST s a -> ST s a
-primitive fixST        "STFix"         :: (a -> ST s a) -> ST s a
+newtype ST s a = ST (forall r. (a -> r) -> r)
 
-primitive stToIO	"primSTtoIO"   :: ST RealWorld a -> IO a
+data RealWorld = RealWorld
+
+primitive thenStrictST "primbindIO" :: ST s a -> (a -> ST s b) -> ST s b
+primitive returnST     "primretIO"  :: a -> ST s a
+
+unST                :: ST s a -> (a -> r) -> r
+unST (ST f)          = f
+
+runST               :: (forall s. ST s a) -> a
+runST m              = unST m id
+
+unsafeRunST         :: ST s a -> a
+unsafeRunST m        = unST m id
+
+stToIO              :: ST RealWorld a -> IO a
+stToIO (ST f)        = IO f
 
 unsafeIOToST        :: IO a -> ST s a
 unsafeIOToST         = unsafePerformIO . liftM returnST
@@ -73,13 +80,10 @@ instance Monad (ST s) where
 
 data STRef s a   -- implemented as an internal primitive
 
-primitive newSTRef   "STNew"      :: a -> ST s (STRef s a)
-primitive readSTRef  "STDeref"    :: STRef s a -> ST s a
-primitive writeSTRef "STAssign"   :: STRef s a -> a -> ST s ()
-primitive eqSTRef    "STMutVarEq" :: STRef s a -> STRef s a -> Bool
-
-modifySTRef :: STRef s a -> (a -> a) -> ST s ()
-modifySTRef ref f = writeSTRef ref . f =<< readSTRef ref
+primitive newSTRef   "newRef"     :: a -> ST s (STRef s a)
+primitive readSTRef  "getRef"     :: STRef s a -> ST s a
+primitive writeSTRef "setRef"     :: STRef s a -> a -> ST s ()
+primitive eqSTRef    "eqRef"      :: STRef s a -> STRef s a -> Bool
 
 instance Eq (STRef s a) where (==) = eqSTRef
 
@@ -105,12 +109,11 @@ newSTArray bs e      = primNewArr bs (rangeSize bs) e
 boundsSTArray a      = primBounds a
 readSTArray a i      = unsafeReadSTArray a (index (boundsSTArray a) i)
 writeSTArray a i e   = unsafeWriteSTArray a (index (boundsSTArray a) i) e
-thawSTArray arr      = newSTArray (bounds arr) err `thenStrictST` \ stArr ->
-		       let 
-                         fillin [] = returnST stArr
-                         fillin ((ix,v):ixvs) = writeSTArray stArr ix v
-                          `thenStrictST` \ _ -> fillin ixvs
-		       in fillin (assocs arr)
+thawSTArray arr      = do
+		       stArr <- newSTArray (bounds arr) err
+		       sequence_ (zipWith (unsafeWriteSTArray stArr)
+						[0..] (elems arr))
+		       return stArr
  where
   err = error "thawArray: element not overwritten" -- shouldnae happen
 freezeSTArray a      = primFreeze a
@@ -119,17 +122,17 @@ unsafeFreezeSTArray  = freezeSTArray  -- not as fast as GHC
 instance Eq (STArray s ix elt) where
   (==) = eqSTArray
 
-primitive primNewArr   "STNewArr"
+primitive primNewArr   "IONewArr"
           :: (a,a) -> Int -> b -> ST s (STArray s a b)
-primitive primReadArr  "STReadArr"
+primitive primReadArr  "IOReadArr"
           :: STArray s a b -> Int -> ST s b
-primitive primWriteArr "STWriteArr"
+primitive primWriteArr "IOWriteArr"
           :: STArray s a b -> Int -> b -> ST s ()
-primitive primFreeze   "STFreeze"
+primitive primFreeze   "IOFreeze"
           :: STArray s a b -> ST s (Array a b)
-primitive primBounds   "STBounds"
+primitive primBounds   "IOBounds"
           :: STArray s a b -> (a,a)
-primitive eqSTArray    "STArrEq"
+primitive eqSTArray    "IOArrEq"
           :: STArray s a b -> STArray s a b -> Bool
 
 -----------------------------------------------------------------------------

@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: builtin.c,v $
- * $Revision: 1.58 $
- * $Date: 2003/05/05 19:46:38 $
+ * $Revision: 1.59 $
+ * $Date: 2003/05/12 08:48:14 $
  * ------------------------------------------------------------------------*/
 
 /* We include math.h before prelude.h because SunOS 4's cpp incorrectly
@@ -1429,14 +1429,6 @@ FILE *fp; {                             /* and print it on fp              */
 #endif
 
 /* --------------------------------------------------------------------------
- * ST monad implementation
- * ------------------------------------------------------------------------*/
-
-#if LAZY_ST
-#include "stmonad.c"
-#endif
-
-/* --------------------------------------------------------------------------
  * Array primitives:
  * ------------------------------------------------------------------------*/
 
@@ -2257,9 +2249,6 @@ Int what; {
 #endif
 #if INTERNAL_PRIMS
 		       registerPrims(&internalPrims);
-#endif
-#if LAZY_ST
-		       registerPrims(&stmonadPrims);
 #endif
 		       setCurrModule(modulePrelude);
 #define pFun(n,s,t)    addPrim(0,n=newName(findText(s),NIL),t,modulePrelude,NIL)

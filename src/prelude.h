@@ -8,8 +8,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: prelude.h,v $
- * $Revision: 1.44 $
- * $Date: 2003/03/09 23:53:07 $
+ * $Revision: 1.45 $
+ * $Date: 2003/05/12 08:48:14 $
  * ------------------------------------------------------------------------*/
 #ifndef __PRELUDE_H__
 #define __PRELUDE_H__
@@ -89,7 +89,6 @@
  *   IO_HANDLES     to include the IO file operations.
  *   IO_REFS	    Ref type for IO_MONAD, and simple operations.
  *   FLUSHEVERY	    to force a fflush after every char in putStr/hPutStr.
- *   LAZY_ST	    to include support for lazy state threads.
  *   NPLUSK	    to include support for (n+k) patterns.
  *   BIGNUMS	    to include support for Integer bignums.
  *   FIXED_SUBST    to force a fixed size for the current substitution.
@@ -142,7 +141,6 @@
 #define IO_HANDLES       1
 #define IO_REFS		 1 /* Experimental IO Ref type			   */
 #define FLUSHEVERY	 1
-#define LAZY_ST		 (IO_MONAD)
 #define NPLUSK		 1 /* Warning: There are those that would prefer 0 */
 #define BIGNUMS		 1 /* Experimental bignum implementation           */
 #define FIXED_SUBST	 0 /* Warning: This may not be appropriate for PCs */

@@ -49,7 +49,7 @@ CFILES		= hugs.c storage.c input.c static.c type.c subst.c \
 		  output.c compiler.c machine.c interp.c builtin.c \
 		  server.c ffi.c module.c machdep.c script.c
 INCFILES	= parser.c preds.c bignums.c scc.c timer.c \
-		  printer.c iomonad.c interns.c stmonad.c array.c
+		  printer.c iomonad.c interns.c array.c
 YFILES		= parser.y
 SOURCES		= $(HFILES) $(CFILES) $(INCFILES) $(YFILES) 
 OBJECTS		= storage.obj input.obj static.obj type.obj compiler.obj \
@@ -147,7 +147,7 @@ compiler.obj	: $(PRELUDE) storage.h connect.h errors.h
 machine.obj	: $(PRELUDE) storage.h connect.h errors.h
 plugin.obj	: $(PRELUDE) storage.h connect.h errors.h
 builtin.obj	: $(PRELUDE) storage.h connect.h errors.h \
-		  bignums.c printer.c iomonad.c interns.c stmonad.c array.c
+		  bignums.c printer.c iomonad.c interns.c array.c
 ffi.obj		: $(PRELUDE) storage.h connect.h errors.h
 module.obj	: $(PRELUDE) storage.h connect.h errors.h module.h
 machdep.obj	: $(PRELUDE) storage.h connect.h errors.h machdep.h

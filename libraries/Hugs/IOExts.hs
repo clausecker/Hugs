@@ -9,8 +9,6 @@ module Hugs.IOExts
 	, unsafePerformIO		-- :: IO a -> a
 	, unsafeInterleaveIO		-- :: IO a -> IO a
 
-	, RealWorld
-
 	, performGC
 
 	, IOModeEx(..)	      	-- instance (Eq, Read, Show)
@@ -37,8 +35,6 @@ import Hugs.IORef
 import Hugs.System ( getArgs )
 
 -----------------------------------------------------------------------------
-
-data RealWorld = RealWorld
 
 primitive performGC "primGC" :: IO ()
 

@@ -65,7 +65,7 @@ CFILES		= hugs.c runhugs.c server.c edit.c observe.c \
 		  plugin.c script.c static.c storage.c \
 		  strutil.c subst.c type.c version.c
 INCFILES	= parser.c preds.c bignums.c timer.c scc.c \
-		  printer.c iomonad.c interns.c stmonad.c array.c
+		  printer.c iomonad.c interns.c array.c
 YFILES		= parser.y
 SOURCES		= $(HFILES) $(CFILES) $(INCFILES) $(YFILES) 
 OBJECTS		= builtin@OBJ@ compiler@OBJ@ errors@OBJ@ evaluator@OBJ@ \

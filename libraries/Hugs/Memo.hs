@@ -75,9 +75,9 @@ defaultSize = 40
 
 memoize :: ST Mem t -> (t -> a -> b -> ST Mem b) -> 
            (a -> b) -> a -> b
-memoize new access f = {-trace "memoize" $-} unsafeST $ do 
+memoize new access f = {-trace "memoize" $-} unsafeRunST $ do 
   t <- new
-  return (\x -> unsafeST $ access t x (f x))
+  return (\x -> unsafeRunST $ access t x (f x))
 
 
 mkMemo  :: TaintedEq a -> HashFunc a -> Int -> (a -> c) -> (a -> c)
@@ -136,19 +136,12 @@ newCache n = newSTArray (0,n) Nothing
 
 ------------------------------------------------------------------
 -- These functions are bad --- dont pay attention to them
-primitive primUnsafeCoerce "primUnsafeCoerce" :: a -> b  
-
-unsafeST :: ST s a -> a
-unsafeST m = fst (reifyST m ())
-
-reifyST :: ST s a -> (b -> (a,b))
-reifyST = primUnsafeCoerce
 
 -- lisp style eql --- as described in "Lazy-memo functions"
-primitive eql "STEql" :: a -> a -> ST Mem Bool
+primitive eql "IOEql" :: a -> a -> ST Mem Bool
 -- a `eql` b = return (a `unsafePtrEq` b)
 
 -- hash based on addresses (or values if the arg is a base type)
-primitive hash "STHash" :: a -> ST Mem Int
+primitive hash "IOHash" :: a -> ST Mem Int
 
 ------------------------------------------------------------------

@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: array.c,v $
- * $Revision: 1.7 $
- * $Date: 2003/01/26 01:03:57 $
+ * $Revision: 1.8 $
+ * $Date: 2003/05/12 08:48:14 $
  * ------------------------------------------------------------------------*/
 
 static Name nameEltUndef;		/* undefined element in array	   */
@@ -22,13 +22,6 @@ PROTO_PRIM(primSubscript);
 PROTO_PRIM(primBounds);
 PROTO_PRIM(primElems);
 PROTO_PRIM(primEltUndef);
-#if LAZY_ST
-PROTO_PRIM(primSTNewArr);
-PROTO_PRIM(primSTReadArr);
-PROTO_PRIM(primSTWriteArr);
-PROTO_PRIM(primSTFreeze);
-PROTO_PRIM(primSTArrEq);
-#endif
 #if IO_MONAD
 PROTO_PRIM(primIONewArr);
 PROTO_PRIM(primIOReadArr);
@@ -47,14 +40,6 @@ static struct primitive arrayPrimTable[] = {
   {"primBounds",	1, primBounds},
   {"primElems",		1, primElems},
   {"eltUndef",		0, primEltUndef},
-#if LAZY_ST
-  {"STNewArr",		4, primSTNewArr},
-  {"STReadArr",		3, primSTReadArr},
-  {"STWriteArr",	4, primSTWriteArr},
-  {"STFreeze",		2, primSTFreeze},
-  {"STBounds",	        1, primBounds},
-  {"STArrEq",	        2, primSTArrEq},
-#endif
 #if IO_MONAD
   {"IONewArr",		3+IOArity, primIONewArr},
   {"IOReadArr",		2+IOArity, primIOReadArr},
@@ -325,47 +310,6 @@ primFun(primElems) {			/* :: Array a b -> [b]		   */
 primFun(primEltUndef) {
     throwException(ap(nameArrayException, ap(nameUndefinedElement, nameNil)));
 }
-
-#if LAZY_ST
-primFun(primSTNewArr) {			/* :: (a,a)			   */
-    declArr;				/*    -> Int			   */
-    eval(primArg(1));			/*	 -> b			   */
-    aNewSet(4,3,primArg(2));		/*	    -> ST s (MutArr s a b) */
-    aRetForST();
-}
-
-primFun(primSTReadArr) {		/* :: MutArr s a b -> Int	   */
-    eval(primArg(1));			/*    -> ST s b			   */
-    aEvalModel(3);
-    eval(primArg(2));
-    aGetElt(3);
-    topfun(mkTuple(2));
-    updapRoot(top(),primArg(1));
-}
-
-primFun(primSTWriteArr) {		/* :: MutArr s a b -> Int -> b	   */
-    eval(primArg(1));			/*    -> ST s ()		   */
-    aEvalModel(4);
-    eval(primArg(3));
-    aPutElt(4,primArg(2));
-    updapRoot(ap(mkTuple(2),nameUnit),primArg(1));
-}
-
-primFun(primSTFreeze) {			/* :: MutArr s a b		   */
-    declArr;				/*    -> ST s (Array a b)	   */
-    eval(primArg(1));
-    aEvalModel(2);
-    aNewCopy(2);
-    aRetForST();
-}
-
-primFun(primSTArrEq) {		        /* :: MutArr s a b                 */
-    aEvalModel(1);                      /*    -> MutArr s a b -> Bool      */
-    aEvalModel(2);
-    updateRoot(primArg(1)==primArg(2) ? nameTrue : nameFalse);
-}
-
-#endif /* LAZY_ST */
 
 #if IO_MONAD
 primFun(primIONewArr) {			/* :: (a,a)			   */

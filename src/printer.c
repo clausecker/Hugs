@@ -8,8 +8,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: printer.c,v $
- * $Revision: 1.9 $
- * $Date: 2003/02/10 14:52:01 $
+ * $Revision: 1.10 $
+ * $Date: 2003/05/12 08:48:14 $
  * ------------------------------------------------------------------------*/
 
 static Void   local printer		Args((Name,Int));
@@ -298,7 +298,7 @@ Int  d; {				/* precedence level		   */
 			break;
 #endif
 
-#if LAZY_ST
+#if IO_REFS
 	case MUTVAR   : outStr("{mutable variable}");
 			pr = nameNPrint;
 			break;

@@ -13,127 +13,54 @@
 module Hugs.LazyST 
 	( ST
 	, runST
-	, unsafeRunST
-	, thenLazyST, thenStrictST, returnST
 	, unsafeInterleaveST
 	, fixST 
-	, RealWorld
-	, stToIO
-	, unsafeIOToST
 
-	, State
-	, STRef
-	  -- instance Eq (STRef s a)
-	, newSTRef
-	, readSTRef
-	, writeSTRef 
-	, modifySTRef
-
-        , STArray
-          -- instance Eq (STArray s ix elt)
-        , newSTArray
-        , boundsSTArray
-        , readSTArray
-        , writeSTArray
-        , thawSTArray
-        , freezeSTArray
-        , unsafeFreezeSTArray
-        , Ix
-
-	, unsafeReadSTArray
-	, unsafeWriteSTArray
+	, lazyToStrictST
+	, strictToLazyST
 	) where
 
-import Hugs.Array(Array,Ix(index,rangeSize),bounds,assocs)
-import Hugs.IOExts(unsafePerformIO,RealWorld)
+import qualified Hugs.ST as ST
 import Control.Monad   
 
 -----------------------------------------------------------------------------
 
-data ST s a      -- implemented as an internal primitive
+newtype ST s a = ST (State s -> (a, State s))
 
-primitive runST                        :: (forall s. ST s a) -> a
-primitive unsafeRunST                  :: ST s a -> s -> (a, s)
-primitive returnST     "STReturn"      :: a -> ST s a
-primitive thenLazyST   "STLazyBind"    :: ST s a -> (a -> ST s b) -> ST s b
-primitive thenStrictST "STStrictBind"  :: ST s a -> (a -> ST s b) -> ST s b
-primitive unsafeInterleaveST "STInter" :: ST s a -> ST s a
-primitive fixST        "STFix"         :: (a -> ST s a) -> ST s a
+unST :: ST s a -> State s -> (a, State s)
+unST (ST f) = f
 
-primitive stToIO	"primSTtoIO"   :: ST RealWorld a -> IO a
+runST :: (forall s. ST s a) -> a
+runST m = fst (unST m S)
 
-unsafeIOToST        :: IO a -> ST s a
-unsafeIOToST         = unsafePerformIO . liftM returnST
+unsafeInterleaveST :: ST s a -> ST s a
+unsafeInterleaveST (ST m) = return (fst (m S))
+
+fixST :: (a -> ST s a) -> ST s a
+fixST f = ST (\s -> let (x,s') = unST (f x) s in (x,s'))
 
 instance Functor (ST s) where
     fmap = liftM
 
 instance Monad (ST s) where
-    (>>=)  = thenLazyST
-    return = returnST
+    return a = ST (\s -> (a, s))
+    ST m >>= f = ST (\S -> let (a,s') = m S in unST (f a) s')
+    -- ST m >>= f = ST (\s -> let (a,s') = m s in unST (f a) s')
 
 -----------------------------------------------------------------------------
 
-type State s = s -- dummy wrapper for state to be closer to GHC interface
-data STRef s a   -- implemented as an internal primitive
-
-primitive newSTRef   "STNew"      :: a -> ST s (STRef s a)
-primitive readSTRef  "STDeref"    :: STRef s a -> ST s a
-primitive writeSTRef "STAssign"   :: STRef s a -> a -> ST s ()
-primitive eqSTRef    "STMutVarEq" :: STRef s a -> STRef s a -> Bool
-
-modifySTRef :: STRef s a -> (a -> a) -> ST s ()
-modifySTRef ref f = writeSTRef ref . f =<< readSTRef ref
-
-instance Eq (STRef s a) where (==) = eqSTRef
+data State s = S
 
 -----------------------------------------------------------------------------
 
-data STArray s ix elt -- implemented as an internal primitive
+lazyToStrictST :: ST s a -> ST.ST s a
+lazyToStrictST (ST m) = ST.ST (\k -> case m S of (a,S) -> k a)
 
-newSTArray          :: Ix ix => (ix,ix) -> elt -> ST s (STArray s ix elt)
-boundsSTArray       :: Ix ix => STArray s ix elt -> (ix, ix)
-readSTArray         :: Ix ix => STArray s ix elt -> ix -> ST s elt
-writeSTArray        :: Ix ix => STArray s ix elt -> ix -> elt -> ST s ()
-thawSTArray         :: Ix ix => Array ix elt -> ST s (STArray s ix elt)
-freezeSTArray       :: Ix ix => STArray s ix elt -> ST s (Array ix elt)
-unsafeFreezeSTArray :: Ix ix => STArray s ix elt -> ST s (Array ix elt)
+strictToLazyST :: ST.ST s a -> ST s a
+strictToLazyST (ST.ST m) = ST (\S -> m delay)
+--	\s -> let (a',s') = case s of S -> m (\a -> (a,S)) in (a',s'))
 
-unsafeReadSTArray   :: Ix i => STArray s i e -> Int -> ST s e
-unsafeReadSTArray    = primReadArr
-
-unsafeWriteSTArray  :: Ix i => STArray s i e -> Int -> e -> ST s ()
-unsafeWriteSTArray   = primWriteArr
-
-newSTArray bs e      = primNewArr bs (rangeSize bs) e
-boundsSTArray a      = primBounds a
-readSTArray a i      = unsafeReadSTArray a (index (boundsSTArray a) i)
-writeSTArray a i e   = unsafeWriteSTArray a (index (boundsSTArray a) i) e
-thawSTArray arr      = newSTArray (bounds arr) err `thenStrictST` \ stArr ->
-		       let 
-                         fillin [] = returnST stArr
-                         fillin ((ix,v):ixvs) = writeSTArray stArr ix v
-                          `thenStrictST` \ _ -> fillin ixvs
-		       in fillin (assocs arr)
- where
-  err = error "thawArray: element not overwritten" -- shouldnae happen
-freezeSTArray a      = primFreeze a
-unsafeFreezeSTArray  = freezeSTArray  -- not as fast as GHC
-
-instance Eq (STArray s ix elt) where
-  (==) = eqSTArray
-
-primitive primNewArr   "STNewArr"
-          :: (a,a) -> Int -> b -> ST s (STArray s a b)
-primitive primReadArr  "STReadArr"
-          :: STArray s a b -> Int -> ST s b
-primitive primWriteArr "STWriteArr"
-          :: STArray s a b -> Int -> b -> ST s ()
-primitive primFreeze   "STFreeze"
-          :: STArray s a b -> ST s (Array a b)
-primitive primBounds   "STBounds"
-          :: STArray s a b -> (a,a)
-primitive eqSTArray    "STArrEq"
-          :: STArray s a b -> STArray s a b -> Bool
+delay :: a -> (a, State s)
+delay a = (a,S)
 
 -----------------------------------------------------------------------------
