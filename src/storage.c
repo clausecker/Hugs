@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: storage.c,v $
- * $Revision: 1.17 $
- * $Date: 2001/08/07 23:29:59 $
+ * $Revision: 1.18 $
+ * $Date: 2001/09/13 00:53:02 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -34,7 +34,7 @@ static Void local patternError          Args((String));
 static Bool local stringMatch           Args((String,String));
 static Bool local typeInvolves		Args((Type,Type));
 static Cell local markCell              Args((Cell));
-static Void local markSnd               Args((Cell));
+static Cell local markSnd               Args((Cell));
 static Cell local indirectChain         Args((Cell));
 static Bool local isMarked		Args((Cell));
 static Cell local lowLevelLastIn        Args((Cell));
@@ -1652,24 +1652,27 @@ mc: switch (fst(c)) {
     if (isGenPair(fst(c))) {
 	STACK_CHECK
 	fst(c) = markCell(fst(c));
-	markSnd(c);
+	return markSnd(c);
     }
     else if (isNull(fst(c)) || fst(c)>=BCSTAG) {
 	STACK_CHECK
-	markSnd(c);
+	return markSnd(c);
+    } else {
+        return c;
     }
-
-    return c;
 }
 
-static Void local markSnd(c)            /* Variant of markCell used to     */
+static Cell local markSnd(c)            /* Variant of markCell used to     */
 Cell c; {                               /* update snd component of cell    */
     Cell t;                             /* using tail recursion            */
+    Cell orig;
+    
+    orig = c;
 
 ma: t = c;                              /* Keep pointer to original pair   */
     c = snd(c);
 mb: if (!isPair(c))
-	return;
+	return orig;
 
     switch (fst(c)) {
 	case INDIRECT : snd(t) = c = indirectChain(c);
@@ -1686,7 +1689,7 @@ mb: if (!isPair(c))
 			    weakPtrs = c;
 			    recordMark();
 			  }
-			  return;
+			  return orig;
 			}
 #endif
     }
@@ -1694,7 +1697,7 @@ mb: if (!isPair(c))
     {   register int place = placeInSet(c);
 	register int mask  = maskInSet(c);
 	if (marks[place]&mask)
-	    return;
+	    return orig;
 	else {
 	    marks[place] |= mask;
 	    recordMark();
@@ -1707,7 +1710,7 @@ mb: if (!isPair(c))
     }
     else if (isNull(fst(c)) || fst(c)>=BCSTAG)
 	goto ma;
-    return;
+    return orig;
 }
 
 static Cell local indirectChain(c)      /* Scan chain of indirections      */
