@@ -422,7 +422,6 @@ mkdir -p $compat
 # Hugs-only modules
 
     stub ConcBase	Hugs.ConcBase
- libexts MonadRec	# new libs have Fix, but Rec is used by mdo
  libexts Memo		# hslibs module is different
  libexts Observe	# hslibs module is different
     stub HugsStorable	Hugs.Storable
