@@ -1,7 +1,7 @@
 module Hugs.Char (
     isAscii, isLatin1, isControl, isPrint, isSpace, isUpper, isLower,
     isAlpha, isDigit, isOctDigit, isHexDigit, isAlphaNum,
-    digitToInt, intToDigit,
+    intToDigit,
     toUpper, toLower,
     ord, chr,
     readLitChar, showLitChar, lexLitChar
@@ -27,13 +27,6 @@ isControl c              =  c < ' ' || c >= '\DEL' && c <= '\x9f'
 isPrint c                =  not (isControl c)
 
 -- Digit conversion operations
-digitToInt               :: Char -> Int
-digitToInt c
-  | isDigit c            =  fromEnum c - fromEnum '0'
-  | c >= 'a' && c <= 'f' =  fromEnum c - fromEnum 'a' + 10
-  | c >= 'A' && c <= 'F' =  fromEnum c - fromEnum 'A' + 10
-  | otherwise            =  error "Char.digitToInt: not a digit"
-
 intToDigit               :: Int -> Char
 intToDigit i
   | i >= 0  && i <=  9   =  toEnum (fromEnum '0' + i)
