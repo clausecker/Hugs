@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.171 $
- * $Date: 2004/11/18 10:25:07 $
+ * $Revision: 1.172 $
+ * $Date: 2004/11/20 20:26:01 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -4051,7 +4051,7 @@ Cell type; {
      */
     Int  line    = intOf(l);
     Int  cconv;
-    Text t   = concatText("--FFI_",textToStr(textOf(intName)));
+    Text t   = concatText("--FFI_",textToStr(textOf(ext)));
     Name n   = newName(t,NIL);
 
     if (textOf(v) != textExport) {
@@ -7090,7 +7090,9 @@ Void checkDefns() {			/* Top level static analysis	   */
 	if (need_stubs && (generate_ffi || !generateFFI)) {
 	  needPrims(0, NULL);
 	  mapProc(linkForeign,foreignImports);
+#if 0
 	  mapProc(linkForeign,foreignExports);
+#endif
 	}
 
         /* We are now finished with foreign import declarations but
