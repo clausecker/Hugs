@@ -7,8 +7,8 @@
  * in the distribution for details.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.5 $
- * $Date: 1999/08/16 15:25:20 $
+ * $Revision: 1.6 $
+ * $Date: 1999/08/16 17:58:39 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1688,7 +1688,9 @@ Class c; {				/* and other parts of class struct.*/
     cclass(c).dcon	 = addPrimCfun(generateText("Make.%s",c),mno,0,NIL);
     if (mno==1)	{			/* Single entry dicts use newtype  */
 	name(cclass(c).dcon).defn = nameId;
-	name(hd(cclass(c).members)).number = mfunNo(0);
+	if (nonNull(cclass(c).members)) {
+	    name(hd(cclass(c).members)).number = mfunNo(0);
+	}
     }
     cclass(c).dbuild     = newDBuild(c);
     cclass(c).defaults   = classBindings("class",c,cclass(c).defaults);
