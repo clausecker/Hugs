@@ -5683,7 +5683,7 @@ fi
     GL_CFLAGS=
   fi
 
-  LIBS="$GLUT_X_LIBS"
+      LIBS=`echo "$LIBS" | sed "s@$GL_X_LIBS@$GLUT_X_LIBS@"`
 
 
 echo "$as_me:$LINENO: checking for library containing glutMainLoop" >&5
