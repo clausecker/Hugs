@@ -3,7 +3,7 @@
 --
 -- (c) 2002, sof
 --
-module DotNet 
+module Dotnet 
 	( Object	-- abstract. Instances: Eq, Show
 	, isNullObj     -- :: Object a -> Bool
 
@@ -109,7 +109,7 @@ module DotNet
 	) where
 
 import Hugs.Prelude
---import qualified PrelNet
+import Data.Char
 import Int
 import Word
 import IOExts
@@ -119,7 +119,7 @@ import StablePtr ( newStablePtr )
 import Monad
 import List ( intersperse )
 import Maybe
-import Char
+--ximport Char ( chr )
 
 infix 8 #
 infix 9 ##
