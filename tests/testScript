@@ -3,11 +3,11 @@
 . ./config
 
 HUGS=../src/hugs
-HUGSDIR=../hugsdir
+HUGSDIR=..
 HUGSFLAGS=
 export HUGS HUGSDIR HUGSFLAGS
 
-STDOPTS='+q -w -pHugs: -s10'
+STDOPTS='+X +q -w -pHugs: -s10'
 
 test_static() {
   echo "\
