@@ -44,17 +44,17 @@ CP		= COPY
 .SUFFIXES	:
 .SUFFIXES	: .c .h .obj
 HFILES		= prelude.h config.h options.h storage.h connect.h \
-		  errors.h command.h server.h
+		  errors.h command.h server.h HsFFI.h module.h machdep.h
 CFILES		= hugs.c storage.c input.c static.c type.c subst.c \
 		  output.c compiler.c machine.c interp.c builtin.c \
-		  server.c ffi.c module.c
-INCFILES	= parser.c preds.c bignums.c scc.c machdep.c timer.c \
+		  server.c ffi.c module.c machdep.c
+INCFILES	= parser.c preds.c bignums.c scc.c timer.c \
 		  printer.c iomonad.c interns.c stmonad.c array.c
 YFILES		= parser.y
 SOURCES		= $(HFILES) $(CFILES) $(INCFILES) $(YFILES) 
 OBJECTS		= storage.obj input.obj static.obj type.obj compiler.obj \
 		  subst.obj plugin.obj builtin.obj machine.obj output.obj \
-		  ffi.obj version.obj module.obj
+		  ffi.obj version.obj module.obj machdep.obj
 IOBJECTS	= hugs.obj $(OBJECTS)
 PRELUDE		= config.h options.h prelude.h
 
@@ -67,7 +67,7 @@ hugs.exe	: $(IOBJECTS)
 		  
 
 SERVER_OBJECTS	= server.obj $(OBJECTS) 
-runhugs.obj	: $(PRELUDE) hugs.c machdep.c timer.c runhugs.c
+runhugs.obj	: $(PRELUDE) hugs.c machdep.h timer.c runhugs.c
 runhugs.exe	: runhugs.obj $(SERVER_OBJECTS)
 		  $(CC) $(LDFLAGS) runhugs.obj @sobjects.rsp $(LIBS) -orunhugs.exe
 
@@ -131,9 +131,9 @@ static.obj	: static.c
 # 		  $(RM) parser.c
 
 server.obj	: $(PRELUDE) storage.h connect.h errors.h \
-		  command.h machdep.c timer.c hugs.c server.c server.h
+		  command.h machdep.h timer.c hugs.c server.c server.h
 hugs.obj	: $(PRELUDE) storage.h connect.h errors.h \
-		  command.h machdep.c timer.c
+		  command.h machdep.h timer.c
 storage.obj	: $(PRELUDE) storage.h connect.h errors.h
 input.obj	: $(PRELUDE) storage.h connect.h errors.h \
 		  parser.c command.h module.h
@@ -150,6 +150,7 @@ builtin.obj	: $(PRELUDE) storage.h connect.h errors.h \
 		  bignums.c printer.c iomonad.c interns.c stmonad.c array.c
 ffi.obj		: $(PRELUDE) storage.h connect.h errors.h
 module.obj	: $(PRELUDE) storage.h connect.h errors.h module.h
+machdep.obj	: $(PRELUDE) storage.h connect.h errors.h machdep.h
 
 ################################################################
 # Regression tests (none supplied)

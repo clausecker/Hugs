@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.115 $
- * $Date: 2003/02/15 00:01:26 $
+ * $Revision: 1.116 $
+ * $Date: 2003/02/17 03:07:56 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -68,7 +68,6 @@ static Void   local whatScripts       Args((Void));
 #if !defined(HUGS_SERVER)
 static Void   local editor            Args((Void));
 static Void   local find              Args((Void));
-static Bool   local startEdit         Args((Int,String));
 static Void   local runEditor         Args((Void));
 static Void   local setModule         Args((Void));
 static Module local findEvalModule    Args((Void));
@@ -136,7 +135,7 @@ char iniArgv[10][33];
  * Machine dependent code for Hugs interpreter:
  * ------------------------------------------------------------------------*/
 
-#include "machdep.c"
+#include "machdep.h"
 #ifdef WANT_TIMER
 #include "timer.c"
 #endif
@@ -379,7 +378,7 @@ String argv[]; {
     readOptions("-p\"%s> \" -r$$",FALSE);
 #if USE_REGISTRY
     projectPath   = readRegChildStrings(HKEY_LOCAL_MACHINE,ProjectRoot,
-				        "HUGSPATH", PATHSEP, "");
+				        "HUGSPATH", "");
 
     readOptions(readRegString(HKEY_LOCAL_MACHINE,hugsRegRoot,"Options",""), TRUE);
     if (!fromEnv("IGNORE_USER_REGISTRY",NULL)) {

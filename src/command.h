@@ -7,9 +7,11 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: command.h,v $
- * $Revision: 1.11 $
- * $Date: 2002/04/11 23:20:18 $
+ * $Revision: 1.12 $
+ * $Date: 2003/02/17 03:07:56 $
  * ------------------------------------------------------------------------*/
+#ifndef __COMMAND_H__
+#define __COMMAND_H__
 
 typedef Int Command;
 
@@ -57,3 +59,5 @@ extern Command readCommand Args((struct cmd *, Char, Char));
 #endif
 
 /*-------------------------------------------------------------------------*/
+
+#endif /* __COMMAND_H__ */

@@ -9,6 +9,9 @@
  * -sof 2002.
  * 
  * ------------------------------------------------------------------------*/
+#ifndef __MODULE_H__
+#define __MODULE_H__
+
 extern Void addQualImport       Args((Text,Text,List));
 extern Void addUnqualImport     Args((Text,Text,List));
 extern Void importName          Args((Module,Name));
@@ -17,3 +20,4 @@ extern Void checkQualImportList Args((Pair));
 extern Void fixupImportExports  Args((List));
 extern List checkExports        Args((List));
 
+#endif /* __MODULE_H__ */

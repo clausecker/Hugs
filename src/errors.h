@@ -7,9 +7,11 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: errors.h,v $
- * $Revision: 1.7 $
- * $Date: 2002/05/14 16:03:20 $
+ * $Revision: 1.8 $
+ * $Date: 2003/02/17 03:07:56 $
  * ------------------------------------------------------------------------*/
+#ifndef __ERRORS_H__
+#define __ERRORS_H__
 
 extern Void internal	 Args((String)) HUGS_noreturn;
 extern Void fatal	 Args((String)) HUGS_noreturn;
@@ -63,3 +65,5 @@ extern Void printObserve Args((String));
 #endif
 
 /*-------------------------------------------------------------------------*/
+
+#endif /* __ERRORS_H__ */

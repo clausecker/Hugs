@@ -10,8 +10,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: server.c,v $
- * $Revision: 1.27 $
- * $Date: 2003/01/23 17:47:08 $
+ * $Revision: 1.28 $
+ * $Date: 2003/02/17 03:07:59 $
  * ------------------------------------------------------------------------*/
 
 #define HUGS_SERVER
@@ -215,7 +215,7 @@ String argv[]; {
 	readOptions(argv[0],FALSE);
       } else {
 #if USE_REGISTRY
-	projectPath = readRegChildStrings(HKEY_LOCAL_MACHINE, ProjectRoot, "HUGSPATH", PATHSEP, "");
+	projectPath = readRegChildStrings(HKEY_LOCAL_MACHINE, ProjectRoot, "HUGSPATH", "");
 	readOptions(readRegString(HKEY_LOCAL_MACHINE,hugsRegRoot,"Options",""), TRUE);
 	readOptions(readRegString(HKEY_CURRENT_USER,hugsRegRoot,"Options",""),TRUE);
 #endif /* USE_REGISTRY */

@@ -7,10 +7,11 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: subst.h,v $
- * $Revision: 1.6 $
- * $Date: 2002/04/11 23:20:22 $
+ * $Revision: 1.7 $
+ * $Date: 2003/02/17 03:08:00 $
  * ------------------------------------------------------------------------*/
-
+#ifndef __SUBST_H__
+#define __SUBST_H__
 
 typedef struct {			/* Each type variable contains:	   */
     Type bound;				/* A type skeleton (unbound==NIL)  */
@@ -115,3 +116,5 @@ extern Bool  sameType		Args((Type,Int,Type,Int));
 extern Bool  matchType		Args((Type,Int,Type,Int));
 
 /*-------------------------------------------------------------------------*/
+
+#endif /* __SUBST_H__ */

@@ -8,9 +8,11 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: prelude.h,v $
- * $Revision: 1.41 $
- * $Date: 2003/02/10 14:52:01 $
+ * $Revision: 1.42 $
+ * $Date: 2003/02/17 03:07:57 $
  * ------------------------------------------------------------------------*/
+#ifndef __PRELUDE_H__
+#define __PRELUDE_H__
 
 #include "config.h"
 #include "options.h"
@@ -865,3 +867,5 @@ extern Void   hugsPutc      	    Args((int, FILE*));
 #endif
 
 /*-------------------------------------------------------------------------*/
+
+#endif /* __PRELUDE_H__ */

@@ -104,8 +104,8 @@ LRESULT CALLBACK		ScriptManDlgProc	(HWND, UINT, WPARAM, LPARAM);
 	HWND		hWndClasses = NULL;	/* Classes Hierarchy Window handle	*/
 
 static	HANDLE		hAccelTable;		/* Accelerators table			*/
-static	HCURSOR 	GarbageCursor  = NULL;	/* GC mouse cursor			*/
-static	HCURSOR 	SaveCursor     = NULL;	/* Used to save current cursor		*/
+	HCURSOR 	GarbageCursor  = NULL;	/* GC mouse cursor			*/
+	HCURSOR 	SaveCursor     = NULL;	/* Used to save current cursor		*/
 static	INT		FrameWinWidth  = 0,
 			FrameWinHeight = 0;	/* Size of Main Window			*/
 static	INT		FrameWinX, FrameWinY;	/* Pos of Main Window in Screen 	*/

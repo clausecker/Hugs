@@ -11,10 +11,16 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.77 $
- * $Date: 2003/02/10 14:52:00 $
+ * $Revision: 1.78 $
+ * $Date: 2003/02/17 03:07:56 $
  * ------------------------------------------------------------------------*/
-#include <math.h>
+#include "machdep.h"
+#include "prelude.h"
+#include "storage.h"
+#include "command.h"
+#include "connect.h"
+#include "errors.h"
+
 
 #ifdef HAVE_SIGNAL_H
 # include <signal.h>
@@ -36,9 +42,7 @@
 #  include <stat.h>
 # endif
 #endif
-#ifdef HAVE_TIME_H
-# include <time.h>
-#endif
+
 
 /* Windows/DOS include files */
 #ifdef HAVE_DOS_H
@@ -107,7 +111,6 @@ int allow_break_count = 0;
 /* --------------------------------------------------------------------------
  * Prototypes for registry reading
  * ------------------------------------------------------------------------*/
-
 #if USE_REGISTRY
 
 /* where have we hidden things in the registry? */
@@ -115,22 +118,11 @@ int allow_break_count = 0;
 #define HScriptRoot ("SOFTWARE\\Haskell\\HaskellScript\\")
 #endif
 
-#define ProjectRoot ("SOFTWARE\\Haskell\\Projects\\")
-
 static Bool   local createKey      Args((HKEY, String, PHKEY, REGSAM));
 static Bool   local queryValue     Args((HKEY, String, String, LPDWORD, LPBYTE, DWORD));
 static Bool   local queryString    Args((HKEY,String,String,String*));
 static Bool   local setValue       Args((HKEY, String, String, DWORD, LPBYTE, DWORD));
-static String local readRegString  Args((HKEY, String, String, String));
-static Bool   local writeRegString Args((String,String));
-
-#if HUGS_FOR_WINDOWS
-static Int    local readRegInt     Args((String,Int));
-static Bool   local writeRegInt    Args((String,Int));
 #endif
-
-static String local readRegChildStrings Args((HKEY, String, String, Char, String));
-#endif /* USE_REGISTRY */
 
 /* --------------------------------------------------------------------------
  * Find information about a file:
@@ -146,9 +138,7 @@ typedef time_t Time;
 #define timeSet(var,tm)         var = tm
 #endif
 
-static Void local getFileInfo   Args((String, Time *, Long *));
-
-static Void local getFileInfo(f,tm,sz)  /* find time stamp and size of file*/
+Void getFileInfo(f,tm,sz)  /* find time stamp and size of file*/
 String f;
 Time   *tm;
 Long   *sz; {
@@ -244,7 +234,7 @@ Bool   isReg; {
 static String local hscriptDir    Args((Void));
 static void   local hscriptSuffixes Args((Void));
 #endif
-static String local RealPath      Args((String));
+
 #if 0
 /* UNUSED */
 static int    local pathCmp       Args((String, String));
@@ -397,7 +387,7 @@ static void hscriptSuffixes() {
 }
 #endif
 
-static String local RealPath(s)         /* Find absolute pathname of file  */
+String local RealPath(s)         /* Find absolute pathname of file  */
 String s; {
 #if HAVE__FULLPATH  /* eg DOS */
     static char path[FILENAME_MAX+1];
@@ -841,9 +831,7 @@ String path; {
  * eg substPath("a:b:c::d:e","x:y:z") = "a:b:c:x:y:z:d:e"
  * ------------------------------------------------------------------------*/
 
-static String local substPath Args((String,String));
-
-static String local substPath(new,sub) /* substitute sub path into new path*/
+String local substPath(new,sub) /* substitute sub path into new path*/
 String new;
 String sub; {
     Bool   substituted = FALSE;            /*   only allow one replacement */
@@ -1353,9 +1341,9 @@ static Void local installHandlers() { /* Install handlers for all fatal    */
 
 #ifndef HUGS_SERVER /* omitted when building the "Hugs server" */
 
-static Bool local startEdit(line,nm)    /* Start editor on file name at    */
-Int    line;                            /* given line.  Both name and line */
-String nm; {                            /* or just line may be zero        */
+Bool startEdit(line,nm)    /* Start editor on file name at    */
+Int    line;               /* given line.  Both name and line */
+String nm; {               /* or just line may be zero        */
     String editorCmd;
     String fullNm;
     Bool   expandedName = FALSE;
@@ -2438,7 +2426,7 @@ DWORD  bufSize; {
     }
 }
 
-static String local readRegString(key,regPath,var,def) /* read String from registry */
+String readRegString(key,regPath,var,def) /* read String from registry */
 HKEY   key;
 String regPath;
 String var; 
@@ -2460,7 +2448,7 @@ String def; {
     }
 }
 
-static Bool local writeRegString(var,val)      /* write String to registry */
+Bool writeRegString(var,val)      /* write String to registry */
 String var;                        
 String val; {
     String realVal = ( (NULL == val) ? "" : val);
@@ -2470,14 +2458,14 @@ String val; {
 }
 
 #if HUGS_FOR_WINDOWS
-static Bool local writeRegInt(var,val)         /* write String to registry */
+Bool writeRegInt(var,val)         /* write String to registry */
 String var;                        
 Int    val; {
     return setValue(HKEY_CURRENT_USER, hugsRegRoot, var, 
 		    REG_DWORD, (LPBYTE)&val, sizeof(val));
 }
 
-static Int local readRegInt(var, def)            /* read Int from registry */
+Int readRegInt(var, def)          /* read Int from registry */
 String var;
 Int    def; {
     DWORD buf;
@@ -2500,11 +2488,10 @@ Int    def; {
 /* concatenate together all strings from registry of the form regPath\\*\\var,
  * seperated by character sep.
  */
-static String local readRegChildStrings(key,regPath,var,sep,def)
+String readRegChildStrings(key,regPath,var,def)
 HKEY	key;
 String	regPath;
 String	var;
-Char	sep;
 String  def;
 {
   HKEY baseKey;
@@ -2526,7 +2513,7 @@ String  def;
   FILETIME ft; /* just to satisfy RegEnumKeyEx() */
   char sepString[2];
   
-  sepString[0] = sep;
+  sepString[0] = PATHSEP;
   sepString[1] = '\0';
   
 /* Macro which appends a NUL terminated string to 'resPath', taking

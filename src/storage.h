@@ -8,9 +8,11 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: storage.h,v $
- * $Revision: 1.51 $
- * $Date: 2003/02/10 14:52:03 $
+ * $Revision: 1.52 $
+ * $Date: 2003/02/17 03:08:00 $
  * ------------------------------------------------------------------------*/
+#ifndef __STORAGE_H__
+#define __STORAGE_H__
 
 /* --------------------------------------------------------------------------
  * Typedefs for main data types:
@@ -1339,3 +1341,5 @@ extern  List   addNamesMatching  Args((String,List));
 #define isAp1(c)    (isPair(c) && !isTag1(fst(c)))
 
 #endif
+
+#endif /* __STORAGE_H__ */
