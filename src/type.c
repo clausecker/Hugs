@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: type.c,v $
- * $Revision: 1.34 $
- * $Date: 2001/06/22 23:00:36 $
+ * $Revision: 1.35 $
+ * $Date: 2001/08/07 23:29:59 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1624,9 +1624,7 @@ Cell e; {
     Cell m		 = assumeEvid(predMonadRec,beta);
     List tmp;
     List whole		 = NIL;
-#if IPARAM
-    List svPreds;
-#endif
+
     tyvar(beta)->kind	 = starToStar;
     
     enterBindings();

@@ -12,8 +12,8 @@
  * included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.21 $
- * $Date: 2001/07/09 06:52:48 $
+ * $Revision: 1.22 $
+ * $Date: 2001/08/07 23:29:59 $
  * ------------------------------------------------------------------------*/
 
 #ifdef HAVE_SIGNAL_H
@@ -124,9 +124,13 @@ static Bool   local queryValue     Args((HKEY, String, String, LPDWORD, LPBYTE, 
 static Bool   local queryString      Args((HKEY,String,String,String*));
 static Bool   local setValue       Args((HKEY, String, String, DWORD, LPBYTE, DWORD));
 static String local readRegString  Args((HKEY, String, String, String));
-static Int    local readRegInt     Args((String,Int));
 static Bool   local writeRegString Args((String,String));
+
+#if 0
+/* UNUSED, but let's keep them around */
+static Int    local readRegInt     Args((String,Int));
 static Bool   local writeRegInt    Args((String,Int));
+#endif
 
 static String local readRegChildStrings Args((HKEY, String, String, Char, String));
 #endif /* USE_REGISTRY */
@@ -1581,7 +1585,7 @@ String symbol; {
 	ERRMSG(0) "Error while importing DLL \"%s\"", dll
 	EEND;
     }
-    return GetProcAddress(instance,symbol);
+    return (void*)GetProcAddress(instance,symbol);
 }
 
 #else /* Dynamic loading not available */
@@ -1806,6 +1810,25 @@ String def; {
     }
 }
 
+static Bool local writeRegString(var,val)      /* write String to registry */
+String var;                        
+String val; {
+    if (NULL == val) {
+	val = "";
+    }
+    return setValue(HKEY_CURRENT_USER, HugsRoot, var, 
+		    REG_SZ, (LPBYTE)val, lstrlen(val)+1);
+}
+
+#if 0
+/* UNUSED, but let's keep them around. */
+static Bool local writeRegInt(var,val)         /* write String to registry */
+String var;                        
+Int    val; {
+    return setValue(HKEY_CURRENT_USER, HugsRoot, var, 
+		    REG_DWORD, (LPBYTE)&val, sizeof(val));
+}
+
 static Int local readRegInt(var, def)            /* read Int from registry */
 String var;
 Int    def; {
@@ -1824,23 +1847,7 @@ Int    def; {
 	return def;
     }
 }
-
-static Bool local writeRegString(var,val)      /* write String to registry */
-String var;                        
-String val; {
-    if (NULL == val) {
-	val = "";
-    }
-    return setValue(HKEY_CURRENT_USER, HugsRoot, var, 
-		    REG_SZ, (LPBYTE)val, lstrlen(val)+1);
-}
-
-static Bool local writeRegInt(var,val)         /* write String to registry */
-String var;                        
-Int    val; {
-    return setValue(HKEY_CURRENT_USER, HugsRoot, var, 
-		    REG_DWORD, (LPBYTE)&val, sizeof(val));
-}
+#endif
 
 /* concatenate together all strings from registry of the form regPath\\*\\var,
  * seperated by character sep.

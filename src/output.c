@@ -9,8 +9,8 @@
  * included in the distribution.
  *
  * $RCSfile: output.c,v $
- * $Revision: 1.20 $
- * $Date: 2001/07/11 18:59:20 $
+ * $Revision: 1.21 $
+ * $Date: 2001/08/07 23:29:59 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1569,51 +1569,48 @@ Int  indent;
 Bool funPrint; 
 {
     Cell j, resultExp;
-    Int seq, appN, argN, i;
+    Int seq, appN, argN;
     Bool firstApp = 1;
 
-	    for (j=firstObs(header); j!=header; j=nextObs(j)){
-	        seq  = intOf(seqObs(j));
-		appN = seqNum(seq);
-		argN = argNum(seq);
+    for (j=firstObs(header); j!=header; j=nextObs(j)){
+        seq  = intOf(seqObs(j));
+        appN = seqNum(seq);
+        argN = argNum(seq);
 
-		if (seq < 0){		/* non-functional value		   */
-		     printArg(stdout, exprObs(j));
-		     if (!funPrint) newLine(indent);
-		}
-		else if (seq!=0) {		/* a function observation  */
-		    funPrint =1;
-		    if (argN == 0){		/* the result expr	   */
-		        if (firstApp){ 		/* print previous result   */
-			    firstApp = 0;
-			    indent   = outColumn;
-			    putStr("{ ");
-			}
-			else { 
-			    putStr(" -> ");
-			    printExp(stdout,resultExp);
-			    newLine(indent); 
-			    putStr(", ");
-			}
-		        resultExp = exprObs(j);
-			putStr ("\\ ");
-		    }
-		    else {			/* an arg expr		   */
-			if (whatIs(exprObs(j)) == OBSERVEHEAD)
-			    printObsList(exprObs(j), indent, TRUE);
-			else
-			    printArg(stdout,exprObs(j));
-			putStr(" ");
-		    }
-		}
-	    }
-	    if (seq >= 0){ 	/* print result of last fun. obs. in list  */
-	        putStr(" -> ");
-		printExp(stdout,resultExp);
-		newLine(indent);
-		putStr("}");
-	    }
-	    return(funPrint);
+        if ( seq < 0 ) {         /* non-functional value        */
+            printArg(stdout, exprObs(j));
+            if (!funPrint) newLine(indent);
+        } else if (seq!=0) {     /* a function observation  */
+            funPrint =1;
+            if (argN == 0){      /* the result expr     */
+                if (firstApp){   /* print previous result   */
+                    firstApp = 0;
+                    indent   = outColumn;
+                    putStr("{ ");
+                } else { 
+                    putStr(" -> ");
+                    printExp(stdout,resultExp);
+                    newLine(indent); 
+                    putStr(", ");
+                }
+                resultExp = exprObs(j);
+                putStr ("\\ ");
+            } else {          /* an arg expr         */
+                if (whatIs(exprObs(j)) == OBSERVEHEAD)
+                    printObsList(exprObs(j), indent, TRUE);
+                else
+                    printArg(stdout,exprObs(j));
+                putStr(" ");
+            }
+        }
+    }
+    if (seq >= 0){  /* print result of last fun. obs. in list  */
+        putStr(" -> ");
+        printExp(stdout,resultExp);
+        newLine(indent);
+        putStr("}");
+    }
+    return(funPrint);
 }
 #endif
 

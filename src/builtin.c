@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: builtin.c,v $
- * $Revision: 1.17 $
- * $Date: 2001/06/29 18:13:08 $
+ * $Revision: 1.18 $
+ * $Date: 2001/08/07 23:29:59 $
  * ------------------------------------------------------------------------*/
 
 /* We include math.h before prelude.h because SunOS 4's cpp incorrectly
@@ -1620,8 +1620,7 @@ primFun(primObserve) {			/* the observe primitive for       */
 }
 
 primFun(primBkpt) {			/* check if break enabled          */
-    Cell exp, obsCell;                  /* initiate dialogue               */
-    Int i=0;
+    Int i=0;                /* initiate dialogue               */
     fflush(stdout);
     eval(pop());
     while (whnfHead==nameCons) {

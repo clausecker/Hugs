@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: storage.c,v $
- * $Revision: 1.16 $
- * $Date: 2001/06/08 23:33:13 $
+ * $Revision: 1.17 $
+ * $Date: 2001/08/07 23:29:59 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -50,7 +50,6 @@ static Observe  local newObserve        Args((Text));
 static Void     local appendObs         Args((Cell,Cell));
 static Breakpt  local addBreakpt        Args((String));
 static Breakpt  local findBreakpt       Args((String));
-static Bool     local isBrkEnabled      Args((String));
 #endif
 
 /* --------------------------------------------------------------------------
@@ -479,7 +478,7 @@ Cell parent; {
     }
     name(nameHw).text         = t;      /* clear new name record           */
     name(nameHw).line         = 0;
-    name(nameHw).syntax	      = NO_SYNTAX;
+    name(nameHw).syntax	      = (unsigned int)NO_SYNTAX;
     name(nameHw).parent       = parent;
     name(nameHw).arity        = 0;
     name(nameHw).number       = EXECNAME;
@@ -1150,12 +1149,6 @@ String s; {			/* return BRKMIN-1 if not found		   */
 	else				return i;
     }
     return BRKMIN-1;
-}
-
-Bool isBrkEnabled(s)		/* FALSE if disabled or not present	   */ 
-String s; {
-    Breakpt b = findBreakpt(s);
-    return (b >= BRKMIN) && breakpt(b).enabled;  
 }
 
 Bool breakNow(s)		/* break enabled && no skips 		   */

@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.38 $
- * $Date: 2001/07/07 00:28:21 $
+ * $Revision: 1.39 $
+ * $Date: 2001/08/07 23:29:59 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -5642,12 +5642,12 @@ Cell op; {
     if (sy==APPLIC) {
 	sy = DEF_OPSYNTAX;
     }
-    return pair(mkInt(sy),op);		/* Pair fixity with (possibly)	   */
-					/* translated operator		   */
+    return pair(mkInt(sy),op);		/* Pair fixity with (possibly) */
+					                /* translated operator		   */
 }
 
-static Syntax local lookupSyntax(t)	/* Try to find fixity for var in   */
-Text t; {				/* enclosing bindings		   */
+static Syntax local lookupSyntax(t)	/* Try to find fixity for var in  */
+Text t; {				            /* enclosing bindings		      */
     List bounds1   = bounds;
     List bindings1 = bindings;
 
@@ -5681,7 +5681,7 @@ Text t; {				/* enclosing bindings		   */
 	bounds1   = tl(bounds1);
 	bindings1 = tl(bindings1);
     }
-    return NO_SYNTAX;
+    return (Syntax)NO_SYNTAX;
 }
 
 /* --------------------------------------------------------------------------

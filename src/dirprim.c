@@ -218,7 +218,6 @@ primFun(primRenameFile) { /* rename a file	   */
 
 
 primFun(primGetDirectory) { /* IO String - get current directory. */
-  int rc;
   char buffer[FILENAME_MAX+1];
   if ((char*)(getcwd(buffer,FILENAME_MAX)) != (char*)NULL) {    
     pushString(buffer);
