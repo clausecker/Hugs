@@ -2,10 +2,11 @@
  * Win-Menu.h:	José Enrique Gallardo Ruiz, April 1995
  *		With minor mods by mpj/adr for Hugs 98, June 1998
  *
- * Hugs for Windows is Copyright (c) José Enrique Gallardo, Mark P Jones,
- * Alastair Reid and the Yale Haskell Group 1994-99, and is distributed as
- * Open Source software under the Artistic License; see the file "Artistic"
- * that is included in the distribution for details.
+ * Hugs 98 for Windows is Copyright (c) José Enrique Gallardo, Mark P
+ * Jones, Alastair Reid, the Yale Haskell Group, and the Oregon
+ * Graduate Institute of Science and Technology, 1994-1999, All rights
+ * reserved.  It is distributed as free software under the license in
+ * the file "License", which is included in the distribution.
  *
  * Defines for menus and dialog boxes
  * ------------------------------------------------------------------------*/
