@@ -5,7 +5,7 @@
 
 module Expr where
 
-import Char( digitToInt )
+import Char( digitToInt, isDigit )
 
 infixr 6 &&&
 infixl 5 >>>

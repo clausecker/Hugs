@@ -3,7 +3,8 @@
 -- Suitable for use with Hugs 98 on 32 bit systems.
 -----------------------------------------------------------------------------
 module Hugs.Word
-	( Word8
+	( Word
+	, Word8
 	, Word16
 	, Word32
 	, Word64
@@ -20,6 +21,8 @@ module Hugs.Word
 	) where
 import Data.Bits
 import Data.Int
+import Data.Ix ( Ix(..) )
+import Data.Ratio ( (%) )
 -- import Numeric ( readDec, showInt ) -- defined in the Prelude
 
 -----------------------------------------------------------------------------

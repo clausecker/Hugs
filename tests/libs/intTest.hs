@@ -3,6 +3,7 @@ module T where
 import Int
 import Word
 import Bits
+import Ix(Ix)
 
 -- grrr, changing the monad translation introduced a spaceleak
 test _ = do

@@ -69,6 +69,7 @@ module Time
 import Locale
 import Char ( intToDigit )
 import IOExts ( unsafePerformIO )
+import Ix ( Ix )
 
 data ClockTime 
   = TOD Integer  -- secs

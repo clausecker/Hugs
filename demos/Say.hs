@@ -30,7 +30,7 @@
 ------------------------------------------------------------------------------
 
 module Say where
-import Char( ord, chr )
+import Char( ord, chr, isSpace, isUpper, isLower, isDigit )
 import List( transpose )
 
 sayit :: String -> IO ()

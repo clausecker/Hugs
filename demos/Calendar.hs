@@ -11,7 +11,7 @@ import Gofer
 import List(zip4)
 import IO(hPutStr,stderr)
 import System( getArgs, getProgName, exitWith, ExitCode(..) )
-import Char (digitToInt)
+import Char (digitToInt, isDigit)
 
 -- Picture handling:
 

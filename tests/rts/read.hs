@@ -2,7 +2,7 @@
 
 module TestRead where
 
-import Ratio(Ratio,Rational)
+import Ratio(Ratio,Rational,(%))
 import List(zip4,zip5,zip6,zip7)
 
 -- test that expected equality holds
@@ -26,7 +26,7 @@ test6 = all tst [LT .. GT]
 test7 = all tst [[],['a'..'z'],['A'..'Z']]
 test8 = all tst $ [minBound,maxBound] 
                   ++ [-100..100 :: Int]
-test9 = all tst $ [(fromInt minBound)-1, (fromInt maxBound)+1]
+test9 = all tst $ [(fromIntegral (minBound::Int))-1, (fromIntegral (maxBound::Int))+1]
                   ++ [-100..100 :: Integer]
 
 -- we don't test fractional Floats/Doubles because they don't work

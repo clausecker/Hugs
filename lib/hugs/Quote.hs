@@ -1,6 +1,7 @@
 module Quote(Quote, quote, trim) where
 
 import List
+import Ratio(Ratio)
 
 class Quote a where
     quote :: a -> String

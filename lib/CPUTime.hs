@@ -8,6 +8,7 @@ module CPUTime
 	, cpuTimePrecision      -- :: Integer
 	) where
 
+import Ratio((%))
 
 cpuTimePrecision :: Integer
 cpuTimePrecision = round (picoSec % fromIntegral clockTicks)

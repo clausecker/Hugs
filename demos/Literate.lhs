@@ -8,6 +8,7 @@ updated for Haskell 1.3.]
 
 > module Literate where
 > import System(getArgs)
+> import Char(isSpace)
 
 Many Haskell implementations support the ``literate comment''
 convention, first developed by Richard Bird and Philip Wadler for

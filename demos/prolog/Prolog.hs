@@ -12,6 +12,7 @@ module Prolog
 
 import List
 import CombParse
+import Char
 
 infix 6 :-
 
