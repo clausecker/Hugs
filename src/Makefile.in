@@ -95,8 +95,8 @@ $(LIBRARIES)	:
 		    cd unix; ./convert_hslibs $(FPTOOLS);  \
 		    cd unix; ./convert_libraries $(FPTOOLS); \
 		  else \
-		    echo "FPTOOLS not defined; not converting new libraries"; \
-		  pfi
+		    echo "FPTOOLS not defined; not converting libraries"; \
+		  fi
 
 ################################################################
 # Clean, distclean, veryclean, TAGS
