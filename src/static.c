@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.52 $
- * $Date: 2001/12/24 08:06:01 $
+ * $Revision: 1.53 $
+ * $Date: 2002/01/24 07:35:21 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -59,6 +59,7 @@ static Type   local instantiateSyn	Args((Type,Type));
 
 static Void   local checkClassDefn	Args((Class));
 static Void   local checkClassDefn2	Args((Class));
+static Void local checkClassDefn2_      Args((List));
 static Cell   local depPredExp		Args((Int,List,Cell));
 static Void   local checkMems		Args((Class,List,Cell));
 static Void   local checkMems2		Args((Class,Cell));
