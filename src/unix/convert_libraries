@@ -44,7 +44,7 @@ fi
 
 # Convert a hierarchical library module for use with Hugs
 
-function cvt {
+cvt() {
 	case $# in
 	2)	;;
 	*)	echo "usage: cvt package file" >&2
@@ -116,7 +116,7 @@ function cvt {
 # For when we cannot use the new module yet: use a Hugs file as a
 # stopgap replacement.
 
-function nocvt {
+nocvt() {
 	case $# in
 	3)	;;
 	*)	echo "usage: nocvt package file hugslib" >&2
@@ -131,7 +131,8 @@ function nocvt {
 	new_module=`echo $2 | sed 's/\..*//' | tr / .`
 	old_extension=`echo $3 | sed 's/[^.]*//'`
 	old_module=`basename $3 $old_extension`
-	sed "s/module[ 	][ 	]*$old_module\\>/module $new_module/g
+	sed "	s/module[ 	][ 	]*$old_module\$/module $new_module/g
+		s/module[ 	][ 	]*$old_module\\([ (]\\)/module $new_module\\1/g
 		s/import IOExts/import Hugs.IOExts/
 		s/import Array/import Hugs.Array/
 		s/import Char/import Data.Char/
@@ -147,7 +148,7 @@ function nocvt {
 		s/import ForeignPtr/import Foreign.ForeignPtr/
 		s/import ST/import Hugs.ST/
 		s/import Dynamic/import Data.Dynamic/
-		/hiding (print/ ! s/import Prelude/import Hugs.Prelude/
+		/hiding (print/!s/import Prelude/import Hugs.Prelude/
 		s/import HugsInternals/import Hugs.Internals/
 		" $hugs_src/$3 >$dst/$new_stem$old_extension
 }
@@ -155,7 +156,7 @@ function nocvt {
 # Create a dummy hierarchical library module for use with Hugs
 # (to be fixed)
 
-function dummy {
+dummy() {
 	case $# in
 	[01])	echo "usage: dummy package file [module ...]" >&2
 		exit 1 ;;
@@ -182,17 +183,17 @@ function dummy {
 
 # Create a compatability stub of a Hugs extension module
 
-function stub {
+stub() {
 	case $# in
 	0)	echo "usage: stub module [module ...]" >&2
 		exit 1 ;;
 	esac
 
-	stub=$1
+	stub_module=$1
 	shift
-	echo "Stub $stub -> $*"
+	echo "Stub $stub_module -> $*"
 	(
-		echo "module $stub("
+		echo "module $stub_module("
 		for real
 		do	echo "	module $real,"
 		done
@@ -201,12 +202,12 @@ function stub {
 		for real
 		do	echo "import $real"
 		done
-	) >$compat/$stub.hs
+	) >$compat/$stub_module.hs
 }
 
 # Copy the Hugs version to the compatibility lib
 
-function libexts {
+libexts() {
 	case $# in
 	1)	;;
 	*)	echo "usage: libexts module" >&2
@@ -218,7 +219,7 @@ function libexts {
 	sed 's/import Prelude/import Hugs.Prelude/' $name >$compat/`basename $name`
 }
 
-function libhugs {
+libhugs() {
 	case $# in
 	1)	;;
 	*)	echo "usage: libhugs module" >&2
@@ -232,7 +233,7 @@ function libhugs {
 
 # Convert the hslibs version to the compatibility lib
 
-function hslibs {
+hslibs() {
 	case $# in
 	2)	;;
 	*)	echo "usage: hslibs dir file" >&2

@@ -26,7 +26,7 @@ if [ ! -d $dst ]; then
   mkdir $dst
 fi
 
-function cvt {
+cvt() {
 
   echo "Converting $1/$2"
   gcc -P -E -traditional -xc -D__HUGS__ -D__HASKELL98__ $3 $src/$1/$2 > $dst/$2
