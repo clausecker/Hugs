@@ -520,14 +520,13 @@ data System obj
 data Delegate obj
 
 foreign import dotnet
-  "static [HugsWrapper.dll]HugsWrapper.DefineDelegator"
+  "static Hugs.Wrapper.DefineDelegator"
   defineDelegator :: String -> StablePtr a -> IO String
 
 newDelegator :: (Object a -> Object b -> IO ())
 	     -> IO (Object (System (Delegate ())))
 newDelegator fun = do
   sp   <- newStablePtr (delegatorWrapper fun)
-  let methArg = "Delegate#1 " -- ++show (stablePtrToInt sp)
   tyNm <- defineDelegator "Delegate" sp
   obj  <- new tyNm
   obj # getField2 "Delegate_handler"
@@ -583,23 +582,20 @@ data BaseType
   | VoidTy
     deriving ( Eq )
 
+foreign import dotnet
+  "static Hugs.Wrapper.DefineType"
+  defineType :: String -> String -> String -> IO String
+
 -- create a new class/type + an instance of it (via the default constructor.)
 defineClass :: Class -> IO (Object b)
-defineClass cls = do
-  let methArgs = toClassArgs cls
-  print methArgs
-  tyStr    <- invokeStatic "HugsWrapper" "DefineType" methArgs
+defineClass cls@(Class clsName mbFrom meths) = do
+  tyStr    <- defineType clsName superTy methString
   if (null tyStr)
    then ioError (userError "unable to create class")
    else new tyStr
  where
-  toClassArgs (Class clsName mbFrom meths) = 
-    ( clsName
-    , fromMaybe "" mbFrom
-    , methString
-    )
-   where
-    methString = concat $ intersperse "/" $ map mkFunctionInfo meths
+  superTy    = fromMaybe "" mbFrom
+  methString = concat $ intersperse "/" $ map mkFunctionInfo meths
 
   mkFunctionInfo (Method name override haskellFun argus mbRes) =
     name ++ '#':haskellFun ++ 
