@@ -26,6 +26,8 @@ import HugsInternals(
 
 import IOExts( unsafePerformIO )
 import Array
+import Char( showLitChar, isAlpha )
+import List( intersperse )
 
 ----------------------------------------------------------------
 -- The top-level print routine 
@@ -54,19 +56,19 @@ printBadRedex err = do
 printDBadRedex err = do
   kind <- classifyCell False err
   case kind of
-  Apply fun args -> do
+    Apply fun args -> do
       funkind <- classifyCell False fun
       case (funkind, args) of
-      (Fun nm, [msg]) | nm == nameError ->
-        outputStr msg
-      _ -> printBadRedex err
-  _ -> printBadRedex err
+        (Fun nm, [msg]) | nm == nameError ->
+          outputStr msg
+        _ -> printBadRedex err
+    _ -> printBadRedex err
 
 outputStr :: Cell -> IO ()
 outputStr xs = do
   kind <- hugsClassifyCell True xs
   case kind of
-  Apply fun args ->
+    Apply fun args ->
       hugsClassifyCell True fun >>= \ funkind ->
       case (funkind, args) of
       (Con nm, [y,ys]) | nm == nameCons ->
@@ -85,11 +87,11 @@ outputStr xs = do
         printBadRedex err
       _ ->
         printBadRedex xs
-  Con nm | nm == nameNil ->
+    Con nm | nm == nameNil ->
         return ()
-  Error err ->
+    Error err ->
         printBadRedex err
-  _ ->
+    _ ->
         printBadRedex xs
 
 print' :: Bool -> Cell -> IO ()
@@ -310,12 +312,8 @@ hugsClassifyCell strict obj =
 -- Utilities
 ----------------------------------------------------------------
 
-intersperse :: a -> [a] -> [a]
-intersperse x (y:ys@(_:_)) = y : x : intersperse x ys
-intersperse x ys = ys
-
 for__ :: Monad m => [a] -> (a -> m ()) -> m () -> m ()
-for__ xs f inc = sequence $ intersperse inc $ map f xs
+for__ xs f inc = sequence_ $ intersperse inc $ map f xs
 
 min_prec, max_prec, fun_prec :: Int
 min_prec = 0
@@ -349,34 +347,4 @@ failOnError = True
 exitWith :: IO () -> IO a
 exitWith m = m >> error "{exitWith}"
 
-----------------------------------------------------------------
--- from Prelude.hs
-----------------------------------------------------------------
-{-
-showLitChar               :: Char -> ShowS
-showLitChar c | c > '\DEL' = showChar '\\' . protectEsc isDigit (shows (fromEnum c))
-showLitChar '\DEL'         = showString "\\DEL"
-showLitChar '\\'           = showString "\\\\"
-showLitChar c | c >= ' '   = showChar c
-showLitChar '\a'           = showString "\\a"
-showLitChar '\b'           = showString "\\b"
-showLitChar '\f'           = showString "\\f"
-showLitChar '\n'           = showString "\\n"
-showLitChar '\r'           = showString "\\r"
-showLitChar '\t'           = showString "\\t"
-showLitChar '\v'           = showString "\\v"
-showLitChar '\SO'          = protectEsc ('H'==) (showString "\\SO")
-showLitChar c              = showString ('\\' : asciiTab!c)
-
-asciiTab = listArray ('\NUL', ' ')
-           ["NUL", "SOH", "STX", "ETX", "EOT", "ENQ", "ACK", "BEL",
-            "BS",  "HT",  "LF",  "VT",  "FF",  "CR",  "SO",  "SI",
-            "DLE", "DC1", "DC2", "DC3", "DC4", "NAK", "SYN", "ETB",
-            "CAN", "EM",  "SUB", "ESC", "FS",  "GS",  "RS",  "US",
-            "SP"]
-
-protectEsc p f             = f . cont
- where cont s@(c:_) | p c  = "\\&" ++ s
-       cont s              = s
--}
 ----------------------------------------------------------------

@@ -67,8 +67,8 @@ isEvaluatedCell cell = do
     Apply fun args -> do 
 		    funkind <- classifyCell False fun
                     case funkind of
-                    Fun nm    -> return (nameArity nm > length args)
-                    _         -> return True
+                      Fun nm    -> return (nameArity nm > length args)
+                      _         -> return True
     _            -> return True
 
 arityOf :: Cell -> IO Int
