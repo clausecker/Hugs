@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: builtin.c,v $
- * $Revision: 1.18 $
- * $Date: 2001/08/07 23:29:59 $
+ * $Revision: 1.19 $
+ * $Date: 2002/01/17 04:41:24 $
  * ------------------------------------------------------------------------*/
 
 /* We include math.h before prelude.h because SunOS 4's cpp incorrectly
@@ -47,7 +47,7 @@
 #include <unistd.h>
 #endif
 
-#ifndef __MINGW__
+#ifndef __MINGW32__
 # ifdef HAVE_SYS_TIMES_H
 #  include <sys/times.h>
 # endif
@@ -57,7 +57,7 @@
 #include <sys/time.h>
 #endif
 
-#ifndef __MINGW__
+#ifndef __MINGW32__
 # if defined(HAVE_SYS_RESOURCE_H)
 #  include <sys/resource.h>
 # endif
