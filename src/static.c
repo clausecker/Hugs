@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.104 $
- * $Date: 2002/10/03 17:28:04 $
+ * $Revision: 1.105 $
+ * $Date: 2002/10/03 18:15:48 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -6904,10 +6904,10 @@ static Void local mdoLoad() {
 	Module m          = findModule(findText(fixLib));
 	Text t            = module(m).text;
 	Text alias        = findModAlias(t);
-	Cell monadRecName = mkQCon(t,findText(fixClass));
-	/* The method name is qualified by its local alias, not
-	 * the (real) module name
+	/* The class and method name are qualified by the local alias, not
+	 * the (real) module name.
 	 */
+	Cell monadRecName = mkQCon(alias,findText(fixClass));
 	Cell mfixName     = mkQCon(alias,findText("mfix"));
 
 	if( !(classMonadRec = findQualClass(monadRecName)) &&
