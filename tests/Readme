@@ -28,7 +28,7 @@ To run the tests:
 2) Run the test script in the tests directory.
 
      cd ../tests
-     sh testScript static tcheck rts libs demos
+     sh testScript static tcheck rts libs ffi demos
 
    You can vary the argument list to vary which tests are performed.
    Tests are somewhat approximately broken down into:
@@ -37,12 +37,13 @@ To run the tests:
      tcheck - type checking
      rts    - evaluating code
      libs   - libraries that come with Hugs
+     ffi    - foreign function interface 
      demos  - demos that come with Hugs
 
 3) Once you get bored of seeing all the successful tests (yahoo!), you
    can use grep to restrict output to the failures:
 
-     sh testScript static tcheck rts libs demos | grep -v '^--'
+     sh testScript static tcheck rts libs ffi demos | grep -v '^--'
 
    A few of the tests generate different output on different platforms
    and so you might get false error reports.  These should all be 
