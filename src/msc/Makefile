@@ -24,7 +24,7 @@
 # TAGS:           build emacs TAGS table
 
 # This rule goes first to make it the default choice
-default		:: hugs.exe runhugs.exe hugsscript.dll
+default		:: hugs.exe runhugs.exe ffihugs.exe hugsscript.dll
 
 CC		= cl /nologo
 CFLAGS		= -ML
@@ -80,7 +80,7 @@ ffihugs.exe	: ffihugs.obj $(SERVER_OBJECTS)
 		  $(CC) $(LDFLAGS) ffihugs.obj $(SERVER_OBJECTS) $(LIBS) -o ffihugs.exe
 
 ffihugs.obj	: runhugs.c
-		  $(CC) -c $(CFLAGS) $(OPTFLAGS) -DFFI_COMPILER runhugs.c -o ffihugs.obj
+		  $(CC) -c $(CFLAGS) $(OPTFLAGS) -DFFI_COMPILER runhugs.c /Foffihugs.obj
 
 hugsscript.obj  : hugsscript.c
 hugsscript.dll  : $(SERVER_OBJECTS) hugsscript.obj
@@ -91,6 +91,9 @@ hugsscript.dll  : $(SERVER_OBJECTS) hugsscript.obj
 ################################################################
 
 clean		::
+		  $(RM) hugs.exe
+		  $(RM) runhugs.exe
+		  $(RM) ffihugs.exe
 		  $(RM) *.o
 		  $(RM) *.O
 		  $(RM) *.obj
