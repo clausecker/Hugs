@@ -11,8 +11,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.47 $
- * $Date: 2002/05/18 10:14:56 $
+ * $Revision: 1.48 $
+ * $Date: 2002/05/20 09:22:41 $
  * ------------------------------------------------------------------------*/
 #include <math.h>
 
@@ -1427,7 +1427,7 @@ String nm; {                            /* or just line may be zero        */
     while (*he) {
       if (*he=='%') {
 	if (*++he=='d') {
-	  sprintf(ec,"%d",(line ? line : 0));
+	  sprintf(ec,"%d",(line ? line : 1));
 	  ec += lineLen;
 	  he++;
 	} else if (*he == 's' || *he == 'f') {
