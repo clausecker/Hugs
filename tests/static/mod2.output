@@ -1,2 +1,2 @@
-ERROR "static/mod2.hs" - Unable to open file "N"
+ERROR "static/mod2.hs" - Can't find imported module "N"
 Hugs:[Leaving Hugs]
