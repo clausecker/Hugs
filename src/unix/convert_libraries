@@ -112,6 +112,7 @@ runhugs=src/runhugs
 export HUGSDIR ffihugs runhugs
 
 BuildFFI=src/unix/BuildFFI
+HugsPackage=src/unix/hugs-package
 
 echo "#! /bin/sh
 
@@ -141,7 +142,7 @@ fi
 
 for package in $packages
 do
-	sh hugs-package -o $BuildFFI $src/$package
+	sh $HugsPackage -o $BuildFFI $src/$package
 done
 
 # Compatibility with lib/exts:
