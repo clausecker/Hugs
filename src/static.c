@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.11 $
- * $Date: 1999/09/22 08:38:11 $
+ * $Revision: 1.12 $
+ * $Date: 1999/10/11 21:02:15 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -63,7 +63,6 @@ static Void   local checkMems		Args((Class,List,Cell));
 static Void   local addMembers		Args((Class));
 static Name   local newMember		Args((Int,Int,Cell,Type,Class));
 static Name   local newDSel		Args((Class,Int));
-static Name   local newDBuild		Args((Class));
 static Text   local generateText	Args((String,Class));
 static Int    local visitClass		Args((Class));
 
@@ -71,10 +70,11 @@ static List   local classBindings	Args((String,Class,List));
 static Name   local memberName		Args((Class,Text));
 static List   local numInsert		Args((Int,Cell,List));
 
-static List   local typeVarsIn		Args((Cell,List,List));
+static List   local typeVarsIn		Args((Cell,List,List,List));
 static List   local maybeAppendVar	Args((Cell,List));
 
 static Type   local checkSigType	Args((Int,String,Cell,Type));
+static Void   local checkOptQuantVars	Args((Int,List,List));
 static Type   local depTopType		Args((Int,List,Type));
 static Type   local depCompType		Args((Int,List,Type));
 static Type   local depTypeExp		Args((Int,List,Type));
@@ -915,7 +915,7 @@ Cell  cd; {				/* definitions (w or w/o deriving) */
 	if (isQualType(con)) {		/* Local predicates		   */
 	    List us;
 	    lps     = fst(snd(con));
-	    for (us = typeVarsIn(lps,NIL,NIL); nonNull(us); us=tl(us))
+	    for (us = typeVarsIn(lps,NIL,NIL,NIL); nonNull(us); us=tl(us))
 		if (!varIsMember(textOf(hd(us)),evs)) {
 		    ERRMSG(line)
 			"Variable \"%s\" in constraint is not locally bound",
@@ -1609,8 +1609,16 @@ Cell  m; {
     Type t    = thd3(m);
     List sig  = NIL;
     List tvs  = NIL;
+    List xtvs = NIL;
 
-    tyvars    = typeVarsIn(t,NIL,tyvars);/* Look for extra type vars.	   */
+    if (isPolyType(t)) {
+	xtvs = fst(snd(t));
+	t    = monotypeOf(t);
+    }
+
+    tyvars    = typeVarsIn(t,NIL,xtvs,tyvars);
+					/* Look for extra type vars.	   */
+    checkOptQuantVars(line,xtvs,tyvars);
 
     if (isQualType(t)) {		/* Overloaded member signatures?   */
 	map2Over(depPredExp,line,tyvars,fst(snd(t)));
@@ -1677,23 +1685,22 @@ Class c; {				/* and other parts of class struct.*/
 /*  Not actually needed just yet; for the time being, dictionary code will
     not be passed through the type checker.
 
-    cclass(c).dtycon    = addPrimTycon(generateText("Dict.%s",c),
-				       NIL,
-				       cclass(c).arity,
-				       DATATYPE,
-				       NIL);
+    cclass(c).dtycon   = addPrimTycon(generateText("Dict.%s",c),
+				      NIL,
+				      cclass(c).arity,
+				      DATATYPE,
+				      NIL);
 */
 
-    mno                  = cclass(c).numSupers + cclass(c).numMembers;
-    cclass(c).dcon	 = addPrimCfun(generateText("Make.%s",c),mno,0,NIL);
+    mno		       = cclass(c).numSupers + cclass(c).numMembers;
+    cclass(c).dcon     = addPrimCfun(generateText("Make.%s",c),mno,0,NIL);
     if (mno==1)	{			/* Single entry dicts use newtype  */
 	name(cclass(c).dcon).defn = nameId;
 	if (nonNull(cclass(c).members)) {
 	    name(hd(cclass(c).members)).number = mfunNo(0);
 	}
     }
-    cclass(c).dbuild     = newDBuild(c);
-    cclass(c).defaults   = classBindings("class",c,cclass(c).defaults);
+    cclass(c).defaults = classBindings("class",c,cclass(c).defaults);
 }
 
 static Name local newMember(l,no,v,t,parent)
@@ -1731,14 +1738,6 @@ Int   no; {
     name(s).arity  = 1;
     name(s).number = DFUNNAME;
     return s;
-}
-
-static Name local newDBuild(c)		/* Make definition for builder	   */
-Class c; {
-    Name b         = newName(generateText("class.%s",c),c);
-    name(b).line   = cclass(c).line;
-    name(b).arity  = cclass(c).numSupers+1;
-    return b;
 }
 
 #define MAX_GEN  128
@@ -1848,33 +1847,35 @@ List xs; {
  * occur in the type expression when read from left to right.
  * ------------------------------------------------------------------------*/
 
-static List local typeVarsIn(ty,us,vs)	/* Calculate list of type variables*/
+static List local typeVarsIn(ty,us,ws,vs)/*Calculate list of type variables*/
 Cell ty;				/* used in type expression, reading*/
 List us;				/* from left to right ignoring any */
-List vs; {				/* listed in us.		   */
+List ws;				/* listed in us.		   */
+List vs; {				/* ws = explicitly quantified vars */
     switch (whatIs(ty)) {
-	case AP        : return typeVarsIn(snd(ty),us,
-					   typeVarsIn(fst(ty),us,vs));
+	case AP        : return typeVarsIn(snd(ty),us,ws,
+					   typeVarsIn(fst(ty),us,ws,vs));
 
 	case VARIDCELL :
-	case VAROPCELL : if (nonNull(findBtyvs(textOf(ty)))
+	case VAROPCELL : if ((nonNull(findBtyvs(textOf(ty)))
+			      && !varIsMember(textOf(ty),ws))
 			     || varIsMember(textOf(ty),us)) {
 			     return vs;
 			 } else {
 			     return maybeAppendVar(ty,vs);
 			 }
 
-	case POLYTYPE  : return typeVarsIn(monotypeOf(ty),polySigOf(ty),vs);
+	case POLYTYPE  : return typeVarsIn(monotypeOf(ty),polySigOf(ty),ws,vs);
 
-	case QUAL      : {   vs = typeVarsIn(fst(snd(ty)),us,vs);
-			     return typeVarsIn(snd(snd(ty)),us,vs);
+	case QUAL      : {   vs = typeVarsIn(fst(snd(ty)),us,ws,vs);
+			     return typeVarsIn(snd(snd(ty)),us,ws,vs);
 			 }
 
-	case BANG      : return typeVarsIn(snd(ty),us,vs);
+	case BANG      : return typeVarsIn(snd(ty),us,ws,vs);
 
 	case LABC      : {   List fs = snd(snd(ty));
 			     for (; nonNull(fs); fs=tl(fs)) {
-				vs = typeVarsIn(snd(hd(fs)),us,vs);
+				vs = typeVarsIn(snd(hd(fs)),us,ws,vs);
 			     }
 			     return vs;
 			 }
@@ -1918,9 +1919,17 @@ Int    line;				/* Check validity of type expr in  */
 String where;				/* explicit type signature	   */
 Cell   e;
 Type   type; {
-    List tvs  = typeVarsIn(type,NIL,NIL);
-    Int  n    = length(tvs);
-    List sunk = unkindTypes;
+    List tvs  = NIL;
+    List sunk = NIL;
+    List xtvs = NIL;
+
+    if (isPolyType(type)) {
+	xtvs = fst(snd(type));
+	type = monotypeOf(type);
+    }
+    tvs  = typeVarsIn(type,NIL,xtvs,NIL);
+    sunk = unkindTypes;
+    checkOptQuantVars(line,xtvs,tvs);
 
     if (isQualType(type)) {
 	map2Over(depPredExp,line,tvs,fst(snd(type)));
@@ -1933,8 +1942,8 @@ Type   type; {
 	type = depTopType(line,tvs,type);
     }
 
-    if (n>0) {
-	if (n>=NUM_OFFSETS) {
+    if (nonNull(tvs)) {
+	if (length(tvs)>=NUM_OFFSETS) {
 	    ERRMSG(line) "Too many type variables in %s\n", where
 	    EEND;
 	} else {
@@ -1953,6 +1962,34 @@ Type   type; {
 
     h98CheckType(line,where,e,type);
     return type;
+}
+
+static Void local checkOptQuantVars(line,xtvs,tvs)
+Int  line;
+List xtvs;				/* Explicitly quantified vars	   */
+List tvs; {				/* Implicitly quantified vars	   */
+    if (nonNull(xtvs)) {
+	List vs = tvs;
+	for (; nonNull(vs); vs=tl(vs)) {
+	    if (!varIsMember(textOf(hd(vs)),xtvs)) {
+		ERRMSG(line) "Quantifier does not mention type variable \"%s\"",
+			     textToStr(textOf(hd(vs)))
+		EEND;
+	    }
+	}
+	for (vs=xtvs; nonNull(vs); vs=tl(vs)) {
+	    if (!varIsMember(textOf(hd(vs)),tvs)) {
+		ERRMSG(line) "Quantified type variable \"%s\" is not used",
+			     textToStr(textOf(hd(vs)))
+		EEND;
+	    }
+	    if (varIsMember(textOf(hd(vs)),tl(vs))) {
+		ERRMSG(line) "Quantified type variable \"%s\" is repeated",
+			     textToStr(textOf(hd(vs)))
+		EEND;
+	    }
+	}
+    }
 }
 
 static Type local depTopType(l,tvs,t)	/* Check top-level of type sig     */
@@ -2060,13 +2097,9 @@ static Type local depTypeVar(line,tyvars,tv)
 Int  line;
 List tyvars;
 Text tv; {
-    Int  offset = 0;
-    Int  found  = (-1);
-    Cell vt     = findBtyvs(tv);
+    Int offset = 0;
+    Int found  = (-1);
 
-    if (nonNull(vt)) {
-	return fst(vt);
-    }
     for (; nonNull(tyvars); offset++) {
 	if (tv==textOf(hd(tyvars))) {
 	    found = offset;
@@ -2074,6 +2107,10 @@ Text tv; {
 	tyvars = tl(tyvars);
     }
     if (found<0) {
+	Cell vt = findBtyvs(tv);
+	if (nonNull(vt)) {
+	    return fst(vt);
+	}
 	ERRMSG(line) "Undefined type variable \"%s\"", textToStr(tv)
 	EEND;
     }
@@ -2086,7 +2123,7 @@ List vs;				/* variables to quantify over	   */
 List tvs;				/* variables already in scope	   */
 Cell body; {				/* type/constr for scope of vars   */
     if (nonNull(vs)) {
-	List bvs = typeVarsIn(body,NIL,NIL);
+	List bvs = typeVarsIn(body,NIL,NIL,NIL);
 	List us  = vs;
 	for (; nonNull(us); us=tl(us)) {
 	    Text u = textOf(hd(us));
@@ -2633,7 +2670,7 @@ Name nameListMonad = NIL;		/* builder function for List Monad */
 static Void local checkInstDefn(in)	/* Validate instance declaration   */
 Inst in; {
     Int  line   = inst(in).line;
-    List tyvars = typeVarsIn(inst(in).head,NIL,NIL);
+    List tyvars = typeVarsIn(inst(in).head,NIL,NIL,NIL);
     List tvps = NIL, tvts = NIL;
     List fds = NIL;
 
@@ -2662,7 +2699,7 @@ Inst in; {
 
     /* add in the tyvars from the `specifics' so that we don't
        prematurely complain about undefined tyvars */
-    tyvars = typeVarsIn(inst(in).specifics,NIL,tyvars);
+    tyvars = typeVarsIn(inst(in).specifics,NIL,NIL,tyvars);
     inst(in).head = depPredExp(line,tyvars,inst(in).head);
 
     if (haskell98) {
@@ -2730,11 +2767,11 @@ Inst in; {
     List  ins  = cclass(c).instances;
     List  prev = NIL;
 
-    substitution(RESET);
     if (nonNull(cclass(c).fds)) {	/* Check for conflicts with fds	   */
 	List ins1 = cclass(c).instances;
 	for (; nonNull(ins1); ins1=tl(ins1)) {
 	    List fds = cclass(c).fds;
+	    substitution(RESET);
 	    for (; nonNull(fds); fds=tl(fds)) {
 		Int  alpha = newKindedVars(inst(in).kinds);
 		Int  beta  = newKindedVars(inst(hd(ins1)).kinds);
@@ -4321,7 +4358,7 @@ Int    l;
 String wh;
 Cell   e;
 Type   t; {
-    List tvs = typeVarsIn(t,NIL,NIL);
+    List tvs = typeVarsIn(t,NIL,NIL,NIL);
     h98DoesntSupport(l,"pattern type annotations");
     for (; nonNull(tvs); tvs=tl(tvs)) {
 	Int beta    = newKindvars(1);
@@ -5791,7 +5828,7 @@ Void checkContext() {			/* Top level static check on Expr  */
     withinScope(NIL);			/* of no local bindings		   */
     qs = inputContext;
     for (vs = NIL; nonNull(qs); qs=tl(qs)) {
-	vs = typeVarsIn(hd(qs),NIL,vs);
+	vs = typeVarsIn(hd(qs),NIL,NIL,vs);
     }
     map2Proc(depPredExp,0,vs,inputContext);
     leaveScope();

@@ -9,8 +9,8 @@
  * included in the distribution.
  *
  * $RCSfile: output.c,v $
- * $Revision: 1.6 $
- * $Date: 1999/09/22 16:34:10 $
+ * $Revision: 1.7 $
+ * $Date: 1999/10/11 21:02:14 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1078,7 +1078,7 @@ Int  fr; {
 			     for (; isAp(ks); ks=tl(ks)) {
 				 putTyVar(fr++);
 				 if (isAp(tl(ks)))
-				     putChr(',');
+				     putChr(' ');
 			     }
 			     putStr(". ");
 			     putType(monotypeOf(t),NEVER,fr);
@@ -1137,12 +1137,14 @@ Int  fr; {
 				    CLOSE(prec>=ARROW_PREC);
 				    return;
 				}
+/*
 				else if (argCount==1) {
 				    putChr('(');
 				    putType(arg(t),ARROW_PREC,fr);
 				    putStr("->)");
 				    return;
 				}
+*/
 			    }
 			    else if (isTuple(typeHead)) {
 				if (argCount==tupleOf(typeHead)) {

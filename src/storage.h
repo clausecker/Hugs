@@ -9,8 +9,8 @@
  * included in the distribution.
  *
  * $RCSfile: storage.h,v $
- * $Revision: 1.8 $
- * $Date: 1999/09/13 15:06:13 $
+ * $Revision: 1.9 $
+ * $Date: 1999/10/11 21:02:17 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -645,7 +645,6 @@ struct strClass {
     List   dsels;			/* Superclass dictionary selectors */
     List   members;			/* :: [Name]			   */
     Int    numMembers;			/* length(members)		   */
-    Name   dbuild;			/* Default dictionary builder	   */
     List   defaults;			/* :: [Name]			   */
     List   instances;			/* :: [Inst]			   */
 };

@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: type.c,v $
- * $Revision: 1.11 $
- * $Date: 1999/09/22 08:38:13 $
+ * $Revision: 1.12 $
+ * $Date: 1999/10/11 21:02:17 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1813,105 +1813,100 @@ static Void local typeClassDefn(c)	/* Type check implementations of   */
 Class c; {				/* defaults for class c		   */
 
     /* ----------------------------------------------------------------------
-     * Generate code for default dictionary builder function:
-     *
-     *   class.C sc1 ... scn d = let v1 ... = ...
-     *                               vm ... = ...
-     *                           in Make.C sc1 ... scn v1 ... vm
-     *
-     * where sci are superclass dictionary parameters, vj are implementations
-     * for member functions, either taken from defaults, or using "error" to
-     * produce a suitable error message.  (Additional line number values must
-     * be added at appropriate places but, for clarity, these are not shown
-     * above.)
+     * Generate code for default dictionary builder functions:
      * --------------------------------------------------------------------*/
 
     Int  beta   = newKindedVars(cclass(c).kinds);
-    List params = makePredAss(cclass(c).supers,beta);
-    Cell body   = cclass(c).dcon;
-    Cell pat    = body;
+    Cell d      = inventDictVar();
+    List dparam = singleton(triple(cclass(c).head,mkInt(beta),d));
     List mems   = cclass(c).members;
     List defs   = cclass(c).defaults;
     List dsels  = cclass(c).dsels;
-    Cell d      = inventDictVar();
-    List args   = NIL;
-    List locs   = NIL;
-    Cell l      = mkInt(cclass(c).line);
-    List ps;
+    Cell pat    = cclass(c).dcon;
+    Cell args   = NIL;
+    Int  width  = cclass(c).numSupers + cclass(c).numMembers;
+    char buf[FILENAME_MAX+1];
+    Int  i      = 0;
+    Int  j      = 0;
 
-    for (ps=params; nonNull(ps); ps=tl(ps)) {
-	Cell v = thd3(hd(ps));
-	body   = ap(body,v);
-	pat    = ap(pat,inventVar());
-	args   = cons(v,args);
+    if (isNull(defs) && nonNull(mems)) {
+        defs = cclass(c).defaults = cons(NIL,NIL);
     }
-    args   = revOnto(args,singleton(d));
-    params = appendOnto(params,
-			singleton(triple(cclass(c).head,mkInt(beta),d)));
 
     for (; nonNull(mems); mems=tl(mems)) {
-	Cell v   = inventVar();		/* Pick a name for component	   */
-	Cell imp = NIL;
-
-	if (nonNull(defs)) {		/* Look for default implementation */
-	    imp  = hd(defs);
-	    defs = tl(defs);
+	static String deftext = "default_";
+	String s	      = textToStr(name(hd(mems)).text);
+	Name   n;
+	for (; i<FILENAME_MAX && deftext[i]!='\0'; i++) {
+	    buf[i] = deftext[i];
 	}
+	for(; (i+j)<FILENAME_MAX && s[j]!='\0'; j++) {
+	    buf[i+j] = s[j];
+	}
+	buf[i+j] = '\0';
+	n = newName(findText(buf),c);
 
-	if (isNull(imp)) {		/* Generate undefined member msg   */
+	if (isNull(hd(defs))) {		/* No default definition	   */
 	    static String header = "Undefined member: ";
-	    String name = textToStr(name(hd(mems)).text);
-	    char   msg[FILENAME_MAX+1];
-	    Int    i;
-	    Int    j;
-
 	    for (i=0; i<FILENAME_MAX && header[i]!='\0'; i++)
-		msg[i] = header[i];
-	    for (j=0; (i+j)<FILENAME_MAX && name[j]!='\0'; j++)
-		msg[i+j] = name[j];
-	    msg[i+j] = '\0';
+		buf[i] = header[i];
+	    for (j=0; (i+j)<FILENAME_MAX && s[j]!='\0'; j++)
+		buf[i+j] = s[j];
+	    buf[i+j] = '\0';
+	    name(n).line  = cclass(c).line;
+	    name(n).arity = 1;
+	    name(n).defn  = singleton(pair(singleton(d),
+					   ap(mkInt(cclass(c).line),
+					      ap(nameError,
+						 mkStr(fixLitText(
+							findText(buf)))))));
+	} else {			/* User supplied default defn	   */
+	    List alts = snd(hd(defs));
+	    Int  line = rhsLine(snd(hd(alts)));
 
-	    imp = pair(v,singleton(pair(NIL,ap(l,ap(nameError,
-						    mkStr(findText(msg)))))));
-	}
-	else {				/* Use default implementation	   */
-	    fst(imp) = v;
 	    typeMember("default member binding",
 		       hd(mems),
-		       snd(imp),
-		       params,
+		       alts,
+		       dparam,
 		       cclass(c).head,
 		       beta);
+
+	    name(n).line  = line;
+	    name(n).arity = 1+length(fst(hd(alts)));
+	    name(n).defn  = alts;
+
+	    for (; nonNull(alts); alts=tl(alts)) {
+		fst(hd(alts)) = cons(d,fst(hd(alts)));
+	    }
 	}
 
-	locs = cons(imp,locs);
-	body = ap(body,v);
-	pat  = ap(pat,v);
+        hd(defs) = n;
+	genDefns = cons(n,genDefns);
+	if (isNull(tl(defs)) && nonNull(tl(mems))) {
+	    tl(defs) = cons(NIL,NIL);
+	}
+	defs     = tl(defs);
     }
-    body     = ap(l,body);
-    if (nonNull(locs))
-	body = ap(LETREC,pair(singleton(locs),body));
-    name(cclass(c).dbuild).defn
-	     = singleton(pair(args,body));
-    genDefns = cons(cclass(c).dbuild,genDefns);
-    cclass(c).defaults = NIL;
 
     /* ----------------------------------------------------------------------
      * Generate code for superclass and member function selectors:
      * --------------------------------------------------------------------*/
 
-    args = getArgs(pat);
-    pat  = singleton(pat);
-    for (; nonNull(dsels); dsels=tl(dsels)) {
-	name(hd(dsels)).defn = singleton(pair(pat,ap(l,hd(args))));
-	args		     = tl(args);
+    for (i=0; i<width; i++) {
+	pat = ap(pat,inventVar());
+    }
+    pat = singleton(pat);
+    for (i=0; nonNull(dsels); dsels=tl(dsels)) {
+	name(hd(dsels)).defn = singleton(pair(pat,
+					      ap(mkInt(cclass(c).line),
+						 nthArg(i++,hd(pat)))));
 	genDefns	     = cons(hd(dsels),genDefns);
     }
     for (mems=cclass(c).members; nonNull(mems); mems=tl(mems)) {
-	name(hd(mems)).defn = singleton(pair(pat,ap(mkInt(name(hd(mems)).line),
-						    hd(args))));
-	args		    = tl(args);
-	genDefns	    = cons(hd(mems),genDefns);
+	name(hd(mems)).defn  = singleton(pair(pat,
+					      ap(mkInt(name(hd(mems)).line),
+						 nthArg(i++,hd(pat)))));
+	genDefns	     = cons(hd(mems),genDefns);
     }
 }
 
@@ -1921,21 +1916,21 @@ Inst in; {				/* member functions for instance in*/
     /* ----------------------------------------------------------------------
      * Generate code for instance specific dictionary builder function:
      *
-     *   inst.maker d1 ... dn = let sc1 = ...
-     *					.
-     *					.
-     *					.
-     *				    scm = ...
-     *				    d   = f (class.C sc1 ... scm d)
-     *		 omit if the   /    f (Make.C sc1' ... scm' v1' ... vk')
-     *		instance decl {		= let vj ... = ...
-     *		 has no imps   \	  in Make.C sc1' ... scm' ... vj ...
+     *   inst.maker d1 ... dn = let sc1    = ...
+     *					   .
+     *					   .
+     *					   .
+     *				    scm    = ...
+     *				    vj ... = ...
+     *				    d      = Make.C sc1 ... scm v1 ... vk
      *				in d
      *
-     * where sci are superclass dictionaries, d and f are new names, vj
+     * where sci are superclass dictionaries, d is a new name, vj
      * is a newly generated name corresponding to the implementation of a
      * member function.  (Additional line number values must be added at
      * appropriate places but, for clarity, these are not shown above.)
+     * If no implementation of a particular vj is available, then we use
+     * the default implementation, partially applied to d.
      * --------------------------------------------------------------------*/
 
     Int  alpha   = newKindedVars(cclass(inst(in).c).kinds);
@@ -1948,7 +1943,9 @@ Inst in; {				/* member functions for instance in*/
 
     List imps    = inst(in).implements;
     Cell l	 = mkInt(inst(in).line);
-    Cell dictDef = cclass(inst(in).c).dbuild;
+    Cell dictDef = cclass(inst(in).c).dcon;
+    List mems    = cclass(inst(in).c).members;
+    List defs    = cclass(inst(in).c).defaults;
     List args	 = NIL;
     List locs	 = NIL;
     List ps;
@@ -1980,61 +1977,33 @@ Inst in; {				/* member functions for instance in*/
 	locs	= cons(pair(thd3(pi),singleton(pair(NIL,ap(l,ev)))),locs);
 	dictDef = ap(dictDef,thd3(pi));
     }
-    dictDef = ap(dictDef,d);
 
-    if (isNull(imps))				/* No implementations	   */
-	locs = cons(pair(d,singleton(pair(NIL,ap(l,dictDef)))),locs);
-    else {					/* Implementations supplied*/
-	List mems  = cclass(inst(in).c).members;
-	Cell f	   = inventVar();
-	Cell pat   = cclass(inst(in).c).dcon;
-	Cell res   = pat;
-	List locs1 = NIL;
-
-	locs       = cons(pair(d,singleton(pair(NIL,ap(l,ap(f,dictDef))))),
-			  locs);
-
-	for (ps=supers; nonNull(ps); ps=tl(ps)){/* Add param for each sc   */
-	    Cell v = inventVar();
-	    pat    = ap(pat,v);
-	    res    = ap(res,v);
+    for (; nonNull(defs); defs=tl(defs)) {
+	Cell imp = NIL;
+	if (nonNull(imps)) {
+	    imp  = hd(imps);
+	    imps = tl(imps);
 	}
-
-	for (; nonNull(mems); mems=tl(mems)) {	/* For each member:	   */
-	    Cell v   = inventVar();
-	    Cell imp = NIL;
-
-	    if (nonNull(imps)) {		/* Look for implementation */
-		imp  = hd(imps);
-		imps = tl(imps);
-	    }
-
-	    if (isNull(imp)) {			/* If none, f will copy	   */
-		pat = ap(pat,v);		/* its argument unchanged  */
-		res = ap(res,v);
-	    }
-	    else {				/* Otherwise, add the impl */
-		pat	 = ap(pat,WILDCARD);	/* to f as a local defn	   */
-		res	 = ap(res,v);
-		typeMember("instance member binding",
-			   hd(mems),
-			   snd(imp),
-			   evids,
-			   inst(in).head,
-			   beta);
-		locs1    = cons(pair(v,snd(imp)),locs1);
-	    }
+	if (isNull(imp)) {
+	    dictDef = ap(dictDef,ap(hd(defs),d));
+	} else {
+	    Cell v  = inventVar();
+	    dictDef = ap(dictDef,v);
+	    typeMember("instance member binding",
+		       hd(mems),
+		       snd(imp),
+		       evids,
+		       inst(in).head,
+		       beta);
+	    locs     = cons(pair(v,snd(imp)),locs);
 	}
-	res = ap(l,res);
-	if (nonNull(locs1))			/* Build the body of f	   */
-	    res = ap(LETREC,pair(singleton(locs1),res));
-	pat  = singleton(pat);			/* And the arglist for f   */
-	locs = cons(pair(f,singleton(pair(pat,res))),locs);
+	mems = tl(mems);
     }
-    d = ap(l,d);
+    locs = cons(pair(d,singleton(pair(NIL,ap(l,dictDef)))),locs);
 
     name(inst(in).builder).defn			/* Register builder imp	   */
-	     = singleton(pair(args,ap(LETREC,pair(singleton(locs),d))));
+	     = singleton(pair(args,ap(LETREC,pair(singleton(locs),
+						  ap(l,d)))));
     genDefns = cons(inst(in).builder,genDefns);
 }
 

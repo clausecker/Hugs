@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.10 $
- * $Date: 1999/09/15 23:57:20 $
+ * $Revision: 1.11 $
+ * $Date: 1999/10/11 21:02:13 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -271,6 +271,7 @@ String argv[]; {
 
 struct options {                        /* command line option toggles     */
     char   c;                           /* table defined in main app.      */
+    int    h98;
     String description;
     Bool   *flag;
 };
@@ -294,7 +295,7 @@ Bool state; {                           /* given state                     */
     Int count = 0;
     Int i;
     for (i=0; toggle[i].c; ++i)
-	if (*toggle[i].flag == state) {
+	if (*toggle[i].flag == state && (!haskell98 || toggle[i].h98)) {
 	    if (count==0)
 		Putchar((char)(state ? '+' : '-'));
 	    Putchar(toggle[i].c);
@@ -310,8 +311,11 @@ static Void local optionInfo() {        /* Print information about command */
     Int    i;
 
     Printf("TOGGLES: groups begin with +/- to turn options on/off resp.\n");
-    for (i=0; toggle[i].c; ++i)
-	Printf(fmtc,toggle[i].c,toggle[i].description);
+    for (i=0; toggle[i].c; ++i) {
+	if (!haskell98 || toggle[i].h98) {
+	    Printf(fmtc,toggle[i].c,toggle[i].description);
+	}
+    }
 
     Printf("\nOTHER OPTIONS: (leading + or - makes no difference)\n");
     Printf(fmts,"hnum","Set heap size (cannot be changed within Hugs)");
@@ -350,8 +354,8 @@ static Void local optionInfo() {        /* Print information about command */
 #if PROFILING
     Printf("\nProfile interval: -d%d", profiling ? profInterval : 0);
 #endif
-    Printf("\nCompatibility   : %s", haskell98 ? "Haskell 98"
-					       : "Hugs Extensions");
+    Printf("\nCompatibility   : %s", haskell98 ? "Haskell 98 (+98)"
+					       : "Hugs Extensions (-98)");
     Putchar('\n');
 }
 
@@ -669,30 +673,30 @@ static Void local forHelp() {
  * ------------------------------------------------------------------------*/
 
 struct options toggle[] = {             /* List of command line toggles    */
-    {'s', "Print no. reductions/cells after eval", &showStats},
-    {'t', "Print type after evaluation",           &addType},
-    {'f', "Terminate evaluation on first error",   &failOnError},
-    {'g', "Print no. cells recovered after gc",    &gcMessages},
-    {'l', "Literate modules as default",           &literateScripts},
-    {'e', "Warn about errors in literate modules", &literateErrors},
-    {'.', "Print dots to show progress",           &useDots},
-    {'q', "Print nothing to show progress",        &quiet},
-    {'w', "Always show which modules are loaded",  &listScripts},
-    {'k', "Show kind errors in full",              &kindExpert},
-    {'o', "Allow overlapping instances",           &allowOverlap},
-    {'u', "Use \"show\" to display results",       &useShow},
-    {'i', "Chase imports while loading modules",   &chaseImports},
+    {'s', 1, "Print no. reductions/cells after eval", &showStats},
+    {'t', 1, "Print type after evaluation",           &addType},
+    {'f', 1, "Terminate evaluation on first error",   &failOnError},
+    {'g', 1, "Print no. cells recovered after gc",    &gcMessages},
+    {'l', 1, "Literate modules as default",           &literateScripts},
+    {'e', 1, "Warn about errors in literate modules", &literateErrors},
+    {'.', 1, "Print dots to show progress",           &useDots},
+    {'q', 1, "Print nothing to show progress",        &quiet},
+    {'w', 1, "Always show which modules are loaded",  &listScripts},
+    {'k', 1, "Show kind errors in full",              &kindExpert},
+    {'o', 0, "Allow overlapping instances",           &allowOverlap},
+    {'u', 1, "Use \"show\" to display results",       &useShow},
+    {'i', 1, "Chase imports while loading modules",   &chaseImports},
 #if EXPLAIN_INSTANCE_RESOLUTION
-    {'x', "Explain instance resolution",           &showInstRes},
+    {'x', 1, "Explain instance resolution",           &showInstRes},
 #endif
 #if MULTI_INST
-    {'m', "Use multi instance resolution",         &multiInstRes},
+    {'m', 0, "Use multi instance resolution",         &multiInstRes},
 #endif
 #if DEBUG_CODE
-    {'D', "Debug: show generated G code",          &debugCode},
+    {'D', 1, "Debug: show generated G code",          &debugCode},
 #endif
 #if DEBUG_SHOWSC
-    {'S', "Debug: show generated SC code",         &debugSC},
+    {'S', 1, "Debug: show generated SC code",         &debugSC},
 #endif
     {0,   0,                                       0}
 };

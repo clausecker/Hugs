@@ -11,8 +11,8 @@
  * included in the distribution.
  *
  * $RCSfile: parser.y,v $
- * $Revision: 1.7 $
- * $Date: 1999/09/15 23:46:04 $
+ * $Revision: 1.8 $
+ * $Date: 1999/10/11 21:02:14 $
  * ------------------------------------------------------------------------*/
 
 %{
@@ -405,7 +405,11 @@ varids0   : /* empty */			{$$ = gc0(NIL);}
 
 /*- Type expressions: -----------------------------------------------------*/
 
-topType	  : context IMPLIES topType1	{$$ = gc3(qualify($1,$3));}
+topType	  : ALL varids '.' topType0	{$$ = gc4(ap(POLYTYPE,
+						     pair(rev($2),$4)));}
+	  | topType0			{$$ = $1;}
+	  ;
+topType0  : context IMPLIES topType1	{$$ = gc3(qualify($1,$3));}
 	  | topType1			{$$ = $1;}
 	  ;
 topType1  : bpolyType ARROW topType1	{$$ = gc3(fn($1,$3));}
@@ -420,7 +424,7 @@ polyType  : ALL varids '.' sigType	{$$ = gc4(ap(POLYTYPE,
 	  ;
 bpolyType : '(' polyType ')'		{$$ = gc3($2);}
 	  ;
-varids	  : varids ',' varid		{$$ = gc3(cons($3,$1));}
+varids	  : varids varid		{$$ = gc2(cons($2,$1));}
 	  | varid			{$$ = gc1(singleton($1));}
 	  ;
 sigType   : context IMPLIES type	{$$ = gc3(qualify($1,$3));}
