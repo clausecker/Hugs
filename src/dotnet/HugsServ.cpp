@@ -15,7 +15,7 @@ extern "C" {
 #define FreeCharString(pstr) System::Runtime::InteropServices::Marshal::FreeHGlobal(pstr)
 
 extern "C" {
-extern char* lastError = NULL;
+extern char* lastError;
 extern char* ClearError();
 extern Void  setError  (char*);
 extern Bool  safeEval  (Cell c);

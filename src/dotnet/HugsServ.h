@@ -1,13 +1,15 @@
 //
-// (c) 2002, sof.
+// (c) 2002-2003, sof.
 //
-// Hugs server API.
+// Hugs Server API exposed as a .NET type (via Managed C++).
 //
 #pragma once
 #using <mscorlib.dll>
+extern "C" {
 #include "prelude.h"
-#define WANT_IT
 #include "server.h"
+extern struct _HugsServerAPI* getHugsAPI();
+};
 
 using namespace System;
 
@@ -20,7 +22,7 @@ public __gc class Server {
   static struct _HugsServerAPI* m_server;
 public:
   static Server() {
-    m_server = initHugsServer(0, 0);
+    m_server = getHugsAPI();
   }
   
   static System::String* ClearError();
