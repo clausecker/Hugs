@@ -2,7 +2,7 @@
 
 # Test the status within Hugs of each module in the hierarchical libraries.
 
-packages='haskell98 base haskell-src network unix X11 HGL'
+packages='haskell98 base haskell-src network unix'
 
 this_dir="`dirname $0`"
 : ${this_dir:-.}
