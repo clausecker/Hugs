@@ -146,7 +146,10 @@
 
 /* Define if time.h or sys/time.h define the timezone variable.  */
 #undef HAVE_TIMEZONE
- 
+
+/* Define if we want to use Apple's OpenGL for the Quartz Display System on Mac OS X (instead of X11) */   
+#undef USE_QUARTZ_OPENGL
+
 
 /* Leave that blank line there!!  Autoheader needs it.
    If you're adding to this file, keep in mind:
@@ -617,4 +620,3 @@
 
 /* The value of EXDEV.  */
 #undef CCONST_EXDEV
-
