@@ -11346,7 +11346,7 @@ elif test "x$target" = "xdos"; then
     HUGSSUFFIXES=".hs;.lhs"
     MkInstall="../MkNull.in"
 else
-    hugsdir_deflt='${datadir}/hugs'
+    hugsdir_deflt='${libdir}/hugs'
     HUGSPATH="{Hugs}/libraries:{Hugs}/oldlib"
     HUGSSUFFIXES=".hs:.lhs"
     MkInstall="../MkInstal.in"
