@@ -93,6 +93,7 @@ install_libraries_ffi :: install_libraries install_include ffihugs$(EXE)
 		$(BUILD_FFI_NEW) Foreign.Marshal.Alloc 
 		$(BUILD_FFI_NEW) Foreign.Marshal.Utils 
 		$(BUILD_FFI_NEW) +L"../libraries/Foreign/C/errno.c" Foreign.C.Error  
+		$(BUILD_FFI_NEW) Text.Regex.Posix
 		$(RM) $(hugsdir)/libraries/Hugs/*.[ch]
-		$(RM) $(hugsdir)/libraries/Foreign/*.[ch]
-		$(RM) $(hugsdir)/libraries/Foreign/Marshal/*.[ch]
+		$(RM) $(hugsdir)/libraries/Foreign/*/*.[ch]
+		$(RM) $(hugsdir)/libraries/Text/Regex/*.[ch]

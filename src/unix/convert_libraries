@@ -16,7 +16,8 @@
 #
 #   ./convert_libraries  <directory where libraries lives>
 
-cpp='gcc -P -E -traditional -xc -D__HUGS__ -D__HASKELL98__'
+cpp_flags='-D__HUGS__'
+cpp="gcc -P -E -traditional -xc $cpp_flags"
 
 hugs_src=../../lib
 dst=../../libraries
@@ -48,48 +49,56 @@ function cvt {
 	*)	echo "usage: cvt package file" >&2
 		exit 1 ;;
 	esac
- 
+
 	echo "Converting $1/$2"
 	dstdir=`dirname $dst/$2`
 	mkdir -p $dstdir
 
-	$cpp -I. -I.. -I$src/$1/include $src/$1/$2 | cat -s >$dst/$2
-}
+	includes="-I. -I.. -I$src/$1/include"
 
-function cvt_happy {
-	case $# in
-	2)	;;
-	*)	echo "usage: cvt_happy package file" >&2
+	case "$2" in
+	*.lhs|*.hs)
+		$cpp $includes $src/$1/$2 | cat -s >$dst/$2
+		;;
+	*.hsc)
+		# with a hack to extract the -#include directives
+		copy="$dstdir/`basename $2`"
+		target="$dstdir/`basename $2 .hsc`.hs"
+		header="`basename $2 .hsc`_aux.h"
+		sed '/^foreign.*"[^ ]*"/ s/"/"'"$header /" "$src/$1/$2" >$copy
+		hsc2hs $cpp_flags $includes "$copy"
+		sed -n 's/^{-# OPTIONS -\(#include .*\) #-}/\1/p' $target >"$dstdir/$header"
+		rm "$copy"
+		;;
+	*.y|*.ly)
+		inname=`basename $2`
+		case $2 in
+		*.ly)	outname="`basename $2 .ly`.hs" ;;
+		*)	outname="`basename $2 .y`.hs" ;;
+		esac
+
+		target="`dirname $dst/$2`/$outname"
+
+		# don't run happy if the happy output is already present
+		hs_file="`dirname $src/$1/$2`/$outname"
+		if [ -f "$hs_file" ]
+		then
+			$cpp "$hs_file" | cat -s >$target
+		else
+			tmpdir=/tmp/cvt.$$
+			mkdir $tmpdir
+			cp $src/$1/$2 $tmpdir/$inname
+			(
+				cd $tmpdir
+				happy $inname
+			)
+			$cpp $tmpdir/$outname | cat -s >$target
+			rm -r $tmpdir
+		fi 
+		;;
+	*)	echo "cvt: don't know how to handle $1/$2" >&2
 		exit 1 ;;
 	esac
- 
-	echo "Converting $1/$2"
-	mkdir -p `dirname $dst/$2`
-
-	inname=`basename $2`
-	case $2 in
-	*.ly)	outname=`basename $2 .ly`.hs ;;
-	*)	outname=`basename $2 .y`.hs ;;
-	esac
-
-	target=`dirname $dst/$2`/$outname
-
-	# don't run happy if the happy output is already present
-	hs_file="`dirname $src/$1/$2`/$outname"
-	if [ -f "$hs_file" ]
-	then
-		$cpp $hs_file | cat -s >$target
-	else
-		tmpdir=/tmp/cvt.$$
-		mkdir $tmpdir
-		cp $src/$1/$2 $tmpdir/$inname
-		(
-			cd $tmpdir
-			happy $inname
-		)
-		$cpp $tmpdir/$outname | cat -s >$target
-		rm -r $tmpdir
-	fi 
 }
 
 # For when we cannot use the new module yet: use a Hugs file as a
@@ -255,7 +264,7 @@ nocvt base Control/Exception.hs		exts/Exception.hs	# Hugs special
   cvt base Data/Array/IO.hs
   cvt base Data/Array/MArray.hs
   cvt base Data/Array/ST.hs
-# cvt base Data/Array/Storable.hs	
+  cvt base Data/Array/Storable.hs	
 # cvt base Data/Array/Unboxed.hs	# GHC-specific
   cvt base Data/Bits.hs
   cvt base Data/Bool.hs
@@ -295,7 +304,7 @@ nocvt base Foreign/ForeignPtr.hs        exts/ForeignPtr.hs
   cvt base Foreign/Marshal/Array.hs
   cvt base Foreign/Marshal/Error.hs
   cvt base Foreign/Marshal/Utils.hs
-nocvt base Foreign/Ptr.hs		exts/Ptr.hs	# not quite right
+nocvt base Foreign/Ptr.hs		exts/Ptr.hs	# incomplete
   cvt base Foreign/StablePtr.hs
   cvt base Foreign/Storable.hs		
   cvt base Numeric.hs
@@ -336,8 +345,8 @@ nocvt base System/Time.hsc		Time.hs		# Hugs primitives
   cvt base Text/PrettyPrint/HughesPJ.hs
   cvt base Text/Read.hs
 # cvt base Text/Read/Lex.hs		# uses ReadP
-# cvt base Text/Regex.hs		# uses Text.Regex.Posix
-# cvt base Text/Regex/Posix.hsc
+  cvt base Text/Regex.hs
+  cvt base Text/Regex/Posix.hsc
   cvt base Text/Show.hs
   cvt base Text/Show/Functions.hs
 
@@ -377,13 +386,28 @@ nocvt base System/Time.hsc		Time.hs		# Hugs primitives
   cvt haskell98 Storable.hs
 # cvt haskell98 Word.hs		# not yet: lacks the deprecated stuff
 
-  cvt_happy haskell-src Language/Haskell/Parser.ly
+  cvt haskell-src Language/Haskell/Parser.ly
   cvt haskell-src Language/Haskell/Lexer.hs
   cvt haskell-src Language/Haskell/ParseMonad.hs
   cvt haskell-src Language/Haskell/ParseUtils.hs
   cvt haskell-src Language/Haskell/Pretty.hs
   cvt haskell-src Language/Haskell/Syntax.hs
   cvt haskell-src Language/Haskell/THSyntax.hs
+
+# cvt network Network.hs
+# cvt network Network/BSD.hsc
+# cvt network Network/CGI.hs
+# cvt network Network/Socket.hsc
+  cvt network Network/URI.hs
+
+# cvt readline System/Console/Readline.hsc
+
+# cvt unix System/Posix.hs
+# cvt unix System/Posix/Directory.hsc
+# cvt unix System/Posix/Files.hsc
+# cvt unix System/Posix/IO.hsc
+# cvt unix System/Posix/Process.hsc
+# cvt unix System/Posix/Unistd.hsc
 
   echo Copying FFI support files
   cp ../../lib/exts/Storable_aux.[ch]   $dst/Hugs
@@ -475,7 +499,7 @@ mkdir -p $compat
 
 # hslibs lang Addr.lhs			# deprecated
  libexts Addr
-# hslibs lang ArrayBase.hs		# -> Data.Array.Base
+  hslibs lang ArrayBase.hs		# -> Data.Array.Base
   hslibs lang Arrow.hs
 # hslibs lang ByteArray.lhs		# deprecated
 # hslibs lang CCall.lhs			# GHC-specific (and obsolete)
@@ -505,7 +529,7 @@ mkdir -p $compat
   hslibs lang ShowFunctions.hs
   hslibs lang Stable.hs
   hslibs lang StableName.hs
-# hslibs lang StorableArray.hs		# -> Data.Array.Storable
+  hslibs lang StorableArray.hs		# -> Data.Array.Storable
 # hslibs lang SystemExts.lhs		# GHC-specific
 # hslibs lang TimeExts.lhs
   hslibs lang Weak.hs
