@@ -11,8 +11,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.115 $
- * $Date: 2004/01/29 16:30:51 $
+ * $Revision: 1.116 $
+ * $Date: 2004/01/31 00:59:10 $
  * ------------------------------------------------------------------------*/
 #include "prelude.h"
 #include "storage.h"
@@ -2201,8 +2201,10 @@ String flags; {
  
     used    = 0;
 
+#ifdef MKDLL_CMD
     /* The compile and link command */
     insert(MKDLL_CMD);
+#endif
     
     /* Identify ourselves */
     insert(" -D__HUGS__");

@@ -89,7 +89,8 @@ int test1() {
 ac_cv_c_jmp_buf_array=yes,
 ac_cv_c_jmp_buf_array=no)])
 if test "$ac_cv_c_jmp_buf_array" = yes; then
-AC_DEFINE(JMPBUF_ARRAY)
+AC_DEFINE(JMPBUF_ARRAY, [1],
+  [Define to 1 if jmpbufs can be treated like arrays.])
 fi
 ])
 
@@ -127,7 +128,7 @@ return;
 ac_cv_prototypes=yes,
 ac_cv_prototypes=no)])
 if test "$ac_cv_prototypes" = yes; then
-AC_DEFINE(HAVE_PROTOTYPES)
+AC_DEFINE(HAVE_PROTOTYPES, [1], [Define to 1 if compiler supports prototypes.])
 fi
 ])
 
@@ -148,7 +149,10 @@ l2: return 2;
 ac_cv_labels_as_values=yes,
 ac_cv_labels_as_values=no)])
 if test "$ac_cv_labels_as_values" = yes; then
-AC_DEFINE(HAVE_LABELS_AS_VALUES)
+AC_DEFINE(HAVE_LABELS_AS_VALUES, [1],
+  [Define to 1 if compiler supports gcc's "labels as values"
+   (aka computed goto) feature (which is used to speed up instruction
+   dispatch in the interpreter).])
 fi
 ])
 
@@ -171,7 +175,8 @@ AC_DEFUN(FPTOOLS_HAVE_ALTZONE,
 ], [return altzone;], 
 fptools_cv_altzone=yes, fptools_cv_altzone=no)])
 if test "$fptools_cv_altzone" = yes; then
-  AC_DEFINE(HAVE_ALTZONE)
+  AC_DEFINE(HAVE_ALTZONE, [1],
+    [Define to 1 if time.h or sys/time.h define the altzone variable.])
 fi
 ])
 
@@ -194,7 +199,8 @@ AC_DEFUN(FPTOOLS_HAVE_TIMEZONE,
 ], [return timezone/1;], 
 fptools_cv_have_timezone=yes, fptools_cv_have_timezone=no)])
 if test "$fptools_cv_have_timezone" = yes; then
-  AC_DEFINE(HAVE_TIMEZONE)
+  AC_DEFINE(HAVE_TIMEZONE, [1],
+    [Define to 1 if time.h or sys/time.h define the timezone variable.])
 fi
 ])
 
@@ -362,7 +368,8 @@ AC_LANG_RESTORE
 ])
 AC_MSG_RESULT($fptools_cv_have_long_long)
 if test "$fptools_cv_have_long_long" = yes; then
-AC_DEFINE(HAVE_LONG_LONG)
+AC_DEFINE(HAVE_LONG_LONG, [1],
+  [Define to 1 if C compiler supports long long types.])
 fi
 ])
 
@@ -574,7 +581,8 @@ AC_DEFUN(FPTOOLS_MSGHDR_MSG_CONTROL,
 #include <sys/socket.h>], [struct msghdr m; m.msg_control;],
 fptools_cv_struct_msghdr_msg_control=yes, fptools_cv_struct_msghdr_msg_control=no)])
 if test $fptools_cv_struct_msghdr_msg_control = yes; then
-  AC_DEFINE(HAVE_STRUCT_MSGHDR_MSG_CONTROL)
+  AC_DEFINE(HAVE_STRUCT_MSGHDR_MSG_CONTROL, [1],
+    [Define if struct msghdr contains msg_control field.])
 fi
 AC_SUBST(HAVE_STRUCT_MSGHDR_MSG_CONTROL)dnl
 ])
@@ -589,7 +597,8 @@ AC_DEFUN(FPTOOLS_MSGHDR_MSG_ACCRIGHTS,
 #include <sys/socket.h>], [struct msghdr m; m.msg_accrights;],
 fptools_cv_struct_msghdr_msg_accrights=yes, fptools_cv_struct_msghdr_msg_accrights=no)])
 if test $fptools_cv_struct_msghdr_msg_accrights = yes; then
-  AC_DEFINE(HAVE_STRUCT_MSGHDR_MSG_ACCRIGHTS)
+  AC_DEFINE(HAVE_STRUCT_MSGHDR_MSG_ACCRIGHTS, [1],
+    [Define to 1 if struct msghdr contains msg_accrights field.])
 fi
 AC_SUBST(HAVE_STRUCT_MSGHDR_MSG_ACCRIGHTS)dnl
 ])
@@ -795,13 +804,6 @@ AC_SUBST([GLUT_LIBS])
 dnl External macros
 
 builtin([include],ac_macros/acx_pthread.m4)
-
-dnl Simplistic implementation of autoconf 2.50 macros for earlier versions
-
-ifndef([AC_HELP_STRING],
-  AC_DEFUN([AC_HELP_STRING],
-    [  ifelse(builtin([eval],len([$1])<24),1,[builtin([format], [%-23s], [$1])],[$1
-                         ]) $2]))
 
 
 # FP_CHECK_PROG(VARIABLE, PROG-TO-CHECK-FOR,
