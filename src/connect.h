@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: connect.h,v $
- * $Revision: 1.8 $
- * $Date: 2000/03/10 18:39:26 $
+ * $Revision: 1.9 $
+ * $Date: 2000/05/05 15:49:52 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -85,6 +85,7 @@ extern Name  namePrint;			/* printing primitive		   */
 #if    IO_MONAD
 extern Type   typeProgIO;		/* For the IO monad, IO ()	   */
 extern Name   nameIORun;	        /* IO monad executor		   */
+extern Name   nameIOBind;	        /* IO bind executor		   */
 extern Name   namePutStr;	        /* Prelude.putStr                  */
 extern Name   nameUserErr;              /* primitives required for IOError */
 extern Name   nameNameErr,  nameSearchErr;
@@ -297,7 +298,7 @@ extern  Cell   resolvePred	Args((Kinds,Cell));
 extern  List   simpleContext	Args((List,Int));
 extern  Cell   rhsExpr		Args((Cell));
 extern  Int    rhsLine		Args((Cell));
-extern  Bool   isProgType	Args((List,Type));
+extern  Cell   getProgType	Args((List,Type));
 extern  Cell   superEvid	Args((Cell,Class,Class));
 extern  Void   linkPreludeTC    Args((Void));
 extern  Void   linkPreludeCM    Args((Void));

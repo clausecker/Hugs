@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.20 $
- * $Date: 2000/03/10 18:39:26 $
+ * $Revision: 1.21 $
+ * $Date: 2000/05/05 15:49:52 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1148,7 +1148,7 @@ static Module local findEvalModule() { /*Module in which to eval expressions*/
 #endif
 
 static Void local evaluator() {        /* evaluate expr and print value    */
-    Type  type, bd;
+    Type  type, bd, t;
     Kinds ks   = NIL;
     Cell  temp = NIL;
 
@@ -1186,8 +1186,23 @@ static Void local evaluator() {        /* evaluate expr and print value    */
     updateTimers();
 #endif
 #if IO_MONAD
-    if (isProgType(ks,type)) {
-	/* Already has type IO t - nothing more to do */
+    if (t = getProgType(ks,type)) {
+	Cell printer = namePrint;
+	if (useShow) {
+	    Cell d = resolvePred(ks,ap(classShow,t));
+	    if (isNull(d)) {
+		printing = FALSE;
+		ERRMSG(0) "Cannot find \"show\" function for IO result:" ETHEN
+		ERRTEXT   "\n*** Expression : "   ETHEN ERREXPR(inputExpr);
+		ERRTEXT   "\n*** Of type    : "   ETHEN ERRTYPE(type);
+		ERRTEXT   "\n"
+		EEND;
+	    }
+	    printer = ap(nameShowsPrec,d);
+	}
+	printer = ap(ap(nameFlip,ap(printer,mkInt(MIN_PREC))),nameNil);
+	printer = ap(ap(nameComp,namePutStr),printer);
+	inputExpr = ap(ap(nameIOBind,inputExpr),printer);
     }
     else
 #endif

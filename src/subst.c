@@ -9,8 +9,8 @@
  * included in the distribution.
  *
  * $RCSfile: subst.c,v $
- * $Revision: 1.16 $
- * $Date: 2000/03/06 22:40:37 $
+ * $Revision: 1.17 $
+ * $Date: 2000/05/05 15:49:52 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1241,14 +1241,15 @@ Int  o; {
 #endif
 
 #if IO_MONAD
-Bool isProgType(ks,type)		/* Test if type is of the form	   */
-List ks;				/* IO t for some t.		   */
-Type type; {
+Type getProgType(ks,type)		/* Extract t, if type is of the    */
+List ks;				/* form IO t, otherwise return     */
+Type type; {				/* NULL cell			   */
     Bool result;
     Int  alpha;
     Int  beta;
     if (isPolyOrQualType(type))
-	return FALSE;
+	return 0; /* ZZ what's the correct name for the empty Cell? */
+		  /* see below as well... */
     emptySubstitution();
     alpha  = newKindedVars(ks);
     beta   = newTyvars(1);
@@ -1256,7 +1257,7 @@ Type type; {
     result = unify(type,alpha,typeProgIO,beta);
     unrestrictBind();
     emptySubstitution();
-    return result;
+    return result ? arg(type) : 0;
 }
 #endif
 
