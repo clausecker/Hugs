@@ -75,10 +75,10 @@ Long version:
         HUGSDIR=hugsdir src/hugs
         -- Run a few tests like 1+2, [1..], etc.  Use ":quit" to exit
 
-    Regression tests are run by "cd src; make check".  You can also
-    run "make LibStatus", which creates a file LibStatus giving the
-    status of each module in fptools/libraries -- none of them
-    should be ERROR.
+    Regression tests are run by "make check".  You can also run
+    "cd libraries; make LibStatus", which creates a file LibStatus
+    giving the status of each module in fptools/libraries -- none
+    of them should be ERROR.
 
  3) Install Hugs in chosen directories
 

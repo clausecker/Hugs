@@ -29,31 +29,64 @@ LIBRARIESDIRS = base haskell98 haskell-src mtl network parsec QuickCheck unix \
 #		for in-place use.
 # distclean:	delete files created by configuring or building.
 # veryclean:	delete most things that can be regenerated (though this
-#		require additional tools).
+#		will require additional tools).
+# check:	run regression tests
 
 all: fptools src/Makefile
 	cd src; $(MAKE) all
+	cd libraries; $(MAKE) all
 	cd docs; $(MAKE) all
+
+# We install the standard libraries and the simple demos.
+# We don't install things which don't work on Unix (e.g. Win32).
 
 install: fptools src/Makefile
 	cd src; $(MAKE) install
+	cd libraries; $(MAKE) install
 	cd docs; $(MAKE) install
+	cd demos; $(MAKE) install
 
 clean:
 	cd src; if test -f Makefile; then $(MAKE) clean; fi
+	cd libraries; if test -f Makefile; then $(MAKE) clean; fi
 	cd docs; if test -f Makefile; then $(MAKE) clean; fi
 
 distclean:
 	$(RM) *.tar.gz *.rpm Defs.mk
 	$(RM) -r config.log config.cache autom4te.cache
 	cd src; if test -f Makefile; then $(MAKE) distclean; fi
+	cd libraries; if test -f Makefile; then $(MAKE) distclean; fi
 	cd docs; if test -f Makefile; then $(MAKE) distclean; fi
 
 veryclean:
 	$(RM) *.tar.gz *.rpm Defs.mk
 	$(RM) -r config.log config.cache autom4te.cache
 	cd src; if test -f Makefile; then $(MAKE) veryclean; fi
+	cd libraries; if test -f Makefile; then $(MAKE) veryclean; fi
 	cd docs; if test -f Makefile; then $(MAKE) veryclean; fi
+
+################################################################
+# Regression tests (Unix only)
+#
+# Uses runstdtest (from ghc-0.26/ghc/glafp-utils/scripts), perl 5
+# and /bin/sh (Bourne shell).
+#
+# "make verbosecheck" generates a lot of output to explain what is going on
+# and reassure you that progress is being made.  This is great if you've
+# never run these tests before - but if you just want to reassure yourself
+# that nothing has broken since the last release, you might prefer to
+# run "make check" which removes all the explanations and success
+# stories - leaving just the errors (if any).
+#
+################################################################
+
+check: all
+	cd tests && sh testScript | egrep -v '^--( |-----)'
+
+verbosecheck: fptools src/Makefile
+	cd src; $(MAKE) all
+	cd libraries; $(MAKE) all
+	cd tests && sh testScript
 
 # Building distributions
 

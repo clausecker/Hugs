@@ -1041,8 +1041,11 @@ if test -f tests/config.in ; then
 fi
 
 AC_OUTPUT(src/Makefile src/platform.h \
+	libraries/Makefile \
+	libraries/tools/config libraries/tools/hugs-package \
 	docs/Makefile docs/users_guide/Makefile \
-	docs/hugs.1 $TESTSCRIPT src/unix/config src/unix/hugs-package)
+	docs/hugs.1 $TESTSCRIPT \
+	demos/Makefile)
 
 echo ''
 echo '************************************************'

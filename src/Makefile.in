@@ -11,24 +11,19 @@
 # Targets:
 #
 # <default>:   	  make hugs@EXEEXT@ and runhugs@EXEEXT@
-# libraries:	  generate libraries from fptools raw sources
-#		  (located in ../fptools)
-# install:	  make and install programs/libraries
+# install:	  make and install programs
 # hugs@EXEEXT@:	  make minimal working system
 # runhugs@EXEEXT@: make batch-mode version of Hugs
 # clean:       	  delete files not required in running system
 # distclean:      delete files that can be regenerated using C compiler
 # veryclean:      delete all machine generated files 
 #                   (you need perl, bison/yacc, etc to rebuild these files)
-# check:	  run regression tests
-# depend:	  recompute object file dependencies (requires gcc, but
-#		  also updates {dotmet,msc,winhugs}/Makefile)
 # TAGS:           build emacs TAGS table
 
 # This rule goes first to make it the default choice
 default		:: all
 
-all		:: hugs@EXEEXT@ runhugs@EXEEXT@ libraries
+all		:: hugs@EXEEXT@ runhugs@EXEEXT@ ffihugs@EXEEXT@
 
 CC		= @CC@
 CFLAGS		= @CFLAGS@ @DEBUGFLAGS@
@@ -43,14 +38,6 @@ RM		= @RM@
 CP		= @CP@
 EXEEXT		= @EXEEXT@
 OBJEXT		= @OBJEXT@
-
-BUILD_DIR	= ../hugsdir
-
-# a file created by make libraries
-LIBRARIES	= $(BUILD_DIR)/libraries/Prelude.hs
-
-# a file created by make include
-INCLUDES	= $(BUILD_DIR)/include/HsFFI.h
 
 # These variables determine where various parts of the Hugs system are
 # installed.  (They are ignored in Windows or DOS.)
@@ -87,12 +74,6 @@ OBJECTS		= builtin.@OBJEXT@ char.@OBJEXT@ compiler.@OBJEXT@ errors.@OBJEXT@ \
 IOBJECTS	= hugs.@OBJEXT@ edit.@OBJEXT@ observe.@OBJEXT@ $(OBJECTS)
 PRELUDE		= config.h options.h prelude.h script.h
 
-HEADERS		= HsFFI.h config.h platform.h unix/MachDeps.h unix/template-hsc.h
-
-TOOLSDIR	= ../tools
-TOOLS		= $(TOOLSDIR)/Package.hs $(TOOLSDIR)/ParsePkgConf.hs \
-		  $(TOOLSDIR)/get_pkg_field
-
 ################################################################
 # Hugs interpreter and standalone evaluator
 ################################################################
@@ -118,49 +99,6 @@ ffihugs.@OBJEXT@ : runhugs.@OBJEXT@
 		  $(CC) -c $(CFLAGS) $(OPTFLAGS) -DFFI_COMPILER runhugs.c -o ffihugs.@OBJEXT@
 
 ################################################################
-# Libraries, converted from raw sources out of the fptools tree
-################################################################
-
-CONVERTERS	= unix/convert_libraries unix/hugs-package
-
-libraries	:: $(LIBRARIES) @FFI_LIBRARIES@
-
-$(LIBRARIES)	: runhugs@EXEEXT@ ffihugs@EXEEXT@ ../libraries/Hugs/*.* $(CONVERTERS) $(TOOLS) $(INCLUDES)
-		  mkdir -p $(BUILD_DIR)/tools
-		  $(CP) $(TOOLS) $(BUILD_DIR)/tools
-		  mkdir -p $(BUILD_DIR)/libraries/Hugs
-		  $(CP) ../libraries/Hugs/*.* $(BUILD_DIR)/libraries/Hugs
-		  cd ..; src/unix/convert_libraries fptools hugsdir
-
-$(INCLUDES)	: $(HEADERS)
-		  mkdir -p $(BUILD_DIR)/include
-		  $(CP) $(HEADERS) $(BUILD_DIR)/include
-		  echo '#include "config.h"' >$(BUILD_DIR)/include/ghcconfig.h
-		  # Ultra-evil...
-		  ( echo '#undef PACKAGE_NAME'      ; \
-		    echo '#undef PACKAGE_TARNAME'   ; \
-		    echo '#undef PACKAGE_VERSION'   ; \
-		    echo '#undef PACKAGE_STRING'    ; \
-		    echo '#undef PACKAGE_BUGREPORT' ) >>$(BUILD_DIR)/include/ghcconfig.h
-
-################################################################
-# Library modules that use the Foreign Function Interface
-################################################################
-
-FFI_LIBRARIES	= $(BUILD_DIR)/libraries/Hugs/Storable@DLL@
-
-ffi_libraries	: $(FFI_LIBRARIES)
-
-BUILD_FFI = env HUGSDIR='$(BUILD_DIR)' HUGSFLAGS='' ./ffihugs +G
-
-# The script unix/BuildFFI is created by unix/convert_libraries,
-# and runs ffihugs on library modules that need it.
-
-$(FFI_LIBRARIES) : $(LIBRARIES) ffihugs$(EXEEXT) $(INCLUDES)
-		  $(BUILD_FFI) +L'$(BUILD_DIR)/libraries/Hugs/Storable_aux.c' Hugs.Storable
-		  cd ..; env HUGSDIR=hugsdir HUGSFLAGS='' src/unix/BuildFFI
-
-################################################################
 # Clean, distclean, veryclean, TAGS
 ################################################################
 
@@ -182,13 +120,11 @@ clean		::
 		  $(RM) *.DSW
 		  $(RM) *.aux
 		  $(RM) *.hp
-		  $(RM) LibStatus
 distclean	:: clean
 distclean	::
 		  $(RM) hugs@EXEEXT@
 		  $(RM) runhugs@EXEEXT@
 		  $(RM) ffihugs@EXEEXT@
-		  $(RM) -r $(BUILD_DIR)
 		  $(RM) Makefile
 		  $(RM) config.h
 		  $(RM) options.h
@@ -265,30 +201,6 @@ depend: $(SOURCES) parser.c
 ################################################################
 # End of generated object dependencies (Don't change or delete this line)
 ################################################################
-
-################################################################
-# Regression tests (Unix only)
-#
-# Uses runstdtest (from ghc-0.26/ghc/glafp-utils/scripts), perl 5
-# and /bin/sh (Bourne shell).
-#
-# "make verbosecheck" generates a lot of output to explain what is going on
-# and reassure you that progress is being made.  This is great if you've
-# never run these tests before - but if you just want to reassure yourself
-# that nothing has broken since the last release, you might prefer to
-# run "make check" which removes all the explanations and success
-# stories - leaving just the errors (if any).
-#
-################################################################
-
-check		: hugs@EXEEXT@ libraries
-		  cd ../tests; sh testScript | egrep -v '^--( |-----)'
-
-verbosecheck	: hugs@EXEEXT@ libraries
-		  cd ../tests; sh testScript
-
-LibStatus	: hugs@EXEEXT@ libraries
-		  (cd ..; src/unix/test_libraries fptools) >$@
 
 @MkInstall@
 

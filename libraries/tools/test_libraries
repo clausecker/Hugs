@@ -6,11 +6,12 @@ packages='haskell98 base haskell-src mtl network parsec QuickCheck unix OpenGL G
 
 this_dir="`dirname $0`"
 : ${this_dir:-.}
-hugs_src_dir="$this_dir/.."
+hugs_root_dir="$this_dir/../.."
 
+hugs_src_dir="$hugs_root_dir/src"
 hugs=$hugs_src_dir/hugs
 
-HUGSDIR=$hugs_src_dir/../hugsdir
+HUGSDIR=$hugs_root_dir/hugsdir
 export HUGSDIR
 
 case $# in

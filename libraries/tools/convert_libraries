@@ -131,8 +131,8 @@ ffihugs=src/ffihugs
 runhugs=src/runhugs
 export HUGSDIR ffihugs runhugs
 
-BuildFFI=src/unix/BuildFFI
-HugsPackage=src/unix/hugs-package
+BuildFFI=libraries/BuildFFI
+HugsPackage=libraries/tools/hugs-package
 
 echo "#! /bin/sh
 
