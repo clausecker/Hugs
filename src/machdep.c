@@ -12,8 +12,8 @@
  * included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.31 $
- * $Date: 2001/11/10 16:25:43 $
+ * $Revision: 1.32 $
+ * $Date: 2001/12/11 23:23:05 $
  * ------------------------------------------------------------------------*/
 
 #ifdef HAVE_SIGNAL_H
@@ -604,13 +604,17 @@ String s;
 
 
 String findPathname(along,nm)   /* Look for a file or module along suggested path */
-String along;                   /* Return ***last attempt*** if no file was found */
+String along;                   /* Return ***input name*** if no file was found */
 String nm; {
     /* AC, 1/21/99: modified to search hugsPath first, then projectPath */
     Bool r = find1(along,nm,hugsPath);
 #if USE_REGISTRY
     r = r || find1(along,nm,projectPath);
 #endif /* USE_REGISTRY */
+    if (!r) {
+        searchReset(0);
+        searchStr(nm);
+    }
     return normPath(searchBuf);
 }
 
