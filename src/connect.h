@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: connect.h,v $
- * $Revision: 1.52 $
- * $Date: 2002/10/12 14:57:58 $
+ * $Revision: 1.53 $
+ * $Date: 2002/10/31 01:41:02 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -147,6 +147,7 @@ extern String versionString;		/* String containing version name  */
 #if USE_REGISTRY
 extern String hugsRegRoot;		/* Root in registry for windows    */
 #endif
+extern String scriptFile;               /* Name of current script (if any) */
 
 extern Type  typeArrow;			/* Builtin type constructors	   */
 extern Type  typeList;
@@ -352,8 +353,8 @@ extern  List   foreignImports;           /* foreign import declarations     */
 extern  List   foreignExports;           /* foreign export declarations     */
 
 extern  Void   ffi              Args((Int));
-extern  Void   foreignHeader    Args((Void));
-extern  Void   foreignFooter    Args((List,List));
+extern  Void   foreignHeader    Args((String));
+extern  Void   foreignFooter    Args((String,List,List));
 extern  Void   ffiSetFlags      Args((String));
 extern  Void   implementForeignImport        Args((Int,Int,Text,Text,List,Bool,Type));
 extern  Void   implementForeignImportDynamic Args((Int,Int,Text,List,Bool,Type));

@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: ffi.c,v $
- * $Revision: 1.20 $
- * $Date: 2002/08/25 16:48:07 $
+ * $Revision: 1.21 $
+ * $Date: 2002/10/31 01:41:02 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -34,8 +34,6 @@ static Void local ffiDeclareFun  Args((Int,Text,Bool,Bool,List,Type));
 static Void local ffiPrimProto   Args((Text,Int));
 static Void local ffiPrimHeader  Args((Text,Int));
 static Void local ffiReturn      Args((Type,String,Int));
-
-extern String scriptFile;
 
 static FILE* out = NIL;                /* file we're generating code into */
 static List  includes = NIL;           /* files already #included         */
@@ -76,8 +74,9 @@ String s; {
     }
 }
 
-Void foreignHeader() {
-    String fnm = mkFFIFilename(scriptFile);
+Void foreignHeader(fn) 
+String fn; {
+    String fnm = mkFFIFilename(fn);
     FILE* f = fopen(fnm,"w");
     if (f == NULL) {
         ERRMSG(0) "Unable to create file '%s'", fnm
@@ -89,7 +88,8 @@ Void foreignHeader() {
     fprintf(out,"static HugsAPI4 *hugs = 0;\n");
 }
 
-Void foreignFooter(is,es)
+Void foreignFooter(fn,is,es)
+String fn;
 List is;
 List es; {
     List xs   = NIL;
@@ -167,7 +167,7 @@ List es; {
     fclose(out);
     out = NIL;
 
-    compileAndLink(scriptFile,ffiFlags);
+    compileAndLink(fn, ffiFlags);
 }
 
 static Void local foreignType(l,t)
