@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: storage.c,v $
- * $Revision: 1.55 $
- * $Date: 2002/10/24 22:17:11 $
+ * $Revision: 1.56 $
+ * $Date: 2002/11/06 15:50:10 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -2884,10 +2884,74 @@ List xs; {
 Name nameIsMember(t,ns)			/* Test if name with text t is a   */
 Text t;					/* member of list of names xs	   */
 List ns; {
-    for (; nonNull(ns); ns=tl(ns))
-	if (t==name(hd(ns)).text)
+    for (; nonNull(ns); ns=tl(ns)) {
+        if (t==name(hd(ns)).text) {
 	    return hd(ns);
+	}
+    }
     return NIL;
+}
+
+/* Locating entities in import/export lists */
+
+Name nameInIEList(nm,ns)		/* Test if Name is a member of */
+Name nm;				/* of import/export list xs.   */
+List ns; {
+    Text t = name(nm).text;
+    Bool isMethod = isClass(name(nm).parent);
+    Bool isDCon   = isTycon(name(nm).parent) && !findTycon(name(nm).text);
+
+    for (; nonNull(ns); ns=tl(ns)) {
+        if (isName(hd(ns)) && t==name(hd(ns)).text) {
+	    return hd(ns);
+	}
+        if ( (isMethod && isPair(hd(ns)) && isClass(fst(hd(ns)))) ||
+	     (isDCon   && isPair(hd(ns)) && isTycon(fst(hd(ns)))) ) {
+	  Name r;
+	  List subs = snd(hd(ns));
+	  if (subs == DOTDOT) {
+	    if (isClass(fst(hd(ns)))) {
+	      subs = cclass(fst(hd(ns))).members;
+	    } else if (isTycon(fst(hd(ns)))) {
+	      subs = tycon(fst(hd(ns))).defn;
+	    }
+	  }
+	  r = nameInIEList(nm,subs);
+	  if (r) return r;
+	}
+    }
+    return NIL;
+}
+
+
+
+Tycon tyconInIEList(t,ns)   	       /* Test if Tycon with text t is a  */
+Text t;				       /* member of import/export list xs */
+List ns; {
+  for (; nonNull(ns); ns=tl(ns)) {
+    if (isTycon(hd(ns)) && t==tycon(hd(ns)).text) {
+        return hd(ns);
+    } else if (isPair(hd(ns)) && isTycon(fst(hd(ns))) &&
+	       t == tycon(fst(hd(ns))).text) {
+        return fst(hd(ns));       
+    }
+  }
+  return NIL;
+}
+
+Class classInIEList(t,ns)   	       /* Test if Class with text t is a  */
+Text t;				       /* member of import/export list xs */
+List ns; {
+  for (; nonNull(ns); ns=tl(ns)) {
+    if (isClass(hd(ns)) && t==cclass(hd(ns)).text) {
+        return hd(ns);
+    }
+    if (isPair(hd(ns)) && isClass(fst(hd(ns))) &&
+	t == cclass(fst(hd(ns))).text) {
+      return fst(hd(ns));       
+    }
+  }
+  return NIL;
 }
 
 Cell intIsMember(n,xs)                 /* Test if integer n is member of   */

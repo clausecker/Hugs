@@ -8,8 +8,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: storage.h,v $
- * $Revision: 1.46 $
- * $Date: 2002/11/03 03:56:05 $
+ * $Revision: 1.47 $
+ * $Date: 2002/11/06 15:50:11 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -849,28 +849,31 @@ extern  Bool isBignum Args((Cell));
 #define hd(c)	     fst(c)
 #define tl(c)	     snd(c)
 
-extern	Int	     length	  Args((List));
-extern	List	     appendOnto   Args((List,List));	/* destructive	   */
-extern	List	     dupOnto      Args((List,List));
-extern  List	     dupList	  Args((List));
-extern  List	     dupUpto	  Args((List,Cell));
-extern	List	     revOnto	  Args((List, List));	/* destructive	   */
+extern	Int	     length	   Args((List));
+extern	List	     appendOnto    Args((List,List));	/* destructive	   */
+extern	List	     dupOnto       Args((List,List));
+extern  List	     dupList	   Args((List));
+extern  List	     dupUpto	   Args((List,Cell));
+extern	List	     revOnto	   Args((List, List));	/* destructive	   */
 #define rev(xs)      revOnto((xs),NIL)			/* destructive	   */
-extern	Cell	     cellIsMember Args((Cell,List));
-extern  Cell         cellAssoc    Args((Cell,List));
-extern  Cell         cellRevAssoc Args((Cell,List));
-extern	List	     concat	  Args((List));
-extern	List	     intersect	  Args((List,List));
-extern	Cell	     varIsMember  Args((Text,List));
-extern	Name	     nameIsMember Args((Text,List));
-extern  Cell	     intIsMember  Args((Int,List));
-extern	List	     replicate	  Args((Int,Cell));
-extern	List	     diffList	  Args((List,List));	/* destructive	   */
-extern  List         deleteCell   Args((List,Cell));	/* non-destructive */
-extern  List	     take	  Args((Int,List));	/* destructive	   */
-extern  List	     splitAt	  Args((Int,List));	/* non-destructive */
-extern  Cell	     nth	  Args((Int,List));
-extern  List	     removeCell	  Args((Cell,List));	/* destructive	   */
+extern	Cell	     cellIsMember  Args((Cell,List));
+extern  Cell         cellAssoc     Args((Cell,List));
+extern  Cell         cellRevAssoc  Args((Cell,List));
+extern	List	     concat	   Args((List));
+extern	List	     intersect	   Args((List,List));
+extern	Cell	     varIsMember   Args((Text,List));
+extern	Name	     nameIsMember  Args((Text,List));
+extern	Name	     nameInIEList  Args((Name,List));
+extern	Tycon	     tyconInIEList Args((Text,List));
+extern	Class	     classInIEList Args((Text,List));
+extern  Cell	     intIsMember   Args((Int,List));
+extern	List	     replicate	   Args((Int,Cell));
+extern	List	     diffList	   Args((List,List));	/* destructive	   */
+extern  List         deleteCell    Args((List,Cell));	/* non-destructive */
+extern  List	     take	   Args((Int,List));	/* destructive	   */
+extern  List	     splitAt	   Args((Int,List));	/* non-destructive */
+extern  Cell	     nth	   Args((Int,List));
+extern  List	     removeCell	   Args((Cell,List));	/* destructive	   */
 
 /* The following macros provide `inline expansion' of some common ways of
  * traversing, using and modifying lists:
