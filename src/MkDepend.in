@@ -1,6 +1,6 @@
 hugs$(OBJ): hugs.c prelude.h config.h platform.h options.h storage.h HsFFI.h \
   command.h connect.h errors.h script.h opts.h strutil.h evaluator.h \
-  machdep.h output.h module.h
+  machdep.h output.h module.h timer.c
 runhugs$(OBJ): runhugs.c prelude.h config.h platform.h options.h storage.h \
   HsFFI.h connect.h machdep.h observe.h builtin.h evaluator.h errors.h \
   server.h HugsAPI.h
@@ -14,7 +14,7 @@ observe$(OBJ): observe.c prelude.h config.h platform.h options.h storage.h \
   observe.h
 builtin$(OBJ): builtin.c prelude.h config.h platform.h options.h storage.h \
   HsFFI.h connect.h errors.h machdep.h char.h builtin.h bignums.c \
-  printer.c iomonad.c timeprim.c dirprim.c array.c
+  printer.c iomonad.c timeprim.c dirprim.c interns.c array.c
 char$(OBJ): char.c prelude.h config.h platform.h options.h storage.h HsFFI.h \
   connect.h errors.h char.h unitable.c
 compiler$(OBJ): compiler.c prelude.h config.h platform.h options.h storage.h \

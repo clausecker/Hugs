@@ -241,8 +241,11 @@ parser.c	: parser.y
 
 HUGS_MAKEFILES = Makefile dotnet/Makefile msc/Makefile winhugs/Makefile
 
+# optional definitions that govern include files
+EXTRA_DEFINES = -DINTERNAL_PRIMS -DUNICODE_CHARS -DWANT_TIMER
+
 depend: $(SOURCES) parser.c
-	gcc -MM $(CFILES) | sed 's/\.o:/$$(OBJ):/' >TMP
+	gcc -MM $(EXTRA_DEFINES) $(CFILES) | sed 's/\.o:/$$(OBJ):/' >TMP
 	if cmp -s TMP MkDepend.in; then : ; else \
 		$(CP) TMP MkDepend.in; \
 		for mfile in $(HUGS_MAKEFILES);\
