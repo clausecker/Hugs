@@ -12,8 +12,8 @@
  * included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.6 $
- * $Date: 1999/10/26 05:47:04 $
+ * $Revision: 1.7 $
+ * $Date: 1999/11/16 22:22:38 $
  * ------------------------------------------------------------------------*/
 
 #ifdef HAVE_SIGNAL_H
@@ -273,7 +273,7 @@ static String local hugsdir() {     /* directory containing lib/Prelude.hs */
 	}
     }
     return dir;
-#elif HAVE_GETMODULEFILENAME && !DOS
+#elif HAVE_GETMODULEFILENAME && !DOS && !__CYGWIN32__
     /* On Windows, we can find the binary we're running and it's
      * conventional to put the libraries in the same place.
      */
