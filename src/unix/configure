@@ -3715,11 +3715,6 @@ if eval "test \"`echo '$ac_cv_flag_'function_dlopen`\" = yes"; then
   echo "$as_me:$LINENO: result: yes" >&5
 echo "${ECHO_T}yes" >&6
   LIBS=" $LIBS"
-    ac_tr_lib=HAVE_LIB`echo dl | tr 'abcdefghijklmnopqrstuvwxyz' 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'`
-  cat >>confdefs.h <<_ACEOF
-#define $ac_tr_lib 1
-_ACEOF
-
 
 else
   echo "$as_me:$LINENO: result: no" >&5
@@ -3733,7 +3728,7 @@ else
 ac_save_LIBS="$LIBS"
 LIBS="-ldl";
 cat > conftest.$ac_ext <<EOF
-#line 3736 "configure"
+#line 3731 "configure"
 #include "confdefs.h"
 main() { extern char dlopen(); dlopen();; exit(0); }
 int t() { return 0; }
@@ -3788,7 +3783,7 @@ else
 ac_save_LIBS="$LIBS"
 LIBS="";
 cat > conftest.$ac_ext <<EOF
-#line 3791 "configure"
+#line 3786 "configure"
 #include "confdefs.h"
 main() { extern char shl_load(); shl_load();; exit(0); }
 int t() { return 0; }
@@ -3818,11 +3813,6 @@ if eval "test \"`echo '$ac_cv_flag_'function_shl_load`\" = yes"; then
   echo "$as_me:$LINENO: result: yes" >&5
 echo "${ECHO_T}yes" >&6
   LIBS=" $LIBS"
-    ac_tr_lib=HAVE_LIB`echo dld | tr 'abcdefghijklmnopqrstuvwxyz' 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'`
-  cat >>confdefs.h <<_ACEOF
-#define $ac_tr_lib 1
-_ACEOF
-
 
 else
   echo "$as_me:$LINENO: result: no" >&5
@@ -3836,7 +3826,7 @@ else
 ac_save_LIBS="$LIBS"
 LIBS="-ldld";
 cat > conftest.$ac_ext <<EOF
-#line 3839 "configure"
+#line 3829 "configure"
 #include "confdefs.h"
 main() { extern char shl_load(); shl_load();; exit(0); }
 int t() { return 0; }
@@ -3891,7 +3881,7 @@ else
 ac_save_LIBS="$LIBS"
 LIBS="";
 cat > conftest.$ac_ext <<EOF
-#line 3894 "configure"
+#line 3884 "configure"
 #include "confdefs.h"
 main() { extern char atan(); atan();; exit(0); }
 int t() { return 0; }
@@ -3921,11 +3911,6 @@ if eval "test \"`echo '$ac_cv_flag_'function_atan`\" = yes"; then
   echo "$as_me:$LINENO: result: yes" >&5
 echo "${ECHO_T}yes" >&6
   LIBS=" $LIBS"
-    ac_tr_lib=HAVE_LIB`echo m | tr 'abcdefghijklmnopqrstuvwxyz' 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'`
-  cat >>confdefs.h <<_ACEOF
-#define $ac_tr_lib 1
-_ACEOF
-
 
 else
   echo "$as_me:$LINENO: result: no" >&5
@@ -3939,7 +3924,7 @@ else
 ac_save_LIBS="$LIBS"
 LIBS="-lm";
 cat > conftest.$ac_ext <<EOF
-#line 3942 "configure"
+#line 3927 "configure"
 #include "confdefs.h"
 main() { extern char atan(); atan();; exit(0); }
 int t() { return 0; }
@@ -18977,7 +18962,7 @@ unset fptools_check_cconst_result
 ac_save_LIBS="$LIBS"
 LIBS=;
 cat > conftest.$ac_ext <<EOF
-#line 18980 "configure"
+#line 18965 "configure"
 #include "confdefs.h"
 
 #if HAVE_WINDOWS_H
@@ -19018,7 +19003,7 @@ fi
 ac_save_LIBS="$LIBS"
 LIBS=;
 cat > conftest.$ac_ext <<EOF
-#line 19021 "configure"
+#line 19006 "configure"
 #include "confdefs.h"
 
 #if HAVE_WINDOWS_H

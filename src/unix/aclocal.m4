@@ -87,11 +87,7 @@ dnl AC_CHECK_LIB_NOWARN(LIBRARY, FUNCTION)
 
 AC_DEFUN(AC_CHECK_LIB_NOWARN,
 [AC_CHECK_FLAG_NOWARN([function_$2],[],[extern char $2(); $2();],
-[changequote(, )dnl
-  ac_tr_lib=HAVE_LIB`echo $1 | tr 'abcdefghijklmnopqrstuvwxyz' 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'`
- changequote([, ])dnl
- AC_DEFINE_UNQUOTED($ac_tr_lib)
-],
+,dnl The function is present without needing the library
 [AC_CHECK_FLAG_NOWARN([library_$1],[-l$1],[extern char $2(); $2();],
 [changequote(, )dnl
   ac_tr_lib=HAVE_LIB`echo $1 | tr 'abcdefghijklmnopqrstuvwxyz' 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'`
