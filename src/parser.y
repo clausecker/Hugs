@@ -11,8 +11,8 @@
  * included in the distribution.
  *
  * $RCSfile: parser.y,v $
- * $Revision: 1.27 $
- * $Date: 2001/12/13 18:58:36 $
+ * $Revision: 1.28 $
+ * $Date: 2002/03/19 18:37:48 $
  * ------------------------------------------------------------------------*/
 
 %{
@@ -249,7 +249,7 @@ imports1  : imports1 ',' import		{$$ = gc3(cons($3,$1));}
 	  | import			{$$ = gc1(singleton($1));}
 	  ;
 import	  : var				{$$ = $1;}
-	  | CONID			{$$ = $1;}
+	  | CONID			{$$ = gc1(pair($1,NIL));}
 	  | CONID '(' UPTO ')'		{$$ = gc4(pair($1,DOTDOT));}
 	  | CONID '(' names ')'		{$$ = gc4(pair($1,$3));}
 	  ;
