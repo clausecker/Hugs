@@ -53,7 +53,6 @@ static struct primitive dirPrimTable[] = {
 
 static struct primInfo dirPrims = { dirControl, dirPrimTable, 0 };
 
-#define IS_FLAG_SET(x,flg) ((x & flg) == flg)
 #define ToBool(v) ( (v) ? nameTrue : nameFalse)
 
 #ifdef _MSC_VER
@@ -76,11 +75,11 @@ static struct primInfo dirPrims = { dirControl, dirPrimTable, 0 };
  * (and feed back the tweak you make.)
  */
 #if !defined(S_ISDIR)
-#define S_ISDIR(st_mode)  IS_FLAG_SET(st_mode,S_IFDIR)
+#define S_ISDIR(st_mode)  ((st_mode & S_IFMT) == S_IFDIR)
 #endif
 
 #if !defined(S_ISREG)
-#define S_ISREG(st_mode)  IS_FLAG_SET(st_mode,S_IFREG)
+#define S_ISREG(st_mode)  ((st_mode & S_IFMT) == S_IFREG)
 #endif
 
 /* --------------------------------------------------------------------------
