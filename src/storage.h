@@ -8,8 +8,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: storage.h,v $
- * $Revision: 1.48 $
- * $Date: 2003/01/22 19:15:23 $
+ * $Revision: 1.49 $
+ * $Date: 2003/02/01 06:36:51 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -781,6 +781,7 @@ extern Name   findQualFun   Args((Text,Text));
 extern Void   addPrim	    Args((Int,Name,String,Module,Type));
 extern Name   addPrimCfun   Args((Text,Int,Int,Cell));
 extern Int    sfunPos	    Args((Name,Name));
+extern Bool   setOldDLLFlag Args((Bool));
 
 /* --------------------------------------------------------------------------
  * Type class values:

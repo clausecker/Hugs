@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.135 $
- * $Date: 2003/01/26 01:03:58 $
+ * $Revision: 1.136 $
+ * $Date: 2003/02/01 06:36:51 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1016,7 +1016,7 @@ Type  ty; {				/* (All types using ks)		    */
  * Expanding out all type synonyms and newtypes in a type expression:
  * ------------------------------------------------------------------------*/
 
-Type fullerExpand(t)			/* find full expansion of type exp */
+static Type local fullerExpand(t)	/* find full expansion of type exp */
 Type t; {				/* assuming that all relevant type */
     Cell h = t;				/* synonym defns of lower rank have*/
     Int  n = 0;				/* already been fully expanded but */
@@ -1053,6 +1053,15 @@ Type t; {				/* assuming that all relevant type */
         t = fullerExpand(t); /* chase chains of newtypes */
     }
     return t;
+}
+
+Bool hasIOResultType(ty) /* return TRUE if FFI/primitive type sig is an IO action. */
+Type ty; {
+  Type t = fullerExpand(ty);
+  while (getHead(t) == typeArrow && argCount == 2) {
+    t = fullerExpand(arg(t));
+  }
+  return (getHead(t) == typeIO && argCount == 1);
 }
 
 static Type local instantiateNewtype(c,env) /* instantiate type using      */
@@ -7135,7 +7144,7 @@ Void checkDefns() {			/* Top level static analysis	   */
             foreignFooter(scriptFile, module(thisModule).text,
 			  foreignImports, foreignExports);
         }
-        needPrims(4);
+        needPrims(5);
         mapProc(linkForeign,foreignImports);
         mapProc(linkForeign,foreignExports);
 

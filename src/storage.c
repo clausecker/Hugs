@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: storage.c,v $
- * $Revision: 1.60 $
- * $Date: 2003/01/31 15:39:45 $
+ * $Revision: 1.61 $
+ * $Date: 2003/02/01 06:36:50 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -748,6 +748,8 @@ Text v; {
 
 struct primInfoDef {
     Module              prim_module; /* module that defined prim-table */
+    Bool                prim_oldIO;  /* backwards compat: does the DLL's primop
+					assume old IO rep? */
     void*               prim_dll;    /* if in a dll, handle to it. */
     struct primInfo*    p_info;
     struct primInfoDef* nextPrimInfoDef; /* subsumes nextPrimInfo (ToDo: nuke it) */
@@ -757,6 +759,16 @@ static Void local freePrimInfo Args((struct primInfoDef*));
 
 static struct primInfoDef *firstPrimInfo = 0; /* queue of primInfo structures */
 static struct primInfoDef *lastPrimInfo  = 0;
+
+/* Nasty global flag - set prior to hoisting in a DLL */
+static Bool oldIO_dll = FALSE;
+
+Bool setOldDLLFlag(flg)
+Bool flg; {
+  Bool res = oldIO_dll;
+  oldIO_dll = flg;
+  return res;
+}
 
 Void registerPrims(info)                /* register new primitives         */
 struct primInfo *info; {
@@ -769,6 +781,7 @@ struct primInfo *info; {
        return;
     } else {
        new_entry->prim_module = currentModule;
+       new_entry->prim_oldIO  = oldIO_dll;
        new_entry->p_info      = info;
        new_entry->prim_dll    = NULL;
     }
@@ -859,10 +872,18 @@ Type   ty; {
 	   for (; prims[i].ref; ++i)
 	       if (strcmp(s,prims[i].ref)==0) {
 		   name(n).arity   = prims[i].arity;
-#if 0
-		   /* I think this is dead code - ADR */
-		   name(n).number  = i;
-#endif
+		   if ( info_def->prim_oldIO && 
+		        hasIOResultType(ty) ) {
+		       /* The primitive has IO type and its impl assumes the old
+		        * IO rep which took a failure and success continuation. 
+			* The failure continuation is assumed unused within the
+			* DLL's primitives (reasonable assumption), so interoperating
+			* with the new representation is simply a case of adjusting
+			* the arity.
+			*/
+		       name(n).arity--;
+		   }
+		   name(n).number  = EXECNAME;
 		   name(n).primDef = prims[i].imp;
 		   return;
 	       }

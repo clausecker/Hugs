@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: connect.h,v $
- * $Revision: 1.64 $
- * $Date: 2003/01/31 17:08:48 $
+ * $Revision: 1.65 $
+ * $Date: 2003/02/01 06:36:54 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -332,6 +332,7 @@ extern  Void   ambigError	Args((Int,String,Cell,Type));
 extern  Void   classDefn	Args((Int,Cell,List,List));
 extern  Void   instDefn		Args((Int,Cell,Cell));
 extern  Void   addTupInst	Args((Class,Int));
+extern  Bool   hasIOResultType  Args((Type));
 #if EVAL_INSTANCES
 extern  Void   addEvalInst	Args((Int,Cell,Int,List));
 #endif

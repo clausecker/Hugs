@@ -11,8 +11,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.74 $
- * $Date: 2003/01/12 18:34:52 $
+ * $Revision: 1.75 $
+ * $Date: 2003/02/01 06:36:52 $
  * ------------------------------------------------------------------------*/
 #include <math.h>
 
@@ -2088,8 +2088,8 @@ String file; {
 #  define INIT_MODULE_FUN "initModule"
 #endif
 
-Void needPrims(version)    /* Load dll containing prims for current module */
-Int version; {
+Void needPrims(version)   /* Load dll containing prims for current module */
+Int  version; {
     if (havePlugin(textToStr(module(currentModule).text))) {
 	return;
     }
@@ -2101,8 +2101,10 @@ Int version; {
 	    void* dll = getDLL(mkDLLFilename(scriptFile));
 	    initModule = (InitModuleFun1)getDLLSymbol(dll,INIT_MODULE_FUN);
 	    if (initModule) {
+	        Bool flg = setOldDLLFlag(TRUE);
 		(*initModule)(hugsAPI1()); 
 		setScriptPrims(setPrimInfoDll(dll));
+		setOldDLLFlag(flg);
 		return;
 	    }
 	    break;
@@ -2113,8 +2115,10 @@ Int version; {
 	    void* dll = getDLL(mkDLLFilename(scriptFile));
 	    initModule = (InitModuleFun2)getDLLSymbol(dll,INIT_MODULE_FUN);
 	    if (initModule) {
+	        Bool flg = setOldDLLFlag(TRUE);
 		(*initModule)(hugsAPI2()); 
 		setScriptPrims(setPrimInfoDll(dll));
+		setOldDLLFlag(flg);
 		return;
 	    }
 	    break;
@@ -2125,20 +2129,25 @@ Int version; {
 	    void* dll = getDLL(mkDLLFilename(scriptFile));
 	    initModule = (InitModuleFun3)getDLLSymbol(dll,INIT_MODULE_FUN);
 	    if (initModule) {
+	        Bool flg = setOldDLLFlag(TRUE);
 		(*initModule)(hugsAPI3()); 
 		setScriptPrims(setPrimInfoDll(dll));
+		setOldDLLFlag(flg);
 		return;
 	    }
 	    break;
 	}
     case 4 : 
+    case 5 : 
 	{ 
 	    InitModuleFun4 initModule;
 	    void* dll = getDLL(mkDLLFilename(scriptFile));
 	    initModule = (InitModuleFun4)getDLLSymbol(dll,INIT_MODULE_FUN);
 	    if (initModule) {
+	        Bool flg = setOldDLLFlag((version == 4));
 		(*initModule)(hugsAPI4()); 
 		setScriptPrims(setPrimInfoDll(dll));
+		setOldDLLFlag(flg);
 		return;
 	    }
 	    break;
