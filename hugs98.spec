@@ -11,9 +11,8 @@ License:      BSDish
 Group:        Development/Languages/Haskell
 Packager:     jeff@galois.com
 URL:          http://www.haskell.org/hugs
-Source0:      %{name}-%{version}.tar.gz
+Source:       %{name}-%{version}.tar.gz
 BuildRoot:    %{_tmppath}/%{name}-buildroot
-Prefix:       %{_prefix}
 Provides:     haskell
 Requires:     readline
 
@@ -21,20 +20,18 @@ Requires:     readline
 Hugs 98 is an interpreter for Haskell, a lazy functional programming language.
 
 %prep
-%setup -n %{name}-%{version}
+%setup -q
 
 %build
-cd src/unix
-./configure --prefix=%{prefix} --mandir=%{_mandir} --with-fptools=../../fptools ${EXTRA_CONFIGURE_OPTS}
-cd ..
-make
-( cd ../docs/users_guide && make && gzip -f -9 users_guide.{dvi,pdf,ps} )
+( cd src/unix
+  ./configure --prefix=%{_prefix} --mandir=%{_mandir} ${EXTRA_CONFIGURE_OPTS} )
+make -C src
+make -C docs/users_guide html
 
 %install
-cd src
-make DESTDIR=${RPM_BUILD_ROOT} install_rpm
-gzip -f -9 ${RPM_BUILD_ROOT}%{_mandir}/man1/hugs.1
-gzip -f -9 ${RPM_BUILD_ROOT}%{_mandir}/man1/hugs-package.1
+rm -rf $RPM_BUILD_ROOT
+
+make -C src DESTDIR=${RPM_BUILD_ROOT} install_rpm
 
 %files
 %defattr(-,root,root)
@@ -49,9 +46,6 @@ gzip -f -9 ${RPM_BUILD_ROOT}%{_mandir}/man1/hugs-package.1
 %doc docs/server.tex
 %doc docs/winhugs-notes.txt
 %doc docs/users_guide/users_guide
-%doc docs/users_guide/users_guide.dvi.gz
-%doc docs/users_guide/users_guide.pdf.gz
-%doc docs/users_guide/users_guide.ps.gz
 %{_mandir}/man1/hugs.1.gz
 %{_mandir}/man1/hugs-package.1.gz
 %{prefix}/bin/ffihugs
