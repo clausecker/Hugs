@@ -6,9 +6,9 @@ Integrated by Reuben Thomas (rrt@sc3d.org), so blame him if it doesn't work.
 
 
 Hugs for EPOC should be built with the Symbian SDK. This directory contains
-all the necessary files; after unpacking the source, copy config.h and
-options.h into src/ and then, after copying the hugs98 directory into
-C:\epoc_code, an incantation of the form
+all the necessary files; after unpacking the source, copy config.h,
+options.h and hugs.mmp into src/ and then, after copying the hugs98
+directory into C:\epoc_code, an incantation of the form
 
 makmake hugs.mmp {marm,winc}
 
@@ -30,7 +30,3 @@ License from the root of the hugs tree for this).
 Good luck, and please pester Reuben or Glenn with questions about building,
 and, in the first instance, for bugs (which are likely to be ours rather
 than Hugs's).
-
-In future the new version of Hugs, STG Hugs, may be ported to EPOC instead
-of Classic Hugs, but we're waiting for it to be stable so we can see how
-well it performs and how memory efficient it is.
