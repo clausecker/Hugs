@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.33 $
- * $Date: 2001/03/19 17:51:53 $
+ * $Revision: 1.34 $
+ * $Date: 2001/04/07 18:28:44 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -2893,11 +2893,11 @@ Inst in; {
 	for (; isAp(t); t=fun(t)) {
 	    if (!isVar(arg(t))) {
 		ERRMSG(line)
-		   "syntax error in instance head (variable expected)"
+		   "Syntax error in instance head (variable expected)"
 		EEND;
 	    }
 	    if (varIsMember(textOf(arg(t)),tvs)) {
-		ERRMSG(line) "repeated type variable \"%s\" in instance head",
+		ERRMSG(line) "Repeated type variable \"%s\" in instance head",
 			     textToStr(textOf(arg(t)))
 		EEND;
 	    }
@@ -2907,7 +2907,7 @@ Inst in; {
 #endif
 	if (isVar(t)) {
 	    ERRMSG(line)
-		"syntax error in instance head (constructor expected)"
+		"Syntax error in instance head (constructor expected)"
 	    EEND;
 	}
     }
@@ -6584,7 +6584,7 @@ List qs; {
 				enterBtyvs();
 				fst(snd(q)) = bindPat(l,fst(snd(q)));
 				if (nonNull(intersect(gatheredVars,patVars))) {
-				    ERRMSG(l) "repeated pattern variable(s) in parallel comprehension"
+				    ERRMSG(l) "Repeated pattern variable(s) in parallel comprehension"
 				    EEND;
 				}
 				gatheredVars = revOnto(patVars,gatheredVars);
@@ -6599,7 +6599,7 @@ List qs; {
 			    snd(q)      = dependencyAnal(snd(q));
 			    hd(depends) = snd(q);
 			    if (nonNull(intersectBinds(gatheredBinds,hd(bindings)))) {
-				ERRMSG(l) "repeated binding(s) in parallel comprehension"
+				ERRMSG(l) "Repeated binding(s) in parallel comprehension"
 				EEND;
 			    }
 			    gatheredBinds = dupOnto(hd(bindings),gatheredBinds);
