@@ -11,8 +11,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.119 $
- * $Date: 2004/10/07 01:49:16 $
+ * $Revision: 1.120 $
+ * $Date: 2004/10/07 10:59:44 $
  * ------------------------------------------------------------------------*/
 #include "prelude.h"
 #include "storage.h"
@@ -1128,13 +1128,6 @@ Void normalTerminal() {                 /* restore terminal initial state  */
 	setTerminal(fileno(stdin), originalSettings);
 }
 
-/* We used to do evaluation with the terminal in raw and noecho mode,
- * but now we just leave it alone, at least on Unix-like systems.
- * When all platforms do this, this function can go away.
- */
-Void noechoTerminal() {
-}
-
 Bool getEchoTerminal(Int fd) {
     TermParams settings;
 
@@ -1206,9 +1199,6 @@ Int getTerminalWidth() {
 Void normalTerminal() {
 }
 
-Void noechoTerminal() {
-}
-
 Bool getEchoTerminal(Int fd) {
     return TRUE;
 }
@@ -1225,8 +1215,6 @@ Void setBuffTerminal(Int fd, Bool buffered) {
 
 #else /* no terminal driver - eg DOS, RISCOS */
 
-static Bool terminalEchoReqd = TRUE;
-
 Int getTerminalWidth() {
 #if RISCOS
     int dummy, width;
@@ -1238,22 +1226,17 @@ Int getTerminalWidth() {
 }
 
 Void normalTerminal() {                 /* restore terminal initial state  */
-    terminalEchoReqd = TRUE;
-}
-
-Void noechoTerminal() {                 /* turn terminal echo on/off       */
-    terminalEchoReqd = FALSE;
 }
 
 Bool getEchoTerminal(Int fd) {
-    return fd!=0 || terminalEchoReqd;
+    return fd!=0;
 }
 
 Void setEchoTerminal(Int fd, Bool echo) {
 }
 
 Bool getBuffTerminal(Int fd) {
-    return fd!=0 || terminalEchoReqd;
+    return fd!=0;
 }
 
 Void setBuffTerminal(Int fd, Bool buffered) {

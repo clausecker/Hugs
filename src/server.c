@@ -11,8 +11,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: server.c,v $
- * $Revision: 1.42 $
- * $Date: 2003/11/19 21:49:48 $
+ * $Revision: 1.43 $
+ * $Date: 2004/10/07 10:59:46 $
  * ------------------------------------------------------------------------*/
 #include "prelude.h"
 #include "storage.h"
@@ -519,9 +519,7 @@ Void startEval()
     numReductions = 0;
     numGcs        = 0;
     printing      = TRUE;
-    noechoTerminal();
     consGC = FALSE;
-    noechoTerminal();
 }
 
 static void evalError(Cell e)

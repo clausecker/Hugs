@@ -65,7 +65,6 @@ String s;{
 				break;
 	}
     } while (cmd!=BRK_CONTINUE);
-    noechoTerminal();
 }
 #endif
 

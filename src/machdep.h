@@ -66,7 +66,6 @@ extern Bool startEdit   Args((Int,String));
 extern  Int    shellEsc		Args((String,Bool,Bool));
 extern  Int    getTerminalWidth Args((Void));
 extern  Void   normalTerminal	Args((Void));
-extern  Void   noechoTerminal	Args((Void));	/* obsolescent */
 extern  Bool   getEchoTerminal	Args((Int));
 extern  Void   setEchoTerminal	Args((Int,Bool));
 extern  Bool   getBuffTerminal	Args((Int));

@@ -157,9 +157,6 @@ Module m; {        /* evaluate expr and print value    */
     clearAllBreak();
     clearObserve();
 #endif
-#if 1 /* Arguably not Haskell 1.4 compliant */
-    noechoTerminal();
-#endif
     consGC = FALSE;
     if (nonNull(type) && addType) {
 	onto(NIL);
