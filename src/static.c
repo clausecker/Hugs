@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.112 $
- * $Date: 2002/10/23 22:19:35 $
+ * $Revision: 1.113 $
+ * $Date: 2002/10/24 03:33:44 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -781,7 +781,7 @@ Pair importSpec; {
   checkImportList(TRUE,importSpec);
 }
 
-static List local addEntityPair(e,is) /* For pair (e,ls) add ls to to the 'is' */
+static List local addEntityPair(e,is) /* For pair (e,ls) add ls to the 'is' */
                                       /* import/export list.                   */
 Cell e;
 List is; {
@@ -6865,7 +6865,7 @@ List qs; {
 		if ( checkIBindings(l,snd(q)) ) {
 		    /* It is unclear what the meaning of this is (by people in-the-know),
 		     * so outlaw it for now. */
-		   ERRMSG(l) "Currently illegal to to bind implicit parameters using comprehension/do-level lets"
+		   ERRMSG(l) "Currently illegal to bind implicit parameters using comprehension/do-level lets"
 	   	   EEND;
 		} else {
 #endif
