@@ -14,6 +14,7 @@ module Storable
 	     poke)           -- :: Ptr a        -> a -> IO ()
         ) where
 
+import Prelude
 import Ptr
 import HugsStorable
 

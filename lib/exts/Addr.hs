@@ -15,6 +15,7 @@ module Addr
 	, addrToFunPtr     -- :: Addr -> FunPtr a
 	) where
 
+import Prelude
 -- data Addr -- in Prelude
 
 instance Eq   Addr where (==)      = primEqAddr

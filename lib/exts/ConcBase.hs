@@ -46,6 +46,7 @@ module ConcBase(
         yield
 	) where
 
+import Prelude
 import IO(IOMode, Handle, ioeGetErrorString) -- for binary file ops
 import IOExts
 

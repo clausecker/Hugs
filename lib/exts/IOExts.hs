@@ -31,6 +31,7 @@ module IOExts
 	, unsafePtrToInt
 	) where
 
+import Prelude
 import IO( ioeGetErrorString, IOMode(..), Handle, openFile )
 import Array
 import IORef

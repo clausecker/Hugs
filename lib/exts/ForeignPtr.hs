@@ -10,6 +10,7 @@ module ForeignPtr
         ) 
 	where
 
+import Prelude
 import Ptr
 import Dynamic
 

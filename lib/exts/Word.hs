@@ -18,6 +18,8 @@ module Word
 	, word32ToInt    -- :: Word32 -> Int
 	, intToWord32    -- :: Int    -> Word32
 	) where
+
+import Prelude
 import Bits
 import Int
 import Numeric ( readDec, showInt )

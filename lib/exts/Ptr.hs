@@ -18,6 +18,8 @@ module Ptr
 	-- instance Show (FunPtr a)
 	) where
 
+import Prelude
+
 -- data Ptr a -- in Prelude
 
 instance Eq   (Ptr a) where (==)      = primEqPtr

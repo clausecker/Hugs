@@ -1,5 +1,6 @@
 module ForeignObj( ForeignObj, module ForeignObj ) where
 
+import Prelude
 -- data ForeignObj -- in Prelude
 
 -- recently renamed

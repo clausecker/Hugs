@@ -40,6 +40,7 @@ module ST
 import Array(Array,Ix(index),bounds,assocs)
 import IOExts(unsafePerformIO)
 import Monad   
+import Ix
 
 -----------------------------------------------------------------------------
 

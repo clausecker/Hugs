@@ -1,5 +1,6 @@
 module StablePtr( StablePtr, module StablePtr ) where
 
+import Prelude
 -- data StablePtr a -- in Prelude
 
 -- recently renamed
