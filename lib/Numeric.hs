@@ -4,29 +4,47 @@
 -- Suitable for use with Hugs 98
 -----------------------------------------------------------------------------
 
-module Numeric(fromRat,
-               showSigned, showInt,
-               readSigned, readInt,
-               readDec, readOct, readHex, 
-               floatToDigits,
-               showEFloat, showFFloat, showGFloat, showFloat, 
-               readFloat, lexDigits) where
+module Numeric
+	( fromRat 	-- :: (RealFloat a) => Rational -> a
+	, showSigned	-- :: (Real a) => (a -> ShowS) -> Int -> a -> ShowS	
+	, readSigned	-- :: (Real a) => ReadS a -> ReadS a
+	, showInt	-- :: (Integral a) => a -> ShowS
+	, readInt	-- :: (Integral a) => a -> (Char -> Bool) -> (Char -> Int) -> ReadS a
+	, readDec	-- :: (Integral a) => ReadS a
+	, readOct	-- :: (Integral a) => ReadS a
+	, readHex	-- :: (Integral a) => ReadS a
+
+	, showEFloat	-- :: (RealFloat a) => Maybe Int -> a -> ShowS
+	, showFFloat	-- :: (RealFloat a) => Maybe Int -> a -> ShowS
+	, showGFloat	-- :: (RealFloat a) => Maybe Int -> a -> ShowS
+	, showFloat	-- :: (RealFloat a) => a -> ShowS
+	   -- not defined 
+	, readFloat	-- :: (RealFloat a) => ReadS a
+
+	, floatToDigits -- :: (RealFloat a) => Integer -> a -> ([Int], Int)
+	, lexDigits	-- :: ReadS String
+	) where
 
 -- Many of these functions have been moved to the Prelude.
 -- The RealFloat instances in the Prelude do not use this floating
 -- point format routine.
+--
+-- Reversed the move to avoid polluting Prelude export list with
+-- non-standard functions.  -- sof 11/01.
 
-import Char
-import Array
+import Char   ( isDigit, isOctDigit, isHexDigit
+	      , digitToInt, intToDigit )
+import Ratio  ( (%), numerator, denominator )
+import Array  ( (!), Array, array )
 
 -- This converts a rational to a floating.  This should be used in the
 -- Fractional instances of Float and Double.
 
 fromRat :: (RealFloat a) => Rational -> a
-fromRat x = 
-    if x == 0 then encodeFloat 0 0              -- Handle exceptional cases
-    else if x < 0 then - fromRat' (-x)          -- first.
-    else fromRat' x
+fromRat x 
+ | x == 0    = encodeFloat 0 0    -- Handle exceptional cases
+ | x < 0     = -fromRat' (-x)     -- first.
+ | otherwise = fromRat' x
 
 -- Conversion process:
 -- Scale the rational number by the RealFloat base until
@@ -52,15 +70,11 @@ fromRat' x = r
 -- Scale x until xMin <= x < xMax, or p (the exponent) <= minExp.
 scaleRat :: Rational -> Int -> Rational -> Rational -> 
              Int -> Rational -> (Rational, Int)
-scaleRat b minExp xMin xMax p x =
-    if p <= minExp then
-        (x, p)
-    else if x >= xMax then
-        scaleRat b minExp xMin xMax (p+1) (x/b)
-    else if x < xMin  then
-        scaleRat b minExp xMin xMax (p-1) (x*b)
-    else
-        (x, p)
+scaleRat b minExp xMin xMax p x
+ | p <= minExp = (x,p)
+ | x >= xMax   = scaleRat b minExp xMin xMax (p+1) (x/b)
+ | x <  xMin   = scaleRat b minExp xMin xMax (p-1) (x*b)
+ | otherwise   = (x, p)
 
 -- Exponentiation with a cache for the most common numbers.
 minExpt = 0::Int
@@ -92,6 +106,43 @@ integerLogBase b i =
 
 -- Misc utilities to show integers and floats 
 
+showSigned    :: Real a => (a -> ShowS) -> Int -> a -> ShowS
+showSigned showPos p x 
+ | x < 0 	= showParen (p > 6)
+		     	    (showChar '-' . showPos (-x))
+ | otherwise	= showPos x
+
+-- showInt is used for positive numbers only
+showInt    :: Integral a => a -> ShowS
+showInt n r | n < 0 = error "Numeric.showInt: can't show negative numbers"
+            | otherwise =
+              let (n',d) = quotRem n 10
+		  r'     = toEnum (fromEnum '0' + fromIntegral d) : r
+	      in  if n' == 0 then r' else showInt n' r'
+
+readSigned:: Real a => ReadS a -> ReadS a
+readSigned readPos = readParen False read'
+		     where read' r  = read'' r ++
+				      [(-x,t) | ("-",s) <- lex r,
+						(x,t)   <- read'' s]
+			   read'' r = [(n,s)  | (str,s) <- lex r,
+						(n,"")  <- readPos str]
+
+readInt :: Integral a => a -> (Char -> Bool) -> (Char -> Int) -> ReadS a
+readInt radix isDig digToInt s =
+    [(foldl1 (\n d -> n * radix + d) (map (fromIntegral . digToInt) ds), r)
+	| (ds,r) <- nonnull isDig s ]
+
+-- Unsigned readers for various bases
+readDec, readOct, readHex :: Integral a => ReadS a
+readDec = readInt 10 isDigit digitToInt
+readOct = readInt  8 isOctDigit digitToInt
+readHex = readInt 16 isHexDigit hex
+	  where hex d = fromEnum d -
+			(if isDigit d
+			   then fromEnum '0'
+			   else fromEnum (if isUpper d then 'A' else 'a') - 10)
+
 showEFloat     :: (RealFloat a) => Maybe Int -> a -> ShowS
 showFFloat     :: (RealFloat a) => Maybe Int -> a -> ShowS
 showGFloat     :: (RealFloat a) => Maybe Int -> a -> ShowS
@@ -107,16 +158,19 @@ showFloat      =  showGFloat Nothing
 data FFFormat = FFExponent | FFFixed | FFGeneric
 
 formatRealFloat :: (RealFloat a) => FFFormat -> Maybe Int -> a -> String
-formatRealFloat fmt decs x = s
+formatRealFloat fmt decs x 
+  | isNaN      x = "NaN"
+  | isInfinite x = if x < 0 then "-Infinity" else "Infinity"
+  | x < 0 || isNegativeZero x = '-' : doFmt fmt (floatToDigits (toInteger base) (-x))
+  | otherwise    = doFmt fmt (floatToDigits (toInteger base) x)
   where base = 10
-        s = if isNaN x then 
-                "NaN"
-            else if isInfinite x then 
-                if x < 0 then "-Infinity" else "Infinity"
-            else if x < 0 || isNegativeZero x then 
-                '-' : doFmt fmt (floatToDigits (toInteger base) (-x))
-            else 
-                doFmt fmt (floatToDigits (toInteger base) x)
+
+    	mk0 "" = "0"            -- Used to ensure we print 34.0, not 34.
+    	mk0 s  = s              -- and 0.34 not .34
+    
+    	mkdot0 "" = ""          -- Used to ensure we print 34, not 34.
+	mkdot0 s  = '.' : s
+
         doFmt fmt (is, e) =
             let ds = map intToDigit is
             in  case fmt of
@@ -127,13 +181,13 @@ formatRealFloat fmt decs x = s
                     case decs of
                     Nothing ->
                         case ds of
-                         ['0'] -> "0.0e0"
+			 []    -> "0.0e0"
                          [d]   -> d : ".0e" ++ show (e-1)
                          d:ds  -> d : '.' : ds ++ 'e':show (e-1)
                     Just dec ->
                         let dec' = max dec 1 in
                         case is of
-                         [0] -> '0':'.':take dec' (repeat '0') ++ "e0"
+                         [] -> '0':'.':take dec' (repeat '0') ++ "e0"
                          _ ->
                           let (ei, is') = roundTo base (dec'+1) is
                               d:ds = map intToDigit
@@ -141,31 +195,27 @@ formatRealFloat fmt decs x = s
                           in d:'.':ds  ++ "e" ++ show (e-1+ei)
                 FFFixed ->
                     case decs of
-                    Nothing ->
-                        let f 0 s ds = mk0 s ++ "." ++ mk0 ds
-                            f n s "" = f (n-1) (s++"0") ""
-                            f n s (d:ds) = f (n-1) (s++[d]) ds
-                            mk0 "" = "0"
-                            mk0 s = s
-                        in  f e "" ds
+                    Nothing 
+		     | e > 0 -> take e (ds ++ repeat '0')
+		     	        ++ mkdot0 (drop e ds)
+		     | otherwise -> '0' : mkdot0 (replicate (-e) '0' ++ ds)
                     Just dec ->
                         let dec' = max dec 0 in
                         if e >= 0 then
                             let (ei, is') = roundTo base (dec' + e) is
                                 (ls, rs) = splitAt (e+ei) (map intToDigit is')
-                            in  (if null ls then "0" else ls) ++ 
-                                (if null rs then "" else '.' : rs)
+                            in  mk0 ls ++ mkdot0 rs
                         else
                             let (ei, is') = roundTo base dec'
                                               (replicate (-e) 0 ++ is)
                                 d : ds = map intToDigit
                                             (if ei > 0 then is' else 0:is')
-                            in  d : '.' : ds
+                            in  d : mkdot0 ds
 
 roundTo :: Int -> Int -> [Int] -> (Int, [Int])
 roundTo base d is = case f d is of
-                (0, is) -> (0, is)
-                (1, is) -> (1, 1 : is)
+                v@(0, is) -> v
+                (1, is)   -> (1, 1 : is)
   where b2 = base `div` 2
         f n [] = (0, replicate n 0)
         f 0 (i:_) = (if i >= b2 then 1 else 0, [])
@@ -193,6 +243,8 @@ floatToDigits base x =
         minExp = minExp0 - p            -- the real minimum exponent
         -- Haskell requires that f be adjusted so denormalized numbers
         -- will have an impossibly low exponent.  Adjust for this.
+	f :: Integer
+	e :: Int
         (f, e) = let n = minExp - e0
                  in  if n > 0 then (f0 `div` (b^n), e0+n) else (f0, e0)
 
@@ -218,7 +270,7 @@ floatToDigits base x =
                         (p - 1 + e0) * 3 `div` 10
                     else
                         ceiling ((log (fromInteger (f+1)) + 
-                                 fromInt e * log (fromInteger b)) / 
+                                 fromIntegral e * log (fromInteger b)) / 
                                   log (fromInteger base))
                 fixup n =
                     if n >= 0 then
@@ -243,5 +295,12 @@ floatToDigits base x =
             else
                 let bk = expt base (-k)
                 in  gen [] (r * bk) s (mUp * bk) (mDn * bk)
-    in  (map toInt (reverse rds), k)
+    in  (map fromIntegral (reverse rds), k)
 
+-- duplicated from Prelude
+-- (to avoid non-standardly exporting 'lexDigits' from there).
+lexDigits        :: ReadS String 
+lexDigits        =  nonnull isDigit
+
+nonnull          :: (Char -> Bool) -> ReadS String
+nonnull p s      =  [(cs,t) | (cs@(_:_),t) <- [span p s]]
