@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: input.c,v $
- * $Revision: 1.19 $
- * $Date: 2001/01/08 21:43:06 $
+ * $Revision: 1.20 $
+ * $Date: 2001/01/17 23:30:36 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -314,7 +314,9 @@ String prompt; {                       /* standard in (i.e. console/kbd)   */
     c1          = ' ';
     column      = (-1);
     row         = 0;
+#if HERE_DOC
     hereState   = START;
+#endif
 
 #if USE_READLINE
     /* Paranoid freeing code supplied by Sverker Nilsson (sverker@opq.se) 

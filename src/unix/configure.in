@@ -2,8 +2,8 @@ dnl ################################################################
 dnl Process this file with autoconf to produce a configure script.
 dnl
 dnl $RCSfile: configure.in,v $
-dnl $Revision: 1.5 $
-dnl $Date: 2000/12/13 07:43:37 $
+dnl $Revision: 1.6 $
+dnl $Date: 2001/01/17 23:30:36 $
 dnl ################################################################
 
 AC_INIT(../hugs.c)
@@ -428,6 +428,7 @@ else
     HUGSPATH="{Hugs}/lib:{Hugs}/lib/hugs:{Hugs}/lib/exts"
     MkInstall="../MkInstal.in"
 fi
+AC_SUBST(HUGSPATH)
 
 if test "x$prefix" = xNONE; then
     prefix="$ac_default_prefix"
@@ -440,8 +441,11 @@ test "x$exec_prefix" = xNONE && exec_prefix='${prefix}'
 
 dnl This is the only way I could find to perform the substitutions
 dnl in hugsdir.  Sigh.
-HUGSDIR=`sh -c "prefix=$prefix; datadir=$datadir; hugsdir=$hugsdir; echo $hugsdir"`
+HUGSDIR=`sh -c "prefix=$prefix; datadir=$datadir; echo $hugsdir"`
 AC_DEFINE_UNQUOTED(HUGSDIR,"$HUGSDIR")
+AC_SUBST(HUGSDIR)
+BINDIR=`sh -c "prefix=$prefix; exec_prefix=$exec_prefix; echo $bindir"`
+AC_SUBST(BINDIR)
 
 if test "x$target" = "xwindows"; then
   SET_INSTALLDIRS=""
@@ -456,6 +460,7 @@ prefix		= $prefix\\
 exec_prefix	= $exec_prefix\\
 bindir		= $bindir\\
 datadir		= $datadir\\
+mandir         = $mandir\\
 hugsdir		= $hugsdir\\
 "
 fi
@@ -503,8 +508,7 @@ dnl ################################################################
 dnl Generate output files
 dnl ################################################################
 
-dnl AC_OUTPUT(../Makefile)
-AC_OUTPUT(../Makefile)
+AC_OUTPUT(../Makefile ../../docs/Makefile ../../docs/hugs.1)
 
 echo ''
 echo '************************************************'
