@@ -33,7 +33,7 @@ __   __ __  __  ____   ___      _________________________________________
 
    - A new GUI under Windows that doesn't consume all CPU time.
 
-   See the release notes in the "doc" directory for more information
+   See the release notes in the "docs" directory for more information
    on some of these features.
 
    Hugs is best used as a Haskell program development system: it boasts
