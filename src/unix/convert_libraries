@@ -17,21 +17,8 @@
 #   ./convert_libraries  <directory where libraries lives> <build dir>
 
 cpp_flags='-D__HUGS__'
-cpp="gcc -P -E -traditional -xc $cpp_flags"
 
-cc=${CC-gcc}
-hsc2hs=${hsc2hs-hsc2hs}
-
-# platform sensitive settings
-unameit=`uname -a | grep CYGWIN`
-if [ "x$unameit" != "x" ]; then
-    # For Win32
-    CALLCONV=stdcall
-else
-    CALLCONV=ccall
-fi
-
-hugs_src=../../lib
+cpp=${cpp-gcc -P -E -traditional -xc}
 
 case $# in
 2)	;;
@@ -54,80 +41,6 @@ fi
 target="$2"
 dst="$target/libraries"
 compat="$target/oldlib"
-
-# Convert a hierarchical library module for use with Hugs
-
-cvt() {
-	case $# in
-	2)	;;
-	*)	echo "usage: cvt package file" >&2
-		exit 1 ;;
-	esac
-
-	echo "Converting $1/$2"
-	dstdir=`dirname $dst/$2`
-	mkdir -p $dstdir
-
-	includes="-I. -I.. -I$src/$1/include"
-
-	case "$2" in
-	*.lhs|*.hs)
-		$cpp $includes $src/$1/$2 | cat -s >$dst/$2
-		;;
-	*.hsc)
-		# with a hack to extract the -#include directives
-		stem="`basename $2 .hsc`"
-		target="$dstdir/$stem.hs"
-		header="${stem}_aux.h"
-		# don't run hsc2hs if its output is already present
-		c_file="`dirname $src/$1/$2`/${stem}_hsc_make.c"
-		if [ -f "$c_file" ]
-		then
-			hsc_make="$dstdir/${stem}_hsc_make"
-			$cc $cpp_flags $includes -o "$hsc_make" "$c_file"
-			$hsc_make | sed '/^foreign.*"[^ ]*"/ s/"/"'"$header /" >$target
-			rm "$hsc_make"
-		else
-			copy="$dstdir/`basename $2`"
-			sed '/^foreign.*"[^ ]*"/ s/"/"'"$header /" "$src/$1/$2" >$copy
-			$hsc2hs --cc="$cc" $cpp_flags $includes "$copy"
-			rm "$copy"
-		fi
-		sed -n 's/^{-# OPTIONS -\(#include .*\) #-}/\1/p' $target >"$dstdir/$header"
-		# dreadful hack to perform CALLCONV substitution of Network/Socket.hs
-		sed -e "s/CALLCONV/$CALLCONV/g" < $target > "$target.ok"
-		mv "$target.ok" $target
-		;;
-	*.y|*.ly)
-		inname=`basename $2`
-		case $2 in
-		*.ly)	outname="`basename $2 .ly`.hs" ;;
-		*)	outname="`basename $2 .y`.hs" ;;
-		esac
-
-		target="`dirname $dst/$2`/$outname"
-
-		# don't run happy if the happy output is already present
-		hs_file="`dirname $src/$1/$2`/$outname"
-		if [ -f "$hs_file" ]
-		then
-			$cpp "$hs_file" | cat -s >$target
-		else
-			tmpdir=/tmp/cvt.$$
-			mkdir $tmpdir
-			cp $src/$1/$2 $tmpdir/$inname
-			(
-				cd $tmpdir
-				happy $inname
-			)
-			$cpp $tmpdir/$outname | cat -s >$target
-			rm -r $tmpdir
-		fi 
-		;;
-	*)	echo "cvt: don't know how to handle $1/$2" >&2
-		exit 1 ;;
-	esac
-}
 
 # Create a compatibility stub for a Hugs extension module
 
@@ -189,192 +102,15 @@ hslibs() {
 	esac
 
 	echo "Converting $2"
-	$cpp $hs_src/$1/$2 >$compat/$2
+	$cpp $cpp_flags $hs_src/$1/$2 >$compat/$2
 }
 
-# Modules to convert
+# Convert hierarchical modules
 
-  cvt base Control/Arrow.hs
-  cvt base Control/Concurrent.hs
-  cvt base Control/Concurrent/Chan.hs
-  cvt base Control/Concurrent/MVar.hs
-  cvt base Control/Concurrent/QSem.hs
-  cvt base Control/Concurrent/QSemN.hs
-  cvt base Control/Concurrent/SampleVar.hs
-  cvt base Control/Exception.hs
-  cvt base Control/Monad.hs
-  cvt base Control/Monad/Cont.hs
-  cvt base Control/Monad/Error.hs
-  cvt base Control/Monad/Fix.hs
-  cvt base Control/Monad/Identity.hs
-  cvt base Control/Monad/List.hs
-  cvt base Control/Monad/Monoid.hs
-  cvt base Control/Monad/RWS.hs
-  cvt base Control/Monad/Reader.hs
-  cvt base Control/Monad/ST.hs
-  cvt base Control/Monad/ST/Lazy.hs
-  cvt base Control/Monad/ST/Strict.hs
-  cvt base Control/Monad/State.hs
-  cvt base Control/Monad/Trans.hs
-  cvt base Control/Monad/Writer.hs
-  cvt base Control/Parallel.hs
-# cvt base Control/Parallel/Strategies.hs	# unused by GHC
-  cvt base Data/Array.hs
-  cvt base Data/Array/Base.hs
-# cvt base Data/Array/Diff.hs
-  cvt base Data/Array/IArray.hs
-  cvt base Data/Array/IO.hs
-  cvt base Data/Array/IO/Internals.hs
-  cvt base Data/Array/MArray.hs
-  cvt base Data/Array/ST.hs
-  cvt base Data/Array/Storable.hs	
-# cvt base Data/Array/Unboxed.hs	# GHC-specific
-  cvt base Data/Bits.hs
-  cvt base Data/Bool.hs
-  cvt base Data/Char.hs
-  cvt base Data/Complex.hs
-  cvt base Data/Dynamic.hs
-  cvt base Data/Either.hs
-  cvt base Data/FiniteMap.hs
-# cvt base Data/Generics.hs		# GHC-specific
-  cvt base Data/Graph.hs
-  cvt base Data/IORef.hs
-  cvt base Data/Int.hs
-  cvt base Data/Ix.hs
-  cvt base Data/List.hs
-  cvt base Data/Maybe.hs
-# cvt base Data/PackedString.hs		# uses Data.Array.Unboxed
-  cvt base Data/Ratio.hs
-  cvt base Data/STRef.hs
-  cvt base Data/STRef/Lazy.hs
-  cvt base Data/STRef/Strict.hs
-  cvt base Data/Set.hs
-  cvt base Data/Tree.hs
-  cvt base Data/Tuple.hs
-  cvt base Data/Unique.hs
-  cvt base Data/Word.hs
-  cvt base Debug/QuickCheck.hs
-# cvt base Debug/QuickCheck/Batch.hs	# needs pre-emptive concurrency
-  cvt base Debug/QuickCheck/Poly.hs
-  cvt base Debug/QuickCheck/Utils.hs
-  cvt base Debug/Trace.hs
-  cvt base Foreign.hs
-  cvt base Foreign/C.hs
-  cvt base Foreign/C/Error.hs
-  cvt base Foreign/C/String.hs		
-  cvt base Foreign/C/Types.hs
-  cvt base Foreign/C/TypesISO.hs
-  cvt base Foreign/ForeignPtr.hs
-  cvt base Foreign/Marshal.hs
-  cvt base Foreign/Marshal/Alloc.hs
-  cvt base Foreign/Marshal/Array.hs
-  cvt base Foreign/Marshal/Error.hs
-  cvt base Foreign/Marshal/Pool.hs
-  cvt base Foreign/Marshal/Utils.hs
-  cvt base Foreign/Ptr.hs
-  cvt base Foreign/StablePtr.hs
-  cvt base Foreign/Storable.hs		
-  cvt base Numeric.hs
-  cvt base Prelude.hs
-  cvt base System/CPUTime.hsc
-  cvt base System/Cmd.hs
-  cvt base System/Console/GetOpt.hs
-  cvt base System/Directory.hs
-  cvt base System/Environment.hs
-  cvt base System/Exit.hs
-  cvt base System/IO.hs
-  cvt base System/IO/Error.hs
-  cvt base System/IO/Unsafe.hs
-# cvt base System/Info.hs
-  cvt base System/Locale.hs
-  cvt base System/Mem.hs
-  cvt base System/Mem/StableName.hs
-  cvt base System/Mem/Weak.hs
-  cvt base System/Random.hs
-# cvt base System/Posix/Signals.hsc
-  cvt base System/Posix/Types.hs
-  cvt base System/Time.hsc
-  cvt base Text/Html.hs
-  cvt base Text/Html/BlockTable.hs
-  cvt base Text/ParserCombinators/Parsec.hs
-  cvt base Text/ParserCombinators/Parsec/Char.hs
-  cvt base Text/ParserCombinators/Parsec/Combinator.hs
-  cvt base Text/ParserCombinators/Parsec/Error.hs
-  cvt base Text/ParserCombinators/Parsec/Expr.hs
-  cvt base Text/ParserCombinators/Parsec/Language.hs
-  cvt base Text/ParserCombinators/Parsec/Perm.hs
-  cvt base Text/ParserCombinators/Parsec/Pos.hs
-  cvt base Text/ParserCombinators/Parsec/Prim.hs
-  cvt base Text/ParserCombinators/Parsec/Token.hs
-# cvt base Text/ParserCombinators/ReadP.hs	# ReadS clashes with Prelude
-# cvt base Text/ParserCombinators/ReadPrec.hs	# uses ReadP
-  cvt base Text/PrettyPrint.hs
-  cvt base Text/PrettyPrint/HughesPJ.hs
-  cvt base Text/Read.hs
-# cvt base Text/Read/Lex.hs		# uses ReadP
-  cvt base Text/Regex.hs
-  cvt base Text/Regex/Posix.hsc
-  cvt base Text/Show.hs
-  cvt base Text/Show/Functions.hs
-
-  # Haskell 98 Report (minus Numeric and Prelude, which are in base)
-
-  cvt haskell98 Array.hs
-  cvt haskell98 CPUTime.hs
-  cvt haskell98 Char.hs
-  cvt haskell98 Complex.hs
-  cvt haskell98 Directory.hs
-  cvt haskell98 IO.hs
-  cvt haskell98 Ix.hs
-  cvt haskell98 List.hs
-  cvt haskell98 Locale.hs
-  cvt haskell98 Maybe.hs
-  cvt haskell98 Monad.hs
-  cvt haskell98 Random.hs
-  cvt haskell98 Ratio.hs
-  cvt haskell98 System.hs
-  cvt haskell98 Time.hs
-
-  # FFI Addendum
-
-  cvt haskell98 Bits.hs
-  cvt haskell98 CError.hs
-  cvt haskell98 CForeign.hs
-  cvt haskell98 CString.hs
-  cvt haskell98 CTypes.hs
-  cvt haskell98 ForeignPtr.hs
-  cvt haskell98 Int.hs
-  cvt haskell98 MarshalAlloc.hs
-  cvt haskell98 MarshalArray.hs
-  cvt haskell98 MarshalError.hs
-  cvt haskell98 MarshalUtils.hs
-  cvt haskell98 Ptr.hs
-  cvt haskell98 StablePtr.hs
-  cvt haskell98 Storable.hs
-  cvt haskell98 Word.hs
-
-  cvt haskell-src Language/Haskell/Parser.ly
-  cvt haskell-src Language/Haskell/Lexer.hs
-  cvt haskell-src Language/Haskell/ParseMonad.hs
-  cvt haskell-src Language/Haskell/ParseUtils.hs
-  cvt haskell-src Language/Haskell/Pretty.hs
-  cvt haskell-src Language/Haskell/Syntax.hs
-  cvt haskell-src Language/Haskell/THSyntax.hs
-
-  cvt network Network.hs
-  cvt network Network/BSD.hsc
-  cvt network Network/CGI.hs
-  cvt network Network/Socket.hsc
-  cvt network Network/URI.hs
-
-# cvt readline System/Console/Readline.hsc
-
-# cvt unix System/Posix.hs
-# cvt unix System/Posix/Directory.hsc
-# cvt unix System/Posix/Files.hsc
-# cvt unix System/Posix/IO.hsc
-# cvt unix System/Posix/Process.hsc
-# cvt unix System/Posix/Unistd.hsc
+for package in base haskell98 haskell-src network
+do
+	./convert_package $1/libraries/$package $dst
+done
 
   echo Copying FFI support files
   cp ../config.h                        $dst/Foreign/C
