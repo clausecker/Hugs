@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: ffi.c,v $
- * $Revision: 1.22 $
- * $Date: 2003/01/03 16:12:49 $
+ * $Revision: 1.23 $
+ * $Date: 2003/01/03 17:00:36 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -284,7 +284,7 @@ Int    num; {
 
 static Void local ffiInclude(fn)                     /* Add #include  */
 Text fn; {
-    if (fn != -1 && !varIsMember(mkVar(fn),includes)) {
+    if (fn != -1 && !varIsMember(fn,includes)) {
         fprintf(out, "#include \"%s\"\n", textToStr(fn));
         includes = cons(mkVar(fn),includes);
     }
