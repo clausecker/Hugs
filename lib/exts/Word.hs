@@ -250,10 +250,32 @@ instance Enum Word32 where
     --enumFromThen c d = map toEnum [fromEnum c, fromEnum d .. fromEnum (last::Word32)]
     --     	           where last = if d < c then minBound else maxBound
 
-    enumFrom       = numericEnumFrom
-    enumFromTo     = numericEnumFromTo
-    enumFromThen   = numericEnumFromThen
-    enumFromThenTo = numericEnumFromThenTo
+    enumFrom       = boundedEnumFrom
+    enumFromTo     = boundedEnumFromTo
+    enumFromThen   = boundedEnumFromThen
+    enumFromThenTo = boundedEnumFromThenTo
+
+boundedEnumFrom        :: (Ord a, Num a, Bounded a, Enum a) => a -> [a]
+boundedEnumFromThen    :: (Ord a, Num a, Bounded a, Enum a) => a -> a -> [a]
+boundedEnumFromTo      :: (Ord a, Num a, Bounded a, Enum a) => a -> a -> [a]
+boundedEnumFromThenTo  :: (Ord a, Num a, Bounded a, Enum a) => a -> a -> a -> [a]
+boundedEnumFrom n
+  | n == maxBound = [n]
+  | otherwise     = n : (boundedEnumFrom $! (n+1))
+boundedEnumFromThen n m
+  | n <= m    = enum (< maxBound - delta) delta n
+  | otherwise = enum (> minBound - delta) delta n
+ where
+  delta = m - n
+boundedEnumFromTo n m = takeWhile (<= m) (boundedEnumFrom n)
+boundedEnumFromThenTo n n' m 
+  | n' >= n   = if n <= m then enum (<= m - delta) delta n else []
+  | otherwise = if n >= m then enum (>= m - delta) delta n else []
+ where
+  delta = n'-n
+
+enum :: (Num a) => (a -> Bool) -> a -> a -> [a]
+enum p delta x = if p x then x : (enum p delta $! (x+delta)) else [x]
 
 instance Read Word32 where
     readsPrec p = readDec
