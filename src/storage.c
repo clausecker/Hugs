@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: storage.c,v $
- * $Revision: 1.51 $
- * $Date: 2002/09/25 13:49:46 $
+ * $Revision: 1.52 $
+ * $Date: 2002/10/02 23:59:26 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -3449,14 +3449,6 @@ Int what; {
 		       handles[HSTDERR].hmode = HAPPEND;
 		       handles[HSTDERR].hbufMode = HUNKNOWN_BUFFERING;
 #endif
-#if GC_MALLOCPTRS
-		       /* The high-water mark for the table points at the
-		        * next available slot in the table
-		        */
-		       mallocPtr_hw = 0;
-		       for (i=0; i<NUM_MALLOCPTRS; i++)
-			   mallocPtrs[i].mpcell = NIL;
-#endif
 #if !HSCRIPT
 #if GC_STABLEPTRS
 		       resetStablePtrs();
@@ -3682,6 +3674,14 @@ Int what; {
 #if GC_WEAKPTRS
 		       finalizers   = NIL;
 		       liveWeakPtrs = NIL;
+#endif
+#if GC_MALLOCPTRS
+		       /* The high-water mark for the table points at the
+		        * next available slot in the table
+		        */
+		       mallocPtr_hw = 0;
+		       for (i=0; i<NUM_MALLOCPTRS; i++)
+			   mallocPtrs[i].mpcell = NIL;
 #endif
 
 #if GC_STABLEPTRS
