@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: type.c,v $
- * $Revision: 1.42 $
- * $Date: 2002/04/11 23:20:22 $
+ * $Revision: 1.43 $
+ * $Date: 2002/04/12 05:39:01 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -81,7 +81,7 @@ Name nameUnit;				/* primitive Unit type constructor */
 Name nameLT,	  nameEQ;		/* Ordering constructors	   */
 Name nameGT;
 Class classMonad;			/* Monads			   */
-Name nameReturn,  nameBind;		/* for translating monad comps	   */
+Name nameReturn,  nameBind, nameThen;   /* for translating do/monad comps  */
 Name nameMFail;
 Name nameGt;				/* for readsPrec		   */
 
@@ -3268,6 +3268,7 @@ Void linkPreludeCM() {			/* Hook to cfuns and mfuns in	   */
 #endif
 	nameReturn      = linkName("return");
 	nameBind        = linkName(">>=");
+	nameThen        = linkName(">>");
 	nameMFail       = linkName("fail");
 
 #if IO_MONAD

@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: connect.h,v $
- * $Revision: 1.29 $
- * $Date: 2002/04/11 23:20:18 $
+ * $Revision: 1.30 $
+ * $Date: 2002/04/12 05:39:01 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -70,7 +70,8 @@ extern Name  nameReadParen;             /* unwrap from parens              */
 extern Name  nameLex;                   /* lexer                           */
 extern Name  nameRangeSize;		/* calculate size of index range   */
 extern Class classMonad;		/* Monads			   */
-extern Name  nameReturn,  nameBind;	/* for translating monad comps	   */
+extern Name  nameReturn, nameBind;	/* for translating do / monad comps*/
+extern Name  nameThen;                  /* for translating do / monad comps*/
 extern Name  nameMFail;
 extern Name  nameListMonad;		/* builder function for List Monad */
 

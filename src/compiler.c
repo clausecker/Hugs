@@ -9,8 +9,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: compiler.c,v $
- * $Revision: 1.9 $
- * $Date: 2002/04/11 23:20:18 $
+ * $Revision: 1.10 $
+ * $Date: 2002/04/12 05:39:00 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -395,7 +395,7 @@ Cell l; {
  *                            IN bind m exp _h
  * do { LET decls; qs }   =>  LETREC decls IN do { qs }
  * do { IF guard; qs }    =>  if guard then do { qs } else fail m  "guard fails"
- * do { e; qs }           =>  LETREC _h _ = [ e | qs ] in bind m exp _h
+ * do { exp; qs }         =>  (>>) m exp (do {qs})
  *
  * where m :: Monad f
  * ------------------------------------------------------------------------*/
@@ -431,17 +431,9 @@ List qs; {
 						  hVar)));
 			    }
 
-	    case DOQUAL :   {   Cell hVar = inventVar();
-				Cell ld   = cons(pair(singleton(WILDCARD),
-						      transDo(m,e,qs1)),
-						 NIL);
-				return ap(LETREC,
-					  pair(singleton(pair(hVar,ld)),
-					       ap(ap(ap(nameBind,
-							m),
-						     translate(snd(q))),
-						  hVar)));
-			    }
+	    case DOQUAL :   return ap(ap(ap(nameThen,m),
+					 translate(snd(q))),
+				      transDo(m,e,qs1));
 
 	    case QWHERE   : return
 				expandLetrec(ap(LETREC,
