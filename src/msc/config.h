@@ -40,6 +40,300 @@
 /* Define to alignment constraint on void pointers */
 #define ALIGNMENT_VOID_P 4
 
+/* The value of E2BIG.  */
+#define CCONST_E2BIG 7
+
+/* The value of EACCES.  */
+#define CCONST_EACCES 13
+
+/* The value of EADDRINUSE.  */
+#define CCONST_EADDRINUSE -1
+
+/* The value of EADDRNOTAVAIL.  */
+#define CCONST_EADDRNOTAVAIL -1
+
+/* The value of EADV.  */
+#define CCONST_EADV -1
+
+/* The value of EAFNOSUPPORT.  */
+#define CCONST_EAFNOSUPPORT -1
+
+/* The value of EAGAIN.  */
+#define CCONST_EAGAIN 11
+
+/* The value of EALREADY.  */
+#define CCONST_EALREADY -1
+
+/* The value of EBADF.  */
+#define CCONST_EBADF 9
+
+/* The value of EBADMSG.  */
+#define CCONST_EBADMSG -1
+
+/* The value of EBADRPC.  */
+#define CCONST_EBADRPC -1
+
+/* The value of EBUSY.  */
+#define CCONST_EBUSY 16
+
+/* The value of ECHILD.  */
+#define CCONST_ECHILD 10
+
+/* The value of ECOMM.  */
+#define CCONST_ECOMM -1
+
+/* The value of ECONNABORTED.  */
+#define CCONST_ECONNABORTED -1
+
+/* The value of ECONNREFUSED.  */
+#define CCONST_ECONNREFUSED -1
+
+/* The value of ECONNRESET.  */
+#define CCONST_ECONNRESET -1
+
+/* The value of EDEADLK.  */
+#define CCONST_EDEADLK 36
+
+/* The value of EDESTADDRREQ.  */
+#define CCONST_EDESTADDRREQ -1
+
+/* The value of EDIRTY.  */
+#define CCONST_EDIRTY -1
+
+/* The value of EDOM.  */
+#define CCONST_EDOM 33
+
+/* The value of EDQUOT.  */
+#define CCONST_EDQUOT -1
+
+/* The value of EEXIST.  */
+#define CCONST_EEXIST 17
+
+/* The value of EFAULT.  */
+#define CCONST_EFAULT 14
+
+/* The value of EFBIG.  */
+#define CCONST_EFBIG 27
+
+/* The value of EFTYPE.  */
+#define CCONST_EFTYPE -1
+
+/* The value of EHOSTDOWN.  */
+#define CCONST_EHOSTDOWN -1
+
+/* The value of EHOSTUNREACH.  */
+#define CCONST_EHOSTUNREACH -1
+
+/* The value of EIDRM.  */
+#define CCONST_EIDRM -1
+
+/* The value of EILSEQ.  */
+#define CCONST_EILSEQ 42
+
+/* The value of EINPROGRESS.  */
+#define CCONST_EINPROGRESS -1
+
+/* The value of EINTR.  */
+#define CCONST_EINTR 4
+
+/* The value of EINVAL.  */
+#define CCONST_EINVAL 22
+
+/* The value of EIO.  */
+#define CCONST_EIO 5
+
+/* The value of EISCONN.  */
+#define CCONST_EISCONN -1
+
+/* The value of EISDIR.  */
+#define CCONST_EISDIR 21
+
+/* The value of ELOOP.  */
+#define CCONST_ELOOP -1
+
+/* The value of EMFILE.  */
+#define CCONST_EMFILE 24
+
+/* The value of EMLINK.  */
+#define CCONST_EMLINK 31
+
+/* The value of EMSGSIZE.  */
+#define CCONST_EMSGSIZE -1
+
+/* The value of EMULTIHOP.  */
+#define CCONST_EMULTIHOP -1
+
+/* The value of ENAMETOOLONG.  */
+#define CCONST_ENAMETOOLONG 38
+
+/* The value of ENETDOWN.  */
+#define CCONST_ENETDOWN -1
+
+/* The value of ENETRESET.  */
+#define CCONST_ENETRESET -1
+
+/* The value of ENETUNREACH.  */
+#define CCONST_ENETUNREACH -1
+
+/* The value of ENFILE.  */
+#define CCONST_ENFILE 23
+
+/* The value of ENOBUFS.  */
+#define CCONST_ENOBUFS -1
+
+/* The value of ENODATA.  */
+#define CCONST_ENODATA -1
+
+/* The value of ENODEV.  */
+#define CCONST_ENODEV 19
+
+/* The value of ENOENT.  */
+#define CCONST_ENOENT 2
+
+/* The value of ENOEXEC.  */
+#define CCONST_ENOEXEC 8
+
+/* The value of ENOLCK.  */
+#define CCONST_ENOLCK 39
+
+/* The value of ENOLINK.  */
+#define CCONST_ENOLINK -1
+
+/* The value of ENOMEM.  */
+#define CCONST_ENOMEM 12
+
+/* The value of ENOMSG.  */
+#define CCONST_ENOMSG -1
+
+/* The value of ENONET.  */
+#define CCONST_ENONET -1
+
+/* The value of ENOPROTOOPT.  */
+#define CCONST_ENOPROTOOPT -1
+
+/* The value of ENOSPC.  */
+#define CCONST_ENOSPC 28
+
+/* The value of ENOSR.  */
+#define CCONST_ENOSR -1
+
+/* The value of ENOSTR.  */
+#define CCONST_ENOSTR -1
+
+/* The value of ENOSYS.  */
+#define CCONST_ENOSYS 40
+
+/* The value of ENOTBLK.  */
+#define CCONST_ENOTBLK -1
+
+/* The value of ENOTCONN.  */
+#define CCONST_ENOTCONN -1
+
+/* The value of ENOTDIR.  */
+#define CCONST_ENOTDIR 20
+
+/* The value of ENOTEMPTY.  */
+#define CCONST_ENOTEMPTY 41
+
+/* The value of ENOTSOCK.  */
+#define CCONST_ENOTSOCK -1
+
+/* The value of ENOTTY.  */
+#define CCONST_ENOTTY 25
+
+/* The value of ENXIO.  */
+#define CCONST_ENXIO 6
+
+/* The value of EOPNOTSUPP.  */
+#define CCONST_EOPNOTSUPP -1
+
+/* The value of EPERM.  */
+#define CCONST_EPERM 1
+
+/* The value of EPFNOSUPPORT.  */
+#define CCONST_EPFNOSUPPORT -1
+
+/* The value of EPIPE.  */
+#define CCONST_EPIPE 32
+
+/* The value of EPROCLIM.  */
+#define CCONST_EPROCLIM -1
+
+/* The value of EPROCUNAVAIL.  */
+#define CCONST_EPROCUNAVAIL -1
+
+/* The value of EPROGMISMATCH.  */
+#define CCONST_EPROGMISMATCH -1
+
+/* The value of EPROGUNAVAIL.  */
+#define CCONST_EPROGUNAVAIL -1
+
+/* The value of EPROTO.  */
+#define CCONST_EPROTO -1
+
+/* The value of EPROTONOSUPPORT.  */
+#define CCONST_EPROTONOSUPPORT -1
+
+/* The value of EPROTOTYPE.  */
+#define CCONST_EPROTOTYPE -1
+
+/* The value of ERANGE.  */
+#define CCONST_ERANGE 34
+
+/* The value of EREMCHG.  */
+#define CCONST_EREMCHG -1
+
+/* The value of EREMOTE.  */
+#define CCONST_EREMOTE -1
+
+/* The value of EROFS.  */
+#define CCONST_EROFS 30
+
+/* The value of ERPCMISMATCH.  */
+#define CCONST_ERPCMISMATCH -1
+
+/* The value of ERREMOTE.  */
+#define CCONST_ERREMOTE -1
+
+/* The value of ESHUTDOWN.  */
+#define CCONST_ESHUTDOWN -1
+
+/* The value of ESOCKTNOSUPPORT.  */
+#define CCONST_ESOCKTNOSUPPORT -1
+
+/* The value of ESPIPE.  */
+#define CCONST_ESPIPE 29
+
+/* The value of ESRCH.  */
+#define CCONST_ESRCH 3
+
+/* The value of ESRMNT.  */
+#define CCONST_ESRMNT -1
+
+/* The value of ESTALE.  */
+#define CCONST_ESTALE -1
+
+/* The value of ETIME.  */
+#define CCONST_ETIME -1
+
+/* The value of ETIMEDOUT.  */
+#define CCONST_ETIMEDOUT -1
+
+/* The value of ETOOMANYREFS.  */
+#define CCONST_ETOOMANYREFS -1
+
+/* The value of ETXTBSY.  */
+#define CCONST_ETXTBSY -1
+
+/* The value of EUSERS.  */
+#define CCONST_EUSERS -1
+
+/* The value of EWOULDBLOCK.  */
+#define CCONST_EWOULDBLOCK -1
+
+/* The value of EXDEV.  */
+#define CCONST_EXDEV 18
+
 /* C compiler invocation use to build a dynamically loadable library.
  * Typical value: "gcc -shared"
  * Must evaluate to a literal C string.
