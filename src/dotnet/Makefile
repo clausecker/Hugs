@@ -235,6 +235,8 @@ strutil.obj	: $(PRELUDE) storage.h connect.h errors.h strutil.h
 errors.obj	: $(PRELUDE) storage.h connect.h errors.h output.h \
 		  opts.h goal.h evaluator.h
 goal.obj	: $(PRELUDE) storage.h machdep.h opts.h goal.h
+opts.obj	: $(PRELUDE) storage.h connect.h errors.h machdep.h \
+		  strutil.h opts.h
 observe.obj	: $(PRELUDE) storage.h connect.h errors.h command.h \
 		  machdep.h builtin.h output.h observe.h
 evaluator.obj	: $(PRELUDE) storage.h connect.h errors.h script.h \
