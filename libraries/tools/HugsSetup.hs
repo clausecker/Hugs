@@ -176,7 +176,7 @@ install buildPref pkg lbi mprefix uInst =
 	withLib pkg $ \ libInfo -> do
 	pkgDir <- hugsPackageDir pkg lbi uInst
 	maybeRemoveFileRecursive pkgDir
-	moveSources buildPref pkgDir (modules libInfo) installSuffixes
+	moveSources buildPref pkgDir (biModules libInfo) installSuffixes
 
 sdist :: FilePath -> FilePath -> PackageDescription -> IO ()
 sdist srcPref distPref pkg_descr =
@@ -308,7 +308,7 @@ getPersistBuildConfig = do
 prepPackage :: BuildInfo -> BuildParameters ->
 		FilePath -> FilePath -> IO [FilePath]
 prepPackage libInfo buildParams srcDir destDir =
-	mapM preprocess (modules libInfo)
+	mapM preprocess (biModules libInfo)
   where preprocess mod = prepModule handlers useCpp cpp
 				(stem srcDir mod) (stem destDir mod)
 	handlers = ppHandlers incls
