@@ -140,6 +140,7 @@ utput"
 utput"
   perl runstdtest $HUGS +q -pHugs: -s12 "-Ostatic/mod98.hs"  "-o1static/mod98.output"
   perl runstdtest $HUGS +q -pHugs: -s17 "-Ostatic/mod99.hs"  "-o1static/mod99.output"
+  perl runstdtest $HUGS +q -pHugs: -s17 "-Ostatic/mod100.hs"  "-o1static/mod100.output"
 
   # Check opaque import/export of tycons
   perl runstdtest $HUGS +q -pHugs: -s20 "-Ostatic/T2.hs"  "-o1static/T2.output"
