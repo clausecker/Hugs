@@ -89,7 +89,7 @@ runhugs.exe	: runhugs.obj $(SERVER_OBJECTS)
 # Create all the FFI extension DLLs.
 #
 FFIHUGS=..\ffihugs
-FFIHUGS_OPTS=+G -W -98 
+FFIHUGS_OPTS=+G -98 -P
 
 .PHONY: ffi-dlls
 

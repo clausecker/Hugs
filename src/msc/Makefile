@@ -93,7 +93,7 @@ hugsscript.dll  : $(SERVER_OBJECTS) hugsscript.obj
 # Create all the FFI extension DLLs.
 #
 FFIHUGS=..\ffihugs
-FFIHUGS_OPTS=+G -W -98 -P
+FFIHUGS_OPTS=+G -98 -P
 
 .PHONY: ffi-dlls
 
