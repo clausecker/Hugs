@@ -35,9 +35,7 @@ Hugs:"15.0"
 Hugs:"-10.0"
 Hugs:"(True,False)"
 Hugs:"[1.66667,-1.66667,-0.0,0.0,-1.66667,1.66667]"
-Hugs:"
-Program error: divide by zero
-
+Hugs:"inf"
 Hugs:Hugs:"3.14159"
 Hugs:"[0.0,0.29552,0.564642,0.841471]"
 Hugs:"[1.0,0.955337,0.825336,0.540302]"
