@@ -107,7 +107,6 @@ veryclean	::
 		  $(RM) unix/config.log
 		  $(RM) unix/config.status
 		  $(RM) unix/configure
-		  $(RM) ../Hugs98-Sep1999.tar.gz
 TAGS		::
 		  etags *.[ych]
 
