@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.95 $
- * $Date: 2002/10/03 14:20:32 $
+ * $Revision: 1.96 $
+ * $Date: 2002/10/07 23:41:05 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -2398,6 +2398,13 @@ String argv[]; {
 	forHelp();
     }
 
+#if defined(_MSC_VER) && !defined(_MANAGED)
+    /* Under Win32 (when compiled with MSVC), we specially
+     * catch and handle SEH stack overflows.
+     */
+    __try {
+#endif
+
     for (;;) {
 	Command cmd;
 	everybody(RESET);               /* reset to sensible initial state */
@@ -2508,6 +2515,41 @@ String argv[]; {
 #endif
     }
     breakOn(FALSE);
+#if defined(_MSC_VER) && !defined(_MANAGED)
+    } __except ( ((GetExceptionCode() == EXCEPTION_STACK_OVERFLOW) ? 
+		  EXCEPTION_EXECUTE_HANDLER : 
+		  EXCEPTION_CONTINUE_SEARCH) ) {
+	/* Closely based on sample code in Nov 1999 Dr GUI MSDN column */
+	char* stackPtr;
+	static SYSTEM_INFO si;
+	static MEMORY_BASIC_INFORMATION mi;
+	static DWORD protect;
+ 
+      /* get at the current stack pointer */
+      _asm mov stackPtr, esp;
+
+      /* query for page size + VM info for the allocation chunk we're currently in. */
+      GetSystemInfo(&si);
+      VirtualQuery(stackPtr, &mi, sizeof(mi));
+
+      /* Abandon the C stack and, most importantly, re-insert
+         the page guard bit. Do this on the page above the
+	 current one, not the one where the exception was raised. */
+      stackPtr = (LPBYTE) (mi.BaseAddress) - si.dwPageSize;
+      if ( VirtualFree(mi.AllocationBase,
+		       (LPBYTE)stackPtr - (LPBYTE) mi.AllocationBase, 
+		       MEM_DECOMMIT) &&
+	   VirtualProtect(stackPtr, si.dwPageSize, 
+			  PAGE_GUARD | PAGE_READWRITE, &protect) ) {
+
+	  FPrintf(errorStream, "ERROR - C stack overflow; restarting.\n"); FFlush(errorStream);
+	  /* ..and jump back out again. */
+	  longjmp(catch_error,1);
+      } else {
+	  fatal("C stack overflow; unable to recover.");
+      }
+    }
+#endif
 }
 
 #endif /* !HUGS_SERVER */
