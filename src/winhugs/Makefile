@@ -70,7 +70,7 @@ OBJECTS		= storage.obj input.obj static.obj type.obj subst.obj \
 		  opts.obj strutil.obj errors.obj evaluator.obj goal.obj \
 		  $(WOBJECTS)
 
-IOBJECTS	= hugs.obj server.obj observe.obj $(OBJECTS)
+IOBJECTS	= hugs.obj edit.obj observe.obj $(OBJECTS)
 PRELUDE		= config.h options.h prelude.h script.h "winhugs\wintext.h"
 
 ################################################################
@@ -201,6 +201,8 @@ builtin$(OBJ): builtin.c prelude.h config.h options.h storage.h HsFFI.h \
  timeprim.c dirprim.c stmonad.c array.c
 compiler$(OBJ): compiler.c prelude.h config.h options.h storage.h HsFFI.h \
  connect.h errors.h goal.h
+edit$(OBJ): edit.c prelude.h config.h options.h storage.h HsFFI.h \
+ connect.h errors.h opts.h strutil.h machdep.h
 errors$(OBJ): errors.c prelude.h config.h options.h storage.h HsFFI.h \
  connect.h errors.h output.h opts.h goal.h evaluator.h
 evaluator$(OBJ): evaluator.c prelude.h config.h options.h storage.h \
@@ -214,7 +216,7 @@ input$(OBJ): input.c prelude.h config.h options.h storage.h HsFFI.h \
  connect.h command.h errors.h module.h script.h opts.h goal.h \
  machdep.h parser.c
 machdep$(OBJ): machdep.c prelude.h config.h options.h storage.h HsFFI.h \
- connect.h command.h errors.h opts.h strutil.h machdep.h
+ connect.h errors.h opts.h strutil.h machdep.h
 machine$(OBJ): machine.c prelude.h config.h options.h storage.h HsFFI.h \
  connect.h errors.h
 module$(OBJ): module.c prelude.h config.h options.h storage.h HsFFI.h \

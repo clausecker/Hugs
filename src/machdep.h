@@ -59,7 +59,9 @@ extern String readRegChildStrings Args((HKEY, String, String, String));
 
 extern String RealPath  Args((String));
 extern String substPath Args((String,String));
+#ifndef HUGS_SERVER
 extern Bool startEdit   Args((Int,String));
+#endif
 
 extern  Int    shellEsc		Args((String,Bool,Bool));
 extern  Int    getTerminalWidth Args((Void));

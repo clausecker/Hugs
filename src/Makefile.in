@@ -58,9 +58,10 @@ HFILES		= HsFFI.h builtin.h command.h config.h connect.h errors.h \
 		  evaluator.h goal.h machdep.h module.h observe.h options.h \
 		  opts.h output.h prelude.h script.h server.h storage.h \
 		  strutil.h subst.h
-CFILES		= hugs.c runhugs.c server.c \
-		  builtin.c compiler.c errors.c evaluator.c ffi.c goal.c input.c \
-		  machdep.c machine.c module.c observe.c opts.c output.c \
+CFILES		= hugs.c runhugs.c server.c edit.c observe.c \
+		  builtin.c compiler.c errors.c evaluator.c \
+		  ffi.c goal.c input.c \
+		  machdep.c machine.c module.c opts.c output.c \
 		  plugin.c script.c static.c storage.c \
 		  strutil.c subst.c type.c version.c
 INCFILES	= parser.c preds.c bignums.c timer.c scc.c \
@@ -72,7 +73,7 @@ OBJECTS		= builtin@OBJ@ compiler@OBJ@ errors@OBJ@ evaluator@OBJ@ \
 		  module@OBJ@ opts@OBJ@ output@OBJ@ plugin@OBJ@ script@OBJ@ \
 		  static@OBJ@ storage@OBJ@ strutil@OBJ@ subst@OBJ@ \
 		  type@OBJ@ version@OBJ@
-IOBJECTS	= hugs@OBJ@ server@OBJ@ observe@OBJ@ $(OBJECTS)
+IOBJECTS	= hugs@OBJ@ edit@OBJ@ observe@OBJ@ $(OBJECTS)
 PRELUDE		= config.h options.h prelude.h script.h
 
 HEADERS		= HsFFI.h
