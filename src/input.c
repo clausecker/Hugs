@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: input.c,v $
- * $Revision: 1.29 $
- * $Date: 2001/09/27 00:26:50 $
+ * $Revision: 1.30 $
+ * $Date: 2001/12/06 00:50:13 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -558,7 +558,7 @@ static Int local nextLine()
     
 static Void local skip() {              /* move forward one char in input  */
     if (c0!=EOF) {                      /* stream, updating c0, c1, ...    */
-	if (c0=='\n') {                 /* Adjusting cursor coords as nec. */
+	if (c0=='\n' || c0=='\r') {     /* Adjusting cursor coords as nec. */
 	    row++;
 	    column=1;
 	    if (reading==SCRIPTFILE)
@@ -648,13 +648,13 @@ static Void local newlineSkip() {      /* skip `\n' (supports lit scripts) */
 		litLines++;
 		return;
 	    }
-	    while (c0 != '\n' && isIn(c0,SPACE)) /* maybe line is blank?   */
+	    while (c0 != '\n' && c0 != '\r' && isIn(c0,SPACE)) /* maybe line is blank?   */
 		skip();
-	    if (c0=='\n' || c0==EOF)
+	    if (c0=='\n' || c0=='\r' || c0==EOF)
 		thisLineIs(BLANKLINE);
 	    else {
 		thisLineIs(TEXTLINE);  /* otherwise it must be a comment   */
-		while (c0!='\n' && c0!=EOF)
+		while (c0!='\n' && c0!='\r' && c0!=EOF)
 		    skip();
 	    }                          /* by now, c0=='\n' or c0==EOF      */
 	} while (c0!=EOF);             /* if new line, start again         */
@@ -863,7 +863,7 @@ static Cell local readChar() {         /* read character constant          */
     Cell charRead;
 
     skip(/* '\'' */);
-    if (c0=='\'' || c0=='\n' || c0==EOF) {
+    if (c0=='\'' || c0=='\n' || c0=='\r' || c0==EOF) {
 	ERRMSG(row) "Illegal character constant"
 	EEND;
     }
@@ -884,7 +884,7 @@ static Cell local readString() {       /* read string literal              */
 
     startToken();
     skip(/* '\"' */);
-    while (c0!='\"' && c0!='\n' && c0!=EOF) {
+    while (c0!='\"' && c0!='\n' && c0!='\r' && c0!=EOF) {
 	c = readAChar(TRUE);
 	if (nonNull(c))
 	    saveStrChr(charOf(c));
@@ -1068,7 +1068,7 @@ Bool isStrLit; {
 
 static Void local skipGap() {          /* skip over gap in string literal  */
     do                                 /* (simplified in Haskell 1.1)      */
-	if (c0=='\n')
+	if (c0=='\n' || c0=='\r')
 	    newlineSkip();
 	else
 	    skip();
@@ -1227,7 +1227,7 @@ Char   sys; {                          /* character for shell escape       */
     while (c0==' ' || c0 =='\t')      					   
 	skip();			      					   
 									   
-    if (c0=='\n')                      /* look for blank command lines     */
+    if (c0=='\n' || c0=='\r')          /* look for blank command lines     */
 	return NOCMD;		      					   
     if (c0==EOF)                       /* look for end of input stream     */
 	return QUIT;		      					   
@@ -1270,7 +1270,7 @@ String readFilename() {                /* Read filename from input (if any)*/
 	while (c0==' ' || c0=='\t')
 	    skip();
 
-    if (c0=='\n' || c0==EOF)           /* return null string at end of line*/
+    if (c0=='\n' || c0=='\r' || c0==EOF)  /* return null string at end of line*/
 	return 0;
 
     startToken();
@@ -1303,7 +1303,7 @@ String readLine() {                    /* Read command line from input     */
 	skip();
 
     startToken();
-    while (c0!='\n' && c0!=EOF) {
+    while (c0!='\n' && c0!='\r' && c0!=EOF) {
 	saveTokenChar(c0);
 	skip();
     }
@@ -1357,7 +1357,7 @@ static Void local skipWhitespace() {   /* Skip over whitespace/comments    */
     for (;;)                           /* Strictly speaking, this code is  */
 	if (c0==EOF)                   /* a little more liberal than the   */
 	    return;                    /* report allows ...                */
-	else if (c0=='\n')	       					   
+	else if (c0=='\n' || c0=='\r')	       					   
 	    newlineSkip();	       					   
 	else if (isIn(c0,SPACE))       					   
 	    skip();		       					   
@@ -1377,7 +1377,7 @@ static Void local skipWhitespace() {   /* Skip over whitespace/comments    */
 		    skip();
 		    nesting--;
 		}
-		else if (c0=='\n')
+		else if (c0=='\n' || c0=='\r')
 		    newlineSkip();
 		else
 		    skip();
@@ -1389,8 +1389,8 @@ static Void local skipWhitespace() {   /* Skip over whitespace/comments    */
 	else if (c0=='-' && c1=='-') {  /* One line comment                */
 	    do
 		skip();
-	    while (c0!='\n' && c0!=EOF);
-	    if (c0=='\n')
+	    while (c0!='\n' && c0!='\r' && c0!=EOF);
+	    if (c0=='\n' || c0=='\r')
 		newlineSkip();
 	}
 	else
