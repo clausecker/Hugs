@@ -37,6 +37,29 @@ target_os=[`echo $TargetPlatform | sed 's/^\([^-]*\)-\([^-]*\)-\([^-]*\).*/\3/'`
 build_cpu=`echo $BuildPlatform | sed 's/-.*//'`
 build_os=[`echo $BuildPlatform | sed 's/^\([^-]*\)-\([^-]*\)-\([^-]*\).*/\3/'`]
 
+# canonicalize the target OS (approximately as fptools does)
+case $target_os in
+aix*) target_os=aix ;;
+cygwin*) target_os=cygwin32 ;;
+darwin*) target_os=darwin ;;
+freebsd2*) target_os=freebsd2 ;;
+freebsd*) target_os=freebsd ;;
+hpux*) target_os=hpux ;;
+irix*) target_os=irix ;;
+linuxaout*) target_os=linuxaout ;;
+linux*) target_os=linux ;;
+mingw32*) target_os=mingw32 ;;
+netbsd*) target_os=netbsd ;;
+openbsd*) target_os=openbsd ;;
+osf[12]*) target_os=osf1 ;;
+osf*) target_os=osf3 ;;
+solaris2*) target_os=solaris2 ;;
+sunos4*) target_os=sunos4 ;;
+ultrix*) target_os=ultrix ;;
+esac
+host_os="$target_os"	# hack: we can't cross-compile
+build_os="$target_os"	# hack: we can't cross-compile
+
 AC_DEFINE_UNQUOTED(HOST_ARCH, "$host_cpu")
 AC_DEFINE_UNQUOTED(HOST_OS, "$host_os")
 
