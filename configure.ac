@@ -34,8 +34,13 @@ BuildPlatform=`/bin/sh config.sub $build` || exit 1
 HostPlatform=`/bin/sh config.sub $host` || exit 1
 TargetPlatform=`/bin/sh config.sub $target` || exit 1
 
-if test x"$TargetPlatform" != x"$HostPlatform" ; then
-  AC_MSG_ERROR([Hugs98 does not yet support differing host/target (i.e., cross-compiling)])
+dnl ** fptools does further canonicalization
+BuildPlatform=`./fp-platform $BuildPlatform`
+HostPlatform=`./fp-platform $HostPlatform`
+TargetPlatform=`./fp-platform $TargetPlatform`
+
+if test x"$HostPlatform" != x"$BuildPlatform" ; then
+  AC_MSG_ERROR([Hugs98 does not yet support differing build/host (i.e., cross-compiling)])
 fi
 
 host_cpu=`echo $HostPlatform | sed 's/-.*//'`
@@ -44,36 +49,6 @@ target_cpu=`echo $TargetPlatform | sed 's/-.*//'`
 target_os=[`echo $TargetPlatform | sed 's/^\([^-]*\)-\([^-]*\)-\([^-]*\).*/\3/'`]
 build_cpu=`echo $BuildPlatform | sed 's/-.*//'`
 build_os=[`echo $BuildPlatform | sed 's/^\([^-]*\)-\([^-]*\)-\([^-]*\).*/\3/'`]
-
-# canonicalize the target cpu (approximately as fptools does)
-case $target_cpu in
-i[[3456]]86*) target_cpu=i386 ;;
-esac
-host_cpu="$target_cpu"	# hack: we can't cross-compile
-build_cpu="$target_cpu"	# hack: we can't cross-compile
-
-# canonicalize the target OS (approximately as fptools does)
-case $target_os in
-aix*) target_os=aix ;;
-cygwin*) target_os=cygwin32 ;;
-darwin*) target_os=darwin ;;
-freebsd2*) target_os=freebsd2 ;;
-freebsd*) target_os=freebsd ;;
-hpux*) target_os=hpux ;;
-irix*) target_os=irix ;;
-linuxaout*) target_os=linuxaout ;;
-linux*) target_os=linux ;;
-mingw32*) target_os=mingw32 ;;
-netbsd*) target_os=netbsd ;;
-openbsd*) target_os=openbsd ;;
-osf[12]*) target_os=osf1 ;;
-osf*) target_os=osf3 ;;
-solaris2*) target_os=solaris2 ;;
-sunos4*) target_os=sunos4 ;;
-ultrix*) target_os=ultrix ;;
-esac
-host_os="$target_os"	# hack: we can't cross-compile
-build_os="$target_os"	# hack: we can't cross-compile
 
 # We don't use AS_TR_CPP here, because it changes case too.
 fp_tr_cpp="sed s/[[^_a-zA-Z0-9]]/_/g"
@@ -368,7 +343,7 @@ dnl Check for Unicode support, and select encoding
 dnl--------------------------------------------------------------------
 
 AC_CHECK_HEADERS(locale.h wchar.h)
-if test "x$target_os" = "xmingw32"; then
+if test "x$host_os" = "xmingw32"; then
   wchar_t_is_unicode=yes	# actually UTF-16
 elif test "${ac_cv_header_wchar_h+set}" = set; then
   AC_MSG_CHECKING([whether wchar_t is ISO 10646 (Unicode)])
@@ -663,7 +638,7 @@ dnl
 dnl Figure out how to do dynamic linking.
 dnl
 dnl It is fairly easy to do the dynamic loading: that is fairly well 
-dnl documented and only depends on the target platform.
+dnl documented and only depends on the host platform.
 dnl 
 dnl It is also fairly easy to decide whether or not to add a leading 
 dnl underscore to symbol names when doing symbol lookup.
@@ -689,7 +664,7 @@ HUGS_TRY_DYNLINK([/LD /ML /nologo])
 dnl Try the win32 way
 dnl gcc-mingw, gcc-cygwin don't want to be given -fPIC,
 dnl but this test fouls up gcc-linux on some architectures.
-case "$target_os" in
+case "$host_os" in
 mingw32|cygwin32)
   HUGS_TRY_DYNLINK([-shared]) ;;
 esac
@@ -791,9 +766,9 @@ dnl the configure script is called
 dnl
 dnl--------------------------------------------------------------------
 
-dnl When building a Windows script, $target_os will be set to "mingw32".
+dnl When building a Windows script, $host_os will be set to "mingw32".
 
-if test "x$target_os" = "xmingw32"; then
+if test "x$host_os" = "xmingw32"; then
     DLL=".dll"          
     DLL_ENDING="-dll"   
     DEV_NULL="nul"
@@ -801,8 +776,8 @@ if test "x$target_os" = "xmingw32"; then
     HUGSPATH=".;{Hugs}\\\\libraries;{Hugs}\\\\packages\\\\*;{Hugs}\\\\oldlib;{Hugs}\\\\lib\\\\win32"
     HUGSSUFFIXES=".hs;.lhs"
     MkInstall="src/MkInstal.in"
-elif test "x$target" = "xdos"; then
-    # Just the same as for Windows but excludes win32 from Path
+elif test "x$host" = "xdos"; then
+    # Much the same as for Windows
     DLL=".dll"          
     DLL_ENDING="-dll"   
     DEV_NULL="nul"
@@ -878,13 +853,13 @@ dnl--------------------------------------------------------------------
 
 HUGS_FOR_WINDOWS=no
 if test "x$with_gui" = xyes; then
-  if test "x$target_os" = "xmingw32"; then
+  if test "x$host_os" = "xmingw32"; then
     LDFLAGS="$LDFLAGS -W"
     WOBJECTS="win-text.obj"
     STRIP="brc32 hugs32.rc hugs.exe -w32"
     RC_FILES="hugs32.rc"
     HUGS_FOR_WINDOWS=yes
-  elif test "x$target" = "xdos"; then
+  elif test "x$host" = "xdos"; then
     WOBJECTS="win-text.obj"
     STRIP="brc hugs16.rc hugs.exe"
     RC_FILES="hugs16.rc"
