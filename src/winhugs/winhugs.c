@@ -66,6 +66,7 @@ LRESULT CALLBACK		ScriptManDlgProc	(HWND, UINT, WPARAM, LPARAM);
 #define DEFAULT_COLS		80
 #define DEFAULT_FONT		"Courier New"
 #define DEFAULT_FONT_SIZE	9
+#define DEFAULT_FONT_WEIGHT	FW_NORMAL
 #define DEFAULT_DIALOGFONT	"MS Sans Serif"
 #define DEFAULT_DIALOGFONT_SIZE 8
 #define DEFAULT_PROMPT		"%s> "
@@ -170,11 +171,10 @@ SelectFont(HWND hWnd)
     cf.lpLogFont   = pLF;
     cf.Flags       = CF_SCREENFONTS |
 	             CF_FIXEDPITCHONLY |
-		     CF_NOSTYLESEL |
  	             CF_INITTOLOGFONTSTRUCT;
     if (ChooseFont(&cf)) {
 	SendMessage(hWndText, WM_SETTEXTFONT,
-		    (WPARAM)pLF->lfFaceName,
+		    (WPARAM)pLF,
 		    (LPARAM)(cf.iPointSize/10));
     }
 }
@@ -943,7 +943,7 @@ static BOOL local InitInstance(LPSTR lpCmdLine, INT nCmdShow)
 {
   RECT		rText, rTB, rSTLN;
   HWND		hWndTB, hWndSTLN;
-  INT		FontSize;
+  INT		FontSize, FontWeight;
   CHAR		FontName[256];
 
   /* Create frame window */
@@ -989,14 +989,14 @@ static BOOL local InitInstance(LPSTR lpCmdLine, INT nCmdShow)
   hAccelTable = LoadAccelerators(hThisInstance, (LPSTR) "HugsAccelerators");
 
   /* create text window */
-  GetFromRegistryFont(FontName, &FontSize);
+  GetFromRegistryFont(FontName, &FontSize, &FontWeight);
   GetFromRegistryScreenSize(&ScreenRows, &ScreenCols);
   hWndText = CreateTextWindow(hThisInstance,
 			      hWndMain,
 			      rTB.right+2,
 			      0 /*V_INDENT*/,
 			      ScreenCols, ScreenRows,
-			      FontName, FontSize,
+			      FontName, FontSize, FontWeight,
 			      hAccelTable);
   if (!hWndText)
     return FALSE;
@@ -1614,6 +1614,7 @@ static VOID local InitMenus(VOID) {
 #define RKEY_SCREENCOLS 	 "Screen Cols"
 #define RKEY_SCREENFONTNAME	 "Screen Font Name"
 #define RKEY_SCREENFONTSIZE	 "Screen Font Size"
+#define RKEY_SCREENFONTWEIGHT	 "Screen Font Weight"
 #define RKEY_DIALOGSFONTNAME	 "Dialogs Font Name"
 #define RKEY_DIALOGSFONTSIZE	 "Dialogs Font Size"
 #define RKEY_LASTPATH		 "LastPath"
@@ -1634,10 +1635,11 @@ static VOID local GetFromRegistryDocPath(CHAR *realPath)
   StrReplace("{Hugs}", hugsdir(), regPath, realPath);
 }
 
-static VOID local GetFromRegistryFont(CHAR *FontName, INT *FontSize)
+static VOID local GetFromRegistryFont(CHAR *FontName, INT *FontSize, INT* FontWeight)
 {
   strcpy(FontName, readRegString(HKEY_CURRENT_USER,HugsRoot,RKEY_SCREENFONTNAME, DEFAULT_FONT));
   *FontSize = readRegInt(RKEY_SCREENFONTSIZE, DEFAULT_FONT_SIZE);
+  *FontWeight = readRegInt(RKEY_SCREENFONTWEIGHT, DEFAULT_FONT_WEIGHT);
 }
 
 static VOID local GetFromRegistryDialogFont(CHAR *FontName, INT *FontSize)
@@ -1708,6 +1710,7 @@ static VOID local SaveGUIOptions(VOID)
     ReleaseDC(hWndText, hDC);
 
     writeRegInt(RKEY_SCREENFONTSIZE, FontSize);
+    writeRegInt(RKEY_SCREENFONTWEIGHT, LogFontPtr->lfWeight);
     writeRegString(RKEY_SCREENFONTNAME, LogFontPtr->lfFaceName);
   }
 

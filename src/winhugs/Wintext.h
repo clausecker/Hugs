@@ -37,7 +37,7 @@ typedef UCHAR* 		POINTER;
 
 
 /* Functions defined in text.c that are exported */
-HWND 	       CreateTextWindow	   (HINSTANCE, HWND, INT, INT, UINT, UINT, LPCSTR, INT, HACCEL);
+HWND 	       CreateTextWindow	   (HINSTANCE, HWND, INT, INT, UINT, UINT, LPCSTR, INT, INT, HACCEL);
 BOOL 	       RegisterTextClass   (HINSTANCE);
 INT cdecl      hWndTextPrintf      (const CHAR *, ...);
 INT cdecl      hWndTextFprintf     (FILE *, const CHAR *, ...);
@@ -62,7 +62,7 @@ INT cdecl      WinPrintf           (HWND, const CHAR *, ...);
 INT cdecl      WinFprintf          (HWND, FILE *, const CHAR *, ...);
 CHAR          *GetSelectedText	   (HWND);
 VOID 	       WinSetAllowBreak    (BOOL);
-VOID           CreateTextFont      (HWND,LPCSTR,INT);
+VOID           CreateTextFont      (HWND,LOGFONT*,INT);
 
 /* ---------------------------------------------------------------------------
  * Now we map C standard I/O functions to the ones defined in Text.c

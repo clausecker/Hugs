@@ -43,7 +43,7 @@ static LPSTR     local  ExpandFileName		      Args((LPSTR));
 static CHAR*   	 local	GetaFileName	   	      Args((HWND, UINT));
 static CHAR*     local  GetFileNameFromFileNamesMenu  Args((FILENAMESMENU*, UINT));
 static VOID      local  GetFromRegistryFileNamesMenu  Args((FILENAMESMENU*, LPSTR));
-static VOID 	 local  GetFromRegistryFont	      Args((CHAR*, INT*));
+static VOID 	 local  GetFromRegistryFont	      Args((CHAR*, INT*, INT*));
 static VOID	 local  GetFromRegistryDocPath	      Args((CHAR *HelpPath));
 static VOID 	 local  GetFromRegistryDialogFont     Args((CHAR*, INT*));
 static VOID 	 local  GetFromRegistryScreenSize     Args((INT*, INT *));

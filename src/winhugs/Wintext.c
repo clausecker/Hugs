@@ -244,9 +244,9 @@ BOOL RegisterTextClass(HINSTANCE hInstance)
  *-------------------------------------------------------------------------*/
 
 VOID
-CreateTextFont(HWND hWnd, 
-	       LPCSTR Fontname,
-	       INT    Fontsize)
+CreateTextFont(HWND hWnd,
+	       LOGFONT* pLF,
+	       INT fontsize)
 {
   HDC        hDC;
   TEXTWINDOWINFO* twi;
@@ -261,11 +261,11 @@ CreateTextFont(HWND hWnd,
   /* Create the font */
   hDC = GetDC(hWnd);
 
-  twi->LogFont.lfHeight         = -MulDiv(Fontsize, GetDeviceCaps(hDC, LOGPIXELSY), 72);
+  twi->LogFont.lfHeight         = pLF->lfHeight;
   twi->LogFont.lfWidth        	= 0;
   twi->LogFont.lfEscapement   	= 0;
   twi->LogFont.lfOrientation  	= 0;
-  twi->LogFont.lfWeight       	= FW_NORMAL;
+  twi->LogFont.lfWeight       	= pLF->lfWeight;
   twi->LogFont.lfItalic     	= FALSE;
   twi->LogFont.lfUnderline  	= FALSE;
   twi->LogFont.lfStrikeOut  	= FALSE;
@@ -274,7 +274,7 @@ CreateTextFont(HWND hWnd,
   twi->LogFont.lfClipPrecision 	= CLIP_TT_ALWAYS;
   twi->LogFont.lfQuality 	= DEFAULT_QUALITY;
   twi->LogFont.lfPitchAndFamily = FIXED_PITCH | FF_MODERN;
-  strcpy(twi->LogFont.lfFaceName, Fontname);
+  strcpy(twi->LogFont.lfFaceName, pLF->lfFaceName);
 
   twi->hFont = CreateFontIndirect(&(twi->LogFont));
   if (!twi->hFont) {
@@ -315,7 +315,8 @@ CreateTextFont(HWND hWnd,
 }
 
 HWND CreateTextWindow(HINSTANCE hInstance, HWND hParent, INT Left, INT Top,
-				UINT Columns, UINT Rows, LPCSTR Fontname, INT Fontsize, HACCEL hAccelTable)
+				UINT Columns, UINT Rows, LPCSTR Fontname, 
+				INT Fontsize, INT FontWeight, HACCEL hAccelTable)
 {
   HWND 		 hWnd;
   HDC		 hDC;
@@ -382,7 +383,7 @@ HWND CreateTextWindow(HINSTANCE hInstance, HWND hParent, INT Left, INT Top,
   twi->LogFont.lfWidth        	= 0;
   twi->LogFont.lfEscapement   	= 0;
   twi->LogFont.lfOrientation  	= 0;
-  twi->LogFont.lfWeight       	= FW_NORMAL;
+  twi->LogFont.lfWeight       	= FontWeight;
   twi->LogFont.lfItalic     	= FALSE;
   twi->LogFont.lfUnderline  	= FALSE;
   twi->LogFont.lfStrikeOut  	= FALSE;
@@ -1916,7 +1917,7 @@ LRESULT CALLBACK TextWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
 			  return (LRESULT) DoGetLogFont (hWnd, message, wParam, lParam);
 
      case WM_SETTEXTFONT:
-			  CreateTextFont(hWnd, (LPCSTR)wParam, (INT)lParam);
+			  CreateTextFont(hWnd, (LOGFONT*)wParam,(INT)lParam);
 			  break;
 
      case WM_SETCURSORSTATUS:
