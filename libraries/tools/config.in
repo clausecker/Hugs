@@ -9,6 +9,4 @@ cc=${CC-@CC@}
 : ${FIND=@FindCmd@}
 
 # whether to include various packages (YES or NO)
-LibsWithGLUT=@LibsWithGLUT@
-LibsWithOpenGL=@LibsWithOpenGL@
 LibsWithX11=@LibsWithX11@
