@@ -11,8 +11,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.57 $
- * $Date: 2002/07/09 21:18:35 $
+ * $Revision: 1.58 $
+ * $Date: 2002/07/19 18:21:07 $
  * ------------------------------------------------------------------------*/
 #include <math.h>
 
@@ -324,6 +324,7 @@ String hugsdir() {                   /* directory containing lib/Prelude.hs */
 	if (s) { 
 	  /* Protect against overruns */
 	  strncpy(dir,s,FILENAME_MAX);
+	  dir[sizeof(dir)-1] = '\0';
 	  free(s);
 	}
     }
@@ -393,10 +394,21 @@ String s; {
     _fullpath(path,s,FILENAME_MAX+1);
 #elif HAVE_REALPATH /* eg Unix */
     static char path[MAXPATHLEN+1];
-    realpath(s,path);                
+    path[sizeof(path)-1] = '\0';
+    if (strlen(s) <= (sizeof(path)-1)) {
+	realpath(s,path);                
+    } else {
+	return s;
+    }
 #else
     static char path[FILENAME_MAX+1];
-    strcpy(path,s);
+
+    path[sizeof(path)-1] = '\0';
+    if (strlen(s) <= (sizeof(path)-1)) {
+        strcpy(path,s);
+    } else {
+	return s;
+    }
 #endif
     return path;
 }
