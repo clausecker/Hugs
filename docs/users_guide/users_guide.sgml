@@ -2,7 +2,6 @@
 <!ENTITY commands       SYSTEM "commands.sgml">
 <!ENTITY extensions     SYSTEM "extensions.sgml">
 <!ENTITY haskell98      SYSTEM "haskell98.sgml">
-<!ENTITY install        SYSTEM "install.sgml">
 <!ENTITY introduction   SYSTEM "introduction.sgml">
 <!ENTITY license        SYSTEM "license.sgml">
 <!ENTITY running        SYSTEM "running.sgml">
@@ -15,7 +14,6 @@
 
 &license;
 &introduction;
-&install;
 &running;
 &commands;
 &haskell98;
