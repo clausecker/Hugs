@@ -20,7 +20,7 @@ fi
 tmpfile=/tmp/libs.$$
 trap 'rm -f $tmpfile+ $tmpfile-; exit 0' 0 1 2 3 15
 
-HUGSFLAGS="-P{Hugs}/libraries -W"
+HUGSFLAGS="-P{Hugs}/libraries:{Hugs}/oldlib -W"
 export HUGSFLAGS
 
 test_module() {
