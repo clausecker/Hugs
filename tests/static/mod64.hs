@@ -1,3 +1,3 @@
--- !!! Pattern binding must bind (not an error in standard Haskell)
+-- !!! Constant pattern bindings (used to be illegal in Hugs).
 module M where
 x = let ['a'] = "a" in 'a'
