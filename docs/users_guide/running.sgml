@@ -46,7 +46,7 @@ the choice making no difference.
 
 <variablelist>
 
-<varlistentry>
+<varlistentry id="option-98">
 <term><option>+98</option></term>
 <listitem>
 <para>
@@ -59,7 +59,7 @@ the <citetitle pubwork=article>Hugs 98 User Manual</citetitle>.
 </listitem>
 </varlistentry>
 
-<varlistentry>
+<varlistentry id="option-overlapping">
 <term><option>+o</option></term>
 <listitem>
 <para>
@@ -68,16 +68,16 @@ Allow overlapping instances (a Hugs extension; default: off)
 </listitem>
 </varlistentry>
 
-<varlistentry>
+<varlistentry id="option-unsafe-overlapping">
 <term><option>+O</option></term>
 <listitem>
 <para>
-Allow overlapping instances (a Hugs extension; default: off)
+Allow unsafe overlapping instances (a Hugs extension; default: off)
 </para>
 </listitem>
 </varlistentry>
 
-<varlistentry>
+<varlistentry id="option-here-documents">
 <term><option>+H</option></term>
 <listitem>
 <para>
@@ -124,14 +124,14 @@ and should be imported if you use the
 </listitem>
 </varlistentry>
 
-<varlistentry>
+<varlistentry id="option-with-dlet">
 <term><option>+W</option></term>
 <listitem>
 <para>
-Use old implicit parameter syntax.
+Use old implicit parameter syntax
+(a Hugs extension; default: on)
 </para>
 <para>
-Allow overlapping instances (a Hugs extension; default: off)
 With the <option>-98</option> option, Hugs supports implicit parameters,
 as described in
 <citetitle pubwork=article>Implicit parameters: dynamic scoping with static types</citetitle>, J Lewis,
@@ -160,7 +160,7 @@ e.g. <literal>Foreign</literal>.
 
 <variablelist>
 
-<varlistentry>
+<varlistentry id="option-literate">
 <term><option>+l</option></term>
 <listitem>
 <para>
@@ -169,7 +169,7 @@ Literate scripts as default (default: off)
 </listitem>
 </varlistentry>
 
-<varlistentry>
+<varlistentry id="option-literate-errors">
 <term><option>+e</option></term>
 <listitem>
 <para>
@@ -178,7 +178,7 @@ Warn about errors in literate scripts (default: on)
 </listitem>
 </varlistentry>
 
-<varlistentry>
+<varlistentry id="option-dots">
 <term><option>+.</option></term>
 <listitem>
 <para>
@@ -187,7 +187,7 @@ Print dots to show progress while loading modules (default: off)
 </listitem>
 </varlistentry>
 
-<varlistentry>
+<varlistentry id="option-quiet">
 <term><option>+q</option></term>
 <listitem>
 <para>
@@ -196,7 +196,7 @@ Print nothing to show progress while loading modules (default: off)
 </listitem>
 </varlistentry>
 
-<varlistentry>
+<varlistentry id="option-show-loaded">
 <term><option>+w</option></term>
 <listitem>
 <para>
@@ -205,7 +205,7 @@ Always show which files were loaded (default: on)
 </listitem>
 </varlistentry>
 
-<varlistentry>
+<varlistentry id="option-preprocessor">
 <term><option>-F</option><replaceable>cmd</replaceable></term>
 <listitem>
 <para>
@@ -219,7 +219,7 @@ and read the standard output.
 </listitem>
 </varlistentry>
 
-<varlistentry>
+<varlistentry id="option-search-path">
 <term><option>-P</option><replaceable>str</replaceable></term>
 <listitem>
 <para>
@@ -242,7 +242,7 @@ prevent it from reading the <literal>Prelude</literal>.
 </listitem>
 </varlistentry>
 
-<varlistentry>
+<varlistentry id="option-suffixes">
 <term><option>-S</option><replaceable>str</replaceable></term>
 <listitem>
 <para>
@@ -338,7 +338,7 @@ In particular, the hierarchical libraries provided with Hugs are unaffected.
 
 <variablelist>
 
-<varlistentry>
+<varlistentry id="option-editor">
 <term><option>-E</option><replaceable>str</replaceable></term>
 <listitem>
 <para>
@@ -455,14 +455,14 @@ gnuclient (for use with (X)Emacs)
 
 <variablelist>
 
-<varlistentry>
+<varlistentry id="option-heap-size">
 <term><option>-h</option><replaceable>num</replaceable></term>
 <listitem>
 <para>
 Set heap size (cannot be changed within Hugs; default: 250K)
 </para>
 
-<varlistentry>
+<varlistentry id="option-prompt">
 <term><option>-p</option><replaceable>str</replaceable></term>
 <listitem>
 <para>
@@ -472,7 +472,7 @@ Any <literal>%s</literal> in <replaceable>str</replaceable>
 will be replaced by the current module name.
 </para>
 
-<varlistentry>
+<varlistentry id="option-repeat-string">
 <term><option>-r</option><replaceable>str</replaceable></term>
 <listitem>
 <para>
@@ -480,7 +480,7 @@ Set repeat last expression string to <replaceable>str</replaceable>
 (default: <quote><literal>$$</literal></quote>).
 </para>
 
-<varlistentry>
+<varlistentry id="option-constraint-cutoff">
 <term><option>-c</option><replaceable>num</replaceable></term>
 <listitem>
 <para>
@@ -488,7 +488,7 @@ Set constraint cutoff limit in the type checker to
 <replaceable>num</replaceable> (default: 40).
 </para>
 
-<varlistentry>
+<varlistentry id="option-print-reductions">
 <term><option>+s</option></term>
 <listitem>
 <para>
@@ -497,7 +497,7 @@ Print number of reductions/cells after each evaluation (default: off)
 </listitem>
 </varlistentry>
 
-<varlistentry>
+<varlistentry id="option-print-type">
 <term><option>+t</option></term>
 <listitem>
 <para>
@@ -506,7 +506,7 @@ Print type after each evaluation (default: off)
 </listitem>
 </varlistentry>
 
-<varlistentry>
+<varlistentry id="option-full-kind-errors">
 <term><option>+k</option></term>
 <listitem>
 <para>
@@ -515,16 +515,70 @@ Show kind errors in full (default: off)
 </listitem>
 </varlistentry>
 
-<varlistentry>
+<varlistentry id="option-use-show">
 <term><option>+u</option></term>
 <listitem>
 <para>
 Use <literal>show</literal> to display results (default: on)
 </para>
+
+<para>
+By default, the values of expressions typed at the prompt are printed using
+the <literal>show</literal> member of the <literal>Show</literal> class:
+<screen>
+  Prelude> [Just (2+3), Nothing]
+  [Just 5,Nothing]
+</screen>
+You can define this function as desired for any new datatype.
+If the type of the expression is not an instance of the
+<literal>Show</literal> class, an error results:
+<screen>
+  Prelude> id
+  ERROR - Cannot find "show" function for:
+  *** Expression : id
+  *** Of type    : a -> a
+</screen>
+With the <option>-u</option> option, a built-in printer is used instead,
+and this works for any type:
+<screen>
+  Prelude> :set -u
+  Prelude> id
+  id
+  Prelude> \x -> x
+  v1497
+  Prelude> [Just (2+3), Nothing]
+  [Maybe_Just 5,Maybe_Nothing]
+</screen>
+Another advantage of the built-in printer is its treatment of failures,
+or exceptions.
+Normally, an exception causes immediate failure of the expression:
+<screen>
+  Prelude> :set +u
+  Prelude> 1 + 2/0
+
+  Program error: divide by zero
+
+  Prelude> [1, 2 + error "foo", 3]
+  [1,
+  Program error: foo
+</screen>
+However the built-in printer prints the whole value, with embedded exceptions:
+<screen>
+  Prelude> :set -u
+  Prelude> [1, 2 + error "foo", 3]
+  [1,{error "foo"},3]
+</screen>
+Sometimes a component could be one of two or more exceptions,
+but the built-in printer shows only one of them:
+<screen>
+  Prelude> 1 + error "foo" + error "bar"
+  {error "foo"}
+</screen>
+</para>
 </listitem>
 </varlistentry>
 
-<varlistentry>
+<varlistentry id="option-print-gc">
 <term><option>+g</option></term>
 <listitem>
 <para>
@@ -533,7 +587,7 @@ Print number of cells recovered after each garbage collection (default: off)
 </listitem>
 </varlistentry>
 
-<varlistentry>
+<varlistentry id="option-qualify-names">
 <term><option>+Q</option></term>
 <listitem>
 <para>
@@ -552,7 +606,7 @@ but turn it back off again afterwards.
 </listitem>
 </varlistentry>
 
-<varlistentry>
+<varlistentry id="option-display-io">
 <term><option>+I</option></term>
 <listitem>
 <para>
@@ -563,12 +617,12 @@ By default, an expression of <literal>IO</literal> type typed at the prompt
 is executed for effect, but the final value it produces is discarded.
 When <option>+I</option> is used, such an expression is evaluated,
 and then its result is printed with <literal>Prelude.print</literal>:
-<programlisting>
+<screen>
   Prelude> :set +I
   Prelude> (return 'a' :: IO Char)
   'a'
   Prelude>
-</programlisting>
+</screen>
 i.e., evaluating an IO action <replaceable>m</replaceable>
 with <option>+I</option> in effect is equivalent to evaluating
 <quote><literal>do { x <- m ; print x }</literal></quote>
@@ -577,26 +631,7 @@ with <option>-I</option>.
 </listitem>
 </varlistentry>
 
-<varlistentry>
-<term><option>+Q</option></term>
-<listitem>
-<para>
-Qualify names when printing (default: off)
-</para>
-<para>
-By default, the interpreter will print out names without qualifying
-them with their defining modules. Most of the time that's exactly what
-you want, but can become confusing if you re-define types and functions;
-the error messages not pinning down what entity it is referring to.
-To have the interpreter qualify the names, use <option>+Q</option>.
-Typically, you use <option>+Q</option> when resolving errors,
-but turn it back off again afterwards.
-</para>
-</listitem>
-
-</varlistentry>
-
-<varlistentry>
+<varlistentry id="option-default-types">
 <term><option>+T</option></term>
 <listitem>
 <para>
@@ -606,19 +641,19 @@ Defaulting types when printing (default: off)
 When printing out types, the interpreter will not try to
 simplify types by applying Haskell's defaulting rules for
 numeric types, e.g.,
-<programlisting>
+<screen>
   Prelude> :t 1
   1 :: Num a => a
   Prelude>
-</programlisting>
-With the <option>+T</option>,
+</screen>
+With the <option>+T</option> option,
 the interpreter attempts to <quote>default</quote> types first:
-<programlisting>
+<screen>
   Prelude> :set +T
   Prelude> :t 1
   1 :: Integer
   Prelude>
-</programlisting>
+</screen>
 Default: -T
 </para>
 </listitem>

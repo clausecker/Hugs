@@ -74,6 +74,18 @@ Hugs only accepts the ISO8859-1 (Latin-1) subset at the moment.
 </para></listitem>
 </varlistentry>
 
+<varlistentry>
+<term>Floating point literals</term>
+<listitem><para>
+Hugs is confused by such things as
+<quote><literal>0xy</literal></quote>,
+<quote><literal>0oy</literal></quote>,
+<quote><literal>9e+y</literal></quote> and
+<quote><literal>9.0e+y</literal></quote>,
+because it doesn't look far enough ahead.
+</para></listitem>
+</varlistentry>
+
 </variablelist>
 
 </sect2>
