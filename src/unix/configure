@@ -1597,6 +1597,10 @@ hslibs and libraries from the Haskell CVS repository." >&2;}
 fi
 FPTOOLS=`cd $FPTOOLS; pwd`
 
+case $host_os in
+  cygwin*|mingw*) FPTOOLS=`cygpath -w $FPTOOLS | sed -e 's@\\\\@/@g'`;;
+esac
+
 
 for ac_prog in 'bison -y' byacc
 do
@@ -3907,7 +3911,7 @@ else
 ac_save_LIBS="$LIBS"
 LIBS="";
 cat > conftest.$ac_ext <<EOF
-#line 3910 "configure"
+#line 3914 "configure"
 #include "confdefs.h"
 main() { extern char dlopen(); dlopen();; exit(0); }
 int t() { return 0; }
@@ -3950,7 +3954,7 @@ else
 ac_save_LIBS="$LIBS"
 LIBS="-ldl";
 cat > conftest.$ac_ext <<EOF
-#line 3953 "configure"
+#line 3957 "configure"
 #include "confdefs.h"
 main() { extern char dlopen(); dlopen();; exit(0); }
 int t() { return 0; }
@@ -4005,7 +4009,7 @@ else
 ac_save_LIBS="$LIBS"
 LIBS="";
 cat > conftest.$ac_ext <<EOF
-#line 4008 "configure"
+#line 4012 "configure"
 #include "confdefs.h"
 main() { extern char shl_load(); shl_load();; exit(0); }
 int t() { return 0; }
@@ -4048,7 +4052,7 @@ else
 ac_save_LIBS="$LIBS"
 LIBS="-ldld";
 cat > conftest.$ac_ext <<EOF
-#line 4051 "configure"
+#line 4055 "configure"
 #include "confdefs.h"
 main() { extern char shl_load(); shl_load();; exit(0); }
 int t() { return 0; }
@@ -4103,7 +4107,7 @@ else
 ac_save_LIBS="$LIBS"
 LIBS="";
 cat > conftest.$ac_ext <<EOF
-#line 4106 "configure"
+#line 4110 "configure"
 #include "confdefs.h"
 main() { extern char atan(); atan();; exit(0); }
 int t() { return 0; }
@@ -4146,7 +4150,7 @@ else
 ac_save_LIBS="$LIBS"
 LIBS="-lm";
 cat > conftest.$ac_ext <<EOF
-#line 4149 "configure"
+#line 4153 "configure"
 #include "confdefs.h"
 main() { extern char atan(); atan();; exit(0); }
 int t() { return 0; }
@@ -19184,7 +19188,7 @@ unset fptools_check_cconst_result
 ac_save_LIBS="$LIBS"
 LIBS=;
 cat > conftest.$ac_ext <<EOF
-#line 19187 "configure"
+#line 19191 "configure"
 #include "confdefs.h"
 
 #if HAVE_WINDOWS_H
@@ -19225,7 +19229,7 @@ fi
 ac_save_LIBS="$LIBS"
 LIBS=;
 cat > conftest.$ac_ext <<EOF
-#line 19228 "configure"
+#line 19232 "configure"
 #include "confdefs.h"
 
 #if HAVE_WINDOWS_H

@@ -138,6 +138,11 @@ hslibs and libraries from the Haskell CVS repository.])
 fi
 FPTOOLS=`cd $FPTOOLS; pwd`
 
+dnl win32: Canonicalize FPTOOLS
+case $host_os in
+  cygwin*|mingw*) FPTOOLS=`cygpath -w $FPTOOLS | sed -e 's@\\\\@/@g'`;;
+esac
+
 dnl--------------------------------------------------------------------
 dnl
 dnl Check for programs
