@@ -33,7 +33,7 @@ static struct primitive timePrimTable[] = {
   /* Time primitives */
   {"getClockTimePrim",     0+IOArity, primGetClockTime},        
   {"toCalTimePrim",        2+IOArity, primGetCalTime},        
-  {"toClockTimePrim",      8+IOArity, primMkTime},
+  {"toClockTimePrim",      7+IOArity, primMkTime},
   {0,			0, 0}
 };
 
@@ -180,23 +180,22 @@ primFun(primGetCalTime) { /* Int   -> Int -> IO (.....) */
 
 primFun(primMkTime) { /* Int{-year-}  -> Int{-month-} -> Int{-day-} ->
                          Int{-hour-}  -> Int{-mins-}  -> Int{-sec-} ->
-			 Int{-tz offset-} -> Int{-isdst-} -> IO Int{-secs since Epoch-} */
+			 Int{-tz offset-} -> IO Int{-secs since Epoch-} */
 #ifdef HAVE_MKTIME
   Int year, month, day;
   Int hour,min,sec;
-  Int tz,isDst;
+  Int tz;
 
   struct tm tm;
   time_t t;
   
-  IntArg(year,8+IOArity);
-  IntArg(month,7+IOArity);
-  IntArg(day,6+IOArity);
-  IntArg(hour,5+IOArity);
-  IntArg(min,4+IOArity);
-  IntArg(sec,3+IOArity);
-  IntArg(tz,2+IOArity);
-  IntArg(isDst,1+IOArity);
+  IntArg(year,7+IOArity);
+  IntArg(month,6+IOArity);
+  IntArg(day,5+IOArity);
+  IntArg(hour,4+IOArity);
+  IntArg(min,3+IOArity);
+  IntArg(sec,2+IOArity);
+  IntArg(tz,1+IOArity);
   
   tm.tm_year = year;
   tm.tm_mon  = month;

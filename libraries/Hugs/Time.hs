@@ -14,7 +14,7 @@ primitive getClockTimePrim :: IO (Int,Int)
 primitive toCalTimePrim ::
 	Int -> Int -> IO (Int,Int,Int,Int,Int,Int,Int,Int,Int,String,Int)
 primitive toClockTimePrim ::
-	Int -> Int -> Int -> Int -> Int -> Int -> Int -> Int -> IO Int
+	Int -> Int -> Int -> Int -> Int -> Int -> Int -> IO Int
 
 picoSec :: Integer
 picoSec = 1000000000000 -- 10^12
