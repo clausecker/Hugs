@@ -19,7 +19,7 @@
 cpp_flags='-D__HUGS__'
 cpp="gcc -P -E -traditional -xc $cpp_flags"
 cc="gcc"
-hsc2hs="hsc2hs"
+hsc2hs="f:/fptools/HEAD/ghc/utils/hsc2hs/hsc2hs-inplace"
 
 hugs_src=../../lib
 
@@ -351,8 +351,7 @@ hslibs() {
   cvt haskell-src Language/Haskell/Syntax.hs
   cvt haskell-src Language/Haskell/THSyntax.hs
 
-# for this one to be useful, really need Network.Socket.socketToHandle.
-#  cvt network Network.hs
+  cvt network Network.hs
   cvt network Network/BSD.hsc
   cvt network Network/CGI.hs
   cvt network Network/Socket.hsc
