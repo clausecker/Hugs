@@ -50,8 +50,6 @@ LIBRARIES	= $(BUILD_DIR)/libraries/Prelude.hs
 # a file created by make include
 INCLUDES	= $(BUILD_DIR)/include/HsFFI.h
 
-ifneq "@target@" "windows"
-ifneq "@target@" "dos"
 # These variables determine where various parts of the Hugs system are
 # installed.  (They are ignored in Windows or DOS.)
 # Binaries are installed in $(bindir); libraries go in $(hugsdir)/libraries
@@ -62,8 +60,6 @@ libdir		= @libdir@
 datadir		= @datadir@
 mandir          = @mandir@
 hugsdir		= @hugsdir@
-endif
-endif
 
 .SUFFIXES	:
 .SUFFIXES	: .c .h @OBJ@
