@@ -1,5 +1,6 @@
 # this Makefile is for building RPM distributions, and is, not surprisingly,
-# somewhat redhat specific.
+# somewhat redhat specific (and rpm version 3 specific - i.e. RedHat 6.0
+# or greater).
 
 RELEASE=hugs98-Nov1999
 
