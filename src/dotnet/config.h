@@ -25,6 +25,9 @@
 /* Define to 1 if you have the <assert.h> header file. */
 #define HAVE_ASSERT_H 1
 
+/* Define to 1 if you have the `atan' function. */
+#define HAVE_ATAN 1
+
 /* Define to 1 if you have /bin/sh */
 #define HAVE_BIN_SH 1
 
@@ -58,11 +61,17 @@
 /* Define to 1 if you have the <dlfcn.h> header file. */
 /* #undef HAVE_DLFCN_H */
 
+/* Define to 1 if you have the `dlopen' function. */
+/* #undef HAVE_DLOPEN */
+
 /* Define to 1 if you have the <dl.h> header file. */
 /* #undef HAVE_DL_H */
 
 /* Define to 1 if you have the <dos.h> header file. */
 #define HAVE_DOS_H 1
+
+/* Define to 1 if you have the `dup' function. */
+/* #undef HAVE_DUP */
 
 /* Define to 1 if you have the <errno.h> header file. */
 #define HAVE_ERRNO_H 1
@@ -105,7 +114,10 @@
 
 /* Define to 1 if heap profiler can (and should) automatically invoke hp2ps to
    convert heap profile (in "profile.hp") to PostScript. */
-#define HAVE_HP2PS 0
+/* #undef HAVE_HP2PS */
+
+/* Define to 1 if you have the <inttypes.h> header file. */
+#define HAVE_INTTYPES_H 1
 
 /* Define to 1 if you have the <io.h> header file. */
 #define HAVE_IO_H 1
@@ -124,8 +136,17 @@
 /* Define to 1 if you have the `dld' library (-ldld). */
 /* #undef HAVE_LIBDLD */
 
+/* Define to 1 if you have the `m' library (-lm). */
+#define HAVE_LIBM 1
+
 /* Define to 1 if you have the <limits.h> header file. */
 #define HAVE_LIMITS_H 1
+
+/* Define to 1 if you have the `LoadLibrary' function. */
+#define HAVE_LOADLIBRARY 1
+
+/* Define to 1 if you have the <locale.h> header file. */
+#define HAVE_LOCALE_H 1
 
 /* Define to 1 if you have the `localtime' function. */
 #define HAVE_LOCALTIME 1
@@ -136,8 +157,14 @@
 /* Define to 1 if you have the `macsystem' function. */
 /* #undef HAVE_MACSYSTEM */
 
+/* Define to 1 if you have the <memory.h> header file. */
+#define HAVE_MEMORY_H 1
+
 /* Define to 1 if you have the `mktime' function. */
 #define HAVE_MKTIME 1
+
+/* Define to 1 if you have the `NSCreateObjectFileImageFromFile' function. */
+/* #undef HAVE_NSCREATEOBJECTFILEIMAGEFROMFILE */
 
 /* Define to 1 if you have the `pclose' function. */
 /* #undef HAVE_PCLOSE */
@@ -147,6 +174,9 @@
 
 /* Define to 1 if you have the `popen' function. */
 /* #undef HAVE_POPEN */
+
+/* Define if you have POSIX threads libraries and header files. */
+/* #undef HAVE_PTHREAD */
 
 /* Define to 1 if you have the `realpath' function. */
 /* #undef HAVE_REALPATH */
@@ -159,6 +189,9 @@
 
 /* Define to 1 if you have the <sgtty.h> header file. */
 /* #undef HAVE_SGTTY_H */
+
+/* Define to 1 if you have the `shl_load' function. */
+/* #undef HAVE_SHL_LOAD */
 
 /* Define to 1 if you have the <signal.h> header file. */
 #define HAVE_SIGNAL_H 1
@@ -174,6 +207,9 @@
 
 /* Define to 1 if you have the <stdarg.h> header file. */
 #define HAVE_STDARG_H 1
+
+/* Define to 1 if you have the <stdint.h> header file. */
+#define HAVE_STDINT_H 1
 
 /* Define to 1 if you have the <stdlib.h> header file. */
 #define HAVE_STDLIB_H 1
@@ -196,11 +232,17 @@
 /* Define to 1 if you have the `stricmp' function. */
 #define HAVE_STRICMP 1
 
+/* Define to 1 if you have the <strings.h> header file. */
+#define HAVE_STRINGS_H 1
+
 /* Define to 1 if you have the <string.h> header file. */
 #define HAVE_STRING_H 1
 
 /* Define to 1 if you have the `strrchr' function. */
 #define HAVE_STRRCHR 1
+
+/* Define to 1 if `tm_zone' is member of `struct tm'. */
+/* #undef HAVE_STRUCT_TM_TM_ZONE */
 
 /* Define to 1 if you have the <sys/ioctl.h> header file. */
 /* #undef HAVE_SYS_IOCTL_H */
@@ -264,6 +306,9 @@
 /* Define to 1 if you have the `vsnprintf' function. */
 /* #undef HAVE_VSNPRINTF */
 
+/* Define to 1 if you have the <wchar.h> header file. */
+#define HAVE_WCHAR_H 1
+
 /* Define to 1 if you have the <windows.h> header file. */
 #define HAVE_WINDOWS_H 1
 
@@ -305,6 +350,10 @@
 /* Define to 1 if the C compiler supports function prototypes. */
 #define PROTOTYPES 1
 
+/* Define to the necessary symbol if this constant uses a non-standard name on
+   your system. */
+/* #undef PTHREAD_CREATE_JOINABLE */
+
 /* Define as the return type of signal handlers (`int' or `void'). */
 #define RETSIGTYPE void
 
@@ -340,6 +389,9 @@
 /* Define to 1 if signal handlers have type void (*)(int) (Otherwise, they're
    assumed to have type int (*)(void).) */
 #define VOID_INT_SIGNALS 1
+
+/* Define like PROTOTYPES; this can be used by system headers. */
+#define __PROTOTYPES 1
 
 /* Define to empty if `const' does not conform to ANSI C. */
 /* #undef const */
