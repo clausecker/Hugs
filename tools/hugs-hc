@@ -3,20 +3,8 @@
 # Simulate a Haskell compiler using Hugs
 # (used to interface to the test suite)
 
-# For best results, you also need to modify Hugs.Prelude, replacing the lines
-#       putChar '\n'
-#       putStr "Program error: "
-#       putStrLn (show err)
-#
-# with
-#
-#       hPutStr stderr "Fail: "
-#       hPutStr stderr (show err)
-#       hPutChar stderr '\n'
-#
-# primitive stderr      :: Handle
-# primitive hPutChar      :: Handle -> Char -> IO ()
-# primitive hPutStr       :: Handle -> String -> IO ()
+# For best results, you also need to modify Hugs.Prelude, using
+# prelude.patch (also in hugs98/tools).
 
 out_file=
 compile_only=false
