@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: runhugs.c,v $
- * $Revision: 1.8 $
- * $Date: 2002/03/01 20:34:09 $
+ * $Revision: 1.9 $
+ * $Date: 2002/04/04 06:46:46 $
  * ------------------------------------------------------------------------*/
 
 #include <stdio.h>
@@ -24,10 +24,6 @@ extern char* lastError;
 
 #if defined(_MSC_VER) && !defined(_MANAGED)
 #include <windows.h>
-#endif
-
-#if __MWERKS__ && macintosh
-#include <SIOUX.h>
 #endif
 
 extern int  main      Args((int, char**));
@@ -71,15 +67,12 @@ char* argv[]; {
     char** hugs_argv;
     int    hugs_argc;
 
+    if (!initSystem()) {
+      fprintf(stderr,"%0: failed to initialize, exiting\n", (argv ? argv[0] : ""));
+      fflush(stderr);
+      exit(1);
+    }
 #if __MWERKS__ && macintosh
-    strcpy(macHugsDir,currentDir());
-    SIOUXSettings.autocloseonquit   = true;
-    SIOUXSettings.asktosaveonclose  = false;
-    SIOUXSettings.columns           = 80;
-    SIOUXSettings.rows              = 40; 
-    SIOUXSettings.tabspaces         = 8;
-    SIOUXSettings.enabledraganddrop = true;
-    SIOUXSetTitle("\pHugs 98");
     argc = ccommand(&argv);
 #endif
 
