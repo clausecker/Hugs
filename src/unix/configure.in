@@ -199,13 +199,6 @@ AC_ARG_ENABLE(ffi,
                  [include modules that use the FFI]),
   , [enable_ffi=autodetect])
 
-AC_ARG_ENABLE(hopengl,
-  AC_HELP_STRING([--enable-hopengl],
-                 [[include HOpenGL, a Haskell binding for OpenGL/GLUT.
-                          On Mac OS X, use --enable-hopengl=x11 to use X11
-                          instead of the "native" libraries]]),
-  , [enable_hopengl=no])
-
 AC_ARG_ENABLE(unicode-chars,
   [AC_HELP_STRING([--enable-unicode-chars[[=<encoding>]]],
                  [allow the Haskell Char type to range over Unicode,
@@ -403,7 +396,7 @@ AC_CHECK_HEADERS(regex.h,[AC_CHECK_FUNC(regcomp, [HavePosixRegex=YES])])
 AC_SUBST(HavePosixRegex)
 
 dnl check for OpenGL include files
-if test x"$enable_hopengl" != x"no"; then
+if test x"$enable_opengl" != x"no"; then
   fp_save_cppflags="$CPPFLAGS"
   CPPFLAGS="$CPPFLAGS $X_CFLAGS"
   if test x"$use_quartz_opengl" = xyes ; then
@@ -554,7 +547,7 @@ FPTOOLS_CHECK_HTYPE(ssize_t)
 FPTOOLS_CHECK_HTYPE(rlim_t)
 
 dnl ** Map OpenGL data types to Haskell types
-if test x"$enable_hopengl" != x"no"; then
+if test x"$enable_opengl" != x"no"; then
 FPTOOLS_CHECK_HTYPE(GLboolean)
 FPTOOLS_CHECK_HTYPE(GLbyte)
 FPTOOLS_CHECK_HTYPE(GLubyte)
