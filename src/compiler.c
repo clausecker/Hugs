@@ -9,8 +9,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: compiler.c,v $
- * $Revision: 1.13 $
- * $Date: 2003/01/23 17:47:07 $
+ * $Revision: 1.14 $
+ * $Date: 2003/02/10 14:52:00 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -159,7 +159,7 @@ Cell e; {
 	case VARIDCELL  :
 	case DICTVAR    :
 	case INTCELL    :
-	case FLOATCELL  :
+	case DOUBLECELL :
 	case STRCELL    :
 	case CHARCELL   : return e;
 
@@ -1092,7 +1092,7 @@ Cell e;  {                             /* e  = expr to transform           */
 	case NAME     :
 	case CHARCELL :
 	case INTCELL  :
-	case FLOATCELL:
+	case DOUBLECELL:
 	case STRCELL  : break;
 
 	default       : internal("pmcTerm");
@@ -1543,7 +1543,7 @@ Cell d; {
 #if NPLUSK
 	case AP        : return (whatIs(fun(d))==ADDPAT) ? 1 : 0;
 #else
-	case AP        : return 0;      /* must be an Int or Float lit     */
+	case AP        : return 0;      /* must be an Int or Double lit    */
 #endif
 #endif
     }
@@ -1559,8 +1559,8 @@ Cell d1, d2; {                          /* descriptors have same value     */
 #endif
     if (isInt(arg(d1)))
 	return isInt(arg(d2)) && intOf(arg(d1))==intOf(arg(d2));
-    if (isFloat(arg(d1)))
-	return isFloat(arg(d2)) && floatOf(arg(d1))==floatOf(arg(d2));
+    if (isDouble(arg(d1)))
+	return isDouble(arg(d2)) && doubleOf(arg(d1))==doubleOf(arg(d2));
 #if BIGNUMS
     if (isBignum(arg(d1)))
 	return isBignum(arg(d2)) && bigCmp(arg(d1),arg(d2))==0;
@@ -1632,7 +1632,7 @@ Cell e; {
 	case TUPLE     :
 	case NAME      :
 	case INTCELL   :
-	case FLOATCELL :
+	case DOUBLECELL:
 	case STRCELL   :
 	case OFFSET    :
 	case CHARCELL  : break;
@@ -1904,7 +1904,7 @@ Cell e; {				/* include extra parameters	   */
 	case TUPLE     :
 	case NAME      :
 	case INTCELL   :
-	case FLOATCELL :
+	case DOUBLECELL:
 	case STRCELL   :
 	case CHARCELL  : break;
 

@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: bignums.c,v $
- * $Revision: 1.8 $
- * $Date: 2003/02/08 15:45:54 $
+ * $Revision: 1.9 $
+ * $Date: 2003/02/10 14:51:59 $
  * ------------------------------------------------------------------------*/
 
 /*#define DEBUG_BIGNUMS*/
@@ -40,6 +40,7 @@ PROTO_PRIM(primIntegerToInt);
 PROTO_PRIM(primWordToInteger);
 PROTO_PRIM(primIntegerToWord);
 PROTO_PRIM(primIntegerToFloat);
+PROTO_PRIM(primIntegerToDouble);
 PROTO_PRIM(primEqInteger);
 PROTO_PRIM(primCmpInteger);
 
@@ -55,7 +56,7 @@ static struct primitive bignumPrimTable[] = {
   {"primWordToInteger",	1, primWordToInteger},
   {"primIntegerToWord",	1, primIntegerToWord},
   {"primIntegerToFloat",1, primIntegerToFloat},
-  {"primIntegerToDouble",1,primIntegerToFloat},
+  {"primIntegerToDouble",1,primIntegerToDouble},
   {"primEqInteger",	2, primEqInteger},
   {"primCmpInteger",	2, primCmpInteger},
   {0,			0, 0}
@@ -236,19 +237,19 @@ Bignum n; {
     }
 }
 
-Cell bigToFloat(n)			/* convert bignum to float	   */
+double bigToDouble(n)			/* convert bignum to double	  */
 Bignum n; {
     if (n==ZERONUM)
-	return mkFloat((Float)0);
+	return 0.0;
     else {
-	Float m  = (Float)0;
-	Float b  = (Float)1;
+	double m  = 0.0;
+	double b  = 1.0;
 	List  ds = snd(n);
 	for (; nonNull(ds); ds=tl(ds)) {
-	    m += b*((Float)digitOf(hd(ds)));
+	    m += b*digitOf(hd(ds));
 	    b *= BIGBASE;
 	}
-	return mkFloat(fst(n)==POSNUM ? m : (-m));
+	return fst(n)==POSNUM ? m : (-m);
     }
 }
 
@@ -380,7 +381,12 @@ primFun(primIntegerToWord) {		/* Conversion :: Integer -> Word   */
 
 primFun(primIntegerToFloat) {		/* Conversion :: Integer -> Float  */
     eval(primArg(1));
-    updateRoot(bigToFloat(whnfHead));
+    updateRoot(mkFloat((FloatPro)bigToDouble(whnfHead)));
+}
+
+primFun(primIntegerToDouble) {		/* Conversion :: Integer -> Double */
+    eval(primArg(1));
+    updateRoot(mkDouble((DoublePro)bigToDouble(whnfHead)));
 }
 
 primFun(primNegInteger) {		/* Integer unary negate		   */

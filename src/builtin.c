@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: builtin.c,v $
- * $Revision: 1.46 $
- * $Date: 2003/02/04 05:07:49 $
+ * $Revision: 1.47 $
+ * $Date: 2003/02/10 14:52:00 $
  * ------------------------------------------------------------------------*/
 
 /* We include math.h before prelude.h because SunOS 4's cpp incorrectly
@@ -127,13 +127,17 @@ Name nameRecEq;				/* Compare records		   */
 Name nameAddEv;				/* Add up evidence		   */
 #endif
 
-#if SHORT_CIRCUIT_COERCIONS
 Name nameRationalToFloat;
+Name nameRationalToDouble;
+#if SHORT_CIRCUIT_COERCIONS
 Name nameFloatToRational;
 Name nameDoubleToRational;
 Name nameDoubleToRatio;
 Name nameIntToRatio;
 Name nameIntToFloat;
+Name nameIntToDouble;
+Name nameDoubleToFloat;
+Name nameFloatToDouble;
 #endif
 
 /* --------------------------------------------------------------------------
@@ -164,6 +168,7 @@ Name nameIntToFloat;
 # define checkWord()  if (!isInt(whnfHead))   internal("Word expected")
 # define checkPtr()   if (!isPtr(whnfHead))   internal("Ptr expected")
 # define checkFloat() if (!isFloat(whnfHead)) internal("Float expected")
+# define checkDouble() if (!isDouble(whnfHead)) internal("Double expected")
 
 # define checkBool()  if (whnfHead != nameTrue && whnfHead != nameFalse) internal("Bool expected");
 
@@ -176,6 +181,7 @@ Name nameIntToFloat;
 # define checkWord()  doNothing()
 # define checkPtr()   doNothing()
 # define checkFloat() doNothing()
+# define checkDouble() doNothing()
 # define checkBool()  doNothing()
 # define checkCon()   doNothing()
 
@@ -284,6 +290,16 @@ Name nameIntToFloat;
    If you use an expression, reevaluation might occur */
 #define FloatResult(nm)                            \
    updateRoot(mkFloat(nm))
+
+#define DoubleArg(nm,offset)                       \
+    eval(primArg(offset));                         \
+    checkDouble();                                 \
+    nm = whnfDouble
+
+/* nm should be a variable in which result is stored.
+   If you use an expression, reevaluation might occur */
+#define DoubleResult(nm)                           \
+   updateRoot(mkDouble(nm))
 
 #define BoolArg(nm, offset)                        \
    eval(primArg(offset));                          \
@@ -521,6 +537,70 @@ Name nameIntToFloat;
     FloatResult(r);                                \
 }
 
+/* e is an expression with free variables x and y */
+#define DoubleDouble2Double(nm,e)                  \
+  primFun(nm) {                                    \
+    Double x, y, r;                                \
+    DoubleArg(x,2);                                \
+    DoubleArg(y,1);                                \
+    r = e;                                         \
+    DoubleResult(r);                               \
+}
+
+/* e is an expression with free variables x and y */
+/* y must be non-zero                             */
+#define DoubleDouble2DoubleNonZero(nm,e)           \
+  primFun(nm) {                                    \
+    Double x, y, r;                                \
+    DoubleArg(x,2);                                \
+    DoubleArg(y,1);                                \
+    if (y==0)                                      \
+      throwException(ap(nameArithException, nameDivideByZero));\
+    r = e;                                         \
+    DoubleResult(r);                               \
+}
+
+/* e is an expression with free variable x        */
+#define Double2Double(nm,e)                        \
+  primFun(nm) {                                    \
+    Double x, r;                                   \
+    DoubleArg(x,1);                                \
+    r = (Double)e;                                 \
+    DoubleResult(r);                               \
+}
+
+/* e is an expression with free variable x        */
+#define Double2Int(nm,e)                           \
+  primFun(nm) {                                    \
+    Double x;                                      \
+    Int r;                                         \
+    DoubleArg(x,1);                                \
+    r = e;                                         \
+    IntResult(r);                                  \
+}
+
+/* e is an expression with free variable x        */
+#define Double2Bool(nm,e)                          \
+  primFun(nm) {                                    \
+    Double x;                                      \
+    Bool r;                                        \
+    DoubleArg(x,1);                                \
+    r = e;                                         \
+    BoolResult(r);                                 \
+}
+
+/* e is an expression with free variable x        */
+/* pre is a precondition (fv x) to test           */
+#define Double2DoublePre(nm,e,pre)                 \
+  primFun(nm) {                                    \
+    Double x, r;                                   \
+    DoubleArg(x,1);                                \
+    if (!(pre))                                    \
+      throwException(ap(nameErrorCall, mkStr(findText("argument out of range"))));\
+    r = (Double)e;                                 \
+    DoubleResult(r);                               \
+}
+
 #define CharArg(nm,offset)                         \
     eval(primArg(offset));                         \
     checkChar();                                   \
@@ -547,6 +627,15 @@ Name nameIntToFloat;
     Float x, y;                                    \
     FloatArg(x,2);                                 \
     FloatArg(y,1);                                 \
+    BoolResult(e);                                 \
+}
+
+/* e is a predicate with free variables x and y   */
+#define DoubleDouble2Bool(nm,e)                    \
+  primFun(nm) {                                    \
+    Double x, y;                                   \
+    DoubleArg(x,2);                                \
+    DoubleArg(y,1);                                \
     BoolResult(e);                                 \
 }
 
@@ -597,9 +686,11 @@ PROTO_PRIM(primIntToChar);
 PROTO_PRIM(primWord32ToInt);
 PROTO_PRIM(primIntToWord32);
 PROTO_PRIM(primIntToFloat);
+PROTO_PRIM(primIntToDouble);
 PROTO_PRIM(primDummyCvt);
 
 PROTO_PRIM(primRationalToFloat);
+PROTO_PRIM(primRationalToDouble);
 
 #if WORD_OPS
 PROTO_PRIM(primMaxWord);
@@ -647,11 +738,20 @@ PROTO_PRIM(primW64toW32);
 
 PROTO_PRIM(primFreeHFunPtr);
 
+PROTO_PRIM(primDoubleToFloat);
+PROTO_PRIM(primFloatToDouble);
+
 PROTO_PRIM(primPlusFloat);
 PROTO_PRIM(primMinusFloat);
 PROTO_PRIM(primMulFloat);
 PROTO_PRIM(primDivFloat);
 PROTO_PRIM(primNegFloat);
+
+PROTO_PRIM(primPlusDouble);
+PROTO_PRIM(primMinusDouble);
+PROTO_PRIM(primMulDouble);
+PROTO_PRIM(primDivDouble);
+PROTO_PRIM(primNegDouble);
 
 #ifdef HAVE_LIBM
 PROTO_PRIM(primSinFloat);
@@ -673,6 +773,25 @@ PROTO_PRIM(primFloatMinExp);
 PROTO_PRIM(primFloatMaxExp);
 PROTO_PRIM(primFloatDecode);
 PROTO_PRIM(primFloatEncode);
+
+PROTO_PRIM(primSinDouble);
+PROTO_PRIM(primCosDouble);
+PROTO_PRIM(primTanDouble);
+PROTO_PRIM(primAsinDouble);
+PROTO_PRIM(primAcosDouble);
+PROTO_PRIM(primAtanDouble);
+#if 0 /* Not used in current Prelude */
+PROTO_PRIM(primAtan2Double);
+#endif
+PROTO_PRIM(primExpDouble);
+PROTO_PRIM(primLogDouble);
+PROTO_PRIM(primSqrtDouble);
+PROTO_PRIM(primDoubleToInt);
+PROTO_PRIM(primDoubleDigits);
+PROTO_PRIM(primDoubleMinExp);
+PROTO_PRIM(primDoubleMaxExp);
+PROTO_PRIM(primDoubleDecode);
+PROTO_PRIM(primDoubleEncode);
 #endif /* HAVE_LIBM */
 
 PROTO_PRIM(primNullAddr);
@@ -693,6 +812,9 @@ PROTO_PRIM(primCmpChar);
 
 PROTO_PRIM(primEqFloat);
 PROTO_PRIM(primCmpFloat);
+
+PROTO_PRIM(primEqDouble);
+PROTO_PRIM(primCmpDouble);
 
 #if TREX
 PROTO_PRIM(primRecExt);
@@ -814,7 +936,7 @@ static struct primitive builtinPrimTable[] = {
   {"primIntToInteger",  1, primDummyCvt},
   {"primIntegerToInt",  1, primDummyCvt},
   {"primIntegerToFloat",1, primIntToFloat},
-  {"primIntegerToDouble",1,primIntToFloat},
+  {"primIntegerToDouble",1,primIntToDouble},
   {"primEqInteger",     2, primEqInt},
   {"primCmpInteger",    2, primCmpInt},
 #endif
@@ -825,11 +947,11 @@ static struct primitive builtinPrimTable[] = {
   {"primDivFloat",      2, primDivFloat},
   {"primNegFloat",      1, primNegFloat},
 
-  {"primPlusDouble",    2, primPlusFloat},      /* Currently Float */
-  {"primMinusDouble",   2, primMinusFloat},     /* Currently Float */
-  {"primMulDouble",     2, primMulFloat},       /* Currently Float */
-  {"primDivDouble",     2, primDivFloat},       /* Currently Float */
-  {"primNegDouble",     1, primNegFloat},       /* Currently Float */
+  {"primPlusDouble",    2, primPlusDouble},
+  {"primMinusDouble",   2, primMinusDouble},
+  {"primMulDouble",     2, primMulDouble},
+  {"primDivDouble",     2, primDivDouble},
+  {"primNegDouble",     1, primNegDouble},
 
 #ifdef HAVE_LIBM
   {"primSinFloat",      1, primSinFloat},
@@ -849,22 +971,22 @@ static struct primitive builtinPrimTable[] = {
   {"primFloatDecode",   1, primFloatDecode},
   {"primFloatEncode",   2, primFloatEncode},
 
-  {"primSinDouble",     1, primSinFloat},       /* Currently Float */
-  {"primCosDouble",     1, primCosFloat},       /* Currently Float */
-  {"primTanDouble",     1, primTanFloat},       /* Currently Float */
-  {"primAsinDouble",    1, primAsinFloat},      /* Currently Float */
-  {"primAcosDouble",    1, primAcosFloat},      /* Currently Float */
-  {"primAtanDouble",    1, primAtanFloat},      /* Currently Float */
-  {"primExpDouble",     1, primExpFloat},       /* Currently Float */
-  {"primLogDouble",     1, primLogFloat},       /* Currently Float */
-  {"primSqrtDouble",    1, primSqrtFloat},      /* Currently Float */
-  {"primDoubleToInt",   1, primFloatToInt},     /* Currently Float */
-  {"primDoubleRadix",   0, primFloatRadix},     /* Currently Float */
-  {"primDoubleDigits",  0, primFloatDigits},    /* Currently Float */
-  {"primDoubleMinExp",  0, primFloatMinExp},    /* Currently Float */
-  {"primDoubleMaxExp",  0, primFloatMaxExp},    /* Currently Float */
-  {"primDoubleDecode",  1, primFloatDecode},    /* Currently Float */
-  {"primDoubleEncode",  2, primFloatEncode},    /* Currently Float */
+  {"primSinDouble",     1, primSinDouble},
+  {"primCosDouble",     1, primCosDouble},
+  {"primTanDouble",     1, primTanDouble},
+  {"primAsinDouble",    1, primAsinDouble},
+  {"primAcosDouble",    1, primAcosDouble},
+  {"primAtanDouble",    1, primAtanDouble},
+  {"primExpDouble",     1, primExpDouble},
+  {"primLogDouble",     1, primLogDouble},
+  {"primSqrtDouble",    1, primSqrtDouble},
+  {"primDoubleToInt",   1, primDoubleToInt},
+  {"primDoubleRadix",   0, primFloatRadix},
+  {"primDoubleDigits",  0, primDoubleDigits},
+  {"primDoubleMinExp",  0, primDoubleMinExp},
+  {"primDoubleMaxExp",  0, primDoubleMaxExp},
+  {"primDoubleDecode",  1, primDoubleDecode},
+  {"primDoubleEncode",  2, primDoubleEncode},
 #endif
 
   {"primIntToChar",     1, primIntToChar},
@@ -872,12 +994,12 @@ static struct primitive builtinPrimTable[] = {
   {"intToWord32",       1, primIntToWord32},
   {"word32ToInt",       1, primWord32ToInt},
   {"primIntToFloat",    1, primIntToFloat},
-  {"primIntToDouble",   1, primIntToFloat},     /* Currently Float */
-  {"doubleToFloat",     1, primDummyCvt},       /* dummy           */
-  {"floatToDouble",     1, primDummyCvt},       /* dummy           */
+  {"primIntToDouble",   1, primIntToDouble},
+  {"doubleToFloat",     1, primDoubleToFloat},
+  {"floatToDouble",     1, primFloatToDouble},
 
   {"primRationalToFloat",  1, primRationalToFloat},
-  {"primRationalToDouble", 1, primRationalToFloat},
+  {"primRationalToDouble", 1, primRationalToDouble},
 
   {"nullAddr",          0, primNullAddr},
   {"addrToInt",         1, primAddrToInt},
@@ -894,8 +1016,8 @@ static struct primitive builtinPrimTable[] = {
   {"primCmpChar",       2, primCmpChar},
   {"primEqFloat",       2, primEqFloat},
   {"primCmpFloat",      2, primCmpFloat},
-  {"primEqDouble",      2, primEqFloat},        /* Currently Float */
-  {"primCmpDouble",     2, primCmpFloat},       /* Currently Float */
+  {"primEqDouble",      2, primEqDouble},
+  {"primCmpDouble",     2, primCmpDouble},
 
   {"primUnsafeCoerce",  1, primDummyCvt},       /* breaks the type system */
 
@@ -1411,6 +1533,12 @@ primFun(primIntToFloat) {              /* Integer to Float primitive       */
     FloatResult((Float)i);
 }
 
+primFun(primIntToDouble) {             /* Integer to Double primitive      */
+    Int i;
+    IntArg(i,1);
+    DoubleResult((Double)i);
+}
+
 primFun(primDummyCvt) {                /* dummy (identity) conversion      */
     updateRoot(primArg(1));
 }
@@ -1422,15 +1550,17 @@ primFun(primRationalToFloat) {
     if (isAp(x)) {
 	Cell f = followInd(fun(x));
 	Cell a = arg(x);
-	if (f == nameFloatToRational
-	    || f == nameDoubleToRational
-	    ) {
+	if (f == nameFloatToRational) {
 	    updateRoot(a);
+	    return;
+	} else if (f == nameDoubleToRational) {
+	    updapRoot(nameDoubleToFloat,a);
 	    return;
 	} else if (isAp(f)) {
 	    Cell g = followInd(fun(f));
 	    if (g == nameDoubleToRatio) {
-		updateRoot(a); /* ignore the dict - it must be right */
+		/* ignore the dict - it must be right */
+		updapRoot(nameDoubleToFloat,a);
 		return;
 	    } else if (g == nameIntToRatio) {
 		updapRoot(nameIntToFloat,a);
@@ -1442,15 +1572,61 @@ primFun(primRationalToFloat) {
     updapRoot(nameRationalToFloat,primArg(1));
 }
 
+primFun(primRationalToDouble) {
+#if SHORT_CIRCUIT_COERCIONS
+    /* Optimisation: we try to short-circuit trivial conversions */
+    Cell x = followInd(primArg(1));
+    if (isAp(x)) {
+	Cell f = followInd(fun(x));
+	Cell a = arg(x);
+	if (f == nameFloatToRational) {
+	    updapRoot(nameFloatToDouble,a);
+	    return;
+	} else if (f == nameDoubleToRational) {
+	    updateRoot(a);
+	    return;
+	} else if (isAp(f)) {
+	    Cell g = followInd(fun(f));
+	    if (g == nameDoubleToRatio) {
+		updateRoot(a); /* ignore the dict - it must be right */
+		return;
+	    } else if (g == nameIntToRatio) {
+		updapRoot(nameIntToDouble,a);
+		return;
+	    }
+	}
+    }
+#endif
+    updapRoot(nameRationalToDouble,primArg(1));
+}
+
 /* --------------------------------------------------------------------------
  * Float arithmetic primitives:
  * ------------------------------------------------------------------------*/
+
+primFun(primFloatToDouble) {
+    Float f;
+    FloatArg(f,1);
+    DoubleResult((Double)f);
+} 
+
+primFun(primDoubleToFloat) {
+    Double f;
+    DoubleArg(f,1);
+    FloatResult((Float)f);
+} 
 
 FloatFloat2Float(primPlusFloat,x+y)    /* Float addition primitive         */
 FloatFloat2Float(primMinusFloat,x-y)   /* Float subtraction primitive      */
 FloatFloat2Float(primMulFloat,x*y)     /* Float multiplication primitive   */
 Float2Float(primNegFloat,-x)           /* Float negation primitive         */
 FloatFloat2FloatNonZero(primDivFloat,x/y)/* Float division primitive       */
+
+DoubleDouble2Double(primPlusDouble,x+y)/* Double addition primitive        */
+DoubleDouble2Double(primMinusDouble,x-y)/* Double subtraction primitive    */
+DoubleDouble2Double(primMulDouble,x*y) /* Double multiplication primitive  */
+Double2Double(primNegDouble,-x)        /* Double negation primitive        */
+DoubleDouble2DoubleNonZero(primDivDouble,x/y)/* Double division primitive  */
 
 #ifdef HAVE_LIBM
 Float2Float(primSinFloat,sin(x))       /* Float sin (trig) primitive       */
@@ -1467,23 +1643,40 @@ Float2Float(primExpFloat,exp(x))       /* Float exponential primitive      */
 Float2FloatPre(primLogFloat,log(x),x>0)/* Float logarithm primitive        */
 Float2FloatPre(primSqrtFloat,sqrt(x),x>=0) /* Float square root primitive  */
 
+Double2Double(primSinDouble,sin(x))    /* Double sin (trig) primitive      */
+Double2Double(primCosDouble,cos(x))    /* Double cos (trig) primitive      */
+Double2Double(primTanDouble,tan(x))    /* Double tan (trig) primitive      */
+Double2Double(primAsinDouble,asin(x))  /* Double arc sin (trig) primitive  */
+Double2Double(primAcosDouble,acos(x))  /* Double arc cos (trig) primitive  */
+Double2Double(primAtanDouble,atan(x))  /* Double arc tan (trig) primitive  */
+Double2Double(primExpDouble,exp(x))    /* Double exponential primitive     */
+Double2DoublePre(primLogDouble,log(x),x>0)/* Double logarithm primitive    */
+Double2DoublePre(primSqrtDouble,sqrt(x),x>=0) /* Double square root primitive */
+
 #if 0 /* This was in Hugs 1.01 - not needed by prelude */
 Float2FloatPre(primLog10Float,log10(x),x>0) /* Float logarithm (base 10) prim*/
 #endif
 /* Not used in Hugs prelude, rounds towards zero */
 Float2Int(primFloatToInt,(Int) x)      /* Adhoc Float --> Int conversion   */
+Double2Int(primDoubleToInt,(Int) x)    /* Adhoc Double --> Int conversion  */
 
 #if BIGNUMS
-CAFBignum(primFloatRadix,bigInt(HUGS_RADIX)) /* Float radix primitive */
+CAFBignum(primFloatRadix,bigInt(HUGS_FLT_RADIX)) /* Float radix primitive  */
 #else                                    
-CAFInt(primFloatRadix,HUGS_RADIX)     /* from K&R2, I hope it's portable  */
+CAFInt(primFloatRadix,HUGS_FLT_RADIX)  /* from K&R2, I hope it's portable  */
 #endif
 
-CAFInt(primFloatDigits,HUGS_MANT_DIG)  /* Float sig. digits primitive      */
+CAFInt(primFloatDigits,HUGS_FLT_MANT_DIG)/* Float sig. digits primitive    */
 				       /* again, courtesy K&R2             */
 
-CAFInt(primFloatMinExp,HUGS_MIN_EXP)   /* Float min exponent primitive     */
-CAFInt(primFloatMaxExp,HUGS_MAX_EXP)   /* Float max exponent primitive     */
+CAFInt(primFloatMinExp,HUGS_FLT_MIN_EXP)/* Float min exponent primitive    */
+CAFInt(primFloatMaxExp,HUGS_FLT_MAX_EXP)/* Float max exponent primitive    */
+
+CAFInt(primDoubleDigits,HUGS_DBL_MANT_DIG)/* Double sig. digits primitive  */
+				       /* again, courtesy K&R2             */
+
+CAFInt(primDoubleMinExp,HUGS_DBL_MIN_EXP)/* Double min exponent primitive  */
+CAFInt(primDoubleMaxExp,HUGS_DBL_MAX_EXP)/* Double max exponent primitive  */
 
 /* ToDo: GHC stole its decode code from Lennart - maybe we should too?     */
 primFun(primFloatDecode) {             /* Float decode primitive           */
@@ -1491,8 +1684,8 @@ primFun(primFloatDecode) {             /* Float decode primitive           */
     Int    n;                          /* another gruesome hack            */
     FloatArg(f,1);
     f  = frexp((double)(f),&n);        /* 0.5   <= f < 1                   */
-    f  = ldexp(f,HUGS_MANT_DIG);       /* 2^m-1 <= f < 2^m, m=HUGS_MANT_DIG*/
-    n -= HUGS_MANT_DIG;
+    f  = ldexp(f,HUGS_FLT_MANT_DIG);   /* 2^m-1 <= f < 2^m, m=HUGS_FLT_MANT_DIG*/
+    n -= HUGS_FLT_MANT_DIG;
 #if BIGNUMS
     push(bigDouble(f));
     updapRoot(ap(mkTuple(2),top()),mkInt(n));
@@ -1511,11 +1704,44 @@ primFun(primFloatEncode) {             /* Float encode primitive           */
     _fpreset();                        /* Get round a possible DJGPP bug?  */
 #endif                                         
 #if BIGNUMS                                    
-    f = (Float)floatOf(bigToFloat(whnfHead)); /* and turn it into a float  */
+    f = (Float)bigToDouble(whnfHead);  /* and turn it into a float         */
 #else                                          
     f = (Float) whnfInt;               /* and turn it into a float         */
 #endif
     updateRoot(mkFloat(ldexp(f,n)));
+}
+
+/* ToDo: GHC stole its decode code from Lennart - maybe we should too?     */
+primFun(primDoubleDecode) {            /* Double decode primitive           */
+    double f;                          /*  :: Double -> (Integer,Int)       */
+    Int    n;                          /* another gruesome hack            */
+    DoubleArg(f,1);
+    f  = frexp((double)(f),&n);        /* 0.5   <= f < 1                   */
+    f  = ldexp(f,HUGS_DBL_MANT_DIG);   /* 2^m-1 <= f < 2^m, m=HUGS_DBL_MANT_DIG*/
+    n -= HUGS_DBL_MANT_DIG;
+#if BIGNUMS
+    push(bigDouble(f));
+    updapRoot(ap(mkTuple(2),top()),mkInt(n));
+#else
+    push(mkInt((Int)f));
+    updapRoot(ap(mkTuple(2),top()),mkInt(n));
+#endif
+}
+
+primFun(primDoubleEncode) {            /* Double encode primitive          */
+    Int n;                             /*  :: Integer -> Int -> Double     */
+    Double f;                          /* Ugly hack, don't use Hugs for    */
+    IntArg(n,1);                       /* numerical work                   */
+    eval(primArg(2));                  /* get integer                      */
+#if DJGPP2                                     
+    _fpreset();                        /* Get round a possible DJGPP bug?  */
+#endif                                         
+#if BIGNUMS                                    
+    f = (Double)bigToDouble(whnfHead); /* and turn it into a double        */
+#else                                          
+    f = (Double)whnfInt;               /* and turn it into a double        */
+#endif
+    DoubleResult(ldexp(f,n));
 }
 
 #endif /* HAVE_LIBM */
@@ -1548,6 +1774,7 @@ IntInt2Bool(primEqInt,x==y)            /* Integer equality primitive       */
 WordWord2Bool(primEqWord,x==y)         /* Natural equality primitive       */
 CharChar2Bool(primEqChar,x==y)         /* Character equality primitive     */
 FloatFloat2Bool(primEqFloat, x==y)     /* Float equality primitive         */
+DoubleDouble2Bool(primEqDouble, x==y)  /* Double equality primitive        */
 
 primFun(primCmpInt32) {                /* Integer compare primitive        */
     Int x, y;
@@ -1589,6 +1816,15 @@ primFun(primCmpFloat) {                /* Float compare primitive          */
     Float x, y;
     FloatArg(x,2);
     FloatArg(y,1);
+    updateRoot( x<y ? nameLT :
+	      ( x>y ? nameGT : 
+		      nameEQ ));
+}
+
+primFun(primCmpDouble) {               /* Double compare primitive         */
+    Double x, y;
+    DoubleArg(x,2);
+    DoubleArg(y,1);
     updateRoot( x<y ? nameLT :
 	      ( x>y ? nameGT : 
 		      nameEQ ));
@@ -2003,7 +2239,7 @@ static HsInt          getInt()       { eval(pop()); checkInt();   return whnfInt
 static HsWord         getWord()      { eval(pop()); checkWord();  return (unsigned int) whnfInt; }
 static HsAddr         getAddr()      { eval(pop()); checkPtr();   return ptrOf(whnfHead); }
 static float          getFloat()     { eval(pop()); checkFloat(); return whnfFloat; }
-static double         getDouble()    { eval(pop()); checkFloat(); return (double) whnfFloat; }
+static double         getDouble()    { eval(pop()); checkDouble(); return whnfDouble; }
 static HsChar         getChar()      { eval(pop()); checkChar();  return charOf(whnfHead); }
 static HugsForeign    getForeign()   { eval(pop()); return derefMP(whnfHead); }
 static HsBool         getBool()      { eval(pop()); checkBool();  return (whnfHead == nameTrue); }
@@ -2057,7 +2293,7 @@ static void putWord(HsWord x) { push(mkInt((int)x)); }
 static void putAddr(HsAddr x) { push(mkPtr(x)); }
 static void putChar(HsChar x) { push(mkChar(x)); }
 static void putFloat (double x) { push(mkFloat(x)); }
-static void putDouble(double x) { push(mkFloat(x)); }
+static void putDouble(double x) { push(mkDouble(x)); }
 static void putForeign(HugsForeign x, void (*f)(HugsForeign)) { push(mkMallocPtr(x,f)); }
 static void putStablePtr   (HugsStablePtr x) { push(derefStablePtr(x)); }
 static void putBool        (HsBool x)        { push(x?nameTrue:nameFalse); }
@@ -2087,14 +2323,14 @@ static Void freeStablePtr4(HsStablePtr x) {
 }
 
 static HsFloat        getFloat4()    { eval(pop()); checkFloat(); return whnfFloat; }
-static HsDouble       getDouble4()   { eval(pop()); checkFloat(); return whnfFloat; }
+static HsDouble       getDouble4()   { eval(pop()); checkDouble(); return whnfDouble; }
 
 static void putFloat4(HsFloat x) {
   push(mkFloat(x));
 }
 
 static void putDouble4(HsDouble x) {
-  push(mkFloat(x));
+  push(mkDouble(x));
 }
 
 static void putForeignPtr(HsForeignPtr x) {
@@ -2742,13 +2978,17 @@ Int what; {
 		       predef(namePmNpk,        "primPmNpk");
 		       predef(namePmSub,        "primPmSub");
 #endif
-#if SHORT_CIRCUIT_COERCIONS
+		       predef(nameRationalToDouble, "rationalToDouble");
 		       predef(nameRationalToFloat,  "rationalToFloat");
+#if SHORT_CIRCUIT_COERCIONS
 		       predef(nameFloatToRational,  "floatToRational");
 		       predef(nameDoubleToRational, "doubleToRational");
 		       predef(nameDoubleToRatio,    "doubleToRatio");
 		       predef(nameIntToRatio,       "intToRatio");
 		       predef(nameIntToFloat,       "primIntToFloat");
+		       predef(nameIntToDouble,      "primIntToDouble");
+		       predef(nameDoubleToFloat,    "doubleToFloat");
+		       predef(nameFloatToDouble,    "floatToDouble");
 #endif
 #undef  predef
 		       break;

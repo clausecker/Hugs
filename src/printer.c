@@ -8,8 +8,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: printer.c,v $
- * $Revision: 1.8 $
- * $Date: 2003/01/23 17:47:08 $
+ * $Revision: 1.9 $
+ * $Date: 2003/02/10 14:52:01 $
  * ------------------------------------------------------------------------*/
 
 static Void   local printer		Args((Name,Int));
@@ -280,6 +280,14 @@ Int  d; {				/* precedence level		   */
 			    outCh('(');
 			outStr(floatToString(whnfFloat));
 			if (whnfFloat<0.0 && d>=UMINUS_PREC)
+			    outCh(')');
+			pr = nameNPrint;
+			break;
+
+	case DOUBLECELL:if (whnfDouble<0.0 && d>=UMINUS_PREC)
+			    outCh('(');
+			outStr(doubleToString(whnfDouble));
+			if (whnfDouble<0.0 && d>=UMINUS_PREC)
 			    outCh(')');
 			pr = nameNPrint;
 			break;

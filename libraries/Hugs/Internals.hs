@@ -95,6 +95,7 @@ data CellKind
   | Int     Int         
   | Integer Integer   
   | Float   Float       
+  | Double  Double       
   | Char    Char        
   | Prim    String      
   | Error   Cell  
@@ -114,6 +115,7 @@ s (Addr a) = Addr (a+1)
 primitive nameCode    :: Name -> Addr
 primitive intAt       :: Addr -> Int
 primitive floatAt     :: Addr -> Float
+primitive doubleAt    :: Addr -> Double
 primitive cellAt      :: Addr -> Cell
 primitive nameAt      :: Addr -> Name
 primitive textAt      :: Addr -> String
@@ -158,6 +160,7 @@ data Instr
   | CHAR    Char
   | INT	    Int    
   | FLOAT   Float   	  
+  | DOUBLE  Double
   | STRING  String  	  
   | MKAP    Int   
   | UPDATE  Int  	  

@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: input.c,v $
- * $Revision: 1.58 $
- * $Date: 2003/01/21 10:17:55 $
+ * $Revision: 1.59 $
+ * $Date: 2003/02/10 14:52:00 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -886,7 +886,7 @@ static Cell local readNumber() {        /* read numeric constant           */
     EEND;
 #endif
 
-    return mkFloat(stringToFloat(tokenStr));
+    return mkDouble(stringToDouble(tokenStr));
 }
 
 static Cell local readChar() {         /* read character constant          */

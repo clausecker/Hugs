@@ -8,8 +8,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: storage.h,v $
- * $Revision: 1.50 $
- * $Date: 2003/02/02 02:23:30 $
+ * $Revision: 1.51 $
+ * $Date: 2003/02/10 14:52:03 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -45,6 +45,7 @@ typedef Cell	     List;			 /* list of cells	   */
 typedef Cell	     Bignum;			 /* bignum integer	   */
 #endif
 typedef FloatImpType Float;			 /* implementation of Float*/
+typedef DoubleImpType Double;			 /* implementation of Double*/
 #if TREX
 typedef Cell	     Ext;			 /* extension label	   */
 #endif
@@ -279,12 +280,20 @@ extern	Bool		isIdent     Args((Cell));
 extern	Cell	        mkFloat		Args((FloatPro));
 extern  FloatPro	floatOf		Args((Cell));
 extern  String		floatToString   Args((FloatPro));
-extern  FloatPro	stringToFloat   Args((String));
 #if BREAK_FLOATS
 extern  Cell		part1Float	Args((FloatPro));
 extern  Cell		part2Float	Args((FloatPro));
 extern  FloatPro	floatFromParts	Args((Cell,Cell));
 #endif
+
+#define isDouble(c)     (isPair(c) && fst(c)==DOUBLECELL)
+extern	Cell	        mkDouble	Args((DoublePro));
+extern  DoublePro	doubleOf	Args((Cell));
+extern  String		doubleToString  Args((DoublePro));
+extern  DoublePro	stringToDouble  Args((String));
+extern  Cell		part1Double	Args((DoublePro));
+extern  Cell		part2Double	Args((DoublePro));
+extern  DoublePro	doubleFromParts	Args((Cell,Cell));
 
 #define isPtr(c)        (isPair(c) && fst(c)==PTRCELL)
 extern  Cell            mkPtr           Args((Pointer));
@@ -405,6 +414,7 @@ extern void growDynTable       Args((DynTable*));
 #define ZCOMP        93 	  /* ZCOMP	snd :: (Exp,[[Qual]])	   */
 #endif
 
+#define DOUBLECELL   97		  /* DOUBLECELL snd :: (Int,Int)	   */
 #define I64CELL      98           /* Int/Word64 snd :: (Int,Int)           */
 
 #if SIZEOF_INTP != SIZEOF_INT

@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.138 $
- * $Date: 2003/02/08 15:46:43 $
+ * $Revision: 1.139 $
+ * $Date: 2003/02/10 14:52:01 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -4558,7 +4558,7 @@ Cell p; {
 	case WILDCARD  :
 	case STRCELL   :
 	case CHARCELL  :
-	case FLOATCELL : break;
+	case DOUBLECELL:
 	case INTCELL   : break;
 
 	case ASPAT     : addToPatVars(line,fst(snd(p)));
@@ -4972,7 +4972,7 @@ List vs; {
 	case CONOPCELL	:
 	case QUALIDENT 	:
 	case INTCELL	:
-	case FLOATCELL	:
+	case DOUBLECELL	:
 	case CHARCELL	:
 	case STRCELL	:
 	case NAME	:
@@ -5311,9 +5311,9 @@ Cell e; {				/* :: OpExp			   */
 				    arg(temp) = bigNeg(arg(temp));
 			    }
 #endif
-			    else if (isFloat(arg(temp))) {
+			    else if (isDouble(arg(temp))) {
 				if (nneg&1)
-				    arg(temp) = mkFloat(-floatOf(arg(temp)));
+				    arg(temp) = mkDouble(-doubleOf(arg(temp)));
 			    }
 			    else {
 				fun(prev) = nameNegate;
@@ -5813,7 +5813,7 @@ Cell e; {
 	case TUPLE	:
 	case STRCELL	:
 	case CHARCELL	:
-	case FLOATCELL  :
+	case DOUBLECELL :
 	case INTCELL	: break;
 
 	case COND	: depTriple(line,snd(e));

@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: machine.c,v $
- * $Revision: 1.13 $
- * $Date: 2003/01/23 17:47:08 $
+ * $Revision: 1.14 $
+ * $Date: 2003/02/10 14:52:01 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -40,7 +40,7 @@ Bool   failOnError   = TRUE;		/* TRUE => abort as soon as error  */
  */
 
 #define INSTRLIST       Ins(iLOAD),  Ins(iCELL),   Ins(iCHAR),    \
-			Ins(iINT),   Ins(iFLOAT),  Ins(iSTRING),  \
+			Ins(iINT),   Ins(iDOUBLE), Ins(iSTRING),  \
 			Ins(iMKAP),  Ins(iUPDATE), Ins(iUPDAP),   \
 			Ins(iEVAL),  Ins(iRETURN), Ins(iTEST),    \
 			Ins(iGOTO),  Ins(iSETSTK), Ins(iROOT),    \
@@ -95,6 +95,11 @@ Addr m; {
 #endif
 }
 
+Double DoubleAt(m)
+Addr m; {
+    return doubleFromParts(cellAt(m),cellAt(m+1));
+}
+
 Cell CellAt(m)
 Addr m; {
     return cellAt(m);
@@ -123,7 +128,7 @@ Addr m; {
 
 static Void  local instrNone    Args((Instr));
 static Void  local instrInt     Args((Instr,Int));
-static Void  local instrFloat   Args((Instr,FloatPro));
+static Void  local instrDouble  Args((Instr,DoublePro));
 static Void  local instrCell    Args((Instr,Cell));
 static Void  local instrText    Args((Instr,Text));
 static Void  local instrLab     Args((Instr,Label));
@@ -146,7 +151,7 @@ static Addr  local dissInstr    Args((Addr));
 static Void  local printCell    Args((Cell));
 static Addr  local dissNone     Args((Addr,String));
 static Addr  local dissInt      Args((Addr,String));
-static Addr  local dissFloat    Args((Addr,String));
+static Addr  local dissDouble   Args((Addr,String));
 static Addr  local dissCell     Args((Addr,String));
 static Addr  local dissText     Args((Addr,String));
 static Addr  local dissAddr     Args((Addr,String));
@@ -206,19 +211,13 @@ Int   n; {
     intAt(lastInstr+1) = n;
 }
 
-static Void local instrFloat(opc,fl)    /* Opcode with Float operand       */
+static Void local instrDouble(opc,fl)    /* Opcode with Double operand     */
 Instr    opc;
-FloatPro fl; {
-#if BREAK_FLOATS
+DoublePro fl; {
     lastInstr            = getMem(3);
     instrAt(lastInstr)   = opc;
-    cellAt(lastInstr+1)  = part1Float(fl);
-    cellAt(lastInstr+2)  = part2Float(fl);
-#else
-    lastInstr            = getMem(2);
-    instrAt(lastInstr)   = opc;
-    floatAt(lastInstr+1) = (Float) fl;
-#endif
+    cellAt(lastInstr+1)  = part1Double(fl);
+    cellAt(lastInstr+2)  = part2Double(fl);
 }
 
 static Void local instrCell(opc,c)      /* Opcode with Cell operand        */
@@ -327,19 +326,14 @@ static Void local asEND() {            /* Fix addresses in assembled code  */
 	    case iCELL   : 
 	    case iCHAR   :
 	    case iINT    :
-#if !BREAK_FLOATS
-	    case iFLOAT  :
-#endif
 	    case iSTRING :
 	    case iMKAP   :
 	    case iUPDATE :
 	    case iUPDAP  : pc+=2;
 			   break;
 
-#if BREAK_FLOATS
-	    case iFLOAT  : pc+=3;
+	    case iDOUBLE : pc+=3;
 			   break;
-#endif
 
 	    case iTEST   : fix(pc+2);
 			   pc+=3;
@@ -354,7 +348,7 @@ static Void local asEND() {            /* Fix addresses in assembled code  */
  * ------------------------------------------------------------------------*/
 
 #define asINTEGER(n) instrInt(iINT,n);          srsp++
-#define asFLOAT(fl)  instrFloat(iFLOAT,fl);     srsp++
+#define asDOUBLE(fl) instrDouble(iDOUBLE,fl);   srsp++
 #define asSTRING(t)  instrText(iSTRING,t);      srsp++
 #define asCHAR(n)    instrInt(iCHAR,n);         srsp++
 #define asLOAD(n)    instrInt(iLOAD,n);         srsp++
@@ -544,7 +538,7 @@ Addr pc; {
 	case iCELL   : pc = dissCell(pc,"CELL");     break;
 	case iCHAR   : pc = dissInt(pc,"CHAR");      break;
 	case iINT    : pc = dissInt(pc,"INT");       break;
-	case iFLOAT  : pc = dissFloat(pc,"FLOAT");   break;
+	case iDOUBLE : pc = dissDouble(pc,"DOUBLE"); break;
 	case iSTRING : pc = dissText(pc,"STRING");   break;
 	case iMKAP   : pc = dissInt(pc,"MKAP");      break;
 	case iUPDATE : pc = dissInt(pc,"UPDATE");    break;
@@ -591,17 +585,12 @@ String s; {
     return pc+2;
 }
 
-static Addr local dissFloat(pc,s)      /* dissassemble instr with Float arg*/
+static Addr local dissDouble(pc,s)      /* dissassemble instr with Double arg*/
 Addr   pc;
 String s; {
-#if BREAK_FLOATS
     Printf("%s\t%s\n",s,
-	floatToString(floatFromParts(cellAt(pc+1),cellAt(pc+2))));
+	doubleToString(doubleFromParts(cellAt(pc+1),cellAt(pc+2))));
     return pc+3;
-#else
-    Printf("%s\t%s\n",s,floatToString((FloatPro)floatAt(pc+1)));
-    return pc+2;
-#endif
 }
 
 static Addr local dissCell(pc,s)       /* dissassemble instr with Cell arg */
@@ -700,7 +689,7 @@ Int  co; {                              /* perform no evaluation           */
 	case INTCELL   : asINTEGER(intOf(e));
 			 break;
 
-	case FLOATCELL : asFLOAT(floatOf(e));
+	case DOUBLECELL : asDOUBLE(doubleOf(e));
 			 break;
 
 	case STRCELL   : asSTRING(textOf(e));
@@ -898,7 +887,7 @@ Label d; {
 			 asGOTO(d);
 			 break;
 
-	case FLOATCELL : asFLOAT(floatOf(e));
+	case DOUBLECELL : asDOUBLE(doubleOf(e));
 			 asGOTO(d);
 			 break;
 
@@ -964,7 +953,7 @@ Label  f, d; {
 		      /* ToDo: should this be the same as fromInt? */
 #endif
 		      else if (h==nameFromDouble) {
-			  asFLOAT(floatOf(arg(discr)));
+			  asDOUBLE(doubleOf(arg(discr)));
 			  make(arg(fun(discr)),co,SHOULDNTFAIL,RUNON);
 			  asCELL(namePmFlt);
 		      }
@@ -1265,6 +1254,7 @@ Int   whnfArgs;                         /* number of arguments of whnf term*/
 Cell  whnfHead;                         /* head cell of term in whnf       */
 Int   whnfInt;                          /* value of INTCELL (in whnf)      */
 Float whnfFloat;                        /* value of FLOATCELL (in whnf)    */
+Double whnfDouble;                      /* value of DOUBLECELL (in whnf)   */
 Long  numReductions;                    /* number of reductions counted    */
 #if PROFILING
 #define saveProducer(n)                 { Name old = producer; producer = n
@@ -1511,6 +1501,9 @@ unw:switch (whatIs(n)) {                /* unwind spine of application     */
 	case FLOATCELL : whnfFloat = (Float)floatOf(n);
 			 break;
 
+	case DOUBLECELL : whnfDouble = (Double)doubleOf(n);
+			 break;
+
 	case STRCELL   : evalString(n);
 			 goto unw;
     }
@@ -1598,6 +1591,9 @@ unw:switch (whatIs(n)) {
 	case FLOATCELL : whnfFloat = (Float)floatOf(n);
 			 break;
 
+	case DOUBLECELL : whnfDouble = (Double)doubleOf(n);
+			 break;
+
 	case STRCELL   : evalString(n);
 			 goto unw;
     }
@@ -1673,16 +1669,10 @@ static  void *labs[] = { INSTRLIST };
 			pc++;
 			Continue;
 
-#if BREAK_FLOATS
-	Case(iFLOAT)  : push(mkFloat(floatFromParts      /* load dbl const */
+	Case(iDOUBLE)  : push(mkDouble(doubleFromParts   /* load dbl const */
 				(pc->cell,(pc+1)->cell)));
 			pc+=2;
 			Continue;
-#else
-	Case(iFLOAT)  : push(mkFloat(pc->mfloat));       /* load float cnst*/
-			pc++;
-			Continue;
-#endif
 
 	Case(iSTRING) : push(mkStr(pc->text));           /* load str const */
 			pc++;

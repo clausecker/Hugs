@@ -8,8 +8,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: prelude.h,v $
- * $Revision: 1.40 $
- * $Date: 2003/01/22 19:15:21 $
+ * $Revision: 1.41 $
+ * $Date: 2003/02/10 14:52:01 $
  * ------------------------------------------------------------------------*/
 
 #include "config.h"
@@ -466,66 +466,78 @@ extern  int  kbhit	Args((void));
  *-------------------------------------------------------------------------*/
 
 /* Can we fit floats into ints? */
-#if USE_DOUBLE_PRECISION
-#define BREAK_FLOATS (SIZEOF_DOUBLE > SIZEOF_INT)
-#else
-#define BREAK_FLOATS (SIZEOF_FLOAT  > SIZEOF_INT)
-#endif
+#define BREAK_FLOATS (SIZEOF_FLOAT > SIZEOF_INT)
 
 #ifdef  HAVE_LIBM
 
-#if USE_DOUBLE_PRECISION
-#define FloatImpType	   double
-#define FloatPro	   double
-#define FloatFMT           "%.9g"
-#else
 #define FloatImpType	   float
 #define FloatPro	   double  /* type to use in prototypes		   */
 				   /* strictly ansi (i.e. gcc) conforming  */
 				   /* but breaks data hiding :-(	   */
 #define FloatFMT	   "%g"
+
+/* Is double too big for two ints?  (if so, use float instead) */
+#define DOUBLE_IS_FLOAT (SIZEOF_DOUBLE > 2*SIZEOF_INT)
+
+#if DOUBLE_IS_FLOAT
+#define DoubleImpType	   FloatImpType
+#define DoublePro	   FloatPro
+#define DoubleFMT          FloatFMT
+#else
+#define DoubleImpType	   double
+#define DoublePro	   double
+#define DoubleFMT          "%.9g"
 #endif
 
 #if HAVE_FLOAT_H
 
 #include <float.h>
 
-#if USE_DOUBLE_PRECISION
-# define HUGS_RADIX    FLT_RADIX
-# define HUGS_MANT_DIG DBL_MANT_DIG
-# define HUGS_MIN_EXP  DBL_MIN_EXP
-# define HUGS_MAX_EXP  DBL_MAX_EXP
+# define HUGS_FLT_RADIX    FLT_RADIX
+# define HUGS_FLT_MANT_DIG FLT_MANT_DIG
+# define HUGS_FLT_MIN_EXP  FLT_MIN_EXP
+# define HUGS_FLT_MAX_EXP  FLT_MAX_EXP
+
+#if DOUBLE_IS_FLOAT
+# define HUGS_DBL_MANT_DIG HUGS_FLT_MANT_DIG
+# define HUGS_DBL_MIN_EXP  HUGS_FLT_MIN_EXP
+# define HUGS_DBL_MAX_EXP  HUGS_FLT_MAX_EXP
 #else
-# define HUGS_RADIX    FLT_RADIX
-# define HUGS_MANT_DIG FLT_MANT_DIG
-# define HUGS_MIN_EXP  FLT_MIN_EXP
-# define HUGS_MAX_EXP  FLT_MAX_EXP
+# define HUGS_DBL_MANT_DIG DBL_MANT_DIG
+# define HUGS_DBL_MIN_EXP  DBL_MIN_EXP
+# define HUGS_DBL_MAX_EXP  DBL_MAX_EXP
 #endif
 
 #elif HAVE_VALUES_H
 
 #include <values.h>
 
-#if USE_DOUBLE_PRECISION
-# define HUGS_RADIX    _EXPBASE
-# define HUGS_MANT_DIG DSIGNIF 
-# define HUGS_MIN_EXP  DMINEXP 
-# define HUGS_MAX_EXP  DMAXEXP 
+# define HUGS_FLT_RADIX    _EXPBASE
+# define HUGS_FLT_MANT_DIG FSIGNIF
+# define HUGS_FLT_MIN_EXP  FMINEXP
+# define HUGS_FLT_MAX_EXP  FMAXEXP 
+
+#if DOUBLE_IS_FLOAT
+# define HUGS_DBL_MANT_DIG HUGS_FLT_MANT_DIG
+# define HUGS_DBL_MIN_EXP  HUGS_FLT_MIN_EXP
+# define HUGS_DBL_MAX_EXP  HUGS_FLT_MAX_EXP
 #else
-# define HUGS_RADIX    _EXPBASE
-# define HUGS_MANT_DIG FSIGNIF
-# define HUGS_MIN_EXP  FMINEXP
-# define HUGS_MAX_EXP  FMAXEXP 
+# define HUGS_DBL_MANT_DIG DSIGNIF
+# define HUGS_DBL_MIN_EXP  DMINEXP
+# define HUGS_DBL_MAX_EXP  DMAXEXP
 #endif
 
 #endif
 
 #ifdef __SYMBIAN32__
 /* Guesswork, really */
-#define HUGS_RADIX          2
-#define HUGS_MANT_DIG      53
-#define HUGS_MIN_EXP    -1021
-#define HUGS_MAX_EXP     1024
+#define HUGS_FLT_RADIX        2
+#define HUGS_FLT_MANT_DIG    24
+#define HUGS_FLT_MIN_EXP   -125
+#define HUGS_FLT_MAX_EXP    128
+#define HUGS_DBL_MANT_DIG    53
+#define HUGS_DBL_MIN_EXP  -1021
+#define HUGS_DBL_MAX_EXP   1024
 #endif
 
 #else /* !HAVE_LIBM */
@@ -533,6 +545,9 @@ extern  int  kbhit	Args((void));
 #define FloatImpType	   int     /*dummy*/
 #define FloatPro	   int
 #define FloatFMT	   "%d"
+#define DoubleImpType	   int     /*dummy*/
+#define DoublePro	   int
+#define DoubleFMT	   "%d"
 
 #endif /* !HAVE_LIBM */
 

@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: connect.h,v $
- * $Revision: 1.65 $
- * $Date: 2003/02/01 06:36:54 $
+ * $Revision: 1.66 $
+ * $Date: 2003/02/10 14:52:00 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -235,6 +235,7 @@ extern Int   whnfArgs;		 	/* number of args of term in whnf  */
 extern Cell  whnfHead;		 	/* head of term in whnf            */
 extern Int   whnfInt;		 	/* integer value of term in whnf   */
 extern Float whnfFloat;		 	/* float value of term in whnf	   */
+extern Double whnfDouble;	 	/* double value of term in whnf	   */
 extern Long  numReductions;		/* number of reductions used       */
 extern Long  numCells;			/* number of cells allocated       */
 extern Int   numGcs;			/* number of garbage collections   */
@@ -419,6 +420,7 @@ extern  Void   throwException   Args((Cell));
 #if BYTECODE_PRIMS
 extern Int     IntAt            Args((Addr));
 extern Float   FloatAt          Args((Addr));
+extern Double  DoubleAt         Args((Addr));
 extern Cell    CellAt           Args((Addr));
 extern Text    TextAt           Args((Addr));
 extern Addr    AddrAt           Args((Addr));
@@ -435,7 +437,7 @@ extern  Bignum bigInt		Args((Int));
 extern  Bignum bigDouble	Args((double));
 extern  Bignum bigNeg		Args((Bignum));
 extern  Cell   bigToInt		Args((Bignum));
-extern  Cell   bigToFloat	Args((Bignum));
+extern  double bigToDouble	Args((Bignum));
 extern  Bignum bigStr		Args((String));
 extern  Cell   bigOut		Args((Bignum,Cell,Bool));
 extern  Bignum bigShift		Args((Bignum,Int,Int));

@@ -11,8 +11,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.76 $
- * $Date: 2003/02/04 05:07:50 $
+ * $Revision: 1.77 $
+ * $Date: 2003/02/10 14:52:00 $
  * ------------------------------------------------------------------------*/
 #include <math.h>
 
@@ -1692,7 +1692,74 @@ FloatPro fl; {                               /* point values print out in  */
     return buffer2;
 }
 
-FloatPro stringToFloat(s)
+static union {
+    Double  dblVal;
+    struct {
+	Cell dblPart1,dblPart2;
+    }      cdVal;
+} fudgeDCoerce;
+
+Cell part1Double(dbl)
+DoublePro dbl; {
+    fudgeDCoerce.dblVal = dbl;
+    return fudgeDCoerce.cdVal.dblPart1;
+}
+
+Cell part2Double(dbl)
+DoublePro dbl; {
+    fudgeDCoerce.dblVal = dbl;
+    return fudgeDCoerce.cdVal.dblPart2;
+}
+
+DoublePro doubleFromParts(c1,c2)
+Cell c1, c2; {
+    fudgeDCoerce.cdVal.dblPart1 = c1;
+    fudgeDCoerce.cdVal.dblPart2 = c2;
+    return fudgeDCoerce.dblVal;
+}
+
+Cell bdTemp = NIL;
+
+Cell mkDouble(dbl)
+DoublePro dbl; {
+    Cell p1,p2;
+    fudgeDCoerce.dblVal = dbl;
+    bdTemp = mkInt(fudgeDCoerce.cdVal.dblPart1);
+    p2     = mkInt(fudgeDCoerce.cdVal.dblPart2);
+    p1     = bdTemp;
+    bdTemp = NIL;
+    return pair(DOUBLECELL,pair(p1,p2));
+}
+
+DoublePro doubleOf(c)
+Cell c; {
+    fudgeDCoerce.cdVal.dblPart1 = intOf(fst(snd(c)));
+    fudgeDCoerce.cdVal.dblPart2 = intOf(snd(snd(c)));
+    return fudgeDCoerce.dblVal;
+}
+
+String doubleToString(dbl)                   /* Make sure that floating    */
+DoublePro dbl; {                             /* point values print out in  */
+    static char buffer1[32];                 /* a form in which they could */
+    static char buffer2[32];                 /* also be entered as doubles */
+    Int i=0, j=0;
+
+    sprintf(buffer1,DoubleFMT,dbl);
+    while (buffer1[i] && strchr("eE.",buffer1[i])==0)
+	buffer2[j++] = buffer1[i++];
+    if (buffer1[i]=='\0') {
+        sprintf(buffer1,"%.1f",dbl);
+        i = j = 0;
+    } else if (buffer1[i]!='.') {
+	buffer2[j++] = '.';
+	buffer2[j++] = '0';
+    }
+    while ((buffer2[j++]=buffer1[i++])!=0) {
+    }
+    return buffer2;
+}
+
+DoublePro stringToDouble(s)
 String s; {
     return atof(s);
 }
@@ -1715,10 +1782,22 @@ FloatPro fl; {
     return "";/*NOTREACHED*/
 }
 
-FloatPro stringToFloat(s)
-String s; {
-    internal("stringToFloat");
-    return 0;
+Cell mkDouble(fl)
+DoublePro fl; {
+    internal("mkDouble");
+    return 0;/*NOTREACHED*/
+}
+
+DoublePro doubleOf(c)
+Cell c; {
+    internal("doubleOf");
+    return 0;/*NOTREACHED*/
+}
+
+String doubleToString(fl)
+DoublePro fl; {
+    internal("doubleToString");
+    return "";/*NOTREACHED*/
 }
 #endif /* !HAVE_LIBM */
 
@@ -2545,15 +2624,21 @@ Void machdep(what)                      /* Handle machine specific         */
 Int what; {                             /* initialisation etc..            */
     switch (what) {
 	case MARK    :
-#if defined(HAVE_LIBM) && BREAK_FLOATS
+#ifdef HAVE_LIBM
+#if BREAK_FLOATS
 		       mark(bfTemp);
+#endif
+		       mark(bdTemp);
 #endif
 		       break;
 	case INSTALL : installHandlers();
 		       break;
 	case RESET   :
-#if defined(HAVE_LIBM) && BREAK_FLOATS
+#ifdef HAVE_LIBM
+#if BREAK_FLOATS
 		       bfTemp = NIL;
+#endif
+		       bdTemp = NIL;
 #endif
 	case BREAK   :
 	case EXIT    : normalTerminal();

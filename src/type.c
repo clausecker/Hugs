@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: type.c,v $
- * $Revision: 1.62 $
- * $Date: 2003/01/23 17:47:08 $
+ * $Revision: 1.63 $
+ * $Date: 2003/02/10 14:52:03 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -757,7 +757,7 @@ Cell e; {
 					   e);
 			  }
 
-	case FLOATCELL	: {   Int alpha = newTyvars(1);
+	case DOUBLECELL	: {   Int alpha = newTyvars(1);
 			      inferType(aVar,alpha);
 			      return ap(ap(nameFromDouble,
 					   assumeEvid(predFractional,alpha)),

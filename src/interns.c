@@ -11,8 +11,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: interns.c,v $
- * $Revision: 1.9 $
- * $Date: 2003/01/26 01:03:58 $
+ * $Revision: 1.10 $
+ * $Date: 2003/02/10 14:52:00 $
  * ------------------------------------------------------------------------*/
  
 /* --------------------------------------------------------------------------
@@ -53,6 +53,7 @@ PROTO_PRIM(primNameString);
 PROTO_PRIM(primNameCode);
 PROTO_PRIM(primIntAt);
 PROTO_PRIM(primFloatAt);
+PROTO_PRIM(primDoubleAt);
 PROTO_PRIM(primCellAt);
 PROTO_PRIM(primNameAt);
 PROTO_PRIM(primBytecodeAt);
@@ -73,6 +74,7 @@ static struct primitive internalPrimTable[] = {
   {"nameCode",      1, primNameCode},
   {"intAt",         1, primIntAt},
   {"floatAt",       1, primFloatAt},
+  {"doubleAt",      1, primDoubleAt},
   {"cellAt",        1, primCellAt},
   {"nameAt",        1, primNameAt},
   {"bytecodeAt",    1, primBytecodeAt},
@@ -98,6 +100,7 @@ static Name nameHugsTuple;            /*    	       | Tuple Int         */
 static Name nameHugsInt;              /*    	       | Int   Int         */
 static Name nameHugsInteger;          /*    	       | Integer Integer   */
 static Name nameHugsFloat;            /*    	       | Float Float       */
+static Name nameHugsDouble;           /*    	       | Double Double     */
 static Name nameHugsChar;             /*    	       | Char  Char        */
 static Name nameHugsPrim;             /*    	       | Prim  String      */
 static Name nameHugsError;            /*    	       | Error Cell        */
@@ -114,6 +117,7 @@ static Void linkInternals() {
 	nameHugsInt     = findName(findText("Int"));
 	nameHugsInteger = findName(findText("Integer"));
 	nameHugsFloat   = findName(findText("Float"));
+	nameHugsDouble  = findName(findText("Double"));
 	nameHugsChar    = findName(findText("Char"));
 	nameHugsPrim    = findName(findText("Prim"));
 	nameHugsError   = findName(findText("Error"));
@@ -125,6 +129,7 @@ static Void linkInternals() {
 	    || isNull(nameHugsInt)     
 	    || isNull(nameHugsInteger) 
 	    || isNull(nameHugsFloat)   
+	    || isNull(nameHugsDouble)   
 	    || isNull(nameHugsChar)    
 	    || isNull(nameHugsPrim)    
 	    || isNull(nameHugsError)
@@ -278,6 +283,9 @@ primFun(primClassifyCell) {          /* classifyCell                       */
 	    case FLOATCELL: result = ap(nameHugsFloat, whnfHead);
 			    break;
 
+	    case DOUBLECELL: result = ap(nameHugsDouble, whnfHead);
+			    break;
+
 #if IO_HANDLES
 	    case HANDCELL : result = ap(nameHugsPrim, mkStr(findText("{handle}")));
 			    break;
@@ -391,6 +399,12 @@ primFun(primFloatAt) {                /* Obtain float at address           */
   Addr m;                             /*  :: Addr -> Cell                  */
   IntArg(m,1);
   FloatResult(FloatAt(m));
+}
+
+primFun(primDoubleAt) {               /* Obtain float at address           */
+  Addr m;                             /*  :: Addr -> Cell                  */
+  IntArg(m,1);
+  DoubleResult(DoubleAt(m));
 }
 
 primFun(primCellAt) {                 /* Obtain cell at address            */

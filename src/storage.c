@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: storage.c,v $
- * $Revision: 1.62 $
- * $Date: 2003/02/02 02:23:30 $
+ * $Revision: 1.63 $
+ * $Date: 2003/02/10 14:52:03 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -2535,6 +2535,9 @@ Int  depth; {
 	      break;
 	  case FLOATCELL :
 	      Printf("float(%f)", floatOf(c));
+	      break;
+	  case DOUBLECELL :
+	      Printf("double(%f)", doubleOf(c));
 	      break;
 	  case CHARCELL :
 	      Printf("char('%c')", charOf(c));
