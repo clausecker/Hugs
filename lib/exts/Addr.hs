@@ -9,6 +9,8 @@ module Addr
 	, addrToInt -- :: Addr -> Int
 	-- instance Eq   Addr
 	-- instance Show Addr
+	, ptrToAddr        -- :: Ptr a -> Addr
+	, addrToPtr        -- :: Addr -> Ptr a
 	) where
 
 -- data Addr -- in Prelude
@@ -21,6 +23,9 @@ primitive plusAddr      :: Addr -> Int -> Addr
 primitive primShowsAddr :: Int -> Addr -> ShowS
 primitive primEqAddr    :: Addr -> Addr -> Bool
 primitive addrToInt     :: Addr -> Int
+
+primitive ptrToAddr    "primUnsafeCoerce" :: Ptr a -> Addr
+primitive addrToPtr    "primUnsafeCoerce" :: Addr -> Ptr a
 
 
 -----------------------------------------------------------------------------
