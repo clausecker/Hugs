@@ -358,7 +358,7 @@ primFun(primGetPermissions) { /* FilePath -> IO (Bool,Bool,Bool,Bool) */
 			  ToBool(isR == 0)),
 		      ToBool(isW == 0)),
 		   ToBool(isX == 0 && !S_ISDIR(st.st_mode))),
-		ToBool(isX == 0 && !S_ISREG(st.st_mode))));
+		ToBool(isX == 0 && S_ISDIR(st.st_mode))));
   }
 #endif
 }
