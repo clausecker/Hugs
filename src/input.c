@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: input.c,v $
- * $Revision: 1.44 $
- * $Date: 2002/07/18 23:51:39 $
+ * $Revision: 1.45 $
+ * $Date: 2002/07/19 18:40:23 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -324,9 +324,10 @@ String prompt; {                       /* standard in (i.e. console/kbd)   */
     hereState   = START;
 #endif
 
-#ifdef HAVE_ISATTY
-    if (!isatty(fileno(stdin))) { /* not reading from a tty:         */
-	reading = NOKEYBOARD;     /* don't prompt or try readline    */
+#if defined(HAVE_ISATTY) && USE_READLINE
+    if (!isatty(fileno(stdin))) { /* not reading from a tty: */
+	reading = NOKEYBOARD;     /* don't try readline      */
+	Printf("%s",prompt);FlushStdout();
 	return;
     }
 #endif
@@ -415,12 +416,12 @@ Long   len; {                           /* used to set target for reading) */
 	    EEND_NORET;
 	    return FALSE;
 	}
-	if (snprintf(cmd,sizeof(cmd)-1, "%s %s", preprocessor, nm) < 0) {
+	if (snprintf(cmd,reallen-1, "%s %s", preprocessor, nm) < 0) {
 	    ERRMSG(0) "Unable to allocate memory for filter command."
 	    EEND_NORET;
 	    return FALSE;
 	} else {
-	    cmd[sizeof(cmd)-1] = '\0';
+	    cmd[reallen-1] = '\0';
 	}
 	inputStream = popen(cmd,"r");
 	free(cmd);
