@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.165 $
- * $Date: 2004/01/10 01:12:13 $
+ * $Revision: 1.166 $
+ * $Date: 2004/01/10 01:14:36 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -4503,6 +4503,10 @@ Cell p; {
 
     if (argCount==2 && isVar(h) && textOf(h)==textPlus) {	/* n+k	   */
 	Cell v = arg(fun(p));
+	if (!isVar(v)) {
+	    ERRMSG(l) "First argument in (n+k) pattern must be a variable"
+	    EEND;
+	}
 	if (!isInt(arg(p))) {
 	    ERRMSG(l) "Second argument in (n+k) pattern must be an integer"
 	    EEND;
