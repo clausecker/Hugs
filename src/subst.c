@@ -8,8 +8,8 @@
  * in the distribution for details.
  *
  * $RCSfile: subst.c,v $
- * $Revision: 1.3 $
- * $Date: 1999/08/05 16:59:35 $
+ * $Revision: 1.4 $
+ * $Date: 1999/09/09 22:57:18 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -217,7 +217,7 @@ Type type; {
 		typeFree++;
 	}
 
-	if (whatIs(typeIs)==QUAL) {    /* Qualified type?		   */
+	if (isQualType(typeIs)) {    /* Qualified type?			   */
 	    predsAre = fst(snd(typeIs));
 	    typeIs   = snd(snd(typeIs));
 	}
@@ -1192,7 +1192,7 @@ Type type; {
     Bool result;
     Int  alpha;
     Int  beta;
-    if (isPolyType(type) || whatIs(type)==QUAL)
+    if (isPolyOrQualType(type))
 	return FALSE;
     emptySubstitution();
     alpha  = newKindedVars(ks);
@@ -1588,8 +1588,8 @@ Type s1; {
     for (; nr2>0; nr2--) {		/* Deal with rank 2 arguments	   */
 	Type t  = arg(fun(s));
 	Type t1 = arg(fun(s1));
-	b       = isPolyType(t);
-	b1      = isPolyType(t1);
+	b       = isPolyOrQualType(t);
+	b1      = isPolyOrQualType(t1);
 	if (b || b1) {
 	    if (b && b1) {
 		t  = dropRank1(t,o,m);

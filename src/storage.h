@@ -8,8 +8,8 @@
  * in the distribution for details.
  *
  * $RCSfile: storage.h,v $
- * $Revision: 1.4 $
- * $Date: 1999/08/16 21:26:47 $
+ * $Revision: 1.5 $
+ * $Date: 1999/09/09 22:57:17 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -520,8 +520,10 @@ extern Tycon findQualTycon Args((Cell));
 extern Tycon addPrimTycon Args((Text,Kind,Int,Cell,Cell));
 
 #define isSynonym(h)	(isTycon(h) && tycon(h).what==SYNONYM)
+#define isQualType(t)	(isPair(t) && fst(t)==QUAL)
 #define mkPolyType(n,t)	pair(POLYTYPE,pair(n,t))
 #define isPolyType(t)	(isPair(t) && fst(t)==POLYTYPE)
+#define isPolyOrQualType(t) (isPair(t) && (fst(t)==POLYTYPE || fst(t)==QUAL))
 #define polySigOf(t)	fst(snd(t))
 #define monotypeOf(t)	snd(snd(t))
 

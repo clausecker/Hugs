@@ -8,8 +8,8 @@
  * in the distribution for details.
  *
  * $RCSfile: output.c,v $
- * $Revision: 1.2 $
- * $Date: 1999/07/28 18:48:17 $
+ * $Revision: 1.3 $
+ * $Date: 1999/09/09 22:57:17 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1032,6 +1032,7 @@ Int  fr; {
 #endif
 #if IPARAM
 	if (whatIs(fun(pi)) == IPCELL) {
+	    putChr('?');
 	    putPred(fun(pi),fr);
 	    putStr(" :: ");
 	    putType(arg(pi),NEVER,fr);

@@ -7,8 +7,8 @@
  * in the distribution for details.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.6 $
- * $Date: 1999/08/16 17:58:39 $
+ * $Revision: 1.7 $
+ * $Date: 1999/09/09 22:57:17 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -883,7 +883,7 @@ Cell  cd; {				/* definitions (w or w/o deriving) */
     for (i=0; i<tycon(t).arity; ++i)	/* build representation for tycon  */
 	lhs = ap(lhs,mkOffset(i));	/* applied to full comp. of args   */
 
-    if (whatIs(cs)==QUAL) {		/* allow for possible context	   */
+    if (isQualType(cs)) {		/* allow for possible context	   */
 	ctxt = fst(snd(cs));
 	cs   = snd(snd(cs));
 	map2Over(depPredExp,line,tyvars,ctxt);
@@ -912,7 +912,7 @@ Cell  cd; {				/* definitions (w or w/o deriving) */
 	    sig = checkQuantVars(line,evs,sig,con);
 	}
 
-	if (whatIs(con)==QUAL) {	/* Local predicates		   */
+	if (isQualType(con)) {		/* Local predicates		   */
 	    List us;
 	    lps     = fst(snd(con));
 	    for (us = typeVarsIn(lps,NIL,NIL); nonNull(us); us=tl(us))
@@ -973,10 +973,10 @@ Cell  cd; {				/* definitions (w or w/o deriving) */
 	    Type ty  = fun(con);
 	    Type cmp = arg(con);
 	    fun(con) = typeArrow;
-	    if (isPolyType(cmp)) {
+	    if (isPolyOrQualType(cmp)) {
 		if (nonNull(derivs)) {
 		    ERRMSG(line) "Cannot derive instances for types" ETHEN
-		    ERRTEXT      " with polymorphic components"
+		    ERRTEXT      " with polymorphic or qualified components"
 		    EEND;
 		}
 		if (nr2==0)
@@ -1236,7 +1236,7 @@ List tcs; {
 			ks = polySigOf(t);
 			t  = monotypeOf(t);
 		    }
-		    if (whatIs(t)==QUAL) {
+		    if (isQualType(t)) {
 			ctxt = fst(snd(t));
 			t    = snd(snd(t));
 		    }
@@ -1267,7 +1267,7 @@ List  ps; {
 	if (isPolyType(t)) {
 	    t = monotypeOf(t);
 	}
-	if (whatIs(t)==QUAL) {
+	if (isQualType(t)) {
 	    t = snd(snd(t));
 	}
 	if (whatIs(t)==EXIST) {		/* No instance if existentials used*/
@@ -1612,7 +1612,7 @@ Cell  m; {
 
     tyvars    = typeVarsIn(t,NIL,tyvars);/* Look for extra type vars.	   */
 
-    if (whatIs(t)==QUAL) {		/* Overloaded member signatures?   */
+    if (isQualType(t)) {		/* Overloaded member signatures?   */
 	map2Over(depPredExp,line,tyvars,fst(snd(t)));
     } else {
 	t = ap(QUAL,pair(NIL,t));
@@ -1925,7 +1925,7 @@ Type   type; {
     Int  n    = length(tvs);
     List sunk = unkindTypes;
 
-    if (whatIs(type)==QUAL) {
+    if (isQualType(type)) {
 	map2Over(depPredExp,line,tvs,fst(snd(type)));
 	snd(snd(type)) = depTopType(line,tvs,snd(snd(type)));
 
@@ -1968,7 +1968,7 @@ Type t; {
     Int  i    = 1;
     for (; getHead(t1)==typeArrow && argCount==2; ++i) {
 	arg(fun(t1)) = depCompType(l,tvs,arg(fun(t1)));
-	if (isPolyType(arg(fun(t1)))) {
+	if (isPolyOrQualType(arg(fun(t1)))) {
 	    nr2 = i;
 	}
 	prev = t1;
@@ -1991,35 +1991,31 @@ static Type local depCompType(l,tvs,t)	/* Check component type for constr */
 Int  l;
 List tvs;
 Type t; {
+    Int  ntvs = length(tvs);
+    List nfr  = NIL;
     if (isPolyType(t)) {
-	Int  ntvs = length(tvs);
-	List nfr  = NIL;
-	if (isPolyType(t)) {
-	    List vs  = fst(snd(t));
-	    t	     = monotypeOf(t);
-	    tvs	     = checkQuantVars(l,vs,tvs,t);
-	    nfr	     = replicate(length(vs),NIL);
-	}
-
-	if (whatIs(t)==QUAL) {
-	    map2Over(depPredExp,l,tvs,fst(snd(t)));
-	    snd(snd(t)) = depTypeExp(l,tvs,snd(snd(t)));
-	    if (isAmbiguous(t)) {
-		ambigError(l,"type component",NIL,t);
-	    }
-	} else {
-	    t = depTypeExp(l,tvs,t);
-	}
-
-	if (isNull(nfr)) {
-	    return t;
-	}
-
-	take(ntvs,tvs);
-	return mkPolyType(nfr,t);
-    } else {
-	return depTypeExp(l,tvs,t);
+	List vs = fst(snd(t));
+	t	= monotypeOf(t);
+	tvs	= checkQuantVars(l,vs,tvs,t);
+	nfr	= replicate(length(vs),NIL);
     }
+
+    if (isQualType(t)) {
+	map2Over(depPredExp,l,tvs,fst(snd(t)));
+	snd(snd(t)) = depTypeExp(l,tvs,snd(snd(t)));
+	if (isAmbiguous(t)) {
+	    ambigError(l,"type component",NIL,t);
+	}
+    } else {
+	t = depTypeExp(l,tvs,t);
+    }
+
+    if (isNull(nfr)) {
+	return t;
+    }
+
+    take(ntvs,tvs);
+    return mkPolyType(nfr,t);
 }
 
 static Type local depTypeExp(line,tyvars,type)
@@ -2201,7 +2197,7 @@ Type type; {				/* ambiguous 			   */
     if (isPolyType(type)) {
 	type = monotypeOf(type);
     }
-    if (whatIs(type)==QUAL) {		/* only qualified types can be	   */
+    if (isQualType(type)) {		/* only qualified types can be	   */
 	List ps   = fst(snd(type));	/* ambiguous			   */
 	List tvps = offsetTyvarsIn(ps,NIL);
 	List tvts = offsetTyvarsIn(snd(snd(type)),NIL);
@@ -2477,7 +2473,7 @@ Cell c; {				/* is well-kinded		   */
 	switch (whatIs(tycon(c).what)) {
 	    case NEWTYPE     :
 	    case DATATYPE    : {   List cs = tycon(c).defn;
-				   if (whatIs(cs)==QUAL) {
+				   if (isQualType(cs)) {
 				       map3Proc(kindPred,line,beta,m,
 								fst(snd(cs)));
 				       tycon(c).defn = cs = snd(snd(cs));
@@ -4249,7 +4245,7 @@ Type   t; {
 	hd(btyvars) = cons(pair(hd(tvs),mkInt(beta)), hd(btyvars));
     }
     t = checkSigType(l,"pattern type",e,t);
-    if (isPolyType(t) || whatIs(t)==QUAL || whatIs(t)==RANK2) {
+    if (isPolyOrQualType(t) || whatIs(t)==RANK2) {
 	ERRMSG(l) "Illegal syntax in %s type annotation", wh
 	EEND;
     }
@@ -5471,7 +5467,7 @@ Bool isP; {
 	if (isPolyType(t)) {		/* Find tycon that c belongs to	   */
 	    t = monotypeOf(t);
 	}
-	if (whatIs(t)==QUAL) {
+	if (isQualType(t)) {
 	    t = snd(snd(t));
 	}
 	if (whatIs(t)==CDICTS) {
@@ -5929,7 +5925,7 @@ Type   t; {
 	Type ty = t;
 	if (isPolyType(t))
 	    t = monotypeOf(t);
-	if (whatIs(t)==QUAL) {
+	if (isQualType(t)) {
 	    Cell pi = h98Context(TRUE,fst(snd(t)));
 	    if (nonNull(pi)) {
 		ERRMSG(line) "Illegal Haskell 98 class constraint in %s",wh

@@ -1,7 +1,7 @@
 /* --------------------------------------------------------------------------
  * Hugs parser (included as part of input.c)
  *
- * Expect 7 shift/reduce conflicts when passing this grammar through yacc,
+ * Expect 6 shift/reduce conflicts when passing this grammar through yacc,
  * but don't worry; they should all be resolved in an appropriate manner.
  *
  * Hugs 98 is Copyright (c) Mark P Jones, Alastair Reid and the Yale
@@ -10,8 +10,8 @@
  * in the distribution for details.
  *
  * $RCSfile: parser.y,v $
- * $Revision: 1.4 $
- * $Date: 1999/08/05 16:59:34 $
+ * $Revision: 1.5 $
+ * $Date: 1999/09/09 22:57:17 $
  * ------------------------------------------------------------------------*/
 
 %{
@@ -311,7 +311,7 @@ qconstr	  : context IMPLIES constr	{$$ = gc3(qualify($1,$3));}
 	  | constr			{$$ = $1;}
 	  ;
 constr	  : '!' btype conop bbtype	{$$ = gc4(ap(ap($3,bang($2)),$4));}
-	  | qbtype1   conop bbtype	{$$ = gc3(ap(ap($2,$1),$3));}
+	  | btype1    conop bbtype	{$$ = gc3(ap(ap($2,$1),$3));}
 	  | btype2    conop bbtype	{$$ = gc3(ap(ap($2,$1),$3));}
 	  | bpolyType conop bbtype	{$$ = gc3(ap(ap($2,$1),$3));}
 	  | btype2			{$$ = $1;}
@@ -408,12 +408,13 @@ topType	  : context IMPLIES topType1	{$$ = gc3(qualify($1,$3));}
 	  | topType1			{$$ = $1;}
 	  ;
 topType1  : bpolyType ARROW topType1	{$$ = gc3(fn($1,$3));}
-	  | qbtype1   ARROW topType1	{$$ = gc3(fn($1,$3));}
+	  | btype1    ARROW topType1	{$$ = gc3(fn($1,$3));}
 	  | btype2    ARROW topType1	{$$ = gc3(fn($1,$3));}
-	  | qbtype			{$$ = $1;}
+	  | btype			{$$ = $1;}
 	  ;
 polyType  : ALL varids '.' sigType	{$$ = gc4(ap(POLYTYPE,
 						     pair(rev($2),$4)));}
+	  | context IMPLIES type	{$$ = gc3(qualify($1,$3));}
 	  | bpolyType			{$$ = $1;}
 	  ;
 bpolyType : '(' polyType ')'		{$$ = gc3($2);}
@@ -422,7 +423,7 @@ varids	  : varids ',' varid		{$$ = gc3(cons($3,$1));}
 	  | varid			{$$ = gc1(singleton($1));}
 	  ;
 sigType   : context IMPLIES type	{$$ = gc3(qualify($1,$3));}
-	  | qtype			{$$ = $1;}
+	  | type			{$$ = $1;}
 	  ;
 context	  : '(' ')'			{$$ = gc2(NIL);}
 	  | btype2			{$$ = gc1(singleton(checkPred($1)));}
@@ -439,7 +440,7 @@ lacks	  : varid '\\' varid		{
 					 noTREX("a type context");
 #endif
 					}
-          | varid COCO type		{
+          | IPVARID COCO type		{
 #if IPARAM
 					 $$ = gc3(pair(mkIParam($1),$3));
 #else
@@ -463,31 +464,17 @@ type1	  : btype1			{$$ = $1;}
 	  | btype2 ARROW type		{$$ = gc3(fn($1,$3));}
 	  | error			{syntaxError("type expression");}
 	  ;
-qtype	  : qtype1			{$$ = $1;}
-	  | btype2			{$$ = $1;}
-	  ;
-qtype1	  : qbtype1			{$$ = $1;}
-	  | qbtype1 ARROW type		{$$ = gc3(fn($1,$3));}
-	  | btype2 ARROW type		{$$ = gc3(fn($1,$3));}
-	  | error			{syntaxError("type expression");}
-	  ;
 btype	  : btype1			{$$ = $1;}
 	  | btype2			{$$ = $1;}
 	  ;
 btype1	  : btype1 atype		{$$ = gc2(ap($1,$2));}
-	  | atype2			{$$ = $1;}
+	  | atype1			{$$ = $1;}
 	  ;
 btype2	  : btype2 atype		{$$ = gc2(ap($1,$2));}
 	  | qconid			{$$ = $1;}
 	  ;
-atype	  : atype2			{$$ = $1;}
+atype	  : atype1			{$$ = $1;}
 	  | qconid			{$$ = $1;}
-	  ;
-qbtype	  : qbtype1			{$$ = $1;}
-	  | btype2			{$$ = $1;}
-	  ;
-qbtype1	  : qbtype1 atype		{$$ = gc2(ap($1,$2));}
-	  | atype1			{$$ = $1;}
 	  ;
 atype1	  : varid			{$$ = $1;}
 	  | '(' ')'			{$$ = gc2(typeUnit);}
@@ -497,12 +484,6 @@ atype1	  : varid			{$$ = $1;}
 	  | '(' tupCommas ')'		{$$ = gc3($2);}
 	  | '(' btypes2 ')'		{$$ = gc3(buildTuple($2));}
 	  | '(' typeTuple ')'		{$$ = gc3(buildTuple($2));}
-	  | '[' type ']'		{$$ = gc3(ap(typeList,$2));}
-	  | '[' ']'			{$$ = gc2(typeList);}
-	  | '_'				{h98DoesntSupport(row,"anonymous type variables");
-					 $$ = gc1(inventVar());}
-	  ;
-atype2	  : atype1			{$$ = $1;}
 	  | '(' tfields ')'		{
 #if TREX
 					 $$ = gc3(revOnto($2,typeNoRow));
@@ -510,7 +491,17 @@ atype2	  : atype1			{$$ = $1;}
 					 noTREX("a type");
 #endif
 					}
-	  | '(' tfields '|' type ')'	{$$ = gc5(revOnto($2,$4));}
+	  | '(' tfields '|' type ')'	{
+#if TREX
+					 $$ = gc5(revOnto($2,$4));
+#else
+					 noTREX("a type");
+#endif
+					}
+	  | '[' type ']'		{$$ = gc3(ap(typeList,$2));}
+	  | '[' ']'			{$$ = gc2(typeList);}
+	  | '_'				{h98DoesntSupport(row,"anonymous type variables");
+					 $$ = gc1(inventVar());}
 	  ;
 btypes2	  : btypes2 ',' btype2		{$$ = gc3(cons($3,$1));}
 	  | btype2  ',' btype2		{$$ = gc3(cons($3,cons($1,NIL)));}

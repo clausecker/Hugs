@@ -7,8 +7,8 @@
  * in the distribution for details.
  *
  * $RCSfile: type.c,v $
- * $Revision: 1.4 $
- * $Date: 1999/08/06 23:03:19 $
+ * $Revision: 1.5 $
+ * $Date: 1999/09/09 22:57:18 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -933,7 +933,7 @@ Cell e; {				/* requires polymorphism, qualified*/
 
 	for (as=getArgs(as); nonNull(as); as=tl(as), body=arg(body)) {
 	    Type expect = dropRank1(arg(fun(body)),alpha,m);
-	    if (isPolyType(expect)) {
+	    if (isPolyOrQualType(expect)) {
 		if (tcMode==EXPRESSION)		/* poly/qual type in expr  */
 		    hd(as) = typeExpected(l,app,hd(as),expect,alpha,m,TRUE);
 		else if (hd(as)!=WILDCARD) {	/* Pattern binding/match   */
@@ -1086,7 +1086,7 @@ Int    m; {
 
     while (getHead(t)==typeArrow && argCount==2 && nonNull(ps)) {
 	Type ta = arg(fun(t));
-	if (isPolyType(ta)) {
+	if (isPolyOrQualType(ta)) {
 	    if (hd(ps)!=WILDCARD) {
 		if (!isVar(hd(ps))) {
 		   ERRMSG(l) "Argument " ETHEN ERREXPR(hd(ps));
@@ -1276,7 +1276,7 @@ Cell e; {
 	for (i=sfunPos(fst(hd(fs)),c); --i>0; t=arg(t))
 	    ;
 	t = dropRank1(arg(fun(t)),to,tf);
-	if (isPolyType(t))
+	if (isPolyOrQualType(t))
 	    snd(hd(fs)) = typeExpected(l,conExpr,snd(hd(fs)),t,to,tf,TRUE);
 	else {
 	    check(l,snd(hd(fs)),e,conExpr,t,to);
