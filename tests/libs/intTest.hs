@@ -4,7 +4,8 @@ import Int
 import Word
 import Bits
 
-test = do
+-- grrr, changing the monad translation introduced a spaceleak
+test _ = do
    testIntlike "Int8"   (0::Int8)     
    testIntlike "Int16"  (0::Int16)    
    testIntlike "Int32"  (0::Int32)    
