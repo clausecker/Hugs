@@ -14,8 +14,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: iomonad.c,v $
- * $Revision: 1.93 $
- * $Date: 2004/11/21 00:40:29 $
+ * $Revision: 1.94 $
+ * $Date: 2005/02/01 10:17:19 $
  * ------------------------------------------------------------------------*/
  
 Name nameIORun;			        /* run IO code                     */
@@ -1459,7 +1459,7 @@ primFun(primHSetBinaryMode) {
     BoolArg(binary, 1+IOArity);
 
     checkOpen(h, "System.IO.hSetBinaryMode");
-#if defined(mingw32_TARGET_OS) || defined(_MSC_VER)
+#if defined(mingw32_HOST_OS) || defined(_MSC_VER)
     setmode(fileno(handles[h].hfp), binary ? _O_BINARY : _O_TEXT);
 #endif
 #if CHAR_ENCODING

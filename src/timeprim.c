@@ -284,7 +284,7 @@ primFun(primGetCPUUsage) { /* IO (Int,Int,Int,Int) */
       sysSec   = (unsigned int)(kT / NS_PER_SEC);
       sysNSec  = (unsigned int)((kT - sysSec * NS_PER_SEC) * 100);
     }
-#elif HAVE_GETRUSAGE /* && ! irix_TARGET_OS && ! solaris2_TARGET_OS */
+#elif HAVE_GETRUSAGE /* && ! irix_HOST_OS && ! solaris2_HOST_OS */
     struct rusage t;
 
     getrusage(RUSAGE_SELF, &t);
