@@ -73,13 +73,17 @@ install_ffi	:: install
 		$(BUILD_FFI_OLD) MarshalAlloc
 		$(BUILD_FFI_OLD) MarshalUtils
 
+install_libraries ::
+		$(INSTALL) -d $(hugsdir)
+		$(INSTALL_DATA) -LR ../libraries $(hugsdir)
+
+install_oldlib ::
+		$(INSTALL) -d $(hugsdir)/oldlib
+		$(INSTALL_DATA) ../oldlib/*.* $(hugsdir)/oldlib
+
 BUILD_FFI_NEW = ./ffihugs -P'{Hugs}/libraries:{Hugs}/oldlib:{Hugs}/lib/hugs' +G
 
-install_libraries :: install
-		$(INSTALL) -d $(hugsdir)
-		$(INSTALL_DATA) -LR ../libraries ../oldlib $(hugsdir)
-
-install_libraries_ffi :: install_libraries
+install_libraries_ffi :: install install_libraries install_oldlib
 		$(BUILD_FFI_NEW) +L"Storable_aux.c" Hugs.Storable 
 		$(BUILD_FFI_NEW) Foreign.Marshal.Alloc 
 		$(BUILD_FFI_NEW) Foreign.Marshal.Utils 
