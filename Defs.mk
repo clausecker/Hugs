@@ -7,7 +7,7 @@ NAME=hugs98
 #
 # Set to 0 if a snapshot release.
 #
-MAJOR_RELEASE=1
+MAJOR_RELEASE=0
 
 # convention: a release uses the MON_YEAR form of version,
 # while a snapshot uses the YEAR_MONTH_DAY form.
