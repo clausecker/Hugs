@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: builtin.c,v $
- * $Revision: 1.52 $
- * $Date: 2003/03/14 11:59:37 $
+ * $Revision: 1.53 $
+ * $Date: 2003/03/14 15:13:28 $
  * ------------------------------------------------------------------------*/
 
 /* We include math.h before prelude.h because SunOS 4's cpp incorrectly
@@ -1627,8 +1627,6 @@ static void           getUnit        Args((void));
 static HsInt          getInt         Args((void));
 static HsWord         getWord        Args((void));
 static HsAddr         getAddr        Args((void));
-static float          getFloat       Args((void));
-static double         getDouble      Args((void));
 static HsChar         getChar        Args((void));
 static HugsForeign    getForeign     Args((void));
 static HsBool         getBool        Args((void));
@@ -1650,8 +1648,6 @@ static HsDouble       getDouble4     Args((void));
 static void           putInt         Args((HsInt));
 static void           putWord        Args((HsWord));
 static void           putAddr        Args((HsAddr));
-static void           putFloat       Args((double));
-static void           putDouble      Args((double));
 static void           putChar        Args((HsChar));
 static void           putForeign     Args((HugsForeign, void (*)(void *)));
 static void           putStablePtr4  Args((HsStablePtr));
@@ -1681,8 +1677,6 @@ static void           getUnit()      { eval(pop()); }
 static HsInt          getInt()       { eval(pop()); checkInt();   return whnfInt; }
 static HsWord         getWord()      { eval(pop()); checkWord();  return (unsigned int) whnfInt; }
 static HsAddr         getAddr()      { eval(pop()); checkPtr();   return ptrOf(whnfHead); }
-static float          getFloat()     { eval(pop()); checkFloat(); return whnfFloat; }
-static double         getDouble()    { eval(pop()); checkDouble(); return whnfDouble; }
 static HsChar         getChar()      { eval(pop()); checkChar();  return charOf(whnfHead); }
 static HugsForeign    getForeign()   { eval(pop()); return derefMP(whnfHead); }
 static HsBool         getBool()      { eval(pop()); checkBool();  return (whnfHead == nameTrue); }
@@ -1735,8 +1729,6 @@ static void putInt (HsInt  x) { push(mkInt(x)); }
 static void putWord(HsWord x) { push(mkInt((int)x)); }
 static void putAddr(HsAddr x) { push(mkPtr(x)); }
 static void putChar(HsChar x) { push(mkChar(x)); }
-static void putFloat (double x) { push(mkFloat(x)); }
-static void putDouble(double x) { push(mkDouble(x)); }
 static void putForeign(HugsForeign x, void (*f)(HugsForeign)) { push(mkMallocPtr(x,f)); }
 static void putStablePtr   (HugsStablePtr x) { push(derefStablePtr(x)); }
 static void putBool        (HsBool x)        { push(x?nameTrue:nameFalse); }
