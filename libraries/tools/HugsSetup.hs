@@ -25,7 +25,7 @@ import qualified Distribution.InstalledPackageInfo as Inst
 import Distribution.ParseUtils
 import Distribution.Package
 import Distribution.PackageDescription
-import Distribution.PreProcess	(PreProcessor)
+import Distribution.PreProcess
 import Distribution.PreProcess.Unlit
 import Distribution.Setup
 import Distribution.Simple.Configure
@@ -94,6 +94,7 @@ main
 		let buildPref = buildDir localbuildinfo
 		try $ removeFileRecursive buildPref
 		try $ removeFile localBuildInfoFile
+		removePreprocessedPackage pkg_descr currentDir (ppSuffixes knownSuffixHandlers)
 		return ()
 
 	    CopyCmd mprefix -> do
@@ -148,7 +149,7 @@ build :: PackageDescription -> LocalBuildInfo -> IO ()
 build pkg lbi = when (buildPackage pkg) $
 	withLib pkg $ \ libInfo -> do
 	-- Pass 1: preprocess (except cpp) files in source directory
-	preprocessPackage pkg
+	preprocessSources pkg lbi knownSuffixHandlers
 	-- Pass 2: copy or cpp files from source directory to build directory
 	files <- listSourceFiles libInfo
 	copyPackage pkg buildPref files
@@ -213,7 +214,7 @@ getBuildParams srcDir pkg_descr = do
 parseBuildParameters :: PackageDescription -> String ->
 	Either PError PackageDescription
 parseBuildParameters pkg_descr inp = do
-	fieldLines <- singleStanza (stripComments inp)
+	fieldLines <- singleStanza (stripComments False inp)
 	foldM (parseBasicStanza basicStanzaFields) pkg_descr fieldLines
 
 -- stolen from Distribution.InstalledPackageInfo
@@ -223,54 +224,6 @@ parseBasicStanza ((StanzaField name _ _ set):fields) pkg (lineNo, f, val)
 parseBasicStanza [] pkg (lineNo, f, val) = return pkg
 
 -- Building a package for Hugs
-
--- Pass 1: apply preprocessors (except cpp) in-place
-
--- Preprocess a package.
-preprocessPackage :: PackageDescription -> IO ()
-preprocessPackage pkg_descr =
-	withLib pkg_descr $ \ libInfo -> do
-	let srcDir = hsSourceDir libInfo
-	let srcStem mod = srcDir `joinFileName` dotToSep mod
-	sequence_ [preprocessModule handlers (srcStem mod) |
-			mod <- biModules libInfo]
-  where handlers = ppHandlers incls
-	incls = ccOptions pkg_descr
-
--- Preprocess a file.
-preprocessModule :: [PPHandler] -> FilePath -> IO ()
-preprocessModule handlers fileStem = chooseHandler handlers
-  where
-	chooseHandler [] = die (fileStem ++ ".*: not found")
-	chooseHandler ((suffix, maybe_pp):handlers) = do
-		let srcFile = fileStem ++ suffix
-		exists <- doesFileExist srcFile
-		if exists then case maybe_pp of
-			    Nothing -> return ()
-			    Just pp -> do
-				pp srcFile (fileStem ++ ".hs")
-				return ()
-		    else chooseHandler handlers
-
--- Preprocessors
-
-type PPHandler = (String, Maybe PreProcessor)
-
-ppHandlers :: [String] -> [PPHandler]
-ppHandlers incls = [
-	(".hs",  Nothing),
-	(".lhs", Nothing),
-	-- TODO: ("_hsc_make.c", ???),
-	(".hsc", Just (standardPP "hsc2hs" (defHugs : incls))),
-	(".ly",  Just (ppHappy)),
-	(".y",   Just (ppHappy))]
-
-ppHappy :: PreProcessor
-ppHappy = standardPP "happy" []
-
-standardPP :: String -> [String] -> PreProcessor
-standardPP eName args inFile outFile
-    = rawSystemPath eName (args ++ ["-o" ++ outFile, inFile])
 
 -- List of Haskell source files relative to source directory.
 listSourceFiles :: BuildInfo -> IO [FilePath]
@@ -353,18 +306,15 @@ uniq (x:xs) = x : uniq (dropWhile (== x) xs)
 -- get options from OPTIONS pragmas at the start of the source file
 getOptions :: FilePath -> IO [String]
 getOptions file = do
-	inp <- readHaskellFile file
-	return $ concat $ takeWhileJust $ map (getPragma "OPTIONS") $ lines inp
-
-takeWhileJust :: [Maybe a] -> [a]
-takeWhileJust (Just x:xs) = x : takeWhileJust xs
-takeWhileJust _ = []
+	(_, opts) <- getOptionsFromSource file
+	return [opt | (GHC, ghc_opts) <- opts, opt <- ghc_opts]
 
 -- get C files from CFILES pragmas throughout the source file
 getCFiles :: FilePath -> IO [String]
 getCFiles file = do
 	inp <- readHaskellFile file
-	return $ concat $ mapMaybe (getPragma "CFILES") $ lines inp
+	return $ concat $ mapMaybe (getPragma "CFILES") $ lines $
+		stripComments True inp
 
 getPragma :: String -> String -> Maybe [String]
 getPragma name line = case words line of
@@ -376,7 +326,7 @@ getPragma name line = case words line of
 testFFIModule :: FilePath -> IO Bool
 testFFIModule file = do
 	inp <- readHaskellFile file
-	return ("foreign" `elem` identifiers (stripComments inp))
+	return ("foreign" `elem` identifiers (stripComments False inp))
 
 -- List of variable identifiers (and reserved words) in a source file.
 identifiers :: String -> [String]
@@ -386,18 +336,6 @@ identifiers cs = case dropWhile (not . isStartChar) cs of
 	  where (ident, cs') = span isFollowChar rest
   where isStartChar c = c == '_' || isAlpha c
 	isFollowChar c = c == '_' || c == '\'' || isAlphaNum c
-
--- Strip all comments from Haskell source.
-stripComments :: String -> String
-stripComments = stripCommentsLevel 0
-  where stripCommentsLevel :: Int -> String -> String
-	stripCommentsLevel 0 ('-':'-':cs) =	-- not quite right (e.g. -->)
-		stripCommentsLevel 0 (dropWhile (/= '\n') cs)
-	stripCommentsLevel n ('{':'-':cs) = stripCommentsLevel (n+1) cs
-	stripCommentsLevel 0 (c:cs) = c : stripCommentsLevel 0 cs
-	stripCommentsLevel n ('-':'}':cs) = stripCommentsLevel (n-1) cs
-	stripCommentsLevel n (c:cs) = stripCommentsLevel n cs
-	stripCommentsLevel _ [] = []
 
 -- Get the non-literate source of a Haskell module.
 readHaskellFile :: FilePath -> IO String
