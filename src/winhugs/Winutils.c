@@ -29,13 +29,9 @@
 
 
 /* Executes the dialog with DlgId identifier using lpDlgProc */
-VOID ExecDialog (HINSTANCE hInstance, WORD DlgId, WNDPROC lpDlgProc)
+BOOL ExecDialog (HINSTANCE hInstance, WORD DlgId, WNDPROC lpDlgProc)
 {
-  DLGPROC lpProcedure;
-
-  lpProcedure = (DLGPROC)MakeProcInstance((FARPROC)lpDlgProc, hInstance);
-  DialogBox(hInstance, MAKEINTRESOURCE(DlgId), GetFocus(), lpProcedure);
-  FreeProcInstance((FARPROC)lpProcedure);
+  return (BOOL)(DialogBox(hInstance, MAKEINTRESOURCE(DlgId), GetFocus(), lpDlgProc));
 }
 
 /* Check whether the extension of file FileName is Ext */
