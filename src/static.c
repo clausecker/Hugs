@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.76 $
- * $Date: 2002/06/22 17:01:34 $
+ * $Revision: 1.77 $
+ * $Date: 2002/07/16 03:44:53 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -540,9 +540,12 @@ Bool   isHidden; {
 			|| tycon(c).what == NEWTYPE)) {
 		    if (snd(e) != DOTDOT) {
 			List ys = snd(e);
+			Name con;
 			while (nonNull(ys)) {
 			    if (isPair(hd(ys))) {
-				subentities = cons (findQualName(hd(ys)),subentities);
+				if (nonNull(con = findQualName(hd(ys)))) {
+				  subentities = cons (con,subentities);
+				}
 			    } else {
 				subentities = cons(hd(ys),subentities);
 			    }
@@ -553,10 +556,13 @@ Bool   isHidden; {
 		    }
 		} else if (isClass(c)) {
 		    if (snd(e) != DOTDOT) {
+		        Name mem;
 			List ys = snd(e);
 			while (nonNull(ys)) {
 			    if (isPair(hd(ys))) {
-				subentities = cons (findQualName(hd(ys)),subentities);
+				if (nonNull(mem = findQualName(hd(ys)))) {
+				  subentities = cons(mem,subentities);
+				}
 			    } else {
 				subentities = cons(hd(ys),subentities);
 			    }
@@ -709,7 +715,7 @@ Pair importSpec; {
 	  modImps = imports;
 	} else {
 	  for(; nonNull(imports); imports=tl(imports)) {
-	    modImps = cons(importEntity(m,hd(imports)), modImps);
+	      modImps = cons(importEntity(m,hd(imports)), modImps);
 	  }
 	}
     }
@@ -749,11 +755,9 @@ Cell e; {
 	cs  = snd(e);
     }
     if (cs != NIL && cs != DOTDOT) {
-	List xs = cs;
-	for (;nonNull(xs);xs=tl(xs)) {
-	    if (whatIs(hd(xs)) != 0) {
-		importEntity(source,hd(xs));
-	    }
+      List xs;
+	for (xs=cs;nonNull(xs);xs=tl(xs)) {
+	  importEntity(source,hd(xs));
 	}
     }
     switch (whatIs(ent)) {
@@ -953,21 +957,22 @@ Cell e; {
 			 * only the constructors in scope are exported. 
 			 */
 			Cell xs;
-			Cell stuff;
+			Cell stuff = DOTDOT;
 			for (xs = module(thisModule).modImports;nonNull(xs);xs=tl(xs)) {
 			    if (isPair(hd(xs)) && fst(hd(xs)) == tycon(nm).mod ) {
 				/* Found the effective import list for tycon's module */
 				List ns;
 				for(ns = snd(hd(xs)); nonNull(ns); ns=tl(ns)) {
-				    if (isPair(hd(ns)) && 
-					isTycon(fst(hd(ns))) &&
-					fst(hd(ns)) == nm) {
-					stuff = snd(hd(ns));
-					/* Add the constructors onto the 'exports' list */
-					for (ns=stuff;nonNull(ns);ns=tl(ns)) {
-					    exports=cons(hd(ns),exports);
-					}
-					break;
+				    if ( isPair(hd(ns)) && 
+					 isTycon(fst(hd(ns))) &&
+					 fst(hd(ns)) == nm ) {
+				      List ms;
+				      stuff = snd(hd(ns));
+				      /* Add the constructors onto the 'exports' list */
+				      for (ms=stuff;nonNull(ms);ms=tl(ms)) {
+					  exports=cons(hd(ms),exports);
+				      }
+				      break;
 				    }
 				}
 				break;
