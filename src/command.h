@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: command.h,v $
- * $Revision: 1.8 $
- * $Date: 2001/01/02 18:21:40 $
+ * $Revision: 1.9 $
+ * $Date: 2001/11/05 18:26:33 $
  * ------------------------------------------------------------------------*/
 
 typedef Int Command;
@@ -46,6 +46,7 @@ extern Command readCommand Args((struct cmd *, Char, Char));
 #ifdef __SYMBIAN32__
 #define PRNDIR 22
 #endif
+#define REGSAVE 23
 
 #if OBSERVATIONS
 /*-------------------------------------------------------------------------*
