@@ -206,7 +206,6 @@ mkdir -p $compat
   hslibs lang ArrayBase.hs		# -> Data.Array.Base
   hslibs lang Arrow.hs			# -> Control.Arrow
 # hslibs lang ByteArray.lhs		# deprecated
-# hslibs lang CCall.lhs			# GHC-specific (and obsolete)
   hslibs lang CTypesISO.hs		# -> Foreign.C.TypesISO
   hslibs lang DiffArray.hs		# -> Data.Array.Diff
 # hslibs lang DirectoryExts.hs
@@ -256,10 +255,8 @@ mkdir -p $compat
   hslibs net SocketPrim.hs		# -> Network.Socket
   hslibs net URI.hs			# -> Network.URI
 
-# hslibs text MatchPS.lhs
   hslibs text Pretty.lhs		# -> Text.PrettyPrint.HughesPJ
-# hslibs text Regex.lhs
-# hslibs text RegexString.lhs
+  hslibs text RegexString.lhs		# -> Text.Regex
 
   hslibs text/html Html.lhs		# -> Text.Html
   hslibs text/html HtmlBlockTable.lhs	# -> Text.Html.BlockTable
@@ -276,9 +273,9 @@ mkdir -p $compat
   hslibs text/parsec ParsecToken.hs	# -> Text.ParserCombinators.Parsec.Token
 
   hslibs util GetOpt.lhs		# -> System.Console.GetOpt
-# hslibs util MD5.lhs			# needs PackedString, etc
 # hslibs util Memo.lhs			# Hugs module is different
 # hslibs util Observe.lhs		# Hugs module is different
+# hslibs util Readline.lhs		# -> System.Console.Readline
 # hslibs util Select.lhs
   hslibs util Unique.lhs		# -> Data.Unique
 
