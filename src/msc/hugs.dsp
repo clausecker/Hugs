@@ -75,7 +75,7 @@ PostBuild_Cmds=copy $(OutDir)\hugs.exe ..\..
 # ADD CPP /nologo /ML /W3 /Gm /GX /ZI /I "." /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /GZ /c
 # SUBTRACT CPP /Fr
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
-# ADD RSC /l 0x409 /d "_DEBUG"
+# ADD RSC /l 0x409 /i "..\..\icons" /d "_DEBUG"
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
 # ADD BSC32 /nologo
@@ -194,6 +194,10 @@ SOURCE=..\version.h
 # Begin Group "Resource Files"
 
 # PROP Default_Filter "ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"
+# Begin Source File
+
+SOURCE=.\hugs.rc
+# End Source File
 # End Group
 # Begin Group "yacc files"
 

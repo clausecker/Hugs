@@ -72,7 +72,7 @@ PostBuild_Cmds=copy $(OutDir)\runhugs.exe ..\..
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /GZ /c
 # ADD CPP /nologo /W3 /Gm /GX /ZI /Od /I "." /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /GZ /c
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
-# ADD RSC /l 0x409 /d "_DEBUG"
+# ADD RSC /l 0x409 /i "..\..\icons" /d "_DEBUG"
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
 # ADD BSC32 /nologo
@@ -195,6 +195,10 @@ SOURCE=..\version.h
 # Begin Group "Resource Files"
 
 # PROP Default_Filter "ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"
+# Begin Source File
+
+SOURCE=.\runhugs.rc
+# End Source File
 # End Group
 # End Target
 # End Project
