@@ -7,8 +7,8 @@
  * in the distribution for details.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.5 $
- * $Date: 1999/08/11 05:48:01 $
+ * $Revision: 1.6 $
+ * $Date: 1999/08/16 17:55:57 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -208,7 +208,7 @@ String argv[]; {
     namesUpto     = 1;
 
 #if HUGS_FOR_WINDOWS
-    hugsEdit      = strCopy(fromEnv("EDITOR","c:\\windows\notepad.exe"));
+    hugsEdit      = strCopy(fromEnv("EDITOR","c:\\windows\\notepad.exe"));
 #elif SYMANTEC_C
     hugsEdit      = "";
 #else
@@ -1456,7 +1456,7 @@ Text t; {
         browseit(mod);
     }
 
-    if (isNull(tc) && isNull(cl) && isNull(nm)) {
+    if (isNull(tc) && isNull(cl) && isNull(nm) && isNull(mod)) {
 	Printf("Unknown reference `%s'\n",textToStr(t));
     }
 }
