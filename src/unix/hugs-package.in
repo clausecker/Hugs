@@ -48,9 +48,11 @@ esac
 # platform sensitive settings
 case $platform in
 Win32)	CALLCONV=stdcall
-	cpp_flags="$cpp_flags -DPLATFORM=Win32" ;;	# hack for HGL
+	cpp_flags="$cpp_flags -DPLATFORM=Win32"  	# hack for HGL
+	tmpdir_root=`cygpath -w /tmp | sed -e 's%\\\\%/%g' `;;
 *)	CALLCONV=ccall
-	cpp_flags="$cpp_flags -DPLATFORM=X11" ;;	# hack for HGL
+	cpp_flags="$cpp_flags -DPLATFORM=X11"   	# hack for HGL
+	tmpdir_root="/tmp" ;;
 esac
 
 script=
@@ -94,7 +96,7 @@ Win32)	# stay away from -m (older versions of 'cygpath' doesn't support it.)
 esac
 
 includes="-I$HUGSDIR/include -I$source_dir/include"
-tmpdir=/tmp/cvt.$$
+tmpdir=$tmpdir_root/cvt.$$
 
 [ -d $tmpdir ] && rm -r $tmpdir
 
@@ -185,8 +187,8 @@ extract_make_variable() {
 
 # Determine the list of modules to be converted
 
-module_list=/tmp/cvs.$$.1
-tmp=/tmp/cvs.$$.2
+module_list=$tmpdir_root/cvs.$$.1
+tmp=$tmpdir_root/cvs.$$.2
 
 trap "rm -f $module_list $tmp; exit 0" 0 1 2 3 15
 
