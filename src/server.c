@@ -11,8 +11,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: server.c,v $
- * $Revision: 1.34 $
- * $Date: 2003/03/10 14:38:19 $
+ * $Revision: 1.35 $
+ * $Date: 2003/03/10 14:57:22 $
  * ------------------------------------------------------------------------*/
 #include "prelude.h"
 #include "storage.h"
@@ -305,7 +305,6 @@ static Void Reset(scripts) /* Restore number of scripts to old level */
 Int scripts; {
     protect(
 	ClearOutputBuffer();
-	clearProject();
 	forgetScriptsFrom(scripts);
 	everybody(RESET);
 	);
@@ -331,11 +330,7 @@ String s;
 static Void LoadProject(fn)       /* load a project into the system  */
 String fn;
 {
-    protect(
-	loadProject(strCopy(fn));
-	readScripts(numLoadedScripts());
-	everybody(RESET);
-	);
+    protect(setError("loadProject: not implemented"));
 }
 
 static Void LoadFile(fn)          /* load a module (from a file) into the system   */

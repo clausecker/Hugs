@@ -28,7 +28,7 @@ Examples include:<p>
 For these purposes, we provide a "<B>Hugs </B> Server API" which provides
 access to some of <B>Hugs </B>' innards:<p>
 <UL><LI>
- loading/compiling files and projects
+ loading/compiling files
 <LI>
  compiling expressions
 <LI>
@@ -76,8 +76,8 @@ Here's what each line does:<p>
 <DD>
   Declare command line arguments used when initialising the server.
   These should consist of the program name (<tt>argv[0]</tt>) and
-  a list of flags.  Unlike <B>Hugs </B> you should not include files or
-  projects to load.
+  a list of flags.  Unlike <B>Hugs </B> you should not include files
+  to load.
 </DD><DT>
 12
 </DT>
@@ -140,7 +140,7 @@ here's the complete list:<p>
 &gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;void&nbsp;&nbsp;(*reset&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;)&nbsp;(int);<br>
 &gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;void&nbsp;&nbsp;(*setOutputEnable)&nbsp;(unsigned);<br>
 &gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;void&nbsp;&nbsp;(*changeDir&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;)&nbsp;(char*);<br>
-&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;void&nbsp;&nbsp;(*loadProject&nbsp;&nbsp;&nbsp;&nbsp;)&nbsp;(char*);<br>
+&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;void&nbsp;&nbsp;(*loadProject&nbsp;&nbsp;&nbsp;&nbsp;)&nbsp;(char*);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/*&nbsp;obsolete&nbsp;*/<br>
 &gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;void&nbsp;&nbsp;(*loadFile&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;)&nbsp;(char*);<br>
 &gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;HVal&nbsp;&nbsp;(*compileExpr&nbsp;&nbsp;&nbsp;&nbsp;)&nbsp;(char*,char*);<br>
 &gt;&nbsp;			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
@@ -164,16 +164,14 @@ to the "virtual function table" in a variable called <tt>hugs</tt> and
 we'll write things like this<p>
 <tt><br>
 &gt;&nbsp;void&nbsp;&nbsp;hugs-&gt;loadFile&nbsp;&nbsp;&nbsp;&nbsp;(char*);<br>
-&gt;&nbsp;void&nbsp;&nbsp;hugs-&gt;loadProject&nbsp;(char*);<br>
 <p>
-</tt>to indicate the type of <tt>hugs-&gt;loadFile</tt> and <tt>hugs-&gt;loadProject</tt>.<a name="loading files"></a><p>
+</tt>to indicate the type of <tt>hugs-&gt;loadFile</tt>.<a name="loading files"></a><p>
 <a name="sect4"></a>
 <h2>4<tt>&nbsp;&nbsp;</tt>Loading files</h2><p>
 Loading files is easy enough.  Simply call
-<tt>hugs-&gt;loadFile(&lt;name&gt;)</tt> or <tt>hugs-&gt;loadProject(&lt;name&gt;)</tt>.<p>
+<tt>hugs-&gt;loadFile(&lt;name&gt;)</tt>.<p>
 <tt><br>
 &gt;&nbsp;void&nbsp;&nbsp;hugs-&gt;loadFile&nbsp;&nbsp;&nbsp;&nbsp;(char*);<br>
-&gt;&nbsp;void&nbsp;&nbsp;hugs-&gt;loadProject&nbsp;(char*);<br>
 <p>
 </tt>Some programs need to be able to "unload" (or "forget") some of
 the Haskell files that have been loaded.  <B>Hugs </B> maintains a
@@ -435,7 +433,7 @@ typedef&nbsp;struct&nbsp;_HugsServerAPI&nbsp;{<br>
 &nbsp;&nbsp;&nbsp;&nbsp;void&nbsp;&nbsp;(*reset&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;)&nbsp;Args((int));<br>
 &nbsp;&nbsp;&nbsp;&nbsp;void&nbsp;&nbsp;(*setOutputEnable)&nbsp;Args((unsigned));<br>
 &nbsp;&nbsp;&nbsp;&nbsp;void&nbsp;&nbsp;(*changeDir&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;)&nbsp;Args((char*));<br>
-&nbsp;&nbsp;&nbsp;&nbsp;void&nbsp;&nbsp;(*loadProject&nbsp;&nbsp;&nbsp;&nbsp;)&nbsp;Args((char*));<br>
+&nbsp;&nbsp;&nbsp;&nbsp;void&nbsp;&nbsp;(*loadProject&nbsp;&nbsp;&nbsp;&nbsp;)&nbsp;Args((char*));&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/*&nbsp;obsolete&nbsp;*/<br>
 &nbsp;&nbsp;&nbsp;&nbsp;void&nbsp;&nbsp;(*loadFile&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;)&nbsp;Args((char*));<br>
 &nbsp;&nbsp;&nbsp;&nbsp;HVal&nbsp;&nbsp;(*compileExpr&nbsp;&nbsp;&nbsp;&nbsp;)&nbsp;Args((char*,char*));<br>
 <br>

@@ -43,8 +43,6 @@ extern Void getFileInfo Args((String, Time *, Long *));
 
 #if USE_REGISTRY
 
-#define ProjectRoot ("SOFTWARE\\Haskell\\Projects\\")
-
 #if HUGS_FOR_WINDOWS
 extern Int    readRegInt     Args((String,Int));
 extern Bool   writeRegInt    Args((String,Int));

@@ -31,7 +31,6 @@
  * ------------------------------------------------------------------------*/
 Int    hpSize            = DEFAULTHEAP; /* Desired heap size               */
 String hugsPath		 = 0;		/* String for file search path     */
-String projectPath	 = 0;		/* String for project search path  */
 String hugsSuffixes	 = 0;		/* Source filename suffixes        */
 
 /* --------------------------------------------------------------------------

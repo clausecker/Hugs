@@ -59,7 +59,6 @@ extern String hugsSuffixes;            /* Source filename suffixes        */
 extern Bool   haskell98;               /* TRUE => Haskell 98 compatibility*/
 extern Int    hpSize;                  /* Desired heap size               */
 extern String hugsEdit;                /* String for editor command       */
-extern String projectPath;	       /* String for project search path  */
 
 /* The rest are conditionally supported flags: */
 #if PROFILING

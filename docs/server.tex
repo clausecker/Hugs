@@ -139,7 +139,7 @@ access to some of \Hugs{}' innards:
 
 \begin{itemize}
 \item
- loading/compiling files and projects
+ loading/compiling files
 \item
  compiling expressions
 \item
@@ -190,8 +190,8 @@ Here's what each line does:
 \item[4-8]
   Declare command line arguments used when initialising the server.
   These should consist of the program name (\cexpr{argv[0]}) and
-  a list of flags.  Unlike \Hugs{} you should not include files or
-  projects to load.
+  a list of flags.  Unlike \Hugs{} you should not include files
+  to load.
 \item[12]
   Initialise the server.  This returns a ``virtual function table''
   which is used to access all other functions in the server API.
@@ -244,7 +244,7 @@ here's the complete list:
 >     void  (*reset          ) (int);
 >     void  (*setOutputEnable) (unsigned);
 >     void  (*changeDir      ) (char*);
->     void  (*loadProject    ) (char*);
+>     void  (*loadProject    ) (char*);     /* obsolete */
 >     void  (*loadFile       ) (char*);
 >     HVal  (*compileExpr    ) (char*,char*);
 > 			       
@@ -270,21 +270,19 @@ we'll write things like this
 
 \begin{verbatim}
 > void  hugs->loadFile    (char*);
-> void  hugs->loadProject (char*);
 \end{verbatim}
 
-to indicate the type of \cfun{hugs->loadFile} and \cfun{hugs->loadProject}.
+to indicate the type of \cfun{hugs->loadFile}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Loading files}\label{loading files}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 Loading files is easy enough.  Simply call
-\cexpr{hugs->loadFile(<name>)} or \cexpr{hugs->loadProject(<name>)}.
+\cexpr{hugs->loadFile(<name>)}.
 
 \begin{verbatim}
 > void  hugs->loadFile    (char*);
-> void  hugs->loadProject (char*);
 \end{verbatim}
 
 Some programs need to be able to ``unload'' (or ``forget'') some of
@@ -614,7 +612,7 @@ typedef struct _HugsServerAPI {
     void  (*reset          ) Args((int));
     void  (*setOutputEnable) Args((unsigned));
     void  (*changeDir      ) Args((char*));
-    void  (*loadProject    ) Args((char*));
+    void  (*loadProject    ) Args((char*));     /* obsolete */
     void  (*loadFile       ) Args((char*));
     HVal  (*compileExpr    ) Args((char*,char*));
 

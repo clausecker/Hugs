@@ -132,20 +132,6 @@ Set module for evaluating expressions.
 </listitem>
 </varlistentry>
 
-<varlistentry id="project-command">
-<term>
-<cmdsynopsis>
-<command>:project</command> <arg choice=plain><replaceable>file</replaceable></arg>
-</cmdsynopsis>
-</term>
-
-<listitem>
-<para>
-Use project file.
-</para>
-</listitem>
-</varlistentry>
-
 <varlistentry id="edit-command">
 <term>
 <cmdsynopsis>

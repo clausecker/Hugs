@@ -11,8 +11,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.82 $
- * $Date: 2003/03/09 23:53:05 $
+ * $Revision: 1.83 $
+ * $Date: 2003/03/10 14:57:22 $
  * ------------------------------------------------------------------------*/
 #include <math.h>
 #include "prelude.h"
@@ -667,12 +667,7 @@ String s;
 String findPathname(along,nm)   /* Look for a file or module along suggested path */
 String along;                   /* Return ***input name*** if no file was found */
 String nm; {
-    /* AC, 1/21/99: modified to search hugsPath first, then projectPath */
-    Bool r = find1(along,nm,hugsPath);
-#if USE_REGISTRY
-    r = r || find1(along,nm,projectPath);
-#endif /* USE_REGISTRY */
-    if (!r) {
+    if (!find1(along,nm,hugsPath)) {
         searchReset(0);
         searchStr(nm);
     }

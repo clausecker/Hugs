@@ -262,9 +262,6 @@ Void optionInfo(Void) {                 /* Print information about command */
     Printf("\n{Hugs}          : %s",hugsdir());
     Printf("\n{Current}       : %s",currentDir());
 #endif
-    if (projectPath!=NULL) {
-	Printf("\nProject Path    : %s",projectPath);
-    }
     Printf("\nSource suffixes : -S");
     printString(hugsSuffixes);
     Printf("\nEditor setting  : -E");
@@ -660,8 +657,6 @@ Void readOptionSettings() {
 #endif
 
 #if USE_REGISTRY
-    projectPath   = readRegChildStrings(HKEY_LOCAL_MACHINE,ProjectRoot,
-				        "HUGSPATH", "");
     readOptions(readRegString(HKEY_LOCAL_MACHINE,hugsRegRoot,"Options",""), TRUE);
     if (!fromEnv("IGNORE_USER_REGISTRY",NULL)) {
       /* If IGNORE_USER_REGISTRY exist as an env var, don't consult

@@ -45,10 +45,6 @@ static Int    scriptsStable;            /* Number of (Prelude) scripts     */
 static Bool   needsImports;             /* set to TRUE if imports required */
        String scriptFile;               /* Name of current script (if any) */
 
-       String currProject = 0;          /* Name of current project file    */
-
-Bool   projectLoaded = FALSE;    /* TRUE => project file loaded     */
-
 /* --------------------------------------------------------------------------
  * Local function prototypes:
  * ------------------------------------------------------------------------*/
@@ -276,37 +272,6 @@ String argv[]; {
 }
 
 /* --------------------------------------------------------------------------
- * Project file handling:
- * ------------------------------------------------------------------------*/
-
-Void loadProject(s)        /* Load project file               */
-String s; {
-    clearProject();
-    currProject = s;
-    projInput(currProject);
-    scriptFile = currProject;
-    forgetAllScripts();
-    while ((s=readFilename())!=0)
-	addScriptName(s,TRUE);
-    if (namesUpto<=1) {
-	ERRMSG(0) "Empty project file"
-	EEND;
-    }
-    scriptFile    = 0;
-    projectLoaded = TRUE;
-}
-
-Void clearProject() {      /* clear name for current project  */
-    if (currProject)
-      free(currProject);
-    currProject   = 0;
-    projectLoaded = FALSE;
-#if HUGS_FOR_WINDOWS
-    setLastEdit((String)0,0);
-#endif
-}
-
-/* --------------------------------------------------------------------------
  * Dropping script files:
  * ------------------------------------------------------------------------*/
 Void forgetScriptsFrom(scno) /* remove scripts from system     */
@@ -399,8 +364,6 @@ Void whatScripts() {       /* list scripts in current session */
     if (!InAutoReloadFiles) {
 #endif
     Printf("\nHugs session for:");
-    if (projectLoaded)
-	Printf(" (project: %s)",currProject);
     for (i=0; i<numScripts; ++i)
 	Printf("\n%s",scriptName[i]);
     Putchar('\n');

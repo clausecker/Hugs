@@ -46,12 +46,6 @@ extern String scriptFile;
 extern Void whatScripts       Args((Void));
 extern Void readScripts       Args((Int));
 
-/* Old and musty -- project files */
-Void loadProject       Args((String));
-Void clearProject      Args((Void));
-extern String currProject;
-extern Bool   projectLoaded;    /* TRUE => project file loaded     */
-
 extern Void script     Args((int));
 
 #if HUGS_FOR_WINDOWS

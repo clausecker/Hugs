@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: connect.h,v $
- * $Revision: 1.71 $
- * $Date: 2003/03/09 23:53:03 $
+ * $Revision: 1.72 $
+ * $Date: 2003/03/10 14:57:17 $
  * ------------------------------------------------------------------------*/
 #ifndef __CONNECT_H__
 #define __CONNECT_H__
@@ -274,7 +274,6 @@ extern  Void   storage          Args((Int));
 extern  Bool   startsQual        Args((Char));
 extern  Void   input             Args((Int));
 extern  Void   consoleInput      Args((String));
-extern  Void   projInput	 Args((String));
 extern  Void   stringInput       Args((String));
 extern  Bool   parseScript       Args((String,Long));
 extern  Void   parseScriptString Args((String));

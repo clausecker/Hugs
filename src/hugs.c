@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.122 $
- * $Date: 2003/03/10 14:39:00 $
+ * $Revision: 1.123 $
+ * $Date: 2003/03/10 14:57:22 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -47,7 +47,6 @@ static Void   local guidance          Args((Void));
 static Void   local forHelp           Args((Void));
 static Void   local changeDir         Args((Void));
 static Void   local load              Args((Void));
-static Void   local project           Args((Void));
 static Void   local editor            Args((Void));
 static Void   local find              Args((Void));
 static Void   local setModule         Args((Void));
@@ -236,8 +235,7 @@ static struct cmd cmds[] = {
  {":type",   TYPEOF}, {":!",    SYSTEM},  {":load",    LOAD},
  {":reload", RELOAD}, {":gc",   COLLECT}, {":edit",    EDIT},
  {":quit",   QUIT},   {":set",  SET},     {":find",    FIND},
- {":names",  NAMES},  {":info", INFO},    {":project", PROJECT},
- {":module",SETMODULE}, 
+ {":names",  NAMES},  {":info", INFO},    {":module",  SETMODULE}, 
  {":browse", BROWSE},
 #if EXPLAIN_INSTANCE_RESOLUTION
  {":xplain", XPLAIN},
@@ -257,7 +255,6 @@ static Void local menu() {
     Printf(":load               clear all files except prelude\n");
     Printf(":also <filenames>   read additional modules\n");
     Printf(":reload             repeat last load command\n");
-    Printf(":project <filename> use project file\n");
     Printf(":edit <filename>    edit file\n");
     Printf(":edit               edit last module\n");
     Printf(":module <module>    set module for evaluating expressions\n");
@@ -356,27 +353,6 @@ static Void local load() {           /* read filenames from command line   */
 				     /* to be read                         */
     while ((s=readFilename())!=0)
 	addScriptName(s,TRUE);
-    readScripts(1);
-}
-
-static Void local project() {          /* read list of script names from   */
-    String s;                          /* project file                     */
-
-    if ((s=readFilename()) || currProject) {
-	if (!s)
-	    s = strCopy(currProject);
-	else if (readFilename()) {
-	    ERRMSG(0) "Too many project files"
-	    EEND;
-	}
-	else
-	    s = strCopy(s);
-    }
-    else {
-	ERRMSG(0) "No project filename specified"
-	EEND;
-    }
-    loadProject(s);
     readScripts(1);
 }
 
@@ -1028,17 +1004,13 @@ String argv[]; {
 #endif
                           find();
 			  break;
-	    case LOAD   : clearProject();
-			  forgetAllScripts();
+	    case LOAD   : forgetAllScripts();
 			  load();
 			  break;
-	    case ALSO   : clearProject();
-			  forgetScriptsFrom(numLoadedScripts());
+	    case ALSO   : forgetScriptsFrom(numLoadedScripts());
 			  load();
 			  break;
 	    case RELOAD : readScripts(1);
-			  break;
-	    case PROJECT: project();
 			  break;
 	    case SETMODULE :
 			  setModule();

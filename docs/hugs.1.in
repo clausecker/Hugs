@@ -190,11 +190,6 @@ read additional modules.
 .B :reload
 repeat last \fBload\fP command.
 .TP
-\fB:project\fP \fIfile\fP
-load the modules listed in \fIfile\fP,
-which contains module names separated by whitespace,
-possibly with Haskell-style comments.
-.TP
 \fB:edit\fP \fIfile\fP
 edit \fIfile\fP.
 .TP

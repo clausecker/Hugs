@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: input.c,v $
- * $Revision: 1.62 $
- * $Date: 2003/03/09 23:53:05 $
+ * $Revision: 1.63 $
+ * $Date: 2003/03/10 14:57:22 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -274,9 +274,8 @@ static Void local initCharTab() {       /* Initialize char decode table    */
 #define NOTHING    0                   /* what kind of input is being read?*/
 #define KEYBOARD   1                   /* - keyboard/console?              */
 #define SCRIPTFILE 2                   /* - script file                    */
-#define PROJFILE   3                   /* - project file                   */
-#define STRING     4                   /* - string buffer?                 */
-#define NOKEYBOARD 5                   /* - standard input, but not a tty  */
+#define STRING     3                   /* - string buffer?                 */
+#define NOKEYBOARD 4                   /* - standard input, but not a tty  */
 
 
 static Int    reading   = NOTHING;
@@ -400,21 +399,6 @@ Void restoreInputState(Void)
     SendMessage (hWndText, WM_SETBUFFERPOS, (WPARAM) 0, saveBufferPos);
 }
 #endif
-
-Void projInput(nm)                     /* prepare to input characters from */
-String nm; {                           /* from named project file          */
-    if ((inputStream = fopen(nm,FOPEN_MODE))!=0) {
-	reading = PROJFILE;
-	c0      = ' ';
-	c1      = '\n';
-	column  = 1;
-	row     = 0;
-    }
-    else {
-	ERRMSG(0) "Unable to open project file \"%s\"", nm
-	EEND;
-    }
-}
 
 static Bool local fileInput(nm,len)     /* prepare to input characters from*/
 String nm;                              /* named file (specified length is */
@@ -711,7 +695,6 @@ static Void local newlineSkip() {      /* skip `\n' (supports lit scripts) */
 
 static Void local closeAnyInput() {    /* Close input stream, if open,     */
     switch (reading) {                 /* or skip to end of console line   */
-	case PROJFILE   :
 	case SCRIPTFILE : if (inputStream) {
 #if SUPPORT_PREPROCESSOR
 			      if (preprocessor) {
@@ -1305,11 +1288,8 @@ Char   sys; {                          /* character for shell escape       */
 }
 
 String readFilename() {                /* Read filename from input (if any)*/
-    if (reading==PROJFILE)
-	skipWhitespace();
-    else
-	while (c0==' ' || c0=='\t')
-	    skip();
+    while (c0==' ' || c0=='\t')
+	skip();
 
     if (c0=='\n' || c0==EOF)           /* return null string at end of line*/
 	return 0;
