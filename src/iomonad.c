@@ -14,8 +14,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: iomonad.c,v $
- * $Revision: 1.59 $
- * $Date: 2003/10/18 00:35:28 $
+ * $Revision: 1.60 $
+ * $Date: 2003/10/18 22:46:41 $
  * ------------------------------------------------------------------------*/
  
 Name nameIORun;			        /* run IO code                     */
@@ -1006,16 +1006,23 @@ primFun(primHandleToFd) {
     if (IS_STANDARD_HANDLE(h) || handles[h].hmode==HCLOSED) {
         IOFail(mkIOError(NIL,
 			 nameIllegal,
-		         "IO.handleToFd",
+		         "System.Posix.IO.handleToFd",
 		         "invalid handle",
 			 NIL));
     }
-    if (handles[h].hmode&(HWRITE|HAPPEND|HREADWRITE))
-	fflush(handles[h].hfp);
-    fd = fileno(handles[h].hfp);
+#if HAVE_DUP
+    fd = dup(fileno(handles[h].hfp));
+    fclose(handles[h].hfp);
     handles[h].hfp   = 0;
     handles[h].hmode = HCLOSED;
     IOReturn(mkInt(fd));
+#else
+    IOFail(mkIOError(handles[h].hcell,
+		     nameIllegal,
+		     "System.Posix.IO.handleToFd",
+		     "unsupported operation",
+		     NIL));
+#endif
 }
 
 /* NOTE: this doesn't implement the Haskell 1.3 semantics */
