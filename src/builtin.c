@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: builtin.c,v $
- * $Revision: 1.83 $
- * $Date: 2005/03/14 23:45:21 $
+ * $Revision: 1.84 $
+ * $Date: 2005/03/27 15:20:26 $
  * ------------------------------------------------------------------------*/
 
 /* We include math.h before prelude.h because SunOS 4's cpp incorrectly
@@ -80,6 +80,12 @@
 
 #if HAVE_FCNTL_H
 # include <fcntl.h>
+#endif
+
+#if defined(openbsd_HOST_OS)
+/* Needed for mallocBytesRWX() */
+#include <inttypes.h>
+#include <sys/mman.h>
 #endif
 
 #endif /* IO_MONAD */
@@ -1951,6 +1957,7 @@ struct thunk_data {
 static void* mkThunk      Args((void (*)(void), HugsStablePtr));
 static void freeThunkAux  Args((struct thunk_data*));
 static void freeAllThunks Args((void));
+static void initAdjustor  Args((void));
 
 static struct thunk_data* foreignThunks = 0;
 
@@ -1972,15 +1979,48 @@ static struct thunk_data* foreignThunks = 0;
    for the C stack fixup code that we need to perform when
    returning in some static piece of memory and arrange
    to return to it before tail jumping from the adjustor thunk.
-
-   For this to work we make the assumption that bytes in .data
-   are considered executable.
 */
-static unsigned char obscure_ccall_ret_code [] =
-  { 0x83, 0xc4, 0x04 /* addl $0x4, %esp */
-  , 0xc3             /* ret */
-  };
+static unsigned char *obscure_ccall_ret_code;	/* set by initAdjustor() */
+
+/* Heavily arch-specific, I'm afraid.. */
+
+/*
+ * Allocate len bytes which are readable, writable, and executable.
+ *
+ * ToDo: If this turns out to be a performance bottleneck, one could
+ * e.g. cache the last VirtualProtect/mprotect-ed region and do
+ * nothing in case of a cache hit.
+ */
+static void* local mallocBytesRWX(int len) {
+    void *addr = (void *)malloc(len);
+#if defined(openbsd_HOST_OS)
+    /* malloced memory isn't executable by default on OpenBSD */
+    uintptr_t pageSize         = sysconf(_SC_PAGESIZE);
+    uintptr_t mask             = ~(pageSize - 1);
+    uintptr_t startOfFirstPage = ((uintptr_t)addr          ) & mask;
+    uintptr_t startOfLastPage  = ((uintptr_t)addr + len - 1) & mask;
+    uintptr_t size             = startOfLastPage - startOfFirstPage + pageSize;
+    if (mprotect((void*)startOfFirstPage, 
+                        (size_t)size, PROT_EXEC | PROT_READ | PROT_WRITE) != 0) {
+        ERRMSG(0) "mallocBytesRWX: failed to protect 0x%p\n", addr
+	EEND;
+    }
 #endif
+    return addr;
+}
+
+#endif /* i386 || X86 */
+
+/* Perform initialisation of adjustor thunk layer (if needed). */
+static void local initAdjustor() {
+#if defined(__i386__) || defined(_X86_)
+    obscure_ccall_ret_code = (unsigned char *)mallocBytesRWX(4);
+    obscure_ccall_ret_code[0x00] = (unsigned char)0x83;  /* addl $0x4, %esp */
+    obscure_ccall_ret_code[0x01] = (unsigned char)0xc4;
+    obscure_ccall_ret_code[0x02] = (unsigned char)0x04;
+    obscure_ccall_ret_code[0x03] = (unsigned char)0xc3;  /* ret */
+#endif
+}
 
 static void* mkThunk(void (*app)(void), HugsStablePtr s) {
     struct thunk_data* thunk 
@@ -2356,6 +2396,8 @@ Void builtIn(what)
 Int what; {
     switch (what) {
 	case INSTALL : 
+		       initAdjustor();
+
 		       registerPrims(&builtinPrims);
 		       registerPrims(&printerPrims);
 #if HASKELL_ARRAYS
