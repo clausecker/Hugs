@@ -14,8 +14,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: iomonad.c,v $
- * $Revision: 1.58 $
- * $Date: 2003/10/16 00:16:48 $
+ * $Revision: 1.59 $
+ * $Date: 2003/10/18 00:35:28 $
  * ------------------------------------------------------------------------*/
  
 Name nameIORun;			        /* run IO code                     */
@@ -113,6 +113,7 @@ PROTO_PRIM(primStdin);
 PROTO_PRIM(primStdout);
 PROTO_PRIM(primStderr);
 PROTO_PRIM(primOpenFd);
+PROTO_PRIM(primHandleToFd);
 PROTO_PRIM(primHIsEOF);
 PROTO_PRIM(primHugsHIsEOF);
 PROTO_PRIM(primHFlush);
@@ -238,6 +239,7 @@ static struct primitive iomonadPrimTable[] = {
   {"openFile",          2+IOArity, primOpenFile},
   {"openBinaryFile",    2+IOArity, primOpenBinaryFile},
   {"openFd",            4+IOArity, primOpenFd},
+  {"handleToFd",	1+IOArity, primHandleToFd},
   {"stdin",		0, primStdin},
   {"stdout",		0, primStdout},
   {"stderr",		0, primStderr},
@@ -996,6 +998,25 @@ primFun(primOpenFd) {			/* open handle to file descriptor. */
     IOReturn(openFdHandle(root,fd,m,binary,"openFd"));
 }
 
+/* Extract the file descriptor from a Handle, discarding the Handle */
+primFun(primHandleToFd) {
+    Int h;
+    Int fd;
+    HandleArg(h,1+IOArity);
+    if (IS_STANDARD_HANDLE(h) || handles[h].hmode==HCLOSED) {
+        IOFail(mkIOError(NIL,
+			 nameIllegal,
+		         "IO.handleToFd",
+		         "invalid handle",
+			 NIL));
+    }
+    if (handles[h].hmode&(HWRITE|HAPPEND|HREADWRITE))
+	fflush(handles[h].hfp);
+    fd = fileno(handles[h].hfp);
+    handles[h].hfp   = 0;
+    handles[h].hmode = HCLOSED;
+    IOReturn(mkInt(fd));
+}
 
 /* NOTE: this doesn't implement the Haskell 1.3 semantics */
 primFun(primHugsHIsEOF) {		/* Test for end of file on handle  */

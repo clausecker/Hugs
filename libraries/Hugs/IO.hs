@@ -48,6 +48,7 @@ module Hugs.IO (
     hIsSeekable,            -- :: Handle -> IO Bool
 
     -- Non-standard extensions 
+    handleToFd,             -- :: Handle -> IO Int
     openFd                  -- :: Int -> Bool -> IOMode -> Bool -> IO Handle
     ) where
 
@@ -173,6 +174,9 @@ primitive hIsOpen,
 	  hIsSeekable :: Handle -> IO Bool
 
 -----------------------------------------------------------------------------
+
+-- Extract the file descriptor from a Handle, closing the Handle
+primitive handleToFd :: Handle -> IO Int
 
 --
 -- Creating a handle from a file descriptor/socket.
