@@ -9,8 +9,8 @@
  * included in the distribution.
  *
  * $RCSfile: subst.c,v $
- * $Revision: 1.11 $
- * $Date: 1999/11/15 22:57:04 $
+ * $Revision: 1.12 $
+ * $Date: 1999/11/16 09:11:56 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -64,8 +64,8 @@ static Int  local tailVar		Args((Type,Int));
 #endif
 
 static Bool local improveAgainst	Args((Int,List,Cell,Int));
-static Bool local improveAgainstInsts	Args((Int,Class,Cell,Int));
-static Bool local pairImprove		Args((Int,Class,Cell,Int,Cell,Int));
+static Bool local instImprove		Args((Int,Class,Cell,Int));
+static Bool local pairImprove		Args((Int,Class,Cell,Int,Cell,Int,Int));
 #if IPARAM
 static Bool local ipImprove		Args((Int,Cell,Int,Cell,Int));
 #endif
@@ -1464,7 +1464,7 @@ List ps; {
 	    if ((isClass(c) && nonNull(cclass(c).xfds)) || isIP(c)) {
 		improved |= improveAgainst(line,sps,pi,o);
 		if (!isIP(c))
-		    improved |= improveAgainstInsts(line,c,pi,o);
+		    improved |= instImprove(line,c,pi,o);
 		improved |= improveAgainst(line,tl(ps1),pi,o);
 	    }
 	}
@@ -1483,7 +1483,7 @@ Int o; {
 	if ((isClass(c) && nonNull(cclass(c).xfds)) || isIP(c)) {
 	    improved |= improveAgainst(line,sps,pi,o);
 	    if (!isIP(c))
-		improved |= improveAgainstInsts(line,c,pi,o);
+		improved |= instImprove(line,c,pi,o);
 	}
     } while (improved);
 }
@@ -1503,9 +1503,9 @@ Int o; {
 	/* it would be nice to optimize for the common case
 	   where h == h1 */
 	if (isClass(h) && isClass(h1)) {
-	    improved |= pairImprove(line,h,pi,o,pi1,o1);
+	    improved |= pairImprove(line,h,pi,o,pi1,o1,numTyvars);
 	    if (h != h1)
-		improved |= pairImprove(line,h1,pi1,o1,pi,o);
+		improved |= pairImprove(line,h1,pi1,o1,pi,o,numTyvars);
 	}
 #if IPARAM
 	else if (isIP(h1) && textOf(h1) == textOf(h))
@@ -1515,7 +1515,7 @@ Int o; {
     return improved;
 }
 
-Bool improveAgainstInsts(line,c,pi,o)
+Bool instImprove(line,c,pi,o)
 Int line;
 Class c;
 Cell pi;
@@ -1525,7 +1525,7 @@ Int o; {
     for (; nonNull(ins); ins=tl(ins)) {
 	Cell in   = hd(ins);
 	Int alpha = newKindedVars(inst(in).kinds);
-	improved |= pairImprove(line,c,pi,o,inst(in).head,alpha);
+	improved |= pairImprove(line,c,pi,o,inst(in).head,alpha,alpha);
     }
     return improved;
 }
@@ -1556,14 +1556,14 @@ Int o1; {
 }
 #endif
 
-Bool pairImprove(line,c,pi1,o1,pi2,o2)	/* Look for improvement of (pi1,o1)*/
+Bool pairImprove(line,c,pi1,o1,pi2,o2,above)	/* Look for improvement of (pi1,o1)*/
 Int   line;				/* against (pi2,o2)                */
 Class c;
 Cell  pi1;
 Int   o1;
 Cell  pi2;
-Int   o2; {
-    Int nTvs = numTyvars;
+Int   o2;
+Int above; {
     Bool improved = FALSE;
     List xfds     = cclass(c).xfds;
     for (; nonNull(xfds); xfds=tl(xfds)) {
@@ -1576,6 +1576,7 @@ Int   o2; {
 	    alpha = newKindedVars(cclass(c).kinds);
 	    if (matchPred(pi2,o2,h,alpha))
 		break;
+	    numTyvars = alpha;
 	}
 	if (nonNull(hs)) {
 	    List fds = snd(xfd);
@@ -1584,14 +1585,15 @@ Int   o2; {
 		Bool same = TRUE;
 		for (; same && nonNull(as); as=tl(as)) {
 		    Int n = offsetOf(hd(as));
-		    same &= sameType(nthArg(n,pi1),o1,mkOffset(n),alpha);
+		    same &= matchTypeAbove(nthArg(n,pi1),o1,
+					   mkOffset(n),alpha,above);
 		}
 		if (isNull(as) && same) {
 		    for (as=snd(hd(fds)); same && nonNull(as); as=tl(as)) {
-			Int  n  = offsetOf(hd(as));
-			Type t1 = nthArg(n,pi1);
-			Type t2  = mkOffset(n);
-			if (!sameType(t1,o1,t2,alpha)) {
+			Int  n    = offsetOf(hd(as));
+			Type t1   = nthArg(n,pi1);
+			Type t2   = mkOffset(n);
+			if (!matchTypeAbove(t1,o1,t2,alpha,above)) {
 			    same &= unify(t1,o1,t2,alpha);
 			    improved = TRUE;
 			}
@@ -1613,9 +1615,9 @@ Int   o2; {
 		    }
 		}
 	    }
+	    numTyvars = alpha;
 	}
     }
-    numTyvars = nTvs;
     return improved;
 }
 
@@ -1728,6 +1730,19 @@ Type t;					/* Assumes types are kind correct  */
 Int  o; {				/* and that no vars have been	   */
     Bool result;			/* alloc'd since o.		   */
     bindOnlyAbove(o);
+    result = unify(t1,o1,t,o);
+    unrestrictBind();
+    return result;
+}
+
+Bool matchTypeAbove(t1,o1,t,o,a)	/* match, allowing only vars	   */
+Type t1;				/* allocated since `a' to be bound */
+Int  o1;				/* this is deeply hacky, since it  */
+Type t;					/* relies on careful use of the	   */
+Int  o;					/* substitution stack		   */
+Int  a; {
+    Bool result;
+    bindOnlyAbove(a);
     result = unify(t1,o1,t,o);
     unrestrictBind();
     return result;
