@@ -45,6 +45,8 @@ PS: Boiled down bug-provoking program enclosed, tbug.gs:
 -}
 module TestDicts where
 
+import IOExts (performGC)
+
 class T a where			-- Line 1
 	t :: Int ->  a
 
