@@ -192,20 +192,22 @@ Void loadPrelude() {  /* load in the Prelude module(s). */
     String prelLocation;
     Bool   listFlg;
 
+    if (!hugsPath)
+	fatal("Hugs search path not defined");
+
     if (!( prelLocation = findMPathname(STD_PRELUDE_HUGS)) ) {
-	Printf("Prelude not found on current path: \"%s\"\n",
-	       hugsPath ? hugsPath : "");
-	fatal("Unable to load prelude");
+	Printf("%s not found on current path: \"%s\"\n",
+	       STD_PRELUDE_HUGS, hugsPath);
+	fatal("Unable to load prelude implementation");
     }
     addScriptName(prelLocation, FALSE);
     
     /* add the H98 Prelude module to the stack */
     if (!( prelLocation = findMPathname(STD_PRELUDE)) ) {
-	Printf("H98 Prelude not found on current path: \"%s\"\n",
-	       hugsPath ? hugsPath : "");
-	fatal("Unable to load H98 prelude");
+	Printf("%s not found on current path: \"%s\"\n",
+	       STD_PRELUDE, hugsPath);
+	fatal("Unable to load prelude");
     }
-
     addScriptName(prelLocation, FALSE);
 
     everybody(INSTALL);
