@@ -93,6 +93,12 @@
  * (Otherwise, they're assumed to have type int (*)(void).)
  */
 #define VOID_INT_SIGNALS 0
+
+/* Define if time.h or sys/time.h define the altzone variable.  */
+#undef HAVE_ALTZONE
+
+/* Define if time.h or sys/time.h define the timezone variable.  */
+#undef HAVE_TIMEZONE
  
 
 /* Leave that blank line there!!  Autoheader needs it.
