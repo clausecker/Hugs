@@ -52,14 +52,21 @@ doing what.</para>
 </qandaentry>
 
 <qandaentry>
-<question><para>Who do I send a bug report to?</para></question>
+<question><para>How do I report a bug?</para></question>
 
 <answer>
+<para>First, check the list of known deviations and bugs
+(see <xref linkend="haskell98"/>).</para>
+
 <para>Please send bug reports to <ulink url="mailto:hugs-bugs@haskell.org">hugs-bugs@haskell.org</ulink>.
 If you send the bug report to an individual, you run the risk that that person
 is on vacation, is rushing to meet a deadline or just accidentally deletes your
 mail.  Sending to the mailing list gives us all a chance to reply to your bug
 report.</para>
+
+<para>Please say which version of Hugs you are using, on which platform,
+and give us enough information to duplicate the problem.
+Like all maintainers, we greatly appreciate short error cases.</para>
 </answer>
 </qandaentry>
 
