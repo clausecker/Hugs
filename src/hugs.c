@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.44 $
- * $Date: 2001/08/11 01:54:35 $
+ * $Revision: 1.45 $
+ * $Date: 2001/08/20 13:24:34 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -973,6 +973,13 @@ struct options toggle[] = {             /* List of command line toggles    */
           1,
 #endif
           "Enable root optimisation",         &rootOpt},
+#endif
+#if HERE_DOC
+    {'H',
+#if !HASKELL_98_ONLY
+             0,
+#endif
+	     "Enable `here documents'",       &hereDocs},
 #endif
     {0,   
 #if !HASKELL_98_ONLY

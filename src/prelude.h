@@ -9,8 +9,8 @@
  * included in the distribution.
  *
  * $RCSfile: prelude.h,v $
- * $Revision: 1.23 $
- * $Date: 2001/08/15 01:09:18 $
+ * $Revision: 1.24 $
+ * $Date: 2001/08/20 13:24:35 $
  * ------------------------------------------------------------------------*/
 
 #include "config.h"
@@ -119,6 +119,7 @@
 #define MULTI_INST	1
 #define OBSERVATIONS    1
 #define ZIP_COMP	1
+#define HERE_DOC	1
 #else
 #define TREX            0
 #define IPARAM          0
@@ -126,8 +127,8 @@
 #define MULTI_INST      0
 #define OBSERVATIONS    0
 #define ZIP_COMP	0
+#define HERE_DOC	0
 #endif
-#define HERE_DOC	 0
 #define HASKELL_ARRAYS	 1
 #define IO_MONAD	 1
 #define IO_HANDLES       1

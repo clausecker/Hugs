@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: input.c,v $
- * $Revision: 1.26 $
- * $Date: 2001/06/14 21:28:52 $
+ * $Revision: 1.27 $
+ * $Date: 2001/08/20 13:24:35 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -162,6 +162,7 @@ static Cell varLabel;                   /* label                           */
 static List imps;                       /* List of imports to be chased    */
 
 #if HERE_DOC
+Bool hereDocs = FALSE;
 enum { START = 0,
        KEEP_GOING,
        BEGIN_VAR,
@@ -1483,7 +1484,7 @@ static Int local yylex() {             /* Read next input token ...        */
 	    }
 
 #if HERE_DOC && !HASKELL_98_ONLY
-    if (c0=='`' && c1=='`' && !haskell98) {
+    if (c0=='`' && c1=='`' && hereDocs) {
 	skip(); skip();
 	hereState = KEEP_GOING;
 	return '(';

@@ -3,6 +3,9 @@ module Quote where
 class Quote a where
     quote :: a -> String
 
+instance Quote Char where
+    quote c = [c]
+
 instance Quote String where
     quote = id
 
@@ -22,4 +25,7 @@ instance Quote Float where
     quote = show
 
 instance Quote Double where
+    quote = show
+
+instance Integral a => Quote (Ratio a) where
     quote = show
