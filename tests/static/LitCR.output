@@ -1,2 +1,2 @@
-ERROR "static/LitCR.lhs":9 - Undefined variable "y"
+ERROR "static/LitCR.lhs":10 - Undefined variable "y"
 Hugs:[Leaving Hugs]

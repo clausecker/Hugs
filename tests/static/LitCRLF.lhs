@@ -1,12 +1,12 @@
---!!! Literate source using CRLF as newline
+-- !!! Literate source using CRLF as newline
 
-> module LitCRLF where
-> import List
+\begin{code}
+module LitCRLF where
+\end{code}
 
-The following definition occurs on line 9:
+The following definition occurs on line 10:
 
 >
 > x = y
 
 Should result in an error.  Notice the line number.
-
