@@ -29,7 +29,7 @@ To run the tests:
 2) Run the test script in the tests directory.
 
      cd ../tests
-     sh ./testScript static tcheck rts libs demos
+     env HUGSFLAGS="" sh ./testScript static tcheck rts libs demos
 
    You can vary the argument list to vary which tests are performed.
    Tests are somewhat approximately broken down into:
@@ -39,6 +39,9 @@ To run the tests:
      rts    - evaluating code
      libs   - libraries that come with Hugs
      demos  - demos that come with Hugs
+
+   You can also use non-empty HUGSFLAGS if you want to test alternate
+   libraries, etc.  Of course, this might make the tests start failing.
 
 3) Once you get bored of seeing all the successful tests (yahoo!), you
    can use grep to restrict output to the failures:

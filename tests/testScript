@@ -2,7 +2,7 @@
 
 . ./config
 
-STDOPTS='+q -w -pHugs: -s10 -P{Hugs}/lib:{Hugs}/lib/hugs:{Hugs}/lib/exts'
+STDOPTS='+q -w -pHugs: -s10'
 
 test_static() {
   echo "\
