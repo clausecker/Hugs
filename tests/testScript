@@ -199,6 +199,8 @@ test_static() {
   perl runstdtest $HUGS $STDOPTS "-Ostatic/mod159.hs" "-o1static/Loaded.output"
   perl runstdtest $HUGS $STDOPTS "-Ostatic/mod160.hs" "-o1static/mod160.output"
   perl runstdtest $HUGS $STDOPTS "-Ostatic/mod161.hs" "-o1static/mod161.output" "-istatic/mod161.input"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod162.hs" "-o1static/Loaded.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod163.hs" "-o1static/Loaded.output"
 
   # Check opaque import/export of tycons
   perl runstdtest $HUGS $STDOPTS "-Ostatic/T2.hs"  "-o1static/T2.output"
