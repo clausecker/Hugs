@@ -45,7 +45,7 @@ test_module() {
 	then	sed -n 's/\(.* ERROR\): \(.*\)/*\1*	'"$module"' (\2)/p' $tmpfile-
 	elif grep '^ERROR' $tmpfile- >/dev/null
 	then
-		module2=`grep '^ERROR ' $tmpfile- | sed -e 's:.*"[^"]*/[a-z][^"/]*/\([^".]*\)\.[a-z]*".*:\1:' -e 's:/:.:g'`
+		module2=`grep '^ERROR ' $tmpfile- | sed -e 's:/packages/[^/]*/:/libraries/:' -e 's:.*"[^"]*/libraries/\([^".]*\)\.[a-z]*".*:\1:' -e 's:/:.:g'`
 		if [ "$module" != "$module2" ]
 		then	reason="imports $module2"
 		else	reason="`sed -n '/^ERROR / s/.* - //p' $tmpfile-`"
@@ -53,7 +53,7 @@ test_module() {
 		echo "*ERROR*  $module ($reason)"
 	elif grep '^ERROR' $tmpfile+ >/dev/null
 	then
-		module2=`grep '^ERROR ' $tmpfile+ | sed -e 's:.*"[^"]*/[a-z][^"/]*/\([^".]*\)\.[a-z]*".*:\1:' -e 's:/:.:g'`
+		module2=`grep '^ERROR ' $tmpfile- | sed -e 's:/packages/[^/]*/:/libraries/:' -e 's:.*"[^"]*/libraries/\([^".]*\)\.[a-z]*".*:\1:' -e 's:/:.:g'`
 		if [ "$module" != "$module2" ]
 		then	reason="imports $module2"
 		else
