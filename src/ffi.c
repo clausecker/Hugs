@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: ffi.c,v $
- * $Revision: 1.7 $
- * $Date: 2002/06/15 00:29:06 $
+ * $Revision: 1.8 $
+ * $Date: 2002/06/15 01:12:33 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -492,9 +492,11 @@ Type resultTy; {
     ffiCallFun(line,cid,argTys,resultTy);
     fprintf(out,"    ");
     foreignPut(line,resultTy,"res",1);
-    fprintf(out,"    hugs->return%s(hugs_root,%d);\n", 
-            isIO?"IO":"Id",
-            resultTy==typeUnit ? 0 : 1);
+    if (isIO || nonNull(argTys)) {
+      fprintf(out,"    hugs->return%s(hugs_root,%d);\n", 
+              isIO?"IO":"Id",
+              resultTy==typeUnit ? 0 : 1);
+    }
     fprintf(out,"}\n");
 }
 
@@ -684,13 +686,9 @@ Type ty; {
     ffiPrimProto(cid,id);
     ffiPrimHeader(cid,id);
     fprintf(out,"{\n");
-    fprintf(out,
-            "    extern int %s;\n", textToStr(cid));
-    fprintf(out,
-            "    hugs->putAddr(&%s);\n", textToStr(cid));
-    fprintf(out,
-            "    hugs->returnId(hugs_root,1);\n"
-            "}\n");
+    fprintf(out,"    extern int %s;\n",      textToStr(cid));
+    fprintf(out,"    hugs->putAddr(&%s);\n", textToStr(cid));
+    fprintf(out,"}\n");
 }
 
 /* ToDo: 
