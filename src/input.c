@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: input.c,v $
- * $Revision: 1.53 $
- * $Date: 2002/10/05 16:06:59 $
+ * $Revision: 1.54 $
+ * $Date: 2002/11/08 06:23:17 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1091,7 +1091,7 @@ Bool skipEsc; {
     alreadyRead[alreadyMatched++] = (char)c0;
     alreadyRead[alreadyMatched++] = '\0';
     ERRMSG(row) "Illegal character escape sequence \"\\%s\"",
-		alreadyRead
+                 alreadyRead
     EEND;
     return NIL;/*NOTREACHED*/
 }
@@ -1319,8 +1319,13 @@ String readFilename() {                /* Read filename from input (if any)*/
 		    saveTokenChar(' ');
 		    skip();
 		    continue;
+		  } else if (c0 == '"') {
+		    saveTokenChar('"');
+		    skip();
+		    continue;
 		  } else {
-		    c = readEscapeChar(TRUE,FALSE);
+		    saveTokenChar('\\');
+		    continue;
 		  }
 		} else {
 		  c = readAChar(TRUE);
