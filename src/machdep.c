@@ -12,8 +12,8 @@
  * included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.5 $
- * $Date: 1999/09/13 11:01:03 $
+ * $Revision: 1.6 $
+ * $Date: 1999/10/26 05:47:04 $
  * ------------------------------------------------------------------------*/
 
 #ifdef HAVE_SIGNAL_H
@@ -950,7 +950,14 @@ Int readTerminalChar() {                /* read character from terminal    */
  	hIn = GetStdHandle(STD_INPUT_HANDLE);
  	GetConsoleMode(hIn, &mo);
  	SetConsoleMode(hIn, mo & ~(ENABLE_LINE_INPUT | ENABLE_ECHO_INPUT));
- 	c = getc(stdin);
+	/* 
+	 * On Win9x, the first time you change the mode (as above) a
+	 * raw '\n' is inserted.  Since enter maps to a raw '\r', and we
+	 * map this (below) to '\n', we can just ignore all *raw* '\n's.
+	 */
+	do {
+	  c = getc(stdin);
+	} while (c == '\n');
  
  	/* Same as it ever was - revert back state of stdin. */
  	SetConsoleMode(hIn, mo);
