@@ -46,11 +46,8 @@ module Hugs.Prelude (
 --  module Ix,
     Ix(range, index, inRange, rangeSize),
 --  module Char,
-    isAscii, isControl, isPrint, isSpace, isUpper, isLower,
+    isSpace, isUpper, isLower,
     isAlpha, isDigit, isOctDigit, isHexDigit, isAlphaNum,
-    digitToInt, intToDigit,
-    toUpper, toLower,
-    ord, chr,
     readLitChar, showLitChar, lexLitChar,
 --  module Numeric
     showSigned, showInt,
@@ -530,11 +527,8 @@ instance Bounded Char where
     minBound = '\0'
     maxBound = '\255'
 
-isAscii, isControl, isPrint, isSpace            :: Char -> Bool
-isUpper, isLower, isAlpha, isDigit, isAlphaNum  :: Char -> Bool
-isAscii c              =  fromEnum c < 128
-isControl c            =  c < ' ' ||  c == '\DEL'
-isPrint c              =  c >= ' ' &&  c <= '~'
+isSpace, isUpper, isLower, isAlpha, isDigit, isAlphaNum :: Char -> Bool
+
 isSpace c              =  c == ' '  ||
 			  c == '\t' ||
 			  c == '\n' ||
@@ -554,34 +548,6 @@ isLower c              =  c >= 'a'   &&  c <= 'z'    ||
 isAlpha c              =  isUpper c  ||  isLower c
 isDigit c              =  c >= '0'   &&  c <= '9'
 isAlphaNum c           =  isAlpha c  ||  isDigit c
-
--- Digit conversion operations
-digitToInt :: Char -> Int
-digitToInt c
-  | isDigit c            =  fromEnum c - fromEnum '0'
-  | c >= 'a' && c <= 'f' =  fromEnum c - fromEnum 'a' + 10
-  | c >= 'A' && c <= 'F' =  fromEnum c - fromEnum 'A' + 10
-  | otherwise            =  error "Char.digitToInt: not a digit"
-
-intToDigit :: Int -> Char
-intToDigit i
-  | i >= 0  && i <=  9   =  toEnum (fromEnum '0' + i)
-  | i >= 10 && i <= 15   =  toEnum (fromEnum 'a' + i - 10)
-  | otherwise            =  error "Char.intToDigit: not a digit"
-
-toUpper, toLower      :: Char -> Char
-toUpper c | c == '\xdf' || c == '\xff' = c	-- lower, but no upper
-	  | isLower c  = toEnum (fromEnum c - fromEnum 'a' + fromEnum 'A')
-	  | otherwise  = c
-
-toLower c | isUpper c  = toEnum (fromEnum c - fromEnum 'A' + fromEnum 'a')
-	  | otherwise  = c
-
-ord         	      :: Char -> Int
-ord         	       = fromEnum
-
-chr                   :: Int -> Char
-chr                    = toEnum
 
 -- Maybe type ---------------------------------------------------------------
 
