@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: connect.h,v $
- * $Revision: 1.76 $
- * $Date: 2003/09/29 21:28:40 $
+ * $Revision: 1.77 $
+ * $Date: 2003/10/13 23:10:23 $
  * ------------------------------------------------------------------------*/
 #ifndef __CONNECT_H__
 #define __CONNECT_H__
@@ -378,7 +378,7 @@ extern  Void   run              Args((Addr,StackPtr));
 extern  Void   eval             Args((Cell));
 extern  Cell   evalWithNoError  Args((Cell));
 extern  Void   evalFails        Args((StackPtr));
-extern  Void   throwException   Args((Cell));
+extern  Void   throwException   Args((Cell)) HUGS_noreturn;
 
 #if BYTECODE_PRIMS
 extern Int     IntAt            Args((Addr));

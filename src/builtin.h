@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: builtin.h,v $
- * $Revision: 1.3 $
- * $Date: 2003/08/26 12:28:33 $
+ * $Revision: 1.4 $
+ * $Date: 2003/10/13 23:10:22 $
  * ------------------------------------------------------------------------*/
 #ifndef __BUILTIN_H__
 #define __BUILTIN_H__
@@ -529,7 +529,7 @@ extern Cell   mkIOError Args((Cell,Name,String,String,Cell));
 #if IO_MONAD
 #define IOArg(n)    primArg((n)+IOArity)
 #define IOReturn(r) { updapRoot(primArg(1),r); return; }
-#define IOFail(r)   { throwException(ap(nameIOException,r)); return; }
+#define IOFail(r)   throwException(ap(nameIOException,r))
 #endif
 
 #endif /* __BUILTIN_H__ */
