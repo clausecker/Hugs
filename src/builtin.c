@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: builtin.c,v $
- * $Revision: 1.26 $
- * $Date: 2002/06/17 21:46:42 $
+ * $Revision: 1.27 $
+ * $Date: 2002/07/09 11:05:26 $
  * ------------------------------------------------------------------------*/
 
 /* We include math.h before prelude.h because SunOS 4's cpp incorrectly
@@ -2326,7 +2326,7 @@ static void* mkThunk(void (*app)(void), HugsStablePtr s) {
          }
      }
 #else
-    ERRMSG(0) "Foreign export dynamic is not supported on this architecture" 
+    ERRMSG(0) "Foreign import wrapper is not supported on this architecture" 
     EEND;
 #endif
     assert(pc <= &thunk->code[0] + sizeof(thunk->code));
