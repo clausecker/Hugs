@@ -18,6 +18,7 @@
 
 cpp_flags='-D__HUGS__'
 cpp="gcc -P -E -traditional -xc $cpp_flags"
+cc="gcc -xc $cpp_flags"
 
 hugs_src=../../lib
 dst=../../libraries
@@ -62,13 +63,24 @@ function cvt {
 		;;
 	*.hsc)
 		# with a hack to extract the -#include directives
-		copy="$dstdir/`basename $2`"
-		target="$dstdir/`basename $2 .hsc`.hs"
-		header="`basename $2 .hsc`_aux.h"
-		sed '/^foreign.*"[^ ]*"/ s/"/"'"$header /" "$src/$1/$2" >$copy
-		hsc2hs $cpp_flags $includes "$copy"
+		stem="`basename $2 .hsc`"
+		target="$dstdir/$stem.hs"
+		header="${stem}_aux.h"
+		# don't run hsc2hs if its output is already present
+		c_file="`dirname $src/$1/$2`/${stem}_hsc_make.c"
+		if [ -f "$c_file" ]
+		then
+			hsc_make="$dstdir/${stem}_hsc_make"
+			$cc $includes -o "$hsc_make" "$c_file"
+			$hsc_make | sed '/^foreign.*"[^ ]*"/ s/"/"'"$header /" >$target
+			rm "$hsc_make"
+		else
+			copy="$dstdir/`basename $2`"
+			sed '/^foreign.*"[^ ]*"/ s/"/"'"$header /" "$src/$1/$2" >$copy
+			hsc2hs $cpp_flags $includes "$copy"
+			rm "$copy"
+		fi
 		sed -n 's/^{-# OPTIONS -\(#include .*\) #-}/\1/p' $target >"$dstdir/$header"
-		rm "$copy"
 		;;
 	*.y|*.ly)
 		inname=`basename $2`

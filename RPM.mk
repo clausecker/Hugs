@@ -25,7 +25,11 @@ ${PACKAGE}.tar.gz:
 	cd ${TARTMP}; cvs -d ${CVSROOT} export -r${TAG} hugs98
 	cd ${TARTMP}/hugs98; cvs -d ${CVSROOT} export -r${HSLIBSTAG} $(addprefix fptools/hslibs/,${HSLIBSDIRS})
 	cd ${TARTMP}/hugs98; cvs -d ${CVSROOT} export -r${LIBRARIESTAG} $(addprefix fptools/libraries/,${LIBRARIESDIRS})
-	cd ${TARTMP}/hugs98/fptools/libraries/haskell-src/Language/Haskell; happy Parser.ly
+	# preprocess these, so the package can be built without happy & ghc
+	find ${TARTMP}/hugs98/fptools/libraries -name "*.ly" -o -name "*.y" |\
+		xargs -l happy
+	find ${TARTMP}/hugs98/fptools/libraries -name "*.hsc" |\
+		xargs -l hsc2hs --no-compile
 	cp ${TARTMP}/hugs98/src/version.c /tmp/mktar
 	cd ${TARTMP}/hugs98/src; sed -e "s/define MAJOR_RELEASE.*/define MAJOR_RELEASE 0/" -e "s/VERSION_STRING MONTH_YEAR/VERSION_STRING \"${MONTH_YEAR}\"/" -e "s/VERSION_STRING YYYYMMDD/VERSION_STRING \"${YEAR_MONTH_DAY}\"/" < ${TARTMP}/version.c > ${TARTMP}/hugs98/src/version.c
 	# using `make parser.c' would be best, but by default yacc
