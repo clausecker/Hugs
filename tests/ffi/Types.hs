@@ -1,5 +1,10 @@
 -- !!! Testing marshalling of all the basic types
 
+import Addr
+import Int
+import Word
+import Ptr( Ptr, FunPtr )
+import StablePtr( StablePtr )
 
 foreign import ccall "types_aux.h" iInt       :: Int         -> IO Int       
 foreign import ccall "types_aux.h" iChar      :: Char        -> IO Char      

@@ -3,7 +3,7 @@
 -- Imports kept minimal to avoid pulling in Storable and other
 -- things which use even more ffi.
 import IOExts( unsafePerformIO )
-import Ptr( freeHaskellFunPtr )
+import Ptr( FunPtr, freeHaskellFunPtr )
 
 tests = do
 

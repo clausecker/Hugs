@@ -1,5 +1,6 @@
 -- !!! Testing all the different forms of foreign import
 
+import Ptr( Ptr, FunPtr )
 
 -- Several variants on static import
 foreign import ccall "static forms_aux.h foo" si1 :: Int -> IO Int       
