@@ -49,7 +49,7 @@
 <PROJECT>
     <TARGETLIST>
         <TARGET>
-            <NAME>O'Hugs</NAME>
+            <NAME>Hugs 98</NAME>
             <SETTINGLIST>
 
                 <!-- Settings for "Source Trees" panel -->
@@ -92,33 +92,15 @@
                     </SETTING>
                     <SETTING>
                         <SETTING><NAME>SearchPath</NAME>
-                            <SETTING><NAME>Path</NAME><VALUE>:::GUSI_215:lib:</VALUE></SETTING>
+                            <SETTING><NAME>Path</NAME><VALUE>::</VALUE></SETTING>
                             <SETTING><NAME>PathFormat</NAME><VALUE>MacOS</VALUE></SETTING>
-                            <SETTING><NAME>PathRoot</NAME><VALUE>CodeWarrior</VALUE></SETTING>
-                        </SETTING>
-                        <SETTING><NAME>Recursive</NAME><VALUE>true</VALUE></SETTING>
-                        <SETTING><NAME>HostFlags</NAME><VALUE>All</VALUE></SETTING>
-                    </SETTING>
-                    <SETTING>
-                        <SETTING><NAME>SearchPath</NAME>
-                            <SETTING><NAME>Path</NAME><VALUE>::CodeWarrior MPW:Interfaces&amp;Libraries:Libraries:SharedLibraries:</VALUE></SETTING>
-                            <SETTING><NAME>PathFormat</NAME><VALUE>MacOS</VALUE></SETTING>
-                            <SETTING><NAME>PathRoot</NAME><VALUE>CodeWarrior</VALUE></SETTING>
-                        </SETTING>
-                        <SETTING><NAME>Recursive</NAME><VALUE>true</VALUE></SETTING>
-                        <SETTING><NAME>HostFlags</NAME><VALUE>All</VALUE></SETTING>
-                    </SETTING>
-                </SETTING>
-                <SETTING><NAME>SystemSearchPaths</NAME>
-                    <SETTING>
-                        <SETTING><NAME>SearchPath</NAME>
-                            <SETTING><NAME>Path</NAME><VALUE>:::GUSI_215:include:</VALUE></SETTING>
-                            <SETTING><NAME>PathFormat</NAME><VALUE>MacOS</VALUE></SETTING>
-                            <SETTING><NAME>PathRoot</NAME><VALUE>CodeWarrior</VALUE></SETTING>
+                            <SETTING><NAME>PathRoot</NAME><VALUE>Project</VALUE></SETTING>
                         </SETTING>
                         <SETTING><NAME>Recursive</NAME><VALUE>false</VALUE></SETTING>
                         <SETTING><NAME>HostFlags</NAME><VALUE>All</VALUE></SETTING>
                     </SETTING>
+                </SETTING>
+                <SETTING><NAME>SystemSearchPaths</NAME>
                     <SETTING>
                         <SETTING><NAME>SearchPath</NAME>
                             <SETTING><NAME>Path</NAME><VALUE>:MSL:</VALUE></SETTING>
@@ -143,9 +125,9 @@
                 <SETTING><NAME>Linker</NAME><VALUE>MacOS PPC Linker</VALUE></SETTING>
                 <SETTING><NAME>PreLinker</NAME><VALUE></VALUE></SETTING>
                 <SETTING><NAME>PostLinker</NAME><VALUE></VALUE></SETTING>
-                <SETTING><NAME>Targetname</NAME><VALUE>O'Hugs</VALUE></SETTING>
+                <SETTING><NAME>Targetname</NAME><VALUE>Hugs 98</VALUE></SETTING>
                 <SETTING><NAME>OutputDirectory</NAME>
-                    <SETTING><NAME>Path</NAME><VALUE>::</VALUE></SETTING>
+                    <SETTING><NAME>Path</NAME><VALUE>:::</VALUE></SETTING>
                     <SETTING><NAME>PathFormat</NAME><VALUE>MacOS</VALUE></SETTING>
                     <SETTING><NAME>PathRoot</NAME><VALUE>Project</VALUE></SETTING>
                 </SETTING>
@@ -455,6 +437,14 @@
                     0000000000000000000000000000000000000000000000000000000000000000
                     0000000000000000000000000000000000000000000000000000000000000000
                     0000000000000000000000000000000000000000000000000000000000000000
+                    00000000000000000000000000000000051C5BC01000000000000100051C64D0
+                    000200000000000000000000051C536000000000000000000000000000000000
+                    0000000000000000000000000000000000000000000000000000000000000000
+                    0000000000000000000000000000000000000000000000000000000000000000
+                    0000000000000000000000000000000000000000000000000000000000000000
+                    0000000000000000000000000000000000000000000000000000000000000000
+                    0000000000000000000000000000000000000000000000000000000000000000
+                    0000000000000000000000000000000000000000000000000000000000000000
                     00000000000000000000000000000000
                 </VALUE></PANELDATA>
 
@@ -611,9 +601,9 @@
                 <SETTING><NAME>MWMerge_MacOS_copyResources</NAME><VALUE>1</VALUE></SETTING>
                 <SETTING><NAME>MWMerge_MacOS_skipResources</NAME>
                     <SETTING><VALUE></VALUE></SETTING>
-                    <SETTING><VALUE>×ôƒ</VALUE></SETTING>
-                    <SETTING><VALUE>sÌH</VALUE></SETTING>
-                    <SETTING><VALUE></VALUE></SETTING>
+                    <SETTING><VALUE>×÷ƒ</VALUE></SETTING>
+                    <SETTING><VALUE>xI</VALUE></SETTING>
+                    <SETTING><VALUE>­</VALUE></SETTING>
                 </SETTING>
 
                 <!-- Settings for "PPC CodeGen" panel -->
@@ -673,12 +663,12 @@
 
                 <!-- Settings for "PPC Project" panel -->
                 <SETTING><NAME>MWProject_PPC_type</NAME><VALUE>Application</VALUE></SETTING>
-                <SETTING><NAME>MWProject_PPC_outfile</NAME><VALUE>O'Hugs</VALUE></SETTING>
-                <SETTING><NAME>MWProject_PPC_filecreator</NAME><VALUE>1330148711</VALUE></SETTING>
+                <SETTING><NAME>MWProject_PPC_outfile</NAME><VALUE>Hugs 98</VALUE></SETTING>
+                <SETTING><NAME>MWProject_PPC_filecreator</NAME><VALUE>1215653747</VALUE></SETTING>
                 <SETTING><NAME>MWProject_PPC_filetype</NAME><VALUE>1095782476</VALUE></SETTING>
-                <SETTING><NAME>MWProject_PPC_size</NAME><VALUE>16192</VALUE></SETTING>
-                <SETTING><NAME>MWProject_PPC_minsize</NAME><VALUE>8096</VALUE></SETTING>
-                <SETTING><NAME>MWProject_PPC_stacksize</NAME><VALUE>128</VALUE></SETTING>
+                <SETTING><NAME>MWProject_PPC_size</NAME><VALUE>12000</VALUE></SETTING>
+                <SETTING><NAME>MWProject_PPC_minsize</NAME><VALUE>6000</VALUE></SETTING>
+                <SETTING><NAME>MWProject_PPC_stacksize</NAME><VALUE>256</VALUE></SETTING>
                 <SETTING><NAME>MWProject_PPC_flags</NAME><VALUE>22752</VALUE></SETTING>
                 <SETTING><NAME>MWProject_PPC_symfilename</NAME><VALUE></VALUE></SETTING>
                 <SETTING><NAME>MWProject_PPC_rsrcname</NAME><VALUE></VALUE></SETTING>
@@ -823,13 +813,6 @@
                 </FILE>
                 <FILE>
                     <PATHTYPE>Name</PATHTYPE>
-                    <PATH>AppearanceLib</PATH>
-                    <PATHFORMAT>MacOS</PATHFORMAT>
-                    <FILEKIND>Library</FILEKIND>
-                    <FILEFLAGS>Debug</FILEFLAGS>
-                </FILE>
-                <FILE>
-                    <PATHTYPE>Name</PATHTYPE>
                     <PATH>MSL AppRuntime.Lib</PATH>
                     <PATHFORMAT>MacOS</PATHFORMAT>
                     <FILEKIND>Library</FILEKIND>
@@ -907,48 +890,6 @@
                 </FILE>
                 <FILE>
                     <PATHTYPE>Name</PATHTYPE>
-                    <PATH>DropShell.c</PATH>
-                    <PATHFORMAT>MacOS</PATHFORMAT>
-                    <FILEKIND>Text</FILEKIND>
-                    <FILEFLAGS>Debug</FILEFLAGS>
-                </FILE>
-                <FILE>
-                    <PATHTYPE>Name</PATHTYPE>
-                    <PATH>DSAppleEvents.c</PATH>
-                    <PATHFORMAT>MacOS</PATHFORMAT>
-                    <FILEKIND>Text</FILEKIND>
-                    <FILEFLAGS>Debug</FILEFLAGS>
-                </FILE>
-                <FILE>
-                    <PATHTYPE>Name</PATHTYPE>
-                    <PATH>DSUserProcs.c</PATH>
-                    <PATHFORMAT>MacOS</PATHFORMAT>
-                    <FILEKIND>Text</FILEKIND>
-                    <FILEFLAGS>Debug</FILEFLAGS>
-                </FILE>
-                <FILE>
-                    <PATHTYPE>Name</PATHTYPE>
-                    <PATH>DSUtils.c</PATH>
-                    <PATHFORMAT>MacOS</PATHFORMAT>
-                    <FILEKIND>Text</FILEKIND>
-                    <FILEFLAGS>Debug</FILEFLAGS>
-                </FILE>
-                <FILE>
-                    <PATHTYPE>Name</PATHTYPE>
-                    <PATH>ohugs.r</PATH>
-                    <PATHFORMAT>MacOS</PATHFORMAT>
-                    <FILEKIND>Text</FILEKIND>
-                    <FILEFLAGS>Debug</FILEFLAGS>
-                </FILE>
-                <FILE>
-                    <PATHTYPE>Name</PATHTYPE>
-                    <PATH>ThreadsLib</PATH>
-                    <PATHFORMAT>MacOS</PATHFORMAT>
-                    <FILEKIND>Library</FILEKIND>
-                    <FILEFLAGS>Debug</FILEFLAGS>
-                </FILE>
-                <FILE>
-                    <PATHTYPE>Name</PATHTYPE>
                     <PATH>PLStringFuncsPPC.lib</PATH>
                     <PATHFORMAT>MacOS</PATHFORMAT>
                     <FILEKIND>Library</FILEKIND>
@@ -956,77 +897,41 @@
                 </FILE>
                 <FILE>
                     <PATHTYPE>Name</PATHTYPE>
-                    <PATH>OpenTptInternetLib</PATH>
-                    <PATHFORMAT>MacOS</PATHFORMAT>
-                    <FILEKIND>Library</FILEKIND>
-                    <FILEFLAGS>Debug</FILEFLAGS>
-                </FILE>
-                <FILE>
-                    <PATHTYPE>Name</PATHTYPE>
-                    <PATH>OpenTransportLib</PATH>
-                    <PATHFORMAT>MacOS</PATHFORMAT>
-                    <FILEKIND>Library</FILEKIND>
-                    <FILEFLAGS>Debug</FILEFLAGS>
-                </FILE>
-                <FILE>
-                    <PATHTYPE>Name</PATHTYPE>
-                    <PATH>OpenTransportAppPPC.o</PATH>
-                    <PATHFORMAT>MacOS</PATHFORMAT>
-                    <FILEKIND>Library</FILEKIND>
-                    <FILEFLAGS>Debug</FILEFLAGS>
-                </FILE>
-                <FILE>
-                    <PATHTYPE>Name</PATHTYPE>
-                    <PATH>OpenTptInetPPC.o</PATH>
-                    <PATHFORMAT>MacOS</PATHFORMAT>
-                    <FILEKIND>Library</FILEKIND>
-                    <FILEFLAGS>Debug</FILEFLAGS>
-                </FILE>
-                <FILE>
-                    <PATHTYPE>Name</PATHTYPE>
-                    <PATH>GUSIConfig.cp</PATH>
+                    <PATH>subst.c</PATH>
                     <PATHFORMAT>MacOS</PATHFORMAT>
                     <FILEKIND>Text</FILEKIND>
                     <FILEFLAGS>Debug</FILEFLAGS>
                 </FILE>
                 <FILE>
                     <PATHTYPE>Name</PATHTYPE>
-                    <PATH>GUSI_SIOUX.PPC.Lib</PATH>
+                    <PATH>plugin.c</PATH>
                     <PATHFORMAT>MacOS</PATHFORMAT>
-                    <FILEKIND>Library</FILEKIND>
+                    <FILEKIND>Text</FILEKIND>
                     <FILEFLAGS>Debug</FILEFLAGS>
                 </FILE>
                 <FILE>
                     <PATHTYPE>Name</PATHTYPE>
-                    <PATH>GUSI_Core.PPC.Lib</PATH>
+                    <PATH>ffi.c</PATH>
                     <PATHFORMAT>MacOS</PATHFORMAT>
-                    <FILEKIND>Library</FILEKIND>
+                    <FILEKIND>Text</FILEKIND>
                     <FILEFLAGS>Debug</FILEFLAGS>
                 </FILE>
                 <FILE>
                     <PATHTYPE>Name</PATHTYPE>
-                    <PATH>GUSI_MSL.PPC.Lib</PATH>
+                    <PATH>MoreFilesExtras.c</PATH>
                     <PATHFORMAT>MacOS</PATHFORMAT>
-                    <FILEKIND>Library</FILEKIND>
+                    <FILEKIND>Text</FILEKIND>
+                    <FILEFLAGS>Debug</FILEFLAGS>
+                </FILE>
+                <FILE>
+                    <PATHTYPE>Name</PATHTYPE>
+                    <PATH>hugs.r</PATH>
+                    <PATHFORMAT>MacOS</PATHFORMAT>
+                    <FILEKIND>Text</FILEKIND>
                     <FILEFLAGS>Debug</FILEFLAGS>
                 </FILE>
             </FILELIST>
             <LINKORDER>
-                <FILEREF>
-                    <PATHTYPE>Name</PATHTYPE>
-                    <PATH>GUSI_SIOUX.PPC.Lib</PATH>
-                    <PATHFORMAT>MacOS</PATHFORMAT>
-                </FILEREF>
-                <FILEREF>
-                    <PATHTYPE>Name</PATHTYPE>
-                    <PATH>GUSI_Core.PPC.Lib</PATH>
-                    <PATHFORMAT>MacOS</PATHFORMAT>
-                </FILEREF>
-                <FILEREF>
-                    <PATHTYPE>Name</PATHTYPE>
-                    <PATH>GUSI_MSL.PPC.Lib</PATH>
-                    <PATHFORMAT>MacOS</PATHFORMAT>
-                </FILEREF>
                 <FILEREF>
                     <PATHTYPE>Name</PATHTYPE>
                     <PATH>MSL C++.PPC.Lib</PATH>
@@ -1059,11 +964,6 @@
                 </FILEREF>
                 <FILEREF>
                     <PATHTYPE>Name</PATHTYPE>
-                    <PATH>AppearanceLib</PATH>
-                    <PATHFORMAT>MacOS</PATHFORMAT>
-                </FILEREF>
-                <FILEREF>
-                    <PATHTYPE>Name</PATHTYPE>
                     <PATH>MSL AppRuntime.Lib</PATH>
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
@@ -1119,62 +1019,32 @@
                 </FILEREF>
                 <FILEREF>
                     <PATHTYPE>Name</PATHTYPE>
-                    <PATH>DropShell.c</PATH>
-                    <PATHFORMAT>MacOS</PATHFORMAT>
-                </FILEREF>
-                <FILEREF>
-                    <PATHTYPE>Name</PATHTYPE>
-                    <PATH>DSAppleEvents.c</PATH>
-                    <PATHFORMAT>MacOS</PATHFORMAT>
-                </FILEREF>
-                <FILEREF>
-                    <PATHTYPE>Name</PATHTYPE>
-                    <PATH>DSUserProcs.c</PATH>
-                    <PATHFORMAT>MacOS</PATHFORMAT>
-                </FILEREF>
-                <FILEREF>
-                    <PATHTYPE>Name</PATHTYPE>
-                    <PATH>DSUtils.c</PATH>
-                    <PATHFORMAT>MacOS</PATHFORMAT>
-                </FILEREF>
-                <FILEREF>
-                    <PATHTYPE>Name</PATHTYPE>
-                    <PATH>ohugs.r</PATH>
-                    <PATHFORMAT>MacOS</PATHFORMAT>
-                </FILEREF>
-                <FILEREF>
-                    <PATHTYPE>Name</PATHTYPE>
-                    <PATH>ThreadsLib</PATH>
-                    <PATHFORMAT>MacOS</PATHFORMAT>
-                </FILEREF>
-                <FILEREF>
-                    <PATHTYPE>Name</PATHTYPE>
                     <PATH>PLStringFuncsPPC.lib</PATH>
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
                 <FILEREF>
                     <PATHTYPE>Name</PATHTYPE>
-                    <PATH>OpenTptInternetLib</PATH>
+                    <PATH>subst.c</PATH>
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
                 <FILEREF>
                     <PATHTYPE>Name</PATHTYPE>
-                    <PATH>OpenTransportLib</PATH>
+                    <PATH>plugin.c</PATH>
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
                 <FILEREF>
                     <PATHTYPE>Name</PATHTYPE>
-                    <PATH>OpenTransportAppPPC.o</PATH>
+                    <PATH>ffi.c</PATH>
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
                 <FILEREF>
                     <PATHTYPE>Name</PATHTYPE>
-                    <PATH>OpenTptInetPPC.o</PATH>
+                    <PATH>MoreFilesExtras.c</PATH>
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
                 <FILEREF>
                     <PATHTYPE>Name</PATHTYPE>
-                    <PATH>GUSIConfig.cp</PATH>
+                    <PATH>hugs.r</PATH>
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
             </LINKORDER>
@@ -1182,145 +1052,119 @@
     </TARGETLIST>
 
     <TARGETORDER>
-        <ORDEREDTARGET><NAME>O'Hugs</NAME></ORDEREDTARGET>
+        <ORDEREDTARGET><NAME>Hugs 98</NAME></ORDEREDTARGET>
     </TARGETORDER>
 
     <GROUPLIST>
         <GROUP><NAME>Sources</NAME>
             <FILEREF>
-                <TARGETNAME>O'Hugs</TARGETNAME>
-                <PATHTYPE>Name</PATHTYPE>
-                <PATH>hugs.c</PATH>
-                <PATHFORMAT>MacOS</PATHFORMAT>
-            </FILEREF>
-            <FILEREF>
-                <TARGETNAME>O'Hugs</TARGETNAME>
+                <TARGETNAME>Hugs 98</TARGETNAME>
                 <PATHTYPE>Name</PATHTYPE>
                 <PATH>builtin.c</PATH>
                 <PATHFORMAT>MacOS</PATHFORMAT>
             </FILEREF>
             <FILEREF>
-                <TARGETNAME>O'Hugs</TARGETNAME>
+                <TARGETNAME>Hugs 98</TARGETNAME>
                 <PATHTYPE>Name</PATHTYPE>
                 <PATH>compiler.c</PATH>
                 <PATHFORMAT>MacOS</PATHFORMAT>
             </FILEREF>
             <FILEREF>
-                <TARGETNAME>O'Hugs</TARGETNAME>
+                <TARGETNAME>Hugs 98</TARGETNAME>
+                <PATHTYPE>Name</PATHTYPE>
+                <PATH>ffi.c</PATH>
+                <PATHFORMAT>MacOS</PATHFORMAT>
+            </FILEREF>
+            <FILEREF>
+                <TARGETNAME>Hugs 98</TARGETNAME>
+                <PATHTYPE>Name</PATHTYPE>
+                <PATH>hugs.c</PATH>
+                <PATHFORMAT>MacOS</PATHFORMAT>
+            </FILEREF>
+            <FILEREF>
+                <TARGETNAME>Hugs 98</TARGETNAME>
                 <PATHTYPE>Name</PATHTYPE>
                 <PATH>input.c</PATH>
                 <PATHFORMAT>MacOS</PATHFORMAT>
             </FILEREF>
             <FILEREF>
-                <TARGETNAME>O'Hugs</TARGETNAME>
+                <TARGETNAME>Hugs 98</TARGETNAME>
                 <PATHTYPE>Name</PATHTYPE>
                 <PATH>machine.c</PATH>
                 <PATHFORMAT>MacOS</PATHFORMAT>
             </FILEREF>
             <FILEREF>
-                <TARGETNAME>O'Hugs</TARGETNAME>
+                <TARGETNAME>Hugs 98</TARGETNAME>
                 <PATHTYPE>Name</PATHTYPE>
                 <PATH>output.c</PATH>
                 <PATHFORMAT>MacOS</PATHFORMAT>
             </FILEREF>
             <FILEREF>
-                <TARGETNAME>O'Hugs</TARGETNAME>
+                <TARGETNAME>Hugs 98</TARGETNAME>
                 <PATHTYPE>Name</PATHTYPE>
                 <PATH>parser.y</PATH>
                 <PATHFORMAT>MacOS</PATHFORMAT>
             </FILEREF>
             <FILEREF>
-                <TARGETNAME>O'Hugs</TARGETNAME>
+                <TARGETNAME>Hugs 98</TARGETNAME>
                 <PATHTYPE>Name</PATHTYPE>
                 <PATH>static.c</PATH>
                 <PATHFORMAT>MacOS</PATHFORMAT>
             </FILEREF>
             <FILEREF>
-                <TARGETNAME>O'Hugs</TARGETNAME>
+                <TARGETNAME>Hugs 98</TARGETNAME>
                 <PATHTYPE>Name</PATHTYPE>
                 <PATH>storage.c</PATH>
                 <PATHFORMAT>MacOS</PATHFORMAT>
             </FILEREF>
             <FILEREF>
-                <TARGETNAME>O'Hugs</TARGETNAME>
+                <TARGETNAME>Hugs 98</TARGETNAME>
+                <PATHTYPE>Name</PATHTYPE>
+                <PATH>plugin.c</PATH>
+                <PATHFORMAT>MacOS</PATHFORMAT>
+            </FILEREF>
+            <FILEREF>
+                <TARGETNAME>Hugs 98</TARGETNAME>
+                <PATHTYPE>Name</PATHTYPE>
+                <PATH>subst.c</PATH>
+                <PATHFORMAT>MacOS</PATHFORMAT>
+            </FILEREF>
+            <FILEREF>
+                <TARGETNAME>Hugs 98</TARGETNAME>
                 <PATHTYPE>Name</PATHTYPE>
                 <PATH>type.c</PATH>
                 <PATHFORMAT>MacOS</PATHFORMAT>
             </FILEREF>
         </GROUP>
-        <GROUP><NAME>DropUnix</NAME>
+        <GROUP><NAME>Mac specific</NAME>
             <FILEREF>
-                <TARGETNAME>O'Hugs</TARGETNAME>
+                <TARGETNAME>Hugs 98</TARGETNAME>
                 <PATHTYPE>Name</PATHTYPE>
-                <PATH>DropShell.c</PATH>
+                <PATH>hugs.r</PATH>
                 <PATHFORMAT>MacOS</PATHFORMAT>
             </FILEREF>
             <FILEREF>
-                <TARGETNAME>O'Hugs</TARGETNAME>
+                <TARGETNAME>Hugs 98</TARGETNAME>
                 <PATHTYPE>Name</PATHTYPE>
-                <PATH>DSAppleEvents.c</PATH>
-                <PATHFORMAT>MacOS</PATHFORMAT>
-            </FILEREF>
-            <FILEREF>
-                <TARGETNAME>O'Hugs</TARGETNAME>
-                <PATHTYPE>Name</PATHTYPE>
-                <PATH>DSUserProcs.c</PATH>
-                <PATHFORMAT>MacOS</PATHFORMAT>
-            </FILEREF>
-            <FILEREF>
-                <TARGETNAME>O'Hugs</TARGETNAME>
-                <PATHTYPE>Name</PATHTYPE>
-                <PATH>DSUtils.c</PATH>
-                <PATHFORMAT>MacOS</PATHFORMAT>
-            </FILEREF>
-            <FILEREF>
-                <TARGETNAME>O'Hugs</TARGETNAME>
-                <PATHTYPE>Name</PATHTYPE>
-                <PATH>ohugs.r</PATH>
-                <PATHFORMAT>MacOS</PATHFORMAT>
-            </FILEREF>
-        </GROUP>
-        <GROUP><NAME>GUSI</NAME>
-            <FILEREF>
-                <TARGETNAME>O'Hugs</TARGETNAME>
-                <PATHTYPE>Name</PATHTYPE>
-                <PATH>GUSIConfig.cp</PATH>
-                <PATHFORMAT>MacOS</PATHFORMAT>
-            </FILEREF>
-            <FILEREF>
-                <TARGETNAME>O'Hugs</TARGETNAME>
-                <PATHTYPE>Name</PATHTYPE>
-                <PATH>GUSI_SIOUX.PPC.Lib</PATH>
-                <PATHFORMAT>MacOS</PATHFORMAT>
-            </FILEREF>
-            <FILEREF>
-                <TARGETNAME>O'Hugs</TARGETNAME>
-                <PATHTYPE>Name</PATHTYPE>
-                <PATH>GUSI_MSL.PPC.Lib</PATH>
-                <PATHFORMAT>MacOS</PATHFORMAT>
-            </FILEREF>
-            <FILEREF>
-                <TARGETNAME>O'Hugs</TARGETNAME>
-                <PATHTYPE>Name</PATHTYPE>
-                <PATH>GUSI_Core.PPC.Lib</PATH>
+                <PATH>MoreFilesExtras.c</PATH>
                 <PATHFORMAT>MacOS</PATHFORMAT>
             </FILEREF>
         </GROUP>
         <GROUP><NAME>ANSI Libraries</NAME>
             <FILEREF>
-                <TARGETNAME>O'Hugs</TARGETNAME>
+                <TARGETNAME>Hugs 98</TARGETNAME>
                 <PATHTYPE>Name</PATHTYPE>
                 <PATH>MSL C.PPC.Lib</PATH>
                 <PATHFORMAT>MacOS</PATHFORMAT>
             </FILEREF>
             <FILEREF>
-                <TARGETNAME>O'Hugs</TARGETNAME>
+                <TARGETNAME>Hugs 98</TARGETNAME>
                 <PATHTYPE>Name</PATHTYPE>
                 <PATH>MSL C++.PPC.Lib</PATH>
                 <PATHFORMAT>MacOS</PATHFORMAT>
             </FILEREF>
             <FILEREF>
-                <TARGETNAME>O'Hugs</TARGETNAME>
+                <TARGETNAME>Hugs 98</TARGETNAME>
                 <PATHTYPE>Name</PATHTYPE>
                 <PATH>MSL SIOUX.PPC.Lib</PATH>
                 <PATHFORMAT>MacOS</PATHFORMAT>
@@ -1328,69 +1172,33 @@
         </GROUP>
         <GROUP><NAME>Mac Libraries</NAME>
             <FILEREF>
-                <TARGETNAME>O'Hugs</TARGETNAME>
+                <TARGETNAME>Hugs 98</TARGETNAME>
                 <PATHTYPE>Name</PATHTYPE>
                 <PATH>InterfaceLib</PATH>
                 <PATHFORMAT>MacOS</PATHFORMAT>
             </FILEREF>
             <FILEREF>
-                <TARGETNAME>O'Hugs</TARGETNAME>
+                <TARGETNAME>Hugs 98</TARGETNAME>
                 <PATHTYPE>Name</PATHTYPE>
                 <PATH>MathLib</PATH>
                 <PATHFORMAT>MacOS</PATHFORMAT>
             </FILEREF>
             <FILEREF>
-                <TARGETNAME>O'Hugs</TARGETNAME>
+                <TARGETNAME>Hugs 98</TARGETNAME>
                 <PATHTYPE>Name</PATHTYPE>
                 <PATH>MSL RuntimePPC.Lib</PATH>
                 <PATHFORMAT>MacOS</PATHFORMAT>
             </FILEREF>
             <FILEREF>
-                <TARGETNAME>O'Hugs</TARGETNAME>
+                <TARGETNAME>Hugs 98</TARGETNAME>
                 <PATHTYPE>Name</PATHTYPE>
                 <PATH>MSL AppRuntime.Lib</PATH>
                 <PATHFORMAT>MacOS</PATHFORMAT>
             </FILEREF>
             <FILEREF>
-                <TARGETNAME>O'Hugs</TARGETNAME>
-                <PATHTYPE>Name</PATHTYPE>
-                <PATH>ThreadsLib</PATH>
-                <PATHFORMAT>MacOS</PATHFORMAT>
-            </FILEREF>
-            <FILEREF>
-                <TARGETNAME>O'Hugs</TARGETNAME>
+                <TARGETNAME>Hugs 98</TARGETNAME>
                 <PATHTYPE>Name</PATHTYPE>
                 <PATH>PLStringFuncsPPC.lib</PATH>
-                <PATHFORMAT>MacOS</PATHFORMAT>
-            </FILEREF>
-            <FILEREF>
-                <TARGETNAME>O'Hugs</TARGETNAME>
-                <PATHTYPE>Name</PATHTYPE>
-                <PATH>OpenTptInternetLib</PATH>
-                <PATHFORMAT>MacOS</PATHFORMAT>
-            </FILEREF>
-            <FILEREF>
-                <TARGETNAME>O'Hugs</TARGETNAME>
-                <PATHTYPE>Name</PATHTYPE>
-                <PATH>OpenTransportLib</PATH>
-                <PATHFORMAT>MacOS</PATHFORMAT>
-            </FILEREF>
-            <FILEREF>
-                <TARGETNAME>O'Hugs</TARGETNAME>
-                <PATHTYPE>Name</PATHTYPE>
-                <PATH>OpenTransportAppPPC.o</PATH>
-                <PATHFORMAT>MacOS</PATHFORMAT>
-            </FILEREF>
-            <FILEREF>
-                <TARGETNAME>O'Hugs</TARGETNAME>
-                <PATHTYPE>Name</PATHTYPE>
-                <PATH>OpenTptInetPPC.o</PATH>
-                <PATHFORMAT>MacOS</PATHFORMAT>
-            </FILEREF>
-            <FILEREF>
-                <TARGETNAME>O'Hugs</TARGETNAME>
-                <PATHTYPE>Name</PATHTYPE>
-                <PATH>AppearanceLib</PATH>
                 <PATHFORMAT>MacOS</PATHFORMAT>
             </FILEREF>
         </GROUP>
