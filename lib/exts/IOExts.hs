@@ -5,34 +5,35 @@
 -----------------------------------------------------------------------------
 
 module IOExts
-	( fixIO
-	, unsafePerformIO
-	, unsafeInterleaveIO
+	( fixIO				-- :: (a -> IO a) -> IO a
+	, unsafePerformIO		-- :: IO a -> a
+	, unsafeInterleaveIO		-- :: IO a -> IO a
 
-	, IORef
-	  -- instance Eq (IORef a)
-	, newIORef
-	, readIORef
-	, writeIORef
+	, module IORef
 
-        , IOArray
-          -- instance Eq (IOArray ix elt)
+        , IOArray			-- instance of: Eq
         , newIOArray
         , boundsIOArray
         , readIOArray
         , writeIOArray
-        , thawIOArray
         , freezeIOArray
+        , thawIOArray
         , unsafeFreezeIOArray
 
-	, performGC
 	, trace
+
+	, performGC
+
+	, IOModeEx(..)	      	-- instance (Eq, Read, Show)
+	, openFileEx	      	-- :: FilePath -> IOModeEx -> IO Handle
+
 	, unsafePtrEq
 	, unsafePtrToInt
 	) where
 
-import IO( ioeGetErrorString )
+import IO( ioeGetErrorString, IOMode(..), Handle, openFile )
 import Array
+import IORef
 
 -----------------------------------------------------------------------------
 
@@ -87,18 +88,6 @@ runAndShowError m =
 
 -----------------------------------------------------------------------------
 
-data IORef a        -- mutable variables containing values of type a
-
-primitive newIORef   "newRef" :: a -> IO (IORef a)
-primitive readIORef  "getRef" :: IORef a -> IO a
-primitive writeIORef "setRef" :: IORef a -> a -> IO ()
-primitive eqIORef    "eqRef"  :: IORef a -> IORef a -> Bool
-
-instance Eq (IORef a) where
-    (==) = eqIORef
-
------------------------------------------------------------------------------
-
 data IOArray ix elt -- implemented as an internal primitive
 
 newIOArray          :: Ix ix => (ix,ix) -> elt -> IO (IOArray ix elt)
@@ -140,3 +129,17 @@ primitive eqIOArray    "IOArrEq"
           :: IOArray a b -> IOArray a b -> Bool
 
 -----------------------------------------------------------------------------
+-- Binary files 
+-----------------------------------------------------------------------------
+data IOModeEx 
+ = BinaryMode IOMode
+ | TextMode   IOMode
+   deriving (Eq, Read, Show)
+
+openFileEx :: FilePath -> IOModeEx -> IO Handle
+openFileEx fp m = 
+  case m of
+    BinaryMode m -> openBinaryFile fp m
+    TextMode m   -> openFile fp m
+
+primitive openBinaryFile         :: FilePath -> IOMode -> IO Handle
