@@ -102,6 +102,9 @@ static VOID		MyScrollWindow		(HWND, INT, INT);
 static VOID 		TextBeginPaint 		(BOOL, HWND, HDC*, PAINTSTRUCT*, HFONT*);
 static VOID 		TextEndPaint 		(BOOL, HWND, HDC*, PAINTSTRUCT*, HFONT*);
 static VOID 		TextOutput 		(HWND, HDC, UINT, UINT, LPSTR, INT, UCHAR);
+static VOID             ResizeView              (HWND, UINT, UINT);
+static VOID             ScrollToCursor          (HWND);
+static VOID             UpdateScrollbar         (HWND hWnd);
 
 static INT 		DoCreate		(HWND, UINT, WPARAM, LPARAM);
 static VOID 		DoDestroy		(HWND, UINT, WPARAM, LPARAM);
@@ -140,7 +143,7 @@ static VOID 	 	ForceShowCaret		(HWND);
 static VOID 	 	ForceDestroyCaret	(HWND);
 static VOID 	 	ForceHideCaret		(HWND);
 
-
+static VOID             WinMoveTo               (HWND, UINT, UINT);
 
 /* --------------------------------------------------------------------------
  * Some defined values:
@@ -307,7 +310,7 @@ CreateTextFont(HWND hWnd,
 
   /* force recomputation of RowsShowed/ColsShowed fields */
   GetClientRect(hWnd, &rect);
-  DoSize(hWnd, WM_SIZE, 0, MAKELPARAM(rect.right-rect.left,rect.bottom-rect.top));
+  ResizeView(hWnd, rect.right-rect.left, rect.bottom-rect.top);
 
   WinClrscr(hWnd);
   WinGotoxy(hWnd, 1, 1);
@@ -733,17 +736,19 @@ static VOID PutTextRegion (BOOL In_WM_PAINT, HWND hWnd, RECT aRect)
 /* Set caret position */
 static VOID ForceMoveCaret (HWND hWnd, UINT x, UINT y)
 {
- TEXTWINDOWINFO  *twi;
+  TEXTWINDOWINFO  *twi;
+  INT deltaY = 0;
 
- twi = (TEXTWINDOWINFO*) GetWindowLong(hWnd, 0);
+  twi = (TEXTWINDOWINFO*) GetWindowLong(hWnd, 0);
 
- twi->PosX = x;
- twi->PosY = y;
+  twi->PosX = x;
+  twi->PosY = y;
 
- if (!twi->InsertStatus) 
-   SetCaretPos((INT)(twi->CharWidth*(x-1-twi->HScroll)+HINDENT), (INT)(twi->CharHeight*(y-1-twi->VScroll)+(twi->CharHeight/2)+VINDENT));
- else 
-   SetCaretPos((INT)(twi->CharWidth*(x-1-twi->HScroll)+HINDENT), (INT)(twi->CharHeight*(y-1-twi->VScroll)+VINDENT));
+  if (!twi->InsertStatus) {
+    deltaY = (twi->CharHeight/2);
+  }
+  SetCaretPos((INT)(twi->CharWidth*(x-1-twi->HScroll)+HINDENT),
+	      (INT)(twi->CharHeight*(y-1-twi->VScroll)+deltaY+VINDENT));
 }
 
 /* Shows caret. Caret shape depends on InsertStatus */
@@ -1057,57 +1062,107 @@ static INT DoChar (HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
   return 0;
 }
 
-static VOID DoSize (HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+static VOID UpdateScrollbar(HWND hWnd)
+{
+    TEXTWINDOWINFO  *twi;
+
+    twi = (TEXTWINDOWINFO*) GetWindowLong(hWnd, 0);
+
+    if ( twi->PosY >= twi->RowsShowed ) {
+	SCROLLINFO sI;
+
+	ZeroMemory(&sI, sizeof(sI));
+	sI.cbSize = sizeof(sI);
+	sI.fMask  = SIF_PAGE | SIF_RANGE;
+	sI.nPage  = twi->RowsShowed;
+	sI.nMin   = 0;
+	sI.nMax   = twi->PosY - 1;
+	SetScrollInfo(hWnd, SB_VERT, &sI, TRUE);
+    }
+}
+
+static VOID ResizeView(HWND hWnd, UINT width, UINT height)
 {
   TEXTWINDOWINFO  *twi;
+  char buf[2045];
 
   twi = (TEXTWINDOWINFO*) GetWindowLong(hWnd, 0);
 
   /* Get number of rows and columns currently showed */
-  if (twi->CharHeight)
-    twi->RowsShowed = (HIWORD(lParam)-VINDENT)/twi->CharHeight;
-
-  if (twi->CharWidth)
-    twi->ColsShowed = (LOWORD(lParam)-HINDENT)/twi->CharWidth;
+  if (twi->CharHeight) {
+      twi->RowsShowed = (height-VINDENT)/twi->CharHeight;
+  }
+  if (twi->CharWidth) {
+    twi->ColsShowed = (width-HINDENT)/twi->CharWidth;
+  }
 
   /* Hide or show HSCROLL BAR */
   if (twi->ColsShowed < twi->Cols) {
     /* Small window */
-    SetScrollRange(hWnd, SB_HORZ, 0, twi->Cols-twi->ColsShowed, TRUE);
-	 SetScrollPos(hWnd, SB_HORZ, twi->HScroll, TRUE);
-  }
-  else {
-	 /* Hide scroll bar */
-    SetScrollRange(hWnd, SB_HORZ, 0, 0, TRUE);
-    twi->HScroll = 0;
-	 SetScrollPos(hWnd, SB_HORZ, twi->HScroll, TRUE);
-    WinGotoxy(hWnd, twi->PosX, twi->PosY);
+      int lines = twi->Cols - twi->ColsShowed;
+      SCROLLINFO sI;
+      
+      ZeroMemory(&sI, sizeof(sI));
+      sI.cbSize = sizeof(sI);
+      sI.fMask  = SIF_PAGE | SIF_RANGE | SIF_POS;
+      sI.nPage  = twi->ColsShowed;
+      sI.nMin   = 0;
+      sI.nMax   = twi->Cols - - 1;
+      sI.nPos   = (twi->HScroll > lines ? lines : twi->HScroll);
+      SetScrollInfo(hWnd, SB_HORZ, &sI, TRUE);
+  } else {
+      /* Hide scroll bar */
+      SetScrollRange(hWnd, SB_HORZ, 0, 0, TRUE);
+      twi->HScroll = 0;
+      SetScrollPos(hWnd, SB_HORZ, twi->HScroll, TRUE);
+      WinGotoxy(hWnd, twi->PosX, twi->PosY);
   }
 
   /* Set Range for VSCROLL BAR */
-  SetScrollRange(hWnd, SB_VERT, 0, twi->Rows-twi->RowsShowed, TRUE);
-  if (twi->VScroll > twi->Rows-twi->RowsShowed) {
-    twi->VScroll = twi->Rows-twi->RowsShowed;
-    WinGotoxy(hWnd, twi->PosX, twi->PosY);
+  if ( twi->PosY > 0 && twi->PosY >= twi->RowsShowed ) {
+      int lines = twi->Rows - twi->RowsShowed;
+      SCROLLINFO sI;
+      
+      ZeroMemory(&sI, sizeof(sI));
+      sI.cbSize = sizeof(sI);
+      sI.fMask  = SIF_PAGE | SIF_RANGE | SIF_POS;
+      sI.nPage  = twi->RowsShowed;
+      sI.nMin   = 0;
+      sI.nMax   = twi->PosY - 1;
+      sI.nPos   = (twi->VScroll > lines ? lines : twi->VScroll);
+      SetScrollInfo(hWnd, SB_VERT, &sI, TRUE);
+  } else { 
+      SetScrollRange(hWnd, SB_VERT, 0, 0, TRUE);
   }
-  SetScrollPos(hWnd, SB_VERT, twi->VScroll, TRUE);
+  if (twi->VScroll > twi->Rows-twi->RowsShowed) {
+      twi->VScroll = twi->Rows-twi->RowsShowed;
+      WinGotoxy(hWnd, twi->PosX, twi->PosY);
+  }
+}		       
+
+static VOID ScrollToCursor(HWND hWnd)
+{
+  TEXTWINDOWINFO  *twi;
+  UINT            vs, hs;
+
+  twi = (TEXTWINDOWINFO*) GetWindowLong(hWnd, 0);
+  vs  = twi->PosY - twi->RowsShowed;
+  hs  = twi->PosX - twi->ColsShowed;
+
+  if ( ( twi->PosY < twi->VScroll ) ||
+       ( twi->PosY > (twi->RowsShowed + twi->VScroll) ) ) {
+    SendMessage(hWnd, WM_VSCROLL, MAKEWPARAM(SB_THUMBPOSITION, vs), 0);
+  }
 }
 
-
-static VOID	MyScrollWindow(HWND hWnd, INT x, INT y)
+static VOID DoSize (HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-	/*RECT wRect;
+    ResizeView(hWnd, LOWORD(lParam), HIWORD(lParam));
+}
 
-	GetClientRect (hWnd, &wRect);
-	wRect.left   += HINDENT;
-	wRect.right  -= HINDENT;
-	wRect.top    += VINDENT;
-	wRect.bottom -= VINDENT;
-
-	ScrollWindow(hWnd, x, y, NULL, &wRect);
-	*/
-	ScrollWindow(hWnd, x, y, NULL, NULL);
-
+static VOID MyScrollWindow(HWND hWnd, INT x, INT y)
+{
+  ScrollWindow(hWnd, x, y, NULL, NULL);
 }
 
 
@@ -1163,15 +1218,12 @@ static VOID DoHScroll (HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
     case SB_THUMBPOSITION:{
 
-      GetScrollRange(hWnd, SB_HORZ, &SbMin, &SbMax);
-
       twi->HScroll = HIWORD(wParam);
-
       SetScrollPos(hWnd, SB_HORZ, twi->HScroll, TRUE);
       InvalidateRect(hWnd,NULL,TRUE);
 
       UpdateWindow(hWnd);
-      WinGotoxy(hWnd, twi->PosX, twi->PosY);
+      WinMoveTo(hWnd, twi->PosX, twi->PosY);
 
     }
     break;
@@ -1188,12 +1240,13 @@ static VOID DoVScroll (HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
   switch(LOWORD(wParam)) {
 
     case SB_PAGEDOWN:
-	 case SB_LINEDOWN: {
+    case SB_LINEDOWN: {
 
-      GetScrollRange(hWnd, SB_VERT, &SbMin, &SbMax);
+	GetScrollRange(hWnd, SB_VERT, &SbMin, &SbMax);
 
-      if (twi->VScroll < SbMax) {
+      if ((twi->RowsShowed + twi->VScroll - 1) < SbMax) {
 	twi->VScroll ++;
+	UpdateScrollbar(hWnd);
 	SetScrollPos(hWnd, SB_VERT, twi->VScroll, TRUE);
 	MyScrollWindow(hWnd, 0, -(INT)twi->CharHeight);
 	UpdateWindow(hWnd);
@@ -1234,7 +1287,7 @@ static VOID DoVScroll (HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
       SetScrollPos(hWnd, SB_VERT, twi->VScroll, TRUE);
       InvalidateRect(hWnd,NULL,TRUE);
       UpdateWindow(hWnd);
-      WinGotoxy(hWnd, twi->PosX, twi->PosY);
+      WinMoveTo(hWnd, twi->PosX, twi->PosY);
     }
     break;
   }
@@ -2173,6 +2226,7 @@ INT WinPutchar (HWND hWnd, CHAR c)
   HFONT		  hSaveFont;
   PAINTSTRUCT     ps;
   BOOL		  saveCurs;
+  BOOL            scrollDown = FALSE;
 
   #define ScrollUp    { dest = BaseScreen;               				\
 											\
@@ -2235,8 +2289,8 @@ INT WinPutchar (HWND hWnd, CHAR c)
      NewPosX = 1;
      NewPosY++;
 
-     if (NewPosY-twi->VScroll > twi->RowsShowed) {
-       SendMessage(hWnd, WM_VSCROLL, SB_LINEDOWN, 0L);
+     if (NewPosY-twi->VScroll >= twi->RowsShowed) {
+       scrollDown=TRUE;
      }
 
      if (NewPosY > twi->Rows) {
@@ -2270,10 +2324,6 @@ INT WinPutchar (HWND hWnd, CHAR c)
        NewPosX = 1;
        NewPosY++;
 
-       if (NewPosY-twi->VScroll > twi->RowsShowed) {
-	 SendMessage(hWnd, WM_VSCROLL, SB_LINEDOWN, 0L);
-       }
-
        if (NewPosY > twi->Rows) {
 	 ScrollUp;
 	 NewPosY--;
@@ -2285,9 +2335,13 @@ INT WinPutchar (HWND hWnd, CHAR c)
   GlobalUnlock(twi->ScrBuffer);
 
   WinGotoxy(hWnd, NewPosX, NewPosY);
+  if ( scrollDown ) {
+    UpdateScrollbar(hWnd);
+    SendMessage(hWnd, WM_VSCROLL, SB_LINEDOWN, 0L);
+  }
 
   WinSetcursor(hWnd, saveCurs);
-
+  
   return c;
 }
 
@@ -2359,6 +2413,19 @@ VOID WinGotoxy(HWND hWnd, UINT x, UINT y)
     p.y = (LONG) y;
     SendMessage(hWnd, WM_GOTOXY, (WPARAM) &p, (LPARAM) 0);
   }
+}
+
+/*
+ * Unconditionally move -- used when updating thumb position.
+ *
+ */
+VOID WinMoveTo(HWND hWnd, UINT x, UINT y)
+{
+  POINT p;
+
+  p.x = (LONG) x;
+  p.y = (LONG) y;
+  SendMessage(hWnd, WM_GOTOXY, (WPARAM) &p, (LPARAM) 0);
 }
 
 /* Get cursor position */
@@ -2578,8 +2645,7 @@ static VOID MoveCursor (HWND hWnd, INT n)
 	  y--;
 	}
       }
-  }
-  else {
+  } else {
     for (i=0; i<n; i++) {
       if (x < Width)
 	x++;
@@ -2589,7 +2655,6 @@ static VOID MoveCursor (HWND hWnd, INT n)
       }
     }
   }
-
   WinGotoxy(hWnd, x, y);
 }
 
@@ -2638,6 +2703,7 @@ CHAR *WinGets(HWND hWnd, CHAR *s)
  WinPuts(hWnd, s);
 
  MoveCursor (hWnd, -(INT)twi->EdLength);
+ ScrollToCursor(hWnd);
 
  for (;;) {
 
