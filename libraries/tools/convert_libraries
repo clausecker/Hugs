@@ -197,7 +197,7 @@ for package in $extra_packages
 do
 	build_package $src/$package $target/packages/$package
 	if test -d $target/packages/$package; then
-		copy_examples $src/$package $target/packages/$package/examples
+		copy_examples $src/$package $target/demos/$package
 	fi
 done
 
