@@ -35,6 +35,8 @@ ${PACKAGE}.tar.gz:
 	cd ${TARTMP}; cvs -d ${CVSROOT} export -r${TAG} hugs98
 	cd ${TARTMP}/hugs98; cvs -d ${CVSROOT} export -r${HSLIBSTAG} $(addprefix fptools/hslibs/,${HSLIBSDIRS})
 	cd ${TARTMP}/hugs98; cvs -d ${CVSROOT} export -r${LIBRARIESTAG} $(addprefix fptools/libraries/,${LIBRARIESDIRS})
+	# Unused, and the pathnames in there are too long for portable tar
+	cd ${TARTMP}/hugs98; rm -rf fptools/libraries/base/Text/ParserCombinators/Parsec/examples
 	# preprocess these, so the package can be built without happy & ghc
 	# changes here should be reflected also in Makefile (sorry)
 	find ${TARTMP}/hugs98/fptools/libraries -name "*.ly" -o -name "*.y" |\
