@@ -1,21 +1,25 @@
 #!/bin/sh
 
 # Convert a Haskell package for use by Hugs
-#
+
+usage="$0 <source-directory> <target-directory>"
+
 # The source directory is assumed to be the root of a package hierarchy,
 # i.e. A/B/C.hs contains the module A.B.C
 #
 # The file hugs/exclude (if present in the source directory) contains
 # a list of modules that aren't to be used with Hugs, one per line,
 # possibly with commentary on the rest of the line.
-
-usage="$0 <source-directory> <target-directory>"
+#
+# Several packages may be put into the same target directory, as long as
+# they don't overlap (which they aren't supposed to).
 
 cpp_flags='-D__HUGS__'
 
 cpp=${cpp-gcc -P -E -traditional -xc}
 cc=${CC-gcc}
 hsc2hs=${hsc2hs-hsc2hs}
+greencard=${greencard-green-card}
 
 # platform sensitive settings
 case `uname -a` in
@@ -58,7 +62,7 @@ hack_foreign() {
 	cd $source_dir
 	find . \( -name '[a-z]*' -o -name GHC -o -name NHC \) -prune -o \
 		\( -name \*.hs -o -name \*.lhs -o -name \*.hsc \
-			-o -name \*.y -o -name \*.ly \) -print |
+			-o -name \*.y -o -name \*.ly -o -name \*.gc \) -print |
 		sed '	s:^\./::
 			s/\..*//' |
 		sort -u
@@ -105,6 +109,12 @@ hack_foreign() {
 		rm "$copy"
 
 		extract_includes $target_stem.hs >"$dstdir/$header"
+	elif [ -f $stem.gc ]; then
+		abs_src_dir=`cd $source_dir; pwd`
+		(
+			cd $target_dir
+			$greencard -t ffi -i $abs_src_dir $modname.gc
+		)
 	elif [ -f $stem.hs ]; then
 		$cpp $cpp_flags $includes $stem.hs | cat -s >$target_stem.hs
 	elif [ -f $stem.lhs ]; then
