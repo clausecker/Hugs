@@ -7,7 +7,7 @@ all: fptools pp-fptools src/Makefile
 	cd src; make
 
 src/Makefile:
-	cd src/unix; make config EXTRA_CONFIGURE_OPTS=$(EXTRA_CONFIGURE_OPTS)
+	cd src/unix; $(MAKE) config
 
 #
 # Utilities needed to check out and process fptools. To override
