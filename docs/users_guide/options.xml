@@ -1122,7 +1122,7 @@ can follow <quote><literal>#include</literal></quote> in a C program, as in
 <screen>
 ffihugs '-i&lt;math.h&gt;' '-i"mydefs.h"' Test.hs test.c -lm
 </screen>
-Note the necessary quoting of the <option>+i</option> options here.
+Note the necessary quoting of the <option>-i</option> options here.
 </para>
 </listitem>
 </varlistentry>

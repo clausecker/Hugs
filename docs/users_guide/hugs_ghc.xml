@@ -8,7 +8,7 @@ Most are described in
 Those described in this chapter are also supported by
 <ulink url="http://www.haskell.org/ghc/">GHC</ulink>
 with appropriate options,
-though in some cases the GHC versions are more general
+though in some cases the GHC versions are more general.
 </para>
 
 <sect1 id="syntax-extensions">
@@ -93,11 +93,14 @@ The web page: <quote><ulink url="http://www.cse.ogi.edu/PacSoft/projects/rmb">ht
 contains up to date information on recursive monadic bindings.
 </para>
 
+<note>
+<title>Historical note</title>
 <para>
-Historical note: The old implementation of the mdo-notation (and most
-of the existing documents) used the name <literal>MonadRec</literal>
-for the class and the corresponding library.
+The old implementation of the mdo-notation (and most of the existing
+documents) used the name <literal>MonadRec</literal> for the class and
+the corresponding library.
 </para>
+</note>
 
 </sect2>
 

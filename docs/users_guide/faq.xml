@@ -103,7 +103,7 @@ The only credible alternatives are:
 <itemizedlist>
 <listitem>
 <para>The export list of the <quote>current module</quote>
-(see the <command>:module </command> command)</para>
+(see <xref linkend="module-commands"/>)</para>
 </listitem>
 <listitem>
 <para>The symbol table of the <quote>current module</quote></para></listitem>
