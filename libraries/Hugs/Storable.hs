@@ -1,5 +1,7 @@
 module Hugs.Storable( module Hugs.Storable ) where
 
+import PrelImpl
+
 -- Will not be needed once we switch over to the hierarchial libraries
 foreign import ccall unsafe "Storable_aux.h" szInt       :: Int
 foreign import ccall unsafe "Storable_aux.h" szChar      :: Int

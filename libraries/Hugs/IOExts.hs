@@ -21,6 +21,7 @@ module Hugs.IOExts
 	, unsafeCoerce
 	) where
 
+import PrelImpl
 import Hugs.IO( ioeGetErrorString, IOMode(..), Handle, openFile )
 
 -----------------------------------------------------------------------------

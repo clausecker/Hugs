@@ -1,5 +1,6 @@
 module Hugs.StablePtr( StablePtr, module Hugs.StablePtr ) where
 
+import PrelImpl
 -- data StablePtr a -- in Prelude
 
 -- recently renamed

@@ -19,6 +19,8 @@ module Hugs.Int
 	-- plus Eq, Ord, Num, Bounded, Real, Integral, Ix, Enum, Read,
 	--  Show and Bits instances for each of Int8, Int16 and Int32
 	) where
+
+import PrelImpl
 import Data.Bits
 
 -----------------------------------------------------------------------------

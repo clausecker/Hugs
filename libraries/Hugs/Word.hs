@@ -19,6 +19,8 @@ module Hugs.Word
 	, word32ToInt    -- :: Word32 -> Int
 	, intToWord32    -- :: Int    -> Word32
 	) where
+
+import PrelImpl
 import Data.Bits
 import Data.Int
 import Data.Ix ( Ix(..) )

@@ -46,6 +46,7 @@ module Hugs.ConcBase(
         yield
 	) where
 
+import PrelImpl
 import Hugs.IO(IOMode, Handle, ioeGetErrorString) -- for binary file ops
 import Hugs.IORef
 
