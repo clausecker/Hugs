@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: machine.c,v $
- * $Revision: 1.19 $
- * $Date: 2003/11/14 00:14:39 $
+ * $Revision: 1.20 $
+ * $Date: 2003/11/22 19:09:50 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1814,7 +1814,7 @@ static  void *labs[] = { INSTRLIST };
 			Continue;
 
 	Case(iTABLE)  :
-	Case(iFAIL)   : throwException(ap(namePatternMatchFail, nameNil));
+	Case(iFAIL)   : evalFails(root);		 /* cannot reduce  */
 			return;/*NOT REACHED*/
 
     EndDispatch
@@ -1855,7 +1855,11 @@ Cell e; {                              /* NIL if successful,               */
 
 Void evalFails(root)                   /* Eval of current redex fails     */
 StackPtr root; {
-    internal("evalFails no longer supported");
+    Cell errorRedex = stack(root);     /* get error & bypass indirections */
+    while (isPair(errorRedex) && fst(errorRedex)==INDIRECT)
+	errorRedex = snd(errorRedex);
+    throwException(ap(namePatternMatchFail,
+	ap(ap(ap(nameNPrint, mkInt(MIN_PREC)), errorRedex), nameNil)));
 }
 
 Void throwException(ex)
