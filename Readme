@@ -1,29 +1,32 @@
 ------------------------------------------------------------------------------
 __   __ __  __  ____   ___      _________________________________________
 ||   || ||  || ||  || ||__      Hugs 98: Based on the Haskell 98 standard
-||___|| ||__|| ||__||  __||     Copyright (c) 1994-2003
+||___|| ||__|| ||__||  __||     Copyright (c) 1994-2005
 ||---||         ___||           World Wide Web: http://haskell.org/hugs
 ||   ||                         Report bugs to: hugs-bugs@haskell.org
-||   || Version: November 2003  _________________________________________
+||   || Version:    March 2005  _________________________________________
 
 ------------------------------------------------------------------------------
 
-   We are pleased to announce a new release of Hugs98, an interpreter
+   We are pleased to announce an interim release of Hugs98, an interpreter
    and programming environment for developing Haskell programs.
-   Sources and binaries are freely available on the World-Wide Web.
+
+   This release is primarily targeted at Unix systems to gain experience
+   with new features.  The new Cabal-based library build system has the
+   potential to make building on Windows easier, but it's not there yet.
+   Volunteers welcome.
 
    Feature highlights of this new release are:
-   
-   - More of the hierarchical libraries, including imprecise exceptions
-     and unboxed arrays, giving greater compatibility with GHC.
-     For now, compatibility with the old libraries is provided by stub
-     modules, but users are encouraged to migrate to the new libraries.
-   - The Double type is now double-precision on most architectures.
-   - The -e, -f, -i, -N, -W and -X options are gone, as is the :project
-     command.
-   - Integrated .NET support (on Windows).
-   - The beginnings of a User's Guide (still somewhat incomplete).
-   - Numerous bug fixes since the previous major release in Nov 2002.
+
+   - The default current module is now the empty module Hugs.Base instead
+     of the Prelude.
+   - The Char type and the Char module now support Unicode as specified
+     in the Haskell 98 Report (contributed by Dmitry Golubovsky).
+   - The new -X option groups several options into one argument.
+   - The syntax of the ffihugs command has changed: the +G and +L options
+     are gone, and a new +i option can be used to specify include files.
+   - Hugs now has basic support for Cabal.
+   - Numerous bug fixes since the previous major release in Nov 2003.
 
    The home page for Hugs is at http://haskell.org/hugs.
 
@@ -36,6 +39,6 @@ __   __ __  __  ____   ___      _________________________________________
 ------------------------------------------------------------------------------
  The Hugs 98 system is Copyright (c) Mark P Jones, Alastair Reid, the
  Yale Haskell Group, and the OGI School of Science & Engineering at OHSU,
- 1994-2003, All rights reserved.  It is distributed as free software under
+ 1994-2005, All rights reserved.  It is distributed as free software under
  the license in the file "License", which is included in the distribution.
 ------------------------------------------------------------------------------

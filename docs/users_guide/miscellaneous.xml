@@ -373,9 +373,11 @@ and the <command>:project</command> command have been removed.
 </sect2>
 
 <sect2>
-<title>Current version</title>
+<title>March 2005</title>
 
 <para>
+This release is primarily targeted at Unix systems to gain experience
+with new features.
 The new Cabal-based library build system has the potential to make
 building on Windows easier, but it's not there yet.  Volunteers welcome.
 </para>
