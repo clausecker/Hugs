@@ -14,8 +14,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: iomonad.c,v $
- * $Revision: 1.51 $
- * $Date: 2003/07/23 11:48:22 $
+ * $Revision: 1.52 $
+ * $Date: 2003/08/01 10:01:59 $
  * ------------------------------------------------------------------------*/
  
 Name nameIORun;			        /* run IO code                     */
@@ -1716,11 +1716,11 @@ primFun(primNewFP) { /* Ptr a -> IO (ForeignPtr a) */
     IOReturn(newMallocPtr(addr));
 }
 
-primFun(primAddFPF) { /* ForeignPtr a -> FunPtr (Ptr a -> IO ()) -> IO () */
+primFun(primAddFPF) { /* FunPtr (Ptr a -> IO ()) -> ForeignPtr a -> IO () */
     int mp;
-    eval(IOArg(2));
-    mp = mpOf(whnfHead);
     eval(IOArg(1));
+    mp = mpOf(whnfHead);
+    eval(IOArg(2));
     mallocPtrs[mp].finalizers = cons(whnfHead, mallocPtrs[mp].finalizers);
     IOReturn(nameUnit);
 }
