@@ -11,8 +11,8 @@
  * included in the distribution.
  *
  * $RCSfile: parser.y,v $
- * $Revision: 1.19 $
- * $Date: 2001/06/22 23:05:29 $
+ * $Revision: 1.20 $
+ * $Date: 2001/06/22 23:30:45 $
  * ------------------------------------------------------------------------*/
 
 %{
@@ -38,8 +38,10 @@ extern String scriptFile;
 #define yyerror(s)		 /* errors handled elsewhere */
 #define YYSTYPE			 Cell
 
-#if !defined(__GNUC__) || __GNUC__ <= 1
+#ifdef YYBISON
+# if !defined(__GNUC__) || __GNUC__ <= 1
 static void __yy_memcpy Args((char*,char*, unsigned int));
+# endif
 #endif
 
 static Cell   local gcShadow	 Args((Int,Cell));
