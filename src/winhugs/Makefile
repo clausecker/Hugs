@@ -2,10 +2,11 @@
 # --------------------------------------------------------------------------
 # Makefile for Hugs
 #
-# Hugs 98 is Copyright (c) Mark P Jones, Alastair Reid and the Yale
-# Haskell Group 1994-99, and is distributed as Open Source software
-# under the Artistic License; see the file "Artistic" that is included
-# in the distribution for details.
+# The Hugs 98 system is Copyright (c) Mark P Jones, Alastair Reid, the
+# Yale Haskell Group, and the OGI School of Science & Engineering at OHSU,
+# 1994-2004, All rights reserved.  It is distributed as
+# free software under the license in the file "License", which is
+# included in the distribution.
 # --------------------------------------------------------------------------
 
 # Targets:
@@ -251,15 +252,15 @@ type.$(OBJEXT): type.c prelude.h config.h platform.h options.h storage.h HsFFI.h
   connect.h errors.h output.h subst.h goal.h opts.h preds.c scc.c
 version.$(OBJEXT): today version.c prelude.h config.h platform.h options.h 
 
+################################################################
+# End of generated object dependencies (Don't change or delete this line)
+################################################################
+
 today: echodate.exe
 	$(PWD)/echodate.exe > echodate.h
 
 echodate.exe: msc/echodate.c
 	$(CC) $(LDFLAGS) msc/echodate.c -o $@
-
-################################################################
-# End of generated object dependencies (Don't change or delete this line)
-################################################################
 
 # WinHugs modules
 #
