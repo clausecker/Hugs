@@ -317,6 +317,12 @@ primFun(primGetPermissions) { /* FilePath -> IO (Bool,Bool,Bool,Bool) */
   int isR, isW, isX;
   
 
+#if __MWERKS__ && macintosh
+    IOFail(mkIOError(nameIllegal,
+		     "Directory.primGetPermissions",
+		     "operation not supported",
+		     IOArg(1)));
+#else
   if (!s) {
     IOFail(mkIOError(nameIllegal,
 		     "Directory.getPermissions",
@@ -341,6 +347,7 @@ primFun(primGetPermissions) { /* FilePath -> IO (Bool,Bool,Bool,Bool) */
 		   ToBool(isX == 0 && !IS_FLAG_SET(st,S_IFDIR))),
 		ToBool(isX == 0 && !IS_FLAG_SET(st,S_IFREG))));
   }
+#endif
 }
 
 #define EVAL_BOOL(x,y) \
@@ -377,6 +384,12 @@ primFun(primSetPermissions) { /* FilePath -> Bool -> Bool -> Bool -> Bool -> IO 
   Bool   e;
   Bool   s;
   
+#if __MWERKS__ && macintosh
+    IOFail(mkIOError(nameIllegal,
+		     "Directory.primSetPermissions",
+		     "operation not supported",
+		     IOArg(1)));
+#else
   EVAL_BOOL(s, IOArg(1));
   EVAL_BOOL(e, IOArg(2));
   EVAL_BOOL(w, IOArg(3));
@@ -405,6 +418,7 @@ primFun(primSetPermissions) { /* FilePath -> Bool -> Bool -> Bool -> Bool -> IO 
     IOReturn(nameUnit);
   }
   
+#endif
 }
 
 /* Pedantically remove these local defs. */

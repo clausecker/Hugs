@@ -19,8 +19,8 @@
  * included in the distribution.
  *
  * $RCSfile: iomonad.c,v $
- * $Revision: 1.15 $
- * $Date: 2001/06/23 21:46:43 $
+ * $Revision: 1.16 $
+ * $Date: 2001/12/06 17:20:26 $
  * ------------------------------------------------------------------------*/
  
 Name nameIORun;			        /* run IO code                     */
@@ -474,7 +474,7 @@ Cell   mbF;
 static Name local toIOError(errc)
 int errc;
 {
-#ifdef HAVE_ERRNO_H
+#if defined(HAVE_ERRNO_H)  && !(__MWERKS__ && macintosh)
   switch(errc) {
 
   case EEXIST:
@@ -503,7 +503,7 @@ static String local toIOErrorDescr(errc,isFile)
 int   errc;
 Bool  isFile;
 {
-#ifdef HAVE_ERRNO_H
+#if defined(HAVE_ERRNO_H)  && !(__MWERKS__ && macintosh)
   switch(errc) {
 
   case EEXIST:
