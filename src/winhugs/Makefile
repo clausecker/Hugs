@@ -26,7 +26,7 @@
 default		:: winhugs.exe 
 
 CC		= cl /nologo
-VERSTR          = -DMONTH_YEAR="\"Oct 2003\""
+VERSTR          = -DMONTH_YEAR="\"Nov 2003\""
 CFLAGS		= -MD -I. $(VERSTR)
 #Debugging options:
 #CFLAGS		= -Zi -MDd -I. $(VERSTR)
