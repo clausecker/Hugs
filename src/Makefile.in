@@ -26,7 +26,9 @@
 # TAGS:           build emacs TAGS table
 
 # This rule goes first to make it the default choice
-default		:: hugs@EXEEXT@ runhugs@EXEEXT@ libraries
+default		:: all
+
+all		:: hugs@EXEEXT@ runhugs@EXEEXT@ libraries
 
 CC		= @CC@
 CFLAGS		= @CFLAGS@ @DEBUGFLAGS@
@@ -156,9 +158,6 @@ $(FFI_LIBRARIES) : $(LIBRARIES) ffihugs$(EXEEXT) $(INCLUDES)
 ################################################################
 
 clean		::
-		  $(RM) hugs@EXEEXT@
-		  $(RM) runhugs@EXEEXT@
-		  $(RM) ffihugs@EXEEXT@
 		  $(RM) *.o
 		  $(RM) *.O
 		  $(RM) *.obj
@@ -176,25 +175,21 @@ clean		::
 		  $(RM) *.DSW
 		  $(RM) *.aux
 		  $(RM) *.hp
-		  $(RM) -r $(BUILD_DIR)
 		  $(RM) LibStatus
 distclean	:: clean
 distclean	::
 		  $(RM) hugs@EXEEXT@
 		  $(RM) runhugs@EXEEXT@
 		  $(RM) ffihugs@EXEEXT@
+		  $(RM) -r $(BUILD_DIR)
+		  $(RM) Makefile
+		  $(RM) config.h
+		  $(RM) options.h
 		  $(RM) *.pdf
 		  $(RM) TAGS
 		  $(RM) *~
 veryclean	:: distclean
 veryclean	::
-		  $(RM) Makefile
-		  $(RM) config.h
-		  $(RM) options.h
-		  $(RM) unix/config.cache
-		  $(RM) unix/config.log
-		  $(RM) unix/config.status
-		  $(RM) unix/configure
 TAGS		::
 		  etags *.[ych]
 

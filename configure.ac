@@ -1023,7 +1023,7 @@ AC_OUTPUT(src/Makefile src/platform.h \
 
 echo ''
 echo '************************************************'
-echo '*** NOW DO: cd src ; make ; make install'
+echo '*** NOW DO: make ; make install'
 echo '************************************************'
 exit 0
 

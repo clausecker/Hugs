@@ -1,30 +1,55 @@
-DOCBOOK2HTML = @DOCBOOK2HTML@
-DOCBOOK2DVI  = @DOCBOOK2DVI@
-DOCBOOK2PDF  = @DOCBOOK2PDF@
-DOCBOOK2PS   = @DOCBOOK2PS@
+INSTALL		= ../../ac_aux/install-sh
+CP		= @CP@
+RM		= @RM@
+DOCBOOK2HTML	= @DOCBOOK2HTML@
+DOCBOOK2DVI	= @DOCBOOK2DVI@
+DOCBOOK2PDF	= @DOCBOOK2PDF@
+DOCBOOK2PS	= @DOCBOOK2PS@
 
-ROOT	     = users_guide
-PARTS	     = $(ROOT).sgml haskell98.sgml hugs_ghc.sgml hugs_only.sgml \
-	       introduction.sgml license.sgml miscellaneous.sgml \
-	       options.sgml using_hugs.sgml
+prefix		= @prefix@
+exec_prefix	= @exec_prefix@
+libdir		= @libdir@
+datadir		= @datadir@
+hugsdir		= @hugsdir@
+
+SGMLDocWays	= html
+
+ROOT		= users_guide
+PARTS		= $(ROOT).sgml haskell98.sgml hugs_ghc.sgml hugs_only.sgml \
+		  introduction.sgml license.sgml miscellaneous.sgml \
+		  options.sgml using_hugs.sgml
 # Options needed for non-SuSE $(DOCBOOK2HTML)
-HTML_OPTS    = --output $(ROOT) -V '%use-id-as-filename%'
+HTML_OPTS	= --output $(ROOT) -V '%use-id-as-filename%'
 
 # Don't use $(ROOT)/index.html, because depending on $(DOCBOOK2HTML) it
 # could be $(ROOT)/$(ROOT).html instead.
-HTML         = $(ROOT)/license.html
+HTML		= $(ROOT)/license.html
 
 %.sgml: %.xml
 	sed -f xml2sgml.sed $*.xml >$@
 
-all: html dvi ps pdf
+all: $(SGMLDocWays)
+
+install: $(SGMLDocWays)
+	if test -f $(HTML); \
+	then	$(INSTALL) -d $(DESTDIR)$(hugsdir)/docs/users_guide; \
+		$(CP) users_guide/*.html $(DESTDIR)$(hugsdir)/docs/users_guide; \
+	fi
+	for ext in dvi pdf ps;\
+	do	if test -f $(ROOT).$$ext;\
+		then	$(CP) $(ROOT)$$ext $(DESTDIR)$(hugsdir)/docs;\
+		fi;\
+	done
 
 clean:
-	$(RM) $(PARTS) $(ROOT).dvi $(ROOT).ps $(ROOT).pdf
-	$(RM) -r $(ROOT)
+	$(RM) $(PARTS)
 
 distclean: clean
+	$(RM) $(ROOT).dvi $(ROOT).ps $(ROOT).pdf
+	$(RM) -r $(ROOT)
 	$(RM) Makefile
+
+veryclean: distclean
 
 html: $(HTML)
 
@@ -37,7 +62,7 @@ pdf: $(ROOT).pdf
 # MEGA-HACK: There is no standard for the options of db2foo, so try to
 # be clever...   :-P
 $(HTML): $(PARTS)
-	rm -rf $(ROOT)
+	$(RM) -r $(ROOT)
 	test -z '$(DOCBOOK2HTML)' || \
 	  if $(DOCBOOK2HTML) --help | grep -e --output > /dev/null 2>&1 ; then \
 	    $(DOCBOOK2HTML) $(HTML_OPTS) $(ROOT).sgml ; \

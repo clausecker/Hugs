@@ -1,9 +1,42 @@
 # Makefile for Documentation
 # Note that some documentation is in other directories.
 
+INSTALL		= ../ac_aux/install-sh
 RM		= @RM@
+CP		= @CP@
 
-all::		server.ps hugs.man
+prefix		= @prefix@
+exec_prefix	= @exec_prefix@
+bindir		= @bindir@
+libdir		= @libdir@
+datadir		= @datadir@
+mandir		= @mandir@
+hugsdir		= @hugsdir@
+
+all:
+		cd users_guide; $(MAKE) all
+
+# all::		server.ps hugs.man
+
+install		:: install_man			      # manual page
+install		:: install_notes		      # Readme, etc
+install		:: install_guide		      # User's Guide
+
+install_man:
+		$(INSTALL) -d $(DESTDIR)$(mandir)/man1
+		$(CP) hugs.1 $(DESTDIR)$(mandir)/man1
+		$(CP) hugs-package.1 $(DESTDIR)$(mandir)/man1
+
+install_notes:
+		$(INSTALL) -d $(DESTDIR)$(hugsdir)/docs
+		$(CP) *.txt  $(DESTDIR)$(hugsdir)/docs
+		$(CP) server.*  $(DESTDIR)$(hugsdir)/docs
+		$(CP) ../Readme  $(DESTDIR)$(hugsdir)
+		$(CP) ../License $(DESTDIR)$(hugsdir)
+		$(CP) ../Credits $(DESTDIR)$(hugsdir)
+
+install_guide:
+		cd users_guide; $(MAKE) install
 
 server.ps:	server.dvi
 		dvips server.dvi -o server.ps
@@ -23,10 +56,14 @@ hugs-package.man: hugs-package.1
 hugs-package.ps: hugs-package.1
 		groff -Tps -man hugs-package.1 >$@
 
+clean:
+		cd users_guide; $(MAKE) clean
+
 distclean:
 		$(RM) server.ps server.dvi
 		$(RM) hugs.man hugs.ps
 		$(RM) hugs-package.man hugs-package.ps
+		cd users_guide; $(MAKE) distclean
 
 veryclean:	distclean
 		$(RM) Makefile hugs.1

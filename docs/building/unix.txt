@@ -20,7 +20,6 @@ machine (including Linux, *BSD and MacOS X).  For other systems:
 Short version (for Unix-like environments):
 
     ./configure --prefix=$HOME
-    cd src
     make install
     make clean
     $HOME/bin/hugs $HOME/lib/hugs/demos/Say
@@ -67,18 +66,17 @@ Long version:
     (libraries/Hugs contains Hugs-specific modules that are also
     copied into hugsdir.)
 
-        cd src
         make
 
     You should now have a working Hugs system, runnable in-place.
     At this point, you might like to run a few tests to make sure
     everything's working:
 
-        HUGSDIR=../hugsdir ./hugs
+        HUGSDIR=hugsdir src/hugs
         -- Run a few tests like 1+2, [1..], etc.  Use ":quit" to exit
 
-    Regression tests are run by "make check".  You can also run
-    "make LibStatus", which creates a file LibStatus giving the
+    Regression tests are run by "cd src; make check".  You can also
+    run "make LibStatus", which creates a file LibStatus giving the
     status of each module in fptools/libraries -- none of them
     should be ERROR.
 
