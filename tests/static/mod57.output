@@ -1,2 +1,2 @@
-ERROR "static/mod57.hs":4 - Definition of primitive "id" clashes with import
+ERROR "static/mod57.hs":4 - Declaration of primitive "id" clashes with import
 Hugs:[Leaving Hugs]

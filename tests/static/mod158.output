@@ -1,2 +1,2 @@
-ERROR "static/mod158.hs":12 - Undefined constructor function "C"
+ERROR "static/mod158.hs":12 - Undefined data constructor "C"
 Hugs:[Leaving Hugs]

@@ -1,2 +1,2 @@
-ERROR "static/mod59.hs":3 - Undefined constructor function "K"
+ERROR "static/mod59.hs":3 - Undefined data constructor "K"
 Hugs:[Leaving Hugs]

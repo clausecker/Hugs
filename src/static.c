@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.163 $
- * $Date: 2003/12/19 03:10:45 $
+ * $Revision: 1.164 $
+ * $Date: 2004/01/08 14:36:29 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -404,7 +404,7 @@ Cell what; {				/* SYNONYM/DATATYPE/etc...	   */
     Tycon tc = findTycon(t);
 
     if ( nonNull(tc) ) {
-	ERRMSG(line) "Repeated definition of type constructor \"%s\"",
+	ERRMSG(line) "Multiple declarations of type constructor \"%s\"",
 		     textToStr(t)
 	EEND;
     } else if (nonNull(tc) && nonNull(tycon(tc).clashes)) {
@@ -685,7 +685,7 @@ Cell  cd; {				/* definitions (w or w/o deriving) */
 	    n = newName(textOf(con),NIL);
 	} else if (name(n).defn!=PREDEFINED && name(n).mod == currentModule) {
 	  /* A local repeated definition */
-	  duplicateError(line,name(n).mod,name(n).text,"constructor function");
+	  duplicateError(line,name(n).mod,name(n).text,"data constructor");
 	} else if (name(n).defn!=PREDEFINED) {
           Name oldnm = n;
 	  removeName(n);
@@ -790,7 +790,7 @@ List ss; {				/* list of existing selectors	   */
 	    Name oldnm = findName(t);
 	    if ( nonNull(oldnm) ) {
 	        if ( name(oldnm).mod == currentModule ) {
-		    ERRMSG(line) "Repeated definition for selector \"%s\"",
+		    ERRMSG(line) "Multiple declarations for selector \"%s\"",
 			         textToStr(t)
 		    EEND;
 		} else {
@@ -1010,7 +1010,7 @@ List fds; {			       /* functional dependencies	   */
     Int  arity = argCount;
 
     if (nonNull(findClass(ct))) {
-	ERRMSG(line) "Repeated definition of class \"%s\"",
+	ERRMSG(line) "Multiple declarations of class \"%s\"",
 		     textToStr(ct)
 	EEND;
     } else if (nonNull(findTycon(ct))) {
@@ -1150,7 +1150,7 @@ Class c; {
     }
 #endif
 
-    h98CheckCtxt(cclass(c).line,"class definition",FALSE,cclass(c).supers,NIL);
+    h98CheckCtxt(cclass(c).line,"class declaration",FALSE,cclass(c).supers,NIL);
     cclass(c).numSupers = length(cclass(c).supers);
     cclass(c).defaults  = extractBindings(cclass(c).members);	/* defaults*/
     ss			= extractSigdecls(cclass(c).members);
@@ -1462,7 +1462,7 @@ Class parent; {
     if (isNull(m)) {
 	m = newName(textOf(v),parent);
     } else if (name(m).defn!=PREDEFINED && name(m).mod == currentModule) {
-	ERRMSG(l) "Repeated definition for member function \"%s\"",
+	ERRMSG(l) "Multiple declarations for member function \"%s\"",
 	  textToStr(name(m).text)
 	EEND;
     } else if (name(m).defn!=PREDEFINED) {
@@ -1520,7 +1520,7 @@ Class c; {				/* class hierarchy is acyclic	   */
     }
 #endif
     if (cclass(c).level < 0) {		/* already visiting this class?	   */
-	ERRMSG(cclass(c).line) "Class hierarchy for \"%s\" is not acyclic",
+	ERRMSG(cclass(c).line) "Superclass relation for \"%s\" is cyclic",
 			       textToStr(cclass(c).text)
 	EEND;
     } else if (cclass(c).level == 0) {	/* visiting class for first time   */
@@ -1899,7 +1899,7 @@ Cell body; {				/* type/constr for scope of vars   */
 	for (; nonNull(us); us=tl(us)) {
 	    Text u = textOf(hd(us));
 	    if (varIsMember(u,tl(us))) {
-		ERRMSG(line) "Duplicated quantified variable %s",
+		ERRMSG(line) "Repeated quantified variable %s",
 			     textToStr(u)
 		EEND;
 	    }
@@ -2345,8 +2345,8 @@ Cell c; {
 static Void local kindTC(c)		/* check each part of a tycon/class*/
 Cell c; {				/* is well-kinded		   */
     if (isTycon(c)) {
-	static String cfun = "constructor function";
-	static String tsyn = "synonym definition";
+	static String cfun = "data constructor";
+	static String tsyn = "synonym declaration";
 	Int line = tycon(c).line;
 	Int beta = tyvar(intOf(tycon(c).kind))->offs;
 	Int m    = tycon(c).arity;
@@ -2513,7 +2513,7 @@ Inst in; {
 	EEND;
     }
 
-    h98CheckCtxt(line,"instance definition",FALSE,inst(in).specifics,NIL);
+    h98CheckCtxt(line,"instance declaration",FALSE,inst(in).specifics,NIL);
     inst(in).numSpecifics = length(inst(in).specifics);
     inst(in).c            = getHead(inst(in).head);
     if (!isClass(inst(in).c)) {
@@ -3910,7 +3910,7 @@ Triple pd; {
     List prims = snd3(pd);
     Type type  = thd3(pd);
     emptySubstitution();
-    type = checkSigType(line,"primitive definition",fst(hd(prims)),type);
+    type = checkSigType(line,"primitive declaration",fst(hd(prims)),type);
     for (; nonNull(prims); prims=tl(prims)) {
 	Cell   p    = hd(prims);
 	Bool   same = isVar(p);
@@ -4594,7 +4594,7 @@ Cell nm;                 /* previously defined constructor  */
 Bool check; {		 /* function (and only one.)        */
     Name n = findQualName(nm);
     if (isNull(n)) {
-	ERRMSG(line) "Undefined constructor function \"%s\"", identToStr(nm)
+	ERRMSG(line) "Undefined data constructor \"%s\"", identToStr(nm)
 	EEND;
     }
     checkIsCfun(line,n);
@@ -4612,7 +4612,7 @@ static Void local checkIsCfun(line,c)  /* Check that c is a constructor fn */
 Int  line;
 Name c; {
     if (!isCfun(c)) {
-	ERRMSG(line) "\"%s\" is not a constructor function",
+	ERRMSG(line) "\"%s\" is not a data constructor",
 		     textToStr(name(c).text)
 	EEND;
     }
@@ -5005,7 +5005,7 @@ Cell sigdecl; { 		       /* :: (Line,[Var],Type)		   */
 		      textToStr(textOf(v))
 	    EEND;
 	} else if (nonNull(fst(attr))) {
-	    ERRMSG(l) "Repeated type signature for \"%s\"",
+	    ERRMSG(l) "Multiple type signatures for \"%s\"",
 		      textToStr(textOf(v))
 	    EEND;
 	}
@@ -5064,7 +5064,7 @@ static Void local dupFixity(line,t)	/* Report repeated fixity decl	   */
 Int  line;
 Text t; {
     ERRMSG(line)
-	"Repeated fixity declaration for operator \"%s\"", textToStr(t)
+	"Multiple fixity declarations for operator \"%s\"", textToStr(t)
     EEND;
 }
 
@@ -7180,11 +7180,11 @@ Module mod;
 Text   t;
 String kind; {
     if (mod == currentModule) {
-	ERRMSG(line) "Repeated definition for %s \"%s\"", kind,
+	ERRMSG(line) "Multiple declarations for %s \"%s\"", kind,
 		     textToStr(t)
 	EEND;
     } else {
-	ERRMSG(line) "Definition of %s \"%s\" clashes with import", kind,
+	ERRMSG(line) "Declaration of %s \"%s\" clashes with import", kind,
 		     textToStr(t)
 	EEND;
     }

@@ -1,2 +1,2 @@
-ERROR "static/mod147.hs":6 - Undefined constructor function "D"
+ERROR "static/mod147.hs":6 - Undefined data constructor "D"
 Hugs:[Leaving Hugs]

@@ -1,2 +1,2 @@
-ERROR "static/mod125.hs":7 - Undefined constructor function "T"
+ERROR "static/mod125.hs":7 - Undefined data constructor "T"
 Hugs:[Leaving Hugs]

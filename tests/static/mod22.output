@@ -1,2 +1,2 @@
-ERROR "static/mod22.hs":2 - Repeated definition for constructor function "K"
+ERROR "static/mod22.hs":2 - Multiple declarations for data constructor "K"
 Hugs:[Leaving Hugs]

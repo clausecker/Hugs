@@ -1,2 +1,2 @@
-ERROR "static/mod101.hs":8 - Undefined constructor function "ConB"
+ERROR "static/mod101.hs":8 - Undefined data constructor "ConB"
 Hugs:[Leaving Hugs]

@@ -10,8 +10,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: parser.y,v $
- * $Revision: 1.45 $
- * $Date: 2003/12/04 18:49:59 $
+ * $Revision: 1.46 $
+ * $Date: 2004/01/08 14:36:29 $
  * ------------------------------------------------------------------------*/
 
 %{
@@ -142,6 +142,8 @@ topModule : startMain begin modBody end {
 					}
 	  | TMODULE modname expspec WHERE '{' modBody end
 					{setExportList($3);   $$ = gc7($6);}
+	  | TMODULE modname expspec WHERE error
+					{syntaxError("declaration");}
 	  | TMODULE error		{syntaxError("module definition");}
 	  ;
 /* To implement the Haskell module system, we have to keep track of the
@@ -275,7 +277,7 @@ topDecl	  : TYPE tyLhs '=' type		{defTycon(4,$3,$2,$4,SYNONYM);}
 	  | TYPE tyLhs '=' type IN invars
 					{defTycon(6,$3,$2,
 						    ap($4,$6),RESTRICTSYN);}
-	  | TYPE error			{syntaxError("type definition");}
+	  | TYPE error			{syntaxError("type declaration");}
 	  | DATA btype2 '=' constrs deriving
 					{defTycon(5,$3,checkTyLhs($2),
 						    ap(rev($4),$5),DATATYPE);}
@@ -288,7 +290,7 @@ topDecl	  : TYPE tyLhs '=' type		{defTycon(4,$3,$2,$4,SYNONYM);}
 	  | DATA context IMPLIES tyLhs  {defTycon(4,$1,$4,
 						  ap(qualify($2,NIL),
 						     NIL),DATATYPE);}
-	  | DATA error			{syntaxError("data definition");}
+	  | DATA error			{syntaxError("data declaration");}
 	  | TNEWTYPE btype2 '=' nconstr deriving
 					{defTycon(5,$3,checkTyLhs($2),
 						    ap($4,$5),NEWTYPE);}
@@ -296,7 +298,7 @@ topDecl	  : TYPE tyLhs '=' type		{defTycon(4,$3,$2,$4,SYNONYM);}
 					{defTycon(7,$5,$4,
 						  ap(qualify($2,$6),
 						     $7),NEWTYPE);}
-	  | TNEWTYPE error		{syntaxError("newtype definition");}
+	  | TNEWTYPE error		{syntaxError("newtype declaration");}
 	  | NEEDPRIMS NUMLIT		{if (isInt($2)) {
 					     needPrims(intOf($2), NULL);
 					 } else {
@@ -335,7 +337,7 @@ constr	  : '!' btype conop bbtype	{$$ = gc4(ap(ap($3,bang($2)),$4));}
 	  | btype4			{$$ = $1;}
 	  | con '{' fieldspecs '}'	{$$ = gc4(ap(LABC,pair($1,rev($3))));}
 	  | con '{' '}'			{$$ = gc3(ap(LABC,pair($1,NIL)));}
-	  | error			{syntaxError("data type definition");}
+	  | error			{syntaxError("data type declaration");}
 	  ;
 btype3	  : btype2 '!' atype		{$$ = gc3(ap($1,bang($3)));}
 	  | btype3 '!' atype		{$$ = gc3(ap($1,bang($3)));}
@@ -1014,7 +1016,7 @@ end	  : '}'				{$$ = $1;}
 					     pushed(1) = mkInt(column);
 					 }
 					 else
-					     syntaxError("definition");
+					     syntaxError("declaration");
 					}
 	  ;
 
@@ -1221,7 +1223,7 @@ Cell c; {				/* T a1 ... a			   */
 	tlhs = fun(tlhs);
     }
     if (whatIs(tlhs)!=CONIDCELL) {
-	ERRMSG(row) "Illegal left hand side in datatype definition"
+	ERRMSG(row) "Illegal left hand side in data type declaration"
 	EEND;
     }
     return c;

@@ -1,2 +1,2 @@
-ERROR "static/mod88.hs":5 - Undefined constructor function "Prelude.Left"
+ERROR "static/mod88.hs":5 - Undefined data constructor "Prelude.Left"
 Hugs:[Leaving Hugs]

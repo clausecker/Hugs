@@ -848,7 +848,7 @@ Cell ent; {
   }
       
   if (inConflict) {
-      ERRMSG(0) "Duplicate export of entity \"%s\"",
+      ERRMSG(0) "Conflicting exports of entity \"%s\"",
                 textToStr(txt) ETHEN
       ERRTEXT "\n*** Could refer to %s.%s or %s.%s",
 	      textToStr(module(mod1).text),

@@ -1,2 +1,2 @@
-ERROR "static/mod120.hs":5 - Undefined constructor function "Foo"
+ERROR "static/mod120.hs":5 - Undefined data constructor "Foo"
 Hugs:[Leaving Hugs]

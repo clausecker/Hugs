@@ -1,3 +1,3 @@
-ERROR "static/mod143.hs" - Duplicate export of entity "Foo"
+ERROR "static/mod143.hs" - Conflicting exports of entity "Foo"
 *** Could refer to M.Foo or Mod143_A.Foo
 Hugs:[Leaving Hugs]
