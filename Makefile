@@ -44,13 +44,13 @@ clean:
 	cd docs; if test -f Makefile; then $(MAKE) clean; fi
 
 distclean:
-	$(RM) *.tar.gz *.rpm
+	$(RM) *.tar.gz *.rpm Defs.mk
 	$(RM) -r config.log config.cache autom4te.cache
 	cd src; if test -f Makefile; then $(MAKE) distclean; fi
 	cd docs; if test -f Makefile; then $(MAKE) distclean; fi
 
 veryclean:
-	$(RM) *.tar.gz *.rpm
+	$(RM) *.tar.gz *.rpm Defs.mk
 	$(RM) -r config.log config.cache autom4te.cache
 	cd src; if test -f Makefile; then $(MAKE) veryclean; fi
 	cd docs; if test -f Makefile; then $(MAKE) veryclean; fi
@@ -76,10 +76,10 @@ src/Makefile: configure src/config.h.in
 	$(RM) -r config.cache autom4te.cache
 	LIBS=$(GNULIBS) ./configure $(EXTRA_CONFIGURE_OPTS)
 
-configure: configure.ac
+configure: configure.ac aclocal.m4
 	-autoconf
 
-src/config.h.in: configure.ac
+src/config.h.in: configure.ac aclocal.m4
 	-autoheader
 
 # fetching library sources
