@@ -385,6 +385,7 @@ by the current locale (see <xref linkend="locale"/>).
 The default current module is now the empty module <literal>Hugs.Base</literal>
 instead of the <literal>Prelude</literal>
 (see <xref linkend="module-commands"/>).
+</para></listitem>
 
 <listitem><para>
 The new <link linkend="option-split-options"><option>-X</option></link> option
