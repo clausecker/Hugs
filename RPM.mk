@@ -5,9 +5,10 @@
 # no rpmbuild on SuSE and rpm still does the job. I like such changes...
 RPMBUILD = rpmbuild
 
-RPMTMP = /tmp/rpm
+TMP    = /tmp
+RPMTMP = ${TMP}/rpm
 # probably should be uniqueified
-TARTMP = /tmp/mktar
+TARTMP = ${TMP}/mktar
 
 SPECFILE=${NAME}.spec
 
@@ -51,7 +52,7 @@ else
 		xargs src/unix/hsc_kludge
 endif
 	@touch ${TARTMP}/hugs98/fptools/stamp-fptools
-	cp ${TARTMP}/hugs98/src/version.c /tmp/mktar
+	cp ${TARTMP}/hugs98/src/version.c ${TMP}/mktar
 	cd ${TARTMP}/hugs98/src; sed ${VERSION_SUBSTS} < ${TARTMP}/version.c > ${TARTMP}/hugs98/src/version.c
 	# using `make parser.c' would be best, but by default yacc
 	# will be used, and yacc is, for some reason, incompatible
@@ -60,9 +61,9 @@ endif
 	cd ${TARTMP}/hugs98; rm -rf tests
 	cd ${TARTMP}/hugs98/src/unix; autoconf # ; autoheader
 	mv ${TARTMP}/hugs98 ${TARTMP}/${PACKAGE}
-	cd ${TARTMP}; tar cf /tmp/${NAME}.tar ${PACKAGE}
-	gzip -9 /tmp/${NAME}.tar
-	mv /tmp/${NAME}.tar.gz ${PACKAGE}.tar.gz
+	cd ${TARTMP}; tar cf ${TMP}/${NAME}.tar ${PACKAGE}
+	gzip -9 ${TMP}/${NAME}.tar
+	mv ${TMP}/${NAME}.tar.gz ${PACKAGE}.tar.gz
 
 rpm-dirs:
 	-mkdir ${RPMTMP}
