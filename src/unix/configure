@@ -8533,7 +8533,7 @@ if test "${with_fptools+set}" = set; then
   withval="$with_fptools"
   FPTOOLS="$withval"
 else
-  FPTOOLS=../fptools
+  FPTOOLS=../../fptools
 fi
 
 
