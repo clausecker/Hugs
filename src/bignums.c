@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: bignums.c,v $
- * $Revision: 1.7 $
- * $Date: 2003/01/23 17:47:07 $
+ * $Revision: 1.8 $
+ * $Date: 2003/02/08 15:45:54 $
  * ------------------------------------------------------------------------*/
 
 /*#define DEBUG_BIGNUMS*/
@@ -24,7 +24,7 @@ static Void local bigDump(List ds, Int n) {
 
 static Cell bn;			/* Bignum accumulator; used in bignum	   */
 				/* calcs, visited by the garbage collector.*/
-static List bigRem = NIL;	/* used in bugQrm to return remainder	   */
+static List bigRem = NIL;	/* used in bigQrm to return remainder	   */
 
 
 /*-------------------------------------------------------------------------*/
