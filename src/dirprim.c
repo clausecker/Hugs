@@ -53,6 +53,36 @@ static struct primitive dirPrimTable[] = {
 
 static struct primInfo dirPrims = { dirControl, dirPrimTable, 0 };
 
+#define IS_FLAG_SET(x,flg) ((x & flg) == flg)
+#define ToBool(v) ( (v) ? nameTrue : nameFalse)
+
+#ifdef _MSC_VER
+/* If not provided, define em. */
+#ifndef R_OK
+#define R_OK 04
+#endif
+#ifndef W_OK
+#define W_OK 02
+#endif
+#ifndef X_OK
+#define X_OK 06
+#endif
+#endif
+
+/* MSVC6 doesn't define these helper macros in <sys/stat.h> there
+ * might be other platforms too, so... The assumption here is that
+ * S_ISDIR() and friends indeed are CPP macros - if that's not the
+ * case, please adjust the conditional below to suit your platform
+ * (and feed back the tweak you make.)
+ */
+#if !defined(S_ISDIR)
+#define S_ISDIR(st_mode)  IS_FLAG_SET(st_mode,S_IFDIR)
+#endif
+
+#if !defined(S_ISREG)
+#define S_ISREG(st_mode)  IS_FLAG_SET(st_mode,S_IFREG)
+#endif
+
 /* --------------------------------------------------------------------------
  * Directory primitives:
  * ------------------------------------------------------------------------*/
@@ -269,7 +299,7 @@ primFun(primFileExist) { /* FilePath -> IO Bool - check to see if file exists. *
   if (rc < 0) {
     IOReturn(nameFalse);
   } else {
-    IOBoolResult(!S_ISDIR(st.st_mode));
+    IOBoolResult(!S_ISDIR(st.st_mode) );
   }
 }
 
@@ -290,24 +320,9 @@ primFun(primDirExist) { /* FilePath -> IO Bool - check to see if directory exist
   if (rc < 0) {
     IOReturn(nameFalse);
   } else {
-    IOBoolResult(S_ISDIR(st.st_mode));
+    IOBoolResult( S_ISDIR(st.st_mode) );
   }
 }
-
-#define ToBool(v) ( (v) ? nameTrue : nameFalse)
-
-#ifdef _MSC_VER
-/* If not provided, define em. */
-#ifndef R_OK
-#define R_OK 04
-#endif
-#ifndef W_OK
-#define W_OK 02
-#endif
-#ifndef X_OK
-#define X_OK 06
-#endif
-#endif
 
 primFun(primGetPermissions) { /* FilePath -> IO (Bool,Bool,Bool,Bool) */
   int rc;
@@ -344,7 +359,7 @@ primFun(primGetPermissions) { /* FilePath -> IO (Bool,Bool,Bool,Bool) */
 			  ToBool(isR == 0)),
 		      ToBool(isW == 0)),
 		   ToBool(isX == 0 && !S_ISDIR(st.st_mode))),
-		ToBool(isX == 0 && S_ISDIR(st.st_mode))));
+		ToBool(isX == 0 && !S_ISREG(st.st_mode))));
   }
 #endif
 }
@@ -454,7 +469,7 @@ primFun(primGetDirContents) { /* FilePath -> IO [FilePath] */
   }
   
   /* First, check whether the directory exists... */
-  if ( (stat(fName, &st) < 0) || (!S_ISDIR(st.st_mode)) ) {
+  if ( (stat(fName, &st) < 0) || !S_ISDIR(st.st_mode) ) {
     IOFail(mkIOError(toIOError(errno),
 		     "Directory.getDirectoryContents",
 		     toIOErrorDescr(errno,FALSE),
