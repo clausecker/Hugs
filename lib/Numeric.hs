@@ -135,13 +135,9 @@ readInt radix isDig digToInt s =
 
 -- Unsigned readers for various bases
 readDec, readOct, readHex :: Integral a => ReadS a
-readDec = readInt 10 isDigit digitToInt
+readDec = readInt 10    isDigit digitToInt
 readOct = readInt  8 isOctDigit digitToInt
-readHex = readInt 16 isHexDigit hex
-	  where hex d = fromEnum d -
-			(if isDigit d
-			   then fromEnum '0'
-			   else fromEnum (if isUpper d then 'A' else 'a') - 10)
+readHex = readInt 16 isHexDigit digitToInt {-works over hex 'digits' too-}
 
 showEFloat     :: (RealFloat a) => Maybe Int -> a -> ShowS
 showFFloat     :: (RealFloat a) => Maybe Int -> a -> ShowS
@@ -164,12 +160,6 @@ formatRealFloat fmt decs x
   | x < 0 || isNegativeZero x = '-' : doFmt fmt (floatToDigits (toInteger base) (-x))
   | otherwise    = doFmt fmt (floatToDigits (toInteger base) x)
   where base = 10
-
-    	mk0 "" = "0"            -- Used to ensure we print 34.0, not 34.
-    	mk0 s  = s              -- and 0.34 not .34
-    
-    	mkdot0 "" = ""          -- Used to ensure we print 34, not 34.
-	mkdot0 s  = '.' : s
 
         doFmt fmt (is, e) =
             let ds = map intToDigit is
@@ -194,11 +184,11 @@ formatRealFloat fmt decs x
                                          (if ei > 0 then init is' else is')
                           in d:'.':ds  ++ "e" ++ show (e-1+ei)
                 FFFixed ->
-                    case decs of
+                  case decs of
                     Nothing 
 		     | e > 0 -> take e (ds ++ repeat '0')
-		     	        ++ mkdot0 (drop e ds)
-		     | otherwise -> '0' : mkdot0 (replicate (-e) '0' ++ ds)
+		     	        ++ '.' : mk0 (drop e ds)
+		     | otherwise -> '0' : '.' : mk0 (replicate (-e) '0' ++ ds)
                     Just dec ->
                         let dec' = max dec 0 in
                         if e >= 0 then
@@ -211,6 +201,12 @@ formatRealFloat fmt decs x
                                 d : ds = map intToDigit
                                             (if ei > 0 then is' else 0:is')
                             in  d : mkdot0 ds
+		  where
+		    mk0 "" = "0"     -- Used to ensure we print 34.0, not 34.
+	       	    mk0 s  = s       -- and 0.34 not .34
+    
+    		    mkdot0 "" = ""   -- Used to ensure we print 34, not 34.
+		    mkdot0 s  = '.' : s
 
 roundTo :: Int -> Int -> [Int] -> (Int, [Int])
 roundTo base d is = case f d is of
