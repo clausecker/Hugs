@@ -308,7 +308,7 @@ ac_includes_default="\
 # include <unistd.h>
 #endif"
 
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS build build_cpu build_vendor build_os host host_cpu host_vendor host_os target target_cpu target_vendor target_os YACC CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT CPP EGREP LD PERL SET_MAKE have_hp2ps DOCBOOK2HTML DOCBOOK2DVI DOCBOOK2PDF DOCBOOK2PS DIFF CONTEXT_DIFF X_CFLAGS X_PRE_LIBS X_LIBS X_EXTRA_LIBS GL_CFLAGS GL_LIBS GLUT_LIBS HAVE_MSGHDR_MSG_ACCRIGHTS HAVE_MSGHDR_MSG_CONTROL ALLOCA FPTOOLS FFI_LIBRARIES OPTFLAGS DEBUGFLAGS LDDEBUGFLAGS MTCFLAGS HUGSPATH HUGSSUFFIXES hugsdir HUGSDIR BINDIR SET_INSTALLDIRS EXE OBJ DLL DLL_ENDING DEV_NULL RM CP WOBJECTS RC_FILES STRIP LIBOBJS LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS build build_cpu build_vendor build_os host host_cpu host_vendor host_os target target_cpu target_vendor target_os FPTOOLS YACC CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT CPP EGREP LD PERL SET_MAKE have_hp2ps DOCBOOK2HTML DOCBOOK2DVI DOCBOOK2PDF DOCBOOK2PS DIFF CONTEXT_DIFF X_CFLAGS X_PRE_LIBS X_LIBS X_EXTRA_LIBS GL_CFLAGS GL_LIBS GLUT_LIBS FFI_LIBRARIES HAVE_MSGHDR_MSG_ACCRIGHTS HAVE_MSGHDR_MSG_CONTROL ALLOCA OPTFLAGS DEBUGFLAGS LDDEBUGFLAGS MTCFLAGS HUGSPATH HUGSSUFFIXES hugsdir HUGSDIR BINDIR SET_INSTALLDIRS EXE OBJ DLL DLL_ENDING DEV_NULL RM CP WOBJECTS RC_FILES STRIP LIBOBJS LTLIBOBJS'
 ac_subst_files='MkInstall MkDepend'
 
 # Initialize some variables set by options.
@@ -848,8 +848,6 @@ if test -n "$ac_init_help"; then
 Optional Features:
   --disable-FEATURE       do not include FEATURE (same as --enable-FEATURE=no)
   --enable-FEATURE[=ARG]  include FEATURE [ARG=yes]
-  --enable-mesa           prefer Mesa over a vendor's native OpenGL library
-                          (default=no)
   --enable-path-canonicalization
                           enable filepath canonicalization
   --enable-timer          enable evaluation timing
@@ -864,17 +862,19 @@ Optional Features:
   --enable-ffi            include modules that use the FFI
   --enable-hopengl        include HOpenGL, a Haskell binding for OpenGL/GLUT.
                           On Mac OS X, use --enable-hopengl=x11 to use X11
-                          instead of the "native" libraries (default=yes)
+                          instead of the "native" libraries
+  --enable-mesa           prefer Mesa over a vendor's native OpenGL library
+                          (default=no)
 
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
   --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
-  --with-x                use the X Window System
   --with-preprocessor     use a preprocessor
   --with-nmake            produce nmake compatible Makefile
   --with-gui              build Hugs for Windows GUI
   --with-pthreads         build Hugs using pthreads C library
   --with-fptools=<dir>    location of fptools directory to get libraries from
+  --with-x                use the X Window System
 
 Some influential environment variables:
   CC          C compiler command
@@ -1428,6 +1428,175 @@ cat >>confdefs.h <<_ACEOF
 #define HOST_OS "$host_os"
 _ACEOF
 
+
+
+# Check whether --enable-path-canonicalization or --disable-path-canonicalization was given.
+if test "${enable_path_canonicalization+set}" = set; then
+  enableval="$enable_path_canonicalization"
+  cat >>confdefs.h <<\_ACEOF
+#define PATH_CANONICALIZATION 1
+_ACEOF
+
+fi;
+
+
+# Check whether --with-preprocessor or --without-preprocessor was given.
+if test "${with_preprocessor+set}" = set; then
+  withval="$with_preprocessor"
+  cat >>confdefs.h <<\_ACEOF
+#define USE_PREPROCESSOR 1
+_ACEOF
+
+fi;
+
+# Check whether --enable-timer or --disable-timer was given.
+if test "${enable_timer+set}" = set; then
+  enableval="$enable_timer"
+
+fi;
+
+# Check whether --enable-profiling or --disable-profiling was given.
+if test "${enable_profiling+set}" = set; then
+  enableval="$enable_profiling"
+  cat >>confdefs.h <<\_ACEOF
+#define PROFILING 1
+_ACEOF
+
+fi;
+
+# Check whether --enable-stack-dumps or --disable-stack-dumps was given.
+if test "${enable_stack_dumps+set}" = set; then
+  enableval="$enable_stack_dumps"
+  cat >>confdefs.h <<\_ACEOF
+#define GIMME_STACK_DUMPS 1
+_ACEOF
+
+fi;
+
+
+# Check whether --with-nmake or --without-nmake was given.
+if test "${with_nmake+set}" = set; then
+  withval="$with_nmake"
+  RM="del";CP="copy"
+fi;
+
+# Check whether --enable-large-banner or --disable-large-banner was given.
+if test "${enable_large_banner+set}" = set; then
+  enableval="$enable_large_banner"
+  cat >>confdefs.h <<\_ACEOF
+#define SMALL_BANNER 1
+_ACEOF
+
+fi;
+
+
+# Check whether --with-gui or --without-gui was given.
+if test "${with_gui+set}" = set; then
+  withval="$with_gui"
+
+fi;
+
+# Check whether --enable-internal-prims or --disable-internal-prims was given.
+if test "${enable_internal_prims+set}" = set; then
+  enableval="$enable_internal_prims"
+  cat >>confdefs.h <<\_ACEOF
+#define INTERNAL_PRIMS 1
+_ACEOF
+ cat >>confdefs.h <<\_ACEOF
+#define BYTECODE_PRIMS 1
+_ACEOF
+
+fi;
+
+# Check whether --enable-debug or --disable-debug was given.
+if test "${enable_debug+set}" = set; then
+  enableval="$enable_debug"
+  cat >>confdefs.h <<\_ACEOF
+#define DEBUG_CODE 1
+_ACEOF
+ cat >>confdefs.h <<\_ACEOF
+#define DEBUG_PRINTER 1
+_ACEOF
+
+fi;
+
+# Check whether --enable-tag-checks or --disable-tag-checks was given.
+if test "${enable_tag_checks+set}" = set; then
+  enableval="$enable_tag_checks"
+  cat >>confdefs.h <<\_ACEOF
+#define CHECK_TAGS 1
+_ACEOF
+
+fi;
+
+# Check whether --enable-lint or --disable-lint was given.
+if test "${enable_lint+set}" = set; then
+  enableval="$enable_lint"
+
+fi;
+
+# Check whether --enable-only98 or --disable-only98 was given.
+if test "${enable_only98+set}" = set; then
+  enableval="$enable_only98"
+  cat >>confdefs.h <<\_ACEOF
+#define HASKELL_98_ONLY 1
+_ACEOF
+
+fi;
+
+
+# Check whether --with-pthreads or --without-pthreads was given.
+if test "${with_pthreads+set}" = set; then
+  withval="$with_pthreads"
+  cat >>confdefs.h <<\_ACEOF
+#define DONT_PANIC 1
+_ACEOF
+ MTCFLAGS="-D_REENTRANT"; LIBS="$LIBS -lpthread"
+fi;
+
+
+# Check whether --with-fptools or --without-fptools was given.
+if test "${with_fptools+set}" = set; then
+  withval="$with_fptools"
+  FPTOOLS="$withval"
+else
+  FPTOOLS=../../fptools
+fi;
+
+# Check whether --enable-ffi or --disable-ffi was given.
+if test "${enable_ffi+set}" = set; then
+  enableval="$enable_ffi"
+
+else
+  enable_ffi=autodetect
+fi;
+
+# Check whether --enable-hopengl or --disable-hopengl was given.
+if test "${enable_hopengl+set}" = set; then
+  enableval="$enable_hopengl"
+
+else
+  enable_hopengl=no
+fi;
+
+
+
+echo "$as_me:$LINENO: checking directory $FPTOOLS" >&5
+echo $ECHO_N "checking directory $FPTOOLS... $ECHO_C" >&6
+if test -d "$FPTOOLS/hslibs" && test -d "$FPTOOLS/libraries"
+then echo "$as_me:$LINENO: result: looks ok" >&5
+echo "${ECHO_T}looks ok" >&6
+else echo "$as_me:$LINENO: result: failed" >&5
+echo "${ECHO_T}failed" >&6
+     { { echo "$as_me:$LINENO: error:
+The argument to --with-fptools must be a directory containing copies of
+hslibs and libraries from the Haskell CVS repository." >&5
+echo "$as_me: error:
+The argument to --with-fptools must be a directory containing copies of
+hslibs and libraries from the Haskell CVS repository." >&2;}
+   { (exit 1); exit 1; }; }
+fi
+FPTOOLS=`cd $FPTOOLS; pwd`
 
 
 for ac_prog in 'bison -y' byacc
@@ -3122,7 +3291,7 @@ else
 ac_save_LIBS="$LIBS"
 LIBS="";
 cat > conftest.$ac_ext <<EOF
-#line 3125 "configure"
+#line 3294 "configure"
 #include "confdefs.h"
 main() { extern char dlopen(); dlopen();; exit(0); }
 int t() { return 0; }
@@ -3170,7 +3339,7 @@ else
 ac_save_LIBS="$LIBS"
 LIBS="-ldl";
 cat > conftest.$ac_ext <<EOF
-#line 3173 "configure"
+#line 3342 "configure"
 #include "confdefs.h"
 main() { extern char dlopen(); dlopen();; exit(0); }
 int t() { return 0; }
@@ -3225,7 +3394,7 @@ else
 ac_save_LIBS="$LIBS"
 LIBS="";
 cat > conftest.$ac_ext <<EOF
-#line 3228 "configure"
+#line 3397 "configure"
 #include "confdefs.h"
 main() { extern char shl_load(); shl_load();; exit(0); }
 int t() { return 0; }
@@ -3273,7 +3442,7 @@ else
 ac_save_LIBS="$LIBS"
 LIBS="-ldld";
 cat > conftest.$ac_ext <<EOF
-#line 3276 "configure"
+#line 3445 "configure"
 #include "confdefs.h"
 main() { extern char shl_load(); shl_load();; exit(0); }
 int t() { return 0; }
@@ -3328,7 +3497,7 @@ else
 ac_save_LIBS="$LIBS"
 LIBS="";
 cat > conftest.$ac_ext <<EOF
-#line 3331 "configure"
+#line 3500 "configure"
 #include "confdefs.h"
 main() { extern char atan(); atan();; exit(0); }
 int t() { return 0; }
@@ -3376,7 +3545,7 @@ else
 ac_save_LIBS="$LIBS"
 LIBS="-lm";
 cat > conftest.$ac_ext <<EOF
-#line 3379 "configure"
+#line 3548 "configure"
 #include "confdefs.h"
 main() { extern char atan(); atan();; exit(0); }
 int t() { return 0; }
@@ -6543,6 +6712,16 @@ fi
 
 done
 
+if test "$enable_ffi" = autodetect; then
+  enable_ffi="$dynamic_loading"
+fi
+
+
+if test "$enable_ffi" = yes; then
+  FFI_LIBRARIES=ffi_libraries
+else
+  FFI_LIBRARIES=
+fi
 
 if test "${ac_cv_header_alloc_h+set}" = set; then
   echo "$as_me:$LINENO: checking for alloc.h" >&5
@@ -18471,7 +18650,7 @@ done
 ac_save_LIBS="$LIBS"
 LIBS=;
 cat > conftest.$ac_ext <<EOF
-#line 18474 "configure"
+#line 18653 "configure"
 #include "confdefs.h"
 
 #if HAVE_WINDOWS_H
@@ -18512,7 +18691,7 @@ fi
 ac_save_LIBS="$LIBS"
 LIBS=;
 cat > conftest.$ac_ext <<EOF
-#line 18515 "configure"
+#line 18694 "configure"
 #include "confdefs.h"
 
 #if HAVE_WINDOWS_H
@@ -21955,183 +22134,6 @@ _ACEOF
 
 fi
 
-
-
-
-# Check whether --enable-path-canonicalization or --disable-path-canonicalization was given.
-if test "${enable_path_canonicalization+set}" = set; then
-  enableval="$enable_path_canonicalization"
-  cat >>confdefs.h <<\_ACEOF
-#define PATH_CANONICALIZATION 1
-_ACEOF
-
-fi;
-
-
-# Check whether --with-preprocessor or --without-preprocessor was given.
-if test "${with_preprocessor+set}" = set; then
-  withval="$with_preprocessor"
-  cat >>confdefs.h <<\_ACEOF
-#define USE_PREPROCESSOR 1
-_ACEOF
-
-fi;
-
-# Check whether --enable-timer or --disable-timer was given.
-if test "${enable_timer+set}" = set; then
-  enableval="$enable_timer"
-
-fi;
-
-# Check whether --enable-profiling or --disable-profiling was given.
-if test "${enable_profiling+set}" = set; then
-  enableval="$enable_profiling"
-  cat >>confdefs.h <<\_ACEOF
-#define PROFILING 1
-_ACEOF
-
-fi;
-
-# Check whether --enable-stack-dumps or --disable-stack-dumps was given.
-if test "${enable_stack_dumps+set}" = set; then
-  enableval="$enable_stack_dumps"
-  cat >>confdefs.h <<\_ACEOF
-#define GIMME_STACK_DUMPS 1
-_ACEOF
-
-fi;
-
-
-# Check whether --with-nmake or --without-nmake was given.
-if test "${with_nmake+set}" = set; then
-  withval="$with_nmake"
-  RM="del";CP="copy"
-fi;
-
-# Check whether --enable-large-banner or --disable-large-banner was given.
-if test "${enable_large_banner+set}" = set; then
-  enableval="$enable_large_banner"
-  cat >>confdefs.h <<\_ACEOF
-#define SMALL_BANNER 1
-_ACEOF
-
-fi;
-
-
-# Check whether --with-gui or --without-gui was given.
-if test "${with_gui+set}" = set; then
-  withval="$with_gui"
-
-fi;
-
-# Check whether --enable-internal-prims or --disable-internal-prims was given.
-if test "${enable_internal_prims+set}" = set; then
-  enableval="$enable_internal_prims"
-  cat >>confdefs.h <<\_ACEOF
-#define INTERNAL_PRIMS 1
-_ACEOF
- cat >>confdefs.h <<\_ACEOF
-#define BYTECODE_PRIMS 1
-_ACEOF
-
-fi;
-
-# Check whether --enable-debug or --disable-debug was given.
-if test "${enable_debug+set}" = set; then
-  enableval="$enable_debug"
-  cat >>confdefs.h <<\_ACEOF
-#define DEBUG_CODE 1
-_ACEOF
- cat >>confdefs.h <<\_ACEOF
-#define DEBUG_PRINTER 1
-_ACEOF
-
-fi;
-
-# Check whether --enable-tag-checks or --disable-tag-checks was given.
-if test "${enable_tag_checks+set}" = set; then
-  enableval="$enable_tag_checks"
-  cat >>confdefs.h <<\_ACEOF
-#define CHECK_TAGS 1
-_ACEOF
-
-fi;
-
-# Check whether --enable-lint or --disable-lint was given.
-if test "${enable_lint+set}" = set; then
-  enableval="$enable_lint"
-
-fi;
-
-# Check whether --enable-only98 or --disable-only98 was given.
-if test "${enable_only98+set}" = set; then
-  enableval="$enable_only98"
-  cat >>confdefs.h <<\_ACEOF
-#define HASKELL_98_ONLY 1
-_ACEOF
-
-fi;
-
-
-# Check whether --with-pthreads or --without-pthreads was given.
-if test "${with_pthreads+set}" = set; then
-  withval="$with_pthreads"
-  cat >>confdefs.h <<\_ACEOF
-#define DONT_PANIC 1
-_ACEOF
- MTCFLAGS="-D_REENTRANT"; LIBS="$LIBS -lpthread"
-fi;
-
-
-# Check whether --with-fptools or --without-fptools was given.
-if test "${with_fptools+set}" = set; then
-  withval="$with_fptools"
-  FPTOOLS="$withval"
-else
-  FPTOOLS=../../fptools
-fi;
-
-# Check whether --enable-ffi or --disable-ffi was given.
-if test "${enable_ffi+set}" = set; then
-  enableval="$enable_ffi"
-
-else
-  enable_ffi="$dynamic_loading"
-fi;
-
-# Check whether --enable-hopengl or --disable-hopengl was given.
-if test "${enable_hopengl+set}" = set; then
-  enableval="$enable_hopengl"
-
-else
-  $enable_hopengl=yes
-fi;
-
-
-
-
-echo "$as_me:$LINENO: checking directory $FPTOOLS" >&5
-echo $ECHO_N "checking directory $FPTOOLS... $ECHO_C" >&6
-if test -d "$FPTOOLS/hslibs" && test -d "$FPTOOLS/libraries"
-then echo "$as_me:$LINENO: result: looks ok" >&5
-echo "${ECHO_T}looks ok" >&6
-else echo "$as_me:$LINENO: result: failed" >&5
-echo "${ECHO_T}failed" >&6
-     { { echo "$as_me:$LINENO: error:
-The argument to --with-fptools must be a directory containing copies of
-hslibs and libraries from the Haskell CVS repository." >&5
-echo "$as_me: error:
-The argument to --with-fptools must be a directory containing copies of
-hslibs and libraries from the Haskell CVS repository." >&2;}
-   { (exit 1); exit 1; }; }
-fi
-FPTOOLS=`cd $FPTOOLS; pwd`
-
-if test "$enable_ffi" = yes; then
-  FFI_LIBRARIES=ffi_libraries
-else
-  FFI_LIBRARIES=
-fi
 
 echo "$as_me:$LINENO: checking for tputs in -lncurses" >&5
 echo $ECHO_N "checking for tputs in -lncurses... $ECHO_C" >&6
@@ -25761,6 +25763,7 @@ s,@target@,$target,;t t
 s,@target_cpu@,$target_cpu,;t t
 s,@target_vendor@,$target_vendor,;t t
 s,@target_os@,$target_os,;t t
+s,@FPTOOLS@,$FPTOOLS,;t t
 s,@YACC@,$YACC,;t t
 s,@CC@,$CC,;t t
 s,@CFLAGS@,$CFLAGS,;t t
@@ -25788,11 +25791,10 @@ s,@X_EXTRA_LIBS@,$X_EXTRA_LIBS,;t t
 s,@GL_CFLAGS@,$GL_CFLAGS,;t t
 s,@GL_LIBS@,$GL_LIBS,;t t
 s,@GLUT_LIBS@,$GLUT_LIBS,;t t
+s,@FFI_LIBRARIES@,$FFI_LIBRARIES,;t t
 s,@HAVE_MSGHDR_MSG_ACCRIGHTS@,$HAVE_MSGHDR_MSG_ACCRIGHTS,;t t
 s,@HAVE_MSGHDR_MSG_CONTROL@,$HAVE_MSGHDR_MSG_CONTROL,;t t
 s,@ALLOCA@,$ALLOCA,;t t
-s,@FPTOOLS@,$FPTOOLS,;t t
-s,@FFI_LIBRARIES@,$FFI_LIBRARIES,;t t
 s,@OPTFLAGS@,$OPTFLAGS,;t t
 s,@DEBUGFLAGS@,$DEBUGFLAGS,;t t
 s,@LDDEBUGFLAGS@,$LDDEBUGFLAGS,;t t

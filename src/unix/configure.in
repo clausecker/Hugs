@@ -38,6 +38,106 @@ AC_DEFINE_UNQUOTED(HOST_OS, "$host_os")
 
 dnl--------------------------------------------------------------------
 dnl
+dnl Check Configuration options
+dnl
+dnl--------------------------------------------------------------------
+
+AC_ARG_ENABLE(path-canonicalization,
+  AC_HELP_STRING([--enable-path-canonicalization],
+                 [enable filepath canonicalization]),
+  AC_DEFINE(PATH_CANONICALIZATION))
+
+AC_ARG_WITH(preprocessor,
+  AC_HELP_STRING([--with-preprocessor],
+                 [use a preprocessor]),
+  AC_DEFINE(USE_PREPROCESSOR))
+
+AC_ARG_ENABLE(timer,
+  AC_HELP_STRING([--enable-timer],
+                 [enable evaluation timing]))
+
+AC_ARG_ENABLE(profiling,
+  AC_HELP_STRING([--enable-profiling],
+                 [enable heap profiler]),
+  AC_DEFINE(PROFILING))
+
+AC_ARG_ENABLE(stack-dumps,
+  AC_HELP_STRING([--enable-stack-dumps],
+                 [enable stack dump on stack overflow]),
+  AC_DEFINE(GIMME_STACK_DUMPS))
+
+AC_ARG_WITH(nmake,
+  AC_HELP_STRING([--with-nmake],
+                 [produce nmake compatible Makefile]),
+  [RM="del";CP="copy"])
+
+AC_ARG_ENABLE(large-banner,
+  AC_HELP_STRING([--disable-large-banner],
+                 [disable multiline startup banner]),
+  AC_DEFINE(SMALL_BANNER))
+
+AC_ARG_WITH(gui,
+  AC_HELP_STRING([--with-gui],
+                 [build Hugs for Windows GUI]))
+
+AC_ARG_ENABLE(internal-prims,
+  AC_HELP_STRING([--enable-internal-prims],
+                 [experimental primitives to access Hugs' innards]),
+  [AC_DEFINE(INTERNAL_PRIMS) AC_DEFINE(BYTECODE_PRIMS)])
+
+AC_ARG_ENABLE(debug,
+  AC_HELP_STRING([--enable-debug],
+                 [include C debugging information (for debugging use)]),
+  [AC_DEFINE(DEBUG_CODE) AC_DEFINE(DEBUG_PRINTER)])
+
+AC_ARG_ENABLE(tag-checks,
+  AC_HELP_STRING([--enable-tag-checks],
+                 [runtime tag checking (for debugging use)]),
+  AC_DEFINE(CHECK_TAGS))
+
+AC_ARG_ENABLE(lint,
+  AC_HELP_STRING([--enable-lint],
+                 [enable "lint" flags (for debugging use)]))
+
+AC_ARG_ENABLE(only98,
+  AC_HELP_STRING([--enable-only98],
+                 [make Hugs Haskell 98 only]),
+  AC_DEFINE(HASKELL_98_ONLY))
+
+AC_ARG_WITH(pthreads,
+  AC_HELP_STRING([--with-pthreads],
+                 [build Hugs using pthreads C library]),
+  [AC_DEFINE(DONT_PANIC) MTCFLAGS="-D_REENTRANT"; LIBS="$LIBS -lpthread"])
+
+AC_ARG_WITH(fptools,
+  AC_HELP_STRING([--with-fptools=<dir>],
+                 [location of fptools directory to get libraries from]),
+  [FPTOOLS="$withval"], [FPTOOLS=../../fptools])
+
+AC_ARG_ENABLE(ffi,
+  AC_HELP_STRING([--enable-ffi],
+                 [include modules that use the FFI]),
+  , [enable_ffi=autodetect])
+
+AC_ARG_ENABLE(hopengl,
+  AC_HELP_STRING([--enable-hopengl],
+                 [include HOpenGL, a Haskell binding for OpenGL/GLUT. On Mac OS X, use --enable-hopengl=x11 to use X11 instead of the "native" libraries]),
+  , [enable_hopengl=no])
+
+AC_SUBST(FPTOOLS)
+
+AC_MSG_CHECKING([directory $FPTOOLS])
+if test -d "$FPTOOLS/hslibs" && test -d "$FPTOOLS/libraries"
+then AC_MSG_RESULT([looks ok])
+else AC_MSG_RESULT(failed)
+     AC_MSG_ERROR([
+The argument to --with-fptools must be a directory containing copies of
+hslibs and libraries from the Haskell CVS repository.])
+fi
+FPTOOLS=`cd $FPTOOLS; pwd`
+
+dnl--------------------------------------------------------------------
+dnl
 dnl Check for programs
 dnl
 dnl--------------------------------------------------------------------
@@ -184,6 +284,16 @@ else
   dynamic_loading=no
 fi
 AC_CHECK_HEADERS(dlfcn.h dl.h mach-o/dyld.h, [dynamic_loading=yes])
+if test "$enable_ffi" = autodetect; then
+  enable_ffi="$dynamic_loading"
+fi
+
+AC_SUBST(FFI_LIBRARIES)
+if test "$enable_ffi" = yes; then
+  FFI_LIBRARIES=ffi_libraries
+else
+  FFI_LIBRARIES=
+fi
 
 dnl Checks for:
 dnl   farcalloc (in bcc), 
@@ -467,114 +577,6 @@ if test "$ac_cv_type_signal" = void; then
 AC_DEFINE(VOID_INT_SIGNALS)
 fi
 
-
-dnl--------------------------------------------------------------------
-dnl
-dnl Check Configuration options
-dnl
-dnl--------------------------------------------------------------------
-
-
-AC_ARG_ENABLE(path-canonicalization,
-  AC_HELP_STRING([--enable-path-canonicalization],
-                 [enable filepath canonicalization]),
-  AC_DEFINE(PATH_CANONICALIZATION))
-
-AC_ARG_WITH(preprocessor,
-  AC_HELP_STRING([--with-preprocessor],
-                 [use a preprocessor]),
-  AC_DEFINE(USE_PREPROCESSOR))
-
-AC_ARG_ENABLE(timer,
-  AC_HELP_STRING([--enable-timer],
-                 [enable evaluation timing]))
-
-AC_ARG_ENABLE(profiling,
-  AC_HELP_STRING([--enable-profiling],
-                 [enable heap profiler]),
-  AC_DEFINE(PROFILING))
-
-AC_ARG_ENABLE(stack-dumps,
-  AC_HELP_STRING([--enable-stack-dumps],
-                 [enable stack dump on stack overflow]),
-  AC_DEFINE(GIMME_STACK_DUMPS))
-
-AC_ARG_WITH(nmake,
-  AC_HELP_STRING([--with-nmake],
-                 [produce nmake compatible Makefile]),
-  [RM="del";CP="copy"])
-
-AC_ARG_ENABLE(large-banner,
-  AC_HELP_STRING([--disable-large-banner],
-                 [disable multiline startup banner]),
-  AC_DEFINE(SMALL_BANNER))
-
-AC_ARG_WITH(gui,
-  AC_HELP_STRING([--with-gui],
-                 [build Hugs for Windows GUI]))
-
-AC_ARG_ENABLE(internal-prims,
-  AC_HELP_STRING([--enable-internal-prims],
-                 [experimental primitives to access Hugs' innards]),
-  [AC_DEFINE(INTERNAL_PRIMS) AC_DEFINE(BYTECODE_PRIMS)])
-
-AC_ARG_ENABLE(debug,
-  AC_HELP_STRING([--enable-debug],
-                 [include C debugging information (for debugging use)]),
-  [AC_DEFINE(DEBUG_CODE) AC_DEFINE(DEBUG_PRINTER)])
-
-AC_ARG_ENABLE(tag-checks,
-  AC_HELP_STRING([--enable-tag-checks],
-                 [runtime tag checking (for debugging use)]),
-  AC_DEFINE(CHECK_TAGS))
-
-AC_ARG_ENABLE(lint,
-  AC_HELP_STRING([--enable-lint],
-                 [enable "lint" flags (for debugging use)]))
-
-AC_ARG_ENABLE(only98,
-  AC_HELP_STRING([--enable-only98],
-                 [make Hugs Haskell 98 only]),
-  AC_DEFINE(HASKELL_98_ONLY))
-
-AC_ARG_WITH(pthreads,
-  AC_HELP_STRING([--with-pthreads],
-                 [build Hugs using pthreads C library]),
-  [AC_DEFINE(DONT_PANIC) MTCFLAGS="-D_REENTRANT"; LIBS="$LIBS -lpthread"])
-
-AC_ARG_WITH(fptools,
-  AC_HELP_STRING([--with-fptools=<dir>],
-                 [location of fptools directory to get libraries from]),
-  [FPTOOLS="$withval"], [FPTOOLS=../../fptools])
-
-AC_ARG_ENABLE(ffi,
-  AC_HELP_STRING([--enable-ffi],
-                 [include modules that use the FFI]),
-  , [enable_ffi="$dynamic_loading"])
-
-AC_ARG_ENABLE(hopengl,
-  AC_HELP_STRING([--enable-hopengl],
-                 [include HOpenGL, a Haskell binding for OpenGL/GLUT. On Mac OS X, use --enable-hopengl=x11 to use X11 instead of the "native" libraries (default=yes)]),
-  , [$enable_hopengl=yes])
-
-AC_SUBST(FPTOOLS)
-AC_SUBST(FFI_LIBRARIES)
-
-AC_MSG_CHECKING([directory $FPTOOLS])
-if test -d "$FPTOOLS/hslibs" && test -d "$FPTOOLS/libraries"
-then AC_MSG_RESULT([looks ok])
-else AC_MSG_RESULT(failed)
-     AC_MSG_ERROR([
-The argument to --with-fptools must be a directory containing copies of
-hslibs and libraries from the Haskell CVS repository.])
-fi
-FPTOOLS=`cd $FPTOOLS; pwd`
-
-if test "$enable_ffi" = yes; then
-  FFI_LIBRARIES=ffi_libraries
-else
-  FFI_LIBRARIES=
-fi
 
 dnl--------------------------------------------------------------------
 dnl 
