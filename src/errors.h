@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: errors.h,v $
- * $Revision: 1.6 $
- * $Date: 2002/04/11 23:20:18 $
+ * $Revision: 1.7 $
+ * $Date: 2002/05/14 16:03:20 $
  * ------------------------------------------------------------------------*/
 
 extern Void internal	 Args((String)) HUGS_noreturn;
@@ -30,6 +30,7 @@ extern Void fatal	 Args((String)) HUGS_noreturn;
 
 #define ERRMSG(l)	 Hilite(); errHead(l); FPrintf(errorStream,
 #define EEND       	 ); Lolite(); errFail()
+#define EEND_NORET       ); Lolite()
 #define ETHEN		 );
 #define ERRTEXT		 Hilite(); FPrintf(errorStream,
 #define ERREXPR(e)	 Hilite(); printExp(errorStream,e); Lolite()
