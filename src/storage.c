@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: storage.c,v $
- * $Revision: 1.72 $
- * $Date: 2003/08/05 17:26:32 $
+ * $Revision: 1.73 $
+ * $Date: 2003/09/19 14:43:45 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -2817,18 +2817,18 @@ Cell c;
     return x.p;
 }
 #else
-#warning "type Addr not supported on this architecture - don't use it"
+#warning "type Ptr not supported on this architecture - don't use it"
 Cell mkPtr(p)
 Pointer p;
 {
-    ERRMSG(0) "mkPtr: type Addr not supported on this architecture"
+    ERRMSG(0) "mkPtr: type Ptr not supported on this architecture"
     EEND;
 }
 
 Pointer ptrOf(c)
 Cell c;
 {
-    ERRMSG(0) "ptrOf: type Addr not supported on this architecture"
+    ERRMSG(0) "ptrOf: type Ptr not supported on this architecture"
     EEND;
 }
 #endif
