@@ -154,6 +154,13 @@ Hugs specific configuration options:
    By default, this is enabled for systems for which the FFI has been
    implemented, which includes most common architectures.
 
+ --enable-hopengl
+
+   Provide the HOpenGL libraries, a Haskell binding for OpenGL/GLUT.
+   You will need to have the OpenGL/GLUT libraries and header files
+   installed for this to work.  On Mac OS X, if you want to use X11
+   instead of the "native" libraries, use --enable-hopengl=x11
+
  --enable-timer
 
    Time how long each evaluation takes.
