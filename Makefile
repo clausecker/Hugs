@@ -13,16 +13,24 @@ all:
 # unless you've just unpacked, `make clean' first
 tar: ${RELEASE}.tar.gz
 
+CVSROOT = ${shell cat CVS/Root}
+
 ${RELEASE}.tar.gz:
+	-rm -rf /tmp/mktar
+	-mkdir -p /tmp/mktar
+	cd /tmp/mktar; cvs -d ${CVSROOT} export -rHEAD hugs98
+	cd /tmp/mktar; cvs -d ${CVSROOT} export -rHEAD fptools/hslibs
 	# using `make parser.c' would be best, but by default yacc
 	# will be used, and yacc is, for some reason, incompatible
-	# cd src; make parser.c
-	cd src; bison -y parser.y; mv y.tab.c parser.c
-	cd src/unix; autoconf; autoheader
-	rm -rf /tmp/${RELEASE}
-	mkdir /tmp/${RELEASE}
-	tar chf - `find . ! -type d -print | egrep -v CVS | egrep -v tests | egrep -v '~' | egrep -v '.#' ` | (cd /tmp/${RELEASE}; tar xfBp -)
-	cd /tmp; tar cf /tmp/hugs98.tar ${RELEASE}
+	cp /tmp/mktar/hugs98/src/version.h /tmp/mktar
+	cd /tmp/mktar/hugs98/src; sed -e s/YYMMDD/`date +"%d%m%y"`/ < /tmp/mktar/version.h > /tmp/mktar/hugs98/src/version.h
+	cd /tmp/mktar/hugs98/src; bison -y parser.y; mv y.tab.c parser.c
+	cd /tmp/mktar/hugs98/src/unix; ./convert_hslibs /tmp/mktar/fptools
+	# Siggy deren't like these in distros
+	cd /tmp/mktar/hugs98; rm -rf tests
+	cd /tmp/mktar/hugs98/src/unix; autoconf; autoheader
+	mv /tmp/mktar/hugs98 /tmp/mktar/${RELEASE}
+	cd /tmp/mktar; tar cf /tmp/hugs98.tar ${RELEASE}
 	gzip -9 /tmp/hugs98.tar
 	mv /tmp/hugs98.tar.gz ${RELEASE}.tar.gz
 
