@@ -31,7 +31,7 @@ make
 
 %install
 cd src
-make DESTDIR=${RPM_BUILD_ROOT} install
+make DESTDIR=${RPM_BUILD_ROOT} install_rpm
 gzip -f -9 ${RPM_BUILD_ROOT}%{_mandir}/man1/hugs.1
 
 %files

@@ -18,6 +18,11 @@ install		:: install_demos		      # goodies
 install		:: install_man                        # manual page
 install		:: install_notes                      # Readme, etc
 
+install_rpm	:: install_bin install_libraries
+install_rpm	:: install_demos
+install_rpm	:: install_man
+# in particular, don't install notes, this is handled by the spec file
+
 install_bin	:: hugs$(EXE) runhugs$(EXE) ffihugs$(EXE) libraries
 		$(INSTALL) -d $(DESTDIR)$(bindir)
 		$(INSTALL) -c hugs$(EXE) $(DESTDIR)$(bindir)
