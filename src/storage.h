@@ -8,8 +8,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: storage.h,v $
- * $Revision: 1.41 $
- * $Date: 2002/08/03 17:06:58 $
+ * $Revision: 1.42 $
+ * $Date: 2002/09/05 14:38:19 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -984,6 +984,7 @@ extern Void        setScriptPrims   Args((void*));
 #define HSTDIN		0	/* Numbers for standard handles		   */
 #define HSTDOUT		1
 #define HSTDERR		2
+#define IS_STANDARD_HANDLE(h)  ((h) <= 2)
 
 struct strHandle {		/* Handle description and status flags	   */
     Cell  hcell;		/* Heap representation of handle (or NIL)  */

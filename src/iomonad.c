@@ -18,8 +18,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: iomonad.c,v $
- * $Revision: 1.30 $
- * $Date: 2002/09/05 10:49:42 $
+ * $Revision: 1.31 $
+ * $Date: 2002/09/05 14:38:19 $
  * ------------------------------------------------------------------------*/
  
 Name nameIORun;			        /* run IO code                     */
@@ -1043,17 +1043,17 @@ primFun(primHFlush) {			/* Flush handle			   */
 primFun(primHClose) {			/* Close handle                   */
     Int h;
     HandleArg(h,3);
-    if (handles[h].hmode!=HCLOSED) {
+
+    /* Disallow closing any of the standard handles */
+    if (!IS_STANDARD_HANDLE(h) && handles[h].hmode!=HCLOSED) {
 	if (h>HSTDERR && handles[h].hfp)
 	    fclose(handles[h].hfp);
 	handles[h].hfp   = 0;
 	handles[h].hmode = HCLOSED;
-	IOReturn(nameUnit);
     }
-    IOFail(mkIOError(nameIllegal,
-		     "IO.hClose",
-		     "handle is closed",
-		     nameNothing));
+    /* closing an already closed handle is the identity
+       (i.e., not an error.) */
+    IOReturn(nameUnit);
 }
 
 primFun(primHGetPosn) {			/* Get file position               */
