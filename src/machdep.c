@@ -12,9 +12,10 @@
  * included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.36 $
- * $Date: 2002/01/17 07:26:27 $
+ * $Revision: 1.37 $
+ * $Date: 2002/01/21 04:43:17 $
  * ------------------------------------------------------------------------*/
+#include <math.h>
 
 #ifdef HAVE_SIGNAL_H
 # include <signal.h>
@@ -44,7 +45,7 @@
 #ifdef HAVE_DOS_H
 # include <dos.h>
 #endif
-#if defined HAVE_CONIO_H && ! HUGS_FOR_WINDOWS
+#if defined(HAVE_CONIO_H) && ! HUGS_FOR_WINDOWS
 # include <conio.h>
 #endif
 #ifdef HAVE_IO_H
@@ -155,7 +156,7 @@ static Void local getFileInfo(f,tm,sz)  /* find time stamp and size of file*/
 String f;
 Time   *tm;
 Long   *sz; {
-#if defined HAVE_SYS_STAT_H || defined HAVE_STAT_H || defined HAVE_UNIX_H
+#if defined(HAVE_SYS_STAT_H) || defined(HAVE_STAT_H) || defined(HAVE_UNIX_H)
     struct stat scbuf;
     if (!stat(f,&scbuf)) {
 	*tm = scbuf.st_mtime;
@@ -219,7 +220,7 @@ static Bool local readable(f)           /* is f a regular, readable file   */
 String f; {
 #if DJGPP2 || HAVE_GETFINFO /* stat returns bogus mode bits on djgpp2 */
     return (0 == access(f,4));
-#elif defined HAVE_SYS_STAT_H || defined HAVE_STAT_H
+#elif defined(HAVE_SYS_STAT_H) || defined(HAVE_STAT_H)
     struct stat scbuf;
     return (  !stat(f,&scbuf) 
 #if !(defined macintosh)	/* Macintosh files always have read permission */
@@ -227,7 +228,7 @@ String f; {
 #endif
 	   && (scbuf.st_mode & S_IFREG) /* regular file */
 	   );
-#elif defined HAVE_OS_SWI /* RISCOS specific */
+#elif defined(HAVE_OS_SWI) /* RISCOS specific */
     os_regset r;                        /* RISCOS PRM p.850     -- JBS     */
     assert(dummy == 0);
     r.r[0] = 17; /* Read catalogue, no path */
@@ -302,13 +303,17 @@ static String local hugsdir() {     /* directory containing lib/Prelude.hs */
 	}
     }
     return dir;
+#elif __MWERKS__ && macintosh
+    static FileName dir = "\0"; /* Directory containing lib: Prelude.hs */
+    strcpy(dir,macHugsDir);
+    return dir;
 #elif HAVE_GETMODULEFILENAME && !DOS && !__CYGWIN32__
     /* On Windows, we can find the binary we're running and it's
      * conventional to put the libraries in the same place.
      */
     static char dir[FILENAME_MAX+1] = "";
     if (dir[0] == '\0') { /* not initialised yet */
-	String slash = 0;
+	String slash = NIL;
 	GetModuleFileName((HMODULE)0,dir,FILENAME_MAX+1);
 	if (dir[0] == '\0') { /* GetModuleFileName must have failed */
 	    return HUGSDIR;
@@ -317,10 +322,6 @@ static String local hugsdir() {     /* directory containing lib/Prelude.hs */
 	    *slash = '\0';
 	}
     }
-    return dir;
-#elif __MWERKS__ && macintosh
-    static FileName dir = "\0"; /* Directory containing lib: Prelude.hs */
-    strcpy(dir,macHugsDir);
     return dir;
 #else
     /* On Unix systems, we can't find the binary we're running and
@@ -1111,7 +1112,7 @@ Int readTerminalChar() {                /* read character from terminal    */
     if (terminalEchoReqd) {
 	return getchar();
     } else {
-#if IS_WIN32 && !HUGS_FOR_WINDOWS && !__BORLANDC__
+#if IS_WINDOWS && !HUGS_FOR_WINDOWS && !__BORLANDC__
 	/* When reading a character from the console/terminal, we want
 	 * to operate in 'raw' mode (to use old UNIX tty parlance) and have
  	 * it return when a character is available and _not_ wait until
@@ -1237,7 +1238,7 @@ static sigHandler(panic) {              /* exit in a panic, on receipt of  */
 }
 #endif /* !DONT_PANIC */
 
-#if IS_WIN32
+#if IS_WINDOWS
 BOOL WINAPI consoleHandler(DWORD dwCtrlType) {
     switch (dwCtrlType) {		/* Allows Hugs to be terminated    */
 	case CTRL_CLOSE_EVENT :		/* from the window's close menu.   */
@@ -1249,7 +1250,7 @@ BOOL WINAPI consoleHandler(DWORD dwCtrlType) {
 
 static Void local installHandlers() { /* Install handlers for all fatal    */ 
 				      /* signals except SIGINT and SIGBREAK*/
-#if IS_WIN32
+#if IS_WINDOWS
     SetConsoleCtrlHandler(consoleHandler,TRUE);
 #endif
 #if !DONT_PANIC && !DOS
@@ -1288,128 +1289,165 @@ static Void local installHandlers() { /* Install handlers for all fatal    */
 static Bool local startEdit(line,nm)    /* Start editor on file name at    */
 Int    line;                            /* given line.  Both name and line */
 String nm; {                            /* or just line may be zero        */
-    static char editorCmd[FILENAME_MAX+1];
-    Bool withinQuotes = FALSE;
-
-#if !(defined macintosh)
-    if (hugsEdit && *hugsEdit) {        /* Check that editor configured    */
-#else
-    /* On a Mac, files have creator information, telling which program
-       to launch to, so an editor named to the empty string "" is often
-       desirable. */
-    if (hugsEdit) {        /* Check that editor configured    */
+    String editorCmd;
+    String fullNm;
+    Bool   expandedName = FALSE;
+    Bool   syncEdit     = TRUE;
+    Bool   useShell     = FALSE;
+    String he;
+    String ec;
+    unsigned int roomReqd = 0;
+    unsigned int nmLen, lineLen, fullNmLen;
+    
+    /* First off, check whether we have actually got a plausible editor
+     * available. On a Mac, files have creator information, telling which
+     * program to launch to, so an editor named to the empty string ""
+     * is often desirable.
+     */
+    if (!hugsEdit 
+#if !(defined(macintosh))
+        || *hugsEdit == '\0'
 #endif
-	Int n     = FILENAME_MAX;
-	String he = hugsEdit;
-	String ec = editorCmd;
-	String rd = NULL;               /* Set to nonnull to redo ...      */
-#if HUGS_FOR_WINDOWS || 1
-	/* In order to support long file names in windows, we use the '\"' */
-	/* character to delimit the path			           */
-	if (*he=='\"') {		/* if editor starts with '\"'      */
-	  *ec++ = *he++;		/* copy initial '\"'		   */
-	  n--;		
-	  for (; n>0 && *he && *he!='\"' && *he!='%'; n--)
-	    *ec++ = *he++;              /* Copy editor name to buffer      */
-					/* assuming filename ends at '\"'  */
-	  *ec++ = *he++;		
-	  n--;				/* copy final '\"'		   */
-	}
-	else
-	  /* we assume a short file name without spaces                    */
-	  for (; n>0 && *he && *he!=' ' && *he!='%'; n--)
-	    *ec++ = *he++;              /* Copy editor name to buffer      */
-					/* assuming filename ends at space */
-        if (line==0) line=1;		/* if line is 0 the following code */
-        				/* does not take into account the  */
-        				/* editor configuration (it just   */
-        				/* copies the file name!)          */
-#else
-	for (; n>0 && *he && *he!=' ' && *he!='%'; n--)
-	    *ec++ = *he++;              /* Copy editor name to buffer      */
-					/* assuming filename ends at space */
-#endif
-	if (nm && line && n>1 && *he){  /* Name, line, and enough space    */
-	    rd = ec;                    /* save, in case we don't find name*/
-	    while (n>0 && *he) {
-		if (*he=='%') {
-		    if (*++he=='d' && n>10) {
-			sprintf(ec,"%d",line);
-			he++;
-		    }
-		    else if (*he=='s' && (size_t)n>(strlen(nm)+2)) {
-	                /* Protect the filename by putting quotes around it */
-		        if (!withinQuotes) *ec++='\"';
-			strcpy(ec,nm); ec += strlen(nm);
-		        if (!withinQuotes) *ec++='\"';
-			*ec='\0';
-			rd = NULL;
-			he++;
-		    }
-		    else if (*he=='%' && n>1) {
-			strcpy(ec,"%");
-			he++;
-		    }
-		    else                /* Ignore % char if not followed   */
-			*ec = '\0';     /* by one of d, s, or %,           */
-		    for (; *ec && n>0; n--)
-			ec++;
-		}   /* ignore % followed by anything other than d, s, or % */
-		else {                  /* Copy other characters across    */
-                    if (*he == '\"')
-                        withinQuotes = !withinQuotes;
-		    *ec++ = *he++;
-		    n--;
-		}
-	    }
-	}
-	else
-	    line = 0;
-
-	if (rd) {                       /* If file name was not included   */
-	    ec   = rd;
-	    line = 0;
-	}
-
-	if (nm && line==0 && n>1) {     /* Name, but no line ...           */
-	  *ec++ = ' '; 
-	  /* Protect the filename by putting quotes around it */
-	  if (n>0) {
-	    *ec++ = '\"'; n--;
-	  }
-	  for (; n>0 && *nm; n--)     /* ... just copy file name         */
-	    *ec++ = *nm++;
-	  if (n>0) {
-	    *ec++ = '\"';
-	    n--;
-	  }
-	}
-
-	*ec = '\0';                     /* Add terminating null byte       */
-    }
-    else {
+	             ) {
 	ERRMSG(0) "Hugs is not configured to use an editor"
 	EEND;
+    } 
+      
+    /* More sanity checks */
+    if (nm == NULL) {
+      return FALSE;
+    }
+    
+    fullNm = RealPath(nm);
+    fullNmLen = strlen(fullNm);
+    nmLen = strlen(nm);
+    lineLen = 1 + (line == 0 ? 0 : (int)log10(line));
+    
+    he = hugsEdit;
+
+    /* Compute the length of the expanded 'hugsEdit' string */
+    while (*he) {
+      if (*he++ == '%') {
+	if (*he == 's') {
+	  /* assume quotes are always put around the filename. */
+	  roomReqd += nmLen + 2;
+	  expandedName = TRUE;
+	} else if (*he == 'f') {
+	  /* assume quotes are always put around the filename. */
+	  roomReqd += fullNmLen + 2;
+	  expandedName = TRUE;
+	} else if ( *he == 'd' ) {
+	  roomReqd += lineLen;
+	} else if ( *he == '%' ) {
+	  /* %% is contracted to % in the expanded string */
+	  roomReqd++;
+	} else {
+	  roomReqd += 2;
+	}
+	he++;
+      } else {
+	roomReqd++;
+      }
+    }
+    
+    if (!expandedName) {
+      /* include room for quotes and an extra space */
+      roomReqd += nmLen + 3;
+    }
+    
+    editorCmd = (String)malloc(sizeof(char) * (roomReqd + 1));
+    if (editorCmd == NULL) {
+      Printf("Warning: Unable to start editor\n");
+      return FALSE;
+    }
+    
+    /* Given a properly sized output buffer, perform the expansion */
+    expandedName = FALSE;
+    ec = editorCmd;
+    he = hugsEdit;
+    
+    /* If the editor command is prefixed with '&', the editor is
+     * started up asynchronously (the default is for Hugs to block
+     * and wait for the editor to exit).
+     *
+     * If the editor command is prefixed with '!', then the editor is
+     * invoked by going via the shell.
+     */
+    while (1) {
+      if (*he == '&') {
+	syncEdit = FALSE;
+	he++;
+      } else if (*he == '!') {
+	useShell = TRUE;
+	he++;
+      } else {
+	break;
+      }
+    }
+    
+    while (*he) {
+      if (*he=='%') {
+	if (*++he=='d') {
+	  sprintf(ec,"%d",line);
+	  ec += lineLen;
+	  he++;
+	} else if (*he == 's' || *he == 'f') {
+	  /* Put quotes around it if the %s occurrence surrounded by wspace only. */
+	  Bool useQuotes = isspace(he[-2]) && (he[1] == '\0' || isspace(he[1]));
+	  if (useQuotes) *ec++='\"';
+	  if (*he == 's') {
+	    strcpy(ec,nm);
+	    ec += nmLen;
+	  } else {
+	    strcpy(ec,fullNm);
+	    ec += fullNmLen;
+	  }
+	  if (useQuotes) *ec++='\"';
+	  *ec='\0';
+	  expandedName = TRUE;
+	  he++;
+	} else if (*he == '%') { /* Unescape % */
+	  *ec++ = '%';
+	  he++;
+	} else {
+	  *ec++ = '%'; 
+	  *ec++ = *he++;
+	}
+      } else {
+	*ec++ = *he++;
+      }
     }
 
-    if (shellEsc(editorCmd,TRUE/*sync*/,TRUE/*sep console*/)) {
-	Printf("Warning: Editor terminated abnormally\n");
-	return FALSE;
+    if (!expandedName) {  /* If file name was not included, add it. */
+      *ec++=' ';
+      /* Protect the filename by putting quotes around it */
+      *ec++='\"'; strcpy(ec,nm); ec += nmLen; *ec++='\"';
     }
+    
+    /* Terminate the string and go! */
+    *ec = '\0';  
+
+    if (shellEsc(editorCmd,syncEdit/*sync*/, useShell/*sep console*/)) {
+      Printf("Warning: Editor terminated abnormally\n");
+      free(editorCmd);
+      return FALSE;
+    }
+    free(editorCmd);
     return TRUE;
 }
 
 Int
-shellEsc(cmd, sync, sepConsole)         /* run a shell command (or shell)  */
+shellEsc(cmd, sync, useShell)         /* run a shell command (or shell)  */
 String cmd;
 Bool   sync;
-Bool   sepConsole; {
+Bool   useShell; {
 #ifndef HAVE_WINDOWS_H
 
-  /* currently ignore the 'sepConsole' and 'sync' flags */
+  /* currently ignore the 'useShell' and 'sync' flags */
 # if HAVE_MACSYSTEM
     return macsystem(cmd);
 # else
+    Int rc;
 #  if HAVE_BIN_SH
     if (cmd[0]=='\0') {
 	cmd = fromEnv("SHELL","/bin/sh");
@@ -1428,7 +1466,7 @@ Bool   sepConsole; {
   si.dwFlags = STARTF_USESHOWWINDOW;
   si.wShowWindow = SW_SHOW;
   
-  if (!sepConsole) {
+  if (useShell) {
     return system(cmd);
   }
   bStatus = 
@@ -1667,7 +1705,7 @@ String dll;
 String symbol; {
 #ifdef RTLD_NOW
     void *instance = dlopen(dll,RTLD_NOW);
-#elif defined RTLD_LAZY /* eg SunOS4 doesn't have RTLD_NOW */
+#elif defined(RTLD_LAZY) /* eg SunOS4 doesn't have RTLD_NOW */
     void *instance = dlopen(dll,RTLD_LAZY);
 #else /* eg FreeBSD doesn't have RTLD_LAZY */
     void *instance = dlopen(dll,1);
@@ -1951,7 +1989,7 @@ String* pString; {
     LONG  rc;
     DWORD bufSize;
     DWORD valType = REG_SZ;
-    Bool  res;
+    Bool  res = FALSE;
 
     if (!createKey(hKey, regPath, &hRootKey, KEY_READ)) {
 	return FALSE;
@@ -1964,11 +2002,7 @@ String* pString; {
 	  if ((*pString = (String)malloc(sizeof(char) * (bufSize + 1))) != NULL) {
 	    rc = RegQueryValueEx(hRootKey, var, NULL, &valType, (LPBYTE)*pString, &bufSize);
 	    res = (rc == ERROR_SUCCESS);
-	  } else {
-	    res = FALSE;
 	  }
-	} else {
-	  res = FALSE;
 	}
 
 	RegCloseKey(hRootKey);
@@ -2019,11 +2053,15 @@ String def; {
 static Bool local writeRegString(var,val)      /* write String to registry */
 String var;                        
 String val; {
+    String realVal;
+
     if (NULL == val) {
-	val = "";
+	realVal = "";
+    } else {
+        realVal = val;
     }
     return setValue(HKEY_CURRENT_USER, HugsRoot, var, 
-		    REG_SZ, (LPBYTE)val, lstrlen(val)+1);
+		    REG_SZ, (LPBYTE)realVal, lstrlen(realVal)+1);
 }
 
 #if HUGS_FOR_WINDOWS
