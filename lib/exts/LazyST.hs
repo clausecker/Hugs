@@ -19,6 +19,7 @@ module LazyST
 	, stToIO
 	, unsafeIOtoST
 
+	, State
 	, STRef
 	  -- instance Eq (STRef s a)
 	, newSTRef
@@ -67,6 +68,7 @@ instance Monad (ST s) where
 
 -----------------------------------------------------------------------------
 
+type State s = s -- dummy wrapper for state to be closer to GHC interface
 data STRef s a   -- implemented as an internal primitive
 
 primitive newSTRef   "STNew"      :: a -> ST s (STRef s a)
