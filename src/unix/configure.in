@@ -152,12 +152,12 @@ if test "`basename ${YACC}`x" = "byaccx"; then
    exit 1;
 fi;
 
+: ${CFLAGS=-g}
+OPTFLAGS="-O2"
+
 AC_PROG_CC
 AC_PROG_CPP
 AC_PROG_GCC_TRADITIONAL
-
-CFLAGS="-g"
-OPTFLAGS="-O2"
 
 if test "$with_pthreads" = yes; then
    ACX_PTHREAD
@@ -662,26 +662,6 @@ GCC_LINT_FLAGS="-Wall \
 
 dnl--------------------------------------------------------------------
 dnl
-dnl Lint flags
-dnl
-dnl--------------------------------------------------------------------
-if test "$enable_lint" = yes; then
-    if test "$CC" = "gcc"; then
-        LINT_FLAGS="$GCC_LINT_FLAGS"
-#    elif test "$CC" = "bcc32"; then
-#        LINT_FLAGS="$BCC32_LINT_FLAGS"
-    else
-        AC_MSG_WARN(dnl
-[lint flags only defined for gcc (at present)
-(ignoring --enable-lint)])
-    fi
-
-    CFLAGS="$CFLAGS $LINT_FLAGS"
-    dnl AC_MSG_WARN(using lint $CFLAGS)
-fi
-
-dnl--------------------------------------------------------------------
-dnl
 dnl Debugging flags (assumed to be mutually exclusive with optimisation)
 dnl
 dnl--------------------------------------------------------------------
@@ -773,9 +753,31 @@ dnl HUGS_TRY_DYNLINK(-G)
 dnl Try the HPUX flags
 dnl HUGS_TRY_DYNLINK([-Aa +z])             
 
-AC_DEFINE_UNQUOTED(MKDLL_CMD, "${CC-cc} $ac_cv_dll_flags")
+AC_DEFINE_UNQUOTED(MKDLL_CMD,
+  ["${CC-cc} $CFLAGS $CPPFLAGS $LDFLAGS $ac_cv_dll_flags"])
 if test "$ac_cv_leading_underscore" = "yes"; then
 AC_DEFINE(LEADING_UNDERSCORE)
+fi
+
+dnl--------------------------------------------------------------------
+dnl
+dnl Lint flags
+dnl (placed after DLL stuff, so not included in MKDLL_CMD)
+dnl
+dnl--------------------------------------------------------------------
+if test "$enable_lint" = yes; then
+    if test "$CC" = "gcc"; then
+        LINT_FLAGS="$GCC_LINT_FLAGS"
+#    elif test "$CC" = "bcc32"; then
+#        LINT_FLAGS="$BCC32_LINT_FLAGS"
+    else
+        AC_MSG_WARN(dnl
+[lint flags only defined for gcc (at present)
+(ignoring --enable-lint)])
+    fi
+
+    CFLAGS="$CFLAGS $LINT_FLAGS"
+    dnl AC_MSG_WARN(using lint $CFLAGS)
 fi
 
 dnl--------------------------------------------------------------------

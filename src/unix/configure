@@ -942,7 +942,7 @@ ac_abs_top_srcdir=`cd "$ac_dir" && cd $ac_top_srcdir && pwd`
     else
       echo "$as_me: WARNING: no configuration information is in $ac_dir" >&2
     fi
-    cd $ac_popdir
+    cd "$ac_popdir"
   done
 fi
 
@@ -1139,7 +1139,7 @@ _ASBOX
       echo "$as_me: caught signal $ac_signal"
     echo "$as_me: exit $exit_status"
   } >&5
-  rm -f core core.* *.core &&
+  rm -f core *.core &&
   rm -rf conftest* confdefs* conf$$* $ac_clean_files &&
     exit $exit_status
      ' 0
@@ -1644,6 +1644,9 @@ if test "`basename ${YACC}`x" = "byaccx"; then
    echo "You need to install 'bison' and re-run the configure script."
    exit 1;
 fi;
+
+: ${CFLAGS=-g}
+OPTFLAGS="-O2"
 
 ac_ext=c
 ac_cpp='$CPP $CPPFLAGS'
@@ -2815,9 +2818,6 @@ echo "${ECHO_T}$ac_cv_prog_gcc_traditional" >&6
   fi
 fi
 
-
-CFLAGS="-g"
-OPTFLAGS="-O2"
 
 if test "$with_pthreads" = yes; then
 
@@ -5993,7 +5993,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 ac_cv_header_stdc=no
 fi
-rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
 fi
@@ -8404,7 +8404,7 @@ echo "$as_me: error: cannot compute sizeof (char), 77
 See \`config.log' for more details." >&2;}
    { (exit 1); exit 1; }; }
 fi
-rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
 rm -f conftest.val
@@ -8765,7 +8765,7 @@ echo "$as_me: error: cannot compute sizeof (double), 77
 See \`config.log' for more details." >&2;}
    { (exit 1); exit 1; }; }
 fi
-rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
 rm -f conftest.val
@@ -9126,7 +9126,7 @@ echo "$as_me: error: cannot compute sizeof (float), 77
 See \`config.log' for more details." >&2;}
    { (exit 1); exit 1; }; }
 fi
-rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
 rm -f conftest.val
@@ -9487,7 +9487,7 @@ echo "$as_me: error: cannot compute sizeof (int), 77
 See \`config.log' for more details." >&2;}
    { (exit 1); exit 1; }; }
 fi
-rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
 rm -f conftest.val
@@ -9848,7 +9848,7 @@ echo "$as_me: error: cannot compute sizeof (long), 77
 See \`config.log' for more details." >&2;}
    { (exit 1); exit 1; }; }
 fi
-rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
 rm -f conftest.val
@@ -10210,7 +10210,7 @@ echo "$as_me: error: cannot compute sizeof (long long), 77
 See \`config.log' for more details." >&2;}
    { (exit 1); exit 1; }; }
 fi
-rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
 rm -f conftest.val
@@ -10572,7 +10572,7 @@ echo "$as_me: error: cannot compute sizeof (short), 77
 See \`config.log' for more details." >&2;}
    { (exit 1); exit 1; }; }
 fi
-rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
 rm -f conftest.val
@@ -10933,7 +10933,7 @@ echo "$as_me: error: cannot compute sizeof (unsigned char), 77
 See \`config.log' for more details." >&2;}
    { (exit 1); exit 1; }; }
 fi
-rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
 rm -f conftest.val
@@ -11294,7 +11294,7 @@ echo "$as_me: error: cannot compute sizeof (unsigned int), 77
 See \`config.log' for more details." >&2;}
    { (exit 1); exit 1; }; }
 fi
-rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
 rm -f conftest.val
@@ -11655,7 +11655,7 @@ echo "$as_me: error: cannot compute sizeof (unsigned long), 77
 See \`config.log' for more details." >&2;}
    { (exit 1); exit 1; }; }
 fi
-rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
 rm -f conftest.val
@@ -12017,7 +12017,7 @@ echo "$as_me: error: cannot compute sizeof (unsigned long long), 77
 See \`config.log' for more details." >&2;}
    { (exit 1); exit 1; }; }
 fi
-rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
 rm -f conftest.val
@@ -12379,7 +12379,7 @@ echo "$as_me: error: cannot compute sizeof (unsigned short), 77
 See \`config.log' for more details." >&2;}
    { (exit 1); exit 1; }; }
 fi
-rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
 rm -f conftest.val
@@ -12740,7 +12740,7 @@ echo "$as_me: error: cannot compute sizeof (void *), 77
 See \`config.log' for more details." >&2;}
    { (exit 1); exit 1; }; }
 fi
-rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
 rm -f conftest.val
@@ -12808,7 +12808,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 ac_cv_alignment_char=$ac_cv_sizeof_char
 fi
-rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
 
@@ -12872,7 +12872,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 ac_cv_alignment_double=$ac_cv_sizeof_double
 fi
-rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
 
@@ -12936,7 +12936,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 ac_cv_alignment_float=$ac_cv_sizeof_float
 fi
-rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
 
@@ -13000,7 +13000,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 ac_cv_alignment_int=$ac_cv_sizeof_int
 fi
-rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
 
@@ -13064,7 +13064,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 ac_cv_alignment_long=$ac_cv_sizeof_long
 fi
-rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
 
@@ -13129,7 +13129,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 ac_cv_alignment_long_long=$ac_cv_sizeof_long_long
 fi
-rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
 
@@ -13194,7 +13194,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 ac_cv_alignment_short=$ac_cv_sizeof_short
 fi
-rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
 
@@ -13258,7 +13258,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 ac_cv_alignment_unsigned_char=$ac_cv_sizeof_unsigned_char
 fi
-rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
 
@@ -13322,7 +13322,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 ac_cv_alignment_unsigned_int=$ac_cv_sizeof_unsigned_int
 fi
-rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
 
@@ -13386,7 +13386,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 ac_cv_alignment_unsigned_long=$ac_cv_sizeof_unsigned_long
 fi
-rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
 
@@ -13451,7 +13451,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 ac_cv_alignment_unsigned_long_long=$ac_cv_sizeof_unsigned_long_long
 fi
-rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
 
@@ -13516,7 +13516,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 ac_cv_alignment_unsigned_short=$ac_cv_sizeof_unsigned_short
 fi
-rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
 
@@ -13580,7 +13580,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 ac_cv_alignment_void_p=$ac_cv_sizeof_void_p
 fi
-rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
 
@@ -13697,7 +13697,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 fptools_cv_htype_char=NotReallyAType
 fi
-rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
  echo "$as_me:$LINENO: result: $fptools_cv_htype_char" >&5
@@ -13811,7 +13811,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 fptools_cv_htype_signed_char=NotReallyAType
 fi
-rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
  echo "$as_me:$LINENO: result: $fptools_cv_htype_signed_char" >&5
@@ -13925,7 +13925,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 fptools_cv_htype_unsigned_char=NotReallyAType
 fi
-rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
  echo "$as_me:$LINENO: result: $fptools_cv_htype_unsigned_char" >&5
@@ -14039,7 +14039,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 fptools_cv_htype_short=NotReallyAType
 fi
-rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
  echo "$as_me:$LINENO: result: $fptools_cv_htype_short" >&5
@@ -14153,7 +14153,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 fptools_cv_htype_unsigned_short=NotReallyAType
 fi
-rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
  echo "$as_me:$LINENO: result: $fptools_cv_htype_unsigned_short" >&5
@@ -14267,7 +14267,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 fptools_cv_htype_int=NotReallyAType
 fi
-rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
  echo "$as_me:$LINENO: result: $fptools_cv_htype_int" >&5
@@ -14381,7 +14381,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 fptools_cv_htype_unsigned_int=NotReallyAType
 fi
-rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
  echo "$as_me:$LINENO: result: $fptools_cv_htype_unsigned_int" >&5
@@ -14495,7 +14495,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 fptools_cv_htype_long=NotReallyAType
 fi
-rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
  echo "$as_me:$LINENO: result: $fptools_cv_htype_long" >&5
@@ -14609,7 +14609,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 fptools_cv_htype_unsigned_long=NotReallyAType
 fi
-rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
  echo "$as_me:$LINENO: result: $fptools_cv_htype_unsigned_long" >&5
@@ -14724,7 +14724,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 fptools_cv_htype_long_long=NotReallyAType
 fi
-rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
  echo "$as_me:$LINENO: result: $fptools_cv_htype_long_long" >&5
@@ -14838,7 +14838,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 fptools_cv_htype_unsigned_long_long=NotReallyAType
 fi
-rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
  echo "$as_me:$LINENO: result: $fptools_cv_htype_unsigned_long_long" >&5
@@ -14953,7 +14953,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 fptools_cv_htype_float=NotReallyAType
 fi
-rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
  echo "$as_me:$LINENO: result: $fptools_cv_htype_float" >&5
@@ -15067,7 +15067,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 fptools_cv_htype_double=NotReallyAType
 fi
-rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
  echo "$as_me:$LINENO: result: $fptools_cv_htype_double" >&5
@@ -15181,7 +15181,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 fptools_cv_htype_ptrdiff_t=NotReallyAType
 fi
-rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
  echo "$as_me:$LINENO: result: $fptools_cv_htype_ptrdiff_t" >&5
@@ -15295,7 +15295,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 fptools_cv_htype_size_t=NotReallyAType
 fi
-rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
  echo "$as_me:$LINENO: result: $fptools_cv_htype_size_t" >&5
@@ -15409,7 +15409,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 fptools_cv_htype_wchar_t=NotReallyAType
 fi
-rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
  echo "$as_me:$LINENO: result: $fptools_cv_htype_wchar_t" >&5
@@ -15523,7 +15523,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 fptools_cv_htype_sig_atomic_t=Int32
 fi
-rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
  echo "$as_me:$LINENO: result: $fptools_cv_htype_sig_atomic_t" >&5
@@ -15637,7 +15637,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 fptools_cv_htype_clock_t=NotReallyAType
 fi
-rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
  echo "$as_me:$LINENO: result: $fptools_cv_htype_clock_t" >&5
@@ -15751,7 +15751,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 fptools_cv_htype_time_t=NotReallyAType
 fi
-rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
  echo "$as_me:$LINENO: result: $fptools_cv_htype_time_t" >&5
@@ -15865,7 +15865,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 fptools_cv_htype_dev_t=Word32
 fi
-rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
  echo "$as_me:$LINENO: result: $fptools_cv_htype_dev_t" >&5
@@ -15979,7 +15979,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 fptools_cv_htype_ino_t=NotReallyAType
 fi
-rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
  echo "$as_me:$LINENO: result: $fptools_cv_htype_ino_t" >&5
@@ -16093,7 +16093,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 fptools_cv_htype_mode_t=NotReallyAType
 fi
-rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
  echo "$as_me:$LINENO: result: $fptools_cv_htype_mode_t" >&5
@@ -16207,7 +16207,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 fptools_cv_htype_off_t=NotReallyAType
 fi
-rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
  echo "$as_me:$LINENO: result: $fptools_cv_htype_off_t" >&5
@@ -16321,7 +16321,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 fptools_cv_htype_pid_t=NotReallyAType
 fi
-rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
  echo "$as_me:$LINENO: result: $fptools_cv_htype_pid_t" >&5
@@ -16435,7 +16435,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 fptools_cv_htype_gid_t=NotReallyAType
 fi
-rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
  echo "$as_me:$LINENO: result: $fptools_cv_htype_gid_t" >&5
@@ -16549,7 +16549,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 fptools_cv_htype_uid_t=NotReallyAType
 fi
-rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
  echo "$as_me:$LINENO: result: $fptools_cv_htype_uid_t" >&5
@@ -16663,7 +16663,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 fptools_cv_htype_cc_t=NotReallyAType
 fi
-rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
  echo "$as_me:$LINENO: result: $fptools_cv_htype_cc_t" >&5
@@ -16777,7 +16777,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 fptools_cv_htype_speed_t=NotReallyAType
 fi
-rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
  echo "$as_me:$LINENO: result: $fptools_cv_htype_speed_t" >&5
@@ -16891,7 +16891,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 fptools_cv_htype_tcflag_t=NotReallyAType
 fi
-rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
  echo "$as_me:$LINENO: result: $fptools_cv_htype_tcflag_t" >&5
@@ -17005,7 +17005,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 fptools_cv_htype_nlink_t=NotReallyAType
 fi
-rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
  echo "$as_me:$LINENO: result: $fptools_cv_htype_nlink_t" >&5
@@ -17119,7 +17119,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 fptools_cv_htype_ssize_t=NotReallyAType
 fi
-rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
  echo "$as_me:$LINENO: result: $fptools_cv_htype_ssize_t" >&5
@@ -17233,7 +17233,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 fptools_cv_htype_rlim_t=NotReallyAType
 fi
-rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
  echo "$as_me:$LINENO: result: $fptools_cv_htype_rlim_t" >&5
@@ -17349,7 +17349,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 fptools_cv_htype_GLboolean=NotReallyAType
 fi
-rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
  echo "$as_me:$LINENO: result: $fptools_cv_htype_GLboolean" >&5
@@ -17463,7 +17463,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 fptools_cv_htype_GLbyte=NotReallyAType
 fi
-rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
  echo "$as_me:$LINENO: result: $fptools_cv_htype_GLbyte" >&5
@@ -17577,7 +17577,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 fptools_cv_htype_GLubyte=NotReallyAType
 fi
-rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
  echo "$as_me:$LINENO: result: $fptools_cv_htype_GLubyte" >&5
@@ -17691,7 +17691,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 fptools_cv_htype_GLshort=NotReallyAType
 fi
-rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
  echo "$as_me:$LINENO: result: $fptools_cv_htype_GLshort" >&5
@@ -17805,7 +17805,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 fptools_cv_htype_GLushort=NotReallyAType
 fi
-rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
  echo "$as_me:$LINENO: result: $fptools_cv_htype_GLushort" >&5
@@ -17919,7 +17919,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 fptools_cv_htype_GLint=NotReallyAType
 fi
-rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
  echo "$as_me:$LINENO: result: $fptools_cv_htype_GLint" >&5
@@ -18033,7 +18033,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 fptools_cv_htype_GLuint=NotReallyAType
 fi
-rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
  echo "$as_me:$LINENO: result: $fptools_cv_htype_GLuint" >&5
@@ -18147,7 +18147,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 fptools_cv_htype_GLsizei=NotReallyAType
 fi
-rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
  echo "$as_me:$LINENO: result: $fptools_cv_htype_GLsizei" >&5
@@ -18261,7 +18261,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 fptools_cv_htype_GLenum=NotReallyAType
 fi
-rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
  echo "$as_me:$LINENO: result: $fptools_cv_htype_GLenum" >&5
@@ -18375,7 +18375,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 fptools_cv_htype_GLbitfield=NotReallyAType
 fi
-rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
  echo "$as_me:$LINENO: result: $fptools_cv_htype_GLbitfield" >&5
@@ -18489,7 +18489,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 fptools_cv_htype_GLfloat=NotReallyAType
 fi
-rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
  echo "$as_me:$LINENO: result: $fptools_cv_htype_GLfloat" >&5
@@ -18603,7 +18603,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 fptools_cv_htype_GLclampf=NotReallyAType
 fi
-rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
  echo "$as_me:$LINENO: result: $fptools_cv_htype_GLclampf" >&5
@@ -18717,7 +18717,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 fptools_cv_htype_GLdouble=NotReallyAType
 fi
-rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
  echo "$as_me:$LINENO: result: $fptools_cv_htype_GLdouble" >&5
@@ -18831,7 +18831,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 fptools_cv_htype_GLclampd=NotReallyAType
 fi
-rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
  echo "$as_me:$LINENO: result: $fptools_cv_htype_GLclampd" >&5
@@ -18894,7 +18894,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 eval "$cv_name=-1"
 fi
-rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
 eval "fptools_check_cconst_result=`echo '$'{$cv_name}`"
@@ -18957,7 +18957,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 eval "$cv_name=-1"
 fi
-rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
 eval "fptools_check_cconst_result=`echo '$'{$cv_name}`"
@@ -21908,7 +21908,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 ac_cv_c_stack_direction=-1
 fi
-rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
 echo "$as_me:$LINENO: result: $ac_cv_c_stack_direction" >&5
@@ -22812,21 +22812,6 @@ GCC_LINT_FLAGS="-Wall \
   -Wno-parentheses \
   "
 
-if test "$enable_lint" = yes; then
-    if test "$CC" = "gcc"; then
-        LINT_FLAGS="$GCC_LINT_FLAGS"
-#    elif test "$CC" = "bcc32"; then
-#        LINT_FLAGS="$BCC32_LINT_FLAGS"
-    else
-        { echo "$as_me:$LINENO: WARNING: lint flags only defined for gcc (at present)
-(ignoring --enable-lint)" >&5
-echo "$as_me: WARNING: lint flags only defined for gcc (at present)
-(ignoring --enable-lint)" >&2;}
-    fi
-
-    CFLAGS="$CFLAGS $LINT_FLAGS"
-    fi
-
 if test "$enable_debug" = yes; then
     OPTFLAGS=""
 else
@@ -23184,7 +23169,7 @@ echo "$as_me: error: cannot compute sizeof (int), 77
 See \`config.log' for more details." >&2;}
    { (exit 1); exit 1; }; }
 fi
-rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
 rm -f conftest.val
@@ -23545,7 +23530,7 @@ echo "$as_me: error: cannot compute sizeof (float), 77
 See \`config.log' for more details." >&2;}
    { (exit 1); exit 1; }; }
 fi
-rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
 rm -f conftest.val
@@ -23906,7 +23891,7 @@ echo "$as_me: error: cannot compute sizeof (double), 77
 See \`config.log' for more details." >&2;}
    { (exit 1); exit 1; }; }
 fi
-rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
 rm -f conftest.val
@@ -24267,7 +24252,7 @@ echo "$as_me: error: cannot compute sizeof (int*), 77
 See \`config.log' for more details." >&2;}
    { (exit 1); exit 1; }; }
 fi
-rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
 rm -f conftest.val
@@ -25294,7 +25279,7 @@ echo "${ECHO_T}$ac_cv_dll_flags" >&6
 
 
 cat >>confdefs.h <<_ACEOF
-#define MKDLL_CMD "${CC-cc} $ac_cv_dll_flags"
+#define MKDLL_CMD "${CC-cc} $CFLAGS $CPPFLAGS $LDFLAGS $ac_cv_dll_flags"
 _ACEOF
 
 if test "$ac_cv_leading_underscore" = "yes"; then
@@ -25303,6 +25288,21 @@ cat >>confdefs.h <<\_ACEOF
 _ACEOF
 
 fi
+
+if test "$enable_lint" = yes; then
+    if test "$CC" = "gcc"; then
+        LINT_FLAGS="$GCC_LINT_FLAGS"
+#    elif test "$CC" = "bcc32"; then
+#        LINT_FLAGS="$BCC32_LINT_FLAGS"
+    else
+        { echo "$as_me:$LINENO: WARNING: lint flags only defined for gcc (at present)
+(ignoring --enable-lint)" >&5
+echo "$as_me: WARNING: lint flags only defined for gcc (at present)
+(ignoring --enable-lint)" >&2;}
+    fi
+
+    CFLAGS="$CFLAGS $LINT_FLAGS"
+    fi
 
 
 
