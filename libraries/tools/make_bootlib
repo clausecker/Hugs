@@ -1,0 +1,148 @@
+#!/bin/sh
+
+# Create libraries sufficient for runhugs, ffihugs, hsc2hs and Cabal scripts.
+
+boot_packages='base haskell98 Cabal'
+
+case $0 in
+*/*)	toolsdir=`dirname $0` ;;
+*)	toolsdir=. ;;
+esac
+
+# parameters set by configure
+. $toolsdir/config
+
+cd $toolsdir/../..
+
+source=fptools/libraries
+target=libraries/bootlib
+cpphs=libraries/tools/cpphs
+fp_includes=fptools/ghc/includes
+
+# platform sensitive settings
+
+case `uname -a` in
+*CYGWIN*) platform=Win32 ;;
+*)	platform=Unix ;;
+esac
+
+case $platform in
+Win32)	tmpdir_root=`cygpath -w /tmp | sed -e 's%\\\\%/%g' `;;
+*)	tmpdir_root="/tmp" ;;
+esac
+
+# Canonicalize win32 paths 
+# (i.e., stay far away from unportable /cygdrive-paths)
+case $platform in
+Win32)	# stay away from -m (older versions of 'cygpath' doesn't support it.)
+	source=`cygpath -w $source | sed -e 's@\\\\@/@g'`
+	target=`cygpath -w $target | sed -e 's@\\\\@/@g'`
+esac
+
+# create all scratch files in $tmpdir
+
+tmpdir=$tmpdir_root/cvt.$$
+[ -d $tmpdir ] && rm -r $tmpdir
+trap "rm -rf $tmpdir; exit 0" 0 1 2 3 15
+mkdir $tmpdir
+
+# internal Hugs modules
+
+mkdir -p $target/Hugs
+cp libraries/hugsbase/Hugs/*.* $target/Hugs
+
+# Preprocess hierarchical modules
+
+for package in $boot_packages
+do
+	package_dir=$source/$package
+
+	# configure the library package first
+
+	if test -x $package_dir/configure; then
+		(cd $package_dir; ./configure)
+	fi
+
+	# Determine the list of modules to be converted
+
+	module_list=$tmpdir/list.1
+	all_modules=$tmpdir/list.2
+
+	(
+		cd $package_dir
+		$FIND . \( -name '[a-z]*' -o -name '[GN]HC' \) -prune -o \
+			\( -name \*.hs -o -name \*.lhs -o -name \*.hsc \) -print |
+			sed '	s:^\./::
+				s/\..*//' |
+			grep -v '^Text/Regex' |
+			$SORT -u >$all_modules
+
+		if [ -f hugs/exclude ]; then
+			sed '	/^[	]*#/ d
+				/^[ 	]*$/ d
+				s/[ 	].*//
+				s:\.:/:g' hugs/exclude |
+			$SORT -u | comm -13 - $all_modules >$module_list
+		else
+			mv $all_modules $module_list
+		fi
+	)
+
+	# Preprocess modules
+
+	while read modname
+	do	echo "Preprocessing $modname"
+
+		stem=$package_dir/$modname
+		target_stem=$target/$modname
+		dstdir=`dirname $target_stem`
+		basename=`basename $stem`
+		cpp_flags="$CPPFLAGS -I$package_dir/include -I$fp_includes"
+
+		mkdir -p $dstdir
+
+		# Hack: can't assume hsc2hs at this point, so just use cpp.
+		# This works for System.Time and System.CPUTime, but not
+		# Text.Regex.Posix, so drop that.
+		if [ -f $stem.hsc ]; then
+			$cpphs $cpp_flags $stem.hsc $target_stem.hs
+		elif [ -f $stem.hs ]; then
+			$cpphs $cpp_flags $stem.hs $target_stem.hs
+		elif [ -f $stem.lhs ]; then
+			$cpphs $cpp_flags $stem.lhs $target_stem.lhs
+		else
+			echo "$0: don't know how to handle $stem" >&2
+		fi
+	done <$module_list
+done
+
+# compile some modules in bootlibs with ffihugs
+
+ffihugs=src/ffihugs
+
+HUGSDIR=hugsdir
+HUGSFLAGS="-P$target"
+export HUGSDIR HUGSFLAGS
+
+base_includes="-I$source/base/include -I$fp_includes"
+
+$ffihugs Hugs.Storable \
+	libraries/hugsbase/Hugs/Storable_aux.c
+
+$ffihugs '-i"HsBase.h"' Foreign.C.Error $base_includes \
+	$source/base/cbits/PrelIOUtils.c
+$ffihugs '-i"HsBase.h"' Foreign.Marshal.Alloc $base_includes \
+	$source/base/cbits/PrelIOUtils.c \
+	$source/base/cbits/dirUtils.c \
+	$source/base/cbits/consUtils.c
+$ffihugs '-i"HsBase.h"' Foreign.Marshal.Utils $base_includes
+
+case $platform in
+Unix)
+	$ffihugs '-i"HsBase.h"' System.Posix.Internals $base_includes
+	;;
+Win32)
+	$ffihugs Distribution.Simple.Configure
+	$ffihugs Distribution.Simple.Utils
+	;;
+esac
