@@ -177,9 +177,6 @@ FPTOOLS_CHECK_HTYPE(GLdouble)
 FPTOOLS_CHECK_HTYPE(GLclampd)
 fi
 
-dnl ** can we open files in binary mode?
-FP_CHECK_CONST([O_BINARY], [#include <fcntl.h>], [0])
-
 dnl ** check for more functions
 AC_CHECK_FUNCS(ftime)
 AC_CHECK_FUNCS(getclock)
