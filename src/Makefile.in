@@ -37,6 +37,7 @@ LIBS		= @LIBS@
 YACC		= @YACC@
 RM		= @RM@
 CP		= @CP@
+EXE		= @EXE@
 
 @SET_INSTALLDIRS@
 
