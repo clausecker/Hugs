@@ -14,37 +14,90 @@ import Hugs.Prelude ( Word, Word8, Word16, Word32, Word64,
                       boundedSucc, boundedPred,
 		      boundedEnumFrom, boundedEnumFromTo,
 		      boundedEnumFromThen, boundedEnumFromThenTo )
-import Data.Bits
-import Data.Int
 import Hugs.Prelude ( Ix(..) )
 import Hugs.Prelude ( (%) )
 import Hugs.Prelude ( readDec )
 import Hugs.Prelude ( Num(fromInt), Integral(toInt) )
 import Hugs.Numeric ( showInt )
+import Data.Bits
+import Data.Int
 
 -----------------------------------------------------------------------------
--- The "official" coercion functions
+-- Word
 -----------------------------------------------------------------------------
 
-word8ToInt   :: Word8  -> Int
-intToWord8   :: Int    -> Word8
-word16ToInt  :: Word16 -> Int
-intToWord16  :: Int    -> Word16
+instance Eq  Word     where (==)    = primEqWord
+instance Ord Word     where compare = primCmpWord
 
-word8ToInt  = word32ToInt    . word8ToWord32
-intToWord8  = word32ToWord8  . intToWord32
-word16ToInt = word32ToInt    . word16ToWord32
-intToWord16 = word32ToWord16 . intToWord32
+instance Num Word where
+    (+)           = primPlusWord
+    (-)           = primMinusWord
+    negate        = primNegateWord
+    (*)           = primMulWord
+    abs           = absReal
+    signum        = signumReal
+    fromInteger   = primIntegerToWord
+    fromInt       = primIntToWord
 
-primitive intToWord32 "intToWord32" :: Int    -> Word32
-primitive word32ToInt "word32ToInt" :: Word32 -> Int
+instance Bounded Word where
+    minBound = 0
+    maxBound = primMaxWord
+
+instance Real Word where
+    toRational x = toInteger x % 1
+
+instance Integral Word where
+    div       = primDivWord
+    quot      = primQuotWord
+    rem       = primRemWord
+    mod       = primModWord
+    quotRem   = primQrmWord
+    divMod    = quotRem
+    toInteger = primWordToInteger
+    toInt     = primWordToInt
+
+instance Ix Word where
+    range (m,n)          = [m..n]
+    index b@(m,n) i
+	   | inRange b i = toInt (i - m)
+	   | otherwise   = error "index: Index out of range"
+    inRange (m,n) i      = m <= i && i <= n
+
+instance Enum Word where
+    succ           = boundedSucc
+    pred           = boundedPred
+    toEnum         = primIntToWord
+    fromEnum       = primWordToInt
+
+    enumFrom       = boundedEnumFrom
+    enumFromTo     = boundedEnumFromTo
+    enumFromThen   = boundedEnumFromThen
+    enumFromThenTo = boundedEnumFromThenTo
+
+instance Read Word where
+    readsPrec p   = readDec
+
+instance Show Word where
+    showsPrec p   = showInt  -- a particularily counterintuitive name!
+
+instance Bits Word where
+    (.&.)         = primAndWord
+    (.|.)         = primOrWord
+    xor           = primXorWord
+    complement    = primComplementWord
+    shift         = primShiftWord
+    rotate        = primRotateWord (bitSize (0::Word))
+    bit           = primBitWord
+    setBit x i    = x .|. bit i
+    clearBit x i  = x .&. complement (bit i)
+    complementBit x i = x `xor` bit i
+    testBit       = primTestWord
+    bitSize  _    = bitSize (0::Int)
+    isSigned _    = False
 
 -----------------------------------------------------------------------------
 -- Word8
 -----------------------------------------------------------------------------
-
-primitive word8ToWord32 "primWord8ToWord32" :: Word8  -> Word32
-primitive word32ToWord8 "primWord32ToWord8" :: Word32 -> Word8
 
 instance Eq  Word8     where (==)    = binop (==)
 instance Ord Word8     where compare = binop compare
@@ -57,7 +110,7 @@ instance Num Word8 where
     abs           = absReal
     signum        = signumReal
     fromInteger   = to . primIntegerToWord
-    fromInt       = intToWord8
+    fromInt       = to . primIntToWord
 
 instance Bounded Word8 where
     minBound = 0
@@ -74,51 +127,48 @@ instance Integral Word8 where
     x `quotRem` y = to2 (binop quotRem x y)
     divMod        = quotRem
     toInteger     = toInteger . from
-    toInt         = word8ToInt
+    toInt         = toInt . from
 
 instance Ix Word8 where
     range (m,n)          = [m..n]
     index b@(m,n) i
-	   | inRange b i = word32ToInt (from (i - m))
+	   | inRange b i = toInt (i - m)
 	   | otherwise   = error "index: Index out of range"
     inRange (m,n) i      = m <= i && i <= n
 
 instance Enum Word8 where
-    succ           = boundedSucc
-    pred           = boundedPred
-    toEnum         = to . intToWord32
-    fromEnum       = word32ToInt . from
-    enumFrom       = boundedEnumFrom
-    enumFromThen   = boundedEnumFromThen
+    succ          = boundedSucc
+    pred          = boundedPred
+    toEnum        = fromInt
+    fromEnum      = toInt
+    enumFrom      = boundedEnumFrom
+    enumFromThen  = boundedEnumFromThen
 
 instance Read Word8 where
-    readsPrec p = readDec
+    readsPrec p   = readDec
 
 instance Show Word8 where
-    showsPrec p = showInt  -- a particularily counterintuitive name!
+    showsPrec p   = showInt  -- a particularily counterintuitive name!
 
 instance Bits Word8 where
-  x .&. y       = to (binop (.&.) x y)
-  x .|. y       = to (binop (.|.) x y)
-  x `xor` y     = to (binop xor x y)
-  complement    = to . complement . from
-  x `shift` i   = to (from x `shift` i)
-  x `rotate` i  = to (from x `rot` i)
-    where rot = primRotateWord 8
-  bit           = to . bit
-  setBit x i    = to (setBit (from x) i)
-  clearBit x i  = to (clearBit (from x) i)
-  complementBit x i = to (complementBit (from x) i)
-  testBit x i   = testBit (from x) i
-  bitSize  _    = 8
-  isSigned _    = False
+    x .&. y       = to (binop (.&.) x y)
+    x .|. y       = to (binop (.|.) x y)
+    x `xor` y     = to (binop xor x y)
+    complement    = to . complement . from
+    x `shift` i   = to (from x `shift` i)
+    x `rotate` i  = to (from x `rot` i)
+      where rot = primRotateWord 8
+    bit           = to . bit
+    setBit x i    = to (setBit (from x) i)
+    clearBit x i  = to (clearBit (from x) i)
+    complementBit x i = to (complementBit (from x) i)
+    testBit x i   = testBit (from x) i
+    bitSize  _    = 8
+    isSigned _    = False
 
 -----------------------------------------------------------------------------
 -- Word16
 -----------------------------------------------------------------------------
-
-primitive word16ToWord32 "primWord16ToWord32" :: Word16 -> Word32
-primitive word32ToWord16 "primWord32ToWord16" :: Word32 -> Word16
 
 instance Eq  Word16     where (==)    = binop (==)
 instance Ord Word16     where compare = binop compare
@@ -131,141 +181,134 @@ instance Num Word16 where
     abs           = absReal
     signum        = signumReal
     fromInteger   = to . primIntegerToWord
-    fromInt       = intToWord16
+    fromInt       = to . primIntToWord
 
 instance Bounded Word16 where
     minBound = 0
     maxBound = 0xffff
 
 instance Real Word16 where
-  toRational x = toInteger x % 1
+    toRational x  = toInteger x % 1
 
 instance Integral Word16 where
-  x `div` y     = to  (binop div x y)
-  x `quot` y    = to  (binop quot x y)
-  x `rem` y     = to  (binop rem x y)
-  x `mod` y     = to  (binop mod x y)
-  x `quotRem` y = to2 (binop quotRem x y)
-  divMod        = quotRem
-  toInteger     = toInteger . from
-  toInt         = word16ToInt
+    x `div` y     = to  (binop div x y)
+    x `quot` y    = to  (binop quot x y)
+    x `rem` y     = to  (binop rem x y)
+    x `mod` y     = to  (binop mod x y)
+    x `quotRem` y = to2 (binop quotRem x y)
+    divMod        = quotRem
+    toInteger     = toInteger . from
+    toInt         = toInt . from
 
 instance Ix Word16 where
-  range (m,n)          = [m..n]
-  index b@(m,n) i
-         | inRange b i = word32ToInt (from (i - m))
-         | otherwise   = error "index: Index out of range"
-  inRange (m,n) i      = m <= i && i <= n
+    range (m,n)          = [m..n]
+    index b@(m,n) i
+	   | inRange b i = toInt (i - m)
+	   | otherwise   = error "index: Index out of range"
+    inRange (m,n) i      = m <= i && i <= n
 
 instance Enum Word16 where
-  succ           = boundedSucc
-  pred           = boundedPred
-  toEnum         = to . intToWord32
-  fromEnum       = word32ToInt . from
-  enumFrom       = boundedEnumFrom
-  enumFromThen   = boundedEnumFromThen
+    succ          = boundedSucc
+    pred          = boundedPred
+    toEnum        = fromInt
+    fromEnum      = toInt
+    enumFrom      = boundedEnumFrom
+    enumFromThen  = boundedEnumFromThen
 
 instance Read Word16 where
-  readsPrec p = readDec
+    readsPrec p   = readDec
 
 instance Show Word16 where
-  showsPrec p = showInt  -- a particularily counterintuitive name!
+    showsPrec p   = showInt  -- a particularily counterintuitive name!
 
 instance Bits Word16 where
-  x .&. y       = to (binop (.&.) x y)
-  x .|. y       = to (binop (.|.) x y)
-  x `xor` y     = to (binop xor x y)
-  complement    = to . complement . from
-  x `shift` i   = to (from x `shift` i)
-  x `rotate` i  = to (from x `rot` i)
-    where rot = primRotateWord 16
-  bit           = to . bit
-  setBit x i    = to (setBit (from x) i)
-  clearBit x i  = to (clearBit (from x) i)
-  complementBit x i = to (complementBit (from x) i)
-  testBit x i   = testBit (from x) i
-  bitSize  _    = 16
-  isSigned _    = False
+    x .&. y       = to (binop (.&.) x y)
+    x .|. y       = to (binop (.|.) x y)
+    x `xor` y     = to (binop xor x y)
+    complement    = to . complement . from
+    x `shift` i   = to (from x `shift` i)
+    x `rotate` i  = to (from x `rot` i)
+      where rot = primRotateWord 16
+    bit           = to . bit
+    setBit x i    = to (setBit (from x) i)
+    clearBit x i  = to (clearBit (from x) i)
+    complementBit x i = to (complementBit (from x) i)
+    testBit x i   = testBit (from x) i
+    bitSize  _    = 16
+    isSigned _    = False
 
 -----------------------------------------------------------------------------
 -- Word32
 -----------------------------------------------------------------------------
 
-instance Eq  Word32     where (==)    = primEqWord
-instance Ord Word32     where compare = primCmpWord
+instance Eq  Word32     where (==)    = binop (==)
+instance Ord Word32     where compare = binop compare
 
 instance Num Word32 where
-    (+)           = primPlusWord
-    (-)           = primMinusWord
-    negate        = primNegateWord
-    (*)           = primMulWord
+    x + y         = to (binop (+) x y)
+    x - y         = to (binop (-) x y)
+    negate        = to . negate . from
+    x * y         = to (binop (*) x y)
     abs           = absReal
     signum        = signumReal
-    fromInteger   = primIntegerToWord
-    fromInt       = intToWord32
+    fromInteger   = to . primIntegerToWord
+    fromInt       = to . primIntToWord
 
 instance Bounded Word32 where
     minBound = 0
-    maxBound = primMaxWord
+    maxBound = 0xffffffff
 
 instance Real Word32 where
-    toRational x = toInteger x % 1
+    toRational x  = toInteger x % 1
 
 instance Integral Word32 where
-    div       = primDivWord
-    quot      = primQuotWord
-    rem       = primRemWord
-    mod       = primModWord
-    quotRem   = primQrmWord
-    divMod    = quotRem
-    toInteger = primWordToInteger
-    toInt     = word32ToInt 
+    x `div` y     = to  (binop div x y)
+    x `quot` y    = to  (binop quot x y)
+    x `rem` y     = to  (binop rem x y)
+    x `mod` y     = to  (binop mod x y)
+    x `quotRem` y = to2 (binop quotRem x y)
+    divMod        = quotRem
+    toInteger     = toInteger . from
+    toInt         = toInt . from
 
 instance Ix Word32 where
     range (m,n)          = [m..n]
     index b@(m,n) i
-	   | inRange b i = word32ToInt (i - m)
+	   | inRange b i = toInt (i - m)
 	   | otherwise   = error "index: Index out of range"
     inRange (m,n) i      = m <= i && i <= n
 
 instance Enum Word32 where
-    succ           = boundedSucc
-    pred           = boundedPred
-    toEnum        = intToWord32
-    fromEnum      = word32ToInt
-
-    --No: suffers from overflow problems: 
-    --   [4294967295 .. 1] :: [Word32]
-    --   = [4294967295,0,1]
-    --enumFrom c       = map toEnum [fromEnum c .. fromEnum (maxBound::Word32)]
-    --enumFromThen c d = map toEnum [fromEnum c, fromEnum d .. fromEnum (last::Word32)]
-    --     	           where last = if d < c then minBound else maxBound
-
-    enumFrom       = boundedEnumFrom
-    enumFromTo     = boundedEnumFromTo
-    enumFromThen   = boundedEnumFromThen
+    succ          = boundedSucc
+    pred          = boundedPred
+    toEnum        = fromInt
+    fromEnum      = toInt
+    enumFrom      = boundedEnumFrom
+    enumFromThen  = boundedEnumFromThen
+    enumFromTo    = boundedEnumFromTo
     enumFromThenTo = boundedEnumFromThenTo
 
 instance Read Word32 where
-    readsPrec p = readDec
+    readsPrec p   = readDec
 
 instance Show Word32 where
-    showsPrec p = showInt  -- a particularily counterintuitive name!
+    showsPrec p   = showInt  -- a particularily counterintuitive name!
 
 instance Bits Word32 where
-  (.&.)         = primAndWord
-  (.|.)         = primOrWord
-  xor           = primXorWord
-  complement    = primComplementWord
-  shift         = primShiftWord
-  rotate        = primRotateWord 32
-  bit           = primBitWord
-  setBit x i    = x .|. bit i
-  clearBit x i  = x .&. complement (bit i)
-  complementBit x i = x `xor` bit i
-  testBit       = primTestWord
-  bitSize  _    = 32
-  isSigned _    = False
+    x .&. y       = to (binop (.&.) x y)
+    x .|. y       = to (binop (.|.) x y)
+    x `xor` y     = to (binop xor x y)
+    complement    = to . complement . from
+    x `shift` i   = to (from x `shift` i)
+    x `rotate` i  = to (from x `rot` i)
+      where rot = primRotateWord 32
+    bit           = to . bit
+    setBit x i    = to (setBit (from x) i)
+    clearBit x i  = to (clearBit (from x) i)
+    complementBit x i = to (complementBit (from x) i)
+    testBit x i   = testBit (from x) i
+    bitSize  _    = 32
+    isSigned _    = False
 
 -----------------------------------------------------------------------------
 -- Word64
@@ -368,50 +411,65 @@ liftUnary op x = word32ToWord64 (op xhi) (op xlo)
 -- Coercions - used to make the instance declarations more uniform
 -----------------------------------------------------------------------------
 
+primitive word8ToWord "primWord8ToWord" :: Word8  -> Word
+primitive wordToWord8 "primWordToWord8" :: Word -> Word8
+
+primitive word16ToWord "primWord16ToWord" :: Word16 -> Word
+primitive wordToWord16 "primWordToWord16" :: Word -> Word16
+
+primitive word32ToWord "primWord32ToWord" :: Word32 -> Word
+primitive wordToWord32 "primWordToWord32" :: Word -> Word32
+
 class Coerce a where
-  to   :: Word32 -> a
-  from :: a -> Word32
+    to   :: Word -> a
+    from :: a -> Word
 
 instance Coerce Word8 where
-  from = word8ToWord32
-  to   = word32ToWord8
+    from = word8ToWord
+    to   = wordToWord8
 
 instance Coerce Word16 where
-  from = word16ToWord32
-  to   = word32ToWord16
+    from = word16ToWord
+    to   = wordToWord16
 
-binop :: Coerce word => (Word32 -> Word32 -> a) -> (word -> word -> a)
+instance Coerce Word32 where
+    from = word32ToWord
+    to   = wordToWord32
+
+binop :: Coerce word => (Word -> Word -> a) -> (word -> word -> a)
 binop op x y = from x `op` from y
 
-to2 :: Coerce word => (Word32, Word32) -> (word, word)
+to2 :: Coerce word => (Word, Word) -> (word, word)
 to2 (x,y) = (to x, to y)
 
 -----------------------------------------------------------------------------
 -- primitives
 -----------------------------------------------------------------------------
 
-primitive primEqWord        :: Word32 -> Word32 -> Bool
-primitive primCmpWord       :: Word32 -> Word32 -> Ordering
+primitive primEqWord        :: Word -> Word -> Bool
+primitive primCmpWord       :: Word -> Word -> Ordering
 primitive primPlusWord,
 	  primMinusWord,
-	  primMulWord	    :: Word32 -> Word32 -> Word32
-primitive primNegateWord    :: Word32 -> Word32
-primitive primIntegerToWord :: Integer -> Word32
-primitive primMaxWord       :: Word32
+	  primMulWord	    :: Word -> Word -> Word
+primitive primNegateWord    :: Word -> Word
+primitive primIntToWord     :: Int -> Word
+primitive primIntegerToWord :: Integer -> Word
+primitive primMaxWord       :: Word
 primitive primDivWord,
 	  primQuotWord,
 	  primRemWord,
-	  primModWord       :: Word32 -> Word32 -> Word32
-primitive primQrmWord       :: Word32 -> Word32 -> (Word32,Word32)
-primitive primWordToInteger :: Word32 -> Integer
-primitive primAndWord       :: Word32 -> Word32 -> Word32
-primitive primOrWord        :: Word32 -> Word32 -> Word32
-primitive primXorWord       :: Word32 -> Word32 -> Word32
-primitive primComplementWord:: Word32 -> Word32
-primitive primShiftWord     :: Word32 -> Int -> Word32
-primitive primRotateWord    :: Int -> Word32 -> Int -> Word32
-primitive primBitWord       :: Int -> Word32
-primitive primTestWord      :: Word32 -> Int -> Bool
+	  primModWord       :: Word -> Word -> Word
+primitive primQrmWord       :: Word -> Word -> (Word,Word)
+primitive primWordToInt     :: Word -> Int
+primitive primWordToInteger :: Word -> Integer
+primitive primAndWord       :: Word -> Word -> Word
+primitive primOrWord        :: Word -> Word -> Word
+primitive primXorWord       :: Word -> Word -> Word
+primitive primComplementWord:: Word -> Word
+primitive primShiftWord     :: Word -> Int -> Word
+primitive primRotateWord    :: Int -> Word -> Int -> Word
+primitive primBitWord       :: Int -> Word
+primitive primTestWord      :: Word -> Int -> Bool
 
 -----------------------------------------------------------------------------
 -- Code copied from the Prelude
