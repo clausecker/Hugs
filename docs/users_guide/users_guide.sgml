@@ -1,4 +1,4 @@
-<!DOCTYPE BOOK PUBLIC "-//OASIS//DTD DocBook V3.1//EN" [
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook V3.1//EN" [
 <!ENTITY haskell98      SYSTEM "haskell98.sgml">
 <!ENTITY hugs-ghc       SYSTEM "hugs_ghc.sgml">
 <!ENTITY hugs-only      SYSTEM "hugs_only.sgml">
@@ -9,9 +9,9 @@
 ]>
 
 <book id="users-guide">
-<bookInfo>
+<bookinfo>
 <title>The Hugs 98 User's Guide</title>
-</bookInfo>
+</bookinfo>
 
 &license;
 &introduction;
