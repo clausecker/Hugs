@@ -248,8 +248,11 @@ do
 		for flag in -I$dstdir -I$source_dir/include
 		do	cmd="$cmd $flag"
 		done
-		for file in `sed -n 's/{-# CBITS \(.*\) #-}/\1/p' $filename`
-		do	cmd="$cmd $source_dir/cbits/$file"
+		for file in `sed -n 's/{-# CFILES \(.*\) #-}/\1/p' $filename`
+		do	case "$file" in
+			/*)	cmd="$cmd $file" ;;
+			*)	cmd="$cmd $source_dir/$file" ;;
+			esac
 		done
 		for flag in $extra_ld_opts $extra_cc_opts
 		do	cmd="$cmd $flag"
