@@ -3,3 +3,4 @@
 !cp tcheck/DictHW2.hs DictHW.hs
 :r
 f 1
+!rm DictHW.hs
