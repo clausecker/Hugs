@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: input.c,v $
- * $Revision: 1.35 $
- * $Date: 2002/01/21 04:25:30 $
+ * $Revision: 1.36 $
+ * $Date: 2002/02/24 04:36:02 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -53,7 +53,7 @@ Bool literateErrors  = TRUE;            /* TRUE => report errs in lit scrs */
 
 String repeatStr     = 0;               /* Repeat last expr                */
 
-#if USE_PREPROCESSOR && (defined(HAVE_POPEN) || defined(HAVE__POPEN))
+#if SUPPORT_PREPROCESSOR
 String preprocessor  = 0;
 #endif
 
@@ -403,7 +403,7 @@ String nm; {                           /* from named project file          */
 static Void local fileInput(nm,len)     /* prepare to input characters from*/
 String nm;                              /* named file (specified length is */
 Long   len; {                           /* used to set target for reading) */
-#if USE_PREPROCESSOR && (defined(HAVE_POPEN) || defined(HAVE__POPEN))
+#if SUPPORT_PREPROCESSOR
     if (preprocessor) {
 	Int reallen = strlen(preprocessor) + 1 + strlen(nm) + 1;
 	char *cmd = malloc(reallen);
@@ -687,7 +687,7 @@ static Void local closeAnyInput() {    /* Close input stream, if open,     */
     switch (reading) {                 /* or skip to end of console line   */
 	case PROJFILE   :
 	case SCRIPTFILE : if (inputStream) {
-#if USE_PREPROCESSOR && (defined(HAVE_POPEN) || defined(HAVE__POPEN))
+#if SUPPORT_PREPROCESSOR
 			      if (preprocessor) {
 				  pclose(inputStream);
 			      } else {
@@ -1335,7 +1335,7 @@ String readLine() {                    /* Read command line from input     */
  * - Otherwise, if no `{' follows the keywords WHERE/LET or OF, a SOFT `{'
  *   is inserted with the column number of the first token after the
  *   WHERE/LET/OF keyword.
- * - When a soft indentation is uppermost on the indetation stack with
+ * - When a soft indentation is uppermost on the indentation stack with
  *   column col' we insert:
  *    `}'  in front of token with column<col' and pop indentation off stack,
  *    `;'  in front of token with column==col'.
@@ -1507,7 +1507,7 @@ static Int local yylex() {             /* Read next input token ...        */
 	    textRepeat = findText(repeatStr);
 	return firstTokenIs;
     }
-
+    
     if (insertOpen) {                  /* insert `soft' opening brace      */
 	insertOpen    = FALSE;
 	insertedToken = TRUE;
@@ -1818,45 +1818,13 @@ Int startWith; {                       /* determining whether to read a    */
 	internal("parseInput");
 }
 
-#ifdef HSCRIPT
-static String memPrefix = "@mem@";
-static Int lenMemPrefix = 5;   /* strlen(memPrefix)*/
-
-Void makeMemScript(mem,fname)
-String mem;
-String fname; {     
-   strcat(fname,memPrefix);
-   itoa((int)mem, fname+strlen(fname), 10); 
-}
-
-Bool isMemScript(fname)
-String fname; {
-   return (strstr(fname,memPrefix) != NULL);
-}
-
-String memScriptString(fname)
-String fname; { 
-    String p = strstr(fname,memPrefix);
-    if (p) {
-	return (String)atoi(p+lenMemPrefix);
-    } else {
-	return NULL;
-    }
-}
-
-Void parseScript(fname,len)		/* Read a script, possibly from mem */
-String fname;
-Long len; {
+Void parseScriptString(buf)		/* Read a script from a string buffer */
+String buf; {
     input(RESET);
-    if (isMemScript(fname)) {
-	char* s = memScriptString(fname);
-	stringInput(s);
-    } else {
-	fileInput(fname,len);
-    }
+    stringInput(buf);
     parseInput(SCRIPT);
 }
-#else
+
 Void parseScript(nm,len)               /* Read a script                    */
 String nm;
 Long   len; {                          /* Used to set a target for reading */
@@ -1864,7 +1832,6 @@ Long   len; {                          /* Used to set a target for reading */
     fileInput(nm,len);
     parseInput(SCRIPT);
 }
-#endif
 
 Void parseExp() {                      /* Read an expression to evaluate   */
     parseInput(EXPR);
