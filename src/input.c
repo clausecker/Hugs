@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: input.c,v $
- * $Revision: 1.37 $
- * $Date: 2002/03/01 18:49:46 $
+ * $Revision: 1.38 $
+ * $Date: 2002/03/01 19:54:51 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -126,7 +126,7 @@ static Text textBang,    textDot,      textAll,	   textImplies;
 
 static Text textModule,  textImport;
 static Text textHiding,  textQualified, textAsMod;
-static Text textDynamic, textCCall, textStdCall;
+static Text textDynamic;
 static Text textUnsafe, textLabel;
 static Text textWildcard;
 static Text textNeedPrims;
@@ -1293,8 +1293,9 @@ String readFilename() {                /* Read filename from input (if any)*/
 	    skip();
 	    while (c0!=EOF && c0!='\"') {
 		Cell c = readAChar(TRUE);
-		if (nonNull(c))
+		if (nonNull(c)) {
 		    saveTokenChar(charOf(c));
+		}
 	    }
 	    if (c0=='"')
 		skip();
@@ -1581,10 +1582,10 @@ static Int local yylex() {             /* Read next input token ...        */
     push(yylval = mkInt(row));         /* default token value is line no.  */
     /* subsequent changes to yylval must also set top() to the same value  */
 
-    if (indentDepth>=0)                /* layout rule(s) active ?          */
-	if (insertedToken)             /* avoid inserting multiple `;'s    */
+    if (indentDepth>=0) {              /* layout rule(s) active ?          */
+	if (insertedToken) {           /* avoid inserting multiple `;'s    */
 	    insertedToken = FALSE;     /* or putting `;' after `{'         */
-	else if (layout[indentDepth]!=HARD)
+	} else if (layout[indentDepth]!=HARD) {
 	    if (column<layout[indentDepth]) {
 		unOffside();
 		return '}';
@@ -1593,6 +1594,8 @@ static Int local yylex() {             /* Read next input token ...        */
 		insertedToken = TRUE;
 		return ';';
 	    }
+	}
+    }
 
 #if HERE_DOC && !HASKELL_98_ONLY
     if (c0=='`' && c1=='`' && hereDocs) {
@@ -1786,7 +1789,6 @@ loop:	    skip();                     /* Skip qualifying dot             */
 
 Bool isModuleId(s)
 String s; {
-    Bool hasDot = FALSE;
     if (!isIn(*s,LARGE))
         return FALSE;
     while (isIn(*s,LARGE)) {
