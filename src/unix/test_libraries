@@ -2,7 +2,7 @@
 
 # Test the status within Hugs of each module in the hierarchical libraries.
 
-packages='haskell98 base haskell-src mtl network parsec QuickCheck unix OpenGL GLUT'
+packages='haskell98 base haskell-src mtl network parsec QuickCheck unix OpenGL GLUT X11 HGL'
 
 this_dir="`dirname $0`"
 : ${this_dir:-.}

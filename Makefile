@@ -17,7 +17,7 @@ LIBRARIESTAG = HEAD
 
 HSLIBSDIRS = concurrent data hssource lang net text util posix
 LIBRARIESDIRS = base haskell98 haskell-src mtl network parsec QuickCheck unix \
-	GLUT OpenGL fgl
+	GLUT OpenGL fgl X11 HGL
 
 # End of general settings (leave this line unchanged)
 
