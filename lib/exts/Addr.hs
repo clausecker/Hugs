@@ -6,7 +6,6 @@ module Addr
 	( Addr
 	, nullAddr -- :: Addr
  	, plusAddr -- :: Addr -> Int -> Addr
-	, addrToInt -- :: Addr -> Int
 	-- instance Eq   Addr
 	-- instance Show Addr
 	, ptrToAddr        -- :: Ptr a -> Addr
@@ -25,7 +24,6 @@ primitive nullAddr      "nullPtr"         :: Addr
 primitive plusAddr      "plusPtr"         :: Addr -> Int -> Addr
 primitive primShowsAddr "primShowsPtr"    :: Int -> Addr -> ShowS
 primitive primEqAddr    "primEqPtr"       :: Addr -> Addr -> Bool
-primitive addrToInt     "ptrToInt"        :: Addr -> Int
 
 primitive ptrToAddr    "primUnsafeCoerce" :: Ptr a -> Addr
 primitive addrToPtr    "primUnsafeCoerce" :: Addr -> Ptr a

@@ -9,7 +9,6 @@ module Hugs.Ptr
         , castPtr          -- :: Ptr a -> Ptr b
 	, alignPtr         -- :: Ptr a -> Int -> Ptr a
 	, minusPtr         -- :: Ptr a -> Ptr b -> Int
-	, ptrToInt         -- :: Ptr a -> Int
 	-- instance Eq   (Ptr a)
 	-- instance Ord  (Ptr a)
 	-- instance Show (Ptr a)
@@ -35,15 +34,12 @@ instance Show (Ptr a) where showsPrec = primShowsPtr
 
 primitive nullPtr                    :: Ptr a
 primitive plusPtr                    :: Ptr a -> Int -> Ptr b
+primitive alignPtr                   :: Ptr a -> Int -> Ptr a
 primitive minusPtr                   :: Ptr a -> Ptr b -> Int
 primitive castPtr "primUnsafeCoerce" :: Ptr a -> Ptr b
 primitive primShowsPtr               :: Int -> Ptr a -> ShowS
 primitive primEqPtr                  :: Ptr a -> Ptr a -> Bool
 primitive primCmpPtr                 :: Ptr a -> Ptr a -> Ordering
-primitive ptrToInt                   :: Ptr a -> Int
-
-alignPtr :: Ptr a -> Int -> Ptr a
-alignPtr p n = p `plusPtr` ((n - ptrToInt p `mod` n) `mod` n)
 
 -- data FunPtr a -- in Hugs.Prelude
 

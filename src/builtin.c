@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: builtin.c,v $
- * $Revision: 1.77 $
- * $Date: 2004/10/14 22:08:41 $
+ * $Revision: 1.78 $
+ * $Date: 2004/10/23 19:08:36 $
  * ------------------------------------------------------------------------*/
 
 /* We include math.h before prelude.h because SunOS 4's cpp incorrectly
@@ -298,8 +298,8 @@ PROTO_PRIM(primDoubleEncode);
 
 PROTO_PRIM(primNullPtr);
 PROTO_PRIM(primPlusPtr);
+PROTO_PRIM(primAlignPtr);
 PROTO_PRIM(primMinusPtr);
-PROTO_PRIM(primPtrToInt);
 PROTO_PRIM(primEqPtr);
 PROTO_PRIM(primCmpPtr);
 
@@ -513,8 +513,8 @@ static struct primitive builtinPrimTable[] = {
   {"primRationalToDouble", 1, primRationalToDouble},
 
   {"nullPtr",           0, primNullPtr},
-  {"ptrToInt",          1, primPtrToInt},
   {"plusPtr",           2, primPlusPtr},
+  {"alignPtr",          2, primAlignPtr},
   {"minusPtr",          2, primMinusPtr},
   {"primEqPtr",         2, primEqPtr},
   {"primCmpPtr",        2, primCmpPtr},
@@ -1263,9 +1263,10 @@ primFun(primDoubleEncode) {            /* Double encode primitive          */
 
 CAFPtr(primNullPtr,0)                  /* Null pointer                     */
 PtrInt2Ptr(primPlusPtr,(char*)x+y)     /* Pointer arithmetic               */
+PtrInt2Ptr(primAlignPtr,(char*)x+(int)((y - (long)x%y)%y))
+				       /* Aligning the pointer             */
 PtrPtr2Int(primMinusPtr,(char*)x-(char*)y) /* Pointer arithmetic           */
 PtrPtr2Bool(primEqPtr,x==y)            /* Pointer equality primitive       */
-Ptr2Int(primPtrToInt,((Int)x))         /* Getting the pointer              */
 
 primFun(primCmpPtr) {                  /* Pointer compare primitive        */
     Pointer x, y;
