@@ -11,8 +11,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: interns.c,v $
- * $Revision: 1.7 $
- * $Date: 2002/11/02 00:21:33 $
+ * $Revision: 1.8 $
+ * $Date: 2002/12/10 00:00:37 $
  * ------------------------------------------------------------------------*/
  
 /* --------------------------------------------------------------------------
@@ -103,7 +103,7 @@ static Name nameHugsPrim;             /*    	       | Prim  String      */
 static Name nameHugsError;            /*    	       | Error Cell        */
 
 static Void linkInternals() {
-    String internLib = (newLibraries ? "Hugs.Internals" : "HugsInternals");
+    String internLib = "Hugs.Internals";
     moduleInternals = findModule(findText(internLib));
     if (nonNull(moduleInternals)) {
 	setCurrModule(moduleInternals);

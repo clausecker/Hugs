@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: type.c,v $
- * $Revision: 1.58 $
- * $Date: 2002/11/29 12:59:35 $
+ * $Revision: 1.59 $
+ * $Date: 2002/12/10 00:00:37 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1604,8 +1604,8 @@ List qs; {
 static Void local typeMDo(l,e)		/* type check recursive-do	   */
 Int l;
 Cell e; {
-    String fixLib     = (newLibraries ? "Control.Monad.Fix" : "MonadRec");
-    String fixClass   = (newLibraries ? "MonadFix" : "MonadRec");
+    String fixLib     = "Control.Monad.Fix";
+    String fixClass   = "MonadFix";
 
     if( !classMonadRec ) {
 	ERRMSG(0) "%s class not defined", fixClass ETHEN
@@ -3085,7 +3085,7 @@ Int what; {
 		       dummyVar     = inventVar();
 
 		       modulePrelude = newModule(textPrelude);
-		       moduleUserPrelude = ( newLibraries ? 0 : modulePrelude);
+		       moduleUserPrelude = 0;
 		       setCurrModule(modulePrelude);
 
 		       starToStar   = simpleKind(1);

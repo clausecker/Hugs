@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.128 $
- * $Date: 2002/11/18 16:37:00 $
+ * $Revision: 1.129 $
+ * $Date: 2002/12/10 00:00:37 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -7086,8 +7086,8 @@ static Void local mdoUsed() {
 
 static Void local mdoLoad() {
     if (mdoLibsNeeded) {
-	String fixLib     = (newLibraries ? "Control.Monad.Fix" : "MonadRec");
-	String fixClass   = (newLibraries ? "MonadFix" : "MonadRec");
+	String fixLib     = "Control.Monad.Fix";
+	String fixClass   = "MonadFix";
     
 	/* Locate the module containing the MonadRec/MonadFix class */
 	Module m          = findModule(findText(fixLib));
@@ -8029,7 +8029,7 @@ static Void local trexUsed() {
 
 static Void local trexLoad() {
     if (trexLibNeeded) {
-	String trexLib    = (newLibraries ? "Hugs.Trex" : "Trex");
+	String trexLib    = "Hugs.Trex";
     
 	/* Locate the module */
 	Module m          = findModule(findText(trexLib));

@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.110 $
- * $Date: 2002/11/29 12:59:34 $
+ * $Revision: 1.111 $
+ * $Date: 2002/12/10 00:00:37 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -34,11 +34,7 @@
 Bool haskell98 = TRUE;			/* TRUE => Haskell 98 compatibility*/
 #endif
 
- /* TRUE => have Prelude re-export Prelude impl module so as to 
-  *         only export what Haskell 98 mandates.
-  */
-Bool newLibraries = FALSE;  
-Bool wantNewLibraries = FALSE;  
+Bool wantNewLibraries = FALSE;  /* unused: kill option later */
 
 #if EXPLAIN_INSTANCE_RESOLUTION
 Bool showInstRes = FALSE;
@@ -194,18 +190,6 @@ String projectPath	 = 0;		/* String for project search path  */
 String hugsSuffixes	 = 0;		/* Source filename suffixes        */
 Bool   preludeLoaded	 = FALSE;
 
-/*
- * Unfortunately, with lib/ and libraries/ we've got two choices of which
- * HUGSPATH to use. We don't know which until we've processed all options and
- * found the effective setting of 'newLibraries' (settable by the user via the
- * 'N' toggle.) So, when constructing the import search path we build up two
- * paths, one assuming the (old) HUGSPATH, the other HUGSPATH2. After
- * having processed all options, we decide which one to use by looking at
- * the value of 'newLibraries'. Hardly ideal, but obviously correct.
- */
-static String hugsPath_1 = 0;
-static String hugsPath_2 = 0;
-
 #if REDIRECT_OUTPUT
 static Bool disableOutput = FALSE;      /* redirect output to buffer?      */
 #endif
@@ -302,47 +286,23 @@ static Void local loadPrelude() {  /* load in the Prelude module(s). */
     String prelLocation;
     Bool   listFlg;
 
-    /* All -P (and N) options processed, set the effective import search path. */
-    hugsPath = strCopy (wantNewLibraries ? hugsPath_2 : hugsPath_1);
-    if (hugsPath_1) { free(hugsPath_1); hugsPath_1 = 0; }
-    if (hugsPath_2) { free(hugsPath_2); hugsPath_2 = 0; }
-
-    /* Figure out whether we're using the 'new' Prelude
-     * or not -- if STD_PRELUDE_HUGS is reachable via the
-     * search path, we are.
-     */
-
     /* Sigh, findMPathname() mutates its module/name arg, so 
      * create a (temporary and short-lived) copy of the constant
      * string.
      */
     prelName = strCopy(STD_PRELUDE_HUGS); 
-    if ( ( prelLocation = findMPathname(NULL, prelName, hugsPath)) ) {
-      newLibraries = TRUE;
-      scriptName[0] = strCopy(prelLocation);
-    } else {
-      if (wantNewLibraries) {
-	    FPrintf(stderr, "New hierarchical libraries not found along search path; ignoring +N toggle.\n");
-	    FFlush(stderr);
-	
-      }
-      newLibraries = FALSE;
-      scriptName[0] = strCopy(findMPathname(NULL, STD_PRELUDE,hugsPath));
-    }
-    free(prelName);
-
-    if (!scriptName[0]) {
+    if (!( prelLocation = findMPathname(NULL, prelName, hugsPath)) ) {
 	Printf("Prelude not found on current path: \"%s\"\n",
 	       hugsPath ? hugsPath : "");
 	fatal("Unable to load prelude");
     }
+    scriptName[0] = strCopy(prelLocation);
+    free(prelName);
     scriptReal[0] = strCopy(RealPath(scriptName[0]));
     chased[0] = FALSE;
     
-    if (newLibraries) {
-      /* add the H98 Prelude module to the stack */
-      addScriptName(findMPathname(NULL, STD_PRELUDE,hugsPath), FALSE);
-    }
+    /* add the H98 Prelude module to the stack */
+    addScriptName(findMPathname(NULL, STD_PRELUDE,hugsPath), FALSE);
 
     everybody(INSTALL);
 
@@ -413,9 +373,7 @@ String argv[]; {
 #else
     hugsEdit      = strCopy(fromEnv("EDITOR",NULL));
 #endif
-    /* see comment next to decl of hugsPath_{1,2} for why this is done. */
-    hugsPath_1    = strCopy(HUGSPATH);
-    hugsPath_2    = strCopy(HUGSPATH2);
+    hugsPath      = strCopy(HUGSPATH2);
     hugsSuffixes  = strCopy(HUGSSUFFIXES);
 #if HSCRIPT
     hscriptSuffixes();
@@ -879,47 +837,20 @@ String s; {                             /* return FALSE if none found.     */
                            String prelLoc;
  	                   String savedPath;
 			   
-			   /* tiresome code duplication */
-			   if (hugsPath) {
-			       savedPath = hugsPath;
-			       if (*(s+1) == '\0') {
-				 hugsPath = strCopy(newLibraries ? HUGSPATH2 : HUGSPATH);
-			       } else {
-				 hugsPath  = substPath(s+1,hugsPath ? hugsPath : "");
-			       }
-			       prelLoc = findMPathname(NULL,STD_PRELUDE, hugsPath);
-			       /* prelLoc points to static storage, don't free. */
-			       if (!prelLoc) {
-				   Printf("ERROR: unable to locate Prelude along new path: \"%s\" - ignoring it.\n", hugsPath_1);
-				   if (hugsPath) free(hugsPath);
-				   hugsPath = savedPath;
-			       } else {
-				   if (savedPath) free(savedPath);
-			       }
-			       
+			   savedPath = hugsPath;
+			   if (*(s+1) == '\0') {
+			     hugsPath = strCopy(HUGSPATH2);
 			   } else {
-			       savedPath = hugsPath_1;
-			       if (*(s+1) == '\0') {
-				 hugsPath_1 = strCopy(HUGSPATH);
-			       } else {
-				 hugsPath_1 = substPath(s+1,hugsPath_1 ? hugsPath_1 : "");
-			       }
-			       prelLoc = findMPathname(NULL,STD_PRELUDE, hugsPath_1);
-			       /* prelLoc points to static storage, don't free. */
-			       if (!prelLoc) {
-				   Printf("ERROR: unable to locate Prelude along new path: \"%s\" - ignoring it.\n", hugsPath_1);
-				   if (hugsPath_1) free(hugsPath_1);
-				   hugsPath_1 = savedPath;
-			       } else {
-				   if (savedPath) free(savedPath);
-				   savedPath = hugsPath_2;
-				   if (*(s+1) == '\0') {
-				     hugsPath_2 = strCopy(HUGSPATH2);
-				   } else {
-				     hugsPath_2 = substPath(s+1,hugsPath_2 ? hugsPath_2 : "");
-				   }
-				   if (savedPath) free(savedPath);
-			       }
+			     hugsPath  = substPath(s+1,hugsPath ? hugsPath : "");
+			   }
+			   prelLoc = findMPathname(NULL,STD_PRELUDE, hugsPath);
+			   /* prelLoc points to static storage, don't free. */
+			   if (!prelLoc) {
+			       Printf("ERROR: unable to locate Prelude along new path: \"%s\" - ignoring it.\n", hugsPath);
+			       if (hugsPath) free(hugsPath);
+			       hugsPath = savedPath;
+			   } else {
+			       if (savedPath) free(savedPath);
 			   }
 			   return TRUE;
 		       }
@@ -930,7 +861,7 @@ String s; {                             /* return FALSE if none found.     */
 			       hugsSuffixes = strCopy(HUGSSUFFIXES);
 			   else
 			       hugsSuffixes = substPath(s+1,hugsSuffixes);
-			   if ( !findMPathname(NULL,STD_PRELUDE,(hugsPath ? hugsPath : hugsPath_1)) ) {
+			   if ( !findMPathname(NULL,STD_PRELUDE,hugsPath) ) {
 			       Printf("ERROR: unable to locate Prelude with new suffix list: \"%s\" - ignoring it.\n", hugsSuffixes);
 			       free(hugsSuffixes);
 			       hugsSuffixes = saveSuffixes;
@@ -973,13 +904,6 @@ String s; {                             /* return FALSE if none found.     */
 		       return TRUE;
 		   } else {
 #endif
-		       if ( (*s == 'N') && 
-			    heapBuilt() &&
-			    (state != newLibraries) ) {
-			   FPrintf(stderr,"Switching to/from hierarchical libraries cannot be done while the interpreter is running\n");
-			   FFlush(stderr);
-		       }
-
 		       toggleSet(*s,state);
 #if !HASKELL_98_ONLY
 		   }

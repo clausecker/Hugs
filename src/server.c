@@ -10,8 +10,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: server.c,v $
- * $Revision: 1.24 $
- * $Date: 2002/10/14 15:27:14 $
+ * $Revision: 1.25 $
+ * $Date: 2002/12/10 00:00:37 $
  * ------------------------------------------------------------------------*/
 
 #define HUGS_SERVER
@@ -205,8 +205,7 @@ String argv[]; {
       scriptFile    = 0;		/* Name of current script (if any) */
       numScripts    = 0;		/* Number of scripts loaded	   */
       namesUpto     = 1;		/* Number of script names set	   */
-      hugsPath_1    = strCopy(HUGSPATH);
-      hugsPath_2    = strCopy(HUGSPATH2);
+      hugsPath      = strCopy(HUGSPATH2);
       hugsSuffixes  = strCopy(HUGSSUFFIXES);
 #if HSCRIPT
       hscriptSuffixes();
