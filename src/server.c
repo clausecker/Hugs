@@ -11,8 +11,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: server.c,v $
- * $Revision: 1.43 $
- * $Date: 2004/10/07 10:59:46 $
+ * $Revision: 1.44 $
+ * $Date: 2004/11/11 23:55:34 $
  * ------------------------------------------------------------------------*/
 #include "prelude.h"
 #include "storage.h"
@@ -213,9 +213,8 @@ String argv[]; {
 	readOptions(argv[0],FALSE);
       } else {
 	readOptionSettings();
-	/* re-parse options for the benefit of #! (which takes only one arg) */
 	for (i=1; i<argc && (argv[i][0]=='+' || argv[i][0]=='-'); ++i) {
-	  if (!readOptions2(argv[i])) {
+	  if (!processOption(argv[i])) {
 	    setError("Unrecognised option");
 	    return NULL;
 	  }

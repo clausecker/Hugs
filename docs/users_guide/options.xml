@@ -8,6 +8,8 @@
 The behaviour of Hugs may be modified by options.
 These are initially set to default values,
 and then read from the following sources in order:
+</para>
+
 <orderedlist>
 <listitem>
 <para>
@@ -53,6 +55,23 @@ The Hugs command line.
 </listitem>
 
 </orderedlist>
+
+<note>
+<title>Parsing of option strings</title>
+<para>
+In each of the above cases except command line arguments,
+the string should consist of zero or more options separated by whitespace.
+To include a literal space in an option, either precede it with a backslash
+or wrap the whole option in double quotes.
+Double quoted options may also contain the escape sequences
+<quote><literal>\ </literal></quote>,
+<quote><literal>\"</literal></quote> and
+<quote><literal>\\</literal></quote>.
+Other backslashes are interpreted literally.
+</para>
+</note>
+
+<para>
 Most options can be changed within Hugs using the <command>:set</command>
 command (see <xref linkend="basic-commands"/>).
 </para>
@@ -78,6 +97,26 @@ the choice making no difference.
 </listitem>
 </itemizedlist>
 </para>
+
+<para>
+A special option is provided to allow several options in a single argument:
+</para>
+
+<variablelist>
+
+<varlistentry id="option-split-options">
+<term><option>-X</option><replaceable>str</replaceable></term>
+<listitem>
+<para>
+The string <replaceable>str</replaceable> is interpreted as an option string,
+in the manner described above.
+This is useful, for example, in some uses of <command>runhugs</command>
+(see <xref linkend="runhugs"/>).
+</para>
+</listitem>
+</varlistentry>
+
+</variablelist>
 
 <sect2 id="options-language">
 <title>Language options</title>
@@ -817,19 +856,11 @@ and for <quote><literal>~</literal></quote> in the argument of the
 <para>
 Additional options for Hugs, processed before any given on the command line
 (see <xref linkend="options-list"/>).
-Within this string, options may be separated by whitespace.
-To include a literal space in an option, either precede it with a backslash
-or wrap the whole option in double quotes.
 The following example assumes a shell compatible with the Unix Bourne shell:
 <programlisting>
 HUGSFLAGS='+k -E"vi +%d"'
 export HUGSFLAGS
 </programlisting>
-Double quoted options may also contain the escape sequences
-<quote><literal>\ </literal></quote>,
-<quote><literal>\"</literal></quote> and
-<quote><literal>\\</literal></quote>.
-Other backslashes are interpreted literally.
 </para>
 </listitem>
 </varlistentry>
@@ -1004,8 +1035,29 @@ This invokes the command
 </screen>
 The <link linkend="option-literate"><option>+l</option></link> option tells
 <command>runhugs</command> that <filename>myecho</filename> contains a
-literate script.
+literate script,
+even though its name does not end in <quote><literal>.lhs</literal></quote>.
 </para>
+
+<note>
+<para>
+Unfortunately, the <literal>#!</literal> feature passes additional arguments
+(if any) to the program as a single argument: if the first line were
+<programlisting>
+#! /usr/local/bin/runhugs +l -98
+</programlisting>
+then the first argument to <command>runhugs</command> would be
+<quote><literal>+l -98</literal></quote>.
+You can get around this using the
+<link linkend="option-split-options"><option>-X</option></link> option,
+which asks for the string to be split into options:
+<programlisting>
+#! /usr/local/bin/runhugs -X +l -98
+</programlisting>
+Then the program will read and act on both the <option>+l</option> and
+<option>-98</option> options.
+</para>
+</note>
 
 </sect1>
 

@@ -368,6 +368,10 @@ and the <command>:project</command> command have been removed.
 <sect2>
 <title>Under development</title>
 
+<para>
+In addition to numerous bug fixes, user-visible changes include:
+</para>
+
 <itemizedlist>
 <listitem><para>
 The <literal>Char</literal> type and the <literal>Char</literal> module
@@ -381,6 +385,13 @@ by the current locale (see <xref linkend="locale"/>).
 The default current module is now the empty module <literal>Hugs.Base</literal>
 instead of the <literal>Prelude</literal>
 (see <xref linkend="module-commands"/>).
+
+<listitem><para>
+The new <link linkend="option-split-options"><option>-X</option></link> option
+can be used to group several options into one argument.
+This is now needed for executable <command>runhugs</command> scripts
+(using the Unix <quote><literal>#!</literal></quote> feature)
+that require two or more options (see <xref linkend="runhugs"/>).
 </para></listitem>
 </itemizedlist>
 

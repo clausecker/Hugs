@@ -502,6 +502,9 @@ String s; {              /* return FALSE if none found.     */
 	    case 'L' : ffiSetFlags(s+1);
 		       return TRUE;
 
+		       /* re-parse options (useful with #!) */
+	    case 'X' : return readOptions2(s+1);
+
 	    case 'h' : setHeapSize(s+1);
 		       return TRUE;
 
