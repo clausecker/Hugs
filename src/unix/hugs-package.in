@@ -16,7 +16,7 @@ usage="$0 [-o script] source-dir [target-dir]"
 
 cpp_flags='-D__HUGS__'
 
-cc=${CC-gcc}
+cc=${CC-@CC@}
 : ${cpp='gcc -P -E -traditional -xc'}
 : ${hsc2hs=hsc2hs}
 : ${greencard=green-card}
@@ -188,7 +188,7 @@ done <$module_list
 
 # Pass 2: compile FFI modules (or save commands in a script)
 
-conf_in=`echo $source_dir/*.conf.in`
+conf_in=$source_dir/package.conf.in
 conf=`echo $source_dir/*.conf`
 
 if [ -f "$conf_in" ]

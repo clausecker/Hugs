@@ -56,11 +56,11 @@ hugs/exclude
 	a list of names of modules to be skipped by the conversion script.
 	(Only the first word in each line is used, and blank lines and
 	lines starting with # are ignored, leaving room for explanations.)
-*.conf.in
+package.conf.in
 	a package configuration file, to be preprocessed with cpp.
 	The script uses the extra_libraries and extra_ld_opts fields.
 	(It should also follow dependencies, but doesn't yet.)
-*.conf
+package.conf
 	a package configuration file (not to be preprocessed).
 
 The conversion script runs ffihugs where required.  It sets the include
