@@ -173,7 +173,7 @@ hugs.obj	: $(PRELUDE) storage.h connect.h errors.h command.h \
 		  script.h opts.h strutil.h evaluator.h machdep.h \
 		  goal.h output.h timer.c 
 storage.obj	: $(PRELUDE) storage.h connect.h errors.h opts.h \
-		  machdep.h evaluator.h
+		  machdep.h evaluator.h strutil.h
 input.obj	: $(PRELUDE) storage.h connect.h errors.h command.h \
 		  module.h script.h opts.h goal.h machdep.h parser.c 
 subst.obj	: $(PRELUDE) storage.h connect.h errors.h output.h \
