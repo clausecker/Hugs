@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.149 $
- * $Date: 2003/04/06 23:38:28 $
+ * $Revision: 1.150 $
+ * $Date: 2003/04/06 23:41:24 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -4592,7 +4592,7 @@ Name p; {
     if (generate_ffi) {
         name(p).arity
           = length(argTys)
-          + (isIO ? 2 : 0);
+          + (isIO ? IOArity : 0);
         implementForeignExport(line,name(p).foreignId,ext,argTys,isIO,t);
     }
 }
