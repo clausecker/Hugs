@@ -28,7 +28,7 @@ Long version:
 
  1) Run the configure script
 
-    On Unix (or other platform providing sh, sed and related tools):
+    On Unix, MacOS X, or other platform providing sh, sed and related tools:
 
       cd Hugs98/src/unix
       ./configure --exec-prefix=/usr/local/solaris --datadir=/usr/local/lib
@@ -61,7 +61,7 @@ Long version:
       run "make hugs.exe -n" to get a list of the files we compile
       and add them to your project.
 
-    On MacOS:
+    On MacOS (pre MacOS X):
 
       Open CodeWarrior Pro 5 and choose [File->Import Project...].
       Select the file ":hugs98:src:machugs:hugs.mcp.xml".  When the file
