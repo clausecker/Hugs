@@ -78,6 +78,15 @@ Int i; {
     free(scriptTable[i].fileName);
   if (scriptTable[i].realName)
     free(scriptTable[i].realName);
+  /* Note: the 'parentName' field is assumed to be pointing
+   * to a string that's not owned by this script stack entry
+   * (cf. assignment of 'parentName' in addScriptName()).
+   * Hence, there' no need to free it here.
+   *
+   * Should you feel that's too brittle, use strCopy() upon
+   * assignment in addScriptName() and free() here.
+   *
+   */
 }
 
 /* We record the number of scripts that loading the Prelude
