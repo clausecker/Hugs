@@ -824,7 +824,7 @@ Double quoted options may also contain the escape sequences
 <quote><literal>\ </literal></quote>,
 <quote><literal>\"</literal></quote> and
 <quote><literal>\\</literal></quote>.
-Other bachslashes are interpreted literally.
+Other backslashes are interpreted literally.
 </para>
 </listitem>
 </varlistentry>
