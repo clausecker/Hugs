@@ -112,7 +112,7 @@
 /* Define if time.h or sys/time.h define the timezone variable.  */
 #undef HAVE_TIMEZONE
 
-/* Define if we want to use Apple's OpenGL for the Quartz Display System on Mac OS X (instead of X11) */   
+/* Define to 1 if native OpenGL should be used on Mac OS X */   
 #undef USE_QUARTZ_OPENGL
 
 
@@ -566,6 +566,9 @@
 
 /* Define to 1 if you have the <GL/gl.h> header file. */
 #undef HAVE_GL_GL_H
+
+/* Define to 1 if you have the <GL/glut.h> header file. */
+#undef HAVE_GL_GLUT_H
 
 /* Define to 1 if you have the `gmtime' function. */
 #undef HAVE_GMTIME
