@@ -116,7 +116,7 @@ cd `pwd`
 " >$BuildFFI
 chmod 755 $BuildFFI
 
-packages='base haskell98 haskell-src network parsec QuickCheck fgl'
+packages='base haskell98 haskell-src mtl network parsec QuickCheck fgl'
 
 #
 # ToDo: fix -- cygwin supports 'unix' only when no -mno-cygwin is given to gcc
