@@ -11,8 +11,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.86 $
- * $Date: 2003/04/08 11:05:55 $
+ * $Revision: 1.87 $
+ * $Date: 2003/04/10 09:26:01 $
  * ------------------------------------------------------------------------*/
 #include "prelude.h"
 #include "storage.h"
@@ -21,6 +21,7 @@
 #include "opts.h"
 #include "strutil.h"
 #include "machdep.h"
+#include "evaluator.h" /* everybody() proto only */
 
 #ifdef HAVE_SIGNAL_H
 # include <signal.h>
