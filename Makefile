@@ -19,8 +19,6 @@ HSLIBSDIRS = concurrent data hssource lang net text util posix
 LIBRARIESDIRS = base haskell98 haskell-src mtl network parsec QuickCheck unix \
 	GLUT OpenGL fgl X11 HGL HaXml HUnit
 
-INSTALL_DOCS = YES
-
 # End of general settings (leave this line unchanged)
 
 # General targets:
@@ -42,12 +40,15 @@ all: fptools src/Makefile
 # We install the standard libraries and the simple demos.
 # We don't install things which don't work on Unix (e.g. Win32).
 
-install: fptools src/Makefile
+install: install_all_but_docs
+	cd docs; $(MAKE) install
+
+# Install everything except documentation, which is installed differently
+# by some packagers (e.g. rpm)
+
+install_all_but_docs: fptools src/Makefile
 	cd src; $(MAKE) install
 	cd libraries; $(MAKE) install
-ifeq "$(INSTALL_DOCS)" "YES"
-	cd docs; $(MAKE) install
-endif
 	cd demos; $(MAKE) install
 
 clean:
