@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: type.c,v $
- * $Revision: 1.17 $
- * $Date: 1999/12/21 21:59:32 $
+ * $Revision: 1.18 $
+ * $Date: 2000/03/04 00:58:51 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1423,7 +1423,8 @@ Cell e; {
     bindTv(alpha,typeIs,typeOff);
     tIs = typeIs;
     tOff = typeOff;
-    /* elim duplicate uses of imp params */
+    /* elim duplicates */
+    improve(line,NIL,preds);
     preds = scSimplify(preds);
     /* extract preds that we're going to bind */
     for (fs1=fs; nonNull(fs1); fs1=tl(fs1)) {
