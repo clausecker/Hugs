@@ -44,25 +44,6 @@ module DotNet
 	                -- -> [InArg]
                         -- -> IO ()
 
-	   -- automatic marshalling of known no. of args
-	, method_1      -- :: (NetType a1, NetType res)
-			-- => MethodName -> a1 -> Object c -> IO res
-	, method_2
-	, method_3
-	, method_4
-	, method_5
-	, method_6
-	, method_7
-
-	, staticMethod_1 -- :: (NetType a1, NetType res)
-	                 -- => ClassName -> MethodName -> a1 -> IO res
-	, staticMethod_2
-	, staticMethod_3
-	, staticMethod_4
-	, staticMethod_5
-	, staticMethod_6
-	, staticMethod_7
-	
 	, getField2 -- :: (NetType a) => FieldName -> Object b -> IO a
 	, setField2 -- :: (NetType a) => FieldName -> Object b -> a -> IO ()
 	
@@ -191,8 +172,8 @@ instance NetType () where
   result _ = return ()
 
 instance NetType Int where
-  arg i  = mkInt32 i
-  result x = toInt32 x
+  arg i  = mkInt i
+  result x = toInt_ x
 
 instance NetType Int8 where
   arg i  = mkSByte (fromIntegral i)
@@ -254,12 +235,10 @@ createObj clsName args = do
   primCreateObject clsName args
 
 {-
- Creating a new Object: via the nullary constructor.
+ Creating a new Object via the nullary constructor.
 -}
 new :: ClassName -> IO (Object a)
-new clsName = do
-  print ("new: " ++ clsName)
-  primCreateObject clsName emptyArgArray
+new clsName = primCreateObject clsName emptyArgArray
 
 emptyArgArray :: Object ()
 emptyArgArray = unsafePerformIO $ do
@@ -355,166 +334,6 @@ setStaticField2 :: (NetType a) => ClassName -> FieldName -> a -> IO ()
 setStaticField2 cName fName val = do
   p     <- arg val
   setStaticField cName fName p
-
-method_1 :: (NetType a1, NetType res)
-	 => MethodName -> a1 -> Object c -> IO res
-method_1 mName a1 obj
-  = method mName
-  	   [ arg a1
-	   ]
-	   obj
-
-method_2 :: (NetType a1, NetType a2, NetType res)
-	 => MethodName -> a1 -> a2 -> Object c -> IO res
-method_2 mName a1 a2 obj 
-  = method mName
-  	   [ arg a1
-	   , arg a2
-	   ]
-	   obj
-
-method_3 :: (NetType a1, NetType a2, NetType a3, NetType res)
-	 => MethodName -> a1 -> a2 -> a3 -> Object c -> IO res
-method_3 mName a1 a2 a3 obj
-  = method mName
-  	   [ arg a1
-	   , arg a2
-	   , arg a3
-	   ]
-	   obj
-
-method_4 :: (NetType a1, NetType a2, NetType a3, NetType a4, NetType res)
-	 => MethodName -> a1 -> a2 -> a3 -> a4 -> Object c -> IO res
-method_4 mName a1 a2 a3 a4 obj
-  = method mName
-  	   [ arg a1
-	   , arg a2
-	   , arg a3
-	   , arg a4
-           ]
-	   obj
-
-method_5 :: (NetType a1, NetType a2, NetType a3, 
-	     NetType a4, NetType a5, NetType res)
-	 => MethodName -> a1 -> a2 -> a3 -> a4 -> a5 -> Object c -> IO res
-method_5 mName a1 a2 a3 a4 a5 obj 
-  = method mName
-           [ arg a1
-	   , arg a2
-	   , arg a3
-	   , arg a4
-	   , arg a5
-	   ]
-	   obj
-
-method_6 :: (NetType a1, NetType a2, NetType a3, 
-	     NetType a4, NetType a5, NetType a6,
-	     NetType res)
-	 => MethodName -> a1 -> a2 -> a3 -> a4 
-	 -> a5 -> a6 -> Object c -> IO res
-method_6 mName a1 a2 a3 a4 a5 a6 obj 
-  = method mName
-           [ arg a1
-	   , arg a2
-	   , arg a3
-	   , arg a4
-	   , arg a5
-	   , arg a6
-	   ]
-	   obj
-
-method_7 :: (NetType a1, NetType a2, NetType a3, 
-	     NetType a4, NetType a5, NetType a6,
-	     NetType a7, NetType res)
-	 => MethodName -> a1 -> a2 -> a3 -> a4 
-	 -> a5 -> a6 -> a7 -> Object c -> IO res
-method_7 mName a1 a2 a3 a4 a5 a6 a7 obj
-  = method mName
-           [ arg a1
-	   , arg a2
-	   , arg a3
-	   , arg a4
-	   , arg a5
-	   , arg a6
-	   , arg a7
-	   ]
-	   obj
-
-staticMethod_1 :: (NetType a1, NetType res)
-	       => ClassName -> MethodName -> a1 -> IO res
-staticMethod_1 cls mName a1
-  = staticMethod cls mName
-  	         [ arg a1
-	         ]
-
-staticMethod_2 :: (NetType a1, NetType a2, NetType res)
-	       => ClassName -> MethodName -> a1 -> a2 -> IO res
-staticMethod_2 cls mName a1 a2
-  = staticMethod cls mName
-  	         [ arg a1
-		 , arg a2
-	         ]
-
-staticMethod_3 :: (NetType a1, NetType a2, NetType a3, NetType res)
-	       => ClassName -> MethodName -> a1 -> a2 -> a3 -> IO res
-staticMethod_3 cls mName a1 a2 a3
-  = staticMethod cls mName
-  	         [ arg a1
-		 , arg a2
-		 , arg a3
-	         ]
-
-staticMethod_4 :: (NetType a1, NetType a2, NetType a3, 
-		   NetType a4, NetType res)
-	       => ClassName -> MethodName -> a1 -> a2 -> a3 -> a4 -> IO res
-staticMethod_4 cls mName a1 a2 a3 a4
-  = staticMethod cls mName
-  	         [ arg a1
-		 , arg a2
-		 , arg a3
-		 , arg a4
-	         ]
-
-staticMethod_5 :: (NetType a1, NetType a2, NetType a3, 
-		   NetType a4, NetType a5, NetType res)
-	       => ClassName -> MethodName -> a1 -> a2 -> a3 -> a4 -> a5 -> IO res
-staticMethod_5 cls mName a1 a2 a3 a4 a5
-  = staticMethod cls mName
-  	         [ arg a1
-		 , arg a2
-		 , arg a3
-		 , arg a4
-		 , arg a5
-	         ]
-
-staticMethod_6 :: (NetType a1, NetType a2, NetType a3, 
-		   NetType a4, NetType a5, NetType a6,
-		   NetType res)
-	       => ClassName -> MethodName -> a1 -> a2 -> a3 -> a4 -> a5 -> a6 -> IO res
-staticMethod_6 cls mName a1 a2 a3 a4 a5 a6
-  = staticMethod cls mName
-  	         [ arg a1
-		 , arg a2
-		 , arg a3
-		 , arg a4
-		 , arg a5
-		 , arg a6
-	         ]
-
-staticMethod_7 :: (NetType a1, NetType a2, NetType a3, 
-		   NetType a4, NetType a5, NetType a6,
-		   NetType a7, NetType res)
-	       => ClassName -> MethodName -> a1 -> a2 -> a3 -> a4 -> a5 -> a6 -> a7 -> IO res
-staticMethod_7 cls mName a1 a2 a3 a4 a5 a6 a7
-  = staticMethod cls mName
-  	         [ arg a1
-		 , arg a2
-		 , arg a3
-		 , arg a4
-		 , arg a5
-		 , arg a6
-		 , arg a7
-	         ]
 
 data System obj
 data Delegate obj
@@ -703,12 +522,6 @@ invokeStatic clsName methName args = do
   res   <- invokeStaticMethod (mkStaticMethod clsName methName) args
   result res
 
-toInt32 :: Object a -> IO Int
-toInt32 = hsValue
-
-mkInt32 :: Int -> IO (Object a)
-mkInt32 = boxValue
-
 hsString :: Object a -> IO String
 hsString x = toString x
 
@@ -718,7 +531,7 @@ hsValue x = result (castObjTy x)
 boxValue :: NetType a => a -> IO (Object b)
 boxValue v = do
  r <- arg v
- return (castObjTy r)
+ return (castObjTy (r :: Object ()))
 
 -- type unsafe.
 mkVector :: BaseType -> Int -> IO (Object a)
@@ -746,6 +559,22 @@ mkVector eltTy sz = do
       UInt64Ty   -> 11
      
 
+foreign import dotnet
+  "static method System.Convert.ToInt32"
+  mkInt32 :: Int32 -> IO (Object ())
+
+foreign import dotnet
+  "static method System.Convert.ToInt32"
+  toInt32 :: Object a -> IO Int32
+  
+foreign import dotnet
+  "static method System.Convert.ToInt32"
+  mkInt :: Int -> IO (Object ())
+
+foreign import dotnet
+  "static method System.Convert.ToInt32"
+  toInt_ :: Object a -> IO Int
+  
 foreign import dotnet
   "static method System.Convert.ToSByte"
   mkSByte :: Int8 -> IO (Object ())
