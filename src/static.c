@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.51 $
- * $Date: 2001/12/20 20:38:50 $
+ * $Revision: 1.52 $
+ * $Date: 2001/12/24 08:06:01 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -32,8 +32,8 @@ static List   local checkSubentities	Args((List,List,List,String,Text));
 static List   local checkExportTycon	Args((List,Text,Cell,Tycon));
 static List   local checkExportClass	Args((List,Text,Cell,Class));
 static List   local checkExport		Args((List,Text,Cell));
-static List   local checkImportEntity	Args((List,Module,Cell));
-static List   local resolveImportList	Args((Module,Cell));
+static List   local checkImportEntity	Args((List,Module,Bool,Cell));
+static List   local resolveImportList	Args((Module,Cell,Bool));
 static Void   local checkImportList	Args((Pair));
 
 static Cell   local importEntity	Args((Module,Cell));
@@ -428,10 +428,11 @@ Text   textParent; {
     return imports;
 }
 
-static List local checkImportEntity(imports,exporter,entity)
+static List local checkImportEntity(imports,exporter,isHidden,entity)
 List   imports; /* Accumulated list of things to import */
 Module exporter;
-Cell   entity; { /* Entry from import list */
+Bool   isHidden;
+Cell   entity; { /* Entry from import/hiding list */
     List oldImports = imports;
     Text t  = isIdent(entity) ? textOf(entity) : textOf(fst(entity));
     List es = module(exporter).exports; 
@@ -480,17 +481,18 @@ Cell   entity; { /* Entry from import list */
 	}
     }
     if (imports == oldImports) {
-	ERRMSG(0) "Unknown entity \"%s\" imported from module \"%s\"",
-		  textToStr(t),
+	ERRMSG(0) "Unknown entity \"%s\" %s from module \"%s\"",
+                  textToStr(t), ((!isHidden) ? "imported" : "hidden"),
 		  textToStr(module(exporter ).text)
 	EEND;
     }
     return imports;
 }
 
-static List local resolveImportList(m,impList)
+static List local resolveImportList(m,impList,isHidden)
 Module m;  /* exporting module */
-Cell   impList; {
+Cell   impList;
+Bool   isHidden; {
     List imports = NIL;
     if (DOTDOT == impList) {
 	List es = module(m).exports;
@@ -514,7 +516,7 @@ Cell   impList; {
 	    }
 	}
     } else {
-	map1Accum(checkImportEntity,imports,m,impList);
+	map2Accum(checkImportEntity,imports,m,isHidden,impList);
     }
     return imports;
 }
@@ -539,8 +541,8 @@ Pair importSpec; {
 	/* Somewhat inefficient - but obviously correct:
 	 * imports = importsOf("module Foo") `setDifference` hidden;
 	 */
-	hidden  = resolveImportList(m, snd(impList));
-	imports = resolveImportList(m, DOTDOT);
+	hidden  = resolveImportList(m, snd(impList),TRUE);
+	imports = resolveImportList(m, DOTDOT,FALSE);
 
 	/* The loop over the 'imports' list happens in both
 	 * branches, but, for efficiency reasons only, we
@@ -553,7 +555,7 @@ Pair importSpec; {
 	  }
 	}
     } else {
-	imports = resolveImportList(m, impList);
+	imports = resolveImportList(m, impList,FALSE);
         for(; nonNull(imports); imports=tl(imports)) {
           modImps = cons(importEntity(m,hd(imports)), modImps);
 	}
