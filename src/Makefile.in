@@ -74,8 +74,8 @@ hugs@EXE@	: $(IOBJECTS) @WOBJECTS@ @RC_FILES@
 
 version.h	: version.h.in $(SOURCES)
 		  @echo "/* version.h - generated from version.h.in by Makefile */" > version.h
-		  @sed -e "s/MONTH_YEAR/`date +"%B %Y"`/" \
-		      -e "s/YYYYMMDD/`date +"%Y%m%d"`/" \
+		  @sed -e "s/MONTH_YEAR/`date +"%B %Y" 2> /dev/null`/" \
+		      -e "s/YYYYMMDD/`date +"%Y%m%d" 2> /dev/null`/" \
 		      < version.h.in >> version.h
 
 SERVER_OBJECTS	= server@OBJ@ $(OBJECTS) 
