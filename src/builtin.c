@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: builtin.c,v $
- * $Revision: 1.78 $
- * $Date: 2004/10/23 19:08:36 $
+ * $Revision: 1.79 $
+ * $Date: 2004/10/29 11:46:01 $
  * ------------------------------------------------------------------------*/
 
 /* We include math.h before prelude.h because SunOS 4's cpp incorrectly
@@ -2026,7 +2026,7 @@ static void* mkThunk(void (*app)(void), HugsStablePtr s) {
     { char** tmpPtr = (char**)pc;   *tmpPtr = obscure_ccall_ret_code;   pc += sizeof(*tmpPtr); }
 
     /* 2 bytes: jmp *%eax */
-    *pc++ = 0xff; *pc++ = 0xe0;
+    *pc++ = (char)0xff; *pc++ = (char)0xe0;
 
 #elif defined(__ppc__) && defined(__GNUC__)
      /* This is only for MacOS X.
@@ -2347,7 +2347,7 @@ void hs_free_stable_ptr(HsStablePtr sp)
 
 void hs_free_fun_ptr(HsFunPtr fp)
 {
-    freeHaskellFunctionPtr(fp);
+    freeHaskellFunctionPtr((void *)fp);
 }
 
 /* --------------------------------------------------------------------------
