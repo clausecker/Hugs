@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: input.c,v $
- * $Revision: 1.13 $
- * $Date: 2000/08/03 00:07:17 $
+ * $Revision: 1.14 $
+ * $Date: 2000/08/04 17:00:34 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -144,10 +144,11 @@ static List imps;                       /* List of imports to be chased    */
 
 #if HERE_DOC
 enum { START = 0,
-       DOLLAR_PAREN,
+       KEEP_GOING,
+       BEGIN_VAR,
        HERE_VAR,
-       CLOSE_PAREN,
-       KEEP_GOING };
+       END_VAR,
+       CLOSE_PAREN };
 static Int hereState = START;
 #endif
 
@@ -833,7 +834,7 @@ static Cell local readString() {       /* read string literal              */
 }
 
 #if HERE_DOC
-static Cell local readHereString() {       /* read fragment of here doc    */
+static Void local readHereString() {       /* read fragment of here doc    */
     startToken();
     while ((c0!='\'' || c1!='\'') && c0!=EOF) {
 	if (c0 == '$') {
@@ -842,7 +843,8 @@ static Cell local readHereString() {       /* read fragment of here doc    */
 	    case '$' :
 		break;
 	    case '(' :
-		hereState = DOLLAR_PAREN;
+		skip();
+		hereState = BEGIN_VAR;
 		goto urgh;
 	    default :
 		ERRMSG(row) "Singleton $ in here document"
@@ -858,10 +860,11 @@ static Cell local readHereString() {       /* read fragment of here doc    */
     }
     /* eat the closing ticks */
     skip(); skip();
+    hereState = CLOSE_PAREN;
 
   urgh:
     endToken();
-    return mkStr(findText(tokenStr));
+    push(yylval = mkStr(findText(tokenStr)));
 }
 
 static Void local hereJoin() {
@@ -1348,33 +1351,31 @@ static Int local yylex() {             /* Read next input token ...        */
 #if HERE_DOC
     if (hereState) {
 	switch (hereState) {
-	case DOLLAR_PAREN :
-	{
-	    skip();
-	    hereState = HERE_VAR;
+        case KEEP_GOING :
+	    readHereString();
+	    return STRINGLIT;
+	case BEGIN_VAR :
 	    hereJoin();
+	    hereState = HERE_VAR;
 	    return VAROP;
-	}
 	case HERE_VAR :
-	    hereState = CLOSE_PAREN;
+	    hereState = END_VAR;
 	    /* will parse and return id, and come back in the right state */
 	    break;
-        case CLOSE_PAREN :
-	{
+        case END_VAR :
 	    skipWhitespace();
 	    if (c0!=')') {
 		ERRMSG(row) "Improperly escaped variable in here document"
 		EEND;
 	    }
 	    skip();
-	    hereState = KEEP_GOING;
 	    hereJoin();
+	    hereState = KEEP_GOING;
 	    return VAROP;
-	}
-        case KEEP_GOING :
+	case CLOSE_PAREN :
+	    push(yylval = mkInt(row));
 	    hereState = START;
-	    push(yylval = readHereString());
-	    return STRINGLIT;
+	    return ')';
 	}
     }
 #endif
@@ -1404,8 +1405,8 @@ static Int local yylex() {             /* Read next input token ...        */
 #if HERE_DOC && !HASKELL_98_ONLY
     if (c0=='\'' && c1=='\'' && !haskell98) {
 	skip(); skip();
-	top() = yylval = readHereString();
-	return STRINGLIT;
+	hereState = KEEP_GOING;
+	return '(';
     }
 #endif
 
