@@ -1,6 +1,6 @@
 #define DECLARE(T) \
-void wr##T(Hs##T *arg1, HsInt arg2, Hs##T arg3); \
-Hs##T rd##T(Hs##T *arg1, HsInt arg2); \
+void write##T##OffPtr(Hs##T *arg1, HsInt arg2, Hs##T arg3); \
+Hs##T read##T##OffPtr(Hs##T *arg1, HsInt arg2); \
 HsInt sz##T(void);
 
 

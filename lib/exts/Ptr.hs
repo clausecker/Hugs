@@ -6,6 +6,7 @@ module Ptr
 	( Ptr
 	, nullPtr          -- :: Ptr a
  	, plusPtr          -- :: Ptr a -> Int -> Ptr b
+        , castPtr          -- :: Ptr a -> Ptr b
 	, ptrToInt         -- :: Ptr a -> Int
 	-- instance Eq   (Ptr a)
 	-- instance Show (Ptr a)
@@ -24,6 +25,7 @@ instance Show (Ptr a) where showsPrec = primShowsPtr
 
 primitive nullPtr      "nullAddr"      :: Ptr a
 primitive plusPtr      "plusAddr"      :: Ptr a -> Int -> Ptr b
+primitive castPtr      "primUnsafeCoerce" :: Ptr a -> Ptr b
 primitive primShowsPtr "primShowsAddr" :: Int -> Ptr a -> ShowS
 primitive primEqPtr    "primEqAddr"    :: Ptr a -> Ptr a -> Bool
 primitive ptrToInt     "addrToInt"     :: Ptr a -> Int

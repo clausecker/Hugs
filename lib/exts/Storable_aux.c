@@ -1,8 +1,8 @@
 #include "HsFFI.h"
 
 #define DEFINE(T) \
-void wr##T(Hs##T *arg1, HsInt arg2, Hs##T arg3) { arg1[arg2] = arg3; } \
-Hs##T rd##T(Hs##T *arg1, HsInt arg2) { return arg1[arg2]; } \
+void write##T##OffPtr(Hs##T *arg1, HsInt arg2, Hs##T arg3) { arg1[arg2] = arg3; } \
+Hs##T read##T##OffPtr(Hs##T *arg1, HsInt arg2) { return arg1[arg2]; } \
 HsInt sz##T(void) { return sizeof(Hs##T); } 
 
 

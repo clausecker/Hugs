@@ -15,6 +15,7 @@ module Storable
         ) where
 
 import Ptr
+import HugsStorable
 
 class Storable a where
    sizeOf      :: a -> Int
@@ -35,75 +36,21 @@ class Storable a where
    peek ptr = peekElemOff ptr 0
    poke ptr = pokeElemOff ptr 0
 
-instance Storable Int           where { sizeOf _ = szInt      ; alignment _ = 1; peekElemOff = rdInt      ; pokeElemOff = wrInt       }
-instance Storable Char          where { sizeOf _ = szChar     ; alignment _ = 1; peekElemOff = rdChar     ; pokeElemOff = wrChar      }
--- instance Storable WideChar   where { sizeOf _ = szWideChar ; alignment _ = 1; peekElemOff = rdWideChar ; pokeElemOff = wrWideChar  }
--- instance Storable Word       where { sizeOf _ = szWord     ; alignment _ = 1; peekElemOff = rdWord     ; pokeElemOff = wrWord      }
-instance Storable (Ptr a)       where { sizeOf _ = szPtr      ; alignment _ = 1; peekElemOff = rdPtr      ; pokeElemOff = wrPtr       }
-instance Storable (FunPtr a)    where { sizeOf _ = szFunPtr   ; alignment _ = 1; peekElemOff = rdFunPtr   ; pokeElemOff = wrFunPtr    }
-instance Storable Float         where { sizeOf _ = szFloat    ; alignment _ = 1; peekElemOff = rdFloat    ; pokeElemOff = wrFloat     }
-instance Storable Double        where { sizeOf _ = szDouble   ; alignment _ = 1; peekElemOff = rdDouble   ; pokeElemOff = wrDouble    }
-instance Storable (StablePtr a) where { sizeOf _ = szStablePtr; alignment _ = 1; peekElemOff = rdStablePtr; pokeElemOff = wrStablePtr }
-instance Storable Int8          where { sizeOf _ = szInt8     ; alignment _ = 1; peekElemOff = rdInt8     ; pokeElemOff = wrInt8      }
-instance Storable Int16         where { sizeOf _ = szInt16    ; alignment _ = 1; peekElemOff = rdInt16    ; pokeElemOff = wrInt16     }
-instance Storable Int32         where { sizeOf _ = szInt32    ; alignment _ = 1; peekElemOff = rdInt32    ; pokeElemOff = wrInt32     }
-instance Storable Int64         where { sizeOf _ = szInt64    ; alignment _ = 1; peekElemOff = rdInt64    ; pokeElemOff = wrInt64     }
-instance Storable Word8         where { sizeOf _ = szWord8    ; alignment _ = 1; peekElemOff = rdWord8    ; pokeElemOff = wrWord8     }
-instance Storable Word16        where { sizeOf _ = szWord16   ; alignment _ = 1; peekElemOff = rdWord16   ; pokeElemOff = wrWord16    }
-instance Storable Word32        where { sizeOf _ = szWord32   ; alignment _ = 1; peekElemOff = rdWord32   ; pokeElemOff = wrWord32    }
-instance Storable Word64        where { sizeOf _ = szWord64   ; alignment _ = 1; peekElemOff = rdWord64   ; pokeElemOff = wrWord64    }
-
-foreign import ccall unsafe "Storable_aux.h" szInt       :: Int
-foreign import ccall unsafe "Storable_aux.h" szChar      :: Int
--- foreign import ccall unsafe "Storable_aux.h" szWideChar  :: Int
--- foreign import ccall unsafe "Storable_aux.h" szWord      :: Int
-foreign import ccall unsafe "Storable_aux.h" szPtr       :: Int
-foreign import ccall unsafe "Storable_aux.h" szFunPtr    :: Int
-foreign import ccall unsafe "Storable_aux.h" szFloat     :: Int
-foreign import ccall unsafe "Storable_aux.h" szDouble    :: Int
-foreign import ccall unsafe "Storable_aux.h" szStablePtr :: Int
-foreign import ccall unsafe "Storable_aux.h" szInt8      :: Int
-foreign import ccall unsafe "Storable_aux.h" szInt16     :: Int
-foreign import ccall unsafe "Storable_aux.h" szInt32     :: Int
-foreign import ccall unsafe "Storable_aux.h" szInt64     :: Int
-foreign import ccall unsafe "Storable_aux.h" szWord8     :: Int
-foreign import ccall unsafe "Storable_aux.h" szWord16    :: Int
-foreign import ccall unsafe "Storable_aux.h" szWord32    :: Int
-foreign import ccall unsafe "Storable_aux.h" szWord64    :: Int
-
-foreign import ccall unsafe "Storable_aux.h" rdInt       :: Ptr Int           -> Int -> IO Int
-foreign import ccall unsafe "Storable_aux.h" rdChar      :: Ptr Char          -> Int -> IO Char
--- foreign import ccall unsafe "Storable_aux.h" rdWideChar  :: Ptr Char          -> Int -> IO Char
--- foreign import ccall unsafe "Storable_aux.h" rdWord      :: Ptr Word          -> Int -> IO Word
-foreign import ccall unsafe "Storable_aux.h" rdPtr       :: Ptr (Ptr a)       -> Int -> IO (Ptr a)
-foreign import ccall unsafe "Storable_aux.h" rdFunPtr    :: Ptr (FunPtr a)    -> Int -> IO (FunPtr a)
-foreign import ccall unsafe "Storable_aux.h" rdFloat     :: Ptr Float         -> Int -> IO Float
-foreign import ccall unsafe "Storable_aux.h" rdDouble    :: Ptr Double        -> Int -> IO Double
-foreign import ccall unsafe "Storable_aux.h" rdStablePtr :: Ptr (StablePtr a) -> Int -> IO (StablePtr a)
-foreign import ccall unsafe "Storable_aux.h" rdInt8      :: Ptr Int8          -> Int -> IO Int8
-foreign import ccall unsafe "Storable_aux.h" rdInt16     :: Ptr Int16         -> Int -> IO Int16
-foreign import ccall unsafe "Storable_aux.h" rdInt32     :: Ptr Int32         -> Int -> IO Int32
-foreign import ccall unsafe "Storable_aux.h" rdInt64     :: Ptr Int64         -> Int -> IO Int64
-foreign import ccall unsafe "Storable_aux.h" rdWord8     :: Ptr Word8         -> Int -> IO Word8
-foreign import ccall unsafe "Storable_aux.h" rdWord16    :: Ptr Word16        -> Int -> IO Word16
-foreign import ccall unsafe "Storable_aux.h" rdWord32    :: Ptr Word32        -> Int -> IO Word32
-foreign import ccall unsafe "Storable_aux.h" rdWord64    :: Ptr Word64        -> Int -> IO Word64
-
-foreign import ccall unsafe "Storable_aux.h" wrInt       :: Ptr Int           -> Int -> Int         -> IO ()
-foreign import ccall unsafe "Storable_aux.h" wrChar      :: Ptr Char          -> Int -> Char        -> IO ()
--- foreign import ccall unsafe "Storable_aux.h" wrWideChar  :: Ptr Char          -> Int -> Char        -> IO ()
--- foreign import ccall unsafe "Storable_aux.h" wrWord      :: Ptr Word          -> Int -> Word        -> IO ()
-foreign import ccall unsafe "Storable_aux.h" wrPtr       :: Ptr (Ptr a)       -> Int -> Ptr a       -> IO ()
-foreign import ccall unsafe "Storable_aux.h" wrFunPtr    :: Ptr (FunPtr a)    -> Int -> FunPtr a    -> IO ()
-foreign import ccall unsafe "Storable_aux.h" wrFloat     :: Ptr Float         -> Int -> Float       -> IO ()
-foreign import ccall unsafe "Storable_aux.h" wrDouble    :: Ptr Double        -> Int -> Double      -> IO ()
-foreign import ccall unsafe "Storable_aux.h" wrStablePtr :: Ptr (StablePtr a) -> Int -> StablePtr a -> IO ()
-foreign import ccall unsafe "Storable_aux.h" wrInt8      :: Ptr Int8          -> Int -> Int8        -> IO ()
-foreign import ccall unsafe "Storable_aux.h" wrInt16     :: Ptr Int16         -> Int -> Int16       -> IO ()
-foreign import ccall unsafe "Storable_aux.h" wrInt32     :: Ptr Int32         -> Int -> Int32       -> IO ()
-foreign import ccall unsafe "Storable_aux.h" wrInt64     :: Ptr Int64         -> Int -> Int64       -> IO ()
-foreign import ccall unsafe "Storable_aux.h" wrWord8     :: Ptr Word8         -> Int -> Word8       -> IO ()
-foreign import ccall unsafe "Storable_aux.h" wrWord16    :: Ptr Word16        -> Int -> Word16      -> IO ()
-foreign import ccall unsafe "Storable_aux.h" wrWord32    :: Ptr Word32        -> Int -> Word32      -> IO ()
-foreign import ccall unsafe "Storable_aux.h" wrWord64    :: Ptr Word64        -> Int -> Word64      -> IO ()
+instance Storable Int           where { sizeOf _ = szInt      ; alignment _ = 1; peekElemOff = readIntOffPtr      ; pokeElemOff = writeIntOffPtr       }
+instance Storable Char          where { sizeOf _ = szChar     ; alignment _ = 1; peekElemOff = readCharOffPtr     ; pokeElemOff = writeCharOffPtr      }
+-- instance Storable WideChar   where { sizeOf _ = szWideChar ; alignment _ = 1; peekElemOff = readWideCharOffPtr ; pokeElemOff = writeWideCharOffPtr  }
+-- instance Storable Word       where { sizeOf _ = szWord     ; alignment _ = 1; peekElemOff = readWordOffPtr     ; pokeElemOff = writeWordOffPtr      }
+instance Storable (Ptr a)       where { sizeOf _ = szPtr      ; alignment _ = 1; peekElemOff = readPtrOffPtr      ; pokeElemOff = writePtrOffPtr       }
+instance Storable (FunPtr a)    where { sizeOf _ = szFunPtr   ; alignment _ = 1; peekElemOff = readFunPtrOffPtr   ; pokeElemOff = writeFunPtrOffPtr    }
+instance Storable Float         where { sizeOf _ = szFloat    ; alignment _ = 1; peekElemOff = readFloatOffPtr    ; pokeElemOff = writeFloatOffPtr     }
+instance Storable Double        where { sizeOf _ = szDouble   ; alignment _ = 1; peekElemOff = readDoubleOffPtr   ; pokeElemOff = writeDoubleOffPtr    }
+instance Storable (StablePtr a) where { sizeOf _ = szStablePtr; alignment _ = 1; peekElemOff = readStablePtrOffPtr; pokeElemOff = writeStablePtrOffPtr }
+instance Storable Int8          where { sizeOf _ = szInt8     ; alignment _ = 1; peekElemOff = readInt8OffPtr     ; pokeElemOff = writeInt8OffPtr      }
+instance Storable Int16         where { sizeOf _ = szInt16    ; alignment _ = 1; peekElemOff = readInt16OffPtr    ; pokeElemOff = writeInt16OffPtr     }
+instance Storable Int32         where { sizeOf _ = szInt32    ; alignment _ = 1; peekElemOff = readInt32OffPtr    ; pokeElemOff = writeInt32OffPtr     }
+instance Storable Int64         where { sizeOf _ = szInt64    ; alignment _ = 1; peekElemOff = readInt64OffPtr    ; pokeElemOff = writeInt64OffPtr     }
+instance Storable Word8         where { sizeOf _ = szWord8    ; alignment _ = 1; peekElemOff = readWord8OffPtr    ; pokeElemOff = writeWord8OffPtr     }
+instance Storable Word16        where { sizeOf _ = szWord16   ; alignment _ = 1; peekElemOff = readWord16OffPtr   ; pokeElemOff = writeWord16OffPtr    }
+instance Storable Word32        where { sizeOf _ = szWord32   ; alignment _ = 1; peekElemOff = readWord32OffPtr   ; pokeElemOff = writeWord32OffPtr    }
+instance Storable Word64        where { sizeOf _ = szWord64   ; alignment _ = 1; peekElemOff = readWord64OffPtr   ; pokeElemOff = writeWord64OffPtr    }
 
