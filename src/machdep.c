@@ -11,8 +11,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.92 $
- * $Date: 2003/07/04 13:49:12 $
+ * $Revision: 1.93 $
+ * $Date: 2003/07/15 22:49:09 $
  * ------------------------------------------------------------------------*/
 #include "prelude.h"
 #include "storage.h"
@@ -712,10 +712,9 @@ String filename; {              /* Return ***input name*** if no file was found 
 
 /* Finding the filename corresponding to a module name:
 
-    find maybe_dir nm = [ d++f++e | d <- dirs, f <- files, e <- exts ]
+    find maybe_dir nm = [ d ++ map dot2slash nm ++ e | d <- dirs, e <- exts ]
       where 
         dirs          = maybeToList maybe_dir ++ "" : hugsPath
-        files         = [map dot2slash nm, nm]
         exts          = hugsSuffixes		-- default: [".hs",".lhs"]
 
 	-- the dir is added if the importing module was found there, or
@@ -796,25 +795,13 @@ String name; {
 
 static Bool local find2(s)	/* Turn module name into a filename */
 String s; {
-    Int save;
-    Bool dots = FALSE;
     String sp;
 
-    /* first, try the module name with dots replaced by slashes */
-    save = searchPos;
+    /* replace all dots in the module name with slashes */
     for (sp = s; *sp; sp++) {
-	if (*sp == '.') {
-	    searchBuf[searchPos++] = SLASH;
-	    dots = TRUE;
-	} else
-	    searchBuf[searchPos++] = *sp;
+	searchBuf[searchPos++] = *sp == '.' ? SLASH : *sp;
     }
-    if (tryEndings(""))
-	return TRUE;
-    searchReset(save);
-
-    /* then try the module name as-is (if different) */
-    return dots && tryEndings(s);
+    return tryEndings("");
 }
 
 String dirname(filename)	/* Return the directory part of the filename */
