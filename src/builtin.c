@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: builtin.c,v $
- * $Revision: 1.72 $
- * $Date: 2003/12/02 12:15:49 $
+ * $Revision: 1.73 $
+ * $Date: 2003/12/06 13:22:20 $
  * ------------------------------------------------------------------------*/
 
 /* We include math.h before prelude.h because SunOS 4's cpp incorrectly
@@ -1360,17 +1360,17 @@ primFun(primCmpDouble) {               /* Double compare primitive         */
 String evalName(es)                     /* evaluate es :: [Char] and save  */
 Cell es; {                              /* in char array... return ptr to  */
     static char buffer[FILENAME_MAX+1]; /* string or 0, if error occurs    */
-    Int         pos    = 0;
+    char	*bp = buffer;
     StackPtr    saveSp = sp;
 
     eval(es);
-    while (whnfHead==nameCons && pos<FILENAME_MAX) {
+    while (whnfHead==nameCons && bp<=buffer+FILENAME_MAX-MAX_CHAR_ENCODING) {
 	eval(pop());
-	buffer[pos++] = (char)charOf(whnfHead);
+	AddChar(charOf(whnfHead), bp);
 	eval(pop());
     }
     if (whnfHead==nameNil) {
-	buffer[pos] = '\0';
+	*bp = '\0';
 	return buffer;
     }
     sp = saveSp;                        /* stack pointer must be the same  */
