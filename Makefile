@@ -52,19 +52,19 @@ install_all_but_docs: fptools src/Makefile
 	cd libraries; $(MAKE) install
 	cd demos; $(MAKE) install
 
-clean:
+clean: clean_root
 	cd src; if test -f Makefile; then $(MAKE) clean; fi
 	cd libraries; if test -f Makefile; then $(MAKE) clean; fi
 	cd docs; if test -f Makefile; then $(MAKE) clean; fi
 	cd demos; if test -f Makefile; then $(MAKE) clean; fi
 
-distclean: clean_root
+distclean: distclean_root
 	cd src; if test -f Makefile; then $(MAKE) distclean; fi
 	cd libraries; if test -f Makefile; then $(MAKE) distclean; fi
 	cd docs; if test -f Makefile; then $(MAKE) distclean; fi
 	cd demos; if test -f Makefile; then $(MAKE) distclean; fi
 
-veryclean: clean_root
+veryclean: veryclean_root
 	cd src; if test -f Makefile; then $(MAKE) veryclean; fi
 	cd libraries; if test -f Makefile; then $(MAKE) veryclean; fi
 	cd docs; if test -f Makefile; then $(MAKE) veryclean; fi
@@ -73,16 +73,12 @@ veryclean: clean_root
 clean_root:
 	$(RM) *.tar.gz *.rpm Defs.mk
 	$(RM) *~
+
+distclean_root: clean_root
 	$(RM) -r config.status config.log config.cache autom4te.cache
 	$(RM) MkDefs tests/config
-	$(RM) fptools/libraries/*/config.log
-	$(RM) fptools/libraries/*/config.status
-	$(RM) -r fptools/libraries/*/autom4te.cache
-	$(RM) fptools/libraries/*/.setup-config
-	$(RM) fptools/libraries/*/.installed-pkg-config
-	$(RM) -r fptools/libraries/HaXml/obj
-	find fptools/libraries -name \*.in | sed 's/\.in$$//' | xargs $(RM)
-	find fptools/libraries -name \*.hsc | sed 's/c$$//' | xargs $(RM)
+
+veryclean_root: distclean_root
 
 ################################################################
 # Regression tests (Unix only)

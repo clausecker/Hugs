@@ -52,6 +52,7 @@ hugs.ps:	hugs.1
 		groff -Tps -man hugs.1 >$@
 
 clean:
+		$(RM) *~
 		cd users_guide; $(MAKE) clean
 
 distclean:

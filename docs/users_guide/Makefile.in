@@ -47,6 +47,7 @@ install: $(SGMLDocWays)
 
 clean:
 	$(RM) $(PARTS)
+	$(RM) *~
 
 distclean: clean
 	$(RM) $(ROOT).dvi $(ROOT).ps $(ROOT).pdf

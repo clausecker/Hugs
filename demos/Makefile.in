@@ -29,6 +29,7 @@ install: all
 	$(INSTALL_DATA) ../demos/prolog/stdlib $(DESTDIR)$(hugsdir)/demos/prolog
 
 clean:
+	$(RM) *~
 
 distclean: clean
 	$(RM) Makefile

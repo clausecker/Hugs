@@ -70,21 +70,32 @@ $(INCLUDES): $(HEADERS)
 
 clean:
 	$(RM) LibStatus
+	$(RM) a.out
+	$(RM) *~
+	$(RM) -r bootlib
+	$(RM) hugsbase/.installed-pkg-config
+	$(RM) ../fptools/libraries/*/.installed-pkg-config
+	find ../fptools/libraries -name \*.hsc | sed 's/c$$//' | xargs $(RM)
+	$(RM) -r ../fptools/ghc/includes
+# package configuration is part of the build process, so clean it here
+	$(RM) hugsbase/.setup-config
+	$(RM) ../fptools/libraries/*/.setup-config
+	$(RM) ../fptools/libraries/*/config.log
+	$(RM) ../fptools/libraries/*/config.status
+	$(RM) -r ../fptools/libraries/*/autom4te.cache
+	$(RM) -r ../fptools/libraries/HaXml/obj
+	find ../fptools/libraries -name \*.in | sed 's/\.in$$//' | xargs $(RM)
 
 distclean: clean
-	$(RM) -r bootlib
 	$(RM) -r $(BUILD_DIR)
 	$(RM) config.log config.status
 	$(RM) -r autom4te.cache
-	$(RM) a.out
 	$(RM) include/ghcconfig.h
 	$(RM) Makefile
 	$(RM) tools/config tools/cpphs.sh
 	$(RM) tools/cpphs
 	$(RM) -r hsc2hs
 	$(RM) tools/hsc2hs
-	$(RM) hugsbase/.setup-config hugsbase/.installed-pkg-config
-	$(RM) -r ../fptools/ghc/includes
 
 veryclean: distclean
 
