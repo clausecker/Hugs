@@ -120,10 +120,10 @@ chmod 755 BuildFFI
 packages='base haskell98 haskell-src network parsec QuickCheck'
 
 #
-# ToDo: fix -- cygwin supports 'unix' (but mingw + msvc doesn't.)
+# ToDo: fix -- cygwin supports 'unix' only when no -mno-cygwin is given to gcc
 #
 case `uname -a` in
-*CYGWIN*) ;;
+CYGWIN*|MINGW32*) ;;
 *)	packages="$packages unix";;
 esac
 
