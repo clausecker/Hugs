@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: storage.c,v $
- * $Revision: 1.23 $
- * $Date: 2001/12/19 10:32:47 $
+ * $Revision: 1.24 $
+ * $Date: 2001/12/24 08:00:59 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -389,13 +389,15 @@ Cell id; {
 	    List   es = NIL;
 	    if (isNull(m)) return NIL;
 	    if (m == currentModule) {
-	      es = module(m).names;
+	      es = module(m).tycons;
 	    } else {
 	      es = module(m).exports;
 	    }
 	    for(; nonNull(es); es=tl(es)) {
 		Cell e = hd(es);
-		if (isPair(e) && isTycon(fst(e)) && tycon(fst(e)).text==t) 
+		if (isTycon(e) && tycon(e).text==t) 
+		    return e;
+		if (isPair(e) && isTycon(fst(e)) &&  tycon(fst(e)).text==t) 
 		    return fst(e);
 	    }
 	    return NIL;
@@ -418,6 +420,11 @@ Cell defn; {
     tycon(tc).what  = what;
     tycon(tc).defn  = defn;
     tycon(tc).arity = ar;
+
+#if !IGNORE_MODULES
+    tycon(tc).mod    = currentModule;
+    module(currentModule).tycons=cons(tc,module(currentModule).tycons);
+#endif
     return tc;
 }
 
@@ -651,6 +658,11 @@ Type   ty; {
     name(n).type	         = ty;
 
 
+#if !IGNORE_MODULES
+    name(n).mod = mod;
+    module(mod).names = cons(n,module(mod).names);
+#endif
+
     /*
      * (mini) sigh - the primitives for the Prelude'ish modules
      * are special in the sense that each such module doesn't
@@ -716,6 +728,12 @@ Cell type; {
     name(n).arity  = arity;
     name(n).number = cfunNo(no);
     name(n).type   = type;
+
+#if !IGNORE_MODULES
+    name(n).mod   = currentModule;
+    module(currentModule).names=cons(n,module(currentModule).names);
+#endif
+
     return n;
 }
 
@@ -925,12 +943,14 @@ Cell c; {				/* class in class list		   */
 	if (isNull(m))
 	    return NIL;
 	if (m == currentModule) {
-	   es = module(m).names;
+	   es = module(m).classes;
 	} else {
 	   es = module(m).exports;
 	}
 	for (; nonNull(es); es=tl(es)) {
 	    Cell e = hd(es);
+	    if (isClass(e) && cclass(e).text == t)
+	        return e;
 	    if (isPair(e) && isClass(fst(e)) && cclass(fst(e)).text==t) 
 		return fst(e);
 	}
