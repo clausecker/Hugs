@@ -13,6 +13,9 @@
    Leave the following blank line there!!  Autoheader needs it.  */
 
 
+/* Include platform-specific defines */
+#include "platform.h"
+
 /* The following symbols are defined in options.h:
  * 
  *   BYTECODE_PRIMS

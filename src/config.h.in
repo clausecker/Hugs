@@ -50,6 +50,9 @@
 /* Define if the X Window System is missing or not being used.  */
 #undef X_DISPLAY_MISSING
 
+/* Include platform-specific defines */
+#include "platform.h"
+
 /* The following symbols are defined in options.h:
  * 
  *   BYTECODE_PRIMS

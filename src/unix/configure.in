@@ -32,9 +32,27 @@ fi
 
 host_cpu=`echo $HostPlatform | sed 's/-.*//'`
 host_os=[`echo $HostPlatform | sed 's/^\([^-]*\)-\([^-]*\)-\([^-]*\).*/\3/'`]
+target_cpu=`echo $TargetPlatform | sed 's/-.*//'`
+target_os=[`echo $TargetPlatform | sed 's/^\([^-]*\)-\([^-]*\)-\([^-]*\).*/\3/'`]
+build_cpu=`echo $BuildPlatform | sed 's/-.*//'`
+build_os=[`echo $BuildPlatform | sed 's/^\([^-]*\)-\([^-]*\)-\([^-]*\).*/\3/'`]
 
 AC_DEFINE_UNQUOTED(HOST_ARCH, "$host_cpu")
 AC_DEFINE_UNQUOTED(HOST_OS, "$host_os")
+
+HostPlatform_CPP=`echo $HostPlatform | sed 's/-/_/g'`
+TargetPlatform_CPP=`echo $TargetPlatform | sed 's/-/_/g'`
+BuildPlatform_CPP=`echo $BuildPlatform | sed 's/-/_/g'`
+
+AC_SUBST(HostPlatform,   $HostPlatform_CPP)
+AC_SUBST(TargetPlatform, $TargetPlatform_CPP)
+AC_SUBST(BuildPlatform,  $BuildPlatform_CPP)
+AC_SUBST(HostOS, $host_os)
+AC_SUBST(HostArch, $host_cpu)
+AC_SUBST(TargetOS, $target_os)
+AC_SUBST(TargetArch, $target_cpu)
+AC_SUBST(BuildOS, $build_os)
+AC_SUBST(BuildArch, $build_cpu)
 
 dnl--------------------------------------------------------------------
 dnl
@@ -928,7 +946,7 @@ if test -f ../../tests/config.in ; then
  TESTSCRIPT=../../tests/config
 fi
 
-AC_OUTPUT(../Makefile \
+AC_OUTPUT(../Makefile ../platform.h \
 	../../docs/Makefile ../../docs/users_guide/Makefile \
 	../../docs/hugs.1 $TESTSCRIPT hugs-package)
 

@@ -89,7 +89,7 @@ OBJECTS		= builtin@OBJ@ compiler@OBJ@ errors@OBJ@ evaluator@OBJ@ \
 IOBJECTS	= hugs@OBJ@ edit@OBJ@ observe@OBJ@ $(OBJECTS)
 PRELUDE		= config.h options.h prelude.h script.h
 
-HEADERS		= HsFFI.h config.h unix/MachDeps.h unix/template-hsc.h
+HEADERS		= HsFFI.h config.h platform.h unix/MachDeps.h unix/template-hsc.h
 
 TOOLSDIR	= ../tools
 TOOLS		= $(TOOLSDIR)/Package.hs $(TOOLSDIR)/ParsePkgConf.hs \

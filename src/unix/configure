@@ -308,7 +308,7 @@ ac_includes_default="\
 # include <unistd.h>
 #endif"
 
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS build build_cpu build_vendor build_os host host_cpu host_vendor host_os target target_cpu target_vendor target_os FPTOOLS YACC CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT CPP EGREP PTHREAD_CC PTHREAD_LIBS PTHREAD_CFLAGS RM CP LD PERL SET_MAKE have_hp2ps DOCBOOK2HTML DOCBOOK2DVI DOCBOOK2PDF DOCBOOK2PS Find2Cmd FindCmd Sort2Cmd SortCmd DIFF CONTEXT_DIFF X_CFLAGS X_PRE_LIBS X_LIBS X_EXTRA_LIBS GL_CFLAGS GL_LIBS GLUT_LIBS FFI_LIBRARIES HavePosixRegex HAVE_STRUCT_MSGHDR_MSG_ACCRIGHTS HAVE_STRUCT_MSGHDR_MSG_CONTROL ALLOCA OPTFLAGS DEBUGFLAGS LDDEBUGFLAGS HUGSPATH HUGSSUFFIXES hugsdir HUGSDIR BINDIR EXE OBJ DLL DLL_ENDING DEV_NULL WOBJECTS RC_FILES STRIP LIBOBJS LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS build build_cpu build_vendor build_os host host_cpu host_vendor host_os target target_cpu target_vendor target_os HostPlatform TargetPlatform BuildPlatform HostOS HostArch TargetOS TargetArch BuildOS BuildArch FPTOOLS YACC CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT CPP EGREP PTHREAD_CC PTHREAD_LIBS PTHREAD_CFLAGS RM CP LD PERL SET_MAKE have_hp2ps DOCBOOK2HTML DOCBOOK2DVI DOCBOOK2PDF DOCBOOK2PS Find2Cmd FindCmd Sort2Cmd SortCmd DIFF CONTEXT_DIFF X_CFLAGS X_PRE_LIBS X_LIBS X_EXTRA_LIBS GL_CFLAGS GL_LIBS GLUT_LIBS FFI_LIBRARIES HavePosixRegex HAVE_STRUCT_MSGHDR_MSG_ACCRIGHTS HAVE_STRUCT_MSGHDR_MSG_CONTROL ALLOCA OPTFLAGS DEBUGFLAGS LDDEBUGFLAGS HUGSPATH HUGSSUFFIXES hugsdir HUGSDIR BINDIR EXE OBJ DLL DLL_ENDING DEV_NULL WOBJECTS RC_FILES STRIP LIBOBJS LTLIBOBJS'
 ac_subst_files='MkInstall MkDepend'
 
 # Initialize some variables set by options.
@@ -1418,6 +1418,10 @@ fi
 
 host_cpu=`echo $HostPlatform | sed 's/-.*//'`
 host_os=`echo $HostPlatform | sed 's/^\([^-]*\)-\([^-]*\)-\([^-]*\).*/\3/'`
+target_cpu=`echo $TargetPlatform | sed 's/-.*//'`
+target_os=`echo $TargetPlatform | sed 's/^\([^-]*\)-\([^-]*\)-\([^-]*\).*/\3/'`
+build_cpu=`echo $BuildPlatform | sed 's/-.*//'`
+build_os=`echo $BuildPlatform | sed 's/^\([^-]*\)-\([^-]*\)-\([^-]*\).*/\3/'`
 
 cat >>confdefs.h <<_ACEOF
 #define HOST_ARCH "$host_cpu"
@@ -1426,6 +1430,29 @@ _ACEOF
 cat >>confdefs.h <<_ACEOF
 #define HOST_OS "$host_os"
 _ACEOF
+
+
+HostPlatform_CPP=`echo $HostPlatform | sed 's/-/_/g'`
+TargetPlatform_CPP=`echo $TargetPlatform | sed 's/-/_/g'`
+BuildPlatform_CPP=`echo $BuildPlatform | sed 's/-/_/g'`
+
+HostPlatform=$HostPlatform_CPP
+
+TargetPlatform=$TargetPlatform_CPP
+
+BuildPlatform=$BuildPlatform_CPP
+
+HostOS=$host_os
+
+HostArch=$host_cpu
+
+TargetOS=$target_os
+
+TargetArch=$target_cpu
+
+BuildOS=$build_os
+
+BuildArch=$build_cpu
 
 
 
@@ -3338,7 +3365,7 @@ else
 echo "${ECHO_T}no" >&6
 fi
 
-RM='${RM} -f'
+RM="$RM -f"
 # Extract the first word of "cp", so it can be a program name with args.
 set dummy cp; ac_word=$2
 echo "$as_me:$LINENO: checking for $ac_word" >&5
@@ -3995,7 +4022,7 @@ else
 ac_save_LIBS="$LIBS"
 LIBS="";
 cat > conftest.$ac_ext <<EOF
-#line 3998 "configure"
+#line 4025 "configure"
 #include "confdefs.h"
 main() { extern char dlopen(); dlopen();; exit(0); }
 int t() { return 0; }
@@ -4038,7 +4065,7 @@ else
 ac_save_LIBS="$LIBS"
 LIBS="-ldl";
 cat > conftest.$ac_ext <<EOF
-#line 4041 "configure"
+#line 4068 "configure"
 #include "confdefs.h"
 main() { extern char dlopen(); dlopen();; exit(0); }
 int t() { return 0; }
@@ -4093,7 +4120,7 @@ else
 ac_save_LIBS="$LIBS"
 LIBS="";
 cat > conftest.$ac_ext <<EOF
-#line 4096 "configure"
+#line 4123 "configure"
 #include "confdefs.h"
 main() { extern char shl_load(); shl_load();; exit(0); }
 int t() { return 0; }
@@ -4136,7 +4163,7 @@ else
 ac_save_LIBS="$LIBS"
 LIBS="-ldld";
 cat > conftest.$ac_ext <<EOF
-#line 4139 "configure"
+#line 4166 "configure"
 #include "confdefs.h"
 main() { extern char shl_load(); shl_load();; exit(0); }
 int t() { return 0; }
@@ -4191,7 +4218,7 @@ else
 ac_save_LIBS="$LIBS"
 LIBS="";
 cat > conftest.$ac_ext <<EOF
-#line 4194 "configure"
+#line 4221 "configure"
 #include "confdefs.h"
 main() { extern char atan(); atan();; exit(0); }
 int t() { return 0; }
@@ -4234,7 +4261,7 @@ else
 ac_save_LIBS="$LIBS"
 LIBS="-lm";
 cat > conftest.$ac_ext <<EOF
-#line 4237 "configure"
+#line 4264 "configure"
 #include "confdefs.h"
 main() { extern char atan(); atan();; exit(0); }
 int t() { return 0; }
@@ -8393,6 +8420,36 @@ fi
 
 done
 
+
+echo "$as_me:$LINENO: checking for SIGPOLL" >&5
+echo $ECHO_N "checking for SIGPOLL... $ECHO_C" >&6
+cat >conftest.$ac_ext <<_ACEOF
+#line $LINENO "configure"
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+#include <signal.h>
+#ifdef SIGPOLL
+we_have_sigpoll
+#endif
+
+_ACEOF
+if (eval "$ac_cpp conftest.$ac_ext") 2>&5 |
+  $EGREP "we_have_sigpoll" >/dev/null 2>&1; then
+
+cat >>confdefs.h <<\_ACEOF
+#define HAVE_SIGPOLL 1
+_ACEOF
+ haveSIGPOLL=yes
+else
+  haveSIGPOLL=no
+fi
+rm -f conftest*
+
+echo "$as_me:$LINENO: result: $haveSIGPOLL" >&5
+echo "${ECHO_T}$haveSIGPOLL" >&6
 
 
 
@@ -14219,7 +14276,8 @@ fi
  if test "$fptools_cv_htype_sup_char" == yes; then
   echo "$as_me:$LINENO: result: $fptools_cv_htype_char" >&5
 echo "${ECHO_T}$fptools_cv_htype_char" >&6
-  cat >>confdefs.h <<_ACEOF
+
+cat >>confdefs.h <<_ACEOF
 #define HTYPE_CHAR $fptools_cv_htype_char
 _ACEOF
 
@@ -14339,7 +14397,8 @@ fi
  if test "$fptools_cv_htype_sup_signed_char" == yes; then
   echo "$as_me:$LINENO: result: $fptools_cv_htype_signed_char" >&5
 echo "${ECHO_T}$fptools_cv_htype_signed_char" >&6
-  cat >>confdefs.h <<_ACEOF
+
+cat >>confdefs.h <<_ACEOF
 #define HTYPE_SIGNED_CHAR $fptools_cv_htype_signed_char
 _ACEOF
 
@@ -14459,7 +14518,8 @@ fi
  if test "$fptools_cv_htype_sup_unsigned_char" == yes; then
   echo "$as_me:$LINENO: result: $fptools_cv_htype_unsigned_char" >&5
 echo "${ECHO_T}$fptools_cv_htype_unsigned_char" >&6
-  cat >>confdefs.h <<_ACEOF
+
+cat >>confdefs.h <<_ACEOF
 #define HTYPE_UNSIGNED_CHAR $fptools_cv_htype_unsigned_char
 _ACEOF
 
@@ -14579,7 +14639,8 @@ fi
  if test "$fptools_cv_htype_sup_short" == yes; then
   echo "$as_me:$LINENO: result: $fptools_cv_htype_short" >&5
 echo "${ECHO_T}$fptools_cv_htype_short" >&6
-  cat >>confdefs.h <<_ACEOF
+
+cat >>confdefs.h <<_ACEOF
 #define HTYPE_SHORT $fptools_cv_htype_short
 _ACEOF
 
@@ -14699,7 +14760,8 @@ fi
  if test "$fptools_cv_htype_sup_unsigned_short" == yes; then
   echo "$as_me:$LINENO: result: $fptools_cv_htype_unsigned_short" >&5
 echo "${ECHO_T}$fptools_cv_htype_unsigned_short" >&6
-  cat >>confdefs.h <<_ACEOF
+
+cat >>confdefs.h <<_ACEOF
 #define HTYPE_UNSIGNED_SHORT $fptools_cv_htype_unsigned_short
 _ACEOF
 
@@ -14819,7 +14881,8 @@ fi
  if test "$fptools_cv_htype_sup_int" == yes; then
   echo "$as_me:$LINENO: result: $fptools_cv_htype_int" >&5
 echo "${ECHO_T}$fptools_cv_htype_int" >&6
-  cat >>confdefs.h <<_ACEOF
+
+cat >>confdefs.h <<_ACEOF
 #define HTYPE_INT $fptools_cv_htype_int
 _ACEOF
 
@@ -14939,7 +15002,8 @@ fi
  if test "$fptools_cv_htype_sup_unsigned_int" == yes; then
   echo "$as_me:$LINENO: result: $fptools_cv_htype_unsigned_int" >&5
 echo "${ECHO_T}$fptools_cv_htype_unsigned_int" >&6
-  cat >>confdefs.h <<_ACEOF
+
+cat >>confdefs.h <<_ACEOF
 #define HTYPE_UNSIGNED_INT $fptools_cv_htype_unsigned_int
 _ACEOF
 
@@ -15059,7 +15123,8 @@ fi
  if test "$fptools_cv_htype_sup_long" == yes; then
   echo "$as_me:$LINENO: result: $fptools_cv_htype_long" >&5
 echo "${ECHO_T}$fptools_cv_htype_long" >&6
-  cat >>confdefs.h <<_ACEOF
+
+cat >>confdefs.h <<_ACEOF
 #define HTYPE_LONG $fptools_cv_htype_long
 _ACEOF
 
@@ -15179,7 +15244,8 @@ fi
  if test "$fptools_cv_htype_sup_unsigned_long" == yes; then
   echo "$as_me:$LINENO: result: $fptools_cv_htype_unsigned_long" >&5
 echo "${ECHO_T}$fptools_cv_htype_unsigned_long" >&6
-  cat >>confdefs.h <<_ACEOF
+
+cat >>confdefs.h <<_ACEOF
 #define HTYPE_UNSIGNED_LONG $fptools_cv_htype_unsigned_long
 _ACEOF
 
@@ -15300,7 +15366,8 @@ fi
  if test "$fptools_cv_htype_sup_long_long" == yes; then
   echo "$as_me:$LINENO: result: $fptools_cv_htype_long_long" >&5
 echo "${ECHO_T}$fptools_cv_htype_long_long" >&6
-  cat >>confdefs.h <<_ACEOF
+
+cat >>confdefs.h <<_ACEOF
 #define HTYPE_LONG_LONG $fptools_cv_htype_long_long
 _ACEOF
 
@@ -15420,7 +15487,8 @@ fi
  if test "$fptools_cv_htype_sup_unsigned_long_long" == yes; then
   echo "$as_me:$LINENO: result: $fptools_cv_htype_unsigned_long_long" >&5
 echo "${ECHO_T}$fptools_cv_htype_unsigned_long_long" >&6
-  cat >>confdefs.h <<_ACEOF
+
+cat >>confdefs.h <<_ACEOF
 #define HTYPE_UNSIGNED_LONG_LONG $fptools_cv_htype_unsigned_long_long
 _ACEOF
 
@@ -15541,7 +15609,8 @@ fi
  if test "$fptools_cv_htype_sup_float" == yes; then
   echo "$as_me:$LINENO: result: $fptools_cv_htype_float" >&5
 echo "${ECHO_T}$fptools_cv_htype_float" >&6
-  cat >>confdefs.h <<_ACEOF
+
+cat >>confdefs.h <<_ACEOF
 #define HTYPE_FLOAT $fptools_cv_htype_float
 _ACEOF
 
@@ -15661,7 +15730,8 @@ fi
  if test "$fptools_cv_htype_sup_double" == yes; then
   echo "$as_me:$LINENO: result: $fptools_cv_htype_double" >&5
 echo "${ECHO_T}$fptools_cv_htype_double" >&6
-  cat >>confdefs.h <<_ACEOF
+
+cat >>confdefs.h <<_ACEOF
 #define HTYPE_DOUBLE $fptools_cv_htype_double
 _ACEOF
 
@@ -15781,7 +15851,8 @@ fi
  if test "$fptools_cv_htype_sup_ptrdiff_t" == yes; then
   echo "$as_me:$LINENO: result: $fptools_cv_htype_ptrdiff_t" >&5
 echo "${ECHO_T}$fptools_cv_htype_ptrdiff_t" >&6
-  cat >>confdefs.h <<_ACEOF
+
+cat >>confdefs.h <<_ACEOF
 #define HTYPE_PTRDIFF_T $fptools_cv_htype_ptrdiff_t
 _ACEOF
 
@@ -15901,7 +15972,8 @@ fi
  if test "$fptools_cv_htype_sup_size_t" == yes; then
   echo "$as_me:$LINENO: result: $fptools_cv_htype_size_t" >&5
 echo "${ECHO_T}$fptools_cv_htype_size_t" >&6
-  cat >>confdefs.h <<_ACEOF
+
+cat >>confdefs.h <<_ACEOF
 #define HTYPE_SIZE_T $fptools_cv_htype_size_t
 _ACEOF
 
@@ -16021,7 +16093,8 @@ fi
  if test "$fptools_cv_htype_sup_wchar_t" == yes; then
   echo "$as_me:$LINENO: result: $fptools_cv_htype_wchar_t" >&5
 echo "${ECHO_T}$fptools_cv_htype_wchar_t" >&6
-  cat >>confdefs.h <<_ACEOF
+
+cat >>confdefs.h <<_ACEOF
 #define HTYPE_WCHAR_T $fptools_cv_htype_wchar_t
 _ACEOF
 
@@ -16141,7 +16214,8 @@ fi
  if test "$fptools_cv_htype_sup_sig_atomic_t" == yes; then
   echo "$as_me:$LINENO: result: $fptools_cv_htype_sig_atomic_t" >&5
 echo "${ECHO_T}$fptools_cv_htype_sig_atomic_t" >&6
-  cat >>confdefs.h <<_ACEOF
+
+cat >>confdefs.h <<_ACEOF
 #define HTYPE_SIG_ATOMIC_T $fptools_cv_htype_sig_atomic_t
 _ACEOF
 
@@ -16261,7 +16335,8 @@ fi
  if test "$fptools_cv_htype_sup_clock_t" == yes; then
   echo "$as_me:$LINENO: result: $fptools_cv_htype_clock_t" >&5
 echo "${ECHO_T}$fptools_cv_htype_clock_t" >&6
-  cat >>confdefs.h <<_ACEOF
+
+cat >>confdefs.h <<_ACEOF
 #define HTYPE_CLOCK_T $fptools_cv_htype_clock_t
 _ACEOF
 
@@ -16381,7 +16456,8 @@ fi
  if test "$fptools_cv_htype_sup_time_t" == yes; then
   echo "$as_me:$LINENO: result: $fptools_cv_htype_time_t" >&5
 echo "${ECHO_T}$fptools_cv_htype_time_t" >&6
-  cat >>confdefs.h <<_ACEOF
+
+cat >>confdefs.h <<_ACEOF
 #define HTYPE_TIME_T $fptools_cv_htype_time_t
 _ACEOF
 
@@ -16501,7 +16577,8 @@ fi
  if test "$fptools_cv_htype_sup_dev_t" == yes; then
   echo "$as_me:$LINENO: result: $fptools_cv_htype_dev_t" >&5
 echo "${ECHO_T}$fptools_cv_htype_dev_t" >&6
-  cat >>confdefs.h <<_ACEOF
+
+cat >>confdefs.h <<_ACEOF
 #define HTYPE_DEV_T $fptools_cv_htype_dev_t
 _ACEOF
 
@@ -16621,7 +16698,8 @@ fi
  if test "$fptools_cv_htype_sup_ino_t" == yes; then
   echo "$as_me:$LINENO: result: $fptools_cv_htype_ino_t" >&5
 echo "${ECHO_T}$fptools_cv_htype_ino_t" >&6
-  cat >>confdefs.h <<_ACEOF
+
+cat >>confdefs.h <<_ACEOF
 #define HTYPE_INO_T $fptools_cv_htype_ino_t
 _ACEOF
 
@@ -16741,7 +16819,8 @@ fi
  if test "$fptools_cv_htype_sup_mode_t" == yes; then
   echo "$as_me:$LINENO: result: $fptools_cv_htype_mode_t" >&5
 echo "${ECHO_T}$fptools_cv_htype_mode_t" >&6
-  cat >>confdefs.h <<_ACEOF
+
+cat >>confdefs.h <<_ACEOF
 #define HTYPE_MODE_T $fptools_cv_htype_mode_t
 _ACEOF
 
@@ -16861,7 +16940,8 @@ fi
  if test "$fptools_cv_htype_sup_off_t" == yes; then
   echo "$as_me:$LINENO: result: $fptools_cv_htype_off_t" >&5
 echo "${ECHO_T}$fptools_cv_htype_off_t" >&6
-  cat >>confdefs.h <<_ACEOF
+
+cat >>confdefs.h <<_ACEOF
 #define HTYPE_OFF_T $fptools_cv_htype_off_t
 _ACEOF
 
@@ -16981,7 +17061,8 @@ fi
  if test "$fptools_cv_htype_sup_pid_t" == yes; then
   echo "$as_me:$LINENO: result: $fptools_cv_htype_pid_t" >&5
 echo "${ECHO_T}$fptools_cv_htype_pid_t" >&6
-  cat >>confdefs.h <<_ACEOF
+
+cat >>confdefs.h <<_ACEOF
 #define HTYPE_PID_T $fptools_cv_htype_pid_t
 _ACEOF
 
@@ -17101,7 +17182,8 @@ fi
  if test "$fptools_cv_htype_sup_gid_t" == yes; then
   echo "$as_me:$LINENO: result: $fptools_cv_htype_gid_t" >&5
 echo "${ECHO_T}$fptools_cv_htype_gid_t" >&6
-  cat >>confdefs.h <<_ACEOF
+
+cat >>confdefs.h <<_ACEOF
 #define HTYPE_GID_T $fptools_cv_htype_gid_t
 _ACEOF
 
@@ -17221,7 +17303,8 @@ fi
  if test "$fptools_cv_htype_sup_uid_t" == yes; then
   echo "$as_me:$LINENO: result: $fptools_cv_htype_uid_t" >&5
 echo "${ECHO_T}$fptools_cv_htype_uid_t" >&6
-  cat >>confdefs.h <<_ACEOF
+
+cat >>confdefs.h <<_ACEOF
 #define HTYPE_UID_T $fptools_cv_htype_uid_t
 _ACEOF
 
@@ -17341,7 +17424,8 @@ fi
  if test "$fptools_cv_htype_sup_cc_t" == yes; then
   echo "$as_me:$LINENO: result: $fptools_cv_htype_cc_t" >&5
 echo "${ECHO_T}$fptools_cv_htype_cc_t" >&6
-  cat >>confdefs.h <<_ACEOF
+
+cat >>confdefs.h <<_ACEOF
 #define HTYPE_CC_T $fptools_cv_htype_cc_t
 _ACEOF
 
@@ -17461,7 +17545,8 @@ fi
  if test "$fptools_cv_htype_sup_speed_t" == yes; then
   echo "$as_me:$LINENO: result: $fptools_cv_htype_speed_t" >&5
 echo "${ECHO_T}$fptools_cv_htype_speed_t" >&6
-  cat >>confdefs.h <<_ACEOF
+
+cat >>confdefs.h <<_ACEOF
 #define HTYPE_SPEED_T $fptools_cv_htype_speed_t
 _ACEOF
 
@@ -17581,7 +17666,8 @@ fi
  if test "$fptools_cv_htype_sup_tcflag_t" == yes; then
   echo "$as_me:$LINENO: result: $fptools_cv_htype_tcflag_t" >&5
 echo "${ECHO_T}$fptools_cv_htype_tcflag_t" >&6
-  cat >>confdefs.h <<_ACEOF
+
+cat >>confdefs.h <<_ACEOF
 #define HTYPE_TCFLAG_T $fptools_cv_htype_tcflag_t
 _ACEOF
 
@@ -17701,7 +17787,8 @@ fi
  if test "$fptools_cv_htype_sup_nlink_t" == yes; then
   echo "$as_me:$LINENO: result: $fptools_cv_htype_nlink_t" >&5
 echo "${ECHO_T}$fptools_cv_htype_nlink_t" >&6
-  cat >>confdefs.h <<_ACEOF
+
+cat >>confdefs.h <<_ACEOF
 #define HTYPE_NLINK_T $fptools_cv_htype_nlink_t
 _ACEOF
 
@@ -17821,7 +17908,8 @@ fi
  if test "$fptools_cv_htype_sup_ssize_t" == yes; then
   echo "$as_me:$LINENO: result: $fptools_cv_htype_ssize_t" >&5
 echo "${ECHO_T}$fptools_cv_htype_ssize_t" >&6
-  cat >>confdefs.h <<_ACEOF
+
+cat >>confdefs.h <<_ACEOF
 #define HTYPE_SSIZE_T $fptools_cv_htype_ssize_t
 _ACEOF
 
@@ -17941,7 +18029,8 @@ fi
  if test "$fptools_cv_htype_sup_rlim_t" == yes; then
   echo "$as_me:$LINENO: result: $fptools_cv_htype_rlim_t" >&5
 echo "${ECHO_T}$fptools_cv_htype_rlim_t" >&6
-  cat >>confdefs.h <<_ACEOF
+
+cat >>confdefs.h <<_ACEOF
 #define HTYPE_RLIM_T $fptools_cv_htype_rlim_t
 _ACEOF
 
@@ -18063,7 +18152,8 @@ fi
  if test "$fptools_cv_htype_sup_GLboolean" == yes; then
   echo "$as_me:$LINENO: result: $fptools_cv_htype_GLboolean" >&5
 echo "${ECHO_T}$fptools_cv_htype_GLboolean" >&6
-  cat >>confdefs.h <<_ACEOF
+
+cat >>confdefs.h <<_ACEOF
 #define HTYPE_GLBOOLEAN $fptools_cv_htype_GLboolean
 _ACEOF
 
@@ -18183,7 +18273,8 @@ fi
  if test "$fptools_cv_htype_sup_GLbyte" == yes; then
   echo "$as_me:$LINENO: result: $fptools_cv_htype_GLbyte" >&5
 echo "${ECHO_T}$fptools_cv_htype_GLbyte" >&6
-  cat >>confdefs.h <<_ACEOF
+
+cat >>confdefs.h <<_ACEOF
 #define HTYPE_GLBYTE $fptools_cv_htype_GLbyte
 _ACEOF
 
@@ -18303,7 +18394,8 @@ fi
  if test "$fptools_cv_htype_sup_GLubyte" == yes; then
   echo "$as_me:$LINENO: result: $fptools_cv_htype_GLubyte" >&5
 echo "${ECHO_T}$fptools_cv_htype_GLubyte" >&6
-  cat >>confdefs.h <<_ACEOF
+
+cat >>confdefs.h <<_ACEOF
 #define HTYPE_GLUBYTE $fptools_cv_htype_GLubyte
 _ACEOF
 
@@ -18423,7 +18515,8 @@ fi
  if test "$fptools_cv_htype_sup_GLshort" == yes; then
   echo "$as_me:$LINENO: result: $fptools_cv_htype_GLshort" >&5
 echo "${ECHO_T}$fptools_cv_htype_GLshort" >&6
-  cat >>confdefs.h <<_ACEOF
+
+cat >>confdefs.h <<_ACEOF
 #define HTYPE_GLSHORT $fptools_cv_htype_GLshort
 _ACEOF
 
@@ -18543,7 +18636,8 @@ fi
  if test "$fptools_cv_htype_sup_GLushort" == yes; then
   echo "$as_me:$LINENO: result: $fptools_cv_htype_GLushort" >&5
 echo "${ECHO_T}$fptools_cv_htype_GLushort" >&6
-  cat >>confdefs.h <<_ACEOF
+
+cat >>confdefs.h <<_ACEOF
 #define HTYPE_GLUSHORT $fptools_cv_htype_GLushort
 _ACEOF
 
@@ -18663,7 +18757,8 @@ fi
  if test "$fptools_cv_htype_sup_GLint" == yes; then
   echo "$as_me:$LINENO: result: $fptools_cv_htype_GLint" >&5
 echo "${ECHO_T}$fptools_cv_htype_GLint" >&6
-  cat >>confdefs.h <<_ACEOF
+
+cat >>confdefs.h <<_ACEOF
 #define HTYPE_GLINT $fptools_cv_htype_GLint
 _ACEOF
 
@@ -18783,7 +18878,8 @@ fi
  if test "$fptools_cv_htype_sup_GLuint" == yes; then
   echo "$as_me:$LINENO: result: $fptools_cv_htype_GLuint" >&5
 echo "${ECHO_T}$fptools_cv_htype_GLuint" >&6
-  cat >>confdefs.h <<_ACEOF
+
+cat >>confdefs.h <<_ACEOF
 #define HTYPE_GLUINT $fptools_cv_htype_GLuint
 _ACEOF
 
@@ -18903,7 +18999,8 @@ fi
  if test "$fptools_cv_htype_sup_GLsizei" == yes; then
   echo "$as_me:$LINENO: result: $fptools_cv_htype_GLsizei" >&5
 echo "${ECHO_T}$fptools_cv_htype_GLsizei" >&6
-  cat >>confdefs.h <<_ACEOF
+
+cat >>confdefs.h <<_ACEOF
 #define HTYPE_GLSIZEI $fptools_cv_htype_GLsizei
 _ACEOF
 
@@ -19023,7 +19120,8 @@ fi
  if test "$fptools_cv_htype_sup_GLenum" == yes; then
   echo "$as_me:$LINENO: result: $fptools_cv_htype_GLenum" >&5
 echo "${ECHO_T}$fptools_cv_htype_GLenum" >&6
-  cat >>confdefs.h <<_ACEOF
+
+cat >>confdefs.h <<_ACEOF
 #define HTYPE_GLENUM $fptools_cv_htype_GLenum
 _ACEOF
 
@@ -19143,7 +19241,8 @@ fi
  if test "$fptools_cv_htype_sup_GLbitfield" == yes; then
   echo "$as_me:$LINENO: result: $fptools_cv_htype_GLbitfield" >&5
 echo "${ECHO_T}$fptools_cv_htype_GLbitfield" >&6
-  cat >>confdefs.h <<_ACEOF
+
+cat >>confdefs.h <<_ACEOF
 #define HTYPE_GLBITFIELD $fptools_cv_htype_GLbitfield
 _ACEOF
 
@@ -19263,7 +19362,8 @@ fi
  if test "$fptools_cv_htype_sup_GLfloat" == yes; then
   echo "$as_me:$LINENO: result: $fptools_cv_htype_GLfloat" >&5
 echo "${ECHO_T}$fptools_cv_htype_GLfloat" >&6
-  cat >>confdefs.h <<_ACEOF
+
+cat >>confdefs.h <<_ACEOF
 #define HTYPE_GLFLOAT $fptools_cv_htype_GLfloat
 _ACEOF
 
@@ -19383,7 +19483,8 @@ fi
  if test "$fptools_cv_htype_sup_GLclampf" == yes; then
   echo "$as_me:$LINENO: result: $fptools_cv_htype_GLclampf" >&5
 echo "${ECHO_T}$fptools_cv_htype_GLclampf" >&6
-  cat >>confdefs.h <<_ACEOF
+
+cat >>confdefs.h <<_ACEOF
 #define HTYPE_GLCLAMPF $fptools_cv_htype_GLclampf
 _ACEOF
 
@@ -19503,7 +19604,8 @@ fi
  if test "$fptools_cv_htype_sup_GLdouble" == yes; then
   echo "$as_me:$LINENO: result: $fptools_cv_htype_GLdouble" >&5
 echo "${ECHO_T}$fptools_cv_htype_GLdouble" >&6
-  cat >>confdefs.h <<_ACEOF
+
+cat >>confdefs.h <<_ACEOF
 #define HTYPE_GLDOUBLE $fptools_cv_htype_GLdouble
 _ACEOF
 
@@ -19623,7 +19725,8 @@ fi
  if test "$fptools_cv_htype_sup_GLclampd" == yes; then
   echo "$as_me:$LINENO: result: $fptools_cv_htype_GLclampd" >&5
 echo "${ECHO_T}$fptools_cv_htype_GLclampd" >&6
-  cat >>confdefs.h <<_ACEOF
+
+cat >>confdefs.h <<_ACEOF
 #define HTYPE_GLCLAMPD $fptools_cv_htype_GLclampd
 _ACEOF
 
@@ -19768,7 +19871,7 @@ unset fptools_check_cconst_result
 ac_save_LIBS="$LIBS"
 LIBS=;
 cat > conftest.$ac_ext <<EOF
-#line 19771 "configure"
+#line 19874 "configure"
 #include "confdefs.h"
 
 #if HAVE_WINDOWS_H
@@ -19809,7 +19912,7 @@ fi
 ac_save_LIBS="$LIBS"
 LIBS=;
 cat > conftest.$ac_ext <<EOF
-#line 19812 "configure"
+#line 19915 "configure"
 #include "confdefs.h"
 
 #if HAVE_WINDOWS_H
@@ -21964,6 +22067,90 @@ done
 
 
 for ac_func in readdir_r
+do
+as_ac_var=`echo "ac_cv_func_$ac_func" | $as_tr_sh`
+echo "$as_me:$LINENO: checking for $ac_func" >&5
+echo $ECHO_N "checking for $ac_func... $ECHO_C" >&6
+if eval "test \"\${$as_ac_var+set}\" = set"; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  cat >conftest.$ac_ext <<_ACEOF
+#line $LINENO "configure"
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+/* System header to define __stub macros and hopefully few prototypes,
+    which can conflict with char $ac_func (); below.
+    Prefer <limits.h> to <assert.h> if __STDC__ is defined, since
+    <limits.h> exists even on freestanding compilers.  */
+#ifdef __STDC__
+# include <limits.h>
+#else
+# include <assert.h>
+#endif
+/* Override any gcc2 internal prototype to avoid an error.  */
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+/* We use char because int might match the return type of a gcc2
+   builtin and then its argument prototype would still apply.  */
+char $ac_func ();
+/* The GNU C library defines this for functions which it implements
+    to always fail with ENOSYS.  Some functions are actually named
+    something starting with __ and the normal name is an alias.  */
+#if defined (__stub_$ac_func) || defined (__stub___$ac_func)
+choke me
+#else
+char (*f) () = $ac_func;
+#endif
+#ifdef __cplusplus
+}
+#endif
+
+int
+main ()
+{
+return f != $ac_func;
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext conftest$ac_exeext
+if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
+  (eval $ac_link) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+         { ac_try='test -s conftest$ac_exeext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  eval "$as_ac_var=yes"
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+eval "$as_ac_var=no"
+fi
+rm -f conftest.$ac_objext conftest$ac_exeext conftest.$ac_ext
+fi
+echo "$as_me:$LINENO: result: `eval echo '${'$as_ac_var'}'`" >&5
+echo "${ECHO_T}`eval echo '${'$as_ac_var'}'`" >&6
+if test `eval echo '${'$as_ac_var'}'` = yes; then
+  cat >>confdefs.h <<_ACEOF
+#define `echo "HAVE_$ac_func" | $as_tr_cpp` 1
+_ACEOF
+
+fi
+done
+
+
+for ac_func in dup
 do
 as_ac_var=`echo "ac_cv_func_$ac_func" | $as_tr_sh`
 echo "$as_me:$LINENO: checking for $ac_func" >&5
@@ -26398,7 +26585,7 @@ if test -f ../../tests/config.in ; then
  TESTSCRIPT=../../tests/config
 fi
 
-                                                            ac_config_files="$ac_config_files ../Makefile ../../docs/Makefile ../../docs/users_guide/Makefile ../../docs/hugs.1 $TESTSCRIPT hugs-package"
+                                                                      ac_config_files="$ac_config_files ../Makefile ../platform.h ../../docs/Makefile ../../docs/users_guide/Makefile ../../docs/hugs.1 $TESTSCRIPT hugs-package"
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
 # tests run on this system so they can be shared between configure
@@ -26923,6 +27110,7 @@ do
   case "$ac_config_target" in
   # Handling of arguments.
   "../Makefile" ) CONFIG_FILES="$CONFIG_FILES ../Makefile" ;;
+  "../platform.h" ) CONFIG_FILES="$CONFIG_FILES ../platform.h" ;;
   "../../docs/Makefile" ) CONFIG_FILES="$CONFIG_FILES ../../docs/Makefile" ;;
   "../../docs/users_guide/Makefile" ) CONFIG_FILES="$CONFIG_FILES ../../docs/users_guide/Makefile" ;;
   "../../docs/hugs.1" ) CONFIG_FILES="$CONFIG_FILES ../../docs/hugs.1" ;;
@@ -27026,6 +27214,15 @@ s,@target@,$target,;t t
 s,@target_cpu@,$target_cpu,;t t
 s,@target_vendor@,$target_vendor,;t t
 s,@target_os@,$target_os,;t t
+s,@HostPlatform@,$HostPlatform,;t t
+s,@TargetPlatform@,$TargetPlatform,;t t
+s,@BuildPlatform@,$BuildPlatform,;t t
+s,@HostOS@,$HostOS,;t t
+s,@HostArch@,$HostArch,;t t
+s,@TargetOS@,$TargetOS,;t t
+s,@TargetArch@,$TargetArch,;t t
+s,@BuildOS@,$BuildOS,;t t
+s,@BuildArch@,$BuildArch,;t t
 s,@FPTOOLS@,$FPTOOLS,;t t
 s,@YACC@,$YACC,;t t
 s,@CC@,$CC,;t t
