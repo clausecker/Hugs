@@ -30,7 +30,7 @@ module Numeric
 	, showFloat	-- :: (RealFloat a) => a -> ShowS
 
 	   -- defined in the Prelude.
-	, readFloat	-- :: (RealFloat a) => ReadS a
+	, readFloat	-- :: (RealFrac a) => ReadS a
 
 	, floatToDigits -- :: (RealFloat a) => Integer -> a -> ([Int], Int)
 	, lexDigits	-- :: ReadS String

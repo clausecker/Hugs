@@ -1434,21 +1434,27 @@ lexDigits               =  nonnull isDigit
 nonnull                 :: (Char -> Bool) -> ReadS String
 nonnull p s             =  [(cs,t) | (cs@(_:_),t) <- [span p s]]
 
-lexLitChar              :: ReadS String
-lexLitChar ('\\':s)     =  [('\\':esc, t) | (esc,t) <- lexEsc s] 
-	where
-	lexEsc (c:s)     | c `elem` "abfnrtv\\\"'" = [([c],s)]
-        lexEsc ('^':c:s) | c >= '@' && c <= '_'    = [(['^',c],s)]
-	lexEsc s@(d:_)   | isDigit d               = lexDigits s
-        lexEsc s@(c:_)   | isUpper c
-                          = let table = ('\DEL',"DEL") : asciiTab
-			    in case [(mne,s') | (c, mne) <- table,
-				 	        ([],s') <- [lexmatch mne s]]
-			       of (pr:_) -> [pr]
-			          []     -> []
-	lexEsc _                                   = []
-lexLitChar (c:s)        =  [([c],s)]
-lexLitChar ""           =  []
+lexLitChar          :: ReadS String
+lexLitChar ""       =  []
+lexLitChar (c:s)
+ | c /= '\\'        =  [([c],s)]
+ | otherwise        =  map (prefix '\\') (lexEsc s)
+ where
+   lexEsc (c:s)     | c `elem` "abfnrtv\\\"'" = [([c],s)]
+   lexEsc ('^':c:s) | c >= '@' && c <= '_'    = [(['^',c],s)]
+    -- Numeric escapes
+   lexEsc ('o':s)  = [prefix 'o' (span isOctDigit s)]
+   lexEsc ('x':s)  = [prefix 'x' (span isHexDigit s)]
+   lexEsc s@(c:_) 
+     | isDigit c   = [span isDigit s]  
+     | isUpper c   = case [(mne,s') | (c, mne) <- table,
+	 	        ([],s') <- [lexmatch mne s]] of
+                       (pr:_) -> [pr]
+	               []     -> []
+   lexEsc _        = []
+
+   table = ('\DEL',"DEL") : asciiTab
+   prefix c (t,s) = (c:t, s)
 
 isOctDigit c  =  c >= '0' && c <= '7'
 isHexDigit c  =  isDigit c || c >= 'A' && c <= 'F'
@@ -1556,7 +1562,7 @@ readSigned readPos = readParen False read'
 
 -- This floating point reader uses a less restrictive syntax for floating
 -- point than the Haskell lexer.  The `.' is optional.
-readFloat     :: RealFloat a => ReadS a
+readFloat     :: RealFrac a => ReadS a
 readFloat r    = [(fromRational ((n%1)*10^^(k-d)),t) | (n,d,s) <- readFix r,
 						       (k,t)   <- readExp s] ++
                  [ (0/0, t) | ("NaN",t)      <- lex r] ++
