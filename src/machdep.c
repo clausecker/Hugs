@@ -11,8 +11,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.64 $
- * $Date: 2002/08/25 16:56:27 $
+ * $Revision: 1.65 $
+ * $Date: 2002/08/26 18:39:49 $
  * ------------------------------------------------------------------------*/
 #include <math.h>
 
@@ -354,12 +354,13 @@ String hugsdir() {                   /* directory containing lib/Prelude.hs */
     }
     return dir;
 #else
-    /* On Unix systems, we can't find the binary we're running and
-     * the libraries may not be installed near the binary anyway.
-     * This forces us to use a hardwired path which is set at 
-     * configuration time (--datadir=...).
+    /* On Unix systems, data is not typically stored relative to a binary
+     * (it's also harder for a binary to determine where it lives).
+     * First, check for an environment var, then fall back to
+     * a configuration-time constant (--datadir=...).
      */
-    return HUGSDIR;
+    char *hugsdir = getenv("HUGSDIR");
+    return hugsdir ? hugsdir : HUGSDIR;
 #endif
 }
 
