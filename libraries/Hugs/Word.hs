@@ -20,12 +20,12 @@ module Hugs.Word
 	, intToWord32    -- :: Int    -> Word32
 	) where
 
-import Hugs.Prelude
+import Hugs.Prelude ( Word, Word8, Word16, Word32, Word64 )
 import Data.Bits
 import Data.Int
 import Data.Ix ( Ix(..) )
 import Data.Ratio ( (%) )
--- import Numeric ( readDec, showInt ) -- defined in the Prelude
+import Hugs.Prelude ( readDec, showInt )
 
 -----------------------------------------------------------------------------
 -- The "official" coercion functions

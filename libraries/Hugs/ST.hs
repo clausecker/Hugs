@@ -44,7 +44,6 @@ import Hugs.Array.Base(HasBounds(bounds),MArray(..))
 import Hugs.IOExts(unsafePerformIO)
 import Control.Monad   
 import Data.Dynamic
-import Ix
 
 -----------------------------------------------------------------------------
 

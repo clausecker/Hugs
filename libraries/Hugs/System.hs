@@ -14,7 +14,7 @@ module Hugs.System (
 	system
 	) where
 
-import Hugs.Prelude
+import Hugs.Prelude( primExitWith )
 
 data ExitCode = ExitSuccess | ExitFailure Int
                 deriving (Eq, Ord, Read, Show)

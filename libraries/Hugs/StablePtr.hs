@@ -1,7 +1,6 @@
 module Hugs.StablePtr( StablePtr, module Hugs.StablePtr ) where
 
-import Hugs.Prelude
--- data StablePtr a -- in Prelude
+import Hugs.Prelude( StablePtr )
 
 -- recently renamed
 newStablePtr = makeStablePtr 
