@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: GreenCard.h,v $
- * $Revision: 1.2 $
- * $Date: 2001/06/28 23:58:41 $
+ * $Revision: 1.3 $
+ * $Date: 2001/11/05 16:55:02 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -24,6 +24,8 @@
  * Xlib, Win32 or other libraries which we might also have to #include).
  *
  * ------------------------------------------------------------------------*/
+#ifndef __GREENCARD_H__
+#define __GREENCARD_H__
 
 /* Configuration details -- set to 0 if your C compiler doesn't support function protos */
 #define HAVE_PROTOTYPES 1
@@ -33,6 +35,16 @@
 #else
 #define Args(x) ()
 #endif
+
+/* What version of the API this file defines (and corresponding Hugs
+ * sources prefer).
+ *
+ * Introduced in 'version 3', so the absence of this #define indicates
+ * 'version 2' (version 1 is, by now, just a hazy memory to one Hugs
+ * developer :-) ).
+ */
+#define HUGSAPI_VERSION 3
+#define HUGSAPI_NAME    HugsAPI3
 
 /* based on code in builtin.c */
 
@@ -124,3 +136,4 @@ static HugsAPI3 *hugs = 0; /* pointer to virtual function table */
 #define DLLEXPORT(rty) rty
 #endif /* Don't need to declare DLL exports */
 
+#endif /* __GREENCARD_H__ */
