@@ -24,7 +24,7 @@ instance Eq (ForeignPtr a) where
     p == q = eqForeignPtr p q
     p /= q = not (eqForeignPtr p q)
 
-primitive makeForeignPtr :: Ptr a -> FunPtr (Ptr a -> IO ()) -> IO ForeignObj
+primitive makeForeignPtr :: Ptr a -> FunPtr (Ptr a -> IO ()) -> IO (ForeignPtr a)
 
 -- not implemented
 -- addForeignPtrFinalizer :: ForeignPtr a -> FunPtr (Ptr a -> IO ()) -> IO ()

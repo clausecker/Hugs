@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: builtin.c,v $
- * $Revision: 1.28 $
- * $Date: 2002/08/03 15:02:57 $
+ * $Revision: 1.29 $
+ * $Date: 2002/08/09 14:24:59 $
  * ------------------------------------------------------------------------*/
 
 /* We include math.h before prelude.h because SunOS 4's cpp incorrectly
@@ -1932,8 +1932,8 @@ static void           getUnit        Args((void));
 static HsInt          getInt         Args((void));
 static HsWord         getWord        Args((void));
 static HsAddr         getAddr        Args((void));
-static Float          getFloat       Args((void));
-static HsDouble       getDouble      Args((void));
+static float          getFloat       Args((void));
+static double         getDouble      Args((void));
 static HsChar         getChar        Args((void));
 static HugsForeign    getForeign     Args((void));
 static HsBool         getBool        Args((void));
@@ -1952,12 +1952,13 @@ static HugsStablePtr  getStablePtr   Args((void));
 static HsStablePtr    getStablePtr4  Args((void));
 static HugsStablePtr  makeStablePtr4 Args((void));
 static HsFloat        getFloat4      Args((void));
+static HsDouble       getDouble4     Args((void));
 
 static void           putInt         Args((HsInt));
 static void           putWord        Args((HsWord));
 static void           putAddr        Args((HsAddr));
-static void           putFloat       Args((HsDouble));
-static void           putDouble      Args((HsDouble));
+static void           putFloat       Args((double));
+static void           putDouble      Args((double));
 static void           putChar        Args((HsChar));
 static void           putForeign     Args((HugsForeign, void (*)(void *)));
 static void           putStablePtr   Args((HugsStablePtr));
@@ -1975,6 +1976,7 @@ static void           putPtr         Args((HsPtr));
 static void           putFunPtr      Args((HsFunPtr));
 static void           putForeignPtr  Args((HsForeignPtr));
 static void           putFloat4      Args((HsFloat));
+static void           putDouble4     Args((HsDouble));
 
 static void           freeStablePtr4 Args((HsStablePtr));
 
@@ -1988,8 +1990,8 @@ static void           getUnit()      { eval(pop()); }
 static HsInt          getInt()       { eval(pop()); checkInt();   return whnfInt; }
 static HsWord         getWord()      { eval(pop()); checkWord();  return (unsigned int) whnfInt; }
 static HsAddr         getAddr()      { eval(pop()); checkPtr();   return ptrOf(whnfHead); }
-static HsFloat        getFloat()     { eval(pop()); checkFloat(); return whnfFloat; }
-static HsDouble       getDouble()    { eval(pop()); checkFloat(); return (double) whnfFloat; }
+static float          getFloat()     { eval(pop()); checkFloat(); return whnfFloat; }
+static double         getDouble()    { eval(pop()); checkFloat(); return (double) whnfFloat; }
 static HsChar         getChar()      { eval(pop()); checkChar();  return charOf(whnfHead); }
 static HugsForeign    getForeign()   { eval(pop()); return derefMP(whnfHead); }
 static HsBool         getBool()      { eval(pop()); checkBool();  return (whnfHead == nameTrue); }
@@ -2050,8 +2052,8 @@ static void putChar(HsChar x)                  { push(mkChar(x)); }
 #else
 static void putChar(x)        HsChar        x; { push(mkChar(x)); }
 #endif                        
-static void putFloat(x)       HsDouble      x; { push(mkFloat(x)); }
-static void putDouble(x)      HsDouble      x; { push(mkFloat(x)); }
+static void putFloat(x)       double        x; { push(mkFloat(x)); }
+static void putDouble(x)      double        x; { push(mkFloat(x)); }
 static void putForeign(x,f)   HugsForeign   x; void (*f)(HugsForeign); { push(mkMallocPtr(x,f)); }
 static void putStablePtr(x)   HugsStablePtr x; { push(derefStablePtr(x)); }
 static void putBool(x)        HsBool        x; { push(x?nameTrue:nameFalse); }
@@ -2083,9 +2085,15 @@ HsStablePtr x; {
 }
 
 static HsFloat        getFloat4()    { eval(pop()); checkFloat(); return whnfFloat; }
+static HsDouble       getDouble4()   { eval(pop()); checkFloat(); return whnfFloat; }
 
 static void putFloat4(x)
 HsFloat x; { 
+  push(mkFloat(x));
+}
+
+static void putDouble4(x)
+HsDouble x; { 
   push(mkFloat(x));
 }
 
@@ -2527,7 +2535,7 @@ HugsAPI4* hugsAPI4() { /* build virtual function table */
 	api.getWord       = getWord;
 	api.getAddr       = getAddr;
 	api.getFloat      = getFloat4;
-	api.getDouble     = getDouble;
+	api.getDouble     = getDouble4;
 	api.getChar       = getChar;
 	api.getForeign    = getForeign;
 	api.getStablePtr  = getStablePtr;
@@ -2536,7 +2544,7 @@ HugsAPI4* hugsAPI4() { /* build virtual function table */
 	api.putWord       = putWord;
 	api.putAddr       = putAddr;
 	api.putFloat      = putFloat4;
-	api.putDouble     = putDouble;
+	api.putDouble     = putDouble4;
 	api.putChar       = putChar;
 	api.putForeign    = putForeign;
 	api.putStablePtr  = putStablePtr;

@@ -1,33 +1,25 @@
-// #warning "Need to use autoconf to generate HsFFI.h"
-
 #ifndef __HSFFI_H__
 #define __HSFFI_H__
 
-// The ifdef Args is a crude way of testing whether this file is
-// #included into Hugs.  Use it to eliminate non-portable stuff.
-
-#ifndef Args
 typedef unsigned char      hugs_uint8_t;
 typedef unsigned short     hugs_uint16_t;
 typedef unsigned int       hugs_uint32_t;
 typedef signed   char      hugs_int8_t;
 typedef signed   short     hugs_int16_t;
 typedef signed   int       hugs_int32_t;
-# ifndef _MSC_VER
+# ifdef _MSC_VER
+typedef unsigned __int64   hugs_uint64_t;
+typedef          __int64   hugs_int64_t;
+# else
 typedef unsigned long long hugs_uint64_t;
 typedef signed   long long hugs_int64_t;
-# else
-typedef unsigned __int64 hugs_uint64_t;
-typedef          __int64 hugs_int64_t;
 # endif
-#endif
 
-#if 0
-typedef unsigned char HsChar;
-#else
-typedef char HsChar;
-#endif
-#ifdef Args
+// The ifdef Args is a crude way of testing whether this file is
+// #included into Hugs.  Use it to eliminate non-portable stuff.
+
+#ifdef Args /* #included into Hugs */
+
 typedef Int            HsInt;        
 typedef Int8           HsInt8;         
 typedef Int16          HsInt16;        
@@ -36,58 +28,38 @@ typedef unsigned int   HsWord;
 typedef unsigned char  HsWord8;        
 typedef unsigned short HsWord16;       
 typedef unsigned int   HsWord32;       
+
+#else /* #included into user-provided C code */
+
+typedef int            HsInt;        
+typedef hugs_int8_t    HsInt8;         
+typedef hugs_int16_t   HsInt16;        
+typedef hugs_int32_t   HsInt32;        
+typedef unsigned int   HsWord;       
+typedef hugs_uint8_t   HsWord8;        
+typedef hugs_uint16_t  HsWord16;       
+typedef hugs_uint32_t  HsWord32;       
+
+#endif   
+
+/* 
+ * Here we deviate from the FFI specification:
+ * If we make them both float, then there's no way to pass a double
+ * to C which means we can't call common C functions like sin.
+ */           
 typedef float          HsFloat;      
 typedef double         HsDouble;     
-# ifndef _MSC_VER
-typedef unsigned long long  HsWord64;        
-typedef signed long long    HsInt64;        
-# else
-typedef unsigned __int64 HsWord64;        
-typedef          __int64 HsInt64;        
-# endif
-#else
-typedef int          HsInt;        
-typedef hugs_int8_t       HsInt8;         
-typedef hugs_int16_t      HsInt16;        
-typedef hugs_int32_t      HsInt32;        
-typedef hugs_int64_t      HsInt64;        
-typedef unsigned int HsWord;       
-typedef hugs_uint8_t      HsWord8;        
-typedef hugs_uint16_t     HsWord16;       
-typedef hugs_uint32_t     HsWord32;       
-typedef hugs_uint64_t     HsWord64;       
-typedef float        HsFloat;      
-typedef double       HsDouble;     
-#endif
-typedef int          HsBool;         
-typedef void*        HsAddr;       
-typedef void*        HsPtr;          
-typedef void         (*HsFunPtr)(void);
-typedef void*        HsForeignPtr;   
-typedef void*        HsStablePtr;  
 
-typedef int          HugsStackPtr;
-typedef void*        HugsForeign;   
-typedef int          HugsStablePtr;  
-
-typedef void (*HugsPrim) (HugsStackPtr); /* primitive function	   */
-
-#ifndef Args  // hack hack
-struct hugs_primitive {		         /* table of primitives		   */
-    char*  ref;				 /* primitive reference string	   */
-    int	   arity;			 /* primitive function arity	   */
-    HugsPrim imp;		         /* primitive implementation	   */
-};
-
-struct hugs_primInfo {
-    void                  (*controlFun)(int);
-    struct hugs_primitive *primFuns;
-    struct hugs_primInfo  *nextPrimInfo;
-};
-#else
-#define hugs_primInfo primInfo
-#endif
-
+typedef hugs_int64_t   HsInt64;        
+typedef hugs_uint64_t  HsWord64;       
+typedef char           HsChar;
+typedef int            HsBool;         
+typedef void*          HsAddr;       
+typedef void*          HsPtr;          
+typedef void           (*HsFunPtr)(void);
+typedef void*          HsForeignPtr;   
+typedef void*          HsStablePtr;  
+                       
 #define HS_CHAR_MIN             0
 #define HS_CHAR_MAX             0xFF
 #define HS_BOOL_FALSE           0
@@ -109,17 +81,21 @@ struct hugs_primInfo {
 #define HS_WORD32_MAX           __UINT32_MAX
 #define HS_WORD64_MAX           __UINT64_MAX
 
-#define HS_FLOAT_RADIX          FLT_RADIX
-#define HS_FLOAT_ROUNDS         FLT_ROUNDS
-#define HS_FLOAT_EPSILON        FLT_EPSILON
-#define HS_FLOAT_DIG            FLT_DIG
-#define HS_FLOAT_MANT_DIG       FLT_MANT_DIG
-#define HS_FLOAT_MIN            FLT_MIN
-#define HS_FLOAT_MIN_EXP        FLT_MIN_EXP
-#define HS_FLOAT_MIN_10_EXP     FLT_MIN_10_EXP
-#define HS_FLOAT_MAX            FLT_MAX
-#define HS_FLOAT_MAX_EXP        FLT_MAX_EXP
-#define HS_FLOAT_MAX_10_EXP     FLT_MAX_10_EXP
+#ifndef Args
+
+#include <float.h>
+
+#define HS_FLOAT_RADIX         FLT_RADIX
+#define HS_FLOAT_ROUNDS        FLT_ROUNDS
+#define HS_FLOAT_EPSILON       FLT_EPSILON
+#define HS_FLOAT_DIG           FLT_DIG
+#define HS_FLOAT_MANT_DIG      FLT_MANT_DIG
+#define HS_FLOAT_MIN           FLT_MIN
+#define HS_FLOAT_MIN_EXP       FLT_MIN_EXP
+#define HS_FLOAT_MIN_10_EXP    FLT_MIN_10_EXP
+#define HS_FLOAT_MAX           FLT_MAX
+#define HS_FLOAT_MAX_EXP       FLT_MAX_EXP
+#define HS_FLOAT_MAX_10_EXP    FLT_MAX_10_EXP
 
 #define HS_DOUBLE_RADIX         DBL_RADIX
 #define HS_DOUBLE_ROUNDS        DBL_ROUNDS
@@ -132,6 +108,30 @@ struct hugs_primInfo {
 #define HS_DOUBLE_MAX           DBL_MAX
 #define HS_DOUBLE_MAX_EXP       DBL_MAX_EXP
 #define HS_DOUBLE_MAX_10_EXP    DBL_MAX_10_EXP
+
+#endif /* included into user code */
+
+typedef int            HugsStackPtr;
+typedef void*          HugsForeign;   
+typedef int            HugsStablePtr;  
+
+typedef void (*HugsPrim) (HugsStackPtr); /* primitive function	   */
+
+#ifndef Args  // hack hack
+struct hugs_primitive {		         /* table of primitives		   */
+    char*  ref;				 /* primitive reference string	   */
+    int	   arity;			 /* primitive function arity	   */
+    HugsPrim imp;		         /* primitive implementation	   */
+};
+
+struct hugs_primInfo {
+    void                  (*controlFun)(int);
+    struct hugs_primitive *primFuns;
+    struct hugs_primInfo  *nextPrimInfo;
+};
+#else
+#define hugs_primInfo primInfo
+#endif
 
 typedef struct {
 

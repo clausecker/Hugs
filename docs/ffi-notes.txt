@@ -7,8 +7,8 @@ Suppose you have some C functions in test.c and some ffi declarations
 for those functions in Test.hs and the code in test.c needs to be
 compiled with -lm.  You can use these with Hugs as follows:
 
-  # Generate Test.c (note that it is _not_ test.c)
-  # compile it and link it against test.c and -lm to produce Test.so
+  # Use ffihugs to generate Test.c compile it and link it against 
+  # test.c and -lm to produce Test.so
   #
   # [If Test.hs depends on other ffi modules, you'll have to compile
   # them first.]
@@ -21,7 +21,7 @@ compiled with -lm.  You can use these with Hugs as follows:
 
 
 This release implements the Haskell foreign function interface
-definition release candidate 1.4:
+definition release candidate 5:
 
   http://www.cse.unsw.edu.au/~chak/haskell/ffi/
 

@@ -66,22 +66,24 @@ install_notes	::
 		$(INSTALL_DATA) ../License $(hugsdir)
 		$(INSTALL_DATA) ../Credits $(hugsdir)
 
-BUILD_FFI = ./ffihugs -P'{Hugs}/libraries:{Hugs}/lib/hugs:{Hugs}/lib/exts' +G
+BUILD_FFI_OLD = ./ffihugs -P'{Hugs}/lib:{Hugs}/lib/exts:{Hugs}/lib/hugs' +G
 
 install_ffi	:: install
-		$(BUILD_FFI) +L"Storable_aux.c" HugsStorable 
-		$(BUILD_FFI) MarshalAlloc
-		$(BUILD_FFI) MarshalUtils
+		$(BUILD_FFI_OLD) +L"Storable_aux.c" HugsStorable 
+		$(BUILD_FFI_OLD) MarshalAlloc
+		$(BUILD_FFI_OLD) MarshalUtils
+
+BUILD_FFI_NEW = ./ffihugs -P'{Hugs}/libraries:{Hugs}/oldlib:{Hugs}/lib/hugs' +G
 
 install_libraries :: install
 		$(INSTALL) -d $(hugsdir)
 		$(INSTALL_DATA) -LR ../libraries ../oldlib $(hugsdir)
 
 install_libraries_ffi :: install_libraries
-		$(BUILD_FFI) +L"Storable_aux.c" Hugs.Storable 
-		$(BUILD_FFI) Foreign.Marshal.Alloc 
-		$(BUILD_FFI) Foreign.Marshal.Utils 
-		$(BUILD_FFI) +L"errno.c" Foreign.C.Error  
+		$(BUILD_FFI_NEW) +L"Storable_aux.c" Hugs.Storable 
+		$(BUILD_FFI_NEW) Foreign.Marshal.Alloc 
+		$(BUILD_FFI_NEW) Foreign.Marshal.Utils 
+		$(BUILD_FFI_NEW) +L"errno.c" Foreign.C.Error  
 		$(RM) $(hugsdir)/libraries/Hugs/*.[ch]
 		$(RM) $(hugsdir)/libraries/Foreign/*.[ch]
 		$(RM) $(hugsdir)/libraries/Foreign/Marshal/*.[ch]
