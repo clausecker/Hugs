@@ -55,10 +55,8 @@ main = do
 
 hugsPackage :: FilePath -> FilePath -> IO ()
 hugsPackage srcDir destDir = do
-	let fpath = srcDir `joinFileName` packageFile
 	exists <- doesFileExist fpath
 	inp <- if exists then readFile fpath else do
-	    let packageFileIn = fpath ++ ".in"
 	    withTempFileDef $ \ tmpFile -> do
 		maybeExit (ppCpp includes packageFileIn tmpFile)
 		readFile tmpFile
@@ -71,50 +69,62 @@ hugsPackage srcDir destDir = do
 		mapM_ (compileFFI pkgInfo srcDir) ffiFiles
   where
 	includes = ["-I" ++ (srcDir `joinFileName` "include")]
+	fpath = srcDir `joinFileName` packageFile
+	packageFileIn = fpath ++ ".in"
 
 -- Pass 1: preprocess files
 
 -- Preprocess a package, returning names of output files.
 prepPackage :: BuildParameters -> FilePath -> FilePath -> IO [FilePath]
 prepPackage pkgInfo srcDir destDir =
-	sequence [prepModule (ppHandlers includes)
+	sequence [prepModule (ppHandlers includes) useCpp (ppCpp includes)
 			(stem srcDir mod) (stem destDir mod) |
 		mod <- modules]
   where modules = exposedModules pkgInfo ++ hiddenModules pkgInfo
 	stem dir mod = dir `joinFileName` dotToSep mod
 	includes = map ("-I" ++) incDirs
 	incDirs = (srcDir `joinFileName` "include") : includeDirs pkgInfo
+	useCpp = True	-- TODO: look for CPP in extensions
 
 -- Preprocess a file, returning name of output file.
-prepModule :: [PPHandler] -> FilePath -> FilePath -> IO FilePath
-prepModule handlers srcStem destStem = do
+prepModule :: [PPHandler] -> Bool -> PreProcessor ->
+		FilePath -> FilePath -> IO FilePath
+prepModule handlers useCpp cpp srcStem destStem = do
 	createIfNotExists True (dirname destStem)
 	chooseHandler handlers
   where
 	dirname f = fst (splitFileName f)
 	chooseHandler [] = die (srcStem ++ ".*: not found")
-	chooseHandler ((suffix, lhs, preprocess):handlers) = do
-		let srcFile = srcStem ++ suffix
+	chooseHandler ((suffix, pps):handlers) = do
 		exists <- doesFileExist srcFile
 		if exists then do
-			let suffix' = if lhs then ".lhs" else ".hs"
-			let destFile = destStem ++ suffix'
-			preprocess srcFile destFile
+			opts <- getOptions srcFile
+			let pps' = if useCpp || "-cpp" `elem` opts
+					then pps ++ [cpp] else pps
+			ppCompose pps' srcFile destFile
 			return destFile
 		    else chooseHandler handlers
+	  where srcFile = srcStem ++ suffix
+		destFile
+		  | suffix == ".lhs" = destStem ++ ".lhs"
+		  | otherwise        = destStem ++ ".hs"
 
 -- Preprocessors
 
-type PPHandler = (String, Bool, PreProcessor)
+type PPHandler = (String, [PreProcessor])
 
 ppHandlers :: [String] -> [PPHandler]
 ppHandlers includes = [
-	(".hs", False, ppCpp includes),
-	(".lhs", True, ppCpp includes),
-	(".hsc", False, ppHsc2hs >-> ppCpp includes),
-	(".ly", False, ppHappy >-> ppCpp includes),
-	(".y", False, ppHappy >-> ppCpp includes)]
-	-- TODO: ("_hsc_make.c", False, ???)
+	(".hs",  []),
+	(".lhs", []),
+	-- TODO: ("_hsc_make.c", ???),
+	(".hsc", [standardPP "hsc2hs" (defHugs : includes)]),
+	(".ly",  [ppHappy]),
+	(".y",   [ppHappy])]
+
+ppCompose :: [PreProcessor] -> PreProcessor
+ppCompose [] = ppIdentity
+ppCompose pps = foldr1 (>->) pps
 
 ppCpp :: [String] -> PreProcessor
 ppCpp flags inFile outFile =
@@ -122,8 +132,8 @@ ppCpp flags inFile outFile =
 		(["-traditional", "-P", defHugs, defCallConv] ++
 		 flags ++ [inFile, outFile])
 
-ppHsc2hs, ppHappy :: PreProcessor
-ppHsc2hs = standardPP "hsc2hs" [defHugs]
+ppIdentity, ppHappy :: PreProcessor
+ppIdentity inFile outFile = copyFile inFile outFile >> return ExitSuccess
 ppHappy = standardPP "happy" []
 
 standardPP :: String -> [String] -> PreProcessor
