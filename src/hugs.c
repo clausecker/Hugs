@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.128 $
- * $Date: 2003/10/14 13:56:22 $
+ * $Revision: 1.129 $
+ * $Date: 2003/10/16 00:16:47 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -77,6 +77,7 @@ static Void   local autoReloadFiles   Args((Void));
  * Local data areas:
  * ------------------------------------------------------------------------*/
 static Text    evalModule = 0;  /* Name of module we eval exprs in */
+static String  defaultArgv[] = { "Hugs" };  /* program name */
 
 /* --------------------------------------------------------------------------
  * UI interpreter initalization:
@@ -141,6 +142,7 @@ String argv[]; {
     loadPrelude();
     
     addScriptsFromArgs(argc,argv);
+    setHugsArgs(1, defaultArgv);
 
     evalModule = findText("");      /* evaluate wrt last module by default */
     readScripts(0);

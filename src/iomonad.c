@@ -14,8 +14,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: iomonad.c,v $
- * $Revision: 1.57 $
- * $Date: 2003/10/14 13:56:23 $
+ * $Revision: 1.58 $
+ * $Date: 2003/10/16 00:16:48 $
  * ------------------------------------------------------------------------*/
  
 Name nameIORun;			        /* run IO code                     */
@@ -26,6 +26,8 @@ static Name namePass;			/* auxiliary:: \f b a -> f a b     */
 #if IO_HANDLES
 static Name nameHreader;	        /* auxiliary function		   */
 #endif
+static Cell hugsProgName;		/* value of getProgName            */
+static Cell hugsArgs;			/* value of getArgs                */
 
 #if IO_HANDLES
 static String local toIOErrorDescr Args((int,Bool));
@@ -69,7 +71,8 @@ Int what; {
 #undef predef
 		       break;
 
-	case RESET   : 
+	case MARK    : mark(hugsProgName);
+		       mark(hugsArgs);
 		       break;
     }
 }
@@ -83,8 +86,10 @@ PROTO_PRIM(primGetEnv);
 PROTO_PRIM(primSystem);
 PROTO_PRIM(primGetRandomSeed);
 
-PROTO_PRIM(primArgc);
-PROTO_PRIM(primArgv);
+PROTO_PRIM(primGetProgName);
+PROTO_PRIM(primGetArgs);
+PROTO_PRIM(primSetProgName);
+PROTO_PRIM(primSetArgs);
 
 PROTO_PRIM(primGetCh);
 PROTO_PRIM(primGetChar);
@@ -213,8 +218,10 @@ static struct primitive iomonadPrimTable[] = {
   {"primSystem",	1+IOArity, primSystem},
   {"getRandomSeed",	0+IOArity, primGetRandomSeed},
 
-  {"primArgc",	        0+IOArity, primArgc},
-  {"primArgv",	        1+IOArity, primArgv},
+  {"primGetProgName",   0+IOArity, primGetProgName},
+  {"primGetArgs",       0+IOArity, primGetArgs},
+  {"primSetProgName",   1+IOArity, primSetProgName},
+  {"primSetArgs",       1+IOArity, primSetArgs},
 
   {"getCh",		0+IOArity, primGetCh},
   {"getChar",		0+IOArity, primGetChar},
@@ -647,40 +654,37 @@ primFun(primSystem) {                   /* primSystem :: String -> IO Int  */
 			 IOArg(1)));
     }
 }
-    
-static String defaultArgv[] = {
-  "Hugs"  /* program name */
-};
-
-static String* hugsArgv = defaultArgv;
-static Int     hugsArgc = sizeof defaultArgv / sizeof defaultArgv[0];
 
 Void setHugsArgs(argc,argv)
 Int    argc;
 String argv[]; {
-    hugsArgc = argc;
-    hugsArgv = argv;
-}
+    int i;
 
-primFun(primArgc) {                     /* primArgc :: IO Int              */
-    IOReturn(mkInt(hugsArgc));
-}
-    
-primFun(primArgv) {                     /* primArgv :: Int -> IO String    */
-    Int i;
-    IntArg(i,1+IOArity);
-    if (0 <= i && i < hugsArgc) {
-	pushString(hugsArgv[i]);
-	IOReturn(pop());
-    } else {
-	IOFail(mkIOError(NIL,
-			 nameIllegal,
-		         "System.getArgs",
-			 "illegal argument",
-			 NIL));
+    hugsArgs = nameNil;
+    hugsProgName = mkStr(findText(argv[0]));
+    for (i=argc-1; i>0; i--) {
+	hugsArgs = ap2(nameCons, mkStr(findText(argv[i])), hugsArgs);
     }
 }
-    
+
+primFun(primGetProgName) {              /* primGetProgName :: IO String    */
+    IOReturn(hugsProgName);
+}
+
+primFun(primGetArgs) {                  /* primGetArgs :: IO [String]      */
+    IOReturn(hugsArgs);
+}
+
+primFun(primSetProgName) {              /* primSetProgName :: String -> IO () */
+    hugsProgName = IOArg(1);
+    IOReturn(nameUnit);
+}
+
+primFun(primSetArgs) {                  /* primSetArgs :: [String] -> IO () */
+    hugsArgs = IOArg(1);
+    IOReturn(nameUnit);
+}
+
 /* --------------------------------------------------------------------------
  * Console IO
  * ------------------------------------------------------------------------*/

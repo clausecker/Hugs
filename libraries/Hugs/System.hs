@@ -9,21 +9,35 @@
 -----------------------------------------------------------------------------
 
 module Hugs.System (
-	getArgs, getProgName, getEnv, 
+	getArgs, getProgName, withArgs, withProgName, getEnv,
 	system
 	) where
 
-import Hugs.Prelude( ExitCode(..) )
+import Hugs.Prelude( ExitCode(..), catchException, throw )
 
-primitive primArgc          :: IO Int
-primitive primArgv          :: Int -> IO String
+primitive getArgs     "primGetArgs"     :: IO [String]
+primitive getProgName "primGetProgName" :: IO String
 
-getArgs                     :: IO [String]
-getArgs                      = do argc <- primArgc
-               		          mapM primArgv [1..argc-1]
+primitive primSetArgs       :: [String] -> IO ()
+primitive primSetProgName   :: String -> IO ()
 
-getProgName                 :: IO String
-getProgName                  = primArgv 0
+-- duplicated from Control.Exception
+act `finally` sequel = do
+    r <- act `catchException` \e -> sequel >> throw e
+    sequel
+    return r
+
+withArgs :: [String] -> IO a -> IO a
+withArgs args act = do
+    old_args <- getArgs
+    primSetArgs args
+    act `finally` primSetArgs old_args
+
+withProgName :: String -> IO a -> IO a
+withProgName name act = do
+    old_name <- getProgName
+    primSetProgName name
+    act `finally` primSetProgName old_name
 
 primitive getEnv            :: String -> IO String
 
