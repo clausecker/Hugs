@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.79 $
- * $Date: 2002/08/03 15:47:23 $
+ * $Revision: 1.80 $
+ * $Date: 2002/08/03 17:00:47 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -56,6 +56,8 @@ static Void   local deriveEval		Args((List));
 static List   local calcEvalContexts	Args((Tycon,List,List));
 static Void   local checkBanged		Args((Name,Kinds,List,Type));
 #endif
+static Type   local fullerExpand	Args((Type));
+static Type   local instantiateNewtype	Args((Name,Type));
 static Type   local instantiateSyn	Args((Type,Type));
 
 static Void   local checkClassDefn	Args((Class));
@@ -1683,6 +1685,64 @@ Type  ty; {				/* (All types using ks)		    */
     }
 }
 #endif
+
+/* --------------------------------------------------------------------------
+ * Expanding out all type synonyms and newtypes in a type expression:
+ * ------------------------------------------------------------------------*/
+
+Type fullerExpand(t)			/* find full expansion of type exp */
+Type t; {				/* assuming that all relevant type */
+    Cell h = t;				/* synonym defns of lower rank have*/
+    Int  n = 0;				/* already been fully expanded but */
+    List args;                          /* not assuming same for newtypes  */
+    for (args=NIL; isAp(h); h=fun(h), n++) {
+        /* Does not apply recursively because the ffi is only interested
+         * in the top level constructors
+         */
+	args = cons(arg(h),args);
+    }
+    t = applyToArgs(h,args);
+    if (isSynonym(h) && n>=tycon(h).arity) {
+	if (n==tycon(h).arity) {
+	    t = instantiateSyn(tycon(h).defn,t);
+	} else {
+	    Type p = t;
+	    while (--n > tycon(h).arity) {
+		p = fun(p);
+	    }
+	    fun(p) = instantiateSyn(tycon(h).defn,fun(p));
+	}
+    } else if (isNewtype(h) && n==tycon(h).arity) {
+        if (n != 0) {
+            /* Not supported because I don't understand the typechecker
+             * well enough.  For those that grok the data structures, it
+             * should be simple.
+             */
+            ERRMSG(name(h).line) "Use of polymorphic newtype '" ETHEN
+            ERRTYPE(t);
+            ERRTEXT "' not supported in foreign function declarations."
+            EEND;
+        }
+        t = instantiateNewtype(hd(tycon(h).defn),t);
+        t = fullerExpand(t); /* chase chains of newtypes */
+    }
+    return t;
+}
+
+static Type local instantiateNewtype(c,env) /* instantiate type using      */
+Name c;					/* env to determine appropriate    */
+Type env; {				/* values for OFFSET type vars	   */
+    Type t = NIL;
+    assert(isName(c));
+    t = name(c).type;
+    if (isPolyType(t)) {
+        t = monotypeOf(t);
+    }
+    assert(getHead(t)==typeArrow && argCount==2);
+    t = arg(fun(t));
+    /* This is probably where we should invoke instantiateSyn(t,env) */
+    return t;
+}
 
 /* --------------------------------------------------------------------------
  * Expanding out all type synonyms in a type expression:
@@ -4888,7 +4948,7 @@ Name p; {
         t = monotypeOf(t);
     }
     while (getHead(t)==typeArrow && argCount==2) {
-        Type ta = fullExpand(arg(fun(t)));
+        Type ta = fullerExpand(arg(fun(t)));
         Type tr = arg(t);
         argTys = cons(ta,argTys);
         t = tr;
@@ -4924,7 +4984,7 @@ Name p; {
             isIO = TRUE;
             t = hd(getArgs(t));
         }
-        t = fullExpand(t);
+        t = fullerExpand(t);
 
         if (generate_ffi) {
             name(p).arity = 1 + length(argTys) + (isIO ? 2 : 0);
@@ -4952,7 +5012,7 @@ Name p; {
 
         argTys = NIL;
         while (getHead(t)==typeArrow && argCount==2) {
-            Type ta = fullExpand(arg(fun(t)));
+            Type ta = fullerExpand(arg(fun(t)));
             Type tr = arg(t);
             argTys = cons(ta,argTys);
             t = tr;
@@ -4964,7 +5024,7 @@ Name p; {
             isIO = TRUE;
             t = hd(getArgs(t));
         }
-        t = fullExpand(t);
+        t = fullerExpand(t);
 
         if (generate_ffi) {
             name(p).arity = 3;
@@ -5037,7 +5097,7 @@ Name p; {
                 isIO = TRUE;
                 t = hd(getArgs(t));
             }
-            t = fullExpand(t);
+            t = fullerExpand(t);
 
             if (generate_ffi) {
                 name(p).arity 
@@ -5089,7 +5149,7 @@ Name p; {
     t = name(p).type;
 
     while (getHead(t)==typeArrow && argCount==2) {
-        Type ta = fullExpand(arg(fun(t)));
+        Type ta = fullerExpand(arg(fun(t)));
         Type tr = arg(t);
         argTys = cons(ta,argTys);
         t = tr;
@@ -5100,7 +5160,7 @@ Name p; {
         t = hd(getArgs(t));
         isIO = TRUE;
     }
-    t = fullExpand(t);
+    t = fullerExpand(t);
 
     if (generate_ffi) {
         name(p).arity 
