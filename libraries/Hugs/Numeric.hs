@@ -122,13 +122,13 @@ formatRealFloat fmt decs x
                     case decs of
                     Nothing ->
                         case ds of
-			 []    -> "0.0e0"
+			 "0"    -> "0.0e0"
                          [d]   -> d : ".0e" ++ show (e-1)
                          d:ds  -> d : '.' : ds ++ 'e':show (e-1)
                     Just dec ->
                         let dec' = max dec 1 in
                         case is of
-                         [] -> '0':'.':take dec' (repeat '0') ++ "e0"
+                         [0] -> '0':'.':take dec' (repeat '0') ++ "e0"
                          _ ->
                           let (ei, is') = roundTo base (dec'+1) is
                               d:ds = map intToDigit
