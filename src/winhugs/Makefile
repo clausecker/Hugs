@@ -25,9 +25,11 @@
 # This rule goes first to make it the default choice
 default		:: winhugs.exe 
 
-CC		= cl /nologo 
-CFLAGS		= -ML -I.
-#CFLAGS		= -ML -DMONTH_YEAR="\"Oct 2002 RC1\""
+CC		= cl /nologo
+VERSTR          = -DMONTH_YEAR="\"Oct 2003\""
+CFLAGS		= -MD -I. $(VERSTR)
+#Debugging options:
+#CFLAGS		= -Zi -MDd -I. $(VERSTR)
 OPTFLAGS	= -O2
 RC		= rc
 
