@@ -110,17 +110,21 @@ extern	Int	uni_gencat	Args((Char));
  *		EOF if not.
  *	Char FGetChar(FILE *f)
  *		Read and decode a Char, returning the Char if successful,
- *		or EOF if end-of-file or a coding error is encountered.
+ *		or EOF if end-of-file or BAD_CHAR on a coding error.
  *	void AddChar(Char c, String &sp)
  *		Add the encoding of c to the string, moving the pointer.
  *		At least MAX_CHAR_ENCODING bytes should be available.
  *	Char ExtractChar(String &sp)
  *		Decode a Char from the string, moving the pointer.
- *		Returns '\0' on end of string or coding error.
+ *		Returns '\0' on end of string or BAD_CHAR on a coding error.
  *	Bool charIsRepresentable(Char c)
  *		Tests whether s can be represented without loss using
  *		the selected encoding.
+ *
+ * There is in general no way to recover from encoding errors.
  * ------------------------------------------------------------------------*/
+
+#define	BAD_CHAR	0xFFFD
 
 #if CHAR_ENCODING_LOCALE
 #  include <wchar.h>

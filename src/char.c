@@ -289,7 +289,7 @@ int fgetc_mb(FILE *f) {
 	    return wc;
 	mbtowc(NULL, NULL, 0);			/* reset shift state */
 	if (n == MAX_CHAR_ENCODING)
-	    return EOF;
+	    return BAD_CHAR;
     }
 }
 
@@ -312,8 +312,11 @@ Char extc_mb(String *sp) {
 	*sp += size;
     else if (size==0)				/* string starts with \0 */
 	(*sp)++;
-    else
+    else {
+	sp++;
+	c = BAD_CHAR;
 	mbtowc(NULL, NULL, 0);			/* reset shift state */
+    }
     return c;
 }
 
@@ -355,18 +358,23 @@ int fgetc_mb(FILE *f) {
     if (b<0x80)				/* ASCII character */
 	return b;
     if (!UTFhead(b))
-	return EOF;
+	return BAD_CHAR;
     size = utfseqlen(b);
     c = b&~UTFmask(size);
     for (i=1 ; i<size; i++) {
 	if ((b = fgetc(f))==EOF)
-	    return EOF;
-	if (!UTFtail(b))
-	    return EOF;
+	    return BAD_CHAR;
+	if (!UTFtail(b)) {
+	    /* try to recover */
+	    while (!UTFhead(b) && (b = fgetc(f))!=EOF)
+		;
+	    ungetc(b, f);
+	    return BAD_CHAR;
+	}
 	c = (c<<6) | (b&0x3F);
     }
     if (utfcodelen(c)!=size)		/* non-shortest form encoding */
-	return EOF;
+	return BAD_CHAR;
     return c;
 }
 
@@ -390,19 +398,19 @@ Char extc_mb(String *sp) {
     if (c<0x80)
 	(*sp)++;
     else if (!UTFhead(c))
-	c = '\0';
+	c = BAD_CHAR;
     else {
         int i, size = utfseqlen(c);	/* how many octets to expect */
 	c &= ~UTFmask(size);
 	for (i=1; i<size; i++) {
 	    Int b = (*sp)[i];
 	    if (!UTFtail(b))
-		return '\0';
+		return BAD_CHAR;
 	    c = (c<<6) | (b&0x3F);
 	}
 	*sp += size;
 	if (utfcodelen(c)!=size)	/* non-shortest form encoding */
-	    return '\0';
+	    return BAD_CHAR;
     }
     return c;
 }
