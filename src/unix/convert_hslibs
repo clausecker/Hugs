@@ -180,7 +180,7 @@ cvt data/edison EdisonPrelude.hs
 # cvt posix PosixTTY.lhs
 # cvt posix PosixUtil.lhs
 
-cvt text Pretty.lhs
+# cvt text Pretty.lhs
 
 # Note that we are forced to rename the "with" combinator to avoid a clash
 # with implicit parameter syntax.
@@ -202,16 +202,16 @@ cvt text/HaXml/lib XmlTypes.hs
 #cvt text/html Html.lhs
 #cvt text/html HtmlBlockTable.lhs
 
-cvt text/parsec Parsec.hs
-cvt text/parsec ParsecChar.hs
-cvt text/parsec ParsecCombinator.hs
-cvt text/parsec ParsecError.hs
-cvt text/parsec ParsecExpr.hs
-cvt text/parsec ParsecLanguage.hs
-cvt text/parsec ParsecPerm.hs
-cvt text/parsec ParsecPos.hs
-cvt text/parsec ParsecPrim.hs
-cvt text/parsec ParsecToken.hs
+# cvt text/parsec Parsec.hs
+# cvt text/parsec ParsecChar.hs
+# cvt text/parsec ParsecCombinator.hs
+# cvt text/parsec ParsecError.hs
+# cvt text/parsec ParsecExpr.hs
+# cvt text/parsec ParsecLanguage.hs
+# cvt text/parsec ParsecPerm.hs
+# cvt text/parsec ParsecPos.hs
+# cvt text/parsec ParsecPrim.hs
+# cvt text/parsec ParsecToken.hs
 
 # cvt tools/DrIFT ChaseImports.hs
 # cvt tools/DrIFT CommandP.hs
