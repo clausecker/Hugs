@@ -16,17 +16,17 @@
 src=$1/hslibs
 dst=../../lib/exts
 
-if (! test -d $src) then
+if [ ! -d $src ]; then
   echo "Can't find hslibs in directory '$1'"
   exit 1
 fi
 
-if (! test -d $dst) then
+if [ ! -d $dst ]; then
   echo "Creating directory '$dst'"
   mkdir $dst
 fi
 
-function cvt () {
+function cvt {
 
   echo "Converting $1/$2"
   gcc -P -E -traditional -xc -D__HUGS__ -D__HASKELL98__ $3 $src/$1/$2 > $dst/$2
