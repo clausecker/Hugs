@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: preds.c,v $
- * $Revision: 1.26 $
- * $Date: 2000/05/21 16:02:15 $
+ * $Revision: 1.27 $
+ * $Date: 2000/12/13 07:43:37 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -405,7 +405,9 @@ List ps;				/* using a top-level instance	   */
 Cell pi;				/* entailment			   */
 Int  o;
 Int  d; {
+#if EXPLAIN_INSTANCE_RESOLUTION
     int i;
+#endif
     Inst in;
 
     if (d++ >= cutoff)
@@ -492,7 +494,9 @@ List ps;				/* using a top-level instance	   */
 Cell pi;				/* entailment			   */
 Int  o;
 Int  d; {
+#if EXPLAIN_INSTANCE_RESOLUTION
     int i;
+#endif
     int k = 0;
     Cell ins;				/* Class predicates		   */
     Inst in, in_;

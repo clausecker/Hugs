@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: storage.c,v $
- * $Revision: 1.9 $
- * $Date: 2000/08/11 22:34:35 $
+ * $Revision: 1.10 $
+ * $Date: 2000/12/13 07:43:37 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1428,8 +1428,8 @@ mc: switch (fst(c)) {
 #if GC_WEAKPTRS
 	case WEAKCELL :
 			{
-			  register place = placeInSet(c);
-			  register mask  = maskInSet(c);
+			  register int place = placeInSet(c);
+			  register int mask  = maskInSet(c);
 			  if (!(marks[place]&mask)) {
 			    marks[place] |= mask;
 			    marks[placeInSet(snd(c))] |= maskInSet(snd(c));
@@ -1443,8 +1443,8 @@ mc: switch (fst(c)) {
 #endif
     }
 
-    {   register place = placeInSet(c);
-	register mask  = maskInSet(c);
+    {   register int place = placeInSet(c);
+	register int mask  = maskInSet(c);
 	if (marks[place]&mask)
 	    return c;
 	else {
@@ -1482,8 +1482,8 @@ mb: if (!isPair(c))
 #if GC_WEAKPTRS
 	case WEAKCELL :
 			{
-			  register place = placeInSet(c);
-			  register mask  = maskInSet(c);
+			  register int place = placeInSet(c);
+			  register int mask  = maskInSet(c);
 			  if (!(marks[place]&mask)) {
 			    marks[place] |= mask;
 			    marks[placeInSet(snd(c))] |= maskInSet(snd(c));
@@ -1496,8 +1496,8 @@ mb: if (!isPair(c))
 #endif
     }
 
-    {   register place = placeInSet(c);
-	register mask  = maskInSet(c);
+    {   register int place = placeInSet(c);
+	register int mask  = maskInSet(c);
 	if (marks[place]&mask)
 	    return;
 	else {
@@ -1551,8 +1551,8 @@ Cell n; {                               /* it was a cell ref, but don't    */
     if (isGenPair(n)) {
 	recordStackRoot();
 	if (fst(n)==INDIRECT) {         /* special case for indirections   */
-	    register place = placeInSet(n);
-	    register mask  = maskInSet(n);
+	    register int place = placeInSet(n);
+	    register int mask  = maskInSet(n);
 	    marks[place]  |= mask;
 	    recordMark();
 	    markSnd(n);
@@ -1593,8 +1593,8 @@ Void garbageCollect()     {             /* Run garbage collector ...       */
 #if IO_HANDLES
     for (i=0; i<NUM_HANDLES; ++i)       /* release any unused handles      */
 	if (nonNull(handles[i].hcell)) {
-	    register place = placeInSet(handles[i].hcell);
-	    register mask  = maskInSet(handles[i].hcell);
+	    register int place = placeInSet(handles[i].hcell);
+	    register int mask  = maskInSet(handles[i].hcell);
 	    if ((marks[place]&mask)==0)
 		freeHandle(i);
 	}
@@ -1602,8 +1602,8 @@ Void garbageCollect()     {             /* Run garbage collector ...       */
 #if GC_MALLOCPTRS
     for (i=0; i<NUM_MALLOCPTRS; ++i)	/* release any unused mallocptrs   */
 	if (isPair(mallocPtrs[i].mpcell)) {
-	    register place = placeInSet(mallocPtrs[i].mpcell);
-	    register mask  = maskInSet(mallocPtrs[i].mpcell);
+	    register int place = placeInSet(mallocPtrs[i].mpcell);
+	    register int mask  = maskInSet(mallocPtrs[i].mpcell);
 	    if ((marks[place]&mask)==0)
 		incMallocPtrRefCnt(i,-1);
 	}
