@@ -8,8 +8,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: output.c,v $
- * $Revision: 1.37 $
- * $Date: 2004/01/10 12:47:32 $
+ * $Revision: 1.38 $
+ * $Date: 2004/01/11 00:34:30 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -515,7 +515,7 @@ Cell e; {
 				  putStr(punc);
 				  punc = ", ";
 				  putStr(textToStr(extText(h)));
-				  putStr("=");
+				  putStr(" = ");
 				  put(NEVER,extField(e));
 				  args = 0;
 				  e    = extRow(e);
