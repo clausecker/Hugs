@@ -274,7 +274,7 @@ nocvt base Control/Exception.hs		exts/Exception.hs	# Hugs special
   cvt base Foreign/Marshal/Utils.hs
 nocvt base Foreign/Ptr.hs		exts/Ptr.hs	# not quite right
   cvt base Foreign/StablePtr.hs
-  cvt base Foreign/Storable.lhs		
+  cvt base Foreign/Storable.hs		
   cvt base Numeric.hs
 nocvt base Prelude.hs			Prelude.hs	# Hugs special
 nocvt base HugsStorable.hs              exts/HugsStorable.hs
@@ -457,6 +457,7 @@ hugslibs ForeignObj			# uses Hugs primitives
   hslibs lang Stable.hs
   hslibs lang StableName.hs
   hslibs lang StablePtr.hs
+  hslibs lang Storable.hs
 # hslibs lang StorableArray.hs		# -> Data.Array.Storable
 # hslibs lang SystemExts.lhs		# GHC-specific
 # hslibs lang TimeExts.lhs
