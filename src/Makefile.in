@@ -85,8 +85,8 @@ ffihugs@OBJ@	: runhugs.c
 ################################################################
 
 libraries	: $(FPTOOLS)
-		  cd unix; ./convert_hslibs ../$(FPTOOLS)
-		  cd unix; ./convert_libraries ../$(FPTOOLS)
+		  cd unix; ./convert_hslibs $(FPTOOLS)
+		  cd unix; ./convert_libraries $(FPTOOLS)
 
 ################################################################
 # Clean, distclean, veryclean, TAGS
