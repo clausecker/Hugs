@@ -6,6 +6,8 @@ NAME=$(shell egrep ^Name: hugs98.spec  | colrm 1 14)
 VERSION=$(shell egrep ^Version: hugs98.spec  | colrm 1 14)
 RELEASE=${NAME}-${VERSION}
 PATCHLEVEL=$(shell egrep ^Release: hugs98.spec  | colrm 1 14)
+TAG=HEAD
+HSLIBSTAG=HEAD
 
 all:
 	@echo "Make what?"
@@ -18,8 +20,8 @@ CVSROOT = ${shell cat CVS/Root}
 ${RELEASE}.tar.gz:
 	-rm -rf /tmp/mktar
 	-mkdir -p /tmp/mktar
-	cd /tmp/mktar; cvs -d ${CVSROOT} export -rHEAD hugs98
-	cd /tmp/mktar; cvs -d ${CVSROOT} export -rHEAD fptools/hslibs
+	cd /tmp/mktar; cvs -d ${CVSROOT} export -r${TAG} hugs98
+	cd /tmp/mktar; cvs -d ${CVSROOT} export -r${HSLIBSTAG} fptools/hslibs
 	# using `make parser.c' would be best, but by default yacc
 	# will be used, and yacc is, for some reason, incompatible
 	cp /tmp/mktar/hugs98/src/version.h /tmp/mktar
