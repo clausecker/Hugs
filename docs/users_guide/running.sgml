@@ -614,6 +614,19 @@ Default: -T
 </listitem>
 </varlistentry>
 
+<varlistentry id="option-root-optimisation">
+<term><option>+R</option></term>
+<listitem>
+<para>
+Enable root optimisation (default: on)
+</para>
+
+<para>
+You might want to turn this off if you're using the observation-based
+debugger (see <xref linkend="observe-and-root-optimisation">).
+</listitem>
+</varlistentry>
+
 </variablelist>
 </sect2>
 
