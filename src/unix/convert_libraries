@@ -272,7 +272,7 @@ mkdir -p $compat
 # hslibs posix PosixErr.lhs
   hslibs posix PosixFiles.lhs
   hslibs posix PosixIO.lhs
-  hslibs posix PosixProcEnv.lhs
+# hslibs posix PosixProcEnv.lhs
 # hslibs posix PosixProcPrim.lhs
   hslibs posix PosixTTY.lhs
 # hslibs posix PosixUtil.lhs
