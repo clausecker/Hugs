@@ -125,7 +125,7 @@ primFun(primGetCalTime) { /* Int   -> Int -> IO (.....) */
   }
   
   /* Warning - ugliness. */
-#if HAVE_TM_ZONE
+#if HAVE_STRUCT_TM_TM_ZONE
   zoneNm = (char*)tm->tm_zone;
 #elif HAVE_TZNAME || IS_WINDOWS
   /* ToDo: fix autoconf macro AC_STRUCT_TIMEZONE so that it will recognise
@@ -137,10 +137,10 @@ primFun(primGetCalTime) { /* Int   -> Int -> IO (.....) */
   zoneNm = NULL;
 #endif
 
-#if HAVE_TM_ZONE
+#if HAVE_STRUCT_TM_TM_ZONE
   utcOff = tm->tm_gmtoff;
-#elif HAVE_TIMEZONE
-# if HAVE_ALTZONE
+#elif HAVE_DECL_TIMEZONE
+# if HAVE_DECL_ALTZONE
   utcOff = (-(tm->tm_isdst ? altzone : timezone));
 # else
   /* Assume DST adjustment is 1 hour. */
@@ -222,10 +222,10 @@ primFun(primMkTime) { /* Int{-year-}  -> Int{-month-} -> Int{-day-} ->
      the UTC offset returned by mktime().
   */
   tz = -tz;
-#if HAVE_TM_ZONE
+#if HAVE_STRUCT_TM_TM_ZONE
   tz += tm.tm_gmtoff;
-#elif HAVE_TIMEZONE
-# if HAVE_ALTZONE
+#elif HAVE_DECL_TIMEZONE
+# if HAVE_DECL_ALTZONE
   tz += (-(tm.tm_isdst ? altzone : timezone));
 # else
   /* Assume DST adjustment is 1 hour */

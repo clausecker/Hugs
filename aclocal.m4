@@ -78,13 +78,15 @@ AC_DEFINE(HAVE_LABELS_AS_VALUES, [1],
 fi
 ])
 
-
-dnl *** Is altzone available? ***
-dnl 
-dnl (copied from the fptools/ configure script)
-AC_DEFUN(FPTOOLS_HAVE_ALTZONE,
-[AC_CACHE_CHECK([altzone], fptools_cv_altzone,
-[AC_TRY_LINK([#if TIME_WITH_SYS_TIME
+# FP_DECL_ALTZONE
+# ---------------
+# Defines HAVE_DECL_ALTZONE to 1 if declared, 0 otherwise.
+#
+# Used by base package.
+AC_DEFUN([FP_DECL_ALTZONE],
+[AC_REQUIRE([AC_HEADER_TIME])dnl
+AC_CHECK_HEADERS([sys/time.h])
+AC_CHECK_DECLS([altzone], [], [],[#if TIME_WITH_SYS_TIME
 # include <sys/time.h>
 # include <time.h>
 #else
@@ -93,22 +95,17 @@ AC_DEFUN(FPTOOLS_HAVE_ALTZONE,
 # else
 #  include <time.h>
 # endif
-#endif
-], [return altzone;], 
-fptools_cv_altzone=yes, fptools_cv_altzone=no)])
-if test "$fptools_cv_altzone" = yes; then
-  AC_DEFINE(HAVE_ALTZONE, [1],
-    [Define to 1 if time.h or sys/time.h define the altzone variable.])
-fi
-])
+#endif])
+])# FP_DECL_ALTZONE
 
-dnl
-dnl Is timezone around? (in a header file)
-dnl 
-dnl (copied from the fptools/ configure script)
-AC_DEFUN(FPTOOLS_HAVE_TIMEZONE,
-[AC_CACHE_CHECK([timezone], fptools_cv_have_timezone,
-[AC_TRY_COMPILE([#if TIME_WITH_SYS_TIME
+# FP_DECL_TIMEZONE
+# ---------------
+# Defines HAVE_DECL_TIMEZONE to 1 if declared, 0 otherwise.
+#
+AC_DEFUN([FP_DECL_TIMEZONE],
+[AC_REQUIRE([AC_HEADER_TIME])dnl
+AC_CHECK_HEADERS([sys/time.h])
+AC_CHECK_DECLS([timezone], [], [],[#if TIME_WITH_SYS_TIME
 # include <sys/time.h>
 # include <time.h>
 #else
@@ -117,14 +114,8 @@ AC_DEFUN(FPTOOLS_HAVE_TIMEZONE,
 # else
 #  include <time.h>
 # endif
-#endif
-], [return timezone/1;], 
-fptools_cv_have_timezone=yes, fptools_cv_have_timezone=no)])
-if test "$fptools_cv_have_timezone" = yes; then
-  AC_DEFINE(HAVE_TIMEZONE, [1],
-    [Define to 1 if time.h or sys/time.h define the timezone variable.])
-fi
-])
+#endif])
+])# FP_DECL_TIMEZONE
 
 
 # FP_COMPUTE_INT(EXPRESSION, VARIABLE, INCLUDES, IF-FAILS)

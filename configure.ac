@@ -573,8 +573,8 @@ dnl
 dnl--------------------------------------------------------------------
 
 AC_STRUCT_TIMEZONE
-FPTOOLS_HAVE_TIMEZONE
-FPTOOLS_HAVE_ALTZONE
+FP_DECL_TIMEZONE
+FP_DECL_ALTZONE
 
 dnl This always fails unless you also #include <windows.h>
 dnl AC_CHECK_FUNCS(GetModuleFileName GetModuleFileNameA)      dnl Windows
