@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: type.c,v $
- * $Revision: 1.37 $
- * $Date: 2001/12/07 18:27:32 $
+ * $Revision: 1.38 $
+ * $Date: 2001/12/13 18:51:18 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1101,6 +1101,7 @@ Bool   addEvid; {			/* TRUE => add \ev -> ...	   */
     savePreds = elimPredsUsing(ps,savePreds);
     if (nonNull(preds) && resolveDefs(genvarType(t,o,NIL)))
 	savePreds = elimPredsUsing(ps,savePreds);
+    elimTauts();
     if (nonNull(preds)) {
 	Type ty = copyType(t,o);
 	List qs = copyPreds(ps);
