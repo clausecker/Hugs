@@ -9,6 +9,8 @@ module Hugs.IOExts
 	, unsafePerformIO		-- :: IO a -> a
 	, unsafeInterleaveIO		-- :: IO a -> IO a
 
+	, RealWorld
+
 	, trace
 
 	, performGC
@@ -25,6 +27,8 @@ import Hugs.Prelude
 import Hugs.IO( ioeGetErrorString, IOMode(..), Handle, openFile )
 
 -----------------------------------------------------------------------------
+
+data RealWorld = RealWorld
 
 primitive performGC "primGC" :: IO ()
 

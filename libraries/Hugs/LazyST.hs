@@ -45,7 +45,7 @@ module Hugs.LazyST
 	) where
 
 import Hugs.Array(Array,Ix(index,rangeSize),bounds,assocs)
-import Hugs.IOExts(unsafePerformIO)
+import Hugs.IOExts(unsafePerformIO,RealWorld)
 import Control.Monad   
 
 -----------------------------------------------------------------------------
@@ -61,8 +61,6 @@ primitive unsafeInterleaveST "STInter" :: ST s a -> ST s a
 primitive fixST        "STFix"         :: (a -> ST s a) -> ST s a
 
 primitive stToIO	"primSTtoIO"   :: ST RealWorld a -> IO a
-
-data RealWorld = RealWorld
 
 unsafeIOToST        :: IO a -> ST s a
 unsafeIOToST         = returnST . unsafePerformIO
