@@ -1,19 +1,17 @@
 Vendor:       PacSoft, Portland, Oregon.
 Name:         hugs98
-Version:      Feb2000
+Version:      Jul2000
 License:      BSDish
-Release:      2
+Release:      1
 Group:        Development/Languages/Haskell
 Packager:     jlewis@cse.ogi.edu
 URL:          http://www.haskell.org/hugs
-Source:       http://www.cse.ogi.edu/PacSoft/projects/Hugs/downloads/hugs98-Feb2000.tar.gz
+Source:       http://www.cse.ogi.edu/PacSoft/projects/Hugs/downloads/hugs98-Jul2000.tar.gz
 Requires:     readline
 BuildRoot:    /tmp/hugs98
 Summary:      A Haskell Interpreter
 %description
-Hugs 98 is an interpreter for Haskell, a lazy functional programming
-language.  It is mostly compliant with the Haskell 98 standard, differing
-mostly in some minor details of the module system.
+Hugs 98 is an interpreter for Haskell, a lazy functional programming language.
 
 %prep
 %setup
