@@ -19,34 +19,34 @@ install		:: install_man                        # manual page
 install		:: install_notes                      # Readme, etc
 
 install_bin	:: hugs$(EXE) runhugs$(EXE) ffihugs$(EXE)
-		$(INSTALL) -d $(bindir)
-		$(INSTALL) -c hugs$(EXE) $(bindir)
-		$(INSTALL) -c runhugs$(EXE) $(bindir)
-		$(INSTALL) -c ffihugs$(EXE) $(bindir)
+		$(INSTALL) -d $(DESTDIR)$(bindir)
+		$(INSTALL) -c hugs$(EXE) $(DESTDIR)$(bindir)
+		$(INSTALL) -c runhugs$(EXE) $(DESTDIR)$(bindir)
+		$(INSTALL) -c ffihugs$(EXE) $(DESTDIR)$(bindir)
 
 install_demos	::
-		$(INSTALL) -d $(hugsdir)/demos
-		$(INSTALL) -d $(hugsdir)/demos/prolog
-		$(INSTALL_DATA) ../demos/*.*            $(hugsdir)/demos
-		$(INSTALL_DATA) ../demos/prolog/*.*     $(hugsdir)/demos/prolog
-		$(INSTALL_DATA) ../demos/prolog/readme  $(hugsdir)/demos/prolog
-		$(INSTALL_DATA) ../demos/prolog/stdlib  $(hugsdir)/demos/prolog
+		$(INSTALL) -d $(DESTDIR)$(hugsdir)/demos
+		$(INSTALL) -d $(DESTDIR)$(hugsdir)/demos/prolog
+		$(INSTALL_DATA) ../demos/*.*           $(DESTDIR)$(hugsdir)/demos
+		$(INSTALL_DATA) ../demos/prolog/*.*    $(DESTDIR)$(hugsdir)/demos/prolog
+		$(INSTALL_DATA) ../demos/prolog/readme $(DESTDIR)$(hugsdir)/demos/prolog
+		$(INSTALL_DATA) ../demos/prolog/stdlib $(DESTDIR)$(hugsdir)/demos/prolog
 
 install_man	::
-		$(INSTALL) -d $(mandir)/man1
-		$(INSTALL_DATA) ../docs/hugs.1 $(mandir)/man1
+		$(INSTALL) -d $(DESTDIR)$(mandir)/man1
+		$(INSTALL_DATA) ../docs/hugs.1 $(DESTDIR)$(mandir)/man1
 
 install_notes	::
-		$(INSTALL) -d $(hugsdir)/docs
-		$(INSTALL_DATA) ../docs/*.txt  $(hugsdir)/docs
-		$(INSTALL_DATA) ../docs/server.*  $(hugsdir)/docs
-		$(INSTALL_DATA) ../Readme  $(hugsdir)
-		$(INSTALL_DATA) ../License $(hugsdir)
-		$(INSTALL_DATA) ../Credits $(hugsdir)
+		$(INSTALL) -d $(DESTDIR)$(hugsdir)/docs
+		$(INSTALL_DATA) ../docs/*.txt  $(DESTDIR)$(hugsdir)/docs
+		$(INSTALL_DATA) ../docs/server.*  $(DESTDIR)$(hugsdir)/docs
+		$(INSTALL_DATA) ../Readme  $(DESTDIR)$(hugsdir)
+		$(INSTALL_DATA) ../License $(DESTDIR)$(hugsdir)
+		$(INSTALL_DATA) ../Credits $(DESTDIR)$(hugsdir)
 
 install_libraries :: libraries
-		$(INSTALL) -d $(hugsdir)
-		$(INSTALL_DATA) -R $(BUILD_DIR)/* $(hugsdir)
-		$(RM) $(hugsdir)/libraries/Hugs/*.[ch]
-		$(RM) $(hugsdir)/libraries/Foreign/*/*.[ch]
-		$(RM) $(hugsdir)/libraries/Text/Regex/*.[ch]
+		$(INSTALL) -d $(DESTDIR)$(hugsdir)
+		$(INSTALL_DATA) -R $(BUILD_DIR)/* $(DESTDIR)$(hugsdir)
+		$(RM) $(DESTDIR)$(hugsdir)/libraries/Hugs/*.[ch]
+		$(RM) $(DESTDIR)$(hugsdir)/libraries/Foreign/*/*.[ch]
+		$(RM) $(DESTDIR)$(hugsdir)/libraries/Text/Regex/*.[ch]
