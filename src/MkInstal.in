@@ -16,7 +16,7 @@ INSTALL_DATA	= /bin/cp
 install		:: install_bin install_lib            # the bare minimum
 install		:: install_libs                       # lotsa libraries
 install		:: install_demos		      # goodies
-install                :: install_man                        # manual page
+install		:: install_man                        # manual page
 
 install_libs    :: install_libhugs 		      # Hugs libraries
 install_libs    :: install_libexts  		      # ghc compatability
@@ -47,5 +47,6 @@ install_libexts	::
 		$(INSTALL_DATA) ../lib/exts/*.*     $(hugsdir)/lib/exts
 
 install_man	::
+		$(INSTALL) -d $(mandir)/man1
 		$(INSTALL_DATA) ../docs/hugs.1 $(mandir)/man1
 
