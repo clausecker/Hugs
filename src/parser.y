@@ -10,8 +10,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: parser.y,v $
- * $Revision: 1.33 $
- * $Date: 2002/06/14 14:41:10 $
+ * $Revision: 1.34 $
+ * $Date: 2002/07/16 05:05:13 $
  * ------------------------------------------------------------------------*/
 
 %{
@@ -163,7 +163,9 @@ modid	  : qconid			{$$ = mkCon(mkNestedQual($1));}
 					  }
 					}
 	  ;
-modBody	  : topDecls			{$$ = $1;}
+modBody	  : /* empty */                 {$$ = gc0(NIL); }
+          | ';' modBody 		{$$ = gc2($2);}
+          | topDecls			{$$ = gc1($1);}
 	  | impDecls chase		{$$ = gc2(NIL);}
 	  | impDecls ';' chase topDecls	{$$ = gc4($4);}
 	  ;
@@ -203,6 +205,7 @@ qname	  : qvar			{$$ = $1;}
 /*- Import declarations: --------------------------------------------------*/
 
 impDecls  : impDecls ';' impDecl	{imps = cons($3,imps); $$=gc3(NIL);}
+	  | impDecls ';'		{$$   = gc2(NIL); }
 	  | impDecl			{imps = singleton($1); $$=gc1(NIL);}
 	  ;
 chase	  : /* empty */			{if (chase(imps)) {
@@ -260,13 +263,9 @@ name	  : var				{$$ = $1;}
 
 /*- Top-level declarations: -----------------------------------------------*/
 
-topDecls  : /* empty */			{$$ = gc0(NIL);}
-	  | ';'				{$$ = gc1(NIL);}
-	  | topDecls1			{$$ = $1;}
-	  | topDecls1 ';'		{$$ = gc2($1);}
-	  ;
-topDecls1 : topDecls1 ';' topDecl	{$$ = gc2($1);}
-	  | topDecls1 ';' decl		{$$ = gc3(cons($3,$1));}
+topDecls  : topDecls ';'		{$$ = gc2($1);}
+          | topDecls ';' topDecl	{$$ = gc2($1);}
+	  | topDecls ';' decl		{$$ = gc3(cons($3,$1));}
 	  | topDecl			{$$ = gc0(NIL);}
 	  | decl			{$$ = gc1(cons($1,NIL));}
 	  ;
@@ -863,11 +862,12 @@ vfield	  : varid '=' exp		{
 					}
 	  ;
 /*#endif*/
-alts	  : alts1			{$$ = $1;}
-	  | alts1 ';'			{$$ = gc2($1);}
-	  ;
-alts1	  : alts1 ';' alt		{$$ = gc3(cons($3,$1));}
-	  | alt				{$$ = gc1(cons($1,NIL));}
+alts      : alts1                       {$$ = $1;}
+          | ';' alts                    {$$ = gc2($2);}
+          ;
+alts1     : alts1 ';' alt               {$$ = gc3(cons($3,$1));}
+          | alts1 ';'                   {$$ = gc2($1);}
+          | alt                         {$$ = gc1(cons($1,NIL));}
 	  ;
 alt	  : pat altRhs wherePart	{$$ = gc3(pair($1,letrec($3,$2)));}
 	  ;
@@ -880,12 +880,15 @@ guardAlts : guardAlts guardAlt		{$$ = gc2(cons($2,$1));}
 	  ;
 guardAlt  : '|' exp0 ARROW exp		{$$ = gc4(pair($3,pair($2,$4)));}
 	  ;
-stmts	  : stmts1 ';'			{$$ = gc2($1);}
-	  | stmts1			{$$ = $1;}
+
+stmts     : stmts1                      {$$ = $1;}
+          | ';' stmts                   {$$ = gc2($2);}
 	  ;
-stmts1    : stmts1 ';' stmt		{$$ = gc3(cons($3,$1));}
+stmts1	  : stmts1 ';' stmt		{$$ = gc3(cons($3,$1));}
+          | stmts1 ';'			{$$ = gc2($1);}
 	  | stmt			{$$ = gc1(cons($1,NIL));}
 	  ;
+
 stmt      : exp_err FROM exp		{$$ = gc3(ap(FROMQUAL,pair($1,$3)));}
 	  | LET ldecls			{$$ = gc2(ap(QWHERE,$2));}
 /*	  | IF exp			{$$ = gc2(ap(BOOLQUAL,$2));}*/
