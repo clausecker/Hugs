@@ -83,6 +83,7 @@ ffihugs@OBJ@	: runhugs.c
 clean		::
 		  $(RM) hugs@EXE@
 		  $(RM) runhugs@EXE@
+		  $(RM) ffihugs@EXE@
 		  $(RM) *.o
 		  $(RM) *.O
 		  $(RM) *.obj
@@ -104,6 +105,7 @@ distclean	:: clean
 distclean	::
 		  $(RM) hugs@EXE@
 		  $(RM) runhugs@EXE@
+		  $(RM) ffihugs@EXE@
 		  $(RM) *.pdf
 		  $(RM) TAGS
 		  $(RM) *~
