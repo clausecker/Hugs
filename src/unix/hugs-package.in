@@ -316,7 +316,6 @@ do
 		for file in `sed -n 's/{-# CBITS \(.*\) #-}/\1/p' $filename`
 		do	cmd="$cmd +L$source_dir/cbits/$file"
 		done
-		cmd="$cmd `echo $modname | tr / .`"
 		for flag in $extra_ld_opts
 		do	cmd="$cmd +L$flag"
 		done
@@ -326,6 +325,7 @@ do
 			*)	cmd="$cmd +L-l$lib" ;;
 			esac
 		done
+		cmd="$cmd `echo $modname | tr / .`"
 
 		case "$script" in
 		'')
