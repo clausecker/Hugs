@@ -290,6 +290,75 @@ Hugs defines these instances only for tuple types of size 5 or less
 
 </sect2>
 
+<sect2 id="other-bugs">
+<title>Other bugs in Hugs</title>
+
+<para>
+Here are other known bugs in Hugs, in addition to the deviations listed
+above.  If you find a bug that is not listed here, please report it by
+sending email to
+<ulink url="mailto:hugs-bugs@haskell.org">hugs-bugs@haskell.org</ulink>.
+</para>
+
+<variablelist>
+
+<varlistentry>
+<term>Crashes on some infinite computations</term>
+<listitem><para>
+Normally, an infinite computation will either exhaust the Hugs heap:
+<screen>
+ERROR - Garbage collection fails to reclaim sufficient space
+</screen>
+overflow the Hugs stack:
+<screen>
+ERROR - Control stack overflow
+</screen>
+or just run indefinitely.
+Occasionally, depending on the relative sizes of your heap, Hugs stack
+and C stack, such expressions can overflow the C stack before exhausting
+the other two.
+On Unix, this usually causes a segmentation fault and causes Hugs to abort.
+</para></listitem>
+</varlistentry>
+
+<varlistentry>
+<term>Space leaks from top-level pattern bindings</term>
+<listitem><para>
+This expression runs in constant space
+<screen>
+mapM_ putStrLn (repeat "y")
+</screen>
+but this program does not:
+<programlisting>
+main = mapM_ putStrLn (repeat "y")
+</programlisting>
+This is caused by <firstterm>CAF-leaks</firstterm> &mdash;
+a long-standing problem for Haskell implementations.
+The problem is that <function>main</function> (a Constant Applicative Form)
+is being updated with an expression of the form:
+<screen>
+putChar 'y' >> putChar '\n' >> mapM_ putStrLn (repeat "y")
+</screen>
+and so on.
+In the former case the outer <function>putChar</function> expressions become
+garbage after use, but now they are referenced by <function>main</function>.
+Some day, we hope to fix this by using a smarter garbage collector.
+In the meantime, you can avoid the problem by making
+the troublesome CAFs non-updatable.
+For example, you could rewrite <function>main</function> as the more convoluted:
+<programlisting>
+main = return () >>= \ _ -> mapM_ putStrLn (repeat "y")
+</programlisting>
+Because the problematic expression is now inside a lambda that is not
+reduced, its expansion will not be reachable from <function>main</function>,
+and will thus be garbage-collected as before.
+</para></listitem>
+</varlistentry>
+
+</variablelist>
+
+</sect2>
+
 </sect1>
 
 <sect1 id="addenda">
