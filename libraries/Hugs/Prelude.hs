@@ -110,7 +110,12 @@ module Hugs.Prelude (
     fromIntegral, realToFrac,
     fst, snd, curry, uncurry, id, const, (.), flip, ($), until,
     asTypeOf, error, undefined,
-    seq, ($!)
+    seq, ($!),
+
+    numericEnumFrom,
+    numericEnumFromTo,
+    numericEnumFromThen,
+    numericEnumFromThenTo
   ) where
 
 -- Standard value bindings {Prelude} ----------------------------------------
