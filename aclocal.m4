@@ -30,24 +30,6 @@ fi
 ])
 
 
-# FP_CHECK_FUNC(FUNCTION, PROLOGUE, BODY, [ACTION-IF-FOUND], [ACTION-IF-NOT-FOUND])
-# ---------------------------------------------------------------------------------
-# A variant of AC_CHECK_FUNCS, limited to a single FUNCTION, but with the
-# additional flexibility of specifying the PROLOGUE and BODY.
-AC_DEFUN([FP_CHECK_FUNC],
-[AS_VAR_PUSHDEF([fp_func], [fp_cv_func_$1])dnl
-AC_CACHE_CHECK([for $1], fp_func,
-[AC_LINK_IFELSE([AC_LANG_PROGRAM([$2], [$3])],
-                [AS_VAR_SET(fp_func, yes)],
-                [AS_VAR_SET(fp_func, no)])])
-AS_IF([test AS_VAR_GET(fp_func) = yes],
-      [AC_DEFINE(AS_TR_CPP(HAVE_$1), [1],
-                [Define to 1 if you have the `]$1[' function.]) $4],
-      [$5])dnl
-AS_VAR_POPDEF([fp_func])dnl
-])# FP_CHECK_FUNC
-
-
 dnl copied from acspecific.m4 (part of autoconf distribution)
 dnl
 dnl AC_DEFUN(AC_STACK_DIRECTION,
@@ -187,7 +169,7 @@ fi
 
 
 # FP_COMPUTE_INT(EXPRESSION, VARIABLE, INCLUDES, IF-FAILS)
-# ---------------------------------------------------------
+# --------------------------------------------------------
 # Assign VARIABLE the value of the compile-time EXPRESSION using INCLUDES for
 # compilation. Execute IF-FAILS when unable to determine the value. Works for
 # cross-compilation, too.
@@ -222,6 +204,93 @@ fi])[]dnl
 AC_DEFINE_UNQUOTED(AS_TR_CPP(alignment_$1), $fp_Cache, [The alignment of a `$1'.])[]dnl
 m4_popdef([fp_Cache])[]dnl
 ])# FP_CHECK_ALIGNMENT
+
+
+# FP_CHECK_CONST(EXPRESSION, [INCLUDES = DEFAULT-INCLUDES], [VALUE-IF-FAIL = -1])
+# -------------------------------------------------------------------------------
+# Defines CONST_EXPRESSION to the value of the compile-time EXPRESSION, using
+# INCLUDES. If the value cannot be determined, use VALUE-IF-FAIL.
+AC_DEFUN([FP_CHECK_CONST],
+[AS_VAR_PUSHDEF([fp_Cache], [fp_cv_const_$1])[]dnl
+AC_CACHE_CHECK([value of $1], fp_Cache,
+[FP_COMPUTE_INT([$1], fp_check_const_result, [AC_INCLUDES_DEFAULT([$2])],
+                [fp_check_const_result=m4_default([$3], ['-1'])])
+AS_VAR_SET(fp_Cache, [$fp_check_const_result])])[]dnl
+AC_DEFINE_UNQUOTED(AS_TR_CPP([CONST_$1]), AS_VAR_GET(fp_Cache), [The value of $1.])[]dnl
+AS_VAR_POPDEF([fp_Cache])[]dnl
+])# FP_CHECK_CONST
+
+
+# FP_CHECK_CONSTS_TEMPLATE(EXPRESSION...)
+# ---------------------------------------
+# autoheader helper for FP_CHECK_CONSTS
+m4_define([FP_CHECK_CONSTS_TEMPLATE],
+[AC_FOREACH([fp_Const], [$1],
+  [AH_TEMPLATE(AS_TR_CPP(CONST_[]fp_Const),
+               [The value of ]fp_Const[.])])[]dnl
+])# FP_CHECK_CONSTS_TEMPLATE
+
+
+# FP_CHECK_CONSTS(EXPRESSION..., [INCLUDES = DEFAULT-INCLUDES], [VALUE-IF-FAIL = -1])
+# -----------------------------------------------------------------------------------
+# List version of FP_CHECK_CONST
+AC_DEFUN(FP_CHECK_CONSTS,
+[FP_CHECK_CONSTS_TEMPLATE([$1])dnl
+for fp_const_name in $1
+do
+FP_CHECK_CONST([$fp_const_name], [$2], [$3])
+done
+])# FP_CHECK_CONSTS
+
+
+# FP_CHECK_PROG(VARIABLE, PROG-TO-CHECK-FOR,
+#               [VALUE-IF-NOT-FOUND], [PATH], [REJECT])
+# -----------------------------------------------------
+# HACK: A small wrapper around AC_CHECK_PROG, setting VARIABLE to the full path
+# of PROG-TO-CHECK-FOR when found.
+AC_DEFUN([FP_CHECK_PROG],
+[AC_CHECK_PROG([$1], [$2], [$as_dir/$ac_word$ac_exec_ext], [$3], [$4], [$5])][]dnl
+)# FP_CHECK_PROC
+
+
+# FP_PROG_FIND
+# ------------
+# Find a non-WinDoze version of the "find" utility.
+AC_DEFUN([FP_PROG_FIND],
+[AC_PATH_PROG([fp_prog_find], [find])
+echo foo > conftest.txt
+$fp_prog_find conftest.txt -print > conftest.out 2>&1
+if grep '^conftest.txt$' conftest.out > /dev/null 2>&1 ; then
+  # OK, looks like a real "find".
+  FindCmd="$fp_prog_find"
+else
+  # Found a poor WinDoze version of "find", ignore it.
+  AC_MSG_WARN([$fp_prog_find looks like a non-*nix find, ignoring it])
+  FP_CHECK_PROG([FindCmd], [find], [], [], [$fp_prog_find])
+fi
+rm -f conftest.txt conftest.out
+AC_SUBST([FindCmd])[]dnl
+])# FP_PROG_FIND
+
+
+# FP_PROG_SORT
+# ------------
+# Find a non-WinDoze version of the "sort" utility.
+AC_DEFUN([FP_PROG_SORT],
+[AC_PATH_PROG([fp_prog_sort], [sort])
+echo foo > conftest.txt
+$fp_prog_sort -u conftest.txt > conftest.out 2>&1
+if grep '^foo$' conftest.out > /dev/null 2>&1 ; then
+  # OK, looks like a real "sort".
+  SortCmd="$fp_prog_sort"
+else
+  # Found a poor WinDoze version of "sort", ignore it.
+  AC_MSG_WARN([$fp_prog_sort looks like a non-*nix sort, ignoring it])
+  FP_CHECK_PROG([SortCmd], [sort], [], [], [$fp_prog_sort])
+fi
+rm -f conftest.txt conftest.out
+AC_SUBST([SortCmd])[]dnl
+])# FP_PROG_SORT
 
 
 dnl ** Map an arithmetic C type to a Haskell type.
@@ -327,6 +396,24 @@ undefine([AC_CV_NAME])dnl
 undefine([AC_CV_NAME_supported])dnl
 ])
 
+
+# FP_CHECK_FUNC(FUNCTION, PROLOGUE, BODY, [ACTION-IF-FOUND], [ACTION-IF-NOT-FOUND])
+# ---------------------------------------------------------------------------------
+# A variant of AC_CHECK_FUNCS, limited to a single FUNCTION, but with the
+# additional flexibility of specifying the PROLOGUE and BODY.
+AC_DEFUN([FP_CHECK_FUNC],
+[AS_VAR_PUSHDEF([fp_func], [fp_cv_func_$1])dnl
+AC_CACHE_CHECK([for $1], fp_func,
+[AC_LINK_IFELSE([AC_LANG_PROGRAM([$2], [$3])],
+                [AS_VAR_SET(fp_func, yes)],
+                [AS_VAR_SET(fp_func, no)])])
+AS_IF([test AS_VAR_GET(fp_func) = yes],
+      [AC_DEFINE(AS_TR_CPP(HAVE_$1), [1],
+                [Define to 1 if you have the `]$1[' function.]) $4],
+      [$5])dnl
+AS_VAR_POPDEF([fp_func])dnl
+])# FP_CHECK_FUNC
+
 dnl ** figure out whether C compiler supports 'long long's
 dnl    (Closely based on Andreas Zeller's macro for testing
 dnl     for this under C++)
@@ -353,204 +440,6 @@ AC_DEFINE(HAVE_LONG_LONG, [1],
   [Define to 1 if C compiler supports long long types.])
 fi
 ])
-
-
-# FP_CHECK_CONST(EXPRESSION, [INCLUDES = DEFAULT-INCLUDES], [VALUE-IF-FAIL = -1])
-# ---------------------------------------------------------------------------------
-# Defines CONST_EXPRESSION to the value of the compile-time EXPRESSION, using
-# INCLUDES. If the value cannot be determined, use VALUE-IF-FAIL.
-AC_DEFUN([FP_CHECK_CONST],
-[AS_VAR_PUSHDEF([fp_Cache], [fp_cv_const_$1])[]dnl
-AC_CACHE_CHECK([value of $1], fp_Cache,
-[FP_COMPUTE_INT([$1], fp_check_const_result, [AC_INCLUDES_DEFAULT([$2])],
-                [fp_check_const_result=m4_default([$3], ['-1'])])
-AS_VAR_SET(fp_Cache, [$fp_check_const_result])])[]dnl
-AC_DEFINE_UNQUOTED(AS_TR_CPP([CONST_$1]), AS_VAR_GET(fp_Cache), [The value of $1.])[]dnl
-AS_VAR_POPDEF([fp_Cache])[]dnl
-])# FP_CHECK_CONST
-
-
-# FP_CHECK_CONSTS_TEMPLATE(EXPRESSION...)
-# ----------------------------------
-# autoheader helper for FP_CHECK_CONSTS
-m4_define([FP_CHECK_CONSTS_TEMPLATE],
-[AC_FOREACH([fp_Const], [$1],
-  [AH_TEMPLATE(AS_TR_CPP(CONST_[]fp_Const),
-               [The value of ]fp_Const[.])])[]dnl
-])# FP_CHECK_CONSTS_TEMPLATE
-
-
-# FP_CHECK_CONSTS(EXPRESSION..., [INCLUDES = DEFAULT-INCLUDES], [VALUE-IF-FAIL = -1])
-# -------------------------------------------------------------------------------------
-# List version of FP_CHECK_CONST
-AC_DEFUN(FP_CHECK_CONSTS,
-[FP_CHECK_CONSTS_TEMPLATE([$1])dnl
-for fp_const_name in $1
-do
-FP_CHECK_CONST([$fp_const_name], [$2], [$3])
-done
-])# FP_CHECK_CONSTS
-
-
-dnl ** Try building and loading a dynamically loadable library using
-dnl    the specified flags.
-dnl
-AC_DEFUN(HUGS_TRY_DYNLINK,
-dnl AC_BEFORE([$0], [AC_C_PROTOTYPES])
-[AC_MSG_CHECKING(if '$1' builds loadable libraries)
-AC_CACHE_VAL(ac_cv_dll_flags,
-[
-  cat > conftest_dl.c <<EOF
-int x = 0;    /* global */
-int y;        /* common */
-static int z; /* static */
-static int test2() { return (test() + x + y + z); }
-int test() { return test2(); }
-EOF
-
-  ac_mkdll='${CC-cc} $1 conftest_dl.c -o conftest_dl.so 1>&AC_FD_CC'
-
-  if AC_TRY_EVAL(ac_mkdll) && test -s conftest_dl.so 
-  then dnl compiling and linking loadee succeeded
-
-    cat > conftest.c << EOF
-#include "confdefs.h"
-#if PROTOTYPES       /* To enable use of prototypes whenever possible */
-#define Args(x) x
-#else
-#define Args(x) ()
-#endif
-
-#define SYMBOL1 "test"
-#define SYMBOL2 "_test"
-
-#define CANTRUN  1
-#define CANTOPEN 2
-#define SYM1_OK  3
-#define SYM2_OK  4
-#define CANTFIND 5
-
-#if HAVE_DLFCN_H /* eg LINUX, SOLARIS, ULTRIX */
-
-#include <stdio.h>
-#include <dlfcn.h>
-
-main()
-{
-    void *instance;
-    void *sym;
-
-    instance = dlopen("./conftest_dl.so",1);
-    if (instance==0) exit(CANTOPEN);
-      
-    sym = dlsym(instance,SYMBOL1);
-    if (sym != 0) exit(SYM1_OK);
-
-    sym = dlsym(instance,SYMBOL2);
-    if (sym != 0) exit(SYM2_OK);
-
-    exit(CANTFIND);
-}
-
-#elif HAVE_DL_H /* eg HPUX */
-
-#include <dl.h>
-
-main()
-{
-    shl_t instance;
-    void* r;
-
-    instance = shl_load("./conftest_dl.so",BIND_IMMEDIATE,0L);
-    if (instance == 0) exit(CANTOPEN);
-    
-    if (0 == shl_findsym(&instance,SYMBOL1,TYPE_PROCEDURE,&r)) exit(SYM1_OK);
-
-    if (0 == shl_findsym(&instance,SYMBOL2,TYPE_PROCEDURE,&r)) exit(SYM2_OK);
-
-    exit(CANTFIND);
-}
-
-#elif HAVE_MACH_O_DYLD_H         /* MacOS X */
-
-#include <stdio.h>
-#include <mach-o/dyld.h>
-
-main()
-{
-    NSObjectFileImage ofile;
-    NSModule handle = NULL;
-    void* addr;
-    NSSymbol sym;
-
-    if (NSCreateObjectFileImageFromFile("./conftest_dl.so",&ofile) != NSObjectFileImageSuccess)
-        exit(CANTOPEN);
-
-    handle = NSLinkModule(ofile,"./conftest_dl.so",NSLINKMODULE_OPTION_PRIVATE);
-    if (handle == 0) exit(CANTOPEN);
-    
-    sym = NSLookupSymbolInModule(handle, SYMBOL1); 
-    if (sym != 0) exit(SYM1_OK);
-    
-    sym = NSLookupSymbolInModule(handle, SYMBOL2); 
-    if (sym != 0) exit(SYM2_OK);
-    
-    exit(CANTFIND);
-}
-
-#elif HAVE_WINDOWS_H
-
-#include <windows.h>
-
-main()
-{
-    HINSTANCE instance;
-    void* sym;
-
-    instance = LoadLibrary("conftest_dl.so");
-    if (instance ==0) exit(CANTOPEN);
-
-    sym = (void*)GetProcAddress(instance,SYMBOL1);
-    if (sym != 0) exit(SYM1_OK);
-
-    sym = (void*)GetProcAddress(instance,SYMBOL2);
-    if (sym != 0) exit(SYM2_OK);
-
-    exit(CANTFIND);
-}
-
-#else
-
-main()
-{
-  exit(CANTRUN);
-}
-
-#endif
-EOF
-
-
-if AC_TRY_EVAL(ac_link) && test -s conftest${ac_exeext} 
-then dnl compiling and linking loader succeeded
-
-  ./conftest 2>/dev/null
-  ac_result=$?
-  if test $ac_result = 3; then
-    ac_cv_dll_flags='$1'
-    ac_cv_leading_underscore=no
-  fi
-  if test $ac_result = 4; then
-    ac_cv_dll_flags='$1'
-    ac_cv_leading_underscore=yes
-  fi
-
-fi dnl compiling and linking loader succeeded
-fi dnl compiling and linking loadee succeeded
-
-rm -fr conftest* a.out
-]) dnl close AC_CACHE_VAL
-AC_MSG_RESULT($ac_cv_dll_flags)]
-)
 
 
 # FP_CHECK_WIN32
@@ -749,6 +638,167 @@ AC_SUBST([GLUT_CFLAGS])
 AC_SUBST([GLUT_LIBS])
 ])# FP_CHECK_GLUT
 
+
+dnl ** Try building and loading a dynamically loadable library using
+dnl    the specified flags.
+dnl
+AC_DEFUN(HUGS_TRY_DYNLINK,
+dnl AC_BEFORE([$0], [AC_C_PROTOTYPES])
+[AC_MSG_CHECKING(if '$1' builds loadable libraries)
+AC_CACHE_VAL(ac_cv_dll_flags,
+[
+  cat > conftest_dl.c <<EOF
+int x = 0;    /* global */
+int y;        /* common */
+static int z; /* static */
+static int test2() { return (test() + x + y + z); }
+int test() { return test2(); }
+EOF
+
+  ac_mkdll='${CC-cc} $1 conftest_dl.c -o conftest_dl.so 1>&AC_FD_CC'
+
+  if AC_TRY_EVAL(ac_mkdll) && test -s conftest_dl.so 
+  then dnl compiling and linking loadee succeeded
+
+    cat > conftest.c << EOF
+#include "confdefs.h"
+#if PROTOTYPES       /* To enable use of prototypes whenever possible */
+#define Args(x) x
+#else
+#define Args(x) ()
+#endif
+
+#define SYMBOL1 "test"
+#define SYMBOL2 "_test"
+
+#define CANTRUN  1
+#define CANTOPEN 2
+#define SYM1_OK  3
+#define SYM2_OK  4
+#define CANTFIND 5
+
+#if HAVE_DLFCN_H /* eg LINUX, SOLARIS, ULTRIX */
+
+#include <stdio.h>
+#include <dlfcn.h>
+
+main()
+{
+    void *instance;
+    void *sym;
+
+    instance = dlopen("./conftest_dl.so",1);
+    if (instance==0) exit(CANTOPEN);
+      
+    sym = dlsym(instance,SYMBOL1);
+    if (sym != 0) exit(SYM1_OK);
+
+    sym = dlsym(instance,SYMBOL2);
+    if (sym != 0) exit(SYM2_OK);
+
+    exit(CANTFIND);
+}
+
+#elif HAVE_DL_H /* eg HPUX */
+
+#include <dl.h>
+
+main()
+{
+    shl_t instance;
+    void* r;
+
+    instance = shl_load("./conftest_dl.so",BIND_IMMEDIATE,0L);
+    if (instance == 0) exit(CANTOPEN);
+    
+    if (0 == shl_findsym(&instance,SYMBOL1,TYPE_PROCEDURE,&r)) exit(SYM1_OK);
+
+    if (0 == shl_findsym(&instance,SYMBOL2,TYPE_PROCEDURE,&r)) exit(SYM2_OK);
+
+    exit(CANTFIND);
+}
+
+#elif HAVE_MACH_O_DYLD_H         /* MacOS X */
+
+#include <stdio.h>
+#include <mach-o/dyld.h>
+
+main()
+{
+    NSObjectFileImage ofile;
+    NSModule handle = NULL;
+    void* addr;
+    NSSymbol sym;
+
+    if (NSCreateObjectFileImageFromFile("./conftest_dl.so",&ofile) != NSObjectFileImageSuccess)
+        exit(CANTOPEN);
+
+    handle = NSLinkModule(ofile,"./conftest_dl.so",NSLINKMODULE_OPTION_PRIVATE);
+    if (handle == 0) exit(CANTOPEN);
+    
+    sym = NSLookupSymbolInModule(handle, SYMBOL1); 
+    if (sym != 0) exit(SYM1_OK);
+    
+    sym = NSLookupSymbolInModule(handle, SYMBOL2); 
+    if (sym != 0) exit(SYM2_OK);
+    
+    exit(CANTFIND);
+}
+
+#elif HAVE_WINDOWS_H
+
+#include <windows.h>
+
+main()
+{
+    HINSTANCE instance;
+    void* sym;
+
+    instance = LoadLibrary("conftest_dl.so");
+    if (instance ==0) exit(CANTOPEN);
+
+    sym = (void*)GetProcAddress(instance,SYMBOL1);
+    if (sym != 0) exit(SYM1_OK);
+
+    sym = (void*)GetProcAddress(instance,SYMBOL2);
+    if (sym != 0) exit(SYM2_OK);
+
+    exit(CANTFIND);
+}
+
+#else
+
+main()
+{
+  exit(CANTRUN);
+}
+
+#endif
+EOF
+
+
+if AC_TRY_EVAL(ac_link) && test -s conftest${ac_exeext} 
+then dnl compiling and linking loader succeeded
+
+  ./conftest 2>/dev/null
+  ac_result=$?
+  if test $ac_result = 3; then
+    ac_cv_dll_flags='$1'
+    ac_cv_leading_underscore=no
+  fi
+  if test $ac_result = 4; then
+    ac_cv_dll_flags='$1'
+    ac_cv_leading_underscore=yes
+  fi
+
+fi dnl compiling and linking loader succeeded
+fi dnl compiling and linking loadee succeeded
+
+rm -fr conftest* a.out
+]) dnl close AC_CACHE_VAL
+AC_MSG_RESULT($ac_cv_dll_flags)]
+)
+
 dnl AC_C_INLINE_ONLY
 dnl ----------------
 dnl Define the preprocessor symbol INLINE_ONLY to the specifier(s)
@@ -799,53 +849,3 @@ dnl External macros
 
 builtin([include],ac_macros/acx_pthread.m4)
 builtin([include],ac_macros/ice_prog_cpp_traditional.m4)
-
-
-# FP_CHECK_PROG(VARIABLE, PROG-TO-CHECK-FOR,
-#               [VALUE-IF-NOT-FOUND], [PATH], [REJECT])
-# -----------------------------------------------------
-# HACK: A small wrapper around AC_CHECK_PROG, setting VARIABLE to the full path
-# of PROG-TO-CHECK-FOR when found.
-AC_DEFUN([FP_CHECK_PROG],
-[AC_CHECK_PROG([$1], [$2], [$as_dir/$ac_word$ac_exec_ext], [$3], [$4], [$5])][]dnl
-)# FP_CHECK_PROC
-
-
-# FP_PROG_FIND
-# ------------
-# Find a non-WinDoze version of the "find" utility.
-AC_DEFUN([FP_PROG_FIND],
-[AC_PATH_PROG([fp_prog_find], [find])
-echo foo > conftest.txt
-$fp_prog_find conftest.txt -print > conftest.out 2>&1
-if grep '^conftest.txt$' conftest.out > /dev/null 2>&1 ; then
-  # OK, looks like a real "find".
-  FindCmd="$fp_prog_find"
-else
-  # Found a poor WinDoze version of "find", ignore it.
-  AC_MSG_WARN([$fp_prog_find looks like a non-*nix find, ignoring it])
-  FP_CHECK_PROG([FindCmd], [find], [], [], [$fp_prog_find])
-fi
-rm -f conftest.txt conftest.out
-AC_SUBST([FindCmd])[]dnl
-])# FP_PROG_FIND
-
-
-# FP_PROG_SORT
-# ------------
-# Find a non-WinDoze version of the "sort" utility.
-AC_DEFUN([FP_PROG_SORT],
-[AC_PATH_PROG([fp_prog_sort], [sort])
-echo foo > conftest.txt
-$fp_prog_sort -u conftest.txt > conftest.out 2>&1
-if grep '^foo$' conftest.out > /dev/null 2>&1 ; then
-  # OK, looks like a real "sort".
-  SortCmd="$fp_prog_sort"
-else
-  # Found a poor WinDoze version of "sort", ignore it.
-  AC_MSG_WARN([$fp_prog_sort looks like a non-*nix sort, ignoring it])
-  FP_CHECK_PROG([SortCmd], [sort], [], [], [$fp_prog_sort])
-fi
-rm -f conftest.txt conftest.out
-AC_SUBST([SortCmd])[]dnl
-])# FP_PROG_SORT
