@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.168 $
- * $Date: 2004/02/02 23:49:18 $
+ * $Revision: 1.169 $
+ * $Date: 2004/02/04 21:47:34 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1355,11 +1355,9 @@ Cell  m; {
 	t    = monotypeOf(t);
     }
 
-    tvs      = typeVarsIn(t,tyvars,xtvs,NIL);
+    tyvars    = typeVarsIn(t,NIL,xtvs,tyvars);
 					/* Look for extra type vars.	   */
-    checkOptQuantVars(line,xtvs,tvs);
-
-    tyvars   = appendOnto(tyvars,tvs);
+    checkOptQuantVars(line,xtvs,tyvars);
 
     if (isQualType(t)) {		/* Overloaded member signatures?   */
 	map2Over(depPredExp,line,tyvars,fst(snd(t)));
