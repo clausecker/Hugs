@@ -1080,7 +1080,7 @@ LRESULT CALLBACK BrowseTyconsDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM 
 static VOID    local setClassBrowserSize     Args((Void));
 static VOID    local doCreate_Classes        Args((HWND));
 static VOID    local doDestroy_Classes       Args((Void));
-static Void    local doMove_Classes          Args((INT,INT));
+static Void    local doMove_Classes          Args((HWND,INT,INT));
 static Void    local doSize_Classes          Args((HWND,INT,INT));
 static Void    local doPaint_Classes         Args((HWND));
 static Void    local setOffset_Classes       Args((HWND,INT,INT));
@@ -1486,12 +1486,15 @@ static Void local doDestroy_Classes() {
    hWndClasses=NULL;
 }
 
-static Void local doMove_Classes(INT x, INT y) {
-   /* We must subtract as it gets client position */
-   cBrowse.ClassesTopX = x - GetSystemMetrics(SM_CXFRAME);
-   cBrowse.ClassesTopY = y - GetSystemMetrics(SM_CYCAPTION)
-			   - GetSystemMetrics(SM_CYFRAME)
-			   + GetSystemMetrics(SM_CYBORDER);
+static Void local doMove_Classes(HWND hWnd, INT x, INT y) {
+   /* WM_MOVE's coords are for the upper-left of the client area;
+      we want the window's upper-left screen coords, so
+      just use GetWindowRect() to get at this. */
+    RECT r;
+
+    GetWindowRect(hWndClasses,&r);
+    cBrowse.ClassesTopX = r.left;
+    cBrowse.ClassesTopY = r.top;
 }
 
 static Void local doSize_Classes(HWND hWnd, INT width, INT height)
@@ -1538,7 +1541,7 @@ LRESULT CALLBACK ClassesWndProc (HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPar
     doSize_Classes(hWnd, (INT) LOWORD(lParam), (INT) HIWORD(lParam));
     break;
   case WM_MOVE: 
-    doMove_Classes((INT) LOWORD(lParam), (INT) HIWORD(lParam));
+    doMove_Classes(hWnd, (INT) LOWORD(lParam), (INT) HIWORD(lParam));
     break;
   case WM_HSCROLL: 
     switch(LOWORD(wParam)) {
