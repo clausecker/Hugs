@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.57 $
- * $Date: 2002/04/09 20:38:35 $
+ * $Revision: 1.58 $
+ * $Date: 2002/04/09 22:36:35 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -595,8 +595,15 @@ Pair importSpec; {
 	 */
 	for(; nonNull(imports); imports=tl(imports)) {
 	  Cell e = hd(imports);
+
+	  /* If the import is a tycon/class, look for their name 
+	   * (not their pairing with their constructors/classes).
+ 	   */
+	  if (isPair(e)) {
+	      e = fst(e);
+	  }
 	  if (!cellIsMember(e,hidden)) {
-	    modImps = cons(importEntity(m,e), modImps);
+	      modImps = cons(importEntity(m,e), modImps);
 	  }
 	}
     } else {
