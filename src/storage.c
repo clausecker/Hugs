@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: storage.c,v $
- * $Revision: 1.27 $
- * $Date: 2002/02/03 19:00:11 $
+ * $Revision: 1.28 $
+ * $Date: 2002/02/23 15:27:06 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -3366,8 +3366,11 @@ Int what; {
 		       TABALLOC(handles,   struct strHandle, NUM_HANDLES)
 #if WANT_FIXED_SIZE_TABLES
 		       for (i=0; i<NUM_HANDLES; i++)
-			   handles[i].hcell = NIL;
+#else
+		       for (i=0; i<num_handles; i++)
 #endif
+			   handles[i].hcell = NIL;
+
 		       handles[HSTDIN].hcell  = ap(HANDCELL,HSTDIN);
 		       handles[HSTDIN].hfp    = stdin;
 		       handles[HSTDOUT].hcell = ap(HANDCELL,HSTDOUT);

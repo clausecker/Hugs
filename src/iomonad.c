@@ -19,8 +19,8 @@
  * included in the distribution.
  *
  * $RCSfile: iomonad.c,v $
- * $Revision: 1.21 $
- * $Date: 2002/02/03 19:00:12 $
+ * $Revision: 1.22 $
+ * $Date: 2002/02/23 15:27:05 $
  * ------------------------------------------------------------------------*/
  
 Name nameIORun;			        /* run IO code                     */
@@ -388,9 +388,14 @@ String loc; {
     
 #if !WANT_FIXED_SIZE_TABLES
     if (i >= MAX_HANDLES) {
+      int j;
       growDynTable(dynTabHandles);
       handles=(struct strHandle*)(dynTabHandles->data);
       num_handles = dynTabHandles->maxIdx;
+      /* Nil out the new entries in the table */
+      for (j=dynTabHandles->idx; j < num_handles; j++) {
+	handles[j].hcell = NIL;
+      }
     }
 #endif
 
