@@ -68,7 +68,7 @@ o Everything under hugslib is created by the src/unix/convert_libraries
 
 o To check the status of each hierarchical module, run
 
-	make check_libraries
+	make LibStatus
 
 o Some libraries are present, but Hugs does not implement all operations,
   or does not provide the same semantics as GHC:

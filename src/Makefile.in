@@ -167,6 +167,7 @@ clean		::
 		  $(RM) *.aux
 		  $(RM) *.hp
 		  $(RM) -r $(BUILD_DIR)
+		  $(RM) LibStatus
 distclean	:: clean
 distclean	::
 		  $(RM) hugs@EXE@
@@ -257,8 +258,8 @@ depend: $(SOURCES)
 check		: libraries
 		  cd ../tests; sh testScript
 
-check_libraries : libraries
-		  unix/test_libraries $(FPTOOLS)
+LibStatus	: libraries
+		  unix/test_libraries $(FPTOOLS) >$@
 
 @MkInstall@
 
