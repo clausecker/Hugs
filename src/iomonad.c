@@ -14,8 +14,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: iomonad.c,v $
- * $Revision: 1.50 $
- * $Date: 2003/06/12 12:53:20 $
+ * $Revision: 1.51 $
+ * $Date: 2003/07/23 11:48:22 $
  * ------------------------------------------------------------------------*/
  
 Name nameIORun;			        /* run IO code                     */
@@ -845,12 +845,17 @@ primFun(primHGetChar) {			/* Read character from handle	   */
 			   "IO.hGetChar",
 			   "end of file",
 			   NIL));
-	}
+	} else
+	    IOFail(mkIOError(handles[h].hcell,
+			     toIOError(errno),
+			     "IO.hGetChar",
+			     toIOErrorDescr(errno,TRUE),
+			     NIL));
     }
     IOFail(mkIOError(handles[h].hcell,
-		     toIOError(errno),
+		     nameIllegal,
 		     "IO.hGetChar",
-		     toIOErrorDescr(errno,TRUE),
+		     "handle is not readable",
 		     NIL));
 }
 
