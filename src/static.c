@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.78 $
- * $Date: 2002/07/26 02:42:57 $
+ * $Revision: 1.79 $
+ * $Date: 2002/08/03 15:47:23 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -4924,6 +4924,7 @@ Name p; {
             isIO = TRUE;
             t = hd(getArgs(t));
         }
+        t = fullExpand(t);
 
         if (generate_ffi) {
             name(p).arity = 1 + length(argTys) + (isIO ? 2 : 0);
@@ -4963,6 +4964,7 @@ Name p; {
             isIO = TRUE;
             t = hd(getArgs(t));
         }
+        t = fullExpand(t);
 
         if (generate_ffi) {
             name(p).arity = 3;
@@ -5035,6 +5037,7 @@ Name p; {
                 isIO = TRUE;
                 t = hd(getArgs(t));
             }
+            t = fullExpand(t);
 
             if (generate_ffi) {
                 name(p).arity 
