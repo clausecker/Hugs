@@ -148,7 +148,7 @@ test_static() {
   perl runstdtest $HUGS $STDOPTS "-Ostatic/mod113.hs"  "-o1static/Loaded.output"
   perl runstdtest $HUGS $STDOPTS "-Ostatic/mod114.hs"  "-o1static/mod114.output"
   perl runstdtest $HUGS $STDOPTS "-Ostatic/mod115.hs"  "-o1static/Loaded.output"
-  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod116.hs"  "-o1static/Loaded.output"
+  perl runstdtest $HUGS $STDOPTS "-Ostatic/mod116.hs"  "-o1static/mod116.output"
   perl runstdtest $HUGS $STDOPTS "-Ostatic/mod117.hs"  "-o1static/Loaded.output"
   perl runstdtest $HUGS $STDOPTS "-Ostatic/mod118.hs"  "-o1static/Loaded.output"
   perl runstdtest $HUGS $STDOPTS "-Ostatic/mod119.hs"  "-o1static/Loaded.output"
