@@ -451,7 +451,7 @@ String s; {              /* return FALSE if none found.     */
 			   
 			   savedPath = hugsPath;
 			   if (*(s+1) == '\0') {
-			     hugsPath = strCopy(HUGSPATH);
+			     hugsPath = uniqPath(strCopy(HUGSPATH));
 			   } else {
 			     hugsPath  = substPath(s+1,hugsPath ? hugsPath : "");
 			   }

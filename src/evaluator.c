@@ -40,7 +40,7 @@ Void startEvaluator(Void)
 {
     initScripts();
 
-    hugsPath      = strCopy(HUGSPATH);
+    hugsPath      = uniqPath(strCopy(HUGSPATH));
     hugsSuffixes  = strCopy(HUGSSUFFIXES);
 #if HSCRIPT
     hscriptSuffixes();

@@ -11,8 +11,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.124 $
- * $Date: 2005/03/08 12:40:37 $
+ * $Revision: 1.125 $
+ * $Date: 2005/03/08 14:21:44 $
  * ------------------------------------------------------------------------*/
 #include "prelude.h"
 #include "storage.h"
@@ -270,7 +270,6 @@ static Bool   local find1	  Args((String));
 static Bool   local find2	  Args((String));
 static String local expandVariable Args((String));
 static String local skipVariable  Args((String));
-static String local uniqPath      Args((String));
 static String local nextPath      Args((String));
 static Bool   local samePath      Args((String,String));
 #if DOS_FILENAMES
@@ -900,7 +899,7 @@ String sub; {
 }
 
 /* Remove duplicates from the path */
-static String local uniqPath(path)
+String uniqPath(path)
 String path; {
     char *pp;
     for (pp = path; *pp; ) {
