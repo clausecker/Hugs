@@ -14,8 +14,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: iomonad.c,v $
- * $Revision: 1.91 $
- * $Date: 2004/11/14 11:02:39 $
+ * $Revision: 1.92 $
+ * $Date: 2004/11/14 13:53:34 $
  * ------------------------------------------------------------------------*/
  
 Name nameIORun;			        /* run IO code                     */
@@ -1581,7 +1581,7 @@ String   loc; {
 
     stmode = modeString(hmode,binary);
     if  ( (wfp = fopen(s,stmode)) == NULL )
-	throwErrno("loc", TRUE, NO_HANDLE, IOArg(2));
+	throwErrno("loc", TRUE, NO_HANDLE, &IOArg(2));
 
     blackHoleRoot();
     drop();
