@@ -9,8 +9,8 @@
  * included in the distribution.
  *
  * $RCSfile: subst.c,v $
- * $Revision: 1.19 $
- * $Date: 2001/04/18 17:01:52 $
+ * $Revision: 1.20 $
+ * $Date: 2001/12/20 20:38:51 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1387,7 +1387,7 @@ Int   o; {				/* match is found, then tyvars from*/
 	}
 	else {
 	    numTyvars = beta;
-	    if (allowOverlap) {
+	    if (allowOverlap && !allowUnsafeOverlap) {
 		Int alpha = newKindedVars(inst(in).kinds);
 		if (isNull(kspi)) {
 		    kspi = copyNoMark(pi,o);

@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.50 $
- * $Date: 2001/12/13 16:35:58 $
+ * $Revision: 1.51 $
+ * $Date: 2001/12/20 20:38:50 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -2904,6 +2904,9 @@ List ms; {			       /* instance members		   */
  * ------------------------------------------------------------------------*/
 
 Bool allowOverlap = FALSE;		/* TRUE => allow overlapping insts */
+Bool allowUnsafeOverlap = FALSE;	/* TRUE => in addition, allow      */
+					/* potentially inconsistent        */
+					/* overlapping instances           */
 Name nameListMonad = NIL;		/* builder function for List Monad */
 
 static Void local checkInstDefn(in)	/* Validate instance declaration   */
@@ -3086,7 +3089,7 @@ Inst in; {
 	if (unifyPred(inst(in).head,alpha,inst(hd(ins)).head,beta)) {
 	    Cell pi  = copyPred(inst(in).head,alpha);
 #if !HASKELL_98_ONLY
-	    if (allowOverlap && !haskell98) {
+	    if ((allowOverlap || allowUnsafeOverlap) && !haskell98) {
 		Bool bef = instCompare(in,hd(ins));
 		Bool aft = instCompare(hd(ins),in);
 		if (bef && !aft) {	/* in comes strictly before hd(ins)*/

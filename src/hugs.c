@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.55 $
- * $Date: 2001/12/14 06:47:30 $
+ * $Revision: 1.56 $
+ * $Date: 2001/12/20 20:38:49 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -932,6 +932,11 @@ struct options toggle[] = {             /* List of command line toggles    */
              0,
 #endif
              "Allow overlapping instances",           &allowOverlap},
+    {'O',
+#if !HASKELL_98_ONLY
+             0,
+#endif
+             "Allow unsafe overlapping instances",    &allowUnsafeOverlap},
     {'u',
 #if !HASKELL_98_ONLY
              1,

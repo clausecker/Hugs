@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: connect.h,v $
- * $Revision: 1.25 $
- * $Date: 2001/12/14 06:47:29 $
+ * $Revision: 1.26 $
+ * $Date: 2001/12/20 20:38:48 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -226,6 +226,9 @@ extern Void  printSc Args((FILE*, Text, Int, Cell));
 extern Bool  kindExpert;		/* TRUE => display kind errors in  */
 					/* 	   full detail		   */
 extern Bool  allowOverlap;		/* TRUE => allow overlapping insts */
+extern Bool  allowUnsafeOverlap;	/* TRUE => in addition, allow      */
+					/* potentially inconsistent        */
+					/* overlapping instances           */
 
 /* --------------------------------------------------------------------------
  * Function prototypes etc...
