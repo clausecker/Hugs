@@ -1654,6 +1654,9 @@ primitive putChar		 :: Char -> IO ()
 primitive putStr		 :: String -> IO ()
 primitive getChar   		 :: IO Char
 
+-- needed locally.
+primitive isEOFError :: IOError -> Bool
+
 userError :: String -> IOError
 userError str 
  = IOError IOError_UserError 
@@ -1668,11 +1671,26 @@ putStrLn  :: String -> IO ()
 putStrLn s = do putStr s
 		putChar '\n'
 
-getLine   :: IO String
-getLine    = do c <- getChar
-		if c=='\n' then return ""
-			   else do cs <- getLine
-				   return (c:cs)
+getLine :: IO String
+getLine  = do 
+  c <- getChar
+  if c=='\n' 
+   then return ""
+   else do
+     ls <- getRest 
+     return (c:ls)
+  where
+   getRest = do
+     c <- catch getChar
+                (\ ex -> if isEOFError ex then 
+			    return '\n'
+			 else
+			    ioError ex)
+     if c=='\n'
+      then return ""
+      else do
+       cs <- getRest 
+       return (c:cs)
 
 -- raises an exception instead of an error
 readIO          :: Read a => String -> IO a

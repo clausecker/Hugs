@@ -126,11 +126,12 @@ hGetBuffering h = do
     1 -> return NoBuffering
     2 -> return LineBuffering
     3 -> return (BlockBuffering (Just sz))
+     -- fatal - never to happen.
+    _ -> error "IO.hGetBuffering: unknown buffering mode"
 
-primitive hGetBuff  :: Handle -> IO (Int,Int)
+primitive hGetBuff :: Handle -> IO (Int,Int)
 
-primitive hFlush       :: Handle -> IO ()
-
+primitive hFlush   :: Handle -> IO ()
 
 data HandlePosn = HandlePosn Handle Int deriving Eq
 
@@ -163,11 +164,27 @@ hReady h	    = hWaitForInput h 0
 
 primitive hGetChar    :: Handle -> IO Char
 
-hGetLine              :: Handle -> IO String
-hGetLine h             = do c <- hGetChar h
-                            if c=='\n' then return ""
-                              else do cs <- hGetLine h
-                                      return (c:cs)
+hGetLine   :: Handle -> IO String
+hGetLine h = do
+  c <- hGetChar h
+  if c=='\n'
+   then return ""
+   else do
+     ls <- getRest 
+     return (c:ls)
+  where
+   getRest = do
+     c <- catch (hGetChar h)
+                (\ ex -> if isEOFError ex then 
+			    return '\n'
+			 else
+			    ioError ex)
+     if c=='\n'
+      then return ""
+      else do
+       cs <- getRest 
+       return (c:cs)
+
 
 primitive hLookAhead    :: Handle -> IO Char
 primitive hGetContents  :: Handle -> IO String
