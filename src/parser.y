@@ -11,8 +11,8 @@
  * included in the distribution.
  *
  * $RCSfile: parser.y,v $
- * $Revision: 1.20 $
- * $Date: 2001/06/22 23:30:45 $
+ * $Revision: 1.21 $
+ * $Date: 2001/09/12 18:52:42 $
  * ------------------------------------------------------------------------*/
 
 %{
@@ -452,9 +452,9 @@ fds	  : /* empty */			{$$ = gc0(NIL);}
 	  ;
 fds1	  : fds1 ',' fd			{$$ = gc3(cons($3,$1));}
 	  | fd				{$$ = gc1(cons($1,NIL));}
-	  | 
 	  ;
 fd	  : varids0 ARROW varids0	{$$ = gc3(pair(rev($1),rev($3)));}
+	  | error			{syntaxError("functional dependency");}
 	  ;
 varids0   : /* empty */			{$$ = gc0(NIL);}
 	  | varids0 varid		{$$ = gc2(cons($2,$1));}
