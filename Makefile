@@ -17,7 +17,7 @@ LIBRARIESTAG = HEAD
 
 HSLIBSDIRS = concurrent data hssource lang net text util posix
 LIBRARIESDIRS = base haskell98 haskell-src mtl network parsec QuickCheck unix \
-	Cabal GLUT OpenGL fgl X11 HGL HaXml HUnit Win32
+	Cabal OpenGL GLUT OpenAL fgl X11 HGL HaXml HUnit Win32
 LIBRARIESFILES = aclocal.m4 configure.ac libraries-footer.txt
 
 # End of general settings (leave this line unchanged)
