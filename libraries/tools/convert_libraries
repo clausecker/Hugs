@@ -156,28 +156,13 @@ extra_packages='fgl HaXml mtl parsec HUnit'
 # ToDo: fix -- cygwin supports 'unix' only when no -mno-cygwin is given to gcc
 #
 case `uname -a` in
-CYGWIN*|MINGW32*) ;;
-*)	core_packages="$core_packages unix";;
-esac
-
-have_graphics=no
-case `uname -a` in
 CYGWIN*|MINGW32*)
-	extra_packages="$extra_packages Win32"
-	have_graphics=yes ;;
-*)
-	if test "$LibsWithX11" = YES
-	then	extra_packages="$extra_packages X11"
-		have_graphics=yes
-	fi ;;
+	extra_packages="$extra_packages Win32" ;;
+*)	core_packages="$core_packages unix" ;;
 esac
 
-if [ $have_graphics = yes ]
-then	extra_packages="$extra_packages HGL"
-fi
-
-# check whether HOpenGL was enabled in configure
-for package in OpenGL GLUT OpenAL
+# check whether these packages were enabled in configure
+for package in X11 HGL OpenGL GLUT OpenAL
 do
 	if grep 'BUILD_PACKAGE=yes' $src/$package/config.mk >/dev/null
 	then	extra_packages="$extra_packages $package"
@@ -392,8 +377,6 @@ mkdir -p $compat
 
 # Graphics library
 
-if [ $have_graphics = yes ]; then
      stub SOEGraphics		Graphics.SOE
      stub GraphicsCore		Graphics.HGL.Core
      stub GraphicsUtils		Graphics.HGL
-fi

@@ -7,6 +7,3 @@ cc=${CC-@CC@}
 : ${hsc2hs=hsc2hs}
 : ${SORT=@SortCmd@}
 : ${FIND=@FindCmd@}
-
-# whether to include various packages (YES or NO)
-LibsWithX11=@LibsWithX11@
