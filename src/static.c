@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.131 $
- * $Date: 2003/01/03 16:12:49 $
+ * $Revision: 1.132 $
+ * $Date: 2003/01/21 10:05:48 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -7054,7 +7054,6 @@ Void checkContext() {			/* Top level static check on Expr  */
 
 Void checkDefns() {			/* Top level static analysis	   */
     List tcs;
-    List xs;
     Module thisModule = lastModule();
     staticAnalysis(RESET);
 
