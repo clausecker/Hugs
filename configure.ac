@@ -94,112 +94,123 @@ dnl
 dnl--------------------------------------------------------------------
 
 AC_ARG_ENABLE(path-canonicalization,
-  AC_HELP_STRING([--enable-path-canonicalization],
-                 [enable filepath canonicalization]),
-  AC_DEFINE([PATH_CANONICALIZATION], [1],
-    [Define to 1 if you want filenames to be converted to normal form
-     by: (a) replacing relative pathnames with absolute pathnames and
-     eliminating .. and . where possible. (b) converting to lower case
-     (only in case-insensitive filesystems)]))
-
-AC_ARG_WITH(preprocessor,
-  AC_HELP_STRING([--with-preprocessor],
-                 [use a preprocessor]),
-  AC_DEFINE([USE_PREPROCESSOR], [1],
-    [Define to 1 if you want to run Haskell code through a
-     preprocessor. Note that there's the import chasing mechanism will
-     not spot any CPP includes so you must :load (not :reload) if you
-     change any (non-Haskell) configuration files.]))
+  [AC_HELP_STRING([--enable-path-canonicalization],
+     [enable canonicalization of filenames])],
+  [if test "$enableval" = yes; then
+   AC_DEFINE([PATH_CANONICALIZATION], [1],
+     [Define to 1 if you want filenames to be converted to normal form
+      by: (a) replacing relative pathnames with absolute pathnames and
+      eliminating .. and . where possible. (b) converting to lower case
+      (only in case-insensitive filesystems)])
+   fi])
 
 AC_ARG_ENABLE(timer,
-  AC_HELP_STRING([--enable-timer],
-                 [enable evaluation timing]))
+  [AC_HELP_STRING([--enable-timer],
+     [enable evaluation timing (for benchmarking Hugs)])])
 
 AC_ARG_ENABLE(profiling,
-  AC_HELP_STRING([--enable-profiling],
-                 [enable heap profiler]),
-  AC_DEFINE([PROFILING], [1],
-    [Define to 1 if heap profiling should be used.]))
+  [AC_HELP_STRING([--enable-profiling],
+     [enable heap profiler])],
+  [if test "$enableval" = yes; then
+   AC_DEFINE([PROFILING], [1],
+     [Define to 1 if heap profiling should be used.])
+   fi])
 
 AC_ARG_ENABLE(stack-dumps,
-  AC_HELP_STRING([--enable-stack-dumps],
-                 [enable stack dump on stack overflow]),
-  AC_DEFINE([GIMME_STACK_DUMPS], [1],
-    [If you get really desperate to understand why your Hugs programs
-     keep crashing or running out of stack, you might like to set this
-     flag and recompile Hugs. When you hit a stack error, it will print
-     out a list of all the objects currently under evaluation. The
-     information isn't perfect and can be pretty hard to understand but
-     it's better than a poke in the eye with a blunt stick. This is a
-     very experimental feature!]))
+  [AC_HELP_STRING([--enable-stack-dumps],
+     [enable stack dump on stack overflow])],
+  [if test "$enableval" = yes; then
+   AC_DEFINE([GIMME_STACK_DUMPS], [1],
+     [If you get really desperate to understand why your Hugs programs
+      keep crashing or running out of stack, you might like to set this
+      flag and recompile Hugs. When you hit a stack error, it will print
+      out a list of all the objects currently under evaluation. The
+      information isn't perfect and can be pretty hard to understand but
+      it's better than a poke in the eye with a blunt stick. This is a
+      very experimental feature!])
+   fi])
 
 AC_ARG_WITH(nmake,
-  AC_HELP_STRING([--with-nmake],
-                 [produce nmake compatible Makefile]),
-  [RM="del";CP="copy"])
+  [AC_HELP_STRING([--with-nmake],
+     [produce a Makefile compatible with nmake])],
+  [if test "$withval" = yes; then RM="del";CP="copy"; fi])
 
 AC_ARG_ENABLE(large-banner,
-  AC_HELP_STRING([--disable-large-banner],
-                 [disable multiline startup banner]),
-  AC_DEFINE([SMALL_BANNER], [1],
-    [Define to 1 if you want the small startup banner.]))
+  [AC_HELP_STRING([--disable-large-banner],
+     [disable multiline startup banner])],
+  [if test "$enableval" = no; then
+   AC_DEFINE([SMALL_BANNER], [1],
+     [Define to 1 if you want the small startup banner.])
+   fi])
 
 AC_ARG_WITH(gui,
-  AC_HELP_STRING([--with-gui],
-                 [build Hugs for Windows GUI]))
+  [AC_HELP_STRING([--with-gui],
+     [build Hugs for Windows GUI (Borland C++ only)])])
 
 AC_ARG_ENABLE(internal-prims,
-  AC_HELP_STRING([--enable-internal-prims],
-                 [experimental primitives to access Hugs' innards]),
-  [AC_DEFINE([INTERNAL_PRIMS], [1],
-    [Define to 1 if you want to use the primitives which let you examine
-     Hugs internals.])
+  [AC_HELP_STRING([--enable-internal-prims],
+     [experimental primitives to access Hugs's innards])],
+  [if test "$enableval" = yes; then
+   AC_DEFINE([INTERNAL_PRIMS], [1],
+     [Define to 1 if you want to use the primitives which let you examine
+      Hugs internals.])
    AC_DEFINE([BYTECODE_PRIMS], [1],
      [Define to 1 if you want to use the primitives which let you
-      examine Hugs bytecodes (requires INTERNAL_PRIMS).])])
+      examine Hugs bytecodes (requires INTERNAL_PRIMS).])
+   fi])
 
 AC_ARG_ENABLE(debug,
-  AC_HELP_STRING([--enable-debug],
-                 [include C debugging information (for debugging use)]),
-  [AC_DEFINE([DEBUG_CODE], [1],
+  [AC_HELP_STRING([--enable-debug],
+     [include C debugging information (for debugging Hugs)])],
+  [if test "$enableval" = yes; then
+   AC_DEFINE([DEBUG_CODE], [1],
      [Define to 1 if debugging generated bytecodes or the bytecode
       interpreter.])
    AC_DEFINE([DEBUG_PRINTER], [1],
      [Define if you want to use a low-level printer from within a
-      debugger.])])
+      debugger.])
+   fi])
 
 AC_ARG_ENABLE(tag-checks,
-  AC_HELP_STRING([--enable-tag-checks],
-                 [runtime tag checking (for debugging use)]),
-  AC_DEFINE([CHECK_TAGS], [1],
-    [Define to 1 if you want to perform runtime tag-checks as an
-     internal consistency check. This makes Hugs run very slowly - but is
-     very effective at detecting and locating subtle bugs.]))
+  [AC_HELP_STRING([--enable-tag-checks],
+     [runtime tag checking (for debugging Hugs)])],
+  [if test "$enableval" = yes; then
+   AC_DEFINE([CHECK_TAGS], [1],
+     [Define to 1 if you want to perform runtime tag-checks as an
+      internal consistency check. This makes Hugs run very slowly - but is
+      very effective at detecting and locating subtle bugs.])
+   fi])
 
 AC_ARG_ENABLE(lint,
-  AC_HELP_STRING([--enable-lint],
-                 [enable "lint" flags (for debugging use)]))
+  [AC_HELP_STRING([--enable-lint],
+     [enable "lint" flags (for debugging Hugs)])])
 
 AC_ARG_ENABLE(only98,
-  AC_HELP_STRING([--enable-only98],
-                 [make Hugs Haskell 98 only]),
-  AC_DEFINE([HASKELL_98_ONLY], [1], [Define to 1 to omit Hugs extensions]))
+  [AC_HELP_STRING([--enable-only98],
+     [build Hugs to understand Haskell 98 only])],
+  [if test "$enableval" = yes; then
+   AC_DEFINE([HASKELL_98_ONLY], [1],
+     [Define to 1 to omit Hugs extensions])
+   fi])
 
 AC_ARG_WITH(pthreads,
-  AC_HELP_STRING([--with-pthreads],
-                 [build Hugs using pthreads C library]),
-  [AC_DEFINE([DONT_PANIC], [1],
+  [AC_HELP_STRING([--with-pthreads],
+     [build Hugs using POSIX threads C library])],
+  [if test "$withval" = yes; then
+   # needed with pthreads
+   AC_DEFINE([DONT_PANIC], [1],
      [In a plain Hugs system, most signals (SIGBUS, SIGTERM, etc) indicate
       some kind of error in Hugs - or maybe a stack overflow.  Rather than
       just crash, Hugs catches these errors and returns to the main loop.
       It does this by calling a function "panic" which longjmp's back to
       the main loop.  If you're developing a foreign library, this may not
       be the right behaviour - it's better if Hugs leaves them for your
-      debugger to catch rather than trapping them and "panicking".])])
+      debugger to catch rather than trapping them and "panicking".])
+   fi])
 
 AC_ARG_ENABLE(ffi,
-  AC_HELP_STRING([--enable-ffi],
-                 [include modules that use the FFI]),
+  [AC_HELP_STRING([--enable-ffi],
+     [include modules that use the FFI [default=autodetect]])],
   , [enable_ffi=autodetect])
 
 AC_ARG_ENABLE(char-encoding,

@@ -213,7 +213,7 @@ Hugs specific configuration options
 
  --enable-internal-prims
 
-   Enable experimental features used in Hugs98/lib/hugs/HugsInternals.hs
+   Enable experimental features used in Hugs.Internals
 
  --enable-stack-dumps
 
@@ -229,16 +229,16 @@ Hugs specific configuration options
 
    For use when debugging Hugs.
 
- --with-preprocessor
+There used to be a --with-preprocessor option, enabling the use of a
+preprocessor for processing Haskell source files before compiling them
+with Hugs.  It's turned on by default at the moment.  To turn it off,
+change USE_PREPROCESSOR in src/options.h.
 
    This is an experimental feature and may change in future versions.
-   (It's turned on by default at the moment.)
 
-   Enable the use of a preprocessor for processing Haskell source files
-   before compiling them with Hugs.  When configured with preprocessing
-   on, you can use the "-F" option to specify which preprocessor to use.
-   For example, if your preprocessor is in /users/JFH/bin/hscpp, you might
-   say
+   When configured with preprocessing on, you can use the "-F" option to
+   specify which preprocessor to use.  For example, if your preprocessor
+   is in /users/JFH/bin/hscpp, you might say
 
      :set -F"/users/JFH/bin/hscpp"
 

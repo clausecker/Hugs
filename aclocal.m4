@@ -455,9 +455,8 @@ AC_REQUIRE([AC_CANONICAL_SYSTEM])
 
 AC_ARG_ENABLE([hopengl],
   [AC_HELP_STRING([--enable-hopengl],
-    [build a Haskell binding for OpenGL (GL/GLU). On Mac OS X, use
-     --enable-hopengl=x11 to use X11 instead of the "native" libraries.
-     (default=no)])],
+    [build a Haskell binding for OpenGL (GL/GLU).  To use X11 instead
+     of the "native" libraries on Mac OS X, use --enable-hopengl=x11])],
   [enable_opengl=$enableval], [enable_opengl=no])
 
 if test x"$enable_opengl" = xno; then
