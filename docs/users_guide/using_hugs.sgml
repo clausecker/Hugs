@@ -10,8 +10,8 @@ The interpreter may be started with a command line of the form
 </cmdsynopsis>
 On many systems it can also be found in the system menus,
 and may be started by (double) clicking on a file with a
-<quote><literal>.hs</literal</quote> or
-<quote><literal>.lhs</literal</quote> extension.
+<quote><literal>.hs</literal></quote> or
+<quote><literal>.lhs</literal></quote> extension.
 </para>
 
 <para>
@@ -214,6 +214,13 @@ The last module loaded becomes the current module.
 You may specify a literal filename.
 The named file may contain a Haskell module with any name,
 but you can't load two modules with the same name together.
+To include a literal space in a filename, either precede it with a backslash
+or wrap the whole filename double quotes.
+Double quoted filenames may also contain the escape sequences
+<quote><literal>\ </literal></quote>,
+<quote><literal>\"</literal></quote> and
+<quote><literal>\\</literal></quote>.
+Other bachslashes are interpreted literally.
 </para>
 
 <para>

@@ -33,6 +33,13 @@ the GUI settings.
 
 <listitem>
 <para>
+(Mac OS prior to Mac OS X)
+the preferences file <quote><literal>Hugs Preferences</literal></quote>.
+</para>
+</listitem>
+
+<listitem>
+<para>
 The environment variable <literal>HUGSFLAGS</literal>, if set.
 </para>
 </listitem>
@@ -136,7 +143,7 @@ This extension is turned off by default.
 </sect2>
 
 <sect2 id="options-loading">
-<title>Module loading</title>
+<title>Module loading options</title>
 
 <variablelist>
 
@@ -278,7 +285,7 @@ The preprocessor can examine the filename to decide what to do with the file.
 </sect2>
 
 <sect2 id="options-editor">
-<title>Source file editor</title>
+<title>Specifying a source file editor</title>
 
 <variablelist>
 
@@ -395,7 +402,7 @@ gnuclient (for use with (X)Emacs)
 </sect2>
 
 <sect2 id="options-evaluation">
-<title>Expression evaluation and printing</title>
+<title>Evaluation and printing options</title>
 
 <variablelist>
 
@@ -628,7 +635,7 @@ with <option>-I</option>.
 </sect2>
 
 <sect2 id="options-resource">
-<title>Resource usage</title>
+<title>Resource usage options</title>
 
 <variablelist>
 
@@ -751,6 +758,105 @@ if you're using the observation-based debugger
 
 </variablelist>
 </sect2>
+
+</sect1>
+
+<sect1 id="environment-variables">
+<title>Environment variables used by Hugs</title>
+
+<para>
+Hugs also consults a number of environment variables
+on systems that support them.
+The method for setting these varies with the system.
+</para>
+
+<variablelist>
+
+<varlistentry id="EMACS">
+<term><option>EMACS</option></term>
+<listitem>
+<para>
+(Windows only)
+If this variable is set, Hugs is assumed to be running in an Emacs subshell
+(with different line termination conventions on input).
+</para>
+</listitem>
+</varlistentry>
+
+<varlistentry id="HOME">
+<term><option>HOME</option></term>
+<listitem>
+<para>
+The user's home directory.
+This is substituted for <literal>{Home}</literal> in the argument of the
+<link linkend="option-search-path"><option>-P</option></link> option
+(see <xref linkend="options-loading">),
+and for <quote><literal>~</literal></quote> in the argument of the
+<command>:cd</command> command
+(see <xref linkend="misc-commands">).
+</para>
+</listitem>
+</varlistentry>
+
+<varlistentry id="HUGSFLAGS">
+<term><option>HUGSFLAGS</option></term>
+<listitem>
+<para>
+Additional options for Hugs, processed before any given on the command line
+(see <xref linkend="options-list">).
+Within this string, options may be separated by whitespace.
+To include a literal space in an option, either precede it with a backslash
+or wrap the whole option in double quotes.
+The following example assumes a shell compatible with the Unix Bourne shell:
+<programlisting>
+  HUGSFLAGS='+k -E"vi +%d"'
+  export HUGSFLAGS
+</programlisting>
+Double quoted options may also contain the escape sequences
+<quote><literal>\ </literal></quote>,
+<quote><literal>\"</literal></quote> and
+<quote><literal>\\</literal></quote>.
+Other bachslashes are interpreted literally.
+</para>
+</listitem>
+</varlistentry>
+
+<varlistentry id="HUGSDIR">
+<term><option>HUGSDIR</option></term>
+<listitem>
+<para>
+The Hugs library directory.
+This is substituted for <literal>{Hugs}</literal> in the argument of the
+<link linkend="option-search-path"><option>-P</option></link> option
+(see <xref linkend="options-loading">).
+</para>
+</listitem>
+</varlistentry>
+
+<varlistentry id="IGNORE-USER-REGISTRY">
+<term><option>IGNORE_USER_REGISTRY</option></term>
+<listitem>
+<para>
+(Windows only)
+If this variable is set, options are not read from the user portion of the
+Registry (see <xref linkend="options-list">).
+You might use this to recover if your registry settings get messed up
+somehow.
+</para>
+</listitem>
+</varlistentry>
+
+<varlistentry id="SHELL">
+<term><option>SHELL</option></term>
+<listitem>
+<para>
+The shell that is invoked by the <command>:!</command> command
+(see <xref linkend="misc-commands">).
+</para>
+</listitem>
+</varlistentry>
+
+</variablelist>
 
 </sect1>
 
