@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: connect.h,v $
- * $Revision: 1.50 $
- * $Date: 2002/10/10 16:18:07 $
+ * $Revision: 1.51 $
+ * $Date: 2002/10/11 00:10:07 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -134,6 +134,8 @@ extern Name  nameShowRecRow;		/* Used to output rows		   */
 extern Name  nameRecEq;			/* Compare records		   */
 extern Name  nameEqRecRow;		/* Used to compare rows		   */
 extern Name  nameInsFld;		/* Field insertion routine	   */
+extern Name  nameShowRecRowCls;         /* Trex.ShowRecRow class           */
+extern Name  nameEqRecRowCls;           /* Trex.EqRecRow class             */
 #endif
 
 extern String repeatStr;		/* Repeat last command string	   */

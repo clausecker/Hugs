@@ -8,8 +8,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: subst.c,v $
- * $Revision: 1.24 $
- * $Date: 2002/07/26 00:06:16 $
+ * $Revision: 1.25 $
+ * $Date: 2002/10/11 00:10:07 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1370,8 +1370,8 @@ Int  o; {
 }
 
 #if TREX
-static Cell trexShow = NIL;		/* Used to test for show on records*/
-static Cell trexEq   = NIL;		/* Used to test for eq on records  */
+Name nameShowRecRowCls = NIL;  /* Used to test for show on records*/
+Name nameEqRecRowCls   = NIL;  /* Used to test for eq on records*/
 #endif
 
 Inst findInstFor(pi,o)			/* Find matching instance for pred */
@@ -1410,8 +1410,8 @@ Int   o; {				/* match is found, then tyvars from*/
     unrestrictBind();
 
 #if TREX
-    {   Bool wantShow   = (c==findQualClass(trexShow));
-	Bool wantEither = wantShow || (c==findQualClass(trexEq));
+    {   Bool wantShow   = (c==nameShowRecRowCls);
+	Bool wantEither = wantShow || (c==nameEqRecRowCls);
 
 	if (wantEither) {			/* Generate instances of   */
 	    Type  t = arg(pi);			/* ShowRecRow and EqRecRow */
@@ -1959,10 +1959,6 @@ Int what; {
 		       mark(typeIs);
 		       mark(predsAre);
 		       mark(genericVars);
-#if TREX
-		       mark(trexShow);
-		       mark(trexEq);
-#endif
 		       break;
 
 	case INSTALL : substitution(RESET);
@@ -1972,12 +1968,6 @@ Int what; {
 			   simpleKindCache[i] = NIL;
 			   varKindCache[i]    = NIL;
 		       }
-#if TREX
-		       trexShow = mkQCon(findText("Trex"),
-					 findText("ShowRecRow"));
-		       trexEq   = mkQCon(findText("Trex"),
-					 findText("EqRecRow"));
-#endif
 		       break;
 
        case EXIT     : 
