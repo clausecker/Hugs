@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.68 $
- * $Date: 2002/03/01 20:34:08 $
+ * $Revision: 1.69 $
+ * $Date: 2002/03/05 22:34:49 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -86,7 +86,7 @@ static Void   local autoReloadFiles   Args((Void));
 static Void   local toggleSet         Args((Char,Bool));
 static Void   local togglesIn         Args((Bool));
 static Void   local optionInfo        Args((Void));
-#if HUGS_FOR_WINDOWS || defined(HUGS_SERVER)
+#if HUGS_FOR_WINDOWS || USE_REGISTRY || defined(HUGS_SERVER)
 static String local optionsToStr      Args((Void));
 #endif
 static Void   local readOptions       Args((String,Bool));
@@ -530,7 +530,7 @@ static Void local optionInfo() {        /* Print information about command */
     Putchar('\n');
 }
 
-#if HUGS_FOR_WINDOWS || defined(HUGS_SERVER)
+#if HUGS_FOR_WINDOWS || USE_REGISTRY || defined(HUGS_SERVER)
 
 #define PUTC(c)                         \
     if (charsLeft > 1) {                \
