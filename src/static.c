@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.74 $
- * $Date: 2002/06/21 20:53:32 $
+ * $Revision: 1.75 $
+ * $Date: 2002/06/21 23:22:00 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -156,6 +156,7 @@ static Name   local addNewPrim		Args((Int,Text,String,Cell));
 
 static Void   local checkForeignImport  Args((Name));
 static Void   local checkForeignExport  Args((Name));
+static Void   local linkForeign         Args((Name));
 
 static Cell   local tidyInfix		Args((Int,Cell));
 static Pair   local attachFixity	Args((Int,Cell));
@@ -4961,12 +4962,12 @@ Name p; {
     } else { 
         /* static function or address:
          *
-         *  ['static'] [fname] [&] ['[' lib ']'] [cid]
+         *  ['static'] ['[' lib ']'] [fname] [&] [cid]
          *
          */
-        Text fn   = 0;
+        Text fn   = -1;
         Text libn = -1;
-        Text cid  = 0;
+        Text cid  = -1;
         Bool isLabel = FALSE;
 
         if (e = matchToken("static",ext)) {
@@ -4989,6 +4990,10 @@ Name p; {
             if (*ext != ']' || ext == e) goto cantparse;
             libn = subText(e,ext-e);
             ext = skipSpaces(ext+1);
+#ifndef SILENTLY_IGNORE_FFI_LIB_SPECS
+            ERRMSG(line) "Hugs doesn't use library specifications."
+            EEND;
+#endif
         }
 
         if (*ext != '\0') {
@@ -5009,7 +5014,6 @@ Name p; {
             }
             if (generate_ffi) {
                 name(p).arity = 0;
-                name(p).lib = libn;
                 implementForeignImportLabel(line,name(p).foreignId,fn,cid,name(p).text,t);
                 name(p).extFun = cid;
             }
@@ -5025,15 +5029,10 @@ Name p; {
                 name(p).arity 
                     = length(argTys) 
                     + (isIO ? 2 : 0);
-                name(p).lib = libn;
                 implementForeignImport(line,name(p).foreignId,fn,cid,argTys,isIO,t);
                 name(p).extFun = cid;
             }
         }
-    }
-
-    if (!generate_ffi) {
-        addPrim(line,p,textToStr(name(p).text),name(p).mod,name(p).type);
     }
 
     return;
@@ -5056,7 +5055,6 @@ Name p; {
     ERRMSG(line) "foreign import & must have type 'Ptr a' or 'FunPtr a'"
     EEND;
 }
-
 
 static Void local checkForeignExport(p)       /* Check foreign export      */
 Name p; {
@@ -5095,9 +5093,12 @@ Name p; {
           = length(argTys) 
           + (isIO ? 2 : 0);
         implementForeignExport(line,name(p).foreignId,ext,argTys,isIO,t);
-    } else {
-        addPrim(line,p,textToStr(name(p).text),name(p).mod,name(p).type);
     }
+}
+
+static Void local linkForeign(p)        /* Link an ffi-generated primitive */
+Name p; {
+    addPrim(name(p).line,p,textToStr(name(p).text),name(p).mod,name(p).type);
 }
 
 /* --------------------------------------------------------------------------
@@ -7573,14 +7574,15 @@ Void checkDefns() {			/* Top level static analysis	   */
          */
         if (generate_ffi) {
             foreignHeader();
-        } else {
-            needPrims(4);
         }
         mapProc(checkForeignImport,foreignImports);
         mapProc(checkForeignExport,foreignExports);
         if (generate_ffi) {
             foreignFooter(foreignImports, foreignExports);
         }
+        needPrims(4);
+        mapProc(linkForeign,foreignImports);
+        mapProc(linkForeign,foreignExports);
 
         /* We are now finished with foreign import declarations but
          * foreign export declarations need to pass through the

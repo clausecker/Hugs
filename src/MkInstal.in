@@ -25,8 +25,8 @@ install_libs    :: install_libexts  		      # ghc compatability
 
 install_bin	:: hugs$(EXE) runhugs$(EXE)
 		$(INSTALL) -d $(bindir)
-		$(INSTALL) hugs$(EXE) $(bindir)
-		$(INSTALL) runhugs$(EXE) $(bindir)
+		$(INSTALL) -c hugs$(EXE) $(bindir)
+		$(INSTALL) -c runhugs$(EXE) $(bindir)
 
 install_lib	::
 		$(INSTALL) -d $(hugsdir)/lib
@@ -44,9 +44,14 @@ install_demos	:: install_libhugs
 		$(INSTALL_DATA) ../demos/prolog/readme  $(hugsdir)/demos/prolog
 		$(INSTALL_DATA) ../demos/prolog/stdlib  $(hugsdir)/demos/prolog
 
-install_libexts	::
+install_libexts	:: build_libexts
 		$(INSTALL) -d $(hugsdir)/lib/exts
 		$(INSTALL_DATA) ../lib/exts/*.*     $(hugsdir)/lib/exts
+
+build_libexts	:: hugs$(EXE) install_include
+		./hugs +q -P../lib:../lib/exts Storable     +G +L"Storable_aux.c" < /dev/null
+		./hugs +q -P../lib:../lib/exts MarshalAlloc +G  < /dev/null
+		./hugs +q -P../lib:../lib/exts MarshalUtils +G  < /dev/null
 
 install_man	::
 		$(INSTALL) -d $(mandir)/man1

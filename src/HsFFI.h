@@ -7,18 +7,18 @@
 // #included into Hugs.  Use it to eliminate non-portable stuff.
 
 #ifndef Args
-typedef unsigned char      uint8_t;
-typedef unsigned short     uint16_t;
-typedef unsigned int       uint32_t;
-typedef signed   char      int8_t;
-typedef signed   short     int16_t;
-typedef signed   int       int32_t;
+typedef unsigned char      hugs_uint8_t;
+typedef unsigned short     hugs_uint16_t;
+typedef unsigned int       hugs_uint32_t;
+typedef signed   char      hugs_int8_t;
+typedef signed   short     hugs_int16_t;
+typedef signed   int       hugs_int32_t;
 # ifndef _MSC_VER
-typedef unsigned long long uint64_t;
-typedef signed   long long int64_t;
+typedef unsigned long long hugs_uint64_t;
+typedef signed   long long hugs_int64_t;
 # else
-typedef unsigned __int64 uint64_t;
-typedef          __int64 int64_t;
+typedef unsigned __int64 hugs_uint64_t;
+typedef          __int64 hugs_int64_t;
 # endif
 #endif
 
@@ -47,15 +47,15 @@ typedef          __int64 HsInt64;
 # endif
 #else
 typedef int          HsInt;        
-typedef int8_t       HsInt8;         
-typedef int16_t      HsInt16;        
-typedef int32_t      HsInt32;        
-typedef int64_t      HsInt64;        
+typedef hugs_int8_t       HsInt8;         
+typedef hugs_int16_t      HsInt16;        
+typedef hugs_int32_t      HsInt32;        
+typedef hugs_int64_t      HsInt64;        
 typedef unsigned int HsWord;       
-typedef uint8_t      HsWord8;        
-typedef uint16_t     HsWord16;       
-typedef uint32_t     HsWord32;       
-typedef uint64_t     HsWord64;       
+typedef hugs_uint8_t      HsWord8;        
+typedef hugs_uint16_t     HsWord16;       
+typedef hugs_uint32_t     HsWord32;       
+typedef hugs_uint64_t     HsWord64;       
 typedef float        HsFloat;      
 typedef double       HsDouble;     
 #endif
@@ -211,7 +211,6 @@ typedef struct {
   void      	 (*freeStablePtr4) (HsStablePtr);
 
   int      	 (*runId)          (int);
-
 } HugsAPI4;
 
 extern  HugsAPI4* hugsAPI4     (void);

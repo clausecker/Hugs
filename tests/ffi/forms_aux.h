@@ -1,1 +1,2 @@
-/* An empty file - Hugs ignores this anyway */
+extern int x;
+

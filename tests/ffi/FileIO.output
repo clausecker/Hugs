@@ -1,18 +1,16 @@
 Hugs:
 Testing open, read and close
-#! /bin/sh
+-- !!! Testing system calls
 
-source config
+import Foreign
+import Exception
+import Prelude hiding (read)
+import CTypes
+import CString
 
-# HUGSFLAGS=-P../lib:../lib/hugs:../lib/exts
-# export HUGSFLAGS
-HUGS=../src/hugs
-
-STDOPTS='+q +w -pHugs: -P../lib:../lib/hugs:../lib/exts'
-
-test_static() {
-  echo "\
--------
+tests = do
+  putStrLn "\nTesting open, read and close"
+  s <- testRead "ffi/File
 
 Testing open, write and close
 

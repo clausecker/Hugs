@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.84 $
- * $Date: 2002/06/13 22:56:42 $
+ * $Revision: 1.85 $
+ * $Date: 2002/06/21 23:22:00 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -152,6 +152,7 @@ static Bool   displayIO    = FALSE;     /* TRUE => use printer for IO result*/
 static Bool   chaseImports = TRUE;      /* TRUE => chase imports on load   */
 static Bool   useDots      = RISCOS;    /* TRUE => use dots in progress    */
 static Bool   quiet        = FALSE;     /* TRUE => don't show progress     */
+static Bool   generate     = FALSE;     /* TRUE => generate ffi code       */
 #if HUGS_FOR_WINDOWS
 static Bool autoLoadFiles  = TRUE;	/* TRUE => reload files before eval*/
 static Bool InAutoReloadFiles = FALSE;	/* TRUE =>loading files before eval*/
@@ -161,6 +162,7 @@ static String scriptName[NUM_SCRIPTS];  /* Script file names               */
 static String scriptReal[NUM_SCRIPTS];  /* Full path to canonical name     */
 static Time   lastChange[NUM_SCRIPTS];  /* Time of last change to script   */
 static Bool   postponed[NUM_SCRIPTS];   /* Indicates postponed load        */
+static Bool   chased[NUM_SCRIPTS];      /* Added by import chasing?        */
 static Int    numScripts;               /* Number of scripts loaded        */
 static Int    namesUpto;                /* Number of script names set      */
 static Bool   needsImports;             /* set to TRUE if imports required */
@@ -250,7 +252,7 @@ char *argv[]; {
       Printf("%0: failed to initialize, exiting\n", (argv ? argv[0] : ""));
       exit(0);
     }
-    
+
     printBanner();
 
     interpreter(argc,argv);
@@ -346,9 +348,9 @@ String argv[]; {
     readOptions(hugsFlags,FALSE);
     if (iniArgc > 0) {
         /* load additional files found in the preferences file */
-      for (i=0; i<iniArgc; i++) {
-	addScriptName(iniArgv[i],TRUE);
-      }
+        for (i=0; i<iniArgc; i++) {
+	    addScriptName(iniArgv[i],TRUE);
+        }
     }
 #else
 # if HUGS_FOR_WINDOWS
@@ -773,6 +775,9 @@ String s; {                             /* return FALSE if none found.     */
 		       return TRUE;
 #endif
 
+	    case 'L' : ffiSetFlags(s+1);
+		       return TRUE;
+
 	    case 'h' : setHeapSize(s+1);
 		       return TRUE;
 
@@ -985,7 +990,7 @@ struct options toggle[] = {             /* List of command line toggles    */
 #if !HASKELL_98_ONLY
              0, 
 #endif
-             "Generate FFI code for foreign import",  &generate_ffi},
+             "Generate FFI code for foreign import",  &generate},
     {'l',
 #if !HASKELL_98_ONLY
              1, 
@@ -1234,6 +1239,7 @@ Bool   sch; {                           /* TRUE => requires pathname search*/
     else {
 	scriptName[namesUpto] = strCopy(sch ? findPathname(NULL,s) : s);
 	scriptReal[namesUpto] = strCopy(RealPath(scriptName[namesUpto]));
+        chased[namesUpto]     = !sch;
 	namesUpto++;
     }
 }
@@ -1286,6 +1292,7 @@ List imps; {
 		String theReal;
 		Time   theTime;
 		Bool   thePost;
+		Bool   theChase;
 
 		postponed[origPos] = TRUE;
 		needsImports       = TRUE;
@@ -1304,16 +1311,19 @@ List imps; {
 		theName = scriptName[i];
 		theReal = scriptReal[i];
 		thePost = postponed[i];
+		theChase = chased[i];
 		timeSet(theTime,lastChange[i]);
 		for (; i>numScripts; i--) {
 		    scriptName[i] = scriptName[i-1];
 		    scriptReal[i] = scriptReal[i-1];
 		    postponed[i]  = postponed[i-1];
+		    chased[i]     = chased[i-1];
 		    timeSet(lastChange[i],lastChange[i-1]);
 		}
 		scriptName[numScripts] = theName;
 		scriptReal[numScripts] = theReal;
 		postponed[numScripts]  = thePost;
+		chased[numScripts]     = theChase;
 		timeSet(lastChange[numScripts],theTime);
 		origPos++;
 	    }
@@ -1352,6 +1362,7 @@ Script scno; {
 	scriptReal[i-1] = scriptReal[i];
 	lastChange[i-1] = lastChange[i];
         postponed[i-1]  = postponed[i];
+        chased[i-1]     = chased[i];
     }
     dropAScript(scno);
     namesUpto--;
@@ -1414,11 +1425,13 @@ Int n; {                                /* loading everything after and    */
     for (; n<NUM_SCRIPTS; n++)          /* No scripts have been postponed  */
 	postponed[n] = FALSE;           /* at this stage                   */
 
+
     while (numScripts<namesUpto) {      /* Process any remaining scripts   */
 	getFileInfo(scriptName[numScripts], &timeStamp, &fileSize);
 	timeSet(lastChange[numScripts],timeStamp);
 	if (numScripts>0)               /* no new script for prelude       */
 	    startNewScript(scriptName[numScripts]);
+        generate_ffi = generate && !chased[numScripts];
 	if (addScript(scriptName[numScripts],fileSize))
 	    numScripts++;
 	else

@@ -71,5 +71,5 @@ copyBytes dest src size  = memcpy dest src (fromIntegral size)
 moveBytes               :: Ptr a -> Ptr a -> Int -> IO ()
 moveBytes dest src size  = memmove dest src (fromIntegral size)
 
-foreign import ccall unsafe memcpy  :: Ptr a -> Ptr a -> CSize -> IO ()
-foreign import ccall unsafe memmove :: Ptr a -> Ptr a -> CSize -> IO ()
+foreign import ccall unsafe "string.h" memcpy  :: Ptr a -> Ptr a -> CSize -> IO ()
+foreign import ccall unsafe "string.h" memmove :: Ptr a -> Ptr a -> CSize -> IO ()

@@ -23,13 +23,13 @@ Running the testsuite
 
 To run the tests:
 
-1) Build Hugs in the usual way but _do not_ make install.
+1) Build Hugs in the usual way - remember to install it
 
      cd hugs98/src/unix
      ./configure
      ./convert_hslibs  ../../..
      cd ..
-     make hugs
+     make install
 
 2) Run the test script in the tests directory.
 

@@ -2,10 +2,6 @@
 
 source config
 
-# HUGSFLAGS=-P../lib:../lib/hugs:../lib/exts
-# export HUGSFLAGS
-HUGS=../src/hugs
-
 STDOPTS='+q +w -pHugs: -P../lib:../lib/hugs:../lib/exts'
 
 test_static() {
@@ -310,8 +306,8 @@ test_ffi() {
 ----------------------------------------------------------------"
 
   # Test static checking and code generation first.
-  perl runstdtest $HUGS $STDOPTS +G -s14 "-Offi/Types.hs" "-o1ffi/Loaded.output"
-  perl runstdtest $HUGS $STDOPTS +G -s14 "-Offi/Forms.hs" "-o1ffi/Loaded.output"
+  perl runstdtest $HUGS $STDOPTS +G +L"types_aux.c" -s14 "-Offi/Types.hs" "-o1ffi/Loaded.output"
+  perl runstdtest $HUGS $STDOPTS +G +L"forms_aux.c" -s14 "-Offi/Forms.hs" "-o1ffi/Loaded.output"
 
   # This is a pair of tests: first build, then test runtime
   perl runstdtest $HUGS $STDOPTS +G -s22 "-Offi/Sin.hs" "-o1ffi/Loaded.output"
@@ -322,8 +318,8 @@ test_ffi() {
   perl runstdtest $HUGS $STDOPTS    -s40 "-Offi/String.hs" "-iffi/String.input" "-o1ffi/String.output"
 
   # This is a pair of tests: first build, then test runtime
-  perl runstdtest $HUGS $STDOPTS +G -s39 "-Offi/FileIO.hs" "-o1ffi/Loaded.output"
-  perl runstdtest $HUGS $STDOPTS    -s40 "-Offi/FileIO.hs" "-iffi/FileIO.input" "-o1ffi/FileIO.output"
+  perl runstdtest $HUGS $STDOPTS +G -s40 "-Offi/FileIO.hs" "-o1ffi/Loaded.output"
+  perl runstdtest $HUGS $STDOPTS    -s41 "-Offi/FileIO.hs" "-iffi/FileIO.input" "-o1ffi/FileIO.output"
 
 } # End of test ffi
 

@@ -25,10 +25,10 @@ tests = do
 
 testSin f g = [ (f x == g x) | x <- [0,0.01 .. 1] ]
 
-foreign import ccall "sin" mysin :: Double -> Double
+foreign import ccall "math.h sin" mysin :: Double -> Double
 foreign import ccall "dynamic" dyn_sin :: FunPtr (Double -> Double) -> (Double -> Double)
 foreign import ccall "dynamic" dyn_sinIO :: FunPtr (Double -> IO Double) -> (Double -> IO Double)
-foreign import ccall "&sin" sin_addr :: FunPtr (Double -> Double)
+foreign import ccall "math.h &sin" sin_addr :: FunPtr (Double -> Double)
 foreign import ccall "wrapper" wrapId :: (Double -> Double) -> IO (FunPtr (Double -> Double))
 foreign import ccall "wrapper" wrapIO :: (Double -> IO Double) -> IO (FunPtr (Double -> IO Double))
 

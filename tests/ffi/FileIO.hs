@@ -3,16 +3,18 @@
 import Foreign
 import Exception
 import Prelude hiding (read)
+import CTypes
+import CString
 
 tests = do
   putStrLn "\nTesting open, read and close"
-  s <- testRead "testScript" 200
-  putStrLn s
+  s <- testRead "ffi/FileIO.hs" 200
+  putStrLn (map castCCharToChar s)
 
   putStrLn "\nTesting open, write and close"
   testWrite "/tmp/test_write" "Test successful"
 
-foreign import ccall safe "static stdlib.h &errno" errno :: Ptr Int
+foreign import ccall safe "static errno.h &errno" errno :: Ptr Int
         
 withString0 s = bracket (newArray0 '\0' s) free
 withBuffer sz m = do
@@ -22,20 +24,20 @@ withBuffer sz m = do
   free b
   return s
 
-foreign import ccall puts :: Ptr Char -> IO Int
+foreign import ccall puts :: Ptr CChar -> IO Int
 
 
-foreign import ccall "open" open'  :: Ptr Char -> Int -> IO Int
-foreign import ccall "open" open2' :: Ptr Char -> Int -> Int -> IO Int
-foreign import ccall "creat" creat' :: Ptr Char -> Int -> IO Int
-foreign import ccall        close :: Int -> IO Int
-foreign import ccall "read" read' :: Int -> Ptr Char -> Int -> IO Int
-foreign import ccall "write" write' :: Int -> Ptr Char -> Int -> IO Int
+foreign import ccall "fcntl.h  open"  open'  :: Ptr CChar -> Int -> IO Int
+foreign import ccall "fcntl.h  open"  open2' :: Ptr CChar -> Int -> Int -> IO Int
+foreign import ccall "fcntl.h  creat" creat' :: Ptr CChar -> Int -> IO Int
+foreign import ccall "unistd.h"       close  :: Int -> IO Int
+foreign import ccall "unistd.h read"  read'  :: Int -> Ptr CChar -> Int -> IO Int
+foreign import ccall "unistd.h write" write' :: Int -> Ptr CChar -> Int -> IO Int
 
-creat s m   = withString0 s $ \s' -> unix "creat" $ creat' s' m
-open s m    = withString0 s $ \s' -> unix "open"  $ open' s' m
-open2 s m n = withString0 s $ \s' -> unix "open2" $ open2' s' m n
-write fd s  = withString0 s $ \s' -> unix "write" $ write' fd s' (length s)
+creat s m   = withCString s $ \s' -> unix "creat" $ creat' s' m
+open s m    = withCString s $ \s' -> unix "open"  $ open' s' m
+open2 s m n = withCString s $ \s' -> unix "open2" $ open2' s' m n
+write fd s  = withCString s $ \s' -> unix "write" $ write' fd s' (length s)
 read  fd sz = withBuffer sz $ \s' -> unix "read"  $ read' fd s' sz
 
 unix s m = do

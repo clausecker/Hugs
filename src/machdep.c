@@ -11,8 +11,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.52 $
- * $Date: 2002/06/15 00:29:08 $
+ * $Revision: 1.53 $
+ * $Date: 2002/06/21 23:22:00 $
  * ------------------------------------------------------------------------*/
 #include <math.h>
 
@@ -1777,10 +1777,10 @@ static void* local getDLLSymbol Args((String,String));
 static void* local getDLLSymbol(dll,symbol)  /* load dll and lookup symbol */
 String dll;
 String symbol; {
-#ifdef RTLD_NOW
+#if defined(RTLD_LAZY) /* eg SunOS4 doesn't have RTLD_NOW */
+    void *instance = dlopen(dll,RTLD_LAZY | RTLD_GLOBAL);
+#elif defined(RTLD_NOW)
     void *instance = dlopen(dll,RTLD_NOW);
-#elif defined(RTLD_LAZY) /* eg SunOS4 doesn't have RTLD_NOW */
-    void *instance = dlopen(dll,RTLD_LAZY);
 #else /* eg FreeBSD doesn't have RTLD_LAZY */
     void *instance = dlopen(dll,1);
 #endif
