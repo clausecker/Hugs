@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.147 $
- * $Date: 2003/03/12 22:38:06 $
+ * $Revision: 1.148 $
+ * $Date: 2003/03/23 01:42:25 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -198,7 +198,6 @@ static Void   local depAlt		Args((Cell));
 static Cell   local depLetRec		Args((Bool,Int,Cell));
 static Void   local depRhs		Args((Cell));
 static Void   local depGuard		Args((Cell));
-static Cell   local depExpr		Args((Int,Cell));
 static Void   local depPair		Args((Int,Cell));
 static Void   local depTriple		Args((Int,Cell));
 static Void   local depComp		Args((Int,Cell,List));
@@ -5862,7 +5861,7 @@ Cell g; {			       /* expression			   */
     depPair(intOf(fst(g)),snd(g));
 }
 
-static Cell local depExpr(line,e)      /* find dependents of expression    */
+Cell depExpr(line,e)      /* find dependents of expression    */
 Int  line;
 Cell e; {
     switch (whatIs(e)) {

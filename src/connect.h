@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: connect.h,v $
- * $Revision: 1.73 $
- * $Date: 2003/03/14 13:31:42 $
+ * $Revision: 1.74 $
+ * $Date: 2003/03/23 01:42:24 $
  * ------------------------------------------------------------------------*/
 #ifndef __CONNECT_H__
 #define __CONNECT_H__
@@ -331,6 +331,7 @@ extern  Cell   h98Context	Args((Bool,List));
 extern  Void   h98CheckCtxt	Args((Int,String,Bool,List,Inst));
 extern  Void   h98CheckType	Args((Int,String,Cell,Type));
 extern  Void   h98DoesntSupport	Args((Int,String));
+extern  Cell   depExpr          Args((Int,Cell));
 
 extern  Void   foreignImport    Args((Cell,Cell,Cell,Cell,Cell,Type));
 extern  Void   foreignExport    Args((Cell,Cell,Cell,Cell,Cell,Type));
