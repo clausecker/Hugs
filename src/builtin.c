@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: builtin.c,v $
- * $Revision: 1.73 $
- * $Date: 2003/12/06 13:22:20 $
+ * $Revision: 1.74 $
+ * $Date: 2004/03/19 20:38:07 $
  * ------------------------------------------------------------------------*/
 
 /* We include math.h before prelude.h because SunOS 4's cpp incorrectly
@@ -2159,7 +2159,7 @@ static void freeThunkAux(struct thunk_data* thunk) {
         foreignThunks = thunk->next;
     }        
     if (thunk->next) {
-        thunk->next->prev = 0;
+        thunk->next->prev = thunk->prev;
     }
     free(thunk);
 }
