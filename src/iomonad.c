@@ -18,8 +18,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: iomonad.c,v $
- * $Revision: 1.25 $
- * $Date: 2002/05/18 16:22:11 $
+ * $Revision: 1.26 $
+ * $Date: 2002/05/30 00:32:59 $
  * ------------------------------------------------------------------------*/
  
 Name nameIORun;			        /* run IO code                     */
@@ -710,19 +710,44 @@ primFun(primArgv) {                     /* primArgv :: Int -> IO String    */
  * ------------------------------------------------------------------------*/
 
 primFun(primGetCh) {			/* Get character from stdin wo/echo*/
-    IOReturn(mkChar(readTerminalChar()));
+    Int c = readTerminalChar();
+    if (c!=EOF) {
+      IOReturn(mkChar(c));
+    } else {
+      IOFail(mkIOError(nameEOFErr,
+		       "IOExtensions.getCh",
+		       "end of file",
+		       nameNothing));
+    }
 }
 
 #if __MWERKS__ && macintosh
 primFun(primGetChar) {			 /* Metrowerks console has no NO_ECHO mode. */
-    IOReturn(mkChar(readTerminalChar()));
+    Int c = readTerminalChar();
+    if (c!=EOF) {
+      IOReturn(mkChar(c));
+    } else {
+      IOFail(mkIOError(nameEOFErr,
+		       "Prelude.getChar",
+		       "end of file",
+		       nameNothing));
+    }
 }
 #else
 primFun(primGetChar) {			/* Get character from stdin w/ echo*/
-    Char c = readTerminalChar();
-    putchar(c);
-    fflush(stdout);
-    IOReturn(mkChar(c));
+    Int c = readTerminalChar();
+    if (c != EOF) {
+      putchar(c);
+      fflush(stdout);
+    }
+    if (c!=EOF) {
+      IOReturn(mkChar(c));
+    } else {
+      IOFail(mkIOError(nameEOFErr,
+		       "Prelude.getChar",
+		       "end of file",
+		       nameNothing));
+    }
 }
 #endif
 
@@ -776,7 +801,7 @@ primFun(primHGetChar) {			/* Read character from handle	   */
     }
 
     if (handles[h].hmode&(HREAD|HREADWRITE)) {
-	Char c = (h==HSTDIN ? readTerminalChar() : getc(handles[h].hfp));
+	Int c = (h==HSTDIN ? readTerminalChar() : getc(handles[h].hfp));
 	if (c!=EOF) {
 	    IOReturn(mkChar(c));
 	} else if ( feof(handles[h].hfp) ) {
