@@ -92,8 +92,9 @@ libraries	:: $(LIBRARIES)
 
 $(LIBRARIES)	:
 		  @if [ x$(FPTOOLS) != x ]; then \
-		    cd unix; ./convert_hslibs $(FPTOOLS);  \
-		    cd unix; ./convert_libraries $(FPTOOLS); \
+		    cd unix; \
+		    ./convert_hslibs $(FPTOOLS); \
+		    ./convert_libraries $(FPTOOLS); \
 		  else \
 		    echo "FPTOOLS not defined; not converting libraries"; \
 		  fi
