@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: builtin.c,v $
- * $Revision: 1.66 $
- * $Date: 2003/10/14 13:56:20 $
+ * $Revision: 1.67 $
+ * $Date: 2003/10/15 05:15:39 $
  * ------------------------------------------------------------------------*/
 
 /* We include math.h before prelude.h because SunOS 4's cpp incorrectly
@@ -1628,6 +1628,8 @@ static HsStablePtr    getStablePtr4  Args((void));
 static HsFloat        getFloat       Args((void));
 static HsDouble       getDouble      Args((void));
 
+static HugsStablePtr  getStablePtr   Args((void));
+
 static void           putInt         Args((HsInt));
 static void           putWord        Args((HsWord));
 static void           putAddr        Args((HsAddr));
@@ -1653,6 +1655,7 @@ static void           freeStablePtr4 Args((HsStablePtr));
 
 	      
 static void           returnIO       Args((HugsStackPtr, int));
+static void           returnId       Args((HugsStackPtr, int));
 static int            runIO          Args((int));
 static void           apMany         Args((int));
 
@@ -2142,8 +2145,93 @@ primFun(primFreeHFunPtr) {		/*  :: FunPtr a -> IO ()           */
 HugsAPI4* hugsAPI4() { /* build virtual function table */
     static HugsAPI4 api;
     static Bool initialised = FALSE;
+
     if (!initialised) {
 
+        /* evaluate next argument */
+      	api.getInt        = getInt;
+	api.getWord       = getWord;
+	api.getAddr       = getAddr;
+	api.getFloat      = getFloat;
+	api.getDouble     = getDouble;
+	api.getChar       = getChar;
+	api.getForeign    = getForeign;
+	api.getStablePtr  = getStablePtr;
+
+	/* push part of result   */
+	api.putInt        = putInt;
+	api.putWord       = putWord;
+	api.putAddr       = putAddr;
+	api.putFloat      = putFloat;
+	api.putDouble     = putDouble;
+	api.putChar       = putChar;
+	api.putForeign    = putForeign;
+	api.putStablePtr  = putStablePtr;
+
+	/* return n values in IO monad or Id monad */
+	api.returnIO      = returnIO;
+        api.returnId      = returnId;
+	api.runIO         = runIO;
+
+	/* free a stable pointer */	    			 
+	api.freeStablePtr = freeStablePtr;
+
+	/* register the prim table */	    			 
+	api.registerPrims = registerPrims;
+
+	/* garbage collect */
+	api.garbageCollect = garbageCollect;
+
+	/* API3 additions follow */
+        api.lookupName    = lookupName;
+        api.ap            = apMany;
+        api.getUnit       = getUnit;
+        api.mkThunk       = mkThunk;
+        api.freeThunk     = freeHaskellFunctionPtr;
+	api.getBool       = getBool;
+	api.putBool       = putBool;
+
+	/* API4 additions follow */
+        api.getInt8       = getInt8;
+        api.getInt16      = getInt16;
+        api.getInt32      = getInt32;
+        api.getInt64      = getInt64;
+        api.getWord8      = getWord8;
+        api.getWord16     = getWord16;
+        api.getWord32     = getWord32;
+        api.getWord64     = getWord64;
+        api.getPtr        = getPtr;
+        api.getFunPtr     = getFunPtr;
+        api.getForeignPtr = getForeignPtr;
+
+        api.putInt8       = putInt8;
+        api.putInt16      = putInt16;
+        api.putInt32      = putInt32;
+        api.putInt64      = putInt64;
+        api.putWord8      = putWord8;
+        api.putWord16     = putWord16;
+        api.putWord32     = putWord32;
+        api.putWord64     = putWord64;
+        api.putPtr        = putPtr;
+        api.putFunPtr     = putFunPtr;
+        api.putForeignPtr = putForeignPtr;
+
+	api.makeStablePtr4 = getStablePtr;
+	api.derefStablePtr4= putStablePtr;
+
+	api.putStablePtr4 = putStablePtr4;
+	api.getStablePtr4 = getStablePtr4;
+	api.freeStablePtr4 = freeStablePtr4;
+			  
+        api.runId         = runId;
+    }
+    return &api;
+}
+
+HugsAPI5* hugsAPI5() { /* build virtual function table */
+    static HugsAPI5 api;
+    static Bool initialised = FALSE;
+    if (!initialised) {
 	api.getBool       = getBool;
       	api.getInt        = getInt;
 	api.getWord       = getWord;
@@ -2204,10 +2292,6 @@ HugsAPI4* hugsAPI4() { /* build virtual function table */
 	api.freeStablePtr4 = freeStablePtr4;
     }
     return &api;
-}
-
-HugsAPI5* hugsAPI5() { /* build virtual function table */
-  return hugsAPI4();
 }
 
 void hs_perform_gc(void)

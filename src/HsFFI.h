@@ -202,21 +202,103 @@ typedef struct {
   HugsStablePtr  (*makeStablePtr4) (void);
   void           (*derefStablePtr4)(HugsStablePtr);
   void      	 (*freeStablePtr4) (HsStablePtr);
-} HugsAPI4;
-
-typedef HugsAPI4 HugsAPI5;
+} HugsAPI5;
 
 /* Note: the change in going from version 4 to 5 is that
    with 5 (and later), the DLLs specify the HugsAPI version
    assumed by the DLL primitives. The HugsAPI method table
-   is identical to 4's.
+   is _not_ identical to 4's; it has been re-orged and
+   tidied up.
 */
 
 extern  HugsAPI5* hugsAPI5     (void);
 typedef void (*InitModuleFun5) (HugsAPI5*);
 typedef int  (*APIVersionFun)  (void);
 
-/* For convenience, keep these around.. */
+/* To ensure backward compatibility, HugsAPI4 is also supported:
+ * (due to the HugsAPI4 vtbl being an extension of HugsAPI3's and
+ *  HugsAPI2's, support for these two comes for free.)
+ */
+typedef struct {
+
+  /* evaluate next argument */
+  HsInt          (*getInt)         (void);
+  HsWord         (*getWord)        (void);
+  HsAddr    	 (*getAddr)        (void);
+  HsFloat        (*getFloat)       (void);
+  HsDouble       (*getDouble)      (void);
+  HsChar         (*getChar)        (void);
+  HugsForeign    (*getForeign)     (void);
+  HugsStablePtr  (*getStablePtr)   (void); /* deprecated */
+
+  /* push part of result   */
+  void           (*putInt)         (HsInt);
+  void      	 (*putWord)        (HsWord);
+  void      	 (*putAddr)        (HsAddr);
+  void           (*putFloat)       (HsFloat);
+  void           (*putDouble)      (HsDouble);
+  void           (*putChar)        (HsChar);
+  void      	 (*putForeign)     (HugsForeign, void (*)(HugsForeign));
+  void           (*putStablePtr)   (HugsStablePtr); /* deprecated */
+
+  /* return n values in IO monad or Id monad */
+  void      	 (*returnIO)       (HugsStackPtr, int);
+  void      	 (*returnId)       (HugsStackPtr, int);
+  int      	 (*runIO)          (int);
+
+  /* free a stable pointer */	    			 
+  void      	 (*freeStablePtr)  (HugsStablePtr); /* deprecated */
+
+  /* register the prim table */	    			 
+  void      	 (*registerPrims)  (struct hugs_primInfo*);
+			   
+  /* garbage collect */
+  void		 (*garbageCollect) (void);
+
+  /* API3 additions follow */
+  HugsStablePtr  (*lookupName)     (char*, char*);
+  void           (*ap)             (int);
+  void           (*getUnit)        (void);
+  void*          (*mkThunk)        (HsFunPtr, HugsStablePtr);
+  void           (*freeThunk)      (void*);
+  HsBool         (*getBool)        (void);
+  void           (*putBool)        (HsBool);
+
+  /* API4 additions follow */
+  HsInt8         (*getInt8)        (void);
+  HsInt16        (*getInt16)       (void);
+  HsInt32        (*getInt32)       (void);
+  HsInt64        (*getInt64)       (void);
+  HsWord8        (*getWord8)       (void);
+  HsWord16       (*getWord16)      (void);
+  HsWord32       (*getWord32)      (void);
+  HsWord64       (*getWord64)      (void);
+  HsPtr          (*getPtr)         (void);
+  HsFunPtr       (*getFunPtr)      (void);
+  HsForeignPtr   (*getForeignPtr)  (void);
+
+  void           (*putInt8)        (HsInt8);
+  void           (*putInt16)       (HsInt16);
+  void           (*putInt32)       (HsInt32);
+  void           (*putInt64)       (HsInt64);
+  void           (*putWord8)       (HsWord8);
+  void           (*putWord16)      (HsWord16);
+  void           (*putWord32)      (HsWord32);
+  void           (*putWord64)      (HsWord64);
+  void           (*putPtr)         (HsPtr);
+  void           (*putFunPtr)      (HsFunPtr);
+  void           (*putForeignPtr)  (HsForeignPtr);
+
+  HugsStablePtr  (*makeStablePtr4) (void);
+  void           (*derefStablePtr4)(HugsStablePtr);
+
+  void           (*putStablePtr4)  (HsStablePtr);
+  HsStablePtr    (*getStablePtr4)  (void);
+  void      	 (*freeStablePtr4) (HsStablePtr);
+
+  int      	 (*runId)          (int);
+} HugsAPI4;
+
 extern  HugsAPI4* hugsAPI4     (void);
 typedef void (*InitModuleFun4) (HugsAPI4*);
 

@@ -11,8 +11,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.101 $
- * $Date: 2003/10/14 13:56:23 $
+ * $Revision: 1.102 $
+ * $Date: 2003/10/15 05:15:39 $
  * ------------------------------------------------------------------------*/
 #include "prelude.h"
 #include "storage.h"
@@ -2021,13 +2021,15 @@ Int  version; {
     if (havePlugin(textToStr(module(currentModule).text))) {
 	return;
     }
-    /* Version 4-5: the Haskell module specifies what module to expect
+    /* Version 2-5: the Haskell module specifies what module to expect
      *              (via a needPrims_hugs decl).
      *
      * Version 0:   the extension DLL specifies the API version it assumes.
      */
     switch (version) { 
-    case 4 : 
+    case 2 :
+    case 3 :
+    case 4 :
 	{ 
 	    InitModuleFun4 initModule;
 	    void* dll = getDLL(mkDLLFilename(scriptFile));
@@ -2059,7 +2061,7 @@ Int  version; {
         {
 	    APIVersionFun versionFun;
 	    void* dll     = getDLL(mkDLLFilename(scriptFile));
-	    Int   version = 4;
+	    Int   version = 5;
 
 	    versionFun = (APIVersionFun)getDLLSymbol(dll,API_VERSION_FUN);
 	    if (versionFun) {
