@@ -774,9 +774,10 @@ List clashes; {
     }
 }
 
-static Void local checkExportDistinct(exports,lone,ent) /* verify that the entity is unique in unqualified form */
-List exports;
-Bool lone;
+/* verify that the entity is unique in unqualified form */
+static Void local checkExportDistinct(exports,ambigCheck,ent) 
+List exports;  
+Bool ambigCheck;
 Cell ent; {
   Name  clashNm;
   Tycon clashTc;
@@ -818,7 +819,7 @@ Cell ent; {
       }
   } else if (isPair(ent)) {
       List subs = NIL;
-      checkExportDistinct(exports, lone, fst(ent));
+      checkExportDistinct(exports, ambigCheck, fst(ent));
       if (snd(ent) == DOTDOT) {
 	if (isTycon(fst(ent))) {
 	  if (tycon(fst(ent)).what == SYNONYM ||
@@ -833,7 +834,7 @@ Cell ent; {
       } else {
 	subs = snd(ent);
       }
-      map2Proc(checkExportDistinct,exports,lone,subs);
+      map2Proc(checkExportDistinct,exports,ambigCheck,subs);
       return;
   } else {
     return;
@@ -850,7 +851,7 @@ Cell ent; {
       EEND;
   }
   
-  if (lone && nonNull(clashes)) {
+  if (ambigCheck && nonNull(clashes)) {
       reportAmbigEntity(module(mod1).text,txt,clashes);
   }
 }
@@ -1078,10 +1079,17 @@ Cell e; {
 		ERRMSG(0) "Illegal export of a lone data constructor \"%s\"",
 		          textToStr(name(export).text)
 	        EEND;
-	    }
-	    expFound = TRUE;
-	    checkExportDistinct(exports,TRUE,export);
-	    exports=cons(export,exports);
+	  }
+	  expFound = TRUE;
+	  /* Re-use static analysis code to verify that 
+	   * a qualified export isn't ambiguous. Unqualified
+	   * ones are better handled by checkExportDistinct().
+	   */
+	  if (isQualIdent(e)) {
+	    depExpr(1,e);
+	  }
+	  checkExportDistinct(exports,!isQualIdent(e),export);
+	  exports=cons(export,exports);
 	}
 	if (!expFound) {
 	    ERRMSG(0) "Unknown entity \"%s\" exported from module \"%s\"",
