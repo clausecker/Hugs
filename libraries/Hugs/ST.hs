@@ -60,7 +60,7 @@ primitive fixST        "STFix"         :: (a -> ST s a) -> ST s a
 primitive stToIO	"primSTtoIO"   :: ST RealWorld a -> IO a
 
 unsafeIOToST        :: IO a -> ST s a
-unsafeIOToST         = returnST . unsafePerformIO
+unsafeIOToST         = unsafePerformIO . liftM returnST
 
 instance Functor (ST s) where
     fmap = liftM
