@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: type.c,v $
- * $Revision: 1.69 $
- * $Date: 2003/03/09 23:53:09 $
+ * $Revision: 1.70 $
+ * $Date: 2003/07/03 17:30:47 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1132,7 +1132,7 @@ Bool   addEvid; {			/* TRUE => add \ev -> ...	   */
 
     normPreds(l);
     savePreds = elimPredsUsing(ps,savePreds);
-    if (nonNull(preds) && resolveDefs(genvarType(t,o,NIL)))
+    if (nonNull(preds) && resolveDefs(genvarType(t,o,NIL),FALSE))
 	savePreds = elimPredsUsing(ps,savePreds);
     elimTauts();
     if (nonNull(preds)) {
@@ -1973,14 +1973,14 @@ List bs; {
 
     if (isNull(tl(defnBounds))) {	/* Top-level may need defaulting   */
 	normPreds(line);
-	if (nonNull(preds) && resolveDefs(genvarAnyAss(hd(defnBounds))))
+	if (nonNull(preds) && resolveDefs(genvarAnyAss(hd(defnBounds)),FALSE))
 	    elimTauts();
 
 	clearMarks();
 	reducePreds();
 	improve(line,NIL,preds);
 	if (nonNull(preds))
-	    resolveDefs(NIL);		/* Nearly Haskell 1.4?		   */
+	    resolveDefs(NIL,FALSE);		/* Nearly Haskell 1.4?		   */
 	elimTauts();
 
 	if (nonNull(preds)) {		/* Look for unresolved overloading */
@@ -2139,7 +2139,7 @@ List bs; {
 
 	normPreds(line);
 	savePreds = elimOuterPreds(savePreds);
-	if (nonNull(preds) && resolveDefs(genvarAllAss(hd(defnBounds)))) {
+	if (nonNull(preds) && resolveDefs(genvarAllAss(hd(defnBounds)),FALSE)) {
 	    savePreds = elimOuterPreds(savePreds);
 	}
 
@@ -2201,13 +2201,13 @@ List bs; {
 	    Int  i  = 0;
 	    for (; i<m; ++i)
 		vs = cons(mkInt(o+i),vs);
-	    if (resolveDefs(vs)) {
+	    if (resolveDefs(vs,FALSE)) {
 		savePreds = elimPredsUsing(ps,savePreds);
 	    }
 	    if (nonNull(preds)) {
 		clearMarks();
 		reducePreds();
-		if (nonNull(preds) && resolveDefs(vs))
+		if (nonNull(preds) && resolveDefs(vs,FALSE))
 		    savePreds = elimPredsUsing(ps,savePreds);
 	    }
 	}
@@ -2541,7 +2541,7 @@ Int    beta; {
     clearMarks();
     normPreds(line);
     qs = elimPredsUsing(evids,NIL);
-    if (nonNull(preds) && resolveDefs(genvarType(t,o,NIL)))
+    if (nonNull(preds) && resolveDefs(genvarType(t,o,NIL),FALSE))
 	qs = elimPredsUsing(evids,qs);
     if (nonNull(qs)) {
 	ERRMSG(line)
@@ -2831,7 +2831,7 @@ Bool useDefs; {				/* using defaults if reqd	   */
     if (useDefs && nonNull(preds)) {
 	clearMarks();
 	reducePreds();
-	if (nonNull(preds) && resolveDefs(NIL))	/* Nearly Haskell 1.4?	   */
+	if (nonNull(preds) && resolveDefs(NIL,TRUE)) /* Nearly Haskell 1.4? */
 	    elimTauts();
     }
     resetGenerics();

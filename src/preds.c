@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: preds.c,v $
- * $Revision: 1.31 $
- * $Date: 2002/04/11 23:20:20 $
+ * $Revision: 1.32 $
+ * $Date: 2003/07/03 17:30:46 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -48,8 +48,8 @@ static List   local elimPredsUsing    Args((List,List));
 static Void   local reducePreds	      Args((Void));
 static Void   local normPreds	      Args((Int));
 
-static Bool   local resolveDefs	      Args((List));
-static Bool   local resolveVar	      Args((Int));
+static Bool   local resolveDefs	      Args((List,Bool));
+static Bool   local resolveVar	      Args((Int,Bool));
 static Class  local classConstraining Args((Int,Cell,Int));
 #if MULTI_INST
 static Bool   local instComp_         Args((Inst,Inst));
@@ -671,7 +671,7 @@ Cell  pi; {				/* desparate measures like context */
     qs = makePredAss(cons(pi,NIL),beta);
     preds = qs;
     elimTauts();
-    if (resolveDefs(NIL))
+    if (resolveDefs(NIL,TRUE))
 	elimTauts();
     emptySubstitution();
     return (nonNull(preds) ? NIL : thd3(hd(qs)));
@@ -956,9 +956,10 @@ Int line; {				/* in some appropriate manner	   */
  * Mechanisms for dealing with defaults:
  * ------------------------------------------------------------------------*/
 
-static Bool local resolveDefs(vs)	/* Attempt to resolve defaults  */
-List vs; {				/* for variables vs subject to  */
-    List pvs       = NIL;		/* constraints in preds		*/
+static Bool local resolveDefs(vs,interactive)/* Attempt to resolve defaults */
+List vs;				/* for variables vs subject to  */
+Bool interactive; {			/* constraints in preds		*/
+    List pvs       = NIL;
     List qs        = preds;
     Bool defaulted = FALSE;
 
@@ -988,7 +989,7 @@ List vs; {				/* for variables vs subject to  */
 #endif
 
 	if (!intIsMember(vn,vs))
-	    defaulted |= resolveVar(vn);
+	    defaulted |= resolveVar(vn,interactive);
 #ifdef DEBUG_DEFAULTS
 	else
 	    Printf("Yes, so no ambiguity!\n");
@@ -998,9 +999,10 @@ List vs; {				/* for variables vs subject to  */
     return defaulted;
 }
 
-static Bool local resolveVar(vn)	/* Determine whether an ambig.  */
-Int  vn; {				/* variable vn can be resolved  */
-    List ps        = preds;		/* by default in the context of */
+static Bool local resolveVar(vn,interactive)/* Determine whether an ambig. */
+Int  vn;				/* variable vn can be resolved  */
+Bool interactive; {			/* by default in the context of */
+    List ps        = preds;
     List cs	   = NIL;		/* the predicates in ps		*/
     Bool aNumClass = FALSE;
 
@@ -1010,6 +1012,7 @@ Int  vn; {				/* variable vn can be resolved  */
     /* According to the Haskell definition, we can only default an ambiguous
      * variable if the set of classes that constrain it:
      *   (a) includes at least one numeric class.
+     *       (However if interactive is TRUE, we also allow Show, Eq or Ord)
      *   (b) includes only numeric or standard classes.
      * In addition, we will not allow a variable to be defaulted unless it
      * appears only in predicates of the form (Class var).
@@ -1025,7 +1028,8 @@ Int  vn; {				/* variable vn can be resolved  */
 	if (nonNull(c)) {
 	    if (c==classRealFrac   || c==classRealFloat ||
 		c==classFractional || c==classFloating  ||
-		c==classReal	   || c==classIntegral  || c==classNum)
+		c==classReal	   || c==classIntegral  || c==classNum ||
+		interactive && (c==classEq || c==classOrd || c==classShow))
 		aNumClass = TRUE;
 	    else if (c!=classEq    && c!=classOrd  && c!=classShow &&
 		     c!=classRead  && c!=classIx   && c!=classEnum &&
