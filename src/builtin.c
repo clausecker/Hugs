@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: builtin.c,v $
- * $Revision: 1.79 $
- * $Date: 2004/10/29 11:46:01 $
+ * $Revision: 1.80 $
+ * $Date: 2004/11/05 15:47:30 $
  * ------------------------------------------------------------------------*/
 
 /* We include math.h before prelude.h because SunOS 4's cpp incorrectly
@@ -506,8 +506,8 @@ static struct primitive builtinPrimTable[] = {
   {"word32ToInt",       1, primWord32ToInt},
   {"primIntToFloat",    1, primIntToFloat},
   {"primIntToDouble",   1, primIntToDouble},
-  {"doubleToFloat",     1, primDoubleToFloat},
-  {"floatToDouble",     1, primFloatToDouble},
+  {"primDoubleToFloat", 1, primDoubleToFloat},
+  {"primFloatToDouble", 1, primFloatToDouble},
 
   {"primRationalToFloat",  1, primRationalToFloat},
   {"primRationalToDouble", 1, primRationalToDouble},
@@ -2455,8 +2455,8 @@ Int what; {
 		       predef(nameIntToRatio,       "intToRatio");
 		       predef(nameIntToFloat,       "primIntToFloat");
 		       predef(nameIntToDouble,      "primIntToDouble");
-		       predef(nameDoubleToFloat,    "doubleToFloat");
-		       predef(nameFloatToDouble,    "floatToDouble");
+		       predef(nameDoubleToFloat,    "primDoubleToFloat");
+		       predef(nameFloatToDouble,    "primFloatToDouble");
 #endif
 #undef  predef
 		       break;

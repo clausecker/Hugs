@@ -854,12 +854,13 @@ realFloatToRational x = (m%1)*(b%1)^^n
 			      b     = floatRadix x
 
 primitive primDivFloat      :: Float -> Float -> Float
-primitive doubleToFloat     :: Double -> Float
+primitive primDoubleToFloat :: Double -> Float
+primitive primFloatToDouble :: Float -> Double	-- used by runtime optimizer
 
 instance Fractional Float where
     (/)          = primDivFloat
     fromRational = primRationalToFloat
-    fromDouble   = doubleToFloat
+    fromDouble   = primDoubleToFloat
 
 primitive primDivDouble :: Double -> Double -> Double
 
