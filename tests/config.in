@@ -4,6 +4,3 @@ export CONTEXT_DIFF
 DEV_NULL='@DEV_NULL@'
 export DEV_NULL
 
-HUGS=@BINDIR@/hugs
-export HUGS
-

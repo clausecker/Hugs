@@ -2,6 +2,11 @@
 
 . ./config
 
+HUGS=../src/hugs
+HUGSDIR=../hugsdir
+HUGSFLAGS=
+export HUGS HUGSDIR HUGSFLAGS
+
 STDOPTS='+q -w -pHugs: -s10'
 
 test_static() {

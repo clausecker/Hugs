@@ -14,19 +14,17 @@
 #
 # Usage:
 #
-#   ./convert_libraries  <directory where libraries lives>
+#   ./convert_libraries  <directory where libraries lives> <build dir>
 
 cpp_flags='-D__HUGS__'
 cpp="gcc -P -E -traditional -xc $cpp_flags"
 cc="gcc -xc $cpp_flags"
 
 hugs_src=../../lib
-dst=../../libraries
-compat=../../oldlib
 
 case $# in
-1)	;;
-*)	echo "usage: $0 <directory where libraries lives>"
+2)	;;
+*)	echo "usage: $0 <directory where libraries lives> <build dir>" >&2
 	exit 1 ;;
 esac
 
@@ -41,6 +39,10 @@ if [ ! -d $hs_src ]; then
 	echo "Can't find hslibs in directory '$1'" >&2
 	exit 1
 fi
+
+target="$2"
+dst="$target/libraries"
+compat="$target/oldlib"
 
 # Convert a hierarchical library module for use with Hugs
 
@@ -180,8 +182,6 @@ hslibs() {
 }
 
 # Modules to convert
-
-# Those with an extra arg simply use a Hugs module instead. (to be fixed)
 
   cvt base Control/Arrow.hs
 # cvt base Control/Concurrent.hs	# Hugs lacks ThreadId

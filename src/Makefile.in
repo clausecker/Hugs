@@ -42,8 +42,13 @@ EXE		= @EXE@
 FPTOOLS		= @FPTOOLS@
 INSTALL_FFI	= @INSTALL_FFI@
 
+BUILD_DIR	= ../hugsdir
+
 # a file created by make libraries
-LIBRARIES	= ../libraries/Prelude.hs
+LIBRARIES	= $(BUILD_DIR)/libraries/Prelude.hs
+
+# a file created by make include
+INCLUDE		= $(BUILD_DIR)/include/HsFFI.h
 
 @SET_INSTALLDIRS@
 
@@ -63,6 +68,8 @@ OBJECTS		= storage@OBJ@ input@OBJ@    static@OBJ@ type@OBJ@    \
 		  machine@OBJ@ output@OBJ@ ffi@OBJ@ version@OBJ@ module@OBJ@
 IOBJECTS	= hugs@OBJ@ $(OBJECTS)
 PRELUDE		= config.h options.h prelude.h
+
+HEADERS		= ../include/GreenCard.h HsFFI.h
 
 ################################################################
 # Hugs interpreter and standalone evaluator
@@ -94,10 +101,58 @@ ffihugs@OBJ@	: runhugs.c
 # Libraries, converted from raw sources out of the fptools tree
 ################################################################
 
-libraries	:: $(LIBRARIES)
+libraries	:: $(LIBRARIES) @FFI_LIBRARIES@
 
 $(LIBRARIES)	:
-		  cd unix; ./convert_libraries $(FPTOOLS)
+		  mkdir -p $(BUILD_DIR)/libraries/Hugs
+		  $(CP) ../libraries/Hugs/*.* $(BUILD_DIR)/libraries/Hugs
+		  cd unix; ./convert_libraries $(FPTOOLS) ../../hugsdir
+
+$(INCLUDE)	: $(HEADERS)
+		  mkdir -p $(BUILD_DIR)/include
+		  $(CP) $(HEADERS) $(BUILD_DIR)/include
+
+################################################################
+# Library modules that use the Foreign Function Interface
+################################################################
+
+BASIC_FFI_LIBRARIES = \
+		$(BUILD_DIR)/libraries/Hugs/Storable@DLL@ \
+		$(BUILD_DIR)/libraries/Foreign/Marshal/Alloc@DLL@ \
+		$(BUILD_DIR)/libraries/Foreign/Marshal/Utils@DLL@ \
+		$(BUILD_DIR)/libraries/Foreign/C/Error@DLL@
+
+EXTRA_FFI_LIBRARIES = \
+		$(BUILD_DIR)/libraries/Text/Regex/Posix@DLL@
+
+FFI_LIBRARIES = $(BASIC_FFI_LIBRARIES) $(EXTRA_FFI_LIBRARIES)
+
+ffi_libraries	: $(FFI_LIBRARIES)
+
+$(FFI_LIBRARIES) : $(LIBRARIES) ffihugs$(EXE) $(INCLUDE)
+
+BUILD_FFI = env HUGSDIR='$(BUILD_DIR)' HUGSFLAGS='-W' ./ffihugs +G
+
+# If only we could put +L options in source files ...
+
+$(BUILD_DIR)/libraries/Hugs/Storable@DLL@ :
+		  $(BUILD_FFI) +L'$(BUILD_DIR)/libraries/Hugs/Storable_aux.c' Hugs.Storable
+
+$(BUILD_DIR)/libraries/Foreign/Marshal/Alloc@DLL@ : \
+			$(BUILD_DIR)/libraries/Hugs/Storable@DLL@
+		  $(BUILD_FFI) Foreign.Marshal.Alloc
+
+$(BUILD_DIR)/libraries/Foreign/Marshal/Utils@DLL@ : \
+			$(BUILD_DIR)/libraries/Hugs/Storable@DLL@ \
+			$(BUILD_DIR)/libraries/Foreign/Marshal/Alloc@DLL@
+		  $(BUILD_FFI) Foreign.Marshal.Utils
+
+$(BUILD_DIR)/libraries/Foreign/C/Error@DLL@ : \
+			$(BUILD_DIR)/libraries/Hugs/Storable@DLL@
+		  $(BUILD_FFI) +L'$(BUILD_DIR)/libraries/Foreign/C/errno.c' Foreign.C.Error  
+
+$(BUILD_DIR)/libraries/Text/Regex/Posix@DLL@ : $(BASIC_FFI_LIBRARIES)
+		  $(BUILD_FFI) Text.Regex.Posix
 
 ################################################################
 # Clean, distclean, veryclean, TAGS
@@ -124,6 +179,7 @@ clean		::
 		  $(RM) *.DSW
 		  $(RM) *.aux
 		  $(RM) *.hp
+		  $(RM) -r $(BUILD_DIR)
 distclean	:: clean
 distclean	::
 		  $(RM) hugs@EXE@
@@ -193,6 +249,8 @@ module@OBJ@	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h module.h
 
 check		:
 
+check_libraries : libraries
+		  unix/test_libraries $(FPTOOLS)
 
 @MkInstall@
 
