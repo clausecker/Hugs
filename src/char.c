@@ -181,7 +181,7 @@ Bool isAlphaNum(Char c) {
 }
 
 Bool isPrint(Char c) {
-    return isLatin1(c) ? isAlphaNumLat1(c) :
+    return isLatin1(c) ? isPrintLat1(c) :
 	    get_properties(c)->category<=GENCAT_Zs;
 }
 
