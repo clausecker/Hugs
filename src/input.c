@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: input.c,v $
- * $Revision: 1.23 $
- * $Date: 2001/02/14 12:15:05 $
+ * $Revision: 1.24 $
+ * $Date: 2001/02/15 16:06:59 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1474,7 +1474,7 @@ static Int local yylex() {             /* Read next input token ...        */
 	    }
 
 #if HERE_DOC && !HASKELL_98_ONLY
-    if (c0=='\'' && c1=='\'' && !haskell98) {
+    if (c0=='`' && c1=='`' && !haskell98) {
 	skip(); skip();
 	hereState = KEEP_GOING;
 	return '(';
