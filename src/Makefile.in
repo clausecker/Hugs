@@ -11,6 +11,8 @@
 # Targets:
 #
 # <default>:   	 make hugs@EXE@ and runhugs@EXE@
+# libraries:	 generate libraries from fptools raw sources
+#		 (located in $(FPTOOLS))
 # install:	 make and install programs/libraries
 # hugs@EXE@:    	 make minimal working system
 # runhugs@EXE@:	 make batch-mode version of Hugs
@@ -36,6 +38,8 @@ YACC		= @YACC@
 RM		= @RM@
 CP		= @CP@
 EXE		= @EXE@
+
+FPTOOLS		= @FPTOOLS@
 
 @SET_INSTALLDIRS@
 
@@ -75,6 +79,14 @@ ffihugs@EXE@	: ffihugs@OBJ@ $(SERVER_OBJECTS)
 
 ffihugs@OBJ@	: runhugs.c
 		  $(CC) -c $(CFLAGS) $(OPTFLAGS) -DFFI_COMPILER runhugs.c -o ffihugs@OBJ@
+
+################################################################
+# Libraries, converted from raw sources out of the fptools tree
+################################################################
+
+libraries	: $(FPTOOLS)
+		  cd unix; ./convert_hslibs ../$(FPTOOLS)
+		  cd unix; ./convert_libraries ../$(FPTOOLS)
 
 ################################################################
 # Clean, distclean, veryclean, TAGS
