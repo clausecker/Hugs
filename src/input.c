@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: input.c,v $
- * $Revision: 1.75 $
- * $Date: 2003/11/14 00:14:39 $
+ * $Revision: 1.76 $
+ * $Date: 2003/11/20 23:12:27 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -914,8 +914,16 @@ static Cell local readAChar(isStrLit)  /* read single char constant        */
 Bool isStrLit; {                       /* TRUE => enable \& and gaps       */
     Cell c = mkChar(c0);
 
-    if (c0=='\\')                      /* escape character?                */
-	return readEscapeChar(isStrLit,TRUE);
+    if (c0=='\\') {                    /* escape character?                */
+	c = readEscapeChar(isStrLit,TRUE);
+#if UNICODE_CHARS
+	if (isStrLit && !isLatin1(charOf(c))) {
+	    ERRMSG(row) "Unrepresentable character `\\%d' in string literal", ((int)charOf(c))
+	    EEND;
+	}
+#endif
+	return c;
+    }
     if (!isLatin1(c0)) {
 	ERRMSG(row) "Non Latin-1 character `\\%d' in constant", ((int)c0)
 	EEND;
