@@ -260,6 +260,7 @@ mkdir -p $compat
 
   hslibs net BSD.hs			# -> Network.BSD
   hslibs net CGI.lhs			# -> Network.CGI
+  hslibs net Socket.lhs			# -> Network.Socket
   hslibs net SocketPrim.hs		# -> Network.Socket
   hslibs net URI.hs			# -> Network.URI
 
