@@ -12,8 +12,8 @@
  * included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.30 $
- * $Date: 2001/09/28 22:52:49 $
+ * $Revision: 1.31 $
+ * $Date: 2001/11/10 16:25:43 $
  * ------------------------------------------------------------------------*/
 
 #ifdef HAVE_SIGNAL_H
@@ -617,7 +617,7 @@ String nm; {
 /*
     find along nm hugspath
       | isModuleId nm = [ d++f++e | f <- files, d <- dirs, e <- exts ]
-      | otherwise     = [nm]
+      | otherwise     = [ nm ++ e | e <- "" : exts ]
       where 
         dirs          = along : "" : hugspath
         files         = [mod2dir nm, nm]
@@ -657,7 +657,11 @@ String path; {
         return find2(along,nm,path); 	/* Also try nm as-is */
     } else {
         searchStr(nm);			/* Assume nm is a filename */
-        return readable(searchBuf);
+	if (!readable(searchBuf)) {
+	  /* Final attempt, assume its a filename sans recognised file extensions. */
+	  return tryEndings("");
+	}
+	return TRUE;
     }
 }
 
