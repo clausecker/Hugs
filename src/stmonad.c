@@ -10,8 +10,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: stmonad.c,v $
- * $Revision: 1.7 $
- * $Date: 2002/05/10 15:20:10 $
+ * $Revision: 1.8 $
+ * $Date: 2002/05/15 16:10:04 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -75,7 +75,8 @@ primFun(primSTRun) {			/* ST monad encapsulate		   */
 
 /* ST s a -> s -> (a, s) */
 primFun(primUnsafeSTRun) {
-    updapRoot(primArg(2),nameUnit);
+    eval(ap(primArg(2),primArg(1)));
+    updateRoot(top());
 }
 
 #if IO_MONAD
