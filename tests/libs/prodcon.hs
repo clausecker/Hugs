@@ -60,16 +60,16 @@ producer 0 mv = do
 producer (n+1) mv = do
   yield
   c <- getChar 
-  writeCVar mv c
+  writeChan mv c
   producer n mv
 
 consumer mv = do
-  c <- readCVar mv
+  c <- readChan mv
   putChar c
   consumer mv
 
 t5 = do
-  mv <- newCVar 
+  mv <- newChan 
   forkIO $ producer 10 mv
   forkIO $ consumer mv
   return ()
