@@ -189,7 +189,9 @@ done
 for package in $extra_packages
 do
 	build_package $src/$package $target/packages/$package
-	copy_examples $src/$package $target/packages/$package/examples
+	if test -d $target/packages/$package; then
+		copy_examples $src/$package $target/packages/$package/examples
+	fi
 done
 
 # Compatibility with lib/exts:
