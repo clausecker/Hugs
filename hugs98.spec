@@ -68,14 +68,11 @@ make -C docs DESTDIR=${RPM_BUILD_ROOT} install_man
 %doc docs/winhugs-notes.txt
 %doc docs/users_guide/users_guide
 %{_mandir}/man1/hugs.1.gz
-%{_mandir}/man1/hugs-package.1.gz
 %{_prefix}/bin/ffihugs
 %{_prefix}/bin/hugs
-%{_prefix}/bin/hugs-package
 %{_prefix}/bin/runhugs
 %{_prefix}/lib/hugs/demos
 %{_prefix}/lib/hugs/include
 %{_prefix}/lib/hugs/libraries
 %{_prefix}/lib/hugs/oldlib
 %{_prefix}/lib/hugs/packages
-%{_prefix}/lib/hugs/tools

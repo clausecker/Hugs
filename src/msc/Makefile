@@ -119,11 +119,9 @@ hugsscript.dll  : $(SERVER_OBJECTS) hugsscript.$(OBJEXT)
 # Libraries, converted from raw sources out of the fptools tree
 ################################################################
 
-CONVERTERS	= unix/convert_libraries unix/hugs-package
+libraries	:: $(LIBRARIES)
 
-libraries	:: $(LIBRARIES) 
-
-$(LIBRARIES)	: runhugs$(EXEEXT) ffihugs$(EXEEXT) ../libraries/Hugs/*.* $(CONVERTERS) $(TOOLS) $(INCLUDES)
+$(LIBRARIES)	: runhugs$(EXEEXT) ffihugs$(EXEEXT) ../libraries/Hugs/*.* unix/convert_libraries $(TOOLS) $(INCLUDES)
 		  -mkdir $(BUILD_DIR)\\tools
 		  $(CP) $(TOOLSDIR)\*.* $(BUILD_DIR)\\tools
 		  -mkdir $(BUILD_DIR)\\libraries

@@ -51,8 +51,6 @@ Long version:
         src/config.h          -- #included into every C file in Hugs
         src/options.h         -- #included into every C file in Hugs
         libraries/Makefile    -- controls conversion of libraries
-        libraries/tools/hugs-package
-                              -- script to convert library packages for Hugs
 
     plus some others related to documentation, testing and examples.
 
