@@ -1,17 +1,18 @@
-dnl ################################################################
-dnl Process this file with autoconf to produce a configure script.
+dnl--------------------------------------------------------------------
 dnl
-dnl $RCSfile: configure.in,v $
-dnl $Revision: 1.17 $
-dnl $Date: 2001/09/26 18:22:17 $
-dnl ################################################################
+dnl Hugs98 configure script template. Process this file with autoconf to
+dnl produce a configure script.
+dnl
+dnl--------------------------------------------------------------------
 
 AC_INIT(../hugs.c)
 AC_CONFIG_HEADER(../config.h ../options.h)
 
-dnl ################################################################
+dnl--------------------------------------------------------------------
+dnl
 dnl Check for programs
-dnl ################################################################
+dnl
+dnl--------------------------------------------------------------------
 
 dnl ToDo: if we have YACC, insert parser.c: parser.y in Makefile
 AC_PROG_YACC
@@ -37,17 +38,22 @@ AC_PROG_DIFF
 dnl If you can run configure, you certainly have /bin/sh
 AC_DEFINE(HAVE_BIN_SH)
 
-dnl ################################################################
+dnl--------------------------------------------------------------------
+dnl 
 dnl Check for libraries
-dnl ################################################################
+dnl
+dnl--------------------------------------------------------------------
+
 
 AC_CHECK_LIB_NOWARN(dl, dlopen)
 AC_CHECK_LIB_NOWARN(dld, shl_load)
 AC_CHECK_LIB_NOWARN(m, atan)
 
-dnl ################################################################
+dnl--------------------------------------------------------------------
+dnl
 dnl Check for header files
-dnl ################################################################
+dnl
+dnl--------------------------------------------------------------------
 
 AC_HEADER_STDC
 AC_HEADER_SYS_WAIT
@@ -79,9 +85,12 @@ dnl   valloc (in sunos, solaris, mips, amiga, next, minix, ultrix)
 AC_CHECK_HEADER(alloc.h,AC_CHECK_FUNCS(farcalloc))
 AC_CHECK_HEADER(malloc.h,AC_CHECK_FUNCS(valloc))
 
-dnl ################################################################
+dnl--------------------------------------------------------------------
+dnl
 dnl Check for library functions.
-dnl ################################################################
+dnl
+dnl--------------------------------------------------------------------
+
 
 dnl Old: AC_CHECK_FUNCS(WinExec GetModuleFileName)       dnl Windows
 dnl Doesn't work because the linker can't see the functions if
@@ -142,7 +151,12 @@ AC_CHECK_FUNCS(localtime)
 AC_CHECK_FUNCS(gmtime)
 AC_CHECK_FUNCS(mktime)
 
+dnl--------------------------------------------------------------------
+dnl
 dnl Timezonery
+dnl
+dnl--------------------------------------------------------------------
+
 AC_STRUCT_TIMEZONE
 FPTOOLS_HAVE_TIMEZONE
 FPTOOLS_HAVE_ALTZONE
@@ -174,9 +188,12 @@ dnl Library functions used in C interface Foreign/test.ss (non-essential)
 
 AC_CHECK_FUNCS(stime poly)
 
-dnl ################################################################
+dnl--------------------------------------------------------------------
+dnl
 dnl Check for typedefs, structures, and compiler characteristics
-dnl ################################################################
+dnl
+dnl--------------------------------------------------------------------
+
 
 AC_C_CONST               dnl can we use "const"?
 AC_C_PROTOTYPES          dnl can we use function prototypes?
@@ -244,9 +261,12 @@ fi
 AC_CHECK_PROG(LD,ld,ld)
 
 
-dnl ################################################################
+dnl--------------------------------------------------------------------
+dnl
 dnl Check Configuration options
-dnl ################################################################
+dnl
+dnl--------------------------------------------------------------------
+
 
 AC_ARG_ENABLE(modules,          [  --disable-modules         disable module system],            AC_DEFINE(IGNORE_MODULES))
 AC_ARG_ENABLE(path-canonicalization,[  --enable-path-canonicalization enable filepath canonicalization],AC_DEFINE(PATH_CANONICALIZATION))
@@ -271,36 +291,40 @@ dnl by setting "USE_DOUBLE_PRECISION" in options.h.in (before running
 dnl the configure script).
 dnl AC_ARG_ENABLE(double-precision, [  --enable-double-precision use double precision arithmetic],  AC_DEFINE(USE_DOUBLE_PRECISION))
 
-dnl Readline
+dnl--------------------------------------------------------------------
+dnl 
+dnl Readline - based on the feature testing that the GHC fptools/ configure
+dnl            script performs.
 dnl
+dnl--------------------------------------------------------------------
 if test "$with_readline" = yes; then
-    use_readline=no
-    TERMCAP=no
-    AC_CHECK_LIB(ncurses,main,TERMCAP="-lncurses",,)
-    if test "$ac_cv_lib_ncurses_main" = no; then
-        AC_CHECK_LIB(termcap,main,TERMCAP="-ltermcap",,)
+    AC_CHECK_LIB(ncurses, tputs,HaveLibTermcap=YES; LibTermcap=ncurses,
+      AC_CHECK_LIB(termcap, tputs, HaveLibTermcap=YES; LibTermcap=termcap,
+        AC_CHECK_LIB(curses, tputs, HaveLibTermcap=YES; LibTermcap=curses,
+         HaveLibTermcap=NO; LibTermcap=not-installed)))
+    if test $HaveLibTermcap = YES ; then
+       LIBS="-l$LibTermcap $LIBS"
+       AC_CHECK_LIB(readline, readline, HaveLibReadline=YES; LibReadline=readline, HaveLibReadline=NO)
     fi
-    if test "$TERMCAP" != no; then
-        AC_CHECK_LIB(readline,readline,LIBS="-lreadline $TERMCAP $LIBS",,$TERMCAP)
-        if test "$ac_cv_lib_readline_readline" = yes; then
-	    use_readline=yes
-	fi
+    
+    if test x"$HaveLibReadline" != xYES ; then
+	    AC_CHECK_LIB(editline, readline, HaveLibReadline=YES; LibReadline=editline, HaveLibReadline=NO)
     fi
-    if test "$use_readline" = no; then
-	    AC_CHECK_LIB(editline,readline,)
-            use_readline="$ac_cv_lib_editline_readline"
-    fi
-    if test "$use_readline" = yes; then
-	AC_DEFINE(USE_READLINE)
-    else
-        AC_MSG_WARN(
-[readline and editline packages not available 
-(ignoring --with-readline)])
+
+    if test $HaveLibTermcap = YES && test x"$HaveLibReadline" = xYES ; then
+        LIBS="-l$LibReadline $LIBS"
+    	AC_DEFINE(USE_READLINE,1)
+    else	
+    	AC_DEFINE(USE_READLINE,0)
+        AC_MSG_WARN([readline and editline packages not available (ignoring --with-readline)])
     fi
 fi
 
+dnl--------------------------------------------------------------------
+dnl
 dnl Profiling
 dnl
+dnl--------------------------------------------------------------------
 if test "$enable_profiling" = yes; then
     if test "$have_hp2ps" = "0"; then
         AC_MSG_WARN(
@@ -309,8 +333,11 @@ if test "$enable_profiling" = yes; then
     fi
 fi
 
+dnl--------------------------------------------------------------------
+dnl
 dnl Timer
 dnl
+dnl--------------------------------------------------------------------
 if test "$enable_timer" = yes; then
     if test "$ac_cv_header_time" = yes; then
         AC_DEFINE(WANT_TIMER)
@@ -347,8 +374,11 @@ case "`uname -s`" in
   *) ;;
 esac
 
+dnl--------------------------------------------------------------------
+dnl
 dnl Lint flags
 dnl
+dnl--------------------------------------------------------------------
 if test "$enable_lint" = yes; then
     if test "$ac_cv_prog_CC" = "gcc"; then
         LINT_FLAGS="$GCC_LINT_FLAGS"
@@ -364,8 +394,11 @@ if test "$enable_lint" = yes; then
     dnl AC_MSG_WARN(using lint $CFLAGS)
 fi
 
+dnl--------------------------------------------------------------------
+dnl
 dnl Debugging flags (assumed to be mutually exclusive with optimisation)
 dnl
+dnl--------------------------------------------------------------------
 if test "$enable_debug" = yes; then
     OPTFLAGS=""
 else
@@ -377,7 +410,11 @@ AC_SUBST(DEBUGFLAGS)
 AC_SUBST(LDDEBUGFLAGS)
 AC_SUBST(MTCFLAGS)
 
+dnl--------------------------------------------------------------------
+dnl
 dnl Figure out sizes of objects and decide which version of Hugs to build
+dnl
+dnl--------------------------------------------------------------------
 
 AC_CHECK_SIZEOF(int,4)
 AC_CHECK_SIZEOF(float,4)
@@ -399,9 +436,12 @@ else
 fi
 
 
-dnl ################################################################
+dnl--------------------------------------------------------------------
+dnl
 dnl Figure out how to do dynamic linking
-dnl ################################################################
+dnl
+dnl--------------------------------------------------------------------
+
 
 dnl NOT used anymore - it's just too unreliable.
 dnl Moved the comments listing different options for each system
@@ -430,11 +470,13 @@ dnl fi
 AC_SUBST(PIC_FLAGS) 
 AC_SUBST(DLL_FLAGS) 
 
-dnl ################################################################
+dnl--------------------------------------------------------------------
+dnl
 dnl Architecture specific substitutions
 dnl The default values can be overridden by environment variables when
 dnl the configure script is called
-dnl ################################################################
+dnl
+dnl--------------------------------------------------------------------
 
 dnl When building a Windows script, $target will be set to "windows".
 
@@ -510,10 +552,12 @@ AC_SUBST_FILE(MkInstall)
 
 AC_DEFINE_UNQUOTED(HUGSPATH,"${HUGSPATH}")
 
-dnl ################################################################
+dnl--------------------------------------------------------------------
+dnl
 dnl Figure out whether we can build the GUI
 dnl (done last because -W flags messes everything else up)
-dnl ################################################################
+dnl
+dnl--------------------------------------------------------------------
 
 if test "x$with_gui" = xyes; then
   if test "x$target" = "xwindows"; then
@@ -537,9 +581,11 @@ AC_SUBST_DEF(WOBJECTS,"")
 AC_SUBST_DEF(RC_FILES,"")
 AC_SUBST_DEF(STRIP,"")
 
-dnl ################################################################
+dnl--------------------------------------------------------------------
+dnl
 dnl Generate output files
-dnl ################################################################
+dnl
+dnl--------------------------------------------------------------------
 
 AC_OUTPUT(../Makefile ../../docs/Makefile ../../docs/hugs.1 ../../tests/testScript)
 
