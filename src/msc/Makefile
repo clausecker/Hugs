@@ -11,16 +11,17 @@
 
 # Targets:
 #
-# <default>:   	 make hugs.exe and runhugs.exe
-# install:	 make and install programs/libraries
-# hugs.exe:    	 make minimal working system
-# runhugs.exe:	 make batch-mode version of Hugs
-# clean:       	 delete files not required in running system
-# distclean:     delete files that can be regenerated using C compiler
-# veryclean:     delete all machine generated files 
-#                  (you need perl, bison/yacc, etc to rebuild these files)
-# check:	 run regression tests
-# TAGS:          build emacs TAGS table
+# <default>:   	  make hugs.exe and runhugs.exe
+# install:	  make and install programs/libraries
+# hugs.exe:    	  make minimal working system
+# runhugs.exe:	  make batch-mode version of Hugs
+# hugsscript.dll: make DLL version of Hugs
+# clean:       	  delete files not required in running system
+# distclean:      delete files that can be regenerated using C compiler
+# veryclean:      delete all machine generated files 
+#                   (you need perl, bison/yacc, etc to rebuild these files)
+# check:	  run regression tests
+# TAGS:           build emacs TAGS table
 
 # This rule goes first to make it the default choice
 default		:: hugs.exe runhugs.exe hugsscript.dll
@@ -74,10 +75,9 @@ runhugs.obj	: $(PRELUDE) hugs.c machdep.c timer.c runhugs.c
 runhugs.exe	: runhugs.obj $(SERVER_OBJECTS)
 		  $(CC) $(LDFLAGS) runhugs.obj $(SERVER_OBJECTS) $(LIBS) -o runhugs.exe
 
-
-
-hugsscript.dll  : $(SERVER_OBJECTS)
-		  $(CC) $(DLL_FLAGS) $(LDFLAGS) $(SERVER_OBJECTS) $(LIBS) -o hugsscript.dll
+hugsscript.obj  : hugsscript.c
+hugsscript.dll  : $(SERVER_OBJECTS) hugsscript.obj
+		  $(CC) $(DLL_FLAGS) $(LDFLAGS) $(SERVER_OBJECTS) hugsscript.obj $(LIBS) -o hugsscript.dll
 
 ################################################################
 # Clean, distclean, veryclean, TAGS
