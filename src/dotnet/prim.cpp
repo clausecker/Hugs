@@ -462,7 +462,7 @@ extPrimFun(primCreateObject) { /* String -> DotNetPtr -> IO DotNetPtr */
   } catch (Exception* e) {
       IOFail(mkIOError(NIL,
 		       nameNetException,
-		       "DotNet.createObject",
+		       "Dotnet.createObject",
 		       ToCharString(e->ToString()),
 		       NIL));
   }
@@ -608,7 +608,7 @@ extPrimFun(primNewString) { /* String -> IO DotNetPtr */
   } catch (Exception* e) {
       IOFail(mkIOError(NIL,
 		       nameNetException,
-		       "DotNet.newString",
+		       "Dotnet.newString",
 		       ToCharString(e->GetType()->ToString()),
 		       NIL));
   }
@@ -643,7 +643,7 @@ extPrimFun(primNewArgArray) { /* Int -> IO DotNetPtr */
   } catch (Exception* e) {
       IOFail(mkIOError(NIL,
 		       nameNetException,
-		       "DotNet.newArgArray",
+		       "Dotnet.newArgArray",
 		       ToCharString(e->GetType()->ToString()),
 		       NIL));
   }
@@ -669,7 +669,7 @@ extPrimFun(primSetArg) { /* DotNetPtr -> DotNetPtr -> Int -> IO () */
   } catch (Exception* e) {
       IOFail(mkIOError(NIL,
 		       nameNetException,
-		       "DotNet.setArgArray",
+		       "Dotnet.setArgArray",
 		       ToCharString(e->GetType()->ToString()),
 		       NIL));
   }
@@ -692,7 +692,7 @@ extPrimFun(primGetArg) { /* DotNetPtr -> Int -> IO DotNetPtr */
   } catch (Exception* e) {
       IOFail(mkIOError(NIL,
 		       nameNetException,
-		       "DotNet.getArg",
+		       "Dotnet.getArg",
 		       ToCharString(e->GetType()->ToString()),
 		       NIL));
   }
@@ -743,7 +743,7 @@ extPrimFun(primMkPrimVector) { /* Int -> Int -> IO DotNetPtr */
   default:
     IOFail(mkIOError(NIL,
 		     nameIllegal,
-		     "DotNet.mkPrimVector",
+		     "Dotnet.mkPrimVector",
 		     "",
 		     NIL));
   }
