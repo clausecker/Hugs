@@ -28,14 +28,24 @@
 
 #include "prelude.h"
 
-String versionString =
 #ifndef MONTH_YEAR
-    "<snapshot>"
+#define VERSION_STRING "<snapshot>"
 #else
 #if MAJOR_RELEASE
-    MONTH_YEAR
+#define VERSION_STRING MONTH_YEAR
 #else
-    YYYYMMDD
+#define VERSION_STRING YYYYMMDD
 #endif
 #endif
-    ;
+
+String versionString = VERSION_STRING;
+
+#if USE_REGISTRY
+#if HUGS_FOR_WINDOWS
+#define HUGSROOT ("SOFTWARE\\Haskell\\Hugs\\Winhugs" VERSION_STRING "\\")
+#else
+#define HUGSROOT ("SOFTWARE\\Haskell\\Hugs\\" VERSION_STRING "\\")
+#endif
+
+String hugsRegRoot = HUGSROOT;
+#endif

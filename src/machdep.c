@@ -11,8 +11,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.68 $
- * $Date: 2002/10/10 16:18:08 $
+ * $Revision: 1.69 $
+ * $Date: 2002/10/12 14:57:58 $
  * ------------------------------------------------------------------------*/
 #include <math.h>
 
@@ -115,11 +115,6 @@ int allow_break_count = 0;
 #define HScriptRoot ("SOFTWARE\\Haskell\\HaskellScript\\")
 #endif
 
-#if HUGS_FOR_WINDOWS
-#define HugsRoot ("SOFTWARE\\Haskell\\Hugs\\Winhugs" versionString "\\")
-#else
-#define HugsRoot ("SOFTWARE\\Haskell\\Hugs\\" versionString "\\")
-#endif
 #define ProjectRoot ("SOFTWARE\\Haskell\\Projects\\")
 
 static Bool   local createKey      Args((HKEY, String, PHKEY, REGSAM));
@@ -320,7 +315,7 @@ String hugsdir() {                   /* directory containing lib/Prelude.hs */
     /* In HaskellScript (Win32 only), we lookup InstallDir in the registry. */
     static char dir[FILENAME_MAX+1] = "";
     if (dir[0] == '\0') { /* not initialised yet */
-	String s = readRegString(HKEY_LOCAL_MACHINE,HugsRoot,"InstallDir", 
+	String s = readRegString(HKEY_LOCAL_MACHINE,hugsRegRoot,"InstallDir", 
 				 HUGSDIR);
 	if (s) { 
 	  /* Protect against overruns */
@@ -2343,7 +2338,7 @@ String var;
 String val; {
     String realVal = ( (NULL == val) ? "" : val);
 
-    return setValue(HKEY_CURRENT_USER, HugsRoot, var,
+    return setValue(HKEY_CURRENT_USER, hugsRegRoot, var,
 		    REG_SZ, (LPBYTE)realVal, lstrlen(realVal)+1);
 }
 
@@ -2351,7 +2346,7 @@ String val; {
 static Bool local writeRegInt(var,val)         /* write String to registry */
 String var;                        
 Int    val; {
-    return setValue(HKEY_CURRENT_USER, HugsRoot, var, 
+    return setValue(HKEY_CURRENT_USER, hugsRegRoot, var, 
 		    REG_DWORD, (LPBYTE)&val, sizeof(val));
 }
 
@@ -2361,11 +2356,11 @@ Int    def; {
     DWORD buf;
     DWORD type;
 
-    if (queryValue(HKEY_CURRENT_USER, HugsRoot, var, &type, 
+    if (queryValue(HKEY_CURRENT_USER, hugsRegRoot, var, &type, 
 		   (LPBYTE)&buf, sizeof(buf))
 	&& type == REG_DWORD) {
 	return (Int)buf;
-    } else if (queryValue(HKEY_LOCAL_MACHINE, HugsRoot, var, &type, 
+    } else if (queryValue(HKEY_LOCAL_MACHINE, hugsRegRoot, var, &type, 
 			  (LPBYTE)&buf, sizeof(buf))
 	       && type == REG_DWORD) {
 	return (Int)buf;
