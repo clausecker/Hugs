@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: storage.c,v $
- * $Revision: 1.21 $
- * $Date: 2001/12/04 19:13:14 $
+ * $Revision: 1.22 $
+ * $Date: 2001/12/14 19:48:25 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -848,15 +848,19 @@ Text t; {
 	EEND;
     }
     cclass(classHw).text      = t;
+    cclass(classHw).line      = 0;
     cclass(classHw).arity     = 0;
+    cclass(classHw).tyvars    = NIL;
     cclass(classHw).kinds     = NIL;
     cclass(classHw).head      = NIL;
     cclass(classHw).fds       = NIL;
     cclass(classHw).xfds      = NIL;
     cclass(classHw).dcon      = NIL;
     cclass(classHw).supers    = NIL;
+    cclass(classHw).numSupers = 0;
     cclass(classHw).dsels     = NIL;
     cclass(classHw).members   = NIL;
+    cclass(classHw).numMembers = 0;
     cclass(classHw).defaults  = NIL;
     cclass(classHw).instances = NIL;
     classes=cons(classHw,classes);
@@ -3054,6 +3058,7 @@ Int what; {
 		       start();
 		       for (i=CLASSMIN; i<classHw; ++i) {
 			   mark(cclass(i).head);
+			   mark(cclass(i).tyvars);
 			   mark(cclass(i).kinds);
 			   mark(cclass(i).fds);
 			   mark(cclass(i).xfds);
