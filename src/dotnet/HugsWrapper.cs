@@ -422,16 +422,7 @@ public class HugsWrapper {
    return theTypeName;
  }
  
- static public String DefineDelegator(String methodSpec) {
-   String methodName;
-   Int32  stablePtr;
-   Int32 idx;
-
-   // no need really to specify the name.
-   idx = methodSpec.IndexOf('#');
-   methodName = methodSpec.Substring(0,Math.Max(0,idx));
-   stablePtr  = Int32.Parse(methodSpec.Substring(idx+1));
-
+ static public String DefineDelegator(String methodName, Int32 stablePtr) {
    String theTypeName;
    TypeBuilder typeBuilder = null;
    
