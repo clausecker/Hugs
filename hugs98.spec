@@ -33,8 +33,14 @@ make prefix=$RPM_BUILD_ROOT/usr install
 %files
 %attr(-, root, root) %doc License
 %attr(-, root, root) %doc Readme
+%attr(-, root, root) %doc Credits
 %attr(-, root, root) %doc docs/server.html
-%attr(-, root, root) %doc docs/windows-notes.txt
+%attr(-, root, root) %doc docs/observe-notes.txt
+%attr(-, root, root) %doc docs/mdo-notes.txt
+%attr(-, root, root) %doc docs/ffi-notes.txt
+%attr(-, root, root) %doc docs/zipcomp-notes.txt
+%attr(-, root, root) %doc docs/winhugs-notes.txt
+%attr(-, root, root) %doc docs/machugs-notes.txt
 %attr(-, root, root) /usr/man/man1/hugs.1.gz
 %attr(-, root, root) /usr/bin/hugs
 %attr(-, root, root) /usr/bin/runhugs
