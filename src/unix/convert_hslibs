@@ -6,18 +6,18 @@
 #
 # Usage:
 #
-#   ./convert_hslibs  <directory where fptools/hslibs lives>
+#   ./convert_hslibs  <directory where hslibs lives>
 #
 # To test the result for syntactic errors, do this:
 #
 #    hugs -98 -P"../../lib:../../lib/hugs:../../lib/exts" ../../lib/exts/*.{hs,lhs}
 #
 
-src=$1/fptools/hslibs
+src=$1/hslibs
 dst=../../lib/exts
 
 if (! test -d $src) then
-  echo "Can't find fptools/hslibs in directory '$1'"
+  echo "Can't find hslibs in directory '$1'"
   exit 1
 fi
 
