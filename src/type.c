@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: type.c,v $
- * $Revision: 1.24 $
- * $Date: 2000/08/15 21:10:42 $
+ * $Revision: 1.25 $
+ * $Date: 2000/08/15 22:12:13 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1349,6 +1349,8 @@ List qss; {
     /* now, we construct a regular comprehension out of the parallel one */
     zpat = mkTuple(length(qss));
     zexp = findQualName(mkQVar(findText("List"),zipName(length(qss))));
+    if (isNull(zexp))
+	zexp = mkVar(zipName(length(qss)));
     for (pss=qss, ass=rev(gatheredAss);nonNull(pss);pss=tl(pss), ass=tl(ass)) {
 	List ps = tupleUp(getPats(hd(ass)));
 	zpat = ap(zpat, ps);
