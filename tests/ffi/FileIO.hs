@@ -28,7 +28,7 @@ foreign import ccall puts :: Ptr CChar -> IO Int
 
 
 foreign import ccall "fcntl.h  open"  open'  :: Ptr CChar -> Int -> IO Int
-foreign import ccall "fcntl.h  open"  open2' :: Ptr CChar -> Int -> Int -> IO Int
+foreign import ccall "fcntl.h  open_for_read"  open2' :: Ptr CChar -> IO Int
 foreign import ccall "fcntl.h  creat" creat' :: Ptr CChar -> Int -> IO Int
 foreign import ccall "unistd.h"       close  :: Int -> IO Int
 foreign import ccall "unistd.h read"  read'  :: Int -> Ptr CChar -> Int -> IO Int
@@ -36,7 +36,7 @@ foreign import ccall "unistd.h write" write' :: Int -> Ptr CChar -> Int -> IO In
 
 creat s m   = withCString s $ \s' -> unix "creat" $ creat' s' m
 open s m    = withCString s $ \s' -> unix "open"  $ open' s' m
-open2 s m n = withCString s $ \s' -> unix "open2" $ open2' s' m n
+open2 s     = withCString s $ \s' -> unix "open2" $ open2' s' 
 write fd s  = withCString s $ \s' -> unix "write" $ write' fd s' (length s)
 read  fd sz = withBuffer sz $ \s' -> unix "read"  $ read' fd s' sz
 
@@ -49,5 +49,5 @@ unix s m = do
    else return x
 
 testRead fn sz = bracket (open fn 0) close (flip read sz)
-testWrite fn s = bracket (open2 fn (512+64+1) 511) close (flip write s)
+testWrite fn s = bracket (open2 fn)  close (flip write s)
 

@@ -1,6 +1,6 @@
 #! /bin/sh
 
-source config
+. ./config
 
 STDOPTS='+q +w -pHugs:'
 
@@ -318,8 +318,8 @@ test_ffi() {
   perl runstdtest $HUGS $STDOPTS    -s40 "-Offi/String.hs" "-iffi/String.input" "-o1ffi/String.output"
 
   # This is a pair of tests: first build, then test runtime
-  perl runstdtest $HUGS $STDOPTS +G -s40 "-Offi/FileIO.hs" "-o1ffi/Loaded.output"
-  perl runstdtest $HUGS $STDOPTS    -s41 "-Offi/FileIO.hs" "-iffi/FileIO.input" "-o1ffi/FileIO.output"
+  perl runstdtest $HUGS $STDOPTS +G +L"FileIO_aux.c" -s40 "-Offi/FileIO.hs" "-o1ffi/Loaded.output"
+  perl runstdtest $HUGS $STDOPTS                     -s41 "-Offi/FileIO.hs" "-iffi/FileIO.input" "-o1ffi/FileIO.output"
 
 } # End of test ffi
 
