@@ -1,7 +1,5 @@
--- !!! data ctor (re-)exportation trickery
-module M where
+-- !!! data ctor (re-)exportation 
+module M (T(M1), M2) where
 
-import Mod116_B
+data T = M1 Int | M2 Int
 
-f = M1 1
-g = M2 2

@@ -1,0 +1,2 @@
+ERROR "static/mod116.hs" - Illegal export of a lone data constructor "M2"
+Hugs:[Leaving Hugs]
