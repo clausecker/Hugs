@@ -62,7 +62,7 @@ module Prelude (
 --  Non-standard exports
     IO(..), IOResult(..), primExitWith, 
     FunPtr, Ptr, Addr,
-    Word, StablePtr, ForeignObj,
+    Word, StablePtr, ForeignObj, ForeignPtr,
     Int8, Int16, Int32, Int64,
     Word8, Word16, Word32, Word64,
     basicIORun, blockIO, IOFinished(..),

@@ -1,7 +1,7 @@
 module ForeignPtr
         ( 
 	  ForeignPtr             -- abstract, instance of: Eq
-        , newForeignPtr          -- :: Ptr a -> FunPtr (Ptr a -> IO ()) -> IO (ForeignPtr a)
+        , makeForeignPtr          -- :: Ptr a -> FunPtr (Ptr a -> IO ()) -> IO (ForeignPtr a)
 --        , addForeignPtrFinalizer -- :: ForeignPtr a -> FunPtr (Ptr a -> IO ()) -> IO ()
 	, withForeignPtr         -- :: ForeignPtr a -> (Ptr a -> IO b) -> IO b
 	, foreignPtrToPtr	 -- :: ForeignPtr a -> Ptr a
@@ -10,13 +10,13 @@ module ForeignPtr
         ) 
 	where
 
-import Foreign.Ptr
-import Data.Dynamic
+import Ptr
+import Dynamic
 
 -- #include "Dynamic.h"
 -- INSTANCE_TYPEABLE1(ForeignPtr,foreignPtrTc,"ForeignPtr")
 
--- date ForeignPtr a -- defined in Prelude.hs
+-- data ForeignPtr a -- defined in Prelude.hs
 
 primitive eqForeignPtr  :: ForeignPtr a -> ForeignPtr a -> Bool
 

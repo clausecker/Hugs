@@ -114,6 +114,8 @@ function nocvt {
 		s/import Marshal/import Foreign.Marshal./
 		s/import Exception/import Control.Exception/
 		s/import Storable/import Foreign.Storable/
+		s/import ForeignPtr/import Foreign.ForeignPtr/
+		s/import Dynamic/import Data.Dynamic/
 		" $hugs_src/$3 >$dst/$new_stem$old_extension
 }
 
@@ -226,13 +228,13 @@ nocvt base Control/Exception.hs		exts/Exception.hs	# Hugs special
   cvt base Control/Parallel.hs
 # cvt base Control/Parallel/Strategies.hs	# unused by GHC
   cvt base Data/Array.hs
-# cvt base Data/Array/Base.hs		# largely GHC-specific
+# cvt base Data/Array/Base.hs		# uses pattern guard syntax
 # cvt base Data/Array/Diff.hs
   cvt base Data/Array/IArray.hs
   cvt base Data/Array/IO.hs
   cvt base Data/Array/MArray.hs
   cvt base Data/Array/ST.hs
-# cvt base Data/Array/Storable.hs	# needs ForeignPtr
+# cvt base Data/Array/Storable.hs	
 # cvt base Data/Array/Unboxed.hs	# GHC-specific
   cvt base Data/Bits.hs
   cvt base Data/Bool.hs
@@ -262,12 +264,12 @@ nocvt base Control/Exception.hs		exts/Exception.hs	# Hugs special
   cvt base Debug/QuickCheck/Utils.hs
   cvt base Debug/Trace.hs
   cvt base Foreign.hs
-# cvt base Foreign/C.hs
+  cvt base Foreign/C.hs
   cvt base Foreign/C/Error.hs
   cvt base Foreign/C/String.hs		
   cvt base Foreign/C/Types.hs
   cvt base Foreign/C/TypesISO.hs
-  cvt base Foreign/ForeignPtr.hs
+nocvt base Foreign/ForeignPtr.hs        exts/ForeignPtr.hs
   cvt base Foreign/Marshal/Alloc.hs
   cvt base Foreign/Marshal/Array.hs
   cvt base Foreign/Marshal/Error.hs
@@ -429,7 +431,7 @@ hugslibs Addr
   hslibs lang Exception.hs
 # hslibs lang ForeignObj.lhs		# deprecated
 hugslibs ForeignObj			# uses Hugs primitives
-  hslibs lang ForeignPtr.hs
+# hslibs lang ForeignPtr.hs
 # hslibs lang Generics.hs		# GHC-specific
 # hslibs lang GlaExts.lhs		# deprecated
   hslibs lang IArray.hs

@@ -627,11 +627,11 @@ elif test "x$target" = "xdos"; then
     DLL=".dll"          
     DLL_ENDING="-dll"   
     DEV_NULL="nul"
-    hugsdir_deflt='${datadir}\\hugs'
+    hugsdir_deflt='${libdir}\\hugs'
     HUGSPATH="{Hugs}\\\\lib;{Hugs}\\\\lib\\\\hugs;{Hugs}\\\\lib\\\\exts"
     MkInstall="../MkNull.in"
 else
-    hugsdir_deflt='${datadir}/hugs'
+    hugsdir_deflt='${libdir}/hugs'
     HUGSPATH="{Hugs}/lib:{Hugs}/lib/hugs:{Hugs}/lib/exts"
     MkInstall="../MkInstal.in"
 fi
@@ -648,7 +648,7 @@ test "x$exec_prefix" = xNONE && exec_prefix='${prefix}'
 
 dnl This is the only way I could find to perform the substitutions
 dnl in hugsdir.  Sigh.
-HUGSDIR=`sh -c "prefix=$prefix; datadir=$datadir; echo $hugsdir"`
+HUGSDIR=`sh -c "prefix=$prefix; exec_prefix=$exec_prefix; libdir=$libdir; echo $hugsdir"`
 AC_DEFINE_UNQUOTED(HUGSDIR,"$HUGSDIR")
 AC_SUBST(HUGSDIR)
 BINDIR=`sh -c "prefix=$prefix; exec_prefix=$exec_prefix; echo $bindir"`
@@ -662,11 +662,11 @@ else
   SET_INSTALLDIRS="\
 # These variables determine where various parts of the Hugs system are\\
 # installed.  (They are ignored in Windows or DOS.)\\
-# Binaries are installed in \$(bindir), libraries in \$(datadir)/lib\\
+# Binaries are installed in \$(bindir), libraries in \$(libdir)/lib\\
 prefix		= $prefix\\
 exec_prefix	= $exec_prefix\\
 bindir		= $bindir\\
-datadir		= $datadir\\
+libdir		= $libdir\\
 mandir          = $mandir\\
 hugsdir		= $hugsdir\\
 "

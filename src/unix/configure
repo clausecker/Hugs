@@ -9814,11 +9814,11 @@ elif test "x$target" = "xdos"; then
     DLL=".dll"          
     DLL_ENDING="-dll"   
     DEV_NULL="nul"
-    hugsdir_deflt='${datadir}\\hugs'
+    hugsdir_deflt='${libdir}\\hugs'
     HUGSPATH="{Hugs}\\\\lib;{Hugs}\\\\lib\\\\hugs;{Hugs}\\\\lib\\\\exts"
     MkInstall="../MkNull.in"
 else
-    hugsdir_deflt='${datadir}/hugs'
+    hugsdir_deflt='${libdir}/hugs'
     HUGSPATH="{Hugs}/lib:{Hugs}/lib/hugs:{Hugs}/lib/exts"
     MkInstall="../MkInstal.in"
 fi
@@ -9836,7 +9836,7 @@ hugsdir=${hugsdir="$hugsdir_deflt"}
 test "x$prefix"      = xNONE && prefix=$ac_default_prefix
 test "x$exec_prefix" = xNONE && exec_prefix='${prefix}'
 
-HUGSDIR=`sh -c "prefix=$prefix; datadir=$datadir; echo $hugsdir"`
+HUGSDIR=`sh -c "prefix=$prefix; exec_prefix=$exec_prefix; libdir=$libdir; echo $hugsdir"`
 cat >> confdefs.h <<EOF
 #define HUGSDIR "$HUGSDIR"
 EOF
@@ -9853,11 +9853,11 @@ else
   SET_INSTALLDIRS="\
 # These variables determine where various parts of the Hugs system are\\
 # installed.  (They are ignored in Windows or DOS.)\\
-# Binaries are installed in \$(bindir), libraries in \$(datadir)/lib\\
+# Binaries are installed in \$(bindir), libraries in \$(libdir)/lib\\
 prefix		= $prefix\\
 exec_prefix	= $exec_prefix\\
 bindir		= $bindir\\
-datadir		= $datadir\\
+libdir		= $libdir\\
 mandir          = $mandir\\
 hugsdir		= $hugsdir\\
 "

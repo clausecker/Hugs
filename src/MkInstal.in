@@ -71,6 +71,7 @@ install_ffi	:: install
 		./hugs +q -w MarshalUtils +G  < /dev/null
 
 install_libraries ::
+		$(INSTALL) -d $(hugsdir)
 		$(INSTALL_DATA) -LR ../libraries ../oldlib $(hugsdir)
 
 BUILD_FFI = ./hugs -P'{Hugs}/libraries' +q +G -w
