@@ -55,7 +55,7 @@ $(HSC2HS): ../fptools/ghc/utils/hsc2hs/Main.hs $(BOOTLIB) $(INCLUDES) $(CPPHS)
 	cp ../fptools/ghc/utils/hsc2hs/template-hsc.h hsc2hs/template-hsc.h
 	(echo '#! /bin/sh'; \
 	 echo "libdir='`pwd`'"; \
-	 echo 'runhugs -P$$libdir/bootlib $$libdir/hsc2hs/Main.hs -I$$libdir/../hugsdir/include "$$@"') >$@
+	 echo '$$libdir/../src/runhugs -P$$libdir/bootlib $$libdir/hsc2hs/Main.hs -I$$libdir/../hugsdir/include "$$@"') >$@
 	chmod 755 $@
 
 $(CPPHS): $(CPPHS).sh
