@@ -30,9 +30,12 @@ usage :: String
 usage = "hugs_package srcDir destDir"
 
 -- Package description file.
--- If this isn't present, try tp preprocess package.conf.in with cpp.
+-- If this isn't present, try to preprocess package.conf.in with cpp.
 packageFile :: String
 packageFile = "package.conf"
+
+-- Currently getting build information from InstalledPackageInfo
+type BuildParameters = InstalledPackageInfo
 
 -- cpp defines
 defHugs, defCallConv :: String
@@ -72,14 +75,15 @@ hugsPackage srcDir destDir = do
 -- Pass 1: preprocess files
 
 -- Preprocess a package, returning names of output files.
-prepPackage :: InstalledPackageInfo -> FilePath -> FilePath -> IO [FilePath]
+prepPackage :: BuildParameters -> FilePath -> FilePath -> IO [FilePath]
 prepPackage pkgInfo srcDir destDir =
 	sequence [prepModule (ppHandlers includes)
 			(stem srcDir mod) (stem destDir mod) |
 		mod <- modules]
   where modules = exposedModules pkgInfo ++ hiddenModules pkgInfo
 	stem dir mod = dir `joinFileName` dotToSep mod
-	includes = ["-I" ++ (srcDir `joinFileName` "include")]
+	includes = map ("-I" ++) incDirs
+	incDirs = (srcDir `joinFileName` "include") : includeDirs pkgInfo
 
 -- Preprocess a file, returning name of output file.
 prepModule :: [PPHandler] -> FilePath -> FilePath -> IO FilePath
@@ -139,7 +143,7 @@ c1 .&&. c2 = do
 
 -- Pass 2: compile FFI modules
 
-compileFFI :: InstalledPackageInfo -> FilePath -> FilePath -> IO ExitCode
+compileFFI :: BuildParameters -> FilePath -> FilePath -> IO ExitCode
 compileFFI pkgInfo srcDir file = do
 	options <- getOptions file
 	let incs = uniq (sort (includeOpts options ++ pkg_incs))
