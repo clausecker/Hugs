@@ -77,15 +77,19 @@ namespace HsWrapGen
 		{
 			m_type = TypeInfo.GetType(tyName);
 
-			Console.WriteLine("{0} {1}",tyName, m_type);
-			m_members = m_type.FindMembers(
-			               System.Reflection.MemberTypes.All,
-				       System.Reflection.BindingFlags.DeclaredOnly |
-			   	       System.Reflection.BindingFlags.Instance |
-				       System.Reflection.BindingFlags.Public |
-				       System.Reflection.BindingFlags.Static,
-				       new System.Reflection.MemberFilter(myFilter),
-				       null);
+			if (m_type.IsInterface) {
+			  m_members = m_type.GetMethods();
+			} else {
+			  m_members = 
+			    m_type.FindMembers(
+					       System.Reflection.MemberTypes.All,
+					       System.Reflection.BindingFlags.DeclaredOnly |
+					       System.Reflection.BindingFlags.Instance |
+					       System.Reflection.BindingFlags.Public |
+					       System.Reflection.BindingFlags.Static,
+					       new System.Reflection.MemberFilter(myFilter),
+					       null);
+			}
 		}
 	}
 }

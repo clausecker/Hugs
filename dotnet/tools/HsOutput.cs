@@ -11,7 +11,7 @@ namespace HsWrapGen
 	public class HsOutput
 	{
         private System.Type m_type;
-		private System.Reflection.MemberInfo[] m_members;
+	private System.Reflection.MemberInfo[] m_members;
         private System.Collections.Specialized.StringCollection m_names;
         private System.Collections.Specialized.StringCollection m_imports;
 	private System.String m_modname;
@@ -26,22 +26,24 @@ namespace HsWrapGen
 	
 
         protected void OutputHeader(System.IO.StreamWriter st) {
-            st.WriteLine("module Dotnet.{0} where", m_type.FullName);
-            st.WriteLine("");
-            st.WriteLine("import Dotnet");
-            st.WriteLine("import qualified Dotnet.{0}", m_type.BaseType.FullName);
-            foreach (String s in m_imports) {
-              st.WriteLine("import qualified {0}", s);
-            }
-            st.WriteLine("");
-	    // ToDo: provide the option of stashing this away in a separate
-	    //       module.
-            st.WriteLine("data {0}_ a", m_type.Name);
-            st.WriteLine("type {0} a = Dotnet.{1}.{2} ({0}_ a)",
-                         m_type.Name,
-                         m_type.BaseType.FullName,
-                         m_type.BaseType.Name);
-            st.WriteLine("");
+	  String supTy    = (m_type.IsInterface ? "System.Object" : m_type.BaseType.FullName);
+	  String supTyCls = (m_type.IsInterface ? "Object" : m_type.BaseType.Name);
+	  st.WriteLine("module Dotnet.{0} where", m_type.FullName);
+	  st.WriteLine("");
+	  st.WriteLine("import Dotnet");
+	  AddImport("Dotnet."+supTy);
+	  foreach (String s in m_imports) {
+	    st.WriteLine("import qualified {0}", s);
+	  }
+	  st.WriteLine("");
+	  // ToDo: provide the option of stashing this away in a separate
+	  //       module.
+	  st.WriteLine("data {0}_ a", m_type.Name);
+	  st.WriteLine("type {0} a = Dotnet.{1}.{2} ({0}_ a)",
+		       m_type.Name,
+		       supTy,
+		       supTyCls);
+	  st.WriteLine("");
         }
 
         private String ToHaskellName(String x) {
@@ -283,16 +285,18 @@ namespace HsWrapGen
             System.IO.StreamWriter st = new System.IO.StreamWriter(fs,System.Text.Encoding.ASCII);
             System.Text.StringBuilder sb = new System.Text.StringBuilder();
 
-	    if (String.Compare(m_type.BaseType.FullName, "System.Enum") == 0) {
+	    if (!m_type.IsInterface && m_type.BaseType.FullName == "System.Enum") {
 	      /* enumerations are mapped onto Haskell data types. */
 	      System.String sep = " = ";
 	      sb.AppendFormat("data {0}Ty", m_type.Name);
 	      sb.Append(System.Environment.NewLine);
 	      foreach (System.Reflection.MemberInfo mem in m_members) {
-		sb.Append(sep);
-                OutputField(sb,mem);
-		sb.Append(System.Environment.NewLine);
-		sep = " | ";
+		if (mem.Name != "value__") {
+		  sb.Append(sep);
+		  OutputField(sb,mem);
+		  sb.Append(System.Environment.NewLine);
+		  sep = " | ";
+		}
 	      }
 	      sb.AppendFormat("  deriving ( Enum, Show, Read ){0}",System.Environment.NewLine);
 	      // Emit functions for converting betw alg type and object type.
@@ -300,7 +304,7 @@ namespace HsWrapGen
 	      AddImport("Dotnet.System.Type");
 	      AddImport("Dotnet.System.Enum");
 	      sb.AppendFormat("to{0} :: {0}Ty -> {0} (){1}", m_type.Name, System.Environment.NewLine);
-	      sb.AppendFormat("to{0} tag = IOExts.unsafePerformIO (System.Enum.parse (IOExts.unsafePerformIO (System.Type.getType \"{1}\")) (show tag)){2}", m_type.Name, m_type.AssemblyQualifiedName,System.Environment.NewLine);
+	      sb.AppendFormat("to{0} tag = IOExts.unsafePerformIO (Dotnet.System.Enum.parse (IOExts.unsafePerformIO (Dotnet.System.Type.getType \"{1}\")) (show tag)){2}", m_type.Name, m_type.AssemblyQualifiedName,System.Environment.NewLine);
 	      sb.Append(System.Environment.NewLine);
 	      sb.AppendFormat("from{0} :: {0} () -> {0}Ty{1}", m_type.Name, System.Environment.NewLine);
 	      sb.AppendFormat("from{0} obj = IOExts.unsafePerformIO (toString obj >>= return.read)", m_type.Name);
@@ -310,8 +314,6 @@ namespace HsWrapGen
                 OutputMember(sb,mem);
 	      }
 	    }
-	    
- 
             OutputHeader(st);
             st.WriteLine(sb.ToString());
             st.Flush();
