@@ -46,21 +46,19 @@ Building from CVS
 -----------------
 
 This is more flexible, but in addition to the environment above,
-you will need a GHC and Happy installation and an Internet
-connection.
+you will need a Happy installation and an Internet connection.
+(Happy is the Happy parser generator available from
+http://www.haskell.org/happy/ -- you can also get by without it by getting
+the file fptools/libraries/haskell-src/Language/Haskell/Parser.hs from
+a source snapshot.)
 
 0) Check out the Hugs sources following instructions
    at http://cvs.haskell.org/
 
-1) if 'hsc2hs' and 'happy' are not available via your PATH setting,
-   you need to tell the build system where they are:
+1) if 'happy' is not available via your PATH setting,
+   you need to tell the build system where it is:
 
-     foo$ export hsc2hs=/path/to/hsc2hs happy=/path/to/happy
-
-   'hsc2hs' comes with GHC
-
-   'happy' is the Happy parser generator available via
-   http://haskell.org/happy/
+     foo$ export happy=/path/to/happy
 
 2) Proceed from step 1 of the above procedure for building from
    snapshots.  When you start from CVS, the make command will also
