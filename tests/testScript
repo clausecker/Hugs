@@ -322,6 +322,10 @@ test_ffi() {
   perl runstdtest $HUGS $STDOPTS +G +L"FileIO_aux.c" "-Offi/FileIO.hs" "-o1ffi/Loaded.output"
   perl runstdtest $HUGS $STDOPTS                     "-Offi/FileIO.hs" "-iffi/FileIO.input" "-o1ffi/FileIO.output"
 
+  # This is a pair of tests: first build, then test runtime
+  perl runstdtest $HUGS $STDOPTS +G "-Offi/Sparc.hs" "-o1ffi/Loaded.output"
+  perl runstdtest $HUGS $STDOPTS    "-Offi/Sparc.hs" "-iffi/Sparc.input" "-o1ffi/Sparc.output"
+
 } # End of test ffi
 
 test_libs() {
