@@ -36,11 +36,22 @@ use at startup: the Haskell 98-based library setup used by all
 previous Hugs releases, or the new, hierarchical Haskell libraries (as
 already provided by NHC and GHC.)
 
-The latter is what all Haskell systems are moving towards; it offering
+The latter is what all Haskell systems are moving towards; it offers
 more flexibility and functionality over the flat module structure
-provided by Haskell 98. However, to avoid needlessly introducing
-compatibility problems for Hugs users, the interpreter offers you the
-choice of staying with the old, and well-proven, libraries.
+provided by Haskell 98.  For example, the old library setup provides
+a module Parsec; in the new setup, its name is
+
+	Text.ParserCombinators.Parsec
+
+but there is also a module called Parsec that merely imports and
+re-exports this module, so your old source code should still work.
+This is one major exception to this: in the old setup, the Prelude
+exported several names not listed in the Haskell 98 Prelude.  The Prelude
+in the new setup complies with the Haskell 98 Report.
+
+For all its advantages, the new setup is new, so as an interim measure
+the interpreter offers you the choice of staying with the old, and
+well-proven, libraries.
 
 By using +N, the default module search path will include libraries
 containing the hierarchical libraries. -N enables the use of the
@@ -50,5 +61,6 @@ documentation for the -P option), setting the N toggle won't have an
 effect. The interpreter will warn you if this is the case.
 
 The default is -N, but you're encouraged to move towards using +N and
-the new libraries. This will in most cases not imply any source code
-changes.
+the new libraries.  This will in most cases not imply any changes to old
+code.  However, you might well wish to use the new, longer module names
+in new code.
