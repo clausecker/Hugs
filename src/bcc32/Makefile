@@ -35,7 +35,7 @@ DLL_FLAGS	= -WDE
 PIC_FLAGS	= 
 LIBS		=  
 
-YACC		= byacc
+YACC		= bison
 RM		= DEL
 CP		= COPY
 

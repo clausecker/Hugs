@@ -36,7 +36,7 @@ DLL_FLAGS	= /LD
 PIC_FLAGS	= 
 LIBS		= kernel32.lib user32.lib gdi32.lib comdlg32.lib shell32.lib advapi32.lib
 
-YACC		= byacc
+YACC		= bison
 RM		= -del
 CP		= copy
 
