@@ -169,7 +169,7 @@ AC_SUBST(CONTEXT_DIFF)
 
 dnl check for prototypes
 dnl
-AC_DEFUN(AC_C_PROTOTYPES,
+AC_DEFUN([AC_C_PROTOTYPES],
 [AC_CACHE_CHECK([prototypes], ac_cv_prototypes,
 [AC_TRY_COMPILE([
 void foo(int);
@@ -448,7 +448,7 @@ dnl    the specified flags.
 dnl
 AC_DEFUN(HUGS_TRY_DYNLINK,
 dnl AC_BEFORE([$0], [AC_C_PROTOTYPES])
-AC_MSG_CHECKING(if '$1' builds loadable libraries)
+[AC_MSG_CHECKING(if '$1' builds loadable libraries)
 AC_CACHE_VAL(ac_cv_dll_flags,
 [
   cat > conftest_dl.c <<EOF
@@ -600,7 +600,7 @@ fi dnl compiling and linking loadee succeeded
 
 rm -fr conftest* a.out
 ]) dnl close AC_CACHE_VAL
-AC_MSG_RESULT($ac_cv_dll_flags)
+AC_MSG_RESULT($ac_cv_dll_flags)]
 )
 
 
