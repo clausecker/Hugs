@@ -13,6 +13,9 @@
 INSTALL		= unix/install-sh
 INSTALL_DATA	= /bin/cp
 
+install_datadir	= $(DESTDIR)$(hugsdir)
+install_libdir	= $(DESTDIR)$(libdir)/hugs
+
 install		:: install_bin install_libraries      # the bare minimum
 install		:: install_demos		      # goodies
 install		:: install_man                        # manual page
@@ -46,8 +49,25 @@ install_notes	::
 		$(INSTALL_DATA) ../Credits $(DESTDIR)$(hugsdir)
 
 install_libraries :: libraries
-		$(INSTALL) -d $(DESTDIR)$(hugsdir)
-		$(INSTALL_DATA) -R $(BUILD_DIR)/* $(DESTDIR)$(hugsdir)
-		$(RM) $(DESTDIR)$(hugsdir)/libraries/Hugs/*.[ch]
-		$(RM) $(DESTDIR)$(hugsdir)/libraries/Foreign/*/*.[ch]
-		$(RM) $(DESTDIR)$(hugsdir)/libraries/Text/Regex/*.[ch]
+		$(INSTALL) -d $(install_datadir)/include
+		$(INSTALL_DATA) $(BUILD_DIR)/include/* $(install_datadir)/include
+		$(INSTALL) -d $(install_datadir)/oldlib
+		$(INSTALL_DATA) $(BUILD_DIR)/oldlib/* $(install_datadir)/oldlib
+		$(INSTALL) -d $(install_datadir)/tools
+		$(INSTALL_DATA) $(BUILD_DIR)/tools/* $(install_datadir)/tools
+		(cd $(BUILD_DIR); find libraries -type f) | while read file;\
+			do	dir=`dirname $$file`;\
+				case $$file in \
+				*.hs|*.lhs) \
+					$(RM) $(install_datadir)/$$file;\
+					$(INSTALL) -d $(install_datadir)/$$dir;\
+					$(INSTALL) $(BUILD_DIR)/$$file $(install_datadir)/$$file ;;\
+				*.so) \
+					$(RM) $(install_libdir)/$$file;\
+					$(INSTALL) -d $(install_libdir)/$$dir;\
+					$(INSTALL) $(BUILD_DIR)/$$file $(install_libdir)/$$file;\
+					$(RM) $(install_datadir)/$$file;\
+					$(INSTALL) -d $(install_datadir)/$$dir;\
+					ln -s $(install_libdir)/$$file $(install_datadir)/$$file ;;\
+				esac \
+			done
