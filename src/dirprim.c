@@ -68,7 +68,7 @@ primFun(primCreateDirectory) { /* create a directory, :: String -> IO ()   */
 		     IOArg(1)));
   }
   
-#if defined(_MSC_VER) || defined(__MINGW__)
+#if defined(_MSC_VER) || defined(__MINGW32__)
    rc = mkdir(s);
 #else
    rc = mkdir(s,0777);
