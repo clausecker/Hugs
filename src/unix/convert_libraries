@@ -1,0 +1,374 @@
+#!/bin/sh
+
+# This script generates:
+# ../../libraries:
+#	copies of the heirarchical libraries suitable for
+#	use with Hugs.  Note that some of the libraries require extensions
+#	to Haskell 98 and have to be run with the -98 flag.
+# ../../oldlib:
+#	compatability stubs for old Hugs libraries
+#
+# A HUGSPATH consisting of both of these should approximate the old libs,
+# and be fairly compatible with GHC.  If you're completely switched over,
+# delete the second one.  Be sure to use hugs -X with the new libraries,
+# or it will get very confused.
+#
+# Usage:
+#
+#   ./convert_libraries  <directory where libraries lives>
+
+cpp='gcc -P -E -traditional -xc -D__HUGS__ -D__HASKELL98__'
+
+hugs_src=../../lib
+dst=../../libraries
+stubdir=../../oldlib
+
+src=$1/libraries
+if [ ! -d $src ]; then
+  echo "Can't find libraries in directory '$1'"
+  exit 1
+fi
+
+# Create a hierarchical library module for use with Hugs
+
+function cvt {
+ 
+	echo "Converting $1/$2"
+	dstdir=`dirname $dst/$2`
+	mkdir -p $dstdir
+
+	# Two forms, because we can't use all modules in the new libs yet.
+	case $# in
+	2)
+		# cvt package file
+		#	- converts a file from the new libraries
+		$cpp -I$src/$1/include $src/$1/$2 | cat -s >$dst/$2
+		;;
+	3)
+		# cvt package file hugslib
+		#	- uses the Hugs file as a stopgap replacement
+		#	  for the new module
+		new_stem=`echo $2 | sed 's/\..*//'`
+		new_module=`echo $2 | sed 's/\..*//' | tr / .`
+		old_extension=`echo $3 | sed 's/[^.]*//'`
+		old_module=`basename $3 $old_extension`
+		sed "s/module[ 	][ 	]*$old_module\\>/module $new_module/g
+			s/import IOExts/import Hugs.IOExts/
+			s/import Array/import Hugs.Array/
+			s/import Char/import Data.Char/
+			s/import Ratio/import Data.Ratio/
+			" $hugs_src/$3 >$dst/$new_stem$old_extension
+		;;
+	esac
+ 
+}
+
+function cvt_happy {
+ 
+	echo "Converting $1/$2"
+	mkdir -p `dirname $dst/$2`
+
+	case $2 in
+	*.ly)	outname=`basename $2 .ly`.hs ;;
+	*)	outname=`basename $2 .y`.hs ;;
+	esac
+
+	tmpdir=/tmp/cvt.$$
+	mkdir $tmpdir
+	(
+		cd $tmpdir
+		cp $src/$1/$2 .
+		happy `basename $2`
+	)
+	$cpp $tmpdir/$outname | cat -s >`dirname $dst/$2`/$outname
+	rm -r $tmpdir
+ 
+}
+
+# Create a compatability stub of a Hugs extension module
+
+function stub {
+	stub=$1
+	shift
+	echo "Stub $stub -> $*"
+	(
+		echo "module $stub("
+		for real
+		do	echo "	module $real,"
+		done
+		echo '    ) where'
+		echo
+		for real
+		do	echo "import $real"
+		done
+	) >$stubdir/$stub.hs
+}
+
+# Modules to convert
+
+# Those with an extra arg simply use a Hugs module instead. (to be fixed)
+
+  cvt base Control/Arrow.hs
+# cvt base Control/Concurrent.hs
+  cvt base Control/Concurrent/Chan.hs
+  cvt base Control/Concurrent/MVar.hs
+  cvt base Control/Concurrent/QSem.hs
+  cvt base Control/Concurrent/QSemN.hs
+  cvt base Control/Concurrent/SampleVar.hs
+  cvt base Control/Exception.hs		exts/Exception.hs	# Hugs special
+  cvt base Control/Monad.hs
+  cvt base Control/Monad/Cont.hs
+  cvt base Control/Monad/Error.hs
+  cvt base Control/Monad/Fix.hs
+  cvt base Control/Monad/Identity.hs
+  cvt base Control/Monad/List.hs
+  cvt base Control/Monad/Monoid.hs
+  cvt base Control/Monad/RWS.hs
+  cvt base Control/Monad/Reader.hs
+  cvt base Control/Monad/ST.hs
+  cvt base Control/Monad/ST/Lazy.hs
+  cvt base Control/Monad/ST/Strict.hs
+  cvt base Control/Monad/State.hs
+  cvt base Control/Monad/Trans.hs
+  cvt base Control/Monad/Writer.hs
+  cvt base Control/Parallel.hs
+# cvt base Control/Parallel/Strategies.hs
+  cvt base Data/Array.hs
+# cvt base Data/Array/Base.hs
+# cvt base Data/Array/Diff.hs
+# cvt base Data/Array/IArray.hs
+# cvt base Data/Array/IO.hs
+# cvt base Data/Array/MArray.hs
+# cvt base Data/Array/ST.hs
+# cvt base Data/Array/Storable.hs
+# cvt base Data/Array/Unboxed.hs
+  cvt base Data/Bits.hs
+  cvt base Data/Bool.hs
+  cvt base Data/Char.hs
+  cvt base Data/Complex.hs
+  cvt base Data/Dynamic.hs
+  cvt base Data/Either.hs
+  cvt base Data/FiniteMap.hs
+# cvt base Data/Generics.hs
+  cvt base Data/IORef.hs
+  cvt base Data/Int.hs
+  cvt base Data/Ix.hs
+  cvt base Data/List.hs
+  cvt base Data/Maybe.hs
+# cvt base Data/PackedString.hs		# uses Data.Array.Unboxed
+  cvt base Data/Ratio.hs
+  cvt base Data/STRef.hs
+  cvt base Data/STRef/Lazy.hs
+  cvt base Data/STRef/Strict.hs
+  cvt base Data/Set.hs
+  cvt base Data/Tuple.hs
+# cvt base Data/Unique.hs
+  cvt base Data/Word.hs
+  cvt base Debug/QuickCheck.hs
+# cvt base Debug/QuickCheck/Batch.hs	# needs Control.Concurrent for ThreadId
+  cvt base Debug/QuickCheck/Poly.hs
+  cvt base Debug/QuickCheck/Utils.hs
+  cvt base Debug/Trace.hs
+# cvt base Foreign.hs
+# cvt base Foreign/C.hs
+# cvt base Foreign/C/Error.hs
+# cvt base Foreign/C/String.hs
+# cvt base Foreign/C/Types.hs
+# cvt base Foreign/C/TypesISO.hs
+# cvt base Foreign/ForeignPtr.hs
+# cvt base Foreign/Marshal/Alloc.hs
+# cvt base Foreign/Marshal/Array.hs
+# cvt base Foreign/Marshal/Error.hs
+# cvt base Foreign/Marshal/Utils.hs
+  cvt base Foreign/Ptr.hs		exts/Ptr.hs	# not quite right
+  cvt base Foreign/StablePtr.hs
+# cvt base Foreign/Storable.hs
+  cvt base Numeric.hs			Numeric.hs	# new one uses ReadP
+  cvt base Prelude.hs			Prelude.hs	# Hugs special
+  cvt base System/CPUTime.hsc		CPUTime.hs	# Hugs primitives
+  cvt base System/Cmd.hs
+  cvt base System/Console/GetOpt.hs
+  cvt base System/Directory.hs		Directory.hs	# Hugs primitives
+  cvt base System/Environment.hs
+  cvt base System/Exit.hs
+  cvt base System/IO.hs
+  cvt base System/IO/Error.hs
+  cvt base System/IO/Unsafe.hs
+# cvt base System/Info.hs
+  cvt base System/Locale.hs
+  cvt base System/Mem.hs
+  cvt base System/Mem/StableName.hs
+  cvt base System/Mem/Weak.hs
+  cvt base System/Random.hs
+  cvt base System/Time.hsc		Time.hs		# Hugs primitives
+  cvt base Text/Html.hs
+  cvt base Text/Html/BlockTable.hs
+  cvt base Text/ParserCombinators/Parsec.hs
+  cvt base Text/ParserCombinators/Parsec/Char.hs
+  cvt base Text/ParserCombinators/Parsec/Combinator.hs
+  cvt base Text/ParserCombinators/Parsec/Error.hs
+  cvt base Text/ParserCombinators/Parsec/Expr.hs
+  cvt base Text/ParserCombinators/Parsec/Language.hs
+  cvt base Text/ParserCombinators/Parsec/Perm.hs
+  cvt base Text/ParserCombinators/Parsec/Pos.hs
+  cvt base Text/ParserCombinators/Parsec/Prim.hs
+  cvt base Text/ParserCombinators/Parsec/Token.hs
+# cvt base Text/ParserCombinators/ReadP.hs	# ReadS clashes with Prelude
+# cvt base Text/ParserCombinators/ReadPrec.hs	# uses ReadP
+  cvt base Text/PrettyPrint.hs
+  cvt base Text/PrettyPrint/HughesPJ.hs
+  cvt base Text/Read.hs
+# cvt base Text/Read/Lex.hs		# uses ReadP
+# cvt base Text/Regex.hs		# uses Text.Regex.Posix
+# cvt base Text/Regex/Posix.hsc
+  cvt base Text/Show.hs
+  cvt base Text/Show/Functions.hs
+
+  cvt haskell98 Array.hs
+  cvt haskell98 CPUTime.hs
+  cvt haskell98 Char.hs
+  cvt haskell98 Complex.hs
+  cvt haskell98 Directory.hs
+  cvt haskell98 IO.hs
+  cvt haskell98 Ix.hs
+  cvt haskell98 List.hs
+  cvt haskell98 Locale.hs
+  cvt haskell98 Maybe.hs
+  cvt haskell98 Monad.hs
+  cvt haskell98 Random.hs
+  cvt haskell98 Ratio.hs
+  cvt haskell98 System.hs
+  cvt haskell98 Time.hs
+
+  cvt_happy haskell-src Language/Haskell/Parser.ly
+  cvt haskell-src Language/Haskell/Lexer.hs
+  cvt haskell-src Language/Haskell/ParseMonad.hs
+  cvt haskell-src Language/Haskell/ParseUtils.hs
+  cvt haskell-src Language/Haskell/Pretty.hs
+  cvt haskell-src Language/Haskell/Syntax.hs
+  cvt haskell-src Language/Haskell/THSyntax.hs
+
+# Stubs for stuff in lib/exts:
+
+mkdir -p $stubdir
+
+# stub Addr
+  stub Bits		Data.Bits
+# stub CString		Foreign.C.String
+# stub CTypes		Foreign.C.Types
+# stub CVar
+  stub Chan		Control.Concurrent.Chan
+  stub Channel		Control.Concurrent.Chan
+# stub ChannelVar
+  stub ConcBase		Hugs.ConcBase
+# stub Concurrent	Control.Concurrent
+  stub Dynamic		Data.Dynamic
+  stub Exception	Control.Exception
+  stub FiniteMap	Data.FiniteMap
+# the Foreign module is also in the new setup
+# stub ForeignObj
+  stub GetOpt		System.Console.GetOpt
+  stub Html		Text.Html
+  stub HtmlBlockTable	Text.Html.BlockTable
+  stub IOExts		Hugs.IOExts Data.IORef
+  stub IORef		Data.IORef
+  stub Int		Hugs.Int
+  stub LazyST		Hugs.LazyST
+  stub MVar		Control.Concurrent.MVar
+# stub MarshalAlloc	Foreign.Marshal.Alloc
+# stub MarshalArray	Foreign.Marshal.Array
+# stub MarshalError	Foreign.Marshal.Error
+# stub MarshalUtils	Foreign.Marshal.Utils
+# stub Memo
+# stub Merge
+  stub MonadCont	Control.Monad.Cont
+  stub MonadEither	Control.Monad.Error
+  stub MonadError	Control.Monad.Error
+  stub MonadFix		Control.Monad.Fix
+  stub MonadIdentity	Control.Monad.Identity
+  stub MonadList	Control.Monad.List
+  stub MonadRWS		Control.Monad.RWS
+  stub MonadReader	Control.Monad.Reader
+# stub MonadRec		# new libs have Fix, but Rec is used by mdo
+  stub MonadState	Control.Monad.State
+  stub MonadTrans	Control.Monad.Trans
+  stub MonadWriter	Control.Monad.Writer
+  stub Monoid		Control.Monad.Monoid
+# stub NumExts
+# stub Observe
+  stub Parallel		Control.Parallel
+  stub Pretty		Text.PrettyPrint
+  stub Ptr		Foreign.Ptr
+  stub QSem		Control.Concurrent.QSem
+  stub QSemN		Control.Concurrent.QSemN
+  stub QuickCheck	Debug.QuickCheck
+  stub QuickCheckPoly	Debug.QuickCheck.Poly
+  stub QuickCheckUtils	Debug.QuickCheck.Utils
+  stub ST		Hugs.ST
+  stub SampleVar	Control.Concurrent.SampleVar
+  stub Semaphore	Control.Concurrent.QSem Control.Concurrent.QSemN
+  stub Set		Data.Set
+  stub ShowFunctions	Text.Show.Functions
+  stub Stable		Hugs.Stable
+  stub StablePtr	Hugs.StablePtr
+# stub Storable
+  stub Weak		Hugs.Weak
+  stub Word		Hugs.Word
+
+# Stuff converted by convert_hslibs:
+
+# stub Assoc
+# stub AssocDefaults
+# stub AssocList
+# stub PatriciaLoMap
+# stub Collection
+# stub CollectionDefaults
+# stub CollectionUtils
+# stub LazyPairingHeap
+# stub LeftistHeap
+# stub MinHeap
+# stub SkewHeap
+# stub SplayHeap
+# stub TestOrdBag
+# stub TestOrdSet
+# stub UnbalancedSet
+# stub BankersQueue
+# stub BinaryRandList
+# stub BraunSeq
+# stub JoinList
+# stub ListSeq
+# stub MyersStack
+# stub RandList
+# stub RevSeq
+# stub Sequence
+# stub SequenceDefaults
+# stub SimpleQueue
+# stub SizedSeq
+# stub TestSeq
+# stub EdisonPrelude
+
+# stub Haskell2Xml
+# stub IsPrefixOf
+# stub IsSuffixOf
+# stub ParseSTLib
+# stub Xml2Haskell
+# stub XmlCombinators	# problem: uses "with"
+# stub XmlHtmlGen
+# stub XmlHtmlPP
+# stub XmlHtmlParse
+# stub XmlLex
+# stub XmlLib
+# stub XmlPP
+# stub XmlParse
+# stub XmlTypes
+
+  stub Parsec		Text.ParserCombinators.Parsec
+  stub ParsecChar	Text.ParserCombinators.Parsec.Char
+  stub ParsecCombinator	Text.ParserCombinators.Parsec.Combinator
+  stub ParsecError	Text.ParserCombinators.Parsec.Error
+  stub ParsecExpr	Text.ParserCombinators.Parsec.Expr
+  stub ParsecLanguage	Text.ParserCombinators.Parsec.Language
+  stub ParsecPerm	Text.ParserCombinators.Parsec.Perm
+  stub ParsecPos	Text.ParserCombinators.Parsec.Pos
+  stub ParsecPrim	Text.ParserCombinators.Parsec.Prim
+  stub ParsecToken	Text.ParserCombinators.Parsec.Token
