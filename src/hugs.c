@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.80 $
- * $Date: 2002/05/15 22:24:20 $
+ * $Revision: 1.81 $
+ * $Date: 2002/05/16 14:26:27 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -41,6 +41,8 @@ Bool showInstRes = FALSE;
 #if MULTI_INST
 Bool multiInstRes = FALSE;
 #endif
+
+static Bool   printMostGeneralType = FALSE;
 
 /* --------------------------------------------------------------------------
  * Local function prototypes:
@@ -103,9 +105,6 @@ static String local strCopy           Args((String));
 static Void   local browseit	      Args((Module,String,Bool));
 static Void   local browse	      Args((Void));
 static Void   local shutdownHugs      Args((Void));
-
-static Bool   printMostGeneralType = TRUE;
-
 
 #if USE_PREFERENCES_FILE
 static Void    readPrefsFile          Args((FILE *));
