@@ -9003,9 +9003,9 @@ GCC_LINT_FLAGS="-Wall \
   "
 
 if test "$enable_lint" = yes; then
-    if test "$ac_cv_prog_CC" = "gcc"; then
+    if test "$CC" = "gcc"; then
         LINT_FLAGS="$GCC_LINT_FLAGS"
-#    elif test "$ac_cv_prog_CC" = "bcc32"; then
+#    elif test "$CC" = "bcc32"; then
 #        LINT_FLAGS="$BCC32_LINT_FLAGS"
     else
         echo "configure: warning: lint flags only defined for gcc (at present)
