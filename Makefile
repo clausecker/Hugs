@@ -78,7 +78,6 @@ src/Makefile: configure src/config.h.in
 
 configure src/config.h.in: src/stamp-h.in
 src/stamp-h.in: configure.ac aclocal.m4 fptools
-	-cp install-sh fptools	# kludge to keep configure happy
 	-autoreconf
 	echo timestamp for config.h.in >$@
 
