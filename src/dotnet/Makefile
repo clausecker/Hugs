@@ -54,7 +54,7 @@ DOTNET_FILES    = dotnet\Invoker.cpp dotnet\prim.cpp dotnet\HugsServ.cpp dotnet\
 CFILES		= hugs.c storage.c input.c static.c type.c subst.c \
 		  output.c compiler.c machine.c interp.c builtin.c \
 		  server.c ffi.c module.c machdep.c script.c opts.c \
-		  strutil.c errors.c evaluator.c goal.c observe.c \
+		  strutil.c errors.c evaluator.c goal.c observe.c char.c \
 		  $(DOTNET_FILES)
 INCFILES	= parser.c preds.c bignums.c scc.c timer.c \
 		  printer.c iomonad.c interns.c array.c
@@ -63,7 +63,7 @@ SOURCES		= $(HFILES) $(CFILES) $(INCFILES) $(YFILES)
 OBJECTS		= storage.obj input.obj static.obj type.obj subst.obj \
 	          compiler.obj plugin.obj builtin.obj machine.obj output.obj \
 		  ffi.obj version.obj module.obj machdep.obj script.obj \
-		  opts.obj strutil.obj errors.obj evaluator.obj goal.obj
+		  opts.obj strutil.obj errors.obj evaluator.obj goal.obj char.obj
 
 DOBJECTS        = dotnet\Invoker.obj dotnet\HugsServ.obj dotnet\HugsWrapper.obj dotnet\prim.obj 
 		  

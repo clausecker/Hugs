@@ -68,7 +68,7 @@ CFILES		= hugs.c runhugs.c server.c edit.c observe.c \
 		  ffi.c goal.c input.c machdep.c machine.c \
 		  module.c opts.c output.c plugin.c script.c \
 		  static.c storage.c strutil.c subst.c \
-		  type.c version.c
+		  type.c version.c char.c
 INCFILES	= array.c bignums.c dirprim.c interns.c iomonad.c \
 		  preds.c printer.c scc.c timeprim.c timer.c
 YFILES		= parser.y
@@ -77,7 +77,7 @@ OBJECTS		= builtin.obj compiler.obj errors.obj evaluator.obj \
 		  ffi.obj goal.obj input.obj machdep.obj machine.obj \
 		  module.obj opts.obj output.obj plugin.obj script.obj \
 		  static.obj storage.obj strutil.obj subst.obj \
-		  type.obj version.obj
+		  type.obj version.obj char.obj
 IOBJECTS	= hugs.obj edit.obj observe.obj hugs.res $(OBJECTS)
 PRELUDE		= config.h options.h prelude.h script.h
 

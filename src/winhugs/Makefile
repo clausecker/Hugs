@@ -53,7 +53,7 @@ HFILES		= prelude.h config.h options.h storage.h connect.h \
 CFILES		= hugs.c storage.c input.c static.c type.c subst.c \
 		  output.c compiler.c machine.c interp.c builtin.c \
 		  server.c ffi.c module.c machdep.c script.c opts.c \
-		  strutil.c errors.c evaluator.c goal.c observe.c \
+		  strutil.c errors.c evaluator.c goal.c observe.c char.c \
 		  Winhugs.c
 
 INCFILES	= parser.c preds.c bignums.c scc.c timer.c \
@@ -69,7 +69,7 @@ WOBJECTS        = winhugs.obj winframe.obj wintext.obj  winhint.obj \
 OBJECTS		= storage.obj input.obj static.obj type.obj subst.obj \
 		  compiler.obj plugin.obj builtin.obj machine.obj output.obj \
 		  ffi.obj version.obj module.obj machdep.obj script.obj \
-		  opts.obj strutil.obj errors.obj evaluator.obj goal.obj \
+		  opts.obj strutil.obj errors.obj evaluator.obj goal.obj char.obj \
 		  $(WOBJECTS)
 
 IOBJECTS	= hugs.obj edit.obj observe.obj $(OBJECTS)
