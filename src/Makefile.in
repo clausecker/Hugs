@@ -135,6 +135,7 @@ $(LIBRARIES)	: runhugs@EXEEXT@ ffihugs@EXEEXT@ ../libraries/Hugs/*.* $(CONVERTER
 $(INCLUDES)	: $(HEADERS)
 		  mkdir -p $(BUILD_DIR)/include
 		  $(CP) $(HEADERS) $(BUILD_DIR)/include
+		  echo '#include "config.h"' >$(BUILD_DIR)/include/ghcconfig.h
 
 ################################################################
 # Library modules that use the Foreign Function Interface
