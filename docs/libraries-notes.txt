@@ -49,9 +49,7 @@ Eventually the compatibility stubs will disappear.
 
 More details on the new setup:
 
-o Some modules require the -W option (which disables the old syntax for
-  implicit parameters using "with" and "dlet").  Others also require
-  the -98 option.
+o Some modules require the -98 option.
 
 o the Hugs.* packages (in libraries/Hugs) provide Hugs-specific
   implementations of standard features, as well as some Hugs-only
