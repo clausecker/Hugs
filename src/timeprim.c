@@ -98,7 +98,7 @@ primFun(primGetClockTime) { /* :: IO (Int,Int) */
 #endif
 }
 
-#if IS_WINDOWS
+#if HAVE_DECL__TIMEZONE
 # define timezone _timezone
 #endif
 
@@ -139,7 +139,7 @@ primFun(primGetCalTime) { /* Int   -> Int -> IO (.....) */
 
 #if HAVE_STRUCT_TM_TM_ZONE
   utcOff = tm->tm_gmtoff;
-#elif HAVE_DECL_TIMEZONE
+#elif HAVE_DECL_TIMEZONE || HAVE_DECL__TIMEZONE
 # if HAVE_DECL_ALTZONE
   utcOff = (-(tm->tm_isdst ? altzone : timezone));
 # else
@@ -224,7 +224,7 @@ primFun(primMkTime) { /* Int{-year-}  -> Int{-month-} -> Int{-day-} ->
   tz = -tz;
 #if HAVE_STRUCT_TM_TM_ZONE
   tz += tm.tm_gmtoff;
-#elif HAVE_DECL_TIMEZONE
+#elif HAVE_DECL_TIMEZONE || HAVE_DECL__TIMEZONE
 # if HAVE_DECL_ALTZONE
   tz += (-(tm.tm_isdst ? altzone : timezone));
 # else

@@ -178,10 +178,13 @@
 #define VOID_INT_SIGNALS 1
 
 /* Define if time.h or sys/time.h define the altzone variable.  */
-/* #undef HAVE_ALTZONE */
+/* #undef HAVE_DECL_ALTZONE */
 
 /* Define if time.h or sys/time.h define the timezone variable.  */
-#define HAVE_TIMEZONE 1
+#define HAVE_DECL_TIMEZONE 1
+
+/* Define if time.h or sys/time.h define the _timezone variable.  */
+#define HAVE_DECL__TIMEZONE 1
 
 /* The number of bytes in a char.  */
 #define SIZEOF_CHAR 1
