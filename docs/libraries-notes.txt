@@ -1,0 +1,42 @@
+Using Hugs with the new hierarchical libraries
+
+Most of the new libraries shipped with GHC 5.04 may also be used with
+Hugs.  The main exceptions are modules related to the FFI.
+
+Some assembly is required:
+(These instructions are for Unix, I imagine cygwin is similar)
+
+o You'll need a copy of both hslibs and libraries from CVS (see
+  http://www.haskell.org/ghc/docs/latest/html/building/sec-cvs.html
+  for details on how to get this.)  Leave these two directories in
+  a single directory
+
+o in src/unix, run
+
+	convert_libraries <directory where libraries lives>
+
+  This will fill in libraries with converted modules, and also create
+  a directory oldlib full of stubs for compatability with the old Hugs
+  libraries, plus some old modules.
+
+o back in src, run
+
+	make install_libraries
+
+o That's it.  Now you can run hugs with
+ 
+	hugs -P'{Hugs}/libraries:{Hugs}/oldlib'
+ 
+  That should be fairly compatible both with GHC 5.04 and with the older
+  Hugs libraries.  If you only want compatability with GHC 5.04, you can
+  drop the second directory from the path.  Some modules also need -98
+
+
+More details:
+
+o libraries/Hugs contains some Hugs-only modules (e.g. Hugs.IO), mostly
+  modified versions of modules from lib.
+
+o to see what's handled and what's not, have a look at the conversion script
+  src/unix/convert_libraries.  It's quite a kludge, but it mostly works,
+  though there's still plenty to do.

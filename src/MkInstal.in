@@ -70,3 +70,6 @@ install_ffi	:: install
 		./hugs +q -w MarshalAlloc +G  < /dev/null
 		./hugs +q -w MarshalUtils +G  < /dev/null
 
+install_libraries ::
+		$(INSTALL_DATA) -LR ../libraries ../oldlib $(hugsdir)
+

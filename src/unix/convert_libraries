@@ -16,15 +16,21 @@
 #
 #   ./convert_libraries  <directory where libraries lives>
 
-cpp='gcc -P -E -traditional -xc -D__HUGS__ -D__HASKELL98__'
+cpp='gcc -P -E -traditional -xc -D__HUGS__ -D__HASKELL98__ -Dwith=with_a'
 
 hugs_src=../../lib
 dst=../../libraries
-stubdir=../../oldlib
+compat=../../oldlib
 
 src=$1/libraries
 if [ ! -d $src ]; then
   echo "Can't find libraries in directory '$1'"
+  exit 1
+fi
+
+hs_src=$1/hslibs
+if [ ! -d $hs_src ]; then
+  echo "Can't find hslibs in directory '$1'"
   exit 1
 fi
 
@@ -102,7 +108,22 @@ function stub {
 		for real
 		do	echo "import $real"
 		done
-	) >$stubdir/$stub.hs
+	) >$compat/$stub.hs
+}
+
+# Copy the Hugs version to the compatibility lib
+
+function useold {
+	name="`ls ../../lib/exts/$1.*`"
+	echo "Copy `basename $name`"
+	cp $name $compat
+}
+
+# Convert the hslibs version to the compatibility lib
+
+function old_cvt {
+	echo "Converting $2"
+	$cpp $hs_src/$1/$2 >$compat/$2
 }
 
 # Modules to convert
@@ -251,23 +272,23 @@ function stub {
 
 # Stubs for stuff in lib/exts:
 
-mkdir -p $stubdir
+mkdir -p $compat
 
-# stub Addr
+useold Addr
   stub Bits		Data.Bits
 # stub CString		Foreign.C.String
 # stub CTypes		Foreign.C.Types
-# stub CVar
+useold CVar
   stub Chan		Control.Concurrent.Chan
   stub Channel		Control.Concurrent.Chan
-# stub ChannelVar				# deprecated Hugs lib
+useold ChannelVar				# deprecated Hugs lib
   stub ConcBase		Hugs.ConcBase
 # stub Concurrent	Control.Concurrent
   stub Dynamic		Data.Dynamic
   stub Exception	Control.Exception
   stub FiniteMap	Data.FiniteMap
 # the Foreign module is also in the new setup
-# stub ForeignObj
+useold ForeignObj
   stub GetOpt		System.Console.GetOpt
   stub Html		Text.Html
   stub HtmlBlockTable	Text.Html.BlockTable
@@ -280,7 +301,7 @@ mkdir -p $stubdir
 # stub MarshalArray	Foreign.Marshal.Array
 # stub MarshalError	Foreign.Marshal.Error
 # stub MarshalUtils	Foreign.Marshal.Utils
-# stub Memo
+useold Memo
 # stub Merge					# deprecated Hugs lib
   stub MonadCont	Control.Monad.Cont
   stub MonadEither	Control.Monad.Error
@@ -290,13 +311,13 @@ mkdir -p $stubdir
   stub MonadList	Control.Monad.List
   stub MonadRWS		Control.Monad.RWS
   stub MonadReader	Control.Monad.Reader
-# stub MonadRec			# new libs have Fix, but Rec is used by mdo
+useold MonadRec			# new libs have Fix, but Rec is used by mdo
   stub MonadState	Control.Monad.State
   stub MonadTrans	Control.Monad.Trans
   stub MonadWriter	Control.Monad.Writer
   stub Monoid		Control.Monad.Monoid
-# stub NumExts
-# stub Observe
+useold NumExts
+useold Observe
   stub Parallel		Control.Parallel
   stub Pretty		Text.PrettyPrint
   stub Ptr		Foreign.Ptr
@@ -316,53 +337,6 @@ mkdir -p $stubdir
   stub Weak		Hugs.Weak
   stub Word		Hugs.Word
 
-# Stuff converted by convert_hslibs:
-
-# stub Assoc
-# stub AssocDefaults
-# stub AssocList
-# stub PatriciaLoMap
-# stub Collection
-# stub CollectionDefaults
-# stub CollectionUtils
-# stub LazyPairingHeap
-# stub LeftistHeap
-# stub MinHeap
-# stub SkewHeap
-# stub SplayHeap
-# stub TestOrdBag
-# stub TestOrdSet
-# stub UnbalancedSet
-# stub BankersQueue
-# stub BinaryRandList
-# stub BraunSeq
-# stub JoinList
-# stub ListSeq
-# stub MyersStack
-# stub RandList
-# stub RevSeq
-# stub Sequence
-# stub SequenceDefaults
-# stub SimpleQueue
-# stub SizedSeq
-# stub TestSeq
-# stub EdisonPrelude
-
-# stub Haskell2Xml
-# stub IsPrefixOf
-# stub IsSuffixOf
-# stub ParseSTLib
-# stub Xml2Haskell
-# stub XmlCombinators	# problem: uses "with"
-# stub XmlHtmlGen
-# stub XmlHtmlPP
-# stub XmlHtmlParse
-# stub XmlLex
-# stub XmlLib
-# stub XmlPP
-# stub XmlParse
-# stub XmlTypes
-
   stub Parsec		Text.ParserCombinators.Parsec
   stub ParsecChar	Text.ParserCombinators.Parsec.Char
   stub ParsecCombinator	Text.ParserCombinators.Parsec.Combinator
@@ -373,3 +347,54 @@ mkdir -p $stubdir
   stub ParsecPos	Text.ParserCombinators.Parsec.Pos
   stub ParsecPrim	Text.ParserCombinators.Parsec.Prim
   stub ParsecToken	Text.ParserCombinators.Parsec.Token
+
+# Stuff converted by convert_hslibs:
+
+cp $hs_src/data/edison/COPYRIGHT $compat/COPYRIGHT.edison
+old_cvt data/edison/Assoc Assoc.hs
+old_cvt data/edison/Assoc AssocDefaults.hs
+old_cvt data/edison/Assoc AssocList.hs
+old_cvt data/edison/Assoc PatriciaLoMap.hs
+
+old_cvt data/edison/Coll Collection.hs
+old_cvt data/edison/Coll CollectionDefaults.hs
+old_cvt data/edison/Coll CollectionUtils.hs
+old_cvt data/edison/Coll LazyPairingHeap.hs
+old_cvt data/edison/Coll LeftistHeap.hs
+old_cvt data/edison/Coll MinHeap.hs
+old_cvt data/edison/Coll SkewHeap.hs
+old_cvt data/edison/Coll SplayHeap.hs
+old_cvt data/edison/Coll TestOrdBag.hs
+old_cvt data/edison/Coll TestOrdSet.hs
+old_cvt data/edison/Coll UnbalancedSet.hs
+
+old_cvt data/edison/Seq BankersQueue.hs
+old_cvt data/edison/Seq BinaryRandList.hs
+old_cvt data/edison/Seq BraunSeq.hs
+old_cvt data/edison/Seq JoinList.hs
+old_cvt data/edison/Seq ListSeq.hs
+old_cvt data/edison/Seq MyersStack.hs
+old_cvt data/edison/Seq RandList.hs
+old_cvt data/edison/Seq RevSeq.hs
+old_cvt data/edison/Seq Sequence.hs
+old_cvt data/edison/Seq SequenceDefaults.hs
+old_cvt data/edison/Seq SimpleQueue.hs
+old_cvt data/edison/Seq SizedSeq.hs
+old_cvt data/edison/Seq TestSeq.hs
+
+old_cvt data/edison EdisonPrelude.hs
+
+old_cvt text/HaXml/lib Haskell2Xml.hs
+old_cvt text/HaXml/lib IsPrefixOf.hs
+old_cvt text/HaXml/lib IsSuffixOf.hs
+old_cvt text/HaXml/lib ParseSTLib.hs
+old_cvt text/HaXml/lib Xml2Haskell.hs
+old_cvt text/HaXml/lib XmlCombinators.hs
+old_cvt text/HaXml/lib XmlHtmlGen.hs
+old_cvt text/HaXml/lib XmlHtmlPP.hs
+old_cvt text/HaXml/lib XmlHtmlParse.hs
+old_cvt text/HaXml/lib XmlLex.hs
+old_cvt text/HaXml/lib XmlLib.hs
+old_cvt text/HaXml/lib XmlPP.hs
+old_cvt text/HaXml/lib XmlParse.hs
+old_cvt text/HaXml/lib XmlTypes.hs
