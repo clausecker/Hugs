@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: ffi.c,v $
- * $Revision: 1.12 $
- * $Date: 2002/06/18 00:41:58 $
+ * $Revision: 1.13 $
+ * $Date: 2002/06/18 00:52:13 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -261,7 +261,7 @@ Type   t; {
     else if (t == typeAddr)   fprintf(out,"HsAddr");
     else if (getHead(t) == typePtr)    fprintf(out,"HsPtr");
     else if (getHead(t) == typeFunPtr) fprintf(out,"HsFunPtr");
-    else if (getHead(t) == typeForeign)fprintf(out,"HsForeignPtr");
+    else if (getHead(t) == typeForeign)fprintf(out,"HugsForeign");
     else if (getHead(t) == typeStable) fprintf(out,"HsStablePtr");
     else {
         ERRMSG(l) "Illegal foreign type" ETHEN
@@ -293,7 +293,7 @@ Int    num; {
     else if (t == typeAddr)   fprintf(out,"%s%d = hugs->getAddr();\n",       nm, num);
     else if (getHead(t) == typePtr)    fprintf(out,"%s%d = hugs->getPtr();\n",        nm, num);
     else if (getHead(t) == typeFunPtr) fprintf(out,"%s%d = hugs->getFunPtr();\n",     nm, num);
-    else if (getHead(t) == typeForeign)fprintf(out,"%s%d = hugs->getForeignPtr();\n", nm, num);
+    else if (getHead(t) == typeForeign)fprintf(out,"%s%d = hugs->getForeign();\n", nm, num);
     else if (getHead(t) == typeStable) fprintf(out,"%s%d = hugs->getStablePtr4();\n",  nm, num);
     else {
         ERRMSG(l) "Illegal outbound (away from Haskell) type" ETHEN
@@ -325,7 +325,7 @@ Int    num; {
     else if (t == typeAddr)   fprintf(out,"hugs->putAddr(%s%d);\n",       nm, num);
     else if (getHead(t) == typePtr)    fprintf(out,"hugs->putPtr(%s%d);\n",        nm, num);
     else if (getHead(t) == typeFunPtr) fprintf(out,"hugs->putFunPtr(%s%d);\n",     nm, num);
-    else if (getHead(t) == typeForeign)fprintf(out,"hugs->putForeignPtr(%s%d);\n", nm, num);
+    else if (getHead(t) == typeForeign)fprintf(out,"hugs->putForeign(%s%d);\n", nm, num);
     else if (getHead(t) == typeStable) fprintf(out,"hugs->putStablePtr4(%s%d);\n", nm, num);
     else {
         ERRMSG(l) "Illegal inbound (coming into Haskell) type" ETHEN
