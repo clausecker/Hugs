@@ -18,8 +18,8 @@
  * in the distribution for details.
  *
  * $RCSfile: iomonad.c,v $
- * $Revision: 1.4 $
- * $Date: 1999/08/13 00:13:06 $
+ * $Revision: 1.5 $
+ * $Date: 1999/08/20 21:06:24 $
  * ------------------------------------------------------------------------*/
  
 Name nameIORun;			        /* run IO code                     */
@@ -162,6 +162,7 @@ PROTO_PRIM(primFinalizerWaiting);
 PROTO_PRIM(primMakeSN);
 PROTO_PRIM(primDerefSN);
 PROTO_PRIM(primHashSN);
+PROTO_PRIM(primEqSN);
 #endif
 
 #ifdef HSCRIPT
@@ -269,6 +270,7 @@ static struct primitive iomonadPrimTable[] = {
   {"makeStableName",	3, primMakeSN},
   {"deRefStableName",	1, primDerefSN},
   {"hashStableName",	1, primHashSN},
+  {"eqStableName",	2, primEqSN},
 #endif
 
 #ifdef HSCRIPT
@@ -997,18 +999,24 @@ primFun(primEqFO) {			/* ForeignObj -> ForeignObj -> Bool*/
  * Stable Names
  * ------------------------------------------------------------------------*/
 
-primFun(primMakeSN) {			/* a -> IO (StableName a)	   */
+primFun(primMakeSN) {		/* a -> IO (StableName a)		   */
     IOReturn(ap(STABLENAME,IOArg(1)));
 }
 
-primFun(primDerefSN) {			/* StableName a -> a		   */
+primFun(primDerefSN) {		/* StableName a -> a			   */
     eval(primArg(1));
     updateRoot(snd(whnfHead));
 }
 
-primFun(primHashSN) {			/* StableName a -> Int		   */
+primFun(primHashSN) {		/* StableName a -> Int			   */
     eval(primArg(1));
     updateRoot(mkInt(whnfHead));
+}
+primFun(primEqSN) {		/* StableName a -> StableName a -> Bool	   */
+    eval(primArg(2));
+    push(whnfHead);
+    eval(primArg(1));
+    updateRoot(pop()==whnfHead ? nameTrue : nameFalse);
 }
 #endif
 
