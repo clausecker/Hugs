@@ -13,6 +13,7 @@
 module LazyST 
 	( ST
 	, runST
+	, unsafeRunST
 	, thenLazyST, thenStrictST, returnST
 	, unsafeInterleaveST
 	, fixST 
