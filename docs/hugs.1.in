@@ -58,14 +58,55 @@ described under \fBOPTIONS\fP.)
 It also tries \fIname\fP as a literal filename.
 Files ending in "\fB.lhs\fP" are treated as literate scripts.
 .SH OPTIONS
-One group of options are toggled with \fB+\fP or \fB\-\fP to turn them on or
-off, respectively:
+Some options are toggled with \fB+\fP or \fB\-\fP to turn them on or
+off, respectively.
+.SS "Language conformance"
 .TP
 .B +98
 Accept only Haskell 98
 (cannot be changed within \fIHugs\fP; default: on).
 Turning this off enables several special Hugs extensions,
 which are described in the \fIHugs 98 User Manual\fP.
+.TP
+.B +o
+Allow overlapping instances (a Hugs extension; default: off)
+.TP
+.B +O
+Allow unsafe overlapping instances (a Hugs extension; default: off)
+.TP
+.B +H
+Allow `here documents' (a Hugs extension; default: off)
+.TP
+.B +W
+Enable obsolete "\fBwith\fP" and "\fBdlet\fP" implicit param binding forms, if
+.B \-98
+is given (a Hugs extension; default: on)
+.SS "Module loading"
+.TP
+.B +l
+Literate scripts as default (default: off)
+.TP
+.B +e
+Warn about errors in literate scripts (default: on)
+.TP
+.B +\&.
+Print dots to show progress while loading modules (default: off)
+.TP
+.B +q
+Print nothing to show progress while loading modules (default: off)
+.TP
+.B +w
+Always show which files loaded (default: on)
+.TP
+.B +i
+Chase imports while loading files (default: on)
+.TP
+.B +X
+Implicitly add path of importing module to search path (default: on)
+.TP
+.B +N
+Use the hierarchical libraries (default: off)
+.SS "Expression evaluation"
 .TP
 .B +s
 Print number of reductions/cells after each evaluation (default: off)
@@ -82,23 +123,8 @@ Terminate evaluation on first error (default: on)
 .B +g
 Print number of cells recovered after gc (default: off)
 .TP
-.B +l
-Literate scripts as default (default: off)
-.TP
-.B +e
-Warn about errors in literate scripts (default: on)
-.TP
-.B +\&.
-Print dots to show progress while loading modules (default: off)
-.TP
-.B +q
-Print nothing to show progress while loading modules (default: off)
-.TP
 .B +Q
 Qualify names when printing (default: off)
-.TP
-.B +w
-Always show which files loaded (default: on)
 .TP
 .B +k
 Show kind errors in full (default: off)
@@ -106,20 +132,9 @@ Show kind errors in full (default: off)
 .B +u
 Use "\fBshow\fP" to display results (default: on)
 .TP
-.B +i
-Chase imports while loading files (default: on)
-.TP
-.B +o
-Allow overlapping instances (a Hugs extension; default: off)
-.TP
-.B +O
-Allow unsafe overlapping instances (a Hugs extension; default: off)
-.TP
-.B +H
-Allow `here documents' (a Hugs extension; default: off)
-.TP
-.B +N
-Use the hierarchical libraries (default: off)
+.B +I
+Display results of IO programs (default: off)
+.SS Parameters
 .LP
 Other options (in which \fB\-\fP could be replaced by \fB+\fP,
 the choice making no difference) are:
@@ -137,7 +152,8 @@ Set repeat last expression string to \fIstr\fP (default: \fB$$\fP).
 .BI \-P str
 Set search path for source files to \fIstr\fP,
 which should be a colon-separated list of directories.
-A null entry in this list will be replaced by the previous search path.
+A null entry in this list will be replaced by the previous search path;
+a null \fIstr\fP means the default path.
 Any occurrence of \fB{Hugs}\fP in this string is expanded to
 the Hugs library directory, namely \fB\*(LB\fP.
 With \fB\-N\fP, the default value is
@@ -155,10 +171,13 @@ With \fB\+N\fP, the default value is
 .BI \-S str
 Set the colon-separated list of source file suffixes to \fIstr\fP
 (default: \fB\*(HS\fP).
-A null entry in this list will be replaced by the previous suffix list.
+A null entry in this list will be replaced by the previous suffix list;
+a null \fIstr\fP means the default list.
 .TP
 .BI \-E str
-Use editor setting given by \fIstr\fP (unset by default).
+Use editor setting given by \fIstr\fP (default: the value of the
+.B EDITOR
+environment variable).
 Any occurrences of \fB%d\fP and \fB%s\fP in the editor option are replaced
 by the start line number and the name of the file to be edited, respectively.
 A common setting is "\fI\*(VI +%d %s\fP".
@@ -321,9 +340,6 @@ executable binary.
 .TP
 .I \*(LB
 directory containing support files.
-.TP
-.I \*(LB/lib/Prelude.hs
-standard prelude, loaded when \fIhugs\fP starts.
 .SH "WEB REFERENCES"
 .TP
 .I http://www.haskell.org/hugs/
