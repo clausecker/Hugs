@@ -53,8 +53,9 @@ function cvt {
 	dstdir=`dirname $dst/$2`
 	mkdir -p $dstdir
 
-	$cpp -I. -I.. -I$src/$1/include $src/$1/$2 | cat -s >$dst/$2
- 
+	$cpp -I. -I.. -I$src/$1/include $src/$1/$2 | 
+	sed -e "s/import Prelude/import PrelImpl/" |
+	cat -s >$dst/$2
 }
 
 function cvt_happy {
@@ -117,6 +118,7 @@ function nocvt {
 		s/import Storable/import Foreign.Storable/
 		s/import ForeignPtr/import Foreign.ForeignPtr/
 		s/import Dynamic/import Data.Dynamic/
+		s/import Prelude/import PrelImpl/
 		" $hugs_src/$3 >$dst/$new_stem$old_extension
 }
 
@@ -181,7 +183,7 @@ function hugslibs {
 		exit 1 ;;
 	esac
 
-	name="`ls ../../lib/exts/$1.*`"
+	name="`ls ../../lib/exts/$1.*hs`"
 	echo "Copy `basename $name`"
 	cp $name $compat
 }
@@ -279,7 +281,7 @@ nocvt base Foreign/Ptr.hs		exts/Ptr.hs	# not quite right
   cvt base Foreign/StablePtr.hs
   cvt base Foreign/Storable.hs		
   cvt base Numeric.hs
-nocvt base Prelude.hs			Prelude.hs	# Hugs special
+nocvt base PrelImpl.hs			Prelude.hs	# Hugs special
 nocvt base System/CPUTime.hsc		CPUTime.hs	# Hugs primitives
   cvt base System/Cmd.hs
   cvt base System/Console/GetOpt.hs
