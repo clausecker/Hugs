@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.99 $
- * $Date: 2002/10/11 14:14:08 $
+ * $Revision: 1.100 $
+ * $Date: 2002/10/14 15:27:13 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -425,8 +425,8 @@ String argv[]; {
     projectPath   = readRegChildStrings(HKEY_LOCAL_MACHINE,ProjectRoot,
 				        "HUGSPATH", PATHSEP, "");
 
-    readOptions(readRegString(HKEY_LOCAL_MACHINE,HugsRoot,"Options",""), TRUE);
-    readOptions(readRegString(HKEY_CURRENT_USER, HugsRoot,"Options",""), TRUE);
+    readOptions(readRegString(HKEY_LOCAL_MACHINE,hugsRegRoot,"Options",""), TRUE);
+    readOptions(readRegString(HKEY_CURRENT_USER, hugsRegRoot,"Options",""), TRUE);
 #endif /* USE_REGISTRY */
 
 #if USE_PREFERENCES_FILE
