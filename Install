@@ -180,6 +180,16 @@ Hugs specific configuration options:
    The ":set -d" command can be used to reduce the time overhead by
    controlling the frequency with which statistics are gathered.
 
+ --enable-double-precision
+
+   By default, Hugs represents the Haskell types Float and Double by the
+   C type float, for reasons that are now obscure.  With this option,
+   both are represented by the C type double -- it seems to work in the
+   situations we've tried.
+
+   Due to the way Hugs implements doubles, this option is ignored if
+   sizeof(double) > 2*sizeof(int).
+
  --with-nmake
 
    Try to generate a Makefile that will work with Microsoft's nmake.
