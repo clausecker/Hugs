@@ -17,15 +17,19 @@
 module Exception( 
         Exception(..),
 
+	try,       -- :: IO a -> IO (Either Exception a)
+	tryJust,   -- :: (Exception -> Maybe b) -> a    -> IO (Either b a)
+
+	catch,     -- :: IO a -> (Exception -> IO a) -> IO a
+	catchJust, -- :: (Exception -> Maybe b) -> IO a -> (b -> IO a) -> IO a
+
 	tryAll,    -- :: a    -> IO (Either Exception a)
 	tryAllIO,  -- :: IO a -> IO (Either Exception a)
-	try,	   -- :: (Exception -> Maybe b) -> a    -> IO (Either b a)
-	tryIO,	   -- :: (Exception -> Maybe b) -> IO a -> IO (Either b a)
 
 	catchAll,  -- :: a    -> (Exception -> IO a) -> IO a
 	catchAllIO,-- :: IO a -> (Exception -> IO a) -> IO a
-	catch,     -- :: (Exception -> Maybe b) -> a    -> (b -> IO a) -> IO a
-	catchIO,   -- :: (Exception -> Maybe b) -> IO a -> (b -> IO a) -> IO a
+
+	evaluate,  -- :: a -> IO a
 
 	-- Exception predicates
 
@@ -35,6 +39,11 @@ module Exception(
 	-- Throwing exceptions
 
 	throwIO,		-- :: Exception -> IO a
+
+	-- Async exception control
+
+        block,          -- :: IO a -> IO a
+        unblock,        -- :: IO a -> IO a
 
 	-- Utilities
 		
@@ -73,23 +82,35 @@ catchException m k = do
 -- Catching Exceptions
 ----------------------------------------------------------------
 
-catchAll  :: a    -> (Exception -> IO a) -> IO a
+catch  :: IO a  -> (Exception -> IO a) -> IO a
+catch a handler = catchException a handler
+
+catchAll  :: a  -> (Exception -> IO a) -> IO a
 catchAll a handler = catchException (a `seq` return a) handler
 
 catchAllIO :: IO a -> (Exception -> IO a) -> IO a
 catchAllIO =  catchException
 
-catch :: (Exception -> Maybe b) -> a -> (b -> IO a) -> IO a
-catch p a handler = catchAll a handler'
+catchJust :: (Exception -> Maybe b) -> IO a -> (b -> IO a) -> IO a
+catchJust p a handler = catchAllIO a handler'
   where handler' e = case p e of 
 			Nothing -> throwIO e
 			Just b  -> handler b
 
-catchIO :: (Exception -> Maybe b) -> IO a -> (b -> IO a) -> IO a
-catchIO p a handler = catchAllIO a handler'
-  where handler' e = case p e of 
-			Nothing -> throwIO e
-			Just b  -> handler b
+----------------------------------------------------------------
+-- evaluate
+----------------------------------------------------------------
+
+evaluate :: a -> IO a
+evaluate a = a `seq` return a
+
+----------------------------------------------------------------
+-- dummy implementations of block and unblock
+----------------------------------------------------------------
+
+block, unblock :: IO a -> IO a
+block   m = m
+unblock m = m
 
 ----------------------------------------------------------------
 -- 'try' and variations.
@@ -99,21 +120,15 @@ tryAll :: a    -> IO (Either Exception a)
 tryAll a = catchException (a `seq` return (Right a)) (\e -> return (Left e))
 
 tryAllIO :: IO a -> IO (Either Exception a)
-tryAllIO a = catchAllIO (a >>= \ v -> return (Right v))
+tryAllIO = try
+
+try :: IO a -> IO (Either Exception a)
+try a = catchAllIO (a >>= \ v -> return (Right v))
 			(\e -> return (Left e))
 
-try :: (Exception -> Maybe b) -> a -> IO (Either b a)
-try p a = do
+tryJust :: (Exception -> Maybe b) -> a -> IO (Either b a)
+tryJust p a = do
   r <- tryAll a
-  case r of
-	Right v -> return (Right v)
-	Left  e -> case p e of
-			Nothing -> throwIO e
-			Just b  -> return (Left b)
-
-tryIO :: (Exception -> Maybe b) -> IO a -> IO (Either b a)
-tryIO p a = do
-  r <- tryAllIO a
   case r of
 	Right v -> return (Right v)
 	Left  e -> case p e of
