@@ -209,7 +209,7 @@ Object* InvokeBridge::InvokeStaticMethod(String* assemName,
   if (assemName != 0 && assemName->Length > 0) {
     typeName->m_assembly = assemName;
   }
-
+  
   try {
     t = InvokeBridge::GetType(typeName->toStdString());
     
@@ -247,7 +247,6 @@ Object* InvokeBridge::InvokeStaticMethod(String* assemName,
 			 0,
 			 0,
 			 (Object __gc* [])args);
-  return 0;
 }
 
 //
