@@ -9,8 +9,8 @@
  * included in the distribution.
  *
  * $RCSfile: prelude.h,v $
- * $Revision: 1.15 $
- * $Date: 2001/02/14 12:15:05 $
+ * $Revision: 1.16 $
+ * $Date: 2001/03/21 23:01:02 $
  * ------------------------------------------------------------------------*/
 
 #include "config.h"
@@ -537,9 +537,13 @@ extern  int  kbhit	Args((void));
 #endif
 
 /* bison-generated parsers like to have alloca - so try to define it */
+#if HAVE_ALLOCA_H
+#include <alloca.h>
+#else
 #if HAVE__ALLOCA
 #ifndef __SYMBIAN32__
 #include <malloc.h>
+#endif
 #endif
 #ifndef alloca
 #define alloca _alloca

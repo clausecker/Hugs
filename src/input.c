@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: input.c,v $
- * $Revision: 1.24 $
- * $Date: 2001/02/15 16:06:59 $
+ * $Revision: 1.25 $
+ * $Date: 2001/03/21 23:01:01 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -690,7 +690,11 @@ static Void local closeAnyInput() {    /* Close input stream, if open,     */
  * Parser: Uses table driven parser generated from parser.y using yacc
  * ------------------------------------------------------------------------*/
 
+# if __MWERKS__ && macintosh
+#include "parser.tab.c"
+#else
 #include "parser.c"
+#endif
 
 /* --------------------------------------------------------------------------
  * Single token input routines:
