@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: connect.h,v $
- * $Revision: 1.85 $
- * $Date: 2004/01/06 19:45:10 $
+ * $Revision: 1.86 $
+ * $Date: 2004/02/16 11:09:51 $
  * ------------------------------------------------------------------------*/
 #ifndef __CONNECT_H__
 #define __CONNECT_H__
@@ -378,7 +378,7 @@ extern  Void   unwind           Args((Cell));
 extern  Void   run              Args((Addr,StackPtr));
 #if !WANT_FIXED_SIZE_TABLES
 extern DynTable* dynMemory;
-extern void    growMemory       Args(());
+extern void    growMemory       Args((Void));
 #endif
 
 extern  Void   eval             Args((Cell));
