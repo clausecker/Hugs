@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.9 $
- * $Date: 1999/09/13 21:36:51 $
+ * $Revision: 1.10 $
+ * $Date: 1999/09/15 23:57:20 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1319,7 +1319,6 @@ Text t; {
     Tycon  tc  = findTycon(t);
     Class  cl  = findClass(t);
     Name   nm  = findName(t);
-    Module mod = findModule(t);
 
     if (nonNull(tc)) {                  /* as a type constructor           */
 	Type t = tc;

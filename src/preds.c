@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: preds.c,v $
- * $Revision: 1.8 $
- * $Date: 1999/09/15 21:39:04 $
+ * $Revision: 1.9 $
+ * $Date: 1999/09/15 23:57:21 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -100,21 +100,6 @@ Text t; {
 	}
 }
 
-static List local splitOutIPs() {
-    List ps = preds;
-    List *prev = &preds;
-    List ips = NIL;
-    for (; nonNull(ps); ps = tl(ps)) {
-	Cell pi = fst3(hd(ps));
-	if (isIP(fun(pi))) {
-	    ips = cons(hd(ps),ips);
-	    *prev = tl(ps);
-	} else {
-	    prev = &tl(ps);
-	}	
-    }
-    return ips;
-}
 #endif
 
 static List local makePredAss(qs,o)	/* Make list of predicate assumps. */
@@ -290,7 +275,7 @@ List ps;				/* Using superclasses and equality.*/
 Cell pi;
 Int  o;
 Int  d; {
-    auto int i;
+    int i;
     for (; nonNull(ps); ps=tl(ps)) {
 	Cell pi1 = hd(ps);
 	Cell ev  = scFind(thd3(pi1),fst3(pi1),intOf(snd3(pi1)),pi,o,d);
@@ -306,7 +291,7 @@ List ps;
 Cell ip;
 Int  o; {
     Class h  = getHead(ip);
-    auto int i;
+    int i;
     for (; nonNull(ps); ps=tl(ps)) {
 	Cell pr1 = hd(ps);
 	Cell pi1 = fst3(pr1);
@@ -454,8 +439,8 @@ List ps;				/* using a top-level instance	   */
 Cell pi;				/* entailment			   */
 Int  o;
 Int  d; {
-    auto int i;
-    auto int k = 0;
+    int i;
+    int k = 0;
     Cell ins;				/* Class predicates		   */
     Inst in, in_;
     Cell pi_;
