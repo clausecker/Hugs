@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: type.c,v $
- * $Revision: 1.54 $
- * $Date: 2002/10/02 00:32:42 $
+ * $Revision: 1.55 $
+ * $Date: 2002/10/03 11:03:50 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -587,9 +587,9 @@ Int  m; {
 
 static Void local typeError(l,e,in,wh,t,o)
 Int    l;			      /* line number near type error	   */
-String wh;			      /* place in which error occurs	   */
 Cell   e;			      /* source of error		   */
 Cell   in;			      /* context if any (NIL if not)	   */
+String wh;			      /* place in which error occurs	   */
 Type   t;			      /* should be of type (t,o)	   */
 Int    o; {			      /* type inferred is (typeIs,typeOff) */
 

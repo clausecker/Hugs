@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.102 $
- * $Date: 2002/09/18 18:04:29 $
+ * $Revision: 1.103 $
+ * $Date: 2002/10/03 11:03:50 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -3055,7 +3055,8 @@ List os; {				/* find list of offsets in those   */
 
 static List local otvarsZonk(pi,os,o)	/* same as above, but zonks	   */
 Cell pi;
-List os; {
+List os; 
+Int  o; {
     List us = NIL;
     for (; nonNull(os); os=tl(os)) {
         Type t = zonkType(nthArg(offsetOf(hd(os)),pi),o);
