@@ -524,5 +524,5 @@ mkdir -p $compat
   libhugs ParseLib
      stub Quote			Hugs.Quote	# only hugs supports here docs
   libhugs StdLibs				# only useful for testing
-     stub Trace			Hugs.Trace
+     stub Trace			Debug.Trace
      stub Trex			Hugs.Trex	# only hugs supports Trex

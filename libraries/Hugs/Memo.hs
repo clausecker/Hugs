@@ -23,7 +23,8 @@ module Hugs.Memo(
         ) where
 
 import Hugs.ST
--- import Hugs.IOExts (unsafePtrEq, trace)
+-- import Hugs.IOExts (unsafePtrEq)
+-- import Debug.Trace (trace)
 
 memo      :: (a -> b) -> (a -> b)
 memoN     :: Int -> (a -> b) -> (a -> b)

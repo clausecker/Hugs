@@ -11,8 +11,6 @@ module Hugs.IOExts
 
 	, RealWorld
 
-	, trace
-
 	, performGC
 
 	, IOModeEx(..)	      	-- instance (Eq, Read, Show)
@@ -31,8 +29,6 @@ import Hugs.IO( IOMode(..), Handle, openFile )
 data RealWorld = RealWorld
 
 primitive performGC "primGC" :: IO ()
-
-primitive trace :: String -> a -> a
 
 unsafePerformIO :: IO a -> a
 unsafePerformIO m = performIO (runAndShowError m)

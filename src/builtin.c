@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: builtin.c,v $
- * $Revision: 1.38 $
- * $Date: 2002/12/12 13:27:25 $
+ * $Revision: 1.39 $
+ * $Date: 2003/01/06 14:31:35 $
  * ------------------------------------------------------------------------*/
 
 /* We include math.h before prelude.h because SunOS 4's cpp incorrectly
@@ -558,7 +558,6 @@ PROTO_PRIM(primSel);
 PROTO_PRIM(primIf);
 PROTO_PRIM(primStrict);
 PROTO_PRIM(primSeq);
-PROTO_PRIM(primTrace);
 PROTO_PRIM(primConCmp);
 PROTO_PRIM(primEnRange);
 PROTO_PRIM(primEnIndex);
@@ -725,7 +724,6 @@ static struct primitive builtinPrimTable[] = {
   {"error",             1, primFail},
   {"sel",               3, primSel},
   {"if",                3, primIf},
-  {"trace",             2, primTrace},
   {"conCmp",            2, primConCmp},
   {"enRange",           1, primEnRange},
   {"enIndex",           2, primEnIndex},
@@ -1074,17 +1072,6 @@ primFun(primStrict) {                   /* Strict application primitive    */
 primFun(primSeq) {                      /* Strict sequencing primitive     */
     eval(primArg(2));                   /* evaluate 1st argument           */
     updateRoot(primArg(1));             /* and return the first            */
-}
-
-primFun(primTrace) {                    /* an unsound trace primitive for  */
-    fflush(stdout);                     /* debugging purposes              */
-    eval(pop());                        /*  :: String -> a -> a            */
-    while (whnfHead==nameCons) {
-	eval(pop());
-	putchar(charOf(whnfHead));
-	eval(pop());
-    }
-    updateRoot(pop());
 }
 
 primFun(primConCmp) {                   /* compare constructors            */
