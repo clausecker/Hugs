@@ -11,8 +11,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.110 $
- * $Date: 2003/12/04 18:49:57 $
+ * $Revision: 1.111 $
+ * $Date: 2003/12/07 20:29:08 $
  * ------------------------------------------------------------------------*/
 #include "prelude.h"
 #include "storage.h"
@@ -2390,7 +2390,7 @@ initSystem()
     
 #endif
 #if HAVE_LOCALE_H
-    setlocale(LC_ALL, "");
+    setlocale(LC_CTYPE, "");
 #endif
     return TRUE;
 }
