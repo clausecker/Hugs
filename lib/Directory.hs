@@ -87,6 +87,6 @@ primitive getDirContents :: FilePath -> IO [FilePath]
 getModificationTime :: FilePath -> IO ClockTime
 getModificationTime fPath = do
   x <- getModTime fPath
-  return (ClockTime (fromIntegral x) 0)
+  return (TOD (fromIntegral x) 0)
 
 primitive getModTime :: FilePath -> IO Int
