@@ -164,7 +164,7 @@ esac
 # check whether these packages were enabled in configure
 for package in X11 HGL OpenGL GLUT OpenAL
 do
-	if grep 'BUILD_PACKAGE=yes' $src/$package/config.mk >/dev/null
+	if grep 'BUILD_PACKAGE[ 	]*=[ 	]*yes' $src/$package/config.mk >/dev/null
 	then	extra_packages="$extra_packages $package"
 	fi
 done
