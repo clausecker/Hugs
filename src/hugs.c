@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.11 $
- * $Date: 1999/10/11 21:02:13 $
+ * $Revision: 1.12 $
+ * $Date: 1999/10/11 21:14:40 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -178,7 +178,7 @@ char *argv[]; {
     Printf("||___|| ||__|| ||__||  __||    Copyright (c) 1994-1999\n");
     Printf("||---||         ___||          World Wide Web: http://haskell.org/hugs\n");
     Printf("||   ||                        Report bugs to: hugs-bugs@haskell.org\n");
-    Printf("||   || Version: %s _________________________________________\n\n",HUGS_VERSION);
+    Printf("||   || Version: %s ________________________________________\n\n",HUGS_VERSION);
 
 #if SYMANTEC_C
     Printf("   Ported to Macintosh by Hans Aberg, compiled " __DATE__ ".\n\n");
