@@ -718,7 +718,7 @@ test -n "$YACC" && break
 done
 test -n "$YACC" || YACC="yacc"
 
-if (test "`basename ${YACC}`x" == "byaccx"); then
+if test "`basename ${YACC}`x" == "byaccx"; then
    echo "Found 'byacc', but the Hugs98 parser is incompatible with it."
    echo "You need to install 'bison' and re-run the configure script."
    exit 1;
@@ -9014,12 +9014,16 @@ if eval "test \"`echo '$''{'ac_cv_dll_flags'+set}'`\" = set"; then
 else
   
   cat > conftest_dl.c <<EOF
-int test() { return 1; }
+int x = 0;    /* global */
+int y;        /* common */
+static int z; /* static */
+static int test2() { return (test() + x + y + z); }
+int test() { return test2(); }
 EOF
 
   ac_mkdll='${CC-cc} "/LD" conftest_dl.c -o conftest_dl.so 1>&5'
 
-  if { (eval echo configure:9023: \"$ac_mkdll\") 1>&5; (eval $ac_mkdll) 2>&5; } && test -s conftest_dl.so 
+  if { (eval echo configure:9027: \"$ac_mkdll\") 1>&5; (eval $ac_mkdll) 2>&5; } && test -s conftest_dl.so 
   then 
     cat > conftest.c << EOF
 #include "confdefs.h"
@@ -9138,7 +9142,7 @@ main()
 EOF
 
 
-if { (eval echo configure:9142: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} 
+if { (eval echo configure:9146: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} 
 then 
   ./conftest 2>/dev/null
   if test $? = 3; then
@@ -9158,18 +9162,22 @@ fi
                 
 
 echo $ac_n "checking if '"-shared"' builds loadable libraries""... $ac_c" 1>&6
-echo "configure:9162: checking if '"-shared"' builds loadable libraries" >&5
+echo "configure:9166: checking if '"-shared"' builds loadable libraries" >&5
 if eval "test \"`echo '$''{'ac_cv_dll_flags'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
   
   cat > conftest_dl.c <<EOF
-int test() { return 1; }
+int x = 0;    /* global */
+int y;        /* common */
+static int z; /* static */
+static int test2() { return (test() + x + y + z); }
+int test() { return test2(); }
 EOF
 
   ac_mkdll='${CC-cc} "-shared" conftest_dl.c -o conftest_dl.so 1>&5'
 
-  if { (eval echo configure:9173: \"$ac_mkdll\") 1>&5; (eval $ac_mkdll) 2>&5; } && test -s conftest_dl.so 
+  if { (eval echo configure:9181: \"$ac_mkdll\") 1>&5; (eval $ac_mkdll) 2>&5; } && test -s conftest_dl.so 
   then 
     cat > conftest.c << EOF
 #include "confdefs.h"
@@ -9288,7 +9296,7 @@ main()
 EOF
 
 
-if { (eval echo configure:9292: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} 
+if { (eval echo configure:9300: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} 
 then 
   ./conftest 2>/dev/null
   if test $? = 3; then
@@ -9308,18 +9316,22 @@ fi
             
 
 echo $ac_n "checking if '"-bundle"' builds loadable libraries""... $ac_c" 1>&6
-echo "configure:9312: checking if '"-bundle"' builds loadable libraries" >&5
+echo "configure:9320: checking if '"-bundle"' builds loadable libraries" >&5
 if eval "test \"`echo '$''{'ac_cv_dll_flags'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
   
   cat > conftest_dl.c <<EOF
-int test() { return 1; }
+int x = 0;    /* global */
+int y;        /* common */
+static int z; /* static */
+static int test2() { return (test() + x + y + z); }
+int test() { return test2(); }
 EOF
 
   ac_mkdll='${CC-cc} "-bundle" conftest_dl.c -o conftest_dl.so 1>&5'
 
-  if { (eval echo configure:9323: \"$ac_mkdll\") 1>&5; (eval $ac_mkdll) 2>&5; } && test -s conftest_dl.so 
+  if { (eval echo configure:9335: \"$ac_mkdll\") 1>&5; (eval $ac_mkdll) 2>&5; } && test -s conftest_dl.so 
   then 
     cat > conftest.c << EOF
 #include "confdefs.h"
@@ -9438,7 +9450,7 @@ main()
 EOF
 
 
-if { (eval echo configure:9442: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} 
+if { (eval echo configure:9454: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} 
 then 
   ./conftest 2>/dev/null
   if test $? = 3; then
@@ -9458,18 +9470,22 @@ fi
         
 
 echo $ac_n "checking if '"-bundle -lc"' builds loadable libraries""... $ac_c" 1>&6
-echo "configure:9462: checking if '"-bundle -lc"' builds loadable libraries" >&5
+echo "configure:9474: checking if '"-bundle -lc"' builds loadable libraries" >&5
 if eval "test \"`echo '$''{'ac_cv_dll_flags'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
   
   cat > conftest_dl.c <<EOF
-int test() { return 1; }
+int x = 0;    /* global */
+int y;        /* common */
+static int z; /* static */
+static int test2() { return (test() + x + y + z); }
+int test() { return test2(); }
 EOF
 
   ac_mkdll='${CC-cc} "-bundle -lc" conftest_dl.c -o conftest_dl.so 1>&5'
 
-  if { (eval echo configure:9473: \"$ac_mkdll\") 1>&5; (eval $ac_mkdll) 2>&5; } && test -s conftest_dl.so 
+  if { (eval echo configure:9489: \"$ac_mkdll\") 1>&5; (eval $ac_mkdll) 2>&5; } && test -s conftest_dl.so 
   then 
     cat > conftest.c << EOF
 #include "confdefs.h"
@@ -9588,7 +9604,7 @@ main()
 EOF
 
 
-if { (eval echo configure:9592: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} 
+if { (eval echo configure:9608: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} 
 then 
   ./conftest 2>/dev/null
   if test $? = 3; then

@@ -38,7 +38,7 @@ dnl--------------------------------------------------------------------
 
 dnl ToDo: if we have YACC, insert parser.c: parser.y in Makefile
 AC_PROG_YACC
-if (test "`basename ${YACC}`x" == "byaccx"); then
+if test "`basename ${YACC}`x" == "byaccx"; then
    echo "Found 'byacc', but the Hugs98 parser is incompatible with it."
    echo "You need to install 'bison' and re-run the configure script."
    exit 1;

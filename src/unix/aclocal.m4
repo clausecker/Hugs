@@ -452,7 +452,11 @@ AC_MSG_CHECKING(if '$1' builds loadable libraries)
 AC_CACHE_VAL(ac_cv_dll_flags,
 [
   cat > conftest_dl.c <<EOF
-int test() { return 1; }
+int x = 0;    /* global */
+int y;        /* common */
+static int z; /* static */
+static int test2() { return (test() + x + y + z); }
+int test() { return test2(); }
 EOF
 
   ac_mkdll='${CC-cc} $1 conftest_dl.c -o conftest_dl.so 1>&AC_FD_CC'
