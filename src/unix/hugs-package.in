@@ -296,10 +296,12 @@ get_pkg_field="$runhugs -98 $HUGSDIR/tools/get_pkg_field"
 
 extra_libraries=
 extra_ld_opts=
+extra_cc_opts=
 c_includes=
 if [ -f "$conf" ]
 then	extra_libraries=`$get_pkg_field extra_libraries $conf | sed 's/HS[^ ]*_cbits *//'`
 	extra_ld_opts=`$get_pkg_field extra_ld_opts $conf`
+	extra_cc_opts=`$get_pkg_field extra_cc_opts $conf`
 	c_includes=`$get_pkg_field c_includes $conf`
 fi
 
@@ -332,7 +334,7 @@ do
 		for file in `sed -n 's/{-# CBITS \(.*\) #-}/\1/p' $filename`
 		do	cmd="$cmd +L$source_dir/cbits/$file"
 		done
-		for flag in $extra_ld_opts
+		for flag in $extra_ld_opts $extra_cc_opts
 		do	cmd="$cmd +L$flag"
 		done
 		for lib in $extra_libraries
