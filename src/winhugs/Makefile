@@ -183,7 +183,7 @@ builtin.obj	: $(PRELUDE) storage.h connect.h errors.h machdep.h \
 ffi.obj		: $(PRELUDE) storage.h connect.h errors.h output.h strutil.h
 module.obj	: $(PRELUDE) storage.h connect.h errors.h module.h
 machdep.obj	: $(PRELUDE) storage.h connect.h errors.h command.h \
-		  opts.h machdep.h
+		  opts.h machdep.h strutil.h
 script.obj	: $(PRELUDE) storage.h connect.h errors.h machdep.h \
 		  opts.h strutil.h script.h 
 strutil.obj	: $(PRELUDE) storage.h connect.h errors.h strutil.h
