@@ -128,8 +128,9 @@ AC_CHECK_HEADERS(
   arpa/inet.h \
   netdb.h netinet/tcp.h \
   sys/stat.h sys/types.h sys/ioctl.h sys/resource.h sys/param.h \
-  sys/socket.h sys/timers.h sys/uio.h sys/un.h sys/utsname.h \
+  sys/socket.h sys/timers.h sys/uio.h sys/un.h sys/utsname.h sys/wait.h \
   console.h pascal.h Files.h errno.h stat.h nlist.h ftw.h direct.h \
+  grp.h pwd.h \
   dirent.h utime.h vfork.h
   )
 

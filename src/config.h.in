@@ -394,6 +394,9 @@
 /* Define if you have the <ftw.h> header file.  */
 #undef HAVE_FTW_H
 
+/* Define if you have the <grp.h> header file.  */
+#undef HAVE_GRP_H
+
 /* Define if you have the <io.h> header file.  */
 #undef HAVE_IO_H
 
@@ -417,6 +420,9 @@
 
 /* Define if you have the <pascal.h> header file.  */
 #undef HAVE_PASCAL_H
+
+/* Define if you have the <pwd.h> header file.  */
+#undef HAVE_PWD_H
 
 /* Define if you have the <sgtty.h> header file.  */
 #undef HAVE_SGTTY_H
@@ -477,6 +483,9 @@
 
 /* Define if you have the <sys/utsname.h> header file.  */
 #undef HAVE_SYS_UTSNAME_H
+
+/* Define if you have the <sys/wait.h> header file.  */
+#undef HAVE_SYS_WAIT_H
 
 /* Define if you have the <termio.h> header file.  */
 #undef HAVE_TERMIO_H
