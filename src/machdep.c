@@ -11,8 +11,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.105 $
- * $Date: 2003/11/06 01:39:19 $
+ * $Revision: 1.106 $
+ * $Date: 2003/11/29 02:38:26 $
  * ------------------------------------------------------------------------*/
 #include "prelude.h"
 #include "storage.h"
@@ -2306,7 +2306,7 @@ Int    def; {
 #endif
 
 /* concatenate together all strings from registry of the form regPath\\*\\var,
- * seperated by character sep.
+ * separated by PATHSEP.
  */
 String readRegChildStrings(HKEY key, String regPath, String var, String def)
 {
@@ -2319,54 +2319,22 @@ String readRegChildStrings(HKEY key, String regPath, String var, String def)
   BOOL addedPath = FALSE;
 
   char* resPath = NULL; /* result path, returned to caller */
-  unsigned int strIncrement = 512; /* min length 'resPath' is extended by. */
-  unsigned int resRoom = 0;        /* Number of chars left in 'resPath'. */
-  unsigned int resLength = 0;      /* resPath length */
-  unsigned int maxLen = 0;
-
-  unsigned int strLength = 0;      /* length of component */
   String component;
   FILETIME ft; /* just to satisfy RegEnumKeyEx() */
   char sepString[2];
+  StringBuilder* builder = newStringBuilder(0);
   
   sepString[0] = PATHSEP;
   sepString[1] = '\0';
   
-/* Macro which appends a NUL terminated string to 'resPath', taking
- * care of (re)allocating the string buffer, so that it'll fit.
- */
-#define APPEND_STRING__(x) \
-    if (x) {\
-    if ( (strLength = strlen(x)) > resRoom || (resRoom == 0 && (x) != NULL) ) { \
-       maxLen = max(strLength, strIncrement); \
-       if (resPath == NULL) { \
-           if ( (resPath = (String)malloc(sizeof(char) * maxLen)) == NULL) { \
- 		return NULL; \
-	   } \
-	   resPath[0] = '\0'; \
-	   resLength = maxLen; \
-	   resRoom   = maxLen; \
-       } else { \
-       	   String tmpPtr; \
-       	   if ( (tmpPtr = (String)realloc(resPath,sizeof(char) * (resLength + maxLen))) == NULL) { \
-	        /* The assumption is that the string is well-formed at the point we exhaust the allocator. */ \
-	   	return resPath; \
-	   } \
-	   resPath = tmpPtr; \
-	   resLength += maxLen; \
-	   resRoom = maxLen; \
-       } \
-    } \
-    strcat(resPath, x); \
-    resRoom -= strLength;}
-  
   ulResult = RegOpenKeyEx(key, regPath, 0, KEY_READ, &baseKey);
   if (ulResult != ERROR_SUCCESS) {
-  	APPEND_STRING__(def);
-	return resPath;
+      freeStringBuilder(builder);
+      resPath = strCopy(def);
+      return resPath;
   }
 
-  APPEND_STRING__(def);
+  appendString(builder, def);
   while (!done) {
     subKeyLen = sizeof(subKeyName);
     ulResult = RegEnumKeyEx(baseKey, dwIndex, subKeyName, &subKeyLen,
@@ -2376,11 +2344,10 @@ String readRegChildStrings(HKEY key, String regPath, String var, String def)
       component = readRegString(baseKey, subKeyName, var, "");
       
       if (addedPath) {
-      	APPEND_STRING__(sepString);
+	  appendString(builder,sepString);
       }
       addedPath = TRUE;
-      
-      APPEND_STRING__(component);
+      appendString(builder,component);
       free(component); /* readRegString() dynamically allocated it, so let go. */
     } else {
       if (ulResult == ERROR_NO_MORE_ITEMS) {
@@ -2392,10 +2359,10 @@ String readRegChildStrings(HKEY key, String regPath, String var, String def)
   }
 
   RegCloseKey(baseKey);
+  resPath = strCopy(toString(builder));
+  freeStringBuilder(builder);
   return resPath;
 }
-
-#undef APPEND_STRING__
 #endif /* USE_REGISTRY */
 
 /* --------------------------------------------------------------------------
