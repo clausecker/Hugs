@@ -70,6 +70,8 @@ main
 			parseConfigureArgs flags args [buildDirOpt]
 		localbuildinfo <- configure pkg_descr flags args
 		writePersistBuildConfig (foldr id localbuildinfo optFns)
+		when (not (buildPackage (buildParams localbuildinfo)))
+			exitFailure
 
 	    BuildCmd -> do
 		(_, args) <- parseBuildArgs args []
@@ -388,13 +390,14 @@ compileFFI :: BuildInfo -> LocalBuildInfo ->
 compileFFI libInfo lbi srcDir file = do
 	options <- getOptions file
 	let incs = uniq (sort (includeOpts options ++ pkg_incs))
-	let hugsArgs = "-98" : map ("-i" ++) incs
+	let pathFlag = "-P" ++ buildDir lbi ++ [searchPathSeparator]
+	let hugsArgs = "-98" : pathFlag : map ("-i" ++) incs
 	cfiles <- getCFiles file
 	let cArgs =
 		ccOptions params ++
 		map (joinFileName srcDir) cfiles ++
-		ldOptions params ++
 		["-L" ++ dir | dir <- extraLibDirs libInfo] ++
+		ldOptions params ++
 		["-l" ++ lib | lib <- extraLibs libInfo] ++
 		concat [["-framework", f] | f <- frameworks params]
 	rawSystem ffihugs (hugsArgs ++ file : cArgs)
