@@ -5,8 +5,7 @@
 -----------------------------------------------------------------------------
 
 module Hugs.IOExts
-	( fixIO			-- :: (a -> IO a) -> IO a
-	, unsafePerformIO	-- :: IO a -> a
+	( unsafePerformIO	-- :: IO a -> a
 
 	, performGC
 
@@ -41,7 +40,6 @@ module Hugs.IOExts
 
 import Hugs.Prelude
 import Hugs.IO
-import Hugs.IORef
 import Hugs.System ( getArgs )
 import Hugs.Ptr ( Ptr )
 
@@ -54,13 +52,6 @@ unsafePerformIO m = valueOf (basicIORun m)
 
 primitive unsafePtrEq    :: a -> a -> Bool
 primitive unsafePtrToInt :: a -> Int
-
-fixIO :: (a -> IO a) -> IO a
-fixIO f = do
-	r <- newIORef (throw NonTermination)
-	x <- f (unsafePerformIO (readIORef r))
-	writeIORef r x
-	return x
 
 primitive unsafeCoerce "primUnsafeCoerce" :: a -> b
 
