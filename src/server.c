@@ -11,13 +11,12 @@
  * included in the distribution.
  *
  * $RCSfile: server.c,v $
- * $Revision: 1.11 $
- * $Date: 2002/02/28 02:05:19 $
+ * $Revision: 1.12 $
+ * $Date: 2002/03/01 20:33:09 $
  * ------------------------------------------------------------------------*/
 
-#define NO_MAIN
+#define HUGS_SERVER
 #include "hugs.c"
-#undef NO_MAIN
 #include "server.h"
 
 DLLEXPORT(HugsServerAPI*) initHugsServer Args((Int, String[]));
@@ -51,6 +50,7 @@ static Void   SetOutputEnable Args((Bool));
 static Void   ChangeDir       Args((String));
 static Void   LoadProject     Args((String));
 static Void   LoadFile        Args((String));
+static Void   LoadStringF     Args((String));
 static Void   SetOptions      Args((String));
 static String GetOptions      Args((Void));
 static HVal   CompileExpr     Args((String, String));
@@ -81,6 +81,7 @@ static Void setHugsAPI() {       /* initialise virtual function table */
     hugs.changeDir       = ChangeDir;
     hugs.loadProject     = LoadProject;
     hugs.loadFile        = LoadFile;
+    hugs.loadFromBuffer  = LoadStringF;
     hugs.setOptions      = SetOptions;
     hugs.getOptions      = GetOptions;
     hugs.compileExpr     = CompileExpr;
@@ -111,7 +112,7 @@ static Void setHugsAPI() {       /* initialise virtual function table */
 #define ErrorBufferSize 10000
 
 static char  serverErrMsg[ErrorBufferSize];   /* Buffer for error messages */
-static char* lastError = NULL;
+char* lastError = NULL;
 
 static String ClearError()
 {
