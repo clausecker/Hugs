@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.162 $
- * $Date: 2003/12/04 18:50:00 $
+ * $Revision: 1.163 $
+ * $Date: 2003/12/19 03:10:45 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -4822,7 +4822,12 @@ List ds; {				/* given list of equations	   */
 		fst(snd(pat)) = rhs;
 		snd(snd(d))   = rhs = pat;
 		fst(snd(d))   = pat = p;
-		fst(rhs)      = RSIGN;
+		/* Lift out the line number, i.e.,
+		 * (ESIGN,((location, expr),ty)) ~=> (location,(ESIGN,(expr,ty)))
+		 */
+		p = snd(rhs);
+		fst(rhs) = fst(fst(p));
+		snd(rhs) = ap(ESIGN,ap(snd(fst(p)),snd(p)));
 	    }
 	    if (isVar(pat)) {		/* Convert simple pattern bind to */
 		notDefined(line,bs,pat);/* a function binding		  */
