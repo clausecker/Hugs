@@ -1,3 +1,4 @@
+\begin{code}
 module Observe (observe
                , bkpt
 	       , setBkpt
@@ -6,4 +7,4 @@ module Observe (observe
 primitive observe :: String -> a -> a
 primitive bkpt    :: String -> a -> a
 primitive setBkpt :: String -> Bool -> IO ()
-
+\end{code}
