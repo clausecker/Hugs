@@ -169,7 +169,7 @@
  *     return (setjmp(jb[0]) == 0);
  * }
  */
-#define JMPBUF_ARRAY   1
+#define JMPBUF_ARRAY 1
 
 /* Define if your C compiler inserts underscores before symbol names */
 /* #undef LEADING_UNDERSCORE */
@@ -182,7 +182,7 @@
 /* Define if time.h or sys/time.h define the altzone variable.  */
 /* #undef HAVE_ALTZONE */
 
-/* Define if we want to use Apple's OpenGL for the Quartz Display System on Mac OS X (instead of X11) */   
+/* Define if we want to use Apple's OpenGL for the Quartz Display System on Mac OS X (instead of X11) */
 /* #undef USE_QUARTZ_OPENGL */
 
 /* Define if time.h or sys/time.h define the timezone variable.  */
@@ -647,7 +647,7 @@
 #define HTYPE_MODE_T Word16
 
 /* Define to Haskell type for nlink_t */
-#define HTYPE_NLINK_T NotReallyAType
+/* #undef HTYPE_NLINK_T */
 
 /* Define to Haskell type for off_t */
 #define HTYPE_OFF_T Int32
@@ -659,7 +659,7 @@
 #define HTYPE_PTRDIFF_T Int32
 
 /* Define to Haskell type for rlim_t */
-#define HTYPE_RLIM_T NotReallyAType
+/* #undef HTYPE_RLIM_T */
 
 /* Define to Haskell type for short */
 #define HTYPE_SHORT Int16
@@ -674,19 +674,19 @@
 #define HTYPE_SIZE_T Word32
 
 /* Define to Haskell type for speed_t */
-#define HTYPE_SPEED_T NotReallyAType
+/* #undef HTYPE_SPEED_T */
 
 /* Define to Haskell type for ssize_t */
-#define HTYPE_SSIZE_T NotReallyAType
+/* #undef HTYPE_SSIZE_T */
 
 /* Define to Haskell type for time_t */
 #define HTYPE_TIME_T Int32
 
 /* Define to Haskell type for tcflag_t */
-#define HTYPE_TCFLAG_T NotReallyAType
+/* #undef HTYPE_TCFLAG_T */
 
 /* Define to Haskell type for uid_t */
-#define HTYPE_UID_T NotReallyAType
+/* #undef HTYPE_UID_T */
 
 /* Define to Haskell type for unsigned char */
 #define HTYPE_UNSIGNED_CHAR Word8
