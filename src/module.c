@@ -15,11 +15,17 @@
 #include "errors.h"
 #include "module.h"
 
-/*
+/* --------------------------------------------------------------------------
+ * Static analysis of modules:
+ *
  * The static checks of the import and export lists are invoked
  * via the entry points in module.h  (cf. static.c:checkDefns()).
- */
+ *
+ * ------------------------------------------------------------------------*/
 
+/* --------------------------------------------------------------------------
+ * local function prototypes:
+ * ------------------------------------------------------------------------*/
 static Name   local lookupName		Args((Text,List));
 static Module local modOfEntity         Args((Cell));
 static Void   local reportAmbigEntity   Args((Text,Text,List));
@@ -38,14 +44,11 @@ static List   local addEntityPair       Args((Cell,List));
 static List   local mergeImportLists    Args((List,List));
 static List   local getIEOrphans        Args((List));
 static List   local fixupIEList         Args((List));
+static List   local allMethodsOrDCons   Args((List,Cell,Module,Bool));
 
 static Cell   local importEntity	Args((Module,Cell));
 static Void   local importTycon		Args((Module,Tycon));
 static Void   local importClass		Args((Module,Class));
-
-/* --------------------------------------------------------------------------
- * Static analysis of modules:
- * ------------------------------------------------------------------------*/
 
 Void addQualImport(orig,new,entities) /* Add to qualified import list       */
 Cell orig;       /* Original name of module                                */
@@ -75,7 +78,7 @@ static Name local lookupName(t,nms)    /* find text t in list of Names     */
 Text t;
 List nms; { /* :: [Name] */
     for(; nonNull(nms); nms=tl(nms)) {
-      if (t == name(hd(nms)).text) {
+      if ( t == name(hd(nms)).text ) {
 	    return hd(nms);
       }
     }
@@ -144,9 +147,8 @@ char sep; {
 }
 #endif
 
-static List
-getIEOrphans(ieList)
-List ieList; {
+static List getIEOrphans(ieList) /* locate methods/dcons appearing on their */
+List ieList; {                   /* own in an import/export list.           */
   List orphans = NIL;
   List xs;
   
@@ -187,8 +189,7 @@ List ieList; {
  *       later on.
  * 
  */
-static List
-fixupIEList(ieList)
+static List fixupIEList(ieList)
 List ieList; {
   List orphans = NIL;
   List xs = ieList;
@@ -942,8 +943,8 @@ Cell e; {
 	       Tycon tc;
 	       Class cc;
 	       
-	       /* Build the (alias) qualified entity and
-		  test whether it's in scope - ugly. */
+	       /* Build the (alias) qualified entity and test whether it's
+		  in scope -- ugly. */
 	       if (isName(hd(ents))) {
 		   txtNm = name(hd(ents)).text;
 		   qid = mkQId(alias,mkVar(txtNm));
@@ -998,6 +999,46 @@ Cell e; {
 	 }
     }
     return exports;
+}
+
+static List local allMethodsOrDCons(imps,nm,mod,wantMethods)
+List   imps;
+Cell   nm;
+Module mod;
+Bool   wantMethods; {
+  /* For a non-local tycon / class exported using (..), locate
+   * the list of dcons/methods that are in scope.
+   *
+   * This requires going through all the import lists, locating
+   * the tycon/class and take the union of all the dcons/methods
+   * found.
+   */
+  List xs;
+  List resList = NIL;
+
+  for (xs = imps; nonNull(xs); xs=tl(xs)) {
+    if ( isPair(hd(xs)) && isPair(snd(hd(xs))) ) {
+      List ns;
+      /* Find the entry for 'nm' tycon.. */
+      for (ns = snd(snd(hd(xs))); nonNull(ns); ns=tl(ns)) {
+	if ( isPair(hd(ns)) && 
+	     ((!wantMethods         &&
+	       isTycon(fst(hd(ns))) &&
+	       fst(hd(ns)) == nm    &&
+	       tycon(fst(hd(ns))).mod == mod) ||
+	      (wantMethods          &&
+	       isClass(fst(hd(ns))) &&
+	       fst(hd(ns)) == nm    &&
+	       cclass(fst(hd(ns))).mod == mod)) ) {
+	  resList=dupOnto(snd(hd(ns)),resList);
+	  /* Assumption: tycon/class may appear more than
+	     once in an import list; */
+	}
+      }
+    }
+  }
+  if (nonNull(resList)) { resList = nubList(resList); }
+  return resList;
 }
 
 static List local checkExport(exports,mt,e) /* Process entry in export list */
@@ -1069,43 +1110,17 @@ Cell e; {
 		return exports; /* Not reached */
 	    case NEWTYPE:
 	    case DATATYPE:
-		/* ToDo: the traversal code here is near identical to
-		   that done for classes below, and ought to be abstracted. */
 		if (DOTDOT==parts) {
 		    Module thisModule = lastModule();
 		    if ( tycon(nm).mod == thisModule ) {
 		      exports = addEntity(nm,DOTDOT,exports);
-		      return exports;
 		    } else {
-			/* If we're re-exporting a tycon via (..),
-			 * only the constructors in scope are exported. 
-			 */
-			Cell xs;
-			List dcons = NIL;
-			Module tcMod = tycon(nm).mod;
-			/* This requires going through all the import lists,
-			 * locating imports of the tycon & take the union of
-			 * all the constructors found to be in scope.
-			 */
-			for (xs = module(thisModule).modImports;nonNull(xs);xs=tl(xs)) {
-			  if ( isPair(hd(xs)) && isPair(snd(hd(xs))) ) {
-			    List ns;
-			    /* Find the entry for the 'nm' tycon.. */
-			    for (ns = snd(snd(hd(xs))); nonNull(ns); ns=tl(ns)) {
-			      if ( isPair(hd(ns))       && 
-				   isTycon(fst(hd(ns))) &&
-				   fst(hd(ns)) == nm    &&
-				   tycon(fst(hd(ns))).mod == tcMod ) {
-				      dcons=dupOnto(snd(hd(ns)),dcons);
-				      /* Assumption: a tycon may appear more than
-				         once in an import list;  */
-			      }
-			    }
-			  }
-			}
-			dcons = nubList(dcons);
-			exports=addEntity(nm,dcons,exports);
-			return exports;
+		      exports = addEntity(nm,
+					  allMethodsOrDCons(module(thisModule).modImports,
+							    nm,
+							    tycon(nm).mod,
+							    FALSE),
+					  exports);
 		    }
 		} else {
 		  List ps = NIL;
@@ -1113,8 +1128,8 @@ Cell e; {
 					"constructor of type",
 					tycon(nm).text);
 		  exports = addEntity(nm,ps,exports);
-		  return exports;
 		}
+		return exports;
 	    default:
 		internal("checkExport1");
 	    }
@@ -1123,47 +1138,21 @@ Cell e; {
 		Module thisModule = lastModule();
 		if ( cclass(nm).mod == thisModule ) {
 		  exports = addEntity(nm,DOTDOT,exports);
- 		  return exports;
 		} else {
-		    /* If we're re-exporting a class via (..),
-		     * only the metods in scope are exported. 
-		     */
-		  Cell xs;
-		  List meths = NIL;
-		  Module ccMod = tycon(nm).mod;
-		  /* This requires going through all the import lists,
-		   * locating imports of the class & take the union of
-		   * all the methods found to be in scope.
-		   */
-		  for (xs = module(thisModule).modImports;nonNull(xs);xs=tl(xs)) {
-		    if ( isPair(hd(xs)) && isPair(snd(hd(xs))) ) {
-		      List ns;
-		      /* Locate the class.. */
-		      for (ns = snd(snd(hd(xs))); nonNull(ns); ns=tl(ns)) {
-			if ( isPair(hd(ns))       && 
-			     isClass(fst(hd(ns))) &&
-			     fst(hd(ns)) == nm    &&
-			     tycon(fst(hd(ns))).mod == ccMod ) {
-			  meths=dupOnto(snd(hd(ns)),meths);
-			  /* Assumption: a class may appear more than
-			     once in an import list;  */
-			}
-		      }
-		    }
-		  }
-		  meths = nubList(meths);
-		  /* Enter the (class,members) pair _and_ the individual 
-		     member names on to the exports list */
-		  exports=addEntity(nm,meths,exports);
-		  return exports;
+		  exports = addEntity(nm,
+				      allMethodsOrDCons(module(thisModule).modImports,
+							nm,
+							cclass(nm).mod,
+							TRUE),
+				      exports);
 		}
 	    } else {
 	      List ps = NIL;
 	      ps = checkSubentities(ps,parts,cclass(nm).members,
 				    "member of class",cclass(nm).text);
 	      exports=addEntity(nm,ps,exports);
-	      return exports;
 	    }
+	    return exports;
 	} else {
 	    ERRMSG(0) "Explicit export list given for non-class/datatype \"%s\" in export list of module \"%s\"",
 		      identToStr(ident),
