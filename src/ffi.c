@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: ffi.c,v $
- * $Revision: 1.28 $
- * $Date: 2003/03/13 04:19:32 $
+ * $Revision: 1.29 $
+ * $Date: 2003/04/24 14:47:00 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -257,10 +257,10 @@ Int    l;
 Type   t; {
     if      (t == typeChar)   fprintf(out,"HsChar");
     else if (t == typeInt)    fprintf(out,"HsInt");
-    else if (t == typeInt8)   fprintf(out,"HsWord8");
-    else if (t == typeInt16)  fprintf(out,"HsWord16");
-    else if (t == typeInt32)  fprintf(out,"HsWord32");
-    else if (t == typeInt64)  fprintf(out,"HsWord64");
+    else if (t == typeInt8)   fprintf(out,"HsInt8");
+    else if (t == typeInt16)  fprintf(out,"HsInt16");
+    else if (t == typeInt32)  fprintf(out,"HsInt32");
+    else if (t == typeInt64)  fprintf(out,"HsInt64");
     else if (t == typeWord8)  fprintf(out,"HsWord8");
     else if (t == typeWord16) fprintf(out,"HsWord16");
     else if (t == typeWord32) fprintf(out,"HsWord32");
