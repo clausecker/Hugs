@@ -1,0 +1,3 @@
+ERROR "static/mod145.hs" - Duplicate export of entity "m1"
+*** Could refer to Mod145.m1 or Mod145_A.m1
+Hugs:[Leaving Hugs]

@@ -1,0 +1,4 @@
+ERROR "static/mod142.hs" - Ambiguous export of entity "x"
+*** Could refer to: M.x Mod142_A.x 
+
+Hugs:[Leaving Hugs]

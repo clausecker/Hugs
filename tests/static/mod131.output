@@ -1,0 +1,3 @@
+ERROR "static/mod131.hs" - Duplicate export of entity "f"
+*** Could refer to Mod131_A.f or Mod131_B.f
+Hugs:[Leaving Hugs]
