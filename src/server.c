@@ -10,16 +10,13 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: server.c,v $
- * $Revision: 1.30 $
- * $Date: 2003/03/05 15:21:47 $
+ * $Revision: 1.31 $
+ * $Date: 2003/03/07 00:52:12 $
  * ------------------------------------------------------------------------*/
 
 #define HUGS_SERVER
 #include "hugs.c"
 #include "server.h"
-
-DLLEXPORT(HugsServerAPI*) initHugsServer Args((Int, String[]));
-DLLEXPORT(Void) shutdownHugsServer Args((HugsServerAPI*));
 
 /* These have non-local scope, as they're used when creating 
  * extended/delegated versions of the server API (cf. the server
@@ -30,7 +27,6 @@ extern Void   startEval       Args((Void));
 extern Bool   safeEval        Args((Cell));
 extern String ClearError      Args((Void));
 extern Cell   getTypeableDict Args((Type));
-extern char*  lastError;
 
 static Void   setHugsAPI   Args((Void));
 static Bool   SetModule    Args((String));

@@ -7,18 +7,14 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: runhugs.c,v $
- * $Revision: 1.14 $
- * $Date: 2003/03/03 06:31:04 $
+ * $Revision: 1.15 $
+ * $Date: 2003/03/07 00:52:13 $
  * ------------------------------------------------------------------------*/
 
 #include <stdio.h>
 #include <stdlib.h>
 #include "prelude.h"
 #include "server.h"
-
-/* In case the server API couldn't
-   be initialised, look at 'lastError'. */
-extern char* lastError;
 
 #if defined(_MSC_VER) && !defined(_MANAGED)
 #include <windows.h>
@@ -28,8 +24,6 @@ extern int  main      Args((int, char**));
 static void check     Args((void));
 static void loadHugs  Args((int, char**));
 
-extern void           shutdownHugsServer Args((HugsServerAPI*));
-extern HugsServerAPI* initHugsServer Args((int,char**));
 static HugsServerAPI* hugs = 0;
 
 /* An optional nicety to call initSystem(); not required. */

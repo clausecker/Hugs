@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: server.h,v $
- * $Revision: 1.8 $
- * $Date: 2003/03/03 06:31:04 $
+ * $Revision: 1.9 $
+ * $Date: 2003/03/07 00:52:13 $
  * ------------------------------------------------------------------------*/
 
 #ifndef Args
@@ -68,6 +68,11 @@ typedef void (*HugsServerShutdownFun) Args((HugsServerAPI*));
 
   //extern HugsServerAPI* initHugsServer Args((int, char**));
 DLLEXPORT(HugsServerAPI*) initHugsServer Args((Int, String[]));
+
+DLLEXPORT(Void) shutdownHugsServer Args((HugsServerAPI*));
+
+/* In case the server API couldn't be initialised, look at 'lastError'. */
+extern char* lastError;
 #ifdef __cplusplus 
 };
 #endif
