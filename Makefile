@@ -2,8 +2,10 @@
 # somewhat redhat specific (and rpm version 3 specific - i.e. RedHat 6.0
 # or greater).
 
-RELEASE=hugs98-Feb2000
-PATCHLEVEL=`egrep ^Release: hugs98.spec  | colrm 1 14`
+NAME=$(shell egrep ^Name: hugs98.spec  | colrm 1 14)
+VERSION=$(shell egrep ^Version: hugs98.spec  | colrm 1 14)
+RELEASE=${NAME}-${VERSION}
+PATCHLEVEL=$(shell egrep ^Release: hugs98.spec  | colrm 1 14)
 
 all:
 	@echo "Make what?"
