@@ -359,7 +359,6 @@ command processor/shell to execute the command.
 </listitem>
 
 </itemizedlist>
-<para>
 If neither <literal>%s</literal> nor <literal>%f</literal> occurs within
 the <option>-E</option> string,
 then the filename is appended before invoking the editor.
@@ -367,8 +366,6 @@ then the filename is appended before invoking the editor.
 
 <para>
 Here are some example editor configurations:
-</para>
-
 <itemizedlist>
 <listitem>
 <para>
