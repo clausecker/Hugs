@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: type.c,v $
- * $Revision: 1.56 $
- * $Date: 2002/10/03 17:28:05 $
+ * $Revision: 1.57 $
+ * $Date: 2002/10/10 14:58:37 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1413,7 +1413,7 @@ List qss; {
     }
     if (isNull(zexp)) {
 	ERRMSG(l) "\"%s\" not in scope (introduced by parallel comprehension)", textToStr(zName) ETHEN
-	ERRTEXT   "\n*** Possible cause: \"List\" library not loaded"
+	ERRTEXT   "\n*** Possible cause: \"List\" module not imported"
 	EEND;
     
     }
@@ -1609,7 +1609,7 @@ Cell e; {
 
     if( !classMonadRec ) {
 	ERRMSG(0) "%s class not defined", fixClass ETHEN
-        ERRTEXT   "\n*** Possible cause: \"%s\" library not loaded", fixLib
+        ERRTEXT   "\n*** Possible cause: \"%s\" module not imported", fixLib
 	EEND;
     }
 
