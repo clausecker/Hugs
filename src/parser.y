@@ -11,8 +11,8 @@
  * included in the distribution.
  *
  * $RCSfile: parser.y,v $
- * $Revision: 1.23 $
- * $Date: 2001/09/19 21:36:03 $
+ * $Revision: 1.24 $
+ * $Date: 2001/12/04 19:13:14 $
  * ------------------------------------------------------------------------*/
 
 %{
@@ -428,7 +428,7 @@ unsafe_flag: /* empty */         {$$ = gc0(NIL);}
 /*- Class declarations: ---------------------------------------------------*/
 
 topDecl	  : TCLASS crule fds wherePart	{classDefn(intOf($1),$2,$4,$3); sp-=4;}
-	  | TINSTANCE irule iwherePart	{instDefn(intOf($1),$2,$3);  sp-=3;}
+	  | TINSTANCE irule wherePart	{instDefn(intOf($1),$2,$3);  sp-=3;}
 	  | DEFAULT '(' dtypes ')'	{defaultDefn(intOf($1),$3);  sp-=4;}
 	  | TCLASS error		{syntaxError("class declaration");}
 	  | TINSTANCE error		{syntaxError("instance declaration");}
@@ -618,18 +618,6 @@ decl	  : gendecl			{$$ = $1;}
 								ap($4,$3)))));}
 	  | pat0 rhs			{$$ = gc2(ap(PATBIND,pair($1,$2)));}
 	  ;
-idecls	  : '{' idecls0 end		{$$ = gc3($2);}
-	  | '{' idecls1 end		{$$ = gc3($2);}
-	  ;
-idecls0	  : /* empty */			{$$ = gc0(NIL);}
-	  | idecls0 ';'			{$$ = gc2($1);}
-	  | idecls1 ';'			{$$ = gc2($1);}
-	  ;
-idecls1	  : idecls0 idecl		{$$ = gc2(cons($2,$1));}
-
-idecl	  : qfunlhs rhs			{$$ = gc2(ap(FUNBIND,pair($1,$2)));}
-          | qvar rhs                    {$$ = gc2(ap(PATBIND,pair($1,$2)));}
-	  ;
 funlhs	  : funlhs0			{$$ = $1;}
 	  | funlhs1			{$$ = $1;}
 	  | npk				{$$ = $1;}
@@ -646,19 +634,6 @@ funlhs1	  : '(' funlhs0 ')' apat	{$$ = gc4(ap($2,$4));}
 	  | var     apat		{$$ = gc2(ap($1,$2));}
 	  | funlhs1 apat		{$$ = gc2(ap($1,$2));}
 	  ;
-qfunlhs	  : qfunlhs0			{$$ = $1;}
-	  | qfunlhs1			{$$ = $1;}
-	  ;
-qfunlhs0  : pat10_vI qvarop      pat0	{$$ = gc3(ap2($2,$1,$3));}
-	  | infixPat qvarop      pat0	{$$ = gc3(ap2($2,$1,$3));}
-	  | NUMLIT   qvarop      pat0	{$$ = gc3(ap2($2,$1,$3));}
-	  | var      qvarop_mipl pat0	{$$ = gc3(ap2($2,$1,$3));}
-	  ;
-qfunlhs1  : '(' qfunlhs0 ')' apat	{$$ = gc4(ap($2,$4));}
-	  | '(' qfunlhs1 ')' apat	{$$ = gc4(ap($2,$4));}
-	  | qvar     apat		{$$ = gc2(ap($1,$2));}
-	  | qfunlhs1 apat		{$$ = gc2(ap($1,$2));}
-	  ;
 rhs	  : rhs1 wherePart		{$$ = gc2(letrec($2,$1));}
 	  | error			{syntaxError("declaration");}
 	  ;
@@ -674,12 +649,6 @@ wherePart : /* empty */			{$$ = gc0(NIL);}
 	  | WHERE decls			{$$ = gc2($2);}
 	  ;
 
-/* Body of instance decls, differs from wherePart in that
-   qualified names can be bound on the LHS.
-*/
-iwherePart : /* empty */		{$$ = gc0(NIL);}
-	   | WHERE idecls		{$$ = gc2($2);}
-	   ;
 /*- Patterns: -------------------------------------------------------------*/
 
 pat	  : npk				{$$ = $1;}
@@ -1037,11 +1006,6 @@ qvarop	  : '-'				{$$ = gc1(varMinus);}
 	  | qvarop_mi			{$$ = $1;}
 	  ;
 qvarop_mi : QVAROP			{$$ = $1;}
-	  | '`' QVARID '`'		{$$ = gc3($2);}
-	  | varop_mi			{$$ = $1;}
-	  ;
-qvarop_mipl : QVAROP			{$$ = $1;}
-	  | '-'				{$$ = gc1(varMinus);}
 	  | '`' QVARID '`'		{$$ = gc3($2);}
 	  | varop_mi			{$$ = $1;}
 	  ;

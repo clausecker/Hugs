@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: storage.c,v $
- * $Revision: 1.20 $
- * $Date: 2001/12/04 00:20:45 $
+ * $Revision: 1.21 $
+ * $Date: 2001/12/04 19:13:14 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -2544,11 +2544,11 @@ List xs, ys; {
     return zs;
 }
 
-Cell varIsMember(t,xs)                 /* Test if variable is a member of     */
-Text t;                                /* given list of (qualified) variables */
+Cell varIsMember(t,xs)                 /* Test if variable is a member of  */
+Text t;                                /* given list of variables          */
 List xs; {
     for (; nonNull(xs); xs=tl(xs))
-	if (t==qualTextOf(hd(xs)))
+	if (t==textOf(hd(xs)))
 	    return hd(xs);
     return NIL;
 }

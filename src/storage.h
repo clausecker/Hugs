@@ -9,8 +9,8 @@
  * included in the distribution.
  *
  * $RCSfile: storage.h,v $
- * $Revision: 1.21 $
- * $Date: 2001/12/04 00:20:45 $
+ * $Revision: 1.22 $
+ * $Date: 2001/12/04 19:13:14 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -230,7 +230,6 @@ extern	Cell	     whatIs    Args((Cell));
 #define textOf(c)	((Text)(snd(c)))         /* c ::  (VAR|CON)(ID|OP) */
 #define qmodOf(c)       (textOf(fst(snd(c))))    /* c ::  QUALIDENT        */
 #define qtextOf(c)      (textOf(snd(snd(c))))    /* c ::  QUALIDENT        */
-#define qualTextOf(v)   (isQualIdent(v) ? qtextOf(v) : textOf(v))
 #define mkVar(t)	ap(VARIDCELL,t)
 #define mkVarop(t)	ap(VAROPCELL,t)
 #define mkCon(t)	ap(CONIDCELL,t)

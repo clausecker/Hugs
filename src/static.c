@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.45 $
- * $Date: 2001/12/04 00:20:45 $
+ * $Revision: 1.46 $
+ * $Date: 2001/12/04 19:13:14 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1995,31 +1995,13 @@ List   bs; {				/* sort into approp. member order  */
 	Cell body = snd(snd(b));
 	Name mnm;
 
-	if ( !(isQVar(fst(b))) ) { /* Only allow function bindings    */
+	if ( !(isVar(fst(b))) ) { /* Only allow function bindings    */
 	    ERRMSG(rhsLine(snd(body)))
 		"Pattern binding illegal in %s declaration", where
 	    EEND;
 	}
 	
-	/* Get at the unqualified name of the method */
-	if (isVar(fst(b))) {
-	  nm = textOf(fst(b));
-	} else {
-	  nm = qtextOf(fst(b));
-	}
-
-#if !IGNORE_MODULES
-	/* If the class member is qualified, verify that its
-	   modid match up with that of the class itself. */
-	if (!isVar(fst(b))) {
-	  if (cclass(c).mod != findQualifier(qmodOf(fst(b)))) {
-	    ERRMSG(rhsLine(snd(hd(body))))
-		"No member \"%s.%s\" (%s) in class \"%s\"",
-		textToStr(qmodOf(fst(b))), textToStr(nm), textToStr(module(findQualifier(qmodOf(fst(b)))).text),textToStr(cclass(c).text)
-	    EEND;
-	  }
-	}
-#endif
+	nm = textOf(fst(b));
 
 	if (isNull(mnm=memberName(c,nm))) {
 	    ERRMSG(rhsLine(snd(hd(body))))
@@ -5106,13 +5088,13 @@ List ds; {				/* given list of equations	   */
 	    Cell lhs	= fst(snd(d));
 	    Cell v	= getHead(lhs);
 	    Cell newAlt = pair(getArgs(lhs),rhs);
-	    if ( !(isVar(v) || isQVar(v)) ) {
+	    if ( !isVar(v) ) {
 		internal("FUNBIND");
 	    }
-	    if (nonNull(lastVar) && (qualTextOf(v))==qualTextOf(lastVar)) {
+	    if (nonNull(lastVar) && (textOf(v))==textOf(lastVar)) {
 		if (argCount!=lastArity) {
 		    ERRMSG(line) "Equations give different arities for \"%s\"",
-				 textToStr(qualTextOf(v))
+				 textToStr(textOf(v))
 		    EEND;
 		}
 		fbindAlts(hd(bs)) = cons(newAlt,fbindAlts(hd(bs)));
@@ -5135,7 +5117,7 @@ List ds; {				/* given list of equations	   */
 		fst(snd(d))   = pat = p;
 		fst(rhs)      = RSIGN;
 	    }
-	    if (isQVar(pat)) {		/* Convert simple pattern bind to */
+	    if (isVar(pat)) {		/* Convert simple pattern bind to */
 		notDefined(line,bs,pat);/* a function binding		  */
 		bs = cons(pair(pat,pair(NIL,singleton(pair(NIL,rhs)))),bs);
 	    } else {
@@ -5237,8 +5219,8 @@ static Void local notDefined(line,bs,v)/* check if name already defined in */
 Int  line;			       /* list of bindings		   */
 List bs;
 Cell v; {
-    if (nonNull(findBinding(qualTextOf(v),bs))) {
-	ERRMSG(line) "\"%s\" multiply defined", textToStr(qualTextOf(v))
+    if (nonNull(findBinding(textOf(v),bs))) {
+	ERRMSG(line) "\"%s\" multiply defined", textToStr(textOf(v))
 	EEND;
     }
 }
@@ -5247,8 +5229,8 @@ static Cell local findBinding(t,bs)    /* look for binding for variable t  */
 Text t; 			       /* in list of bindings bs	   */
 List bs; {
     for (; nonNull(bs); bs=tl(bs)) {
-	if (isQVar(fst(hd(bs)))) {		      /* function-binding? */
-	    if (qualTextOf(fst(hd(bs)))==t) {
+	if (isVar(fst(hd(bs)))) {		      /* function-binding? */
+	    if (textOf(fst(hd(bs)))==t) {
 		return hd(bs);
 	    }
 	} else if (nonNull(varIsMember(t,fst(hd(bs))))){/* pattern-binding?*/
