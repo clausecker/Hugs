@@ -17,4 +17,6 @@ PACKAGE=${NAME}-${VERSION}
 TAG=HEAD
 HSLIBSTAG=HEAD
 
+HSLIBSDIRS=hslibs libraries/base libraries/haskell98 libraries/haskell-src
+
 CVSROOT = ${shell cat CVS/Root}

@@ -1,19 +1,15 @@
 include Defs.mk
 
 # does an in-place install (mainly because src/unix; make config does that)
-all: libraries src/Makefile
-	cd src; make
-
-libraries: fptools
-
-fptools:
-	-mkdir fptools
-	cvs -d ${CVSROOT} export -r${HSLIBSTAG} fptools/hslibs
-	cvs -d ${CVSROOT} export -r${HSLIBSTAG} fptools/libraries
-	cd src/unix; ./convert_hslibs ../../fptools
-	cd src/unix; ./convert_libraries ../../fptools
+# FIXME
+all: src/Makefile fptools
+	cd src; make && make libraries
 
 src/Makefile:
 	cd src/unix; make config
+
+fptools:
+	-mkdir fptools
+	cvs -d ${CVSROOT} export -r${HSLIBSTAG} $(addprefix fptools/,${HSLIBSDIRS})
 
 include RPM.mk

@@ -25,9 +25,10 @@ Hugs 98 is an interpreter for Haskell, a lazy functional programming language.
 
 %build
 cd src/unix
-./configure --prefix=%{prefix} --with-readline
+./configure --prefix=%{prefix} --with-fptools=../fptools --with-readline
 cd ..
 make
+make libraries
 
 %install
 cd src
@@ -50,6 +51,8 @@ gzip -f -9 $RPM_BUILD_ROOT%{prefix}/man/man1/hugs.1
 %{prefix}/man/man1/hugs.1.gz
 %{prefix}/bin/hugs
 %{prefix}/bin/runhugs
-%{prefix}/share/hugs/demos
-%{prefix}/share/hugs/lib
-%{prefix}/share/hugs/include
+%{prefix}/lib/hugs/demos
+%{prefix}/lib/hugs/include
+%{prefix}/lib/hugs/lib
+%{prefix}/lib/hugs/libraries
+%{prefix}/lib/hugs/oldlib
