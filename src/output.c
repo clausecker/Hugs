@@ -9,8 +9,8 @@
  * included in the distribution.
  *
  * $RCSfile: output.c,v $
- * $Revision: 1.23 $
- * $Date: 2001/08/15 01:07:06 $
+ * $Revision: 1.24 $
+ * $Date: 2001/12/13 06:05:27 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1448,8 +1448,10 @@ Kind k; {
 		       }
 		       else
 			   putKind(fst(k));
-		       putStr(" -> ");
-		       putKind(snd(k));
+		       if (whatIs(snd(k)) != NIL) {
+			   putStr(" -> ");
+			   putKind(snd(k));
+		       }
 		       break;
 
 #if TREX
