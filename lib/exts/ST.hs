@@ -45,7 +45,7 @@ import Monad
 
 data ST s a      -- implemented as an internal primitive
 
-primitive runST                        :: (forall s -> ST s a) -> a
+primitive runST                        :: (forall s . ST s a) -> a
 primitive returnST     "STReturn"      :: a -> ST s a
 primitive thenLazyST   "STLazyBind"    :: ST s a -> (a -> ST s b) -> ST s b
 primitive thenStrictST "STStrictBind"  :: ST s a -> (a -> ST s b) -> ST s b
