@@ -71,7 +71,7 @@ conjug d    = unwords . trailingI . map conj . maybe d  -- d is default input
                                  where x `cons` xs | x=="I" && null xs = ["me"]
                                                    | otherwise         = x:xs
 
-conjugates :: [(Word, Word)]
+conjugates :: [(String, String)]
 conjugates  = prepare (oneways ++ concat [[(x,y), (y,x)] | (x,y) <- bothways])
               where oneways  = [ ("me",   "you") ]
                     bothways = [ ("are",  "am"),     ("we're", "was"),
@@ -81,8 +81,7 @@ conjugates  = prepare (oneways ++ concat [[(x,y), (y,x)] | (x,y) <- bothways])
 
 -- Response data --------------------------------------------------------------
 
-type Word     = String
-type Words    = [Word]
+type Words    = [String]
 type KeyTable = [(Key, Replies)]
 type Replies  = [String]
 type State    = (KeyTable, Replies)
