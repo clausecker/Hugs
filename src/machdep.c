@@ -11,8 +11,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.118 $
- * $Date: 2004/10/01 10:28:44 $
+ * $Revision: 1.119 $
+ * $Date: 2004/10/07 01:49:16 $
  * ------------------------------------------------------------------------*/
 #include "prelude.h"
 #include "storage.h"
@@ -1195,10 +1195,6 @@ Int getTerminalWidth() {                /* determine width of terminal     */
 #endif
 }
 
-Int readTerminalChar() {                /* read character from terminal    */
-    return FGetChar(stdin);             /* without echo, assuming that     */
-}                                       /* noechoTerminal() is active...   */
-
 #elif __MWERKS__ && macintosh
 #include <limits.h>
 
@@ -1225,10 +1221,6 @@ Bool getBuffTerminal(Int fd) {
 }
 
 Void setBuffTerminal(Int fd, Bool buffered) {
-}
-
-Int readTerminalChar() {               /* read character from terminal    */
-    return getchar();
 }
 
 #else /* no terminal driver - eg DOS, RISCOS */
@@ -1267,6 +1259,7 @@ Bool getBuffTerminal(Int fd) {
 Void setBuffTerminal(Int fd, Bool buffered) {
 }
 
+#if 0
 Int readTerminalChar() {                /* read character from terminal    */
     if (terminalEchoReqd) {
 	return getchar();
@@ -1345,6 +1338,7 @@ Int readTerminalChar() {                /* read character from terminal    */
 	return c=='\r' ? '\n' : c;      /* slight paranoia about CR-LF    */
     }
 }
+#endif
 
 #endif /* no terminal driver */
 

@@ -14,8 +14,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: iomonad.c,v $
- * $Revision: 1.81 $
- * $Date: 2004/09/30 17:05:10 $
+ * $Revision: 1.82 $
+ * $Date: 2004/10/07 01:49:15 $
  * ------------------------------------------------------------------------*/
  
 Name nameIORun;			        /* run IO code                     */
@@ -514,17 +514,14 @@ static Char local hGetChar(Int h, String fname) {
     if (handles[h].hLookAhead>=0) {
 	c = handles[h].hLookAhead;
 	handles[h].hLookAhead = -1;
-    } else if (h==HSTDIN) {
-	c = readTerminalChar();
-    } else if (handles[h].hBinaryMode)
+    } else if (handles[h].hBinaryMode) {
 	c = getc(handles[h].hfp);
-#else /* !CHAR_ENCODING */
-    if (h==HSTDIN)
-	c = readTerminalChar();
-#endif
-    else {
+    } else {
 	c = FGetChar(handles[h].hfp);
     }
+#else /* !CHAR_ENCODING */
+    c = FGetChar(handles[h].hfp);
+#endif
     if (c==EOF && !feof(handles[h].hfp)) {
 	IOFail(mkIOError(&handles[h].hcell,
 			 toIOError(errno),
@@ -756,7 +753,7 @@ primFun(primSetArgs) {                  /* primSetArgs :: [String] -> IO () */
  * ------------------------------------------------------------------------*/
 
 primFun(primGetChar) {			/* Get character from stdin        */
-    Int c = readTerminalChar();
+    Int c = FGetChar(stdin);
     if (c==EOF) {
 	IOFail(mkIOError(&handles[HSTDIN].hcell,
 			 nameEOFErr,
@@ -764,10 +761,6 @@ primFun(primGetChar) {			/* Get character from stdin        */
 			 "end of file",
 			 NULL));
     }
-#if RAW_CONSOLE				/* Simulate echoing ourselves.     */
-    FPutChar(c, stdout);
-    fflush(stdout);
-#endif
     IOReturn(mkChar(c));
 }
 
@@ -1592,13 +1585,12 @@ primFun(primHPutBuf) {			/* write binary data from a buffer   */
 }
 
 primFun(primHGetBuf) {			/* read binary data into a buffer   */
-    Int h, size, savedSize;
+    Int h, size, numRead;
     Pointer buf;
 
     HandleArg(h, 3+IOArity);
     PtrArg(buf, 2+IOArity);
     IntArg(size, 1+IOArity);
-    savedSize = size;
 
     /* argument checks */
     if (!(handles[h].hmode & (HREAD | HREADWRITE))) {
@@ -1631,29 +1623,16 @@ primFun(primHGetBuf) {			/* read binary data into a buffer   */
 	handles[h].hHaveRead = TRUE;
     }
 
-    if (h == HSTDIN) {
-	char *p = (char*)buf;
-	while (size > 0) {
-	    Int c = readTerminalChar();
-	    if (c == EOF) break;
-	    *p++ = (char)c;
-	    size--;
-	}
-    } else {
-	errno = 0;
-	while (size > 0 && !feof(handles[h].hfp)) {
-	    size -= (Int)fread(buf, 1, size, handles[h].hfp);
-	    if (errno != 0) {
-		IOFail (mkIOError(&handles[h].hcell,
-				  toIOError(errno),
-				  "System.IO.hGetBuf",
-				  toIOErrorDescr(errno,TRUE),
-				  NULL));
-	    }
-	}
+    numRead = (Int)fread(buf, 1, size, handles[h].hfp);
+    if (numRead < size && ferror(handles[h].hfp)) {
+	IOFail (mkIOError(&handles[h].hcell,
+			  toIOError(errno),
+			  "System.IO.hGetBuf",
+			  toIOErrorDescr(errno,TRUE),
+			  NULL));
     }
 
-    IOReturn(mkInt(savedSize - size));
+    IOReturn(mkInt(numRead));
 }
 
 primFun(primWriteFile) {		/* write string to specified file  */

@@ -63,17 +63,10 @@ extern String substPath Args((String,String));
 extern Bool startEdit   Args((Int,String));
 #endif
 
-/* Turn off console echo/buffering during evaluation? */
-#define RAW_CONSOLE ( \
-	!HAVE_TERMIO_H && !HAVE_SGTTY_H && !HAVE_TERMIOS_H && \
-	!(__MWERKS__ && macintosh) && \
-	IS_WINDOWS && !HUGS_FOR_WINDOWS && !__BORLANDC__)
-
 extern  Int    shellEsc		Args((String,Bool,Bool));
 extern  Int    getTerminalWidth Args((Void));
 extern  Void   normalTerminal	Args((Void));
 extern  Void   noechoTerminal	Args((Void));	/* obsolescent */
-extern  Int    readTerminalChar Args((Void));
 extern  Bool   getEchoTerminal	Args((Int));
 extern  Void   setEchoTerminal	Args((Int,Bool));
 extern  Bool   getBuffTerminal	Args((Int));
