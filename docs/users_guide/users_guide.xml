@@ -11,7 +11,7 @@
 <!ENTITY options        SYSTEM "options.xml">
 <!ENTITY using-hugs     SYSTEM "using_hugs.xml">
 <!ENTITY % ISOpub PUBLIC
-       "ISO 8879:1986//ENTITIES Publishing//EN"
+       "ISO 8879:1986//ENTITIES Publishing//EN//XML"
        "http://www.oasis-open.org/docbook/xmlcharent/0.3/iso-pub.ent">
 %ISOpub;
 <!ENTITY % ISOtech PUBLIC
