@@ -151,8 +151,8 @@ HugsSetup="$runhugs -98 $top_dir/fptools/libraries/Cabal/examples/hapax.hs"
 # extra_packages - packaged with Hugs, but may also be independently updated
 #	(each of these goes in a separate hierarchy under {Hugs}/packages)
 
-core_packages='base mtl Cabal haskell98 haskell-src network'
-extra_packages='QuickCheck fgl HaXml parsec HUnit'
+core_packages='base Cabal haskell98 haskell-src network'
+extra_packages='QuickCheck mtl fgl HaXml parsec HUnit'
 
 #
 # ToDo: fix -- cygwin supports 'unix' only when no -mno-cygwin is given to gcc
