@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.27 $
- * $Date: 2001/01/08 21:43:06 $
+ * $Revision: 1.28 $
+ * $Date: 2001/01/18 17:32:13 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -206,7 +206,7 @@ static Void   local depTriple		Args((Int,Cell));
 static Void   local depComp		Args((Int,Cell,List));
 #if ZIP_COMP
 static Void   local depZComp		Args((Int,Cell,List));
-static Void   local depCompy		Args((Int,List));
+static Void   local depZCompBranch	Args((Int,List));
 static List   local intersectBinds	Args((List bs1,List bs2));
 static List   local getBindVars		Args((List bs));
 #endif
@@ -6442,7 +6442,6 @@ List eqs; {
 #endif
 
 #if ZIP_COMP
-/* ZZ this will all fall over if there are nested zip comps */
 static List gatheredVars;
 static List gatheredBinds;
 static List gatheredTyvars;
@@ -6473,7 +6472,7 @@ List qss; {
     }
     withinScope(NIL);
     for (;nonNull(qss);qss=tl(qss)) {
-	depCompy(l,hd(qss));
+	depZCompBranch(l,hd(qss));
 	/* reset for next list of qualifiers */
 	restoreBvars(NIL);
     }
@@ -6493,7 +6492,7 @@ List qss; {
     leaveGathering();
 }
 
-static Void local depCompy(l,qs)	/* find dependents of comprehension*/
+static Void local depZCompBranch(l,qs)	/* find dependents of comprehension*/
 Int  l;
 List qs; {
     if (isNull(qs)) {
@@ -6510,7 +6509,7 @@ List qs; {
 				}
 				gatheredVars = revOnto(patVars,gatheredVars);
 				gatheredTyvars = dupOnto(hd(btyvars),gatheredTyvars);
-				depCompy(l,qs1);
+				depZCompBranch(l,qs1);
 				fst(snd(q)) = applyBtyvs(fst(snd(q)));
 			    }
 			    break;
@@ -6524,13 +6523,13 @@ List qs; {
 				EEND;
 			    }
 			    gatheredBinds = dupOnto(hd(bindings),gatheredBinds);
-			    depCompy(l,qs1);
+			    depZCompBranch(l,qs1);
 			    leaveScope();
 			    break;
 
 	    case DOQUAL	  : /* fall-thru */
 	    case BOOLQUAL : snd(q) = depExpr(l,snd(q));
-			    depCompy(l,qs1);
+			    depZCompBranch(l,qs1);
 			    break;
 	}
     }
