@@ -297,10 +297,25 @@ primFun(primDirExist) { /* FilePath -> IO Bool - check to see if directory exist
 #define IS_FLAG_SET(x,flg) ((x.st_mode & flg) == flg)
 #define ToBool(v) ( (v) ? nameTrue : nameFalse)
 
+#ifdef _MSC_VER
+/* If not provided, define em. */
+#ifndef R_OK
+#define R_OK 04
+#endif
+#ifndef W_OK
+#define W_OK 02
+#endif
+#ifndef X_OK
+#define X_OK 06
+#endif
+#endif
+
 primFun(primGetPermissions) { /* FilePath -> IO (Bool,Bool,Bool,Bool) */
   int rc;
   String s = evalName(IOArg(1));
   struct stat st;
+  int isR, isW, isX;
+  
 
   if (!s) {
     IOFail(mkIOError(nameIllegal,
@@ -309,6 +324,9 @@ primFun(primGetPermissions) { /* FilePath -> IO (Bool,Bool,Bool,Bool) */
 		     IOArg(1)));
   }
   
+  isR = access(s, R_OK);
+  isW = access(s, W_OK);
+  isX = access(s, X_OK);
   rc = stat(s, &st);
   
   if (rc != 0) {
@@ -318,10 +336,10 @@ primFun(primGetPermissions) { /* FilePath -> IO (Bool,Bool,Bool,Bool) */
 		     IOArg(1)));
   } else {
     IOReturn(ap(ap(ap(ap( mkTuple(4),
-			  ToBool(IS_FLAG_SET(st, S_IREAD))),
-		      ToBool(IS_FLAG_SET(st, S_IWRITE))),
-		   ToBool(IS_FLAG_SET(st, S_IEXEC) && !IS_FLAG_SET(st,S_IFDIR))),
-		ToBool(IS_FLAG_SET(st,S_IEXEC) && IS_FLAG_SET(st,S_IFDIR))));
+			  ToBool(isR == 0)),
+		      ToBool(isW == 0)),
+		   ToBool(isX == 0 && !IS_FLAG_SET(st,S_IFDIR))),
+		ToBool(isX == 0 && !IS_FLAG_SET(st,S_IFREG))));
   }
 }
 
