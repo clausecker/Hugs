@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.65 $
- * $Date: 2002/04/17 14:23:46 $
+ * $Revision: 1.66 $
+ * $Date: 2002/04/20 15:23:35 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1071,14 +1071,11 @@ Cell what; {				/* SYNONYM/DATATYPE/etc...	   */
     Text t = textOf(getHead(lhs));
     Tycon tc = findTycon(t);
 
-#if 0
     if (nonNull(tc = findTycon(t))) {
 	ERRMSG(line) "Repeated definition of type constructor \"%s\"",
 		     textToStr(t)
 	EEND;
-    } else
-#endif
-    if (nonNull(tc) && nonNull(tycon(tc).clashes)) {
+    } else if (nonNull(tc) && nonNull(tycon(tc).clashes)) {
         List ls = tycon(tc).clashes;
 	ERRMSG(line) "Ambiguous type constructor occurrence \"%s\"", textToStr(t) ETHEN
         ERRTEXT "\n*** Could refer to: " ETHEN
@@ -2027,6 +2024,19 @@ Cell pred; {
 	    ERRMSG(line) "Undefined class \"%s\"", identToStr(h)
 	    EEND;
 	}
+	if (!isQualIdent(h) && nonNull(cclass(c).clashes)) {
+	  List ls = cclass(c).clashes;
+	  ERRMSG(line) "Ambiguous class occurrence \"%s\"", textToStr(cclass(c).text) ETHEN
+	  ERRTEXT "\n*** Could refer to: " ETHEN
+	  ERRTEXT "%s.%s ", textToStr(module(cclass(c).mod).text), textToStr(cclass(c).text) ETHEN
+	  for(;nonNull(ls);ls=tl(ls)) {
+	    ERRTEXT "%s.%s", 
+		    textToStr(module(cclass(hd(ls)).mod).text), 
+		    textToStr(cclass(hd(ls)).text)
+		    ETHEN
+  	  }
+	  ERRTEXT "\n" EEND;
+        }
 	if (isNull(prev)) {
 	    pred = c;
 	} else {
@@ -2182,8 +2192,8 @@ Class parent; {
     if (isNull(m)) {
 	m = newName(textOf(v),parent);
     } else if (name(m).defn!=PREDEFINED && name(m).mod == currentModule) {
-	ERRMSG(l) "Repeated definition for member function \"%s.%s\"",
-	  textToStr(module(name(m).mod).text),textToStr(name(m).text)
+	ERRMSG(l) "Repeated definition for member function \"%s\"",
+	  textToStr(name(m).text)
 	EEND;
     } else if (name(m).defn!=PREDEFINED) {
 	  removeName(m);
@@ -3230,7 +3240,7 @@ Inst in; {
 	ERRMSG(line) "Illegal predicate in instance declaration"
 	EEND;
     }
-
+    
     /* should this be over xfds? */
     if (nonNull(cclass(inst(in).c).fds)) {
         List fds = cclass(inst(in).c).fds;
