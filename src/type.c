@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: type.c,v $
- * $Revision: 1.63 $
- * $Date: 2003/02/10 14:52:03 $
+ * $Revision: 1.64 $
+ * $Date: 2003/02/12 05:49:14 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -950,7 +950,7 @@ Cell e; {				/* requires polymorphism, qualified*/
     }
 
     if (isNull(typeIs))
-	internal("typeAp1");
+       internal("typeAp1");
 
     instantiate(typeIs);		/* Deal with polymorphism ...	   */
     if (nonNull(predsAre)) {		/* ... and with qualified types.   */
@@ -2275,10 +2275,17 @@ Class c; {				/* defaults for class c		   */
     }
 
     for (; nonNull(mems); mems=tl(mems)) {
-	static String deftext = "default_";
-	Text member           = name(hd(mems)).text;
-	String s	      = textToStr(member);
 	Name   n;
+	Text member           = name(hd(mems)).text;
+#if 0
+	/* This is unsafe, creating a new name that's in the
+	   same namespace as the user's -- indeed, a bug was
+	   reported as a result of this.
+	   
+	   Instead, invent a new name. Simpler and safer.
+	*/
+	static String deftext = "default_";
+	String s	      = textToStr(member);
 	for (i = 0; i<FILENAME_MAX && deftext[i]!='\0'; i++) {
 	    buf[i] = deftext[i];
 	}
@@ -2287,6 +2294,8 @@ Class c; {				/* defaults for class c		   */
 	}
 	buf[i+j] = '\0';
 	n = newName(findText(buf),c);
+#endif
+	n = newName(inventText(),c);
 
 	if (isNull(hd(defs))) {		/* No default definition	   */
 	    name(n).line  = cclass(c).line;
