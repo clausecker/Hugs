@@ -1,0 +1,35 @@
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+                    "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd" 
+                      [
+<!ENTITY haskell98      SYSTEM "haskell98.sgml">
+<!ENTITY hugs-ghc       SYSTEM "hugs_ghc.sgml">
+<!ENTITY hugs-only      SYSTEM "hugs_only.sgml">
+<!ENTITY introduction   SYSTEM "introduction.sgml">
+<!ENTITY license        SYSTEM "license.sgml">
+<!ENTITY miscellaneous  SYSTEM "miscellaneous.sgml">
+<!ENTITY options        SYSTEM "options.sgml">
+<!ENTITY using-hugs     SYSTEM "using_hugs.sgml">
+<!ENTITY % ISOpub PUBLIC
+       "ISO 8879:1986//ENTITIES Publishing//EN"
+       "http://www.oasis-open.org/docbook/xmlcharent/0.3/iso-pub.ent">
+%ISOpub;
+<!ENTITY % ISOtech PUBLIC
+       "ISO 8879:1986//ENTITIES General Technical//EN//XML"
+       "http://www.oasis-open.org/docbook/xmlcharent/0.3/iso-tech.ent">
+%ISOtech;
+]>
+<book id="users-guide">
+<bookinfo>
+<title>The Hugs 98 User's Guide</title>
+</bookinfo>
+
+&license;
+&introduction;
+&using-hugs;
+&options;
+&haskell98;
+&hugs-ghc;
+&hugs-only;
+&miscellaneous;
+
+</book>
