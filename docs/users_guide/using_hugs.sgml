@@ -1,5 +1,25 @@
-<chapter id="commands">
-<title>Hugs commands</title>
+<chapter id="using-hugs">
+<title>Using Hugs</title>
+
+<para>
+The interpreter may be started with a command line of the form
+<cmdsynopsis>
+<command>hugs</command>
+<arg rep=repeat choice=opt><replaceable>option</replaceable></arg>
+<arg rep=repeat choice=opt><replaceable>file</replaceable></arg>
+</cmdsynopsis>
+On many systems it can also be found in the system menus,
+and may be started by (double) clicking on a file with a
+<quote><literal>.hs</literal</quote> or
+<quote><literal>.lhs</literal</quote> extension.
+</para>
+
+<para>
+Hugs takes options from the command line and elsewhere
+(see <xref linkend="options-list">),
+and then loads the Haskell <literal>Prelude</literal> module,
+as well as as any modules specified on the command line.
+</para>
 
 <para>
 Hugs starts with a banner like
@@ -17,9 +37,10 @@ Hugs starts with a banner like
   Prelude>
 </screen>
 The prompt string <literal>Prelude></literal> indicates that the current
-module is the Haskell <literal>Prelude</literal>.
-At this prompt, you can type expressions to evaluate,
-and also commands of the form
+module is the Haskell <literal>Prelude</literal>
+(assuming no modules were specified on the command line).
+At this prompt, you can type Haskell expressions to be evaluated,
+and also enter commands of the form
 <quote><command>:<replaceable>cmd</replaceable></command></quote>,
 where <replaceable>cmd</replaceable> may be abbreviated to a single letter.
 </para>
@@ -37,7 +58,7 @@ where <replaceable>cmd</replaceable> may be abbreviated to a single letter.
 
 <listitem>
 <para>
-Evaluate the expression.
+Evaluate a Haskell expression.
 The expression cannot be broken over multiple lines.
 Usually, the value is simply converted to a string
 (using <literal>show</literal>) and printed:
@@ -46,7 +67,8 @@ Usually, the value is simply converted to a string
   3
 </screen>
 The printing style can be changed with the
-<link linkend="option-use-show"><option>-u</option></link> option.
+<link linkend="option-use-show"><option>-u</option></link> option
+(see <xref linkend="options-evaluation">).
 </para>
 
 <para>
@@ -61,7 +83,8 @@ the resulting IO action is performed:
 </screen>
 Usually the value produced by this action is ignored,
 but this can be changed with the
-<link linkend="option-display-io"><option>+I</option></link> option.
+<link linkend="option-display-io"><option>+I</option></link> option
+(see <xref linkend="options-evaluation">).
 </para>
 
 <note>
@@ -106,7 +129,8 @@ without evaluating it.
 Usually the defaulting rules (discussed above) are not applied to the type
 before printing,
 but this can be changed with the
-<link linkend="option-default-types"><option>+T</option></link> option.
+<link linkend="option-default-types"><option>+T</option></link> option
+(see <xref linkend="options-evaluation">).
 </para>
 </listitem>
 </varlistentry>
@@ -154,6 +178,10 @@ Exit the interpreter.
 <title>Loading and editing Haskell module files</title>
 
 <para>
+The Hugs prompt accepts expressions, but not Haskell definitions.
+These should be placed in text files containing Haskell modules,
+and these modules loaded into Hugs either by listing them on the command line,
+or by using the commands listed here.
 Hugs assumes that each Haskell module is in a separate file.
 You can load these files by name, or by specifying a module name.
 </para>
@@ -200,7 +228,8 @@ Windows systems use <quote><literal>\</literal></quote>.)
 The search path may be changed using the
 <link linkend="option-search-path"><option>-P</option></link> option,
 while the set of suffixes tried may be changed using the
-<link linkend="option-suffixes"><option>-S</option></link> option.
+<link linkend="option-suffixes"><option>-S</option></link> option
+(see <xref linkend="options-loading">).
 The file found should contain a Haskell module called
 <replaceable>M</replaceable>.
 </para>

@@ -258,7 +258,8 @@ applied to a list of <literal>Char</literal>.
 
 <para>
 Hugs used to have a <option>+m</option> option
-(if Hugs was compiled with <literal>MULTI_INST</literal> set),
+(for multi-instance resolution,
+if Hugs was compiled with <literal>MULTI_INST</literal> set),
 which accepted more overlapping instances by deferring the choice between them,
 but it is currently broken.
 </para>

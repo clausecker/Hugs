@@ -1,14 +1,8 @@
-<chapter id="running">
-<title>Running Hugs</title>
+<chapter id="options">
+<title>Changing the behaviour of Hugs</title>
 
-<sect1 id="passing-options">
-<title>Passing options to Hugs</title>
-
-<cmdsynopsis>
-<command>hugs</command>
-<arg rep=repeat choice=opt><replaceable>option</replaceable></arg>
-<arg rep=repeat choice=opt><replaceable>file</replaceable></arg>
-</cmdsynopsis>
+<sect1 id="options-list">
+<title>Hugs options</title>
 
 <para>
 The behaviour of Hugs may be modified by options.
@@ -50,16 +44,9 @@ The Hugs command line.
 </listitem>
 
 </orderedlist>
+Most options can be changed within Hugs using the <command>:set</command>
+command (see <xref linkend="basic-commands">).
 </para>
-
-<para>
-See <ulink url="http://cvs.haskell.org/Hugs/pages/hugsman/started.html">Section 4 of the <citetitle pubwork=article>Hugs 98 User Manual</citetitle></ulink>.
-</para>
-
-</sect1>
-
-<sect1 id="options-list">
-<title>Hugs options</title>
 
 <para>
 Hugs takes two kinds of options:

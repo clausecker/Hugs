@@ -497,7 +497,7 @@ In addition to numerous bug fixes, user-visible changes include:
 
 <itemizedlist>
 <listitem><para>
-The beginnings of a User's Guide (still somewhat incomplete).
+The beginnings of a User's Guide (though still incomplete).
 </para></listitem>
 
 <listitem><para>
@@ -525,7 +525,7 @@ Integrated .NET support (on Windows platforms).
 
 <listitem><para>
 The <option>-e</option>, <option>-f</option>, <option>-i</option>,
-<option>-n</option>, <option>-W</option> and <option>-X</option> options
+<option>-N</option>, <option>-W</option> and <option>-X</option> options
 and the <command>:project</command> command have been removed.
 </para></listitem>
 </itemizedlist>
