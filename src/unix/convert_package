@@ -188,7 +188,7 @@ do
 	if grep '^>*[ 	]*foreign[ 	][ 	]*[ei][mx]port' $filename >/dev/null
 	then
 		cmd="$ffihugs +G -98 -P$target_dir:"
-		for flag in -I$dstdir $includes
+		for flag in -I$dstdir -I$target_dir $includes
 		do	cmd="$cmd +L$flag"
 		done
 		for file in ${stem}_stub_ffi.c ${stem}_hsc.c
