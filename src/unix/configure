@@ -308,7 +308,7 @@ ac_includes_default="\
 # include <unistd.h>
 #endif"
 
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS build build_cpu build_vendor build_os host host_cpu host_vendor host_os target target_cpu target_vendor target_os FPTOOLS YACC CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT CPP EGREP PTHREAD_CC PTHREAD_LIBS PTHREAD_CFLAGS LD PERL SET_MAKE have_hp2ps DOCBOOK2HTML DOCBOOK2DVI DOCBOOK2PDF DOCBOOK2PS DIFF CONTEXT_DIFF X_CFLAGS X_PRE_LIBS X_LIBS X_EXTRA_LIBS GL_CFLAGS GL_LIBS GLUT_LIBS FFI_LIBRARIES HAVE_STRUCT_MSGHDR_MSG_ACCRIGHTS HAVE_STRUCT_MSGHDR_MSG_CONTROL ALLOCA OPTFLAGS DEBUGFLAGS LDDEBUGFLAGS HUGSPATH HUGSSUFFIXES hugsdir HUGSDIR BINDIR SET_INSTALLDIRS EXE OBJ DLL DLL_ENDING DEV_NULL RM CP WOBJECTS RC_FILES STRIP LIBOBJS LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS build build_cpu build_vendor build_os host host_cpu host_vendor host_os target target_cpu target_vendor target_os FPTOOLS YACC CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT CPP EGREP PTHREAD_CC PTHREAD_LIBS PTHREAD_CFLAGS LD PERL SET_MAKE have_hp2ps DOCBOOK2HTML DOCBOOK2DVI DOCBOOK2PDF DOCBOOK2PS Find2Cmd FindCmd Sort2Cmd SortCmd DIFF CONTEXT_DIFF X_CFLAGS X_PRE_LIBS X_LIBS X_EXTRA_LIBS GL_CFLAGS GL_LIBS GLUT_LIBS FFI_LIBRARIES HAVE_STRUCT_MSGHDR_MSG_ACCRIGHTS HAVE_STRUCT_MSGHDR_MSG_CONTROL ALLOCA OPTFLAGS DEBUGFLAGS LDDEBUGFLAGS HUGSPATH HUGSSUFFIXES hugsdir HUGSDIR BINDIR SET_INSTALLDIRS EXE OBJ DLL DLL_ENDING DEV_NULL RM CP WOBJECTS RC_FILES STRIP LIBOBJS LTLIBOBJS'
 ac_subst_files='MkInstall MkDepend'
 
 # Initialize some variables set by options.
@@ -942,7 +942,7 @@ ac_abs_top_srcdir=`cd "$ac_dir" && cd $ac_top_srcdir && pwd`
     else
       echo "$as_me: WARNING: no configuration information is in $ac_dir" >&2
     fi
-    cd "$ac_popdir"
+    cd $ac_popdir
   done
 fi
 
@@ -1139,7 +1139,7 @@ _ASBOX
       echo "$as_me: caught signal $ac_signal"
     echo "$as_me: exit $exit_status"
   } >&5
-  rm -f core *.core &&
+  rm -f core core.* *.core &&
   rm -rf conftest* confdefs* conf$$* $ac_clean_files &&
     exit $exit_status
      ' 0
@@ -2416,7 +2416,8 @@ if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
   echo "$as_me:$LINENO: \$? = $ac_status" >&5
   (exit $ac_status); }; }; then
   for ac_declaration in \
-   '' \
+   ''\
+   '#include <stdlib.h>' \
    'extern "C" void std::exit (int) throw (); using std::exit;' \
    'extern "C" void std::exit (int); using std::exit;' \
    'extern "C" void exit (int) throw ();' \
@@ -2430,8 +2431,8 @@ _ACEOF
 cat confdefs.h >>conftest.$ac_ext
 cat >>conftest.$ac_ext <<_ACEOF
 /* end confdefs.h.  */
-$ac_declaration
 #include <stdlib.h>
+$ac_declaration
 int
 main ()
 {
@@ -3599,6 +3600,227 @@ done
 
 
 
+# Extract the first word of "find", so it can be a program name with args.
+set dummy find; ac_word=$2
+echo "$as_me:$LINENO: checking for $ac_word" >&5
+echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6
+if test "${ac_cv_path_Find2Cmd+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  case $Find2Cmd in
+  [\\/]* | ?:[\\/]*)
+  ac_cv_path_Find2Cmd="$Find2Cmd" # Let the user override the test with a path.
+  ;;
+  *)
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+  for ac_exec_ext in '' $ac_executable_extensions; do
+  if $as_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_path_Find2Cmd="$as_dir/$ac_word$ac_exec_ext"
+    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+done
+
+  ;;
+esac
+fi
+Find2Cmd=$ac_cv_path_Find2Cmd
+
+if test -n "$Find2Cmd"; then
+  echo "$as_me:$LINENO: result: $Find2Cmd" >&5
+echo "${ECHO_T}$Find2Cmd" >&6
+else
+  echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6
+fi
+
+$Find2Cmd --version > conftest.out 2>&1
+if grep "FIND: Parameter format" conftest.out >/dev/null 2>&1 ; then
+   # Encountered MS' find utility, which is not what we're after.
+   #
+   # HACK - AC_CHECK_PROG is useful here in that does let you reject
+   # an (absolute) entry in the path (Find2Cmd). It is not so useful
+   # in that it doesn't let you (AFAIU) set VARIABLE equal to the
+   # absolute path eventually found. So, hack around this by inspecting
+   # what variables hold the abs. path & use them directly.
+   # Extract the first word of "find", so it can be a program name with args.
+set dummy find; ac_word=$2
+echo "$as_me:$LINENO: checking for $ac_word" >&5
+echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6
+if test "${ac_cv_prog_FindCmd+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  if test -n "$FindCmd"; then
+  ac_cv_prog_FindCmd="$FindCmd" # Let the user override the test.
+else
+  ac_prog_rejected=no
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+  for ac_exec_ext in '' $ac_executable_extensions; do
+  if $as_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    if test "$as_dir/$ac_word$ac_exec_ext" = "$Find2Cmd"; then
+       ac_prog_rejected=yes
+       continue
+     fi
+    ac_cv_prog_FindCmd="`echo $ac_dir/$ac_word`"
+    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+done
+
+if test $ac_prog_rejected = yes; then
+  # We found a bogon in the path, so make sure we never use it.
+  set dummy $ac_cv_prog_FindCmd
+  shift
+  if test $# != 0; then
+    # We chose a different compiler from the bogus one.
+    # However, it has the same basename, so the bogon will be chosen
+    # first if we set FindCmd to just the basename; use the full file name.
+    shift
+    ac_cv_prog_FindCmd="$as_dir/$ac_word${1+' '}$@"
+  else
+    # Default is a loser.
+    { { echo "$as_me:$LINENO: error: FindCmd=$Find2Cmd unacceptable, but no other find found in \$PATH" >&5
+echo "$as_me: error: FindCmd=$Find2Cmd unacceptable, but no other find found in \$PATH" >&2;}
+   { (exit 1); exit 1; }; }
+  fi
+fi
+  test -z "$ac_cv_prog_FindCmd" && ac_cv_prog_FindCmd="find"
+fi
+fi
+FindCmd=$ac_cv_prog_FindCmd
+if test -n "$FindCmd"; then
+  echo "$as_me:$LINENO: result: $FindCmd" >&5
+echo "${ECHO_T}$FindCmd" >&6
+else
+  echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6
+fi
+
+else
+FindCmd=$Find2Cmd
+
+fi
+
+
+# Extract the first word of "sort", so it can be a program name with args.
+set dummy sort; ac_word=$2
+echo "$as_me:$LINENO: checking for $ac_word" >&5
+echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6
+if test "${ac_cv_path_Sort2Cmd+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  case $Sort2Cmd in
+  [\\/]* | ?:[\\/]*)
+  ac_cv_path_Sort2Cmd="$Sort2Cmd" # Let the user override the test with a path.
+  ;;
+  *)
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+  for ac_exec_ext in '' $ac_executable_extensions; do
+  if $as_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_path_Sort2Cmd="$as_dir/$ac_word$ac_exec_ext"
+    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+done
+
+  ;;
+esac
+fi
+Sort2Cmd=$ac_cv_path_Sort2Cmd
+
+if test -n "$Sort2Cmd"; then
+  echo "$as_me:$LINENO: result: $Sort2Cmd" >&5
+echo "${ECHO_T}$Sort2Cmd" >&6
+else
+  echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6
+fi
+
+$Sort2Cmd --version > conftest.out 2>&1
+if grep "^--version" conftest.out >/dev/null 2>&1 ; then
+   # Encountered MS' sort utility, which is not what we're after.
+   #
+   # HACK - see FPTOOLS_FIND_FIND remark.
+   # Extract the first word of "sort", so it can be a program name with args.
+set dummy sort; ac_word=$2
+echo "$as_me:$LINENO: checking for $ac_word" >&5
+echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6
+if test "${ac_cv_prog_SortCmd+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  if test -n "$SortCmd"; then
+  ac_cv_prog_SortCmd="$SortCmd" # Let the user override the test.
+else
+  ac_prog_rejected=no
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+  for ac_exec_ext in '' $ac_executable_extensions; do
+  if $as_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    if test "$as_dir/$ac_word$ac_exec_ext" = "$Sort2Cmd"; then
+       ac_prog_rejected=yes
+       continue
+     fi
+    ac_cv_prog_SortCmd="`echo $ac_dir/$ac_word`"
+    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+done
+
+if test $ac_prog_rejected = yes; then
+  # We found a bogon in the path, so make sure we never use it.
+  set dummy $ac_cv_prog_SortCmd
+  shift
+  if test $# != 0; then
+    # We chose a different compiler from the bogus one.
+    # However, it has the same basename, so the bogon will be chosen
+    # first if we set SortCmd to just the basename; use the full file name.
+    shift
+    ac_cv_prog_SortCmd="$as_dir/$ac_word${1+' '}$@"
+  else
+    # Default is a loser.
+    { { echo "$as_me:$LINENO: error: SortCmd=$Sort2Cmd unacceptable, but no other sort found in \$PATH" >&5
+echo "$as_me: error: SortCmd=$Sort2Cmd unacceptable, but no other sort found in \$PATH" >&2;}
+   { (exit 1); exit 1; }; }
+  fi
+fi
+  test -z "$ac_cv_prog_SortCmd" && ac_cv_prog_SortCmd="sort"
+fi
+fi
+SortCmd=$ac_cv_prog_SortCmd
+if test -n "$SortCmd"; then
+  echo "$as_me:$LINENO: result: $SortCmd" >&5
+echo "${ECHO_T}$SortCmd" >&6
+else
+  echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6
+fi
+
+else
+SortCmd=$Sort2Cmd
+
+fi
+
+
+
 # Extract the first word of "diff", so it can be a program name with args.
 set dummy diff; ac_word=$2
 echo "$as_me:$LINENO: checking for $ac_word" >&5
@@ -3685,7 +3907,7 @@ else
 ac_save_LIBS="$LIBS"
 LIBS="";
 cat > conftest.$ac_ext <<EOF
-#line 3688 "configure"
+#line 3910 "configure"
 #include "confdefs.h"
 main() { extern char dlopen(); dlopen();; exit(0); }
 int t() { return 0; }
@@ -3728,7 +3950,7 @@ else
 ac_save_LIBS="$LIBS"
 LIBS="-ldl";
 cat > conftest.$ac_ext <<EOF
-#line 3731 "configure"
+#line 3953 "configure"
 #include "confdefs.h"
 main() { extern char dlopen(); dlopen();; exit(0); }
 int t() { return 0; }
@@ -3783,7 +4005,7 @@ else
 ac_save_LIBS="$LIBS"
 LIBS="";
 cat > conftest.$ac_ext <<EOF
-#line 3786 "configure"
+#line 4008 "configure"
 #include "confdefs.h"
 main() { extern char shl_load(); shl_load();; exit(0); }
 int t() { return 0; }
@@ -3826,7 +4048,7 @@ else
 ac_save_LIBS="$LIBS"
 LIBS="-ldld";
 cat > conftest.$ac_ext <<EOF
-#line 3829 "configure"
+#line 4051 "configure"
 #include "confdefs.h"
 main() { extern char shl_load(); shl_load();; exit(0); }
 int t() { return 0; }
@@ -3881,7 +4103,7 @@ else
 ac_save_LIBS="$LIBS"
 LIBS="";
 cat > conftest.$ac_ext <<EOF
-#line 3884 "configure"
+#line 4106 "configure"
 #include "confdefs.h"
 main() { extern char atan(); atan();; exit(0); }
 int t() { return 0; }
@@ -3924,7 +4146,7 @@ else
 ac_save_LIBS="$LIBS"
 LIBS="-lm";
 cat > conftest.$ac_ext <<EOF
-#line 3927 "configure"
+#line 4149 "configure"
 #include "confdefs.h"
 main() { extern char atan(); atan();; exit(0); }
 int t() { return 0; }
@@ -5978,7 +6200,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 ac_cv_header_stdc=no
 fi
-rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
 fi
@@ -8389,7 +8611,7 @@ echo "$as_me: error: cannot compute sizeof (char), 77
 See \`config.log' for more details." >&2;}
    { (exit 1); exit 1; }; }
 fi
-rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
 rm -f conftest.val
@@ -8750,7 +8972,7 @@ echo "$as_me: error: cannot compute sizeof (double), 77
 See \`config.log' for more details." >&2;}
    { (exit 1); exit 1; }; }
 fi
-rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
 rm -f conftest.val
@@ -9111,7 +9333,7 @@ echo "$as_me: error: cannot compute sizeof (float), 77
 See \`config.log' for more details." >&2;}
    { (exit 1); exit 1; }; }
 fi
-rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
 rm -f conftest.val
@@ -9472,7 +9694,7 @@ echo "$as_me: error: cannot compute sizeof (int), 77
 See \`config.log' for more details." >&2;}
    { (exit 1); exit 1; }; }
 fi
-rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
 rm -f conftest.val
@@ -9833,7 +10055,7 @@ echo "$as_me: error: cannot compute sizeof (long), 77
 See \`config.log' for more details." >&2;}
    { (exit 1); exit 1; }; }
 fi
-rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
 rm -f conftest.val
@@ -10195,7 +10417,7 @@ echo "$as_me: error: cannot compute sizeof (long long), 77
 See \`config.log' for more details." >&2;}
    { (exit 1); exit 1; }; }
 fi
-rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
 rm -f conftest.val
@@ -10557,7 +10779,7 @@ echo "$as_me: error: cannot compute sizeof (short), 77
 See \`config.log' for more details." >&2;}
    { (exit 1); exit 1; }; }
 fi
-rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
 rm -f conftest.val
@@ -10918,7 +11140,7 @@ echo "$as_me: error: cannot compute sizeof (unsigned char), 77
 See \`config.log' for more details." >&2;}
    { (exit 1); exit 1; }; }
 fi
-rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
 rm -f conftest.val
@@ -11279,7 +11501,7 @@ echo "$as_me: error: cannot compute sizeof (unsigned int), 77
 See \`config.log' for more details." >&2;}
    { (exit 1); exit 1; }; }
 fi
-rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
 rm -f conftest.val
@@ -11640,7 +11862,7 @@ echo "$as_me: error: cannot compute sizeof (unsigned long), 77
 See \`config.log' for more details." >&2;}
    { (exit 1); exit 1; }; }
 fi
-rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
 rm -f conftest.val
@@ -12002,7 +12224,7 @@ echo "$as_me: error: cannot compute sizeof (unsigned long long), 77
 See \`config.log' for more details." >&2;}
    { (exit 1); exit 1; }; }
 fi
-rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
 rm -f conftest.val
@@ -12364,7 +12586,7 @@ echo "$as_me: error: cannot compute sizeof (unsigned short), 77
 See \`config.log' for more details." >&2;}
    { (exit 1); exit 1; }; }
 fi
-rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
 rm -f conftest.val
@@ -12725,7 +12947,7 @@ echo "$as_me: error: cannot compute sizeof (void *), 77
 See \`config.log' for more details." >&2;}
    { (exit 1); exit 1; }; }
 fi
-rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
 rm -f conftest.val
@@ -12793,7 +13015,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 ac_cv_alignment_char=$ac_cv_sizeof_char
 fi
-rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
 
@@ -12857,7 +13079,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 ac_cv_alignment_double=$ac_cv_sizeof_double
 fi
-rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
 
@@ -12921,7 +13143,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 ac_cv_alignment_float=$ac_cv_sizeof_float
 fi
-rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
 
@@ -12985,7 +13207,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 ac_cv_alignment_int=$ac_cv_sizeof_int
 fi
-rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
 
@@ -13049,7 +13271,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 ac_cv_alignment_long=$ac_cv_sizeof_long
 fi
-rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
 
@@ -13114,7 +13336,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 ac_cv_alignment_long_long=$ac_cv_sizeof_long_long
 fi
-rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
 
@@ -13179,7 +13401,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 ac_cv_alignment_short=$ac_cv_sizeof_short
 fi
-rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
 
@@ -13243,7 +13465,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 ac_cv_alignment_unsigned_char=$ac_cv_sizeof_unsigned_char
 fi
-rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
 
@@ -13307,7 +13529,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 ac_cv_alignment_unsigned_int=$ac_cv_sizeof_unsigned_int
 fi
-rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
 
@@ -13371,7 +13593,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 ac_cv_alignment_unsigned_long=$ac_cv_sizeof_unsigned_long
 fi
-rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
 
@@ -13436,7 +13658,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 ac_cv_alignment_unsigned_long_long=$ac_cv_sizeof_unsigned_long_long
 fi
-rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
 
@@ -13501,7 +13723,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 ac_cv_alignment_unsigned_short=$ac_cv_sizeof_unsigned_short
 fi
-rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
 
@@ -13565,7 +13787,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 ac_cv_alignment_void_p=$ac_cv_sizeof_void_p
 fi
-rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
 
@@ -13682,7 +13904,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 fptools_cv_htype_char=NotReallyAType
 fi
-rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
  echo "$as_me:$LINENO: result: $fptools_cv_htype_char" >&5
@@ -13796,7 +14018,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 fptools_cv_htype_signed_char=NotReallyAType
 fi
-rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
  echo "$as_me:$LINENO: result: $fptools_cv_htype_signed_char" >&5
@@ -13910,7 +14132,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 fptools_cv_htype_unsigned_char=NotReallyAType
 fi
-rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
  echo "$as_me:$LINENO: result: $fptools_cv_htype_unsigned_char" >&5
@@ -14024,7 +14246,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 fptools_cv_htype_short=NotReallyAType
 fi
-rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
  echo "$as_me:$LINENO: result: $fptools_cv_htype_short" >&5
@@ -14138,7 +14360,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 fptools_cv_htype_unsigned_short=NotReallyAType
 fi
-rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
  echo "$as_me:$LINENO: result: $fptools_cv_htype_unsigned_short" >&5
@@ -14252,7 +14474,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 fptools_cv_htype_int=NotReallyAType
 fi
-rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
  echo "$as_me:$LINENO: result: $fptools_cv_htype_int" >&5
@@ -14366,7 +14588,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 fptools_cv_htype_unsigned_int=NotReallyAType
 fi
-rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
  echo "$as_me:$LINENO: result: $fptools_cv_htype_unsigned_int" >&5
@@ -14480,7 +14702,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 fptools_cv_htype_long=NotReallyAType
 fi
-rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
  echo "$as_me:$LINENO: result: $fptools_cv_htype_long" >&5
@@ -14594,7 +14816,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 fptools_cv_htype_unsigned_long=NotReallyAType
 fi
-rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
  echo "$as_me:$LINENO: result: $fptools_cv_htype_unsigned_long" >&5
@@ -14709,7 +14931,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 fptools_cv_htype_long_long=NotReallyAType
 fi
-rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
  echo "$as_me:$LINENO: result: $fptools_cv_htype_long_long" >&5
@@ -14823,7 +15045,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 fptools_cv_htype_unsigned_long_long=NotReallyAType
 fi
-rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
  echo "$as_me:$LINENO: result: $fptools_cv_htype_unsigned_long_long" >&5
@@ -14938,7 +15160,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 fptools_cv_htype_float=NotReallyAType
 fi
-rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
  echo "$as_me:$LINENO: result: $fptools_cv_htype_float" >&5
@@ -15052,7 +15274,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 fptools_cv_htype_double=NotReallyAType
 fi
-rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
  echo "$as_me:$LINENO: result: $fptools_cv_htype_double" >&5
@@ -15166,7 +15388,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 fptools_cv_htype_ptrdiff_t=NotReallyAType
 fi
-rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
  echo "$as_me:$LINENO: result: $fptools_cv_htype_ptrdiff_t" >&5
@@ -15280,7 +15502,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 fptools_cv_htype_size_t=NotReallyAType
 fi
-rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
  echo "$as_me:$LINENO: result: $fptools_cv_htype_size_t" >&5
@@ -15394,7 +15616,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 fptools_cv_htype_wchar_t=NotReallyAType
 fi
-rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
  echo "$as_me:$LINENO: result: $fptools_cv_htype_wchar_t" >&5
@@ -15508,7 +15730,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 fptools_cv_htype_sig_atomic_t=Int32
 fi
-rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
  echo "$as_me:$LINENO: result: $fptools_cv_htype_sig_atomic_t" >&5
@@ -15622,7 +15844,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 fptools_cv_htype_clock_t=NotReallyAType
 fi
-rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
  echo "$as_me:$LINENO: result: $fptools_cv_htype_clock_t" >&5
@@ -15736,7 +15958,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 fptools_cv_htype_time_t=NotReallyAType
 fi
-rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
  echo "$as_me:$LINENO: result: $fptools_cv_htype_time_t" >&5
@@ -15850,7 +16072,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 fptools_cv_htype_dev_t=Word32
 fi
-rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
  echo "$as_me:$LINENO: result: $fptools_cv_htype_dev_t" >&5
@@ -15964,7 +16186,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 fptools_cv_htype_ino_t=NotReallyAType
 fi
-rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
  echo "$as_me:$LINENO: result: $fptools_cv_htype_ino_t" >&5
@@ -16078,7 +16300,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 fptools_cv_htype_mode_t=NotReallyAType
 fi
-rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
  echo "$as_me:$LINENO: result: $fptools_cv_htype_mode_t" >&5
@@ -16192,7 +16414,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 fptools_cv_htype_off_t=NotReallyAType
 fi
-rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
  echo "$as_me:$LINENO: result: $fptools_cv_htype_off_t" >&5
@@ -16306,7 +16528,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 fptools_cv_htype_pid_t=NotReallyAType
 fi
-rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
  echo "$as_me:$LINENO: result: $fptools_cv_htype_pid_t" >&5
@@ -16420,7 +16642,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 fptools_cv_htype_gid_t=NotReallyAType
 fi
-rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
  echo "$as_me:$LINENO: result: $fptools_cv_htype_gid_t" >&5
@@ -16534,7 +16756,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 fptools_cv_htype_uid_t=NotReallyAType
 fi
-rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
  echo "$as_me:$LINENO: result: $fptools_cv_htype_uid_t" >&5
@@ -16648,7 +16870,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 fptools_cv_htype_cc_t=NotReallyAType
 fi
-rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
  echo "$as_me:$LINENO: result: $fptools_cv_htype_cc_t" >&5
@@ -16762,7 +16984,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 fptools_cv_htype_speed_t=NotReallyAType
 fi
-rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
  echo "$as_me:$LINENO: result: $fptools_cv_htype_speed_t" >&5
@@ -16876,7 +17098,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 fptools_cv_htype_tcflag_t=NotReallyAType
 fi
-rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
  echo "$as_me:$LINENO: result: $fptools_cv_htype_tcflag_t" >&5
@@ -16990,7 +17212,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 fptools_cv_htype_nlink_t=NotReallyAType
 fi
-rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
  echo "$as_me:$LINENO: result: $fptools_cv_htype_nlink_t" >&5
@@ -17104,7 +17326,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 fptools_cv_htype_ssize_t=NotReallyAType
 fi
-rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
  echo "$as_me:$LINENO: result: $fptools_cv_htype_ssize_t" >&5
@@ -17218,7 +17440,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 fptools_cv_htype_rlim_t=NotReallyAType
 fi
-rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
  echo "$as_me:$LINENO: result: $fptools_cv_htype_rlim_t" >&5
@@ -17334,7 +17556,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 fptools_cv_htype_GLboolean=NotReallyAType
 fi
-rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
  echo "$as_me:$LINENO: result: $fptools_cv_htype_GLboolean" >&5
@@ -17448,7 +17670,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 fptools_cv_htype_GLbyte=NotReallyAType
 fi
-rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
  echo "$as_me:$LINENO: result: $fptools_cv_htype_GLbyte" >&5
@@ -17562,7 +17784,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 fptools_cv_htype_GLubyte=NotReallyAType
 fi
-rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
  echo "$as_me:$LINENO: result: $fptools_cv_htype_GLubyte" >&5
@@ -17676,7 +17898,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 fptools_cv_htype_GLshort=NotReallyAType
 fi
-rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
  echo "$as_me:$LINENO: result: $fptools_cv_htype_GLshort" >&5
@@ -17790,7 +18012,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 fptools_cv_htype_GLushort=NotReallyAType
 fi
-rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
  echo "$as_me:$LINENO: result: $fptools_cv_htype_GLushort" >&5
@@ -17904,7 +18126,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 fptools_cv_htype_GLint=NotReallyAType
 fi
-rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
  echo "$as_me:$LINENO: result: $fptools_cv_htype_GLint" >&5
@@ -18018,7 +18240,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 fptools_cv_htype_GLuint=NotReallyAType
 fi
-rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
  echo "$as_me:$LINENO: result: $fptools_cv_htype_GLuint" >&5
@@ -18132,7 +18354,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 fptools_cv_htype_GLsizei=NotReallyAType
 fi
-rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
  echo "$as_me:$LINENO: result: $fptools_cv_htype_GLsizei" >&5
@@ -18246,7 +18468,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 fptools_cv_htype_GLenum=NotReallyAType
 fi
-rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
  echo "$as_me:$LINENO: result: $fptools_cv_htype_GLenum" >&5
@@ -18360,7 +18582,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 fptools_cv_htype_GLbitfield=NotReallyAType
 fi
-rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
  echo "$as_me:$LINENO: result: $fptools_cv_htype_GLbitfield" >&5
@@ -18474,7 +18696,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 fptools_cv_htype_GLfloat=NotReallyAType
 fi
-rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
  echo "$as_me:$LINENO: result: $fptools_cv_htype_GLfloat" >&5
@@ -18588,7 +18810,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 fptools_cv_htype_GLclampf=NotReallyAType
 fi
-rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
  echo "$as_me:$LINENO: result: $fptools_cv_htype_GLclampf" >&5
@@ -18702,7 +18924,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 fptools_cv_htype_GLdouble=NotReallyAType
 fi
-rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
  echo "$as_me:$LINENO: result: $fptools_cv_htype_GLdouble" >&5
@@ -18816,7 +19038,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 fptools_cv_htype_GLclampd=NotReallyAType
 fi
-rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
  echo "$as_me:$LINENO: result: $fptools_cv_htype_GLclampd" >&5
@@ -18879,7 +19101,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 eval "$cv_name=-1"
 fi
-rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
 eval "fptools_check_cconst_result=`echo '$'{$cv_name}`"
@@ -18942,7 +19164,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 eval "$cv_name=-1"
 fi
-rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
 eval "fptools_check_cconst_result=`echo '$'{$cv_name}`"
@@ -18962,7 +19184,7 @@ unset fptools_check_cconst_result
 ac_save_LIBS="$LIBS"
 LIBS=;
 cat > conftest.$ac_ext <<EOF
-#line 18965 "configure"
+#line 19187 "configure"
 #include "confdefs.h"
 
 #if HAVE_WINDOWS_H
@@ -19003,7 +19225,7 @@ fi
 ac_save_LIBS="$LIBS"
 LIBS=;
 cat > conftest.$ac_ext <<EOF
-#line 19006 "configure"
+#line 19228 "configure"
 #include "confdefs.h"
 
 #if HAVE_WINDOWS_H
@@ -21893,7 +22115,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 ( exit $ac_status )
 ac_cv_c_stack_direction=-1
 fi
-rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
 echo "$as_me:$LINENO: result: $ac_cv_c_stack_direction" >&5
@@ -23154,7 +23376,7 @@ echo "$as_me: error: cannot compute sizeof (int), 77
 See \`config.log' for more details." >&2;}
    { (exit 1); exit 1; }; }
 fi
-rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
 rm -f conftest.val
@@ -23515,7 +23737,7 @@ echo "$as_me: error: cannot compute sizeof (float), 77
 See \`config.log' for more details." >&2;}
    { (exit 1); exit 1; }; }
 fi
-rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
 rm -f conftest.val
@@ -23876,7 +24098,7 @@ echo "$as_me: error: cannot compute sizeof (double), 77
 See \`config.log' for more details." >&2;}
    { (exit 1); exit 1; }; }
 fi
-rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
 rm -f conftest.val
@@ -24237,7 +24459,7 @@ echo "$as_me: error: cannot compute sizeof (int*), 77
 See \`config.log' for more details." >&2;}
    { (exit 1); exit 1; }; }
 fi
-rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
 fi
 rm -f conftest.val
@@ -24392,7 +24614,7 @@ main()
     HINSTANCE instance;
     void* sym;
 
-    instance = LoadLibrary("conftest_dl.dll");
+    instance = LoadLibrary("conftest_dl.so");
     if (instance ==0) exit(CANTOPEN);
 
     sym = (void*)GetProcAddress(instance,SYMBOL1);
@@ -24555,7 +24777,7 @@ main()
     HINSTANCE instance;
     void* sym;
 
-    instance = LoadLibrary("conftest_dl.dll");
+    instance = LoadLibrary("conftest_dl.so");
     if (instance ==0) exit(CANTOPEN);
 
     sym = (void*)GetProcAddress(instance,SYMBOL1);
@@ -24592,6 +24814,170 @@ then
   fi
   if test $ac_result = 4; then
     ac_cv_dll_flags='/LD /ML /nologo'
+    ac_cv_leading_underscore=yes
+  fi
+
+fi fi
+rm -fr conftest* a.out
+
+fi
+ echo "$as_me:$LINENO: result: $ac_cv_dll_flags" >&5
+echo "${ECHO_T}$ac_cv_dll_flags" >&6
+
+
+echo "$as_me:$LINENO: checking if '-shared' builds loadable libraries" >&5
+echo $ECHO_N "checking if '-shared' builds loadable libraries... $ECHO_C" >&6
+if test "${ac_cv_dll_flags+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+
+  cat > conftest_dl.c <<EOF
+int x = 0;    /* global */
+int y;        /* common */
+static int z; /* static */
+static int test2() { return (test() + x + y + z); }
+int test() { return test2(); }
+EOF
+
+  ac_mkdll='${CC-cc} -shared conftest_dl.c -o conftest_dl.so 1>&5'
+
+  if { (eval echo "$as_me:$LINENO: \"$ac_mkdll\"") >&5
+  (eval $ac_mkdll) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } && test -s conftest_dl.so
+  then
+    cat > conftest.c << EOF
+#include "confdefs.h"
+#if HAVE_PROTOTYPES       /* To enable use of prototypes whenever possible */
+#define Args(x) x
+#else
+#define Args(x) ()
+#endif
+
+#define SYMBOL1 "test"
+#define SYMBOL2 "_test"
+
+#define CANTRUN  1
+#define CANTOPEN 2
+#define SYM1_OK  3
+#define SYM2_OK  4
+#define CANTFIND 5
+
+#if HAVE_DLFCN_H /* eg LINUX, SOLARIS, ULTRIX */
+
+#include <stdio.h>
+#include <dlfcn.h>
+
+main()
+{
+    void *instance;
+    void *sym;
+
+    instance = dlopen("./conftest_dl.so",1);
+    if (instance==0) exit(CANTOPEN);
+
+    sym = dlsym(instance,SYMBOL1);
+    if (sym != 0) exit(SYM1_OK);
+
+    sym = dlsym(instance,SYMBOL2);
+    if (sym != 0) exit(SYM2_OK);
+
+    exit(CANTFIND);
+}
+
+#elif HAVE_DL_H /* eg HPUX */
+
+#include <dl.h>
+
+main()
+{
+    shl_t instance;
+    void* r;
+
+    instance = shl_load("./conftest_dl.so",BIND_IMMEDIATE,0L);
+    if (instance == 0) exit(CANTOPEN);
+
+    if (0 == shl_findsym(&instance,SYMBOL1,TYPE_PROCEDURE,&r)) exit(SYM1_OK);
+
+    if (0 == shl_findsym(&instance,SYMBOL2,TYPE_PROCEDURE,&r)) exit(SYM2_OK);
+
+    exit(CANTFIND);
+}
+
+#elif HAVE_MACH_O_DYLD_H         /* MacOS X */
+
+#include <stdio.h>
+#include <mach-o/dyld.h>
+
+main()
+{
+    NSObjectFileImage ofile;
+    NSModule handle = NULL;
+    void* addr;
+    NSSymbol sym;
+
+    if (NSCreateObjectFileImageFromFile("./conftest_dl.so",&ofile) != NSObjectFileImageSuccess)
+        exit(CANTOPEN);
+
+    handle = NSLinkModule(ofile,"./conftest_dl.so",NSLINKMODULE_OPTION_PRIVATE);
+    if (handle == 0) exit(CANTOPEN);
+
+    sym = NSLookupSymbolInModule(handle, SYMBOL1);
+    if (sym != 0) exit(SYM1_OK);
+
+    sym = NSLookupSymbolInModule(handle, SYMBOL2);
+    if (sym != 0) exit(SYM2_OK);
+
+    exit(CANTFIND);
+}
+
+#elif HAVE_WINDOWS_H
+
+#include <windows.h>
+
+main()
+{
+    HINSTANCE instance;
+    void* sym;
+
+    instance = LoadLibrary("conftest_dl.so");
+    if (instance ==0) exit(CANTOPEN);
+
+    sym = (void*)GetProcAddress(instance,SYMBOL1);
+    if (sym != 0) exit(SYM1_OK);
+
+    sym = (void*)GetProcAddress(instance,SYMBOL2);
+    if (sym != 0) exit(SYM2_OK);
+
+    exit(CANTFIND);
+}
+
+#else
+
+main()
+{
+  exit(CANTRUN);
+}
+
+#endif
+EOF
+
+
+if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
+  (eval $ac_link) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } && test -s conftest${ac_exeext}
+then
+  ./conftest 2>/dev/null
+  ac_result=$?
+  if test $ac_result = 3; then
+    ac_cv_dll_flags='-shared'
+    ac_cv_leading_underscore=no
+  fi
+  if test $ac_result = 4; then
+    ac_cv_dll_flags='-shared'
     ac_cv_leading_underscore=yes
   fi
 
@@ -24719,7 +25105,7 @@ main()
     HINSTANCE instance;
     void* sym;
 
-    instance = LoadLibrary("conftest_dl.dll");
+    instance = LoadLibrary("conftest_dl.so");
     if (instance ==0) exit(CANTOPEN);
 
     sym = (void*)GetProcAddress(instance,SYMBOL1);
@@ -24883,7 +25269,7 @@ main()
     HINSTANCE instance;
     void* sym;
 
-    instance = LoadLibrary("conftest_dl.dll");
+    instance = LoadLibrary("conftest_dl.so");
     if (instance ==0) exit(CANTOPEN);
 
     sym = (void*)GetProcAddress(instance,SYMBOL1);
@@ -25047,7 +25433,7 @@ main()
     HINSTANCE instance;
     void* sym;
 
-    instance = LoadLibrary("conftest_dl.dll");
+    instance = LoadLibrary("conftest_dl.so");
     if (instance ==0) exit(CANTOPEN);
 
     sym = (void*)GetProcAddress(instance,SYMBOL1);
@@ -25212,7 +25598,7 @@ main()
     HINSTANCE instance;
     void* sym;
 
-    instance = LoadLibrary("conftest_dl.dll");
+    instance = LoadLibrary("conftest_dl.so");
     if (instance ==0) exit(CANTOPEN);
 
     sym = (void*)GetProcAddress(instance,SYMBOL1);
@@ -26097,6 +26483,10 @@ s,@DOCBOOK2HTML@,$DOCBOOK2HTML,;t t
 s,@DOCBOOK2DVI@,$DOCBOOK2DVI,;t t
 s,@DOCBOOK2PDF@,$DOCBOOK2PDF,;t t
 s,@DOCBOOK2PS@,$DOCBOOK2PS,;t t
+s,@Find2Cmd@,$Find2Cmd,;t t
+s,@FindCmd@,$FindCmd,;t t
+s,@Sort2Cmd@,$Sort2Cmd,;t t
+s,@SortCmd@,$SortCmd,;t t
 s,@DIFF@,$DIFF,;t t
 s,@CONTEXT_DIFF@,$CONTEXT_DIFF,;t t
 s,@X_CFLAGS@,$X_CFLAGS,;t t
