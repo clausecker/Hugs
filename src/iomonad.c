@@ -18,8 +18,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: iomonad.c,v $
- * $Revision: 1.37 $
- * $Date: 2002/12/20 17:56:23 $
+ * $Revision: 1.38 $
+ * $Date: 2003/01/16 18:43:16 $
  * ------------------------------------------------------------------------*/
  
 Name nameIORun;			        /* run IO code                     */
@@ -1604,7 +1604,7 @@ primFun(primEqFP) {		/* ForeignPtr a -> ForeignPtr a -> Bool    */
 }
 
 primFun(primTouchFP) {		/* ForeignPtr a -> IO ()	           */
-    eval(IOArg(2));
+    eval(IOArg(1));
     checkForeign();
     IOReturn(nameUnit);
 }
