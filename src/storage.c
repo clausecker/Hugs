@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: storage.c,v $
- * $Revision: 1.73 $
- * $Date: 2003/09/19 14:43:45 $
+ * $Revision: 1.74 $
+ * $Date: 2003/10/07 13:56:02 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -19,6 +19,7 @@
 #include "machdep.h"
 #include "evaluator.h" /* everybody() proto only */
 #include "strutil.h"
+#include "output.h"	/* needed for DEBUG_PRINTER|PROFILING */
 #include <setjmp.h>
 
 /*#define DEBUG_SHOWUSE*/
@@ -1226,10 +1227,10 @@ StackPtr sp;                        /* stack pointer                       */
 #define UPPER_DISP  5               /* # display entries on top of stack   */
 #define LOWER_DISP  5               /* # display entries on bottom of stack*/
 
-Void hugsStackOverflow() {	    /* Report stack overflow               */
-    extern Int  rootsp;
-    extern Cell evalRoots[];
+extern Int  rootsp;
+extern Cell evalRoots[];
 
+Void hugsStackOverflow() {	    /* Report stack overflow               */
     ERRMSG(0) "Control stack overflow" ETHEN
     if (rootsp>=0) {
 	Int i;

@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: type.c,v $
- * $Revision: 1.72 $
- * $Date: 2003/09/29 21:28:41 $
+ * $Revision: 1.73 $
+ * $Date: 2003/10/07 13:56:02 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -18,6 +18,7 @@
 #include "output.h"
 #include "subst.h"
 #include "goal.h"
+#include "opts.h"	/* needed for EXPLAIN_INSTANCE_RESOLUTION|MULTI_INST */
 
 /*#define DEBUG_TYPES*/
 /*#define DEBUG_KINDS*/

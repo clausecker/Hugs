@@ -9,8 +9,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: compiler.c,v $
- * $Revision: 1.20 $
- * $Date: 2003/10/07 12:07:22 $
+ * $Revision: 1.21 $
+ * $Date: 2003/10/07 13:56:02 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -18,6 +18,8 @@
 #include "connect.h"
 #include "errors.h"
 #include "goal.h"
+#include "output.h"	/* needed for DEBUG_CODE|DEBUG_SHOWSC */
+#include "opts.h"	/* needed for DEBUG_SHOWSC */
 
 Addr inputCode;                        /* Addr of compiled code for expr   */
 static Name currentName;               /* Top level name being processed   */
@@ -2087,7 +2089,7 @@ static Void local debugConstructor(FILE *fp,Name c) {
     }
     break;
   default:
-    fprintf(fp,"** unknown constructor **",whatIs(c));
+    fprintf(fp,"** unknown constructor **");
   }
 }
 #endif

@@ -190,9 +190,9 @@ observe$(OBJ): observe.c prelude.h config.h options.h storage.h HsFFI.h \
   connect.h command.h errors.h machdep.h builtin.h output.h observe.h
 builtin$(OBJ): builtin.c prelude.h config.h options.h storage.h HsFFI.h \
   connect.h errors.h machdep.h builtin.h bignums.c printer.c iomonad.c \
-  timeprim.c dirprim.c array.c
+  timeprim.c dirprim.c interns.c array.c
 compiler$(OBJ): compiler.c prelude.h config.h options.h storage.h HsFFI.h \
-  connect.h errors.h goal.h
+  connect.h errors.h goal.h output.h opts.h
 errors$(OBJ): errors.c prelude.h config.h options.h storage.h HsFFI.h \
   connect.h errors.h output.h opts.h goal.h evaluator.h
 evaluator$(OBJ): evaluator.c prelude.h config.h options.h storage.h HsFFI.h \
@@ -207,7 +207,7 @@ input$(OBJ): input.c prelude.h config.h options.h storage.h HsFFI.h connect.h \
 machdep$(OBJ): machdep.c prelude.h config.h options.h storage.h HsFFI.h \
   connect.h errors.h opts.h strutil.h machdep.h evaluator.h
 machine$(OBJ): machine.c prelude.h config.h options.h storage.h HsFFI.h \
-  connect.h errors.h
+  connect.h errors.h opts.h
 module$(OBJ): module.c prelude.h config.h options.h storage.h HsFFI.h \
   connect.h errors.h module.h output.h
 opts$(OBJ): opts.c prelude.h config.h options.h storage.h HsFFI.h connect.h \
@@ -222,13 +222,13 @@ static$(OBJ): static.c prelude.h config.h options.h storage.h HsFFI.h \
   connect.h machdep.h errors.h output.h subst.h module.h opts.h goal.h \
   scc.c
 storage$(OBJ): storage.c prelude.h config.h options.h storage.h HsFFI.h \
-  connect.h opts.h errors.h machdep.h evaluator.h strutil.h
+  connect.h opts.h errors.h machdep.h evaluator.h strutil.h output.h
 strutil$(OBJ): strutil.c prelude.h config.h options.h storage.h HsFFI.h \
   connect.h errors.h strutil.h
 subst$(OBJ): subst.c prelude.h config.h options.h storage.h HsFFI.h connect.h \
   errors.h output.h opts.h subst.h
 type$(OBJ): type.c prelude.h config.h options.h storage.h HsFFI.h connect.h \
-  errors.h output.h subst.h goal.h preds.c scc.c
+  errors.h output.h subst.h goal.h opts.h preds.c scc.c
 version$(OBJ): version.c prelude.h config.h options.h
 
 ################################################################

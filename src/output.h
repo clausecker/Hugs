@@ -24,4 +24,9 @@ extern Void printFD	 Args((FILE *,Pair));
 extern Void printObserve Args((String));
 #endif
 
+#if DEBUG_SHOWSC
+extern Void  printSc Args((FILE*, Text, Int, Cell));
+#endif
+
+
 #endif /* __OUTPUT_H__ */

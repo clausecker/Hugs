@@ -88,17 +88,11 @@ extern Bool  hereDocs;                  /* TRUE => enable `here documents' */
 extern Bool  autoLoadFiles;             /* TRUE => automatically reloaded modified files */
 #endif
 
-
 #if SUPPORT_PREPROCESSOR
 extern String preprocessor;             /* preprocessor command            */
 #endif
 
-#if DEBUG_SHOWSC
-extern Void  printSc Args((FILE*, Text, Int, Cell));
-#endif
-
 extern Bool   printing;                 /* TRUE => currently printing value*/
-
 
 /* 
  * How to add a new flag / option:

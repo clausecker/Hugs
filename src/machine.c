@@ -7,14 +7,15 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: machine.c,v $
- * $Revision: 1.16 $
- * $Date: 2003/03/03 06:31:04 $
+ * $Revision: 1.17 $
+ * $Date: 2003/10/07 13:56:02 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
 #include "storage.h"
 #include "connect.h"
 #include "errors.h"
+#include "opts.h"	/* needed for DEBUG_CODE */
 #include <setjmp.h>
 
 #if OBSERVATIONS
