@@ -305,6 +305,9 @@ primFun(primFileExist) { /* FilePath -> IO Bool - check to see if file exists. *
 primFun(primDirExist) { /* FilePath -> IO Bool - check to see if directory exists. */
   int rc;
   String s = evalName(IOArg(1));
+#ifdef _WIN32
+  int len;
+#endif
   struct stat st;
 
   if (!s) {
@@ -314,6 +317,18 @@ primFun(primDirExist) { /* FilePath -> IO Bool - check to see if directory exist
 		     IOArg(1)));
   }
   
+#ifdef _WIN32
+  /* For whatever reason, stat()ing a directory name
+   * like "foo/" returns an error, while both "foo" and "foo/."
+   * is fine. We want them all to be treated equal.
+   */
+  len = strlen(s);
+  while (len > 0 && 
+	 (s[len-1] == '/' || s[len-1] == '\\')) {
+      s[len-1] = '\0';
+      len--;
+  }
+#endif
   rc = stat(s, &st);
   
   if (rc < 0) {
