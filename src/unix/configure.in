@@ -356,7 +356,6 @@ dnl--------------------------------------------------------------------
 AC_CHECK_LIB_NOWARN(dl, dlopen)
 AC_CHECK_LIB_NOWARN(dld, shl_load)
 AC_CHECK_LIB_NOWARN(m, atan)
-AC_PATH_XTRA
 FP_CHECK_GLUT
 
 dnl--------------------------------------------------------------------
