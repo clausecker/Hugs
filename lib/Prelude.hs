@@ -62,7 +62,7 @@ module Prelude (
     Ratio, Rational, (%), numerator, denominator, approxRational,
 --  Non-standard exports
     IO(..), IOResult(..), primExitWith, Addr, Word, StablePtr, ForeignObj,
-    basicIORun, IOFinished(..),
+    basicIORun, blockIO, IOFinished(..),
     threadToIOResult,
     HugsException, catchHugsException, primThrowException,
 
@@ -1655,6 +1655,12 @@ catchHugsException (IO m) k = IO $ \ f s ->
              (\ e -> case (k e) of { IO k' -> k' f s })
              f
              (s . fromObj)
+
+-- reify current thread, execute 'm <thread>' and switch to next thread
+blockIO :: ((a -> IOResult) -> IO ()) -> IO a
+blockIO m = IO (\ f s -> Hugs_BlockThread (s . fromObj) m')
+ where
+  m' k = threadToIOResult (m (k . toObj))
 
 hugsIORun  :: IO a -> Either Int a
 hugsIORun m = 

@@ -91,12 +91,6 @@ kill = IO (\f s -> Hugs_DeadThread)
 
 yield = IO (\ f s -> Hugs_YieldThread (s ()))
 
--- reify current thread, execute 'm <thread>' and switch to next thread
-blockIO :: ((a -> IOResult) -> IO ()) -> IO a
-blockIO m = IO (\ f s -> Hugs_BlockThread (s . fromObj) m')
- where
-  m' k = threadToIOResult (m (k . toObj))
-
 -- add the continuation to the runnable list, and continue
 continueIO :: IOResult -> IO ()
 continueIO cc = IO (\ f s -> Hugs_ForkThread (s ()) cc)
