@@ -8,8 +8,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: options.h,v $
- * $Revision: 1.18 $
- * $Date: 2004/10/16 17:55:12 $
+ * $Revision: 1.19 $
+ * $Date: 2005/01/19 01:14:57 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -35,7 +35,7 @@
  *
  * This value can be overridden using the -S flag.
  */
-#define HUGSSUFFIXES ".hs:.lhs"
+#define HUGSSUFFIXES ".hs;.lhs"
 
 /* The directory name which is substituted for the string "{Hugs}"
  * in a path variable.  This normally points to where the Hugs libraries
