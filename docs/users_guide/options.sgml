@@ -52,7 +52,7 @@ The Hugs command line.
 
 </orderedlist>
 Most options can be changed within Hugs using the <command>:set</command>
-command (see <xref linkend="basic-commands">).
+command (see <xref linkend="basic-commands"/>).
 </para>
 
 <para>
@@ -89,7 +89,7 @@ the choice making no difference.
 Accept only Haskell 98.
 This is on by default, and cannot be changed within Hugs.
 Turning this off enables several special Hugs extensions,
-which are described in <xref linkend="hugs-ghc">, <xref linkend="hugs-only">
+which are described in <xref linkend="hugs-ghc"/>, <xref linkend="hugs-only"/>
 and the <citetitle pubwork="article">Hugs 98 User Manual</citetitle>.
 </para>
 </listitem>
@@ -101,7 +101,7 @@ and the <citetitle pubwork="article">Hugs 98 User Manual</citetitle>.
 <para>
 Set constraint cutoff limit in the type checker to
 <replaceable>num</replaceable> (default: 40).
-See <xref linkend="flexible-instances">.
+See <xref linkend="flexible-instances"/>.
 </para>
 </listitem>
 </varlistentry>
@@ -111,7 +111,7 @@ See <xref linkend="flexible-instances">.
 <listitem>
 <para>
 Allow certain overlapping instances (a Hugs extension; default: off).
-See <xref linkend="overlapping-instances"> for details.
+See <xref linkend="overlapping-instances"/> for details.
 </para>
 </listitem>
 </varlistentry>
@@ -123,7 +123,7 @@ See <xref linkend="overlapping-instances"> for details.
 Allow certain overlapping instances (a Hugs extension; default: off).
 These are the same overlapping instances as accepted by <option>+o</option>,
 but <option>+O</option> also accepts ambiguous uses of these instances,
-even though this is unsafe (see <xref linkend="overlapping-instances">).
+even though this is unsafe (see <xref linkend="overlapping-instances"/>).
 </para>
 </listitem>
 </varlistentry>
@@ -135,7 +135,7 @@ even though this is unsafe (see <xref linkend="overlapping-instances">).
 Support <emphasis>here documents</emphasis>
 (named after similar things in Unix shells),
 another way of writing large string literals
-(see <xref linkend="here-documents">).
+(see <xref linkend="here-documents"/>).
 This extension is turned off by default.
 </para>
 </listitem>
@@ -161,7 +161,7 @@ are always treated as ordinary Haskell,
 while those ending in <quote><literal>.lhs</literal></quote>
 are always treated as literate scripts.
 This option determines whether other files are literate scripts or not.
-(See <xref linkend="runhugs"> for an example.)
+(See <xref linkend="runhugs"/> for an example.)
 </para>
 </listitem>
 </varlistentry>
@@ -297,7 +297,7 @@ The preprocessor can examine the filename to decide what to do with the file.
 <listitem>
 <para>
 Specify the editor used by the <literal>:edit</literal> command
-(see <xref linkend="module-commands">).
+(see <xref linkend="module-commands"/>).
 For example, to have Hugs invoke <literal>vi</literal> to edit your files,
 use
 <programlisting>
@@ -487,7 +487,7 @@ simplify types by applying defaulting rules, e.g.,
 </screen>
 With the <option>+T</option> option,
 the interpreter attempts to <quote>default</quote> types first,
-using the same rules as for expressions (see <xref linkend="basic-commands">):
+using the same rules as for expressions (see <xref linkend="basic-commands"/>):
 <screen>
   Prelude> :set +T
   Prelude> :t 1
@@ -759,7 +759,7 @@ Enable root optimisation (default: on).
 <para>
 This usually gives a small gain in speed, but you might want to turn it off
 if you're using the observation-based debugger
-(see <xref linkend="observe-and-root-optimisation">).
+(see <xref linkend="observe-and-root-optimisation"/>).
 </para>
 </listitem>
 </varlistentry>
@@ -798,10 +798,10 @@ If this variable is set, Hugs is assumed to be running in an Emacs subshell
 The user's home directory.
 This is substituted for <literal>{Home}</literal> in the argument of the
 <link linkend="option-search-path"><option>-P</option></link> option
-(see <xref linkend="options-loading">),
+(see <xref linkend="options-loading"/>),
 and for <quote><literal>~</literal></quote> in the argument of the
 <command>:cd</command> command
-(see <xref linkend="misc-commands">).
+(see <xref linkend="misc-commands"/>).
 </para>
 </listitem>
 </varlistentry>
@@ -811,7 +811,7 @@ and for <quote><literal>~</literal></quote> in the argument of the
 <listitem>
 <para>
 Additional options for Hugs, processed before any given on the command line
-(see <xref linkend="options-list">).
+(see <xref linkend="options-list"/>).
 Within this string, options may be separated by whitespace.
 To include a literal space in an option, either precede it with a backslash
 or wrap the whole option in double quotes.
@@ -836,7 +836,7 @@ Other bachslashes are interpreted literally.
 The Hugs library directory.
 This is substituted for <literal>{Hugs}</literal> in the argument of the
 <link linkend="option-search-path"><option>-P</option></link> option
-(see <xref linkend="options-loading">).
+(see <xref linkend="options-loading"/>).
 </para>
 </listitem>
 </varlistentry>
@@ -847,7 +847,7 @@ This is substituted for <literal>{Hugs}</literal> in the argument of the
 <para>
 (Windows only)
 If this variable is set, options are not read from the user portion of the
-Registry (see <xref linkend="options-list">).
+Registry (see <xref linkend="options-list"/>).
 You might use this to recover if your registry settings get messed up
 somehow.
 </para>
@@ -859,7 +859,7 @@ somehow.
 <listitem>
 <para>
 The shell that is invoked by the <command>:!</command> command
-(see <xref linkend="misc-commands">).
+(see <xref linkend="misc-commands"/>).
 </para>
 </listitem>
 </varlistentry>

@@ -339,7 +339,7 @@ Windows and Linux using gcc.
 </itemizedlist>
 <para>
 Modules containing <literal>foreign</literal> declarations must be compiled
-with <command>ffihugs</command> before use (see <xref linkend="ffihugs">).
+with <command>ffihugs</command> before use (see <xref linkend="ffihugs"/>).
 </para>
 
 </sect2>
