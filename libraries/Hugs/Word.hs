@@ -8,6 +8,7 @@ module Hugs.Word
 	, Word16
 	, Word32
 	, Word64
+	-- These functions are deprecated: use fromIntegral instead
 	, word8ToWord32  -- :: Word8  -> Word32
 	, word32ToWord8  -- :: Word32 -> Word8
 	, word16ToWord32 -- :: Word16 -> Word32

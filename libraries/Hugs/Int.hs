@@ -8,6 +8,7 @@ module Hugs.Int
 	, Int16
 	, Int32
 	, Int64
+	-- These functions are deprecated: use fromIntegral instead
 	, int8ToInt  -- :: Int8  -> Int
 	, intToInt8  -- :: Int   -> Int8
 	, int16ToInt -- :: Int16 -> Int
