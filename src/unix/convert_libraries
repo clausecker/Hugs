@@ -237,7 +237,7 @@ nocvt base Control/Exception.hs		exts/Exception.hs	# Hugs special
   cvt base Control/Parallel.hs
 # cvt base Control/Parallel/Strategies.hs	# unused by GHC
   cvt base Data/Array.hs
-# cvt base Data/Array/Base.hs		# uses pattern guard syntax
+  cvt base Data/Array/Base.hs
 # cvt base Data/Array/Diff.hs
   cvt base Data/Array/IArray.hs
   cvt base Data/Array/IO.hs

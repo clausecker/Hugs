@@ -65,6 +65,7 @@ module Hugs.Prelude (
     basicIORun, blockIO, IOFinished(..),
     threadToIOResult,
     HugsException, catchHugsException, primThrowException,
+    unsafeIndex, unsafeRangeSize,
 
     Bool(False, True),
     Maybe(Nothing, Just),
@@ -321,14 +322,27 @@ realToFrac      = fromRational . toRational
 
 class (Ord a) => Ix a where
     range                :: (a,a) -> [a]
-    index                :: (a,a) -> a -> Int
+    index, unsafeIndex   :: (a,a) -> a -> Int
     inRange              :: (a,a) -> a -> Bool
     rangeSize            :: (a,a) -> Int
+    unsafeRangeSize      :: (a,a) -> Int
 
-    rangeSize r@(l,u)
-             | null (range r) = 0
-             | otherwise      = index r u + 1
-	-- NB: replacing "null (range r)" by  "not (l <= u)"
+	-- Must specify one of index, unsafeIndex
+    index b i | inRange b i = unsafeIndex b i
+              | otherwise   = error "Error in array index"
+    unsafeIndex b i = index b i
+
+	-- As long as you don't override the default rangeSize,
+	-- you can specify unsafeRangeSize as follows, to speed up
+	-- some operations:
+	--
+	--    unsafeRangeSize b@(_l,h) = unsafeIndex b h + 1
+	--
+    rangeSize b@(_l,h) | inRange b h = unsafeIndex b h + 1
+                       | otherwise   = 0
+    unsafeRangeSize b = rangeSize b
+
+	-- NB: replacing "inRange b h" by  "l <= u"
 	-- fails if the bounds are tuples.  For example,
 	-- 	(1,2) <= (2,1)
 	-- but the range is nevertheless empty

@@ -37,13 +37,14 @@ module Hugs.ST
         , freezeSTArray
         , unsafeFreezeSTArray
         , Ix
+
+	, unsafeReadSTArray
+	, unsafeWriteSTArray
 	) where
 
-import Hugs.Array(Array,Ix(index,rangeSize),assocs)
-import Hugs.Array.Base(HasBounds(bounds),MArray(..))
+import Hugs.Array(Array,Ix(index,rangeSize),bounds,assocs)
 import Hugs.IOExts(unsafePerformIO)
 import Control.Monad   
-import Data.Dynamic
 
 -----------------------------------------------------------------------------
 
@@ -96,10 +97,16 @@ thawSTArray         :: Ix ix => Array ix elt -> ST s (STArray s ix elt)
 freezeSTArray       :: Ix ix => STArray s ix elt -> ST s (Array ix elt)
 unsafeFreezeSTArray :: Ix ix => STArray s ix elt -> ST s (Array ix elt)
 
+unsafeReadSTArray   :: Ix i => STArray s i e -> Int -> ST s e
+unsafeReadSTArray    = primReadArr (const id)
+
+unsafeWriteSTArray  :: Ix i => STArray s i e -> Int -> e -> ST s ()
+unsafeWriteSTArray   = primWriteArr (const id)
+
 newSTArray bs e      = primNewArr bs (rangeSize bs) e
 boundsSTArray a      = primBounds a
-readSTArray a i      = primReadArr index a i
-writeSTArray a i e   = primWriteArr index a i e
+readSTArray a i      = unsafeReadSTArray a (index (boundsSTArray a) i)
+writeSTArray a i e   = unsafeWriteSTArray a (index (boundsSTArray a) i) e
 thawSTArray arr      = newSTArray (bounds arr) err `thenStrictST` \ stArr ->
 		       let 
                          fillin [] = returnST stArr
@@ -114,15 +121,12 @@ unsafeFreezeSTArray  = freezeSTArray  -- not as fast as GHC
 instance Eq (STArray s ix elt) where
   (==) = eqSTArray
 
-instance HasBounds (STArray s) where
-  bounds = boundsSTArray
-
 primitive primNewArr   "STNewArr"
           :: (a,a) -> Int -> b -> ST s (STArray s a b)
 primitive primReadArr  "STReadArr"
-          :: ((a,a) -> a -> Int) -> STArray s a b -> a -> ST s b
+          :: ((i,i) -> a -> Int) -> STArray s i b -> a -> ST s b
 primitive primWriteArr "STWriteArr"
-          :: ((a,a) -> a -> Int) -> STArray s a b -> a -> b -> ST s ()
+          :: ((i,i) -> a -> Int) -> STArray s i b -> a -> b -> ST s ()
 primitive primFreeze   "STFreeze"
           :: STArray s a b -> ST s (Array a b)
 primitive primBounds   "STBounds"
@@ -131,16 +135,3 @@ primitive eqSTArray    "STArrEq"
           :: STArray s a b -> STArray s a b -> Bool
 
 -----------------------------------------------------------------------------
-
-instance MArray (STArray s) e (ST s) where
-	newArray = newSTArray
-	readArray = readSTArray
-	writeArray = writeSTArray
-
-sTArrayTc :: TyCon
-sTArrayTc = mkTyCon "STArray"
-
-instance (Typeable a, Typeable b, Typeable c) => Typeable (STArray a b c) where
-  typeOf a = mkAppTy sTArrayTc [typeOf ((undefined :: STArray a b c -> a) a),
-				typeOf ((undefined :: STArray a b c -> b) a),
-				typeOf ((undefined :: STArray a b c -> c) a)]

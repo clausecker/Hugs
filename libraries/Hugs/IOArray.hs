@@ -13,6 +13,8 @@ module Hugs.IOArray
 	, freezeIOArray
 	, thawIOArray
 	, unsafeFreezeIOArray
+	, unsafeReadIOArray
+	, unsafeWriteIOArray
 	) where
 
 import Hugs.Array
@@ -30,10 +32,16 @@ thawIOArray         :: Ix ix => Array ix elt -> IO (IOArray ix elt)
 freezeIOArray       :: Ix ix => IOArray ix elt -> IO (Array ix elt)
 unsafeFreezeIOArray :: Ix ix => IOArray ix elt -> IO (Array ix elt)
 
+unsafeReadIOArray   :: Ix i => IOArray i e -> Int -> IO e
+unsafeReadIOArray    = primReadArr (const id)
+
+unsafeWriteIOArray  :: Ix i => IOArray i e -> Int -> e -> IO ()
+unsafeWriteIOArray   = primWriteArr (const id)
+
 newIOArray bs e      = primNewArr bs (rangeSize bs) e
 boundsIOArray a      = primBounds a
-readIOArray a i      = primReadArr index a i
-writeIOArray a i e   = primWriteArr index a i e
+readIOArray a i      = unsafeReadIOArray a (index (boundsIOArray a) i)
+writeIOArray a i e   = unsafeWriteIOArray a (index (boundsIOArray a) i) e
 thawIOArray arr      = do a <- newIOArray (bounds arr) err
 			  let fillin []          = return a
 			      fillin((ix,v):ixs) = do writeIOArray a ix v
@@ -50,9 +58,9 @@ instance Eq (IOArray ix elt) where
 primitive primNewArr   "IONewArr"
           :: (a,a) -> Int -> b -> IO (IOArray a b)
 primitive primReadArr  "IOReadArr"
-          :: ((a,a) -> a -> Int) -> IOArray a b -> a -> IO b
+          :: ((i,i) -> a -> Int) -> IOArray i b -> a -> IO b
 primitive primWriteArr "IOWriteArr"
-          :: ((a,a) -> a -> Int) -> IOArray a b -> a -> b -> IO ()
+          :: ((i,i) -> a -> Int) -> IOArray i b -> a -> b -> IO ()
 primitive primFreeze   "IOFreeze"
           :: IOArray a b -> IO (Array a b)
 primitive primBounds   "IOBounds"
@@ -61,10 +69,3 @@ primitive eqIOArray    "IOArrEq"
           :: IOArray a b -> IOArray a b -> Bool
 
 -----------------------------------------------------------------------------
-
-iOArrayTc :: TyCon
-iOArrayTc = mkTyCon "IOArray"
-
-instance (Typeable a, Typeable b) => Typeable (IOArray a b) where
-  typeOf a = mkAppTy iOArrayTc [typeOf ((undefined :: IOArray a b -> a) a),
-				typeOf ((undefined :: IOArray a b -> b) a)]
