@@ -1,5 +1,7 @@
 -- !!! Testing primitive exception support
 
+import Exception( HugsException )
+
 -- data HugsException
 
 -- Note that these primitives break referential transparency.

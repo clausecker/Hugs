@@ -31,6 +31,12 @@ module Exception(
 
 	evaluate,  -- :: a -> IO a
 
+	-- Hugs-only stuff
+
+	HugsException,
+	catchHugsException,	-- :: IO a -> (HugsException -> IO a) -> IO a
+	primThrowException,	-- :: HugsException -> a
+
 	-- Exception predicates
 
 	justIoErrors,		-- :: Exception -> Maybe IOError
