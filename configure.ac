@@ -422,7 +422,7 @@ dnl
 dnl--------------------------------------------------------------------
 
 dnl ** do we have long longs?
-FPTOOLS_C_LONG_LONG
+AC_CHECK_TYPES([long long])
 
 dnl ** what are the sizes of various types
 AC_CHECK_SIZEOF(char,               1)
@@ -430,14 +430,14 @@ AC_CHECK_SIZEOF(double,             8)
 AC_CHECK_SIZEOF(float,              4)
 AC_CHECK_SIZEOF(int,                4)
 AC_CHECK_SIZEOF(long,               4)
-if test "$fptools_cv_have_long_long" = yes; then
+if test "$ac_cv_type_long_long" = yes; then
 AC_CHECK_SIZEOF(long long,          8)
 fi
 AC_CHECK_SIZEOF(short,              2)
 AC_CHECK_SIZEOF(unsigned char,      1)
 AC_CHECK_SIZEOF(unsigned int,       4)
 AC_CHECK_SIZEOF(unsigned long,      4)
-if test "$fptools_cv_have_long_long" = yes; then
+if test "$ac_cv_type_long_long" = yes; then
 AC_CHECK_SIZEOF(unsigned long long, 8)
 fi
 AC_CHECK_SIZEOF(unsigned short,     2)
@@ -449,14 +449,14 @@ FP_CHECK_ALIGNMENT(double)
 FP_CHECK_ALIGNMENT(float)
 FP_CHECK_ALIGNMENT(int)
 FP_CHECK_ALIGNMENT(long)
-if test "$fptools_cv_have_long_long" = yes; then
+if test "$ac_cv_type_long_long" = yes; then
 FP_CHECK_ALIGNMENT(long long)
 fi
 FP_CHECK_ALIGNMENT(short)
 FP_CHECK_ALIGNMENT(unsigned char)
 FP_CHECK_ALIGNMENT(unsigned int)
 FP_CHECK_ALIGNMENT(unsigned long)
-if test "$fptools_cv_have_long_long" = yes; then
+if test "$ac_cv_type_long_long" = yes; then
 FP_CHECK_ALIGNMENT(unsigned long long)
 fi
 FP_CHECK_ALIGNMENT(unsigned short)
@@ -472,7 +472,7 @@ FPTOOLS_CHECK_HTYPE(int)
 FPTOOLS_CHECK_HTYPE(unsigned int)
 FPTOOLS_CHECK_HTYPE(long)
 FPTOOLS_CHECK_HTYPE(unsigned long)
-if test "$fptools_cv_have_long_long" = yes; then
+if test "$ac_cv_type_long_long" = yes; then
 FPTOOLS_CHECK_HTYPE(long long)
 FPTOOLS_CHECK_HTYPE(unsigned long long)
 fi

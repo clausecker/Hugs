@@ -13,47 +13,6 @@ $1=${$1=$2}
 AC_SUBST($1)
 ])
 
-dnl Generalisation of AC_CHECK_TYPE which let's us specify which
-dnl header files to search.
-
-dnl AC_CHECK_TYPE_IN(TYPE, DEFAULT, HEADERS)
-
-AC_DEFUN(AC_CHECK_TYPE_IN,
-[dnl
-AC_MSG_CHECKING(for $1)
-AC_CACHE_VAL(ac_cv_type_$1,
-[AC_EGREP_CPP($1, [$3], ac_cv_type_$1=yes, ac_cv_type_$1=no)])dnl
-AC_MSG_RESULT($ac_cv_type_$1)
-if test $ac_cv_type_$1 = no; then
-  AC_DEFINE($1, $2)
-fi
-])
-
-
-dnl copied from acspecific.m4 (part of autoconf distribution)
-dnl
-dnl AC_DEFUN(AC_STACK_DIRECTION,
-dnl [AC_CACHE_CHECK(stack direction for C alloca, ac_cv_c_stack_direction,
-dnl [AC_TRY_RUN([find_stack_direction ()
-dnl {
-dnl   static char *addr = 0;
-dnl   auto char dummy;
-dnl   if (addr == 0)
-dnl 	{
-dnl 	  addr = &dummy;
-dnl 	  return find_stack_direction ();
-dnl 	}
-dnl   else
-dnl 	return (&dummy > addr) ? 1 : -1;
-dnl }
-dnl main ()
-dnl {
-dnl   exit (find_stack_direction() < 0);
-dnl }], ac_cv_c_stack_direction=1, ac_cv_c_stack_direction=-1,
-dnl   ac_cv_c_stack_direction=0)])
-dnl AC_DEFINE_UNQUOTED(STACK_DIRECTION, $ac_cv_c_stack_direction)
-dnl ])
-
 
 dnl On some machines, you cannot take the address of a jmp_buf
 dnl
@@ -413,33 +372,6 @@ AS_IF([test AS_VAR_GET(fp_func) = yes],
       [$5])dnl
 AS_VAR_POPDEF([fp_func])dnl
 ])# FP_CHECK_FUNC
-
-dnl ** figure out whether C compiler supports 'long long's
-dnl    (Closely based on Andreas Zeller's macro for testing
-dnl     for this under C++)
-dnl
-dnl    If the C compiler supports `long long' types,
-dnl    define `HAVE_LONG_LONG'.
-dnl
-AC_DEFUN(FPTOOLS_C_LONG_LONG,
-[
-AC_REQUIRE([AC_PROG_CC])
-AC_MSG_CHECKING(whether ${CC} supports long long types)
-AC_CACHE_VAL(fptools_cv_have_long_long,
-[
-AC_LANG_SAVE
-AC_LANG_C
-AC_TRY_COMPILE(,[long long a;],
-fptools_cv_have_long_long=yes,
-fptools_cv_have_long_long=no)
-AC_LANG_RESTORE
-])
-AC_MSG_RESULT($fptools_cv_have_long_long)
-if test "$fptools_cv_have_long_long" = yes; then
-AC_DEFINE(HAVE_LONG_LONG, [1],
-  [Define to 1 if C compiler supports long long types.])
-fi
-])
 
 
 # FP_CHECK_WIN32
