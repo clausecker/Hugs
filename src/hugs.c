@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.42 $
- * $Date: 2001/07/18 16:23:29 $
+ * $Revision: 1.43 $
+ * $Date: 2001/08/10 00:29:21 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -2037,39 +2037,54 @@ static Void local autoReloadFiles() {
 }
 #endif
 
-#if USE_THREADS
-static Void  local loopInBackground 	Args((Void));
-static Void  local stopEvaluatorThread	Args((Void));
-static DWORD local evaluatorThreadBody 	Args((LPDWORD));
-static Void  local startEvaluatorThread	Args((Void));
+#if USE_THREADS 
+static Void  local loopInBackground  Args((Void));
+static Void  local stopEvaluatorThread Args((Void));
+static DWORD local evaluatorThreadBody  Args((LPDWORD));
+static Void  local startEvaluatorThread Args((Void));
 
-static HANDLE evaluatorThread;
-static DWORD  evaluatorThreadId;
-static Bool   evaluatorThreadRunning = FALSE;
+static HANDLE  evaluatorThread=NULL;
+static DWORD   evaluatorThreadId;
+static Bool    evaluatorThreadRunning = FALSE;
+static jmp_buf goToEvaluator;
 
 static Void local stopEvaluatorThread(Void) {
-    evaluatorThreadRunning = FALSE;        
-    TerminateThread(evaluatorThread, 1000); 
+
+    if(evaluatorThreadRunning){
+
+      if(GetCurrentThreadId() != evaluatorThreadId) {
+       MessageBox(NULL, "stopEvaluatorThread executed by main thread !!!","Error", MB_OK);
+      }
+
+      evaluatorThreadRunning = FALSE;
+      SuspendThread(evaluatorThread);
+      /* stop here until resumed */
+      longjmp(goToEvaluator,1);
+    }
 }
 
+
 static DWORD local evaluatorThreadBody(LPDWORD notUsed) {
+
+    Int evaluatorNumber = setjmp(goToEvaluator);
     evaluator();
     stopEvaluatorThread();
+
+    /* not reached*/
     return 0;
 }
 
 static Void local startEvaluatorThread(Void) {
-
-    evaluatorThread = CreateThread(NULL,
+    if (!evaluatorThread)
+      evaluatorThread = CreateThread(NULL,
                                    0,
-                                   (LPTHREAD_START_ROUTINE) evaluatorThreadBody, 
-                                   NULL, 
-                                   CREATE_SUSPENDED, 
+                                   (LPTHREAD_START_ROUTINE)evaluatorThreadBody,
+                                   NULL,
+                                   CREATE_SUSPENDED,
                                    &evaluatorThreadId);
-    //SetThreadPriority(evaluatorThread, THREAD_PRIORITY_HIGHEST); 
-    evaluatorThreadRunning = TRUE;                        
+    evaluatorThreadRunning = TRUE;
     ResumeThread(evaluatorThread);
-} 
+}
 
 #endif /* USE_THREADS */
 
