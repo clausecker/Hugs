@@ -338,7 +338,7 @@ class (Ord a) => Ix a where
 
 	-- Must specify one of index, unsafeIndex
     index b i | inRange b i = unsafeIndex b i
-              | otherwise   = error "Prelude.Ix.index: Error in array index"
+              | otherwise   = error "Ix.index: Error in array index"
     unsafeIndex b i = index b i
 
 	-- As long as you don't override the default rangeSize,
@@ -522,7 +522,7 @@ instance Ix Char where
     range (c,c')      = [c..c']
     index b@(c,c') ci
        | inRange b ci = fromEnum ci - fromEnum c
-       | otherwise    = error "Prelude.Ix{Char}.index: Index out of range."
+       | otherwise    = error "Ix{Char}.index: Index out of range."
     inRange (c,c') ci = fromEnum c <= i && i <= fromEnum c'
 			where i = fromEnum ci
 
@@ -729,14 +729,14 @@ instance Ix Int where
     range (m,n)          = [m..n]
     index b@(m,n) i
 	   | inRange b i = i - m
-	   | otherwise   = error "Prelude.Ix{Int}.index: Index out of range"
+	   | otherwise   = error "Ix{Int}.index: Index out of range"
     inRange (m,n) i      = m <= i && i <= n
 
 instance Ix Integer where
     range (m,n)          = [m..n]
     index b@(m,n) i
 	   | inRange b i = fromInteger (i - m)
-	   | otherwise   = error "Prelude.Ix{Integer}.index: Index out of range"
+	   | otherwise   = error "Ix{Integer}.index: Index out of range"
     inRange (m,n) i      = m <= i && i <= n
 
 instance Enum Int where
