@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: preds.c,v $
- * $Revision: 1.14 $
- * $Date: 1999/10/22 21:44:10 $
+ * $Revision: 1.15 $
+ * $Date: 1999/10/22 22:11:14 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -837,11 +837,6 @@ static List local elimPredsUsing(ps,sps)/* Try to discharge or defer preds,*/
 List ps;				/* splitting if necessary to match */
 List sps; {				/* context ps.  sps = savePreds.   */
     List rems = NIL;
-    /*
-    Printf("elimPredsUsing: ");
-    printContext(stdout,copyPreds(preds));
-    Printf("\n");
-    */
     while (nonNull(preds)) {		/* Pick a predicate from preds	   */
 	Cell p  = preds;
 	Cell pi = fst3(hd(p));
