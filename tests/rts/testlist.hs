@@ -1,4 +1,4 @@
---!!! Testing list operations
+-- !!! Testing list operations
 
 -- Hack: The only purpose of this script is to give us a place to put
 -- the above comment...

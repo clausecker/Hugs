@@ -1,4 +1,4 @@
---!!! Instance context can't satisfy class-hierarchy constraint
+-- !!! Instance context can't satisfy class-hierarchy constraint
 module M where
 class Foo a
 class Foo a => Bar a

@@ -1,4 +1,4 @@
---!!! Test for error in type error message (fixed in Hugs 1.4)
+-- !!! Test for error in type error message (fixed in Hugs 1.4)
 module TyErr where
 
 newtype StateMonad m s a = MkStateMonad (s -> (m (s, a)))

@@ -1,4 +1,4 @@
---!!! Testing error checking in qualified names (local variables)
+-- !!! Testing error checking in qualified names (local variables)
 
 -- No qualified local variables
 module TestQual3 where

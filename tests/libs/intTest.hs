@@ -1,4 +1,4 @@
---!!! Testing Int and Word
+-- !!! Testing Int and Word
 module T where
 import Int
 import Word

@@ -1,4 +1,4 @@
---!!! Testing primitive exception support
+-- !!! Testing primitive exception support
 
 -- data HugsException
 

@@ -1,4 +1,4 @@
---!!! Default decl for non-method
+-- !!! Default decl for non-method
 module M where
 class C a where
   x :: a

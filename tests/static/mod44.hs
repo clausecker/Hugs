@@ -1,4 +1,4 @@
---!!! Repeated instance decl
+-- !!! Repeated instance decl
 module M where
 data T = T Int
 instance Eq T

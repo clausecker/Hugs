@@ -1,4 +1,4 @@
---!!! Testing top level printer (note that this doesn't necessarily test show)
+-- !!! Testing top level printer (note that this doesn't necessarily test show)
 
 -- Test things of type String
 

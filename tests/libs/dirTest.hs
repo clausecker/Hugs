@@ -1,4 +1,4 @@
---!!! Testing the Directory module
+-- !!! Testing the Directory module
 module Main where
 
 import Directory

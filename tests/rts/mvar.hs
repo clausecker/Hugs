@@ -1,4 +1,4 @@
---!!! Testing the MVar primitives
+-- !!! Testing the MVar primitives
 
 -- Some of these tests are marked as non-deterministic.
 -- Tests involving these will "fail" if the scheduling order

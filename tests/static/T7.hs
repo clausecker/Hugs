@@ -1,4 +1,4 @@
---!!! Testing export of class members
+-- !!! Testing export of class members
 
 module T7 where
 

@@ -1,4 +1,4 @@
---!!! Testing System
+-- !!! Testing System
 module T where
 
 import System(getArgs,getProgName,getEnv,system)

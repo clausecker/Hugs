@@ -1,4 +1,4 @@
---!!! Testing IOError (part 1)
+-- !!! Testing IOError (part 1)
 
 import IO
 

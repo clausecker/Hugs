@@ -1,4 +1,4 @@
---!!! Testing typechecking of runST
+-- !!! Testing typechecking of runST
 module RunSTTest where
 
 import ST

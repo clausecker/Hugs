@@ -1,4 +1,4 @@
---!!! Dictionary bug demo 
+-- !!! Dictionary bug demo 
 import Array
 
 a :: Array Int Int

@@ -1,4 +1,4 @@
---!!! Correct abstract class export
+-- !!! Correct abstract class export
 module M(C) where
 class C a where
   m1 :: a

@@ -1,4 +1,4 @@
---!!! Testing error catching
+-- !!! Testing error catching
 
 --module TestCatch where
 

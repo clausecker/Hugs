@@ -1,4 +1,4 @@
---!!! Type sigs in instance decl
+-- !!! Type sigs in instance decl
 module M where
 data T = T Int
 instance Eq T where

@@ -1,4 +1,4 @@
---!!! Importing Class with missing member
+-- !!! Importing Class with missing member
 module M where
 import Prelude(Eq((==)))
 

@@ -1,4 +1,4 @@
---!!! Testing monad comprehensions
+-- !!! Testing monad comprehensions
 module MonadTest where
 import Monad
 

@@ -1,4 +1,4 @@
---!!! Correct abstract class import
+-- !!! Correct abstract class import
 module M where
 import Prelude(Eq)
 

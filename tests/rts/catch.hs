@@ -1,4 +1,4 @@
---!!! Testing error catching
+-- !!! Testing error catching
 
 test1, test2 :: Either HugsObject Int
 

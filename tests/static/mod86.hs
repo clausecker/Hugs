@@ -1,4 +1,4 @@
---!!! Correct abstract tycon import
+-- !!! Correct abstract tycon import
 module M where
 import Prelude(Either)
 

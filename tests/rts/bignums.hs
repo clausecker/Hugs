@@ -1,4 +1,4 @@
---!!! Testing bignums
+-- !!! Testing bignums
 
 -- Note: anything which prints an Integer automatically tests
 -- quotRem.

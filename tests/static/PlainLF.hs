@@ -1,4 +1,4 @@
---!!! Plain source using LF as newline
+-- !!! Plain source using LF as newline
 
 module PlainLF where
 

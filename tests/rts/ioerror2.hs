@@ -1,4 +1,4 @@
---!!! Testing IOError (part 2)
+-- !!! Testing IOError (part 2)
 
 -- These should both raise the same error - not IOErrors!
 a1 = ["a" !! 1]

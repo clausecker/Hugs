@@ -1,4 +1,4 @@
---!!! Multiple modules per file
+-- !!! Multiple modules per file
 module M where
 foo = 'a'
 

@@ -1,4 +1,4 @@
---!!! Testing interaction of exception handling with threads
+-- !!! Testing interaction of exception handling with threads
 
 -- As with prodcon, this test is sensitive to the order that threads
 -- get scheduled but what it's really testing is that the right errors

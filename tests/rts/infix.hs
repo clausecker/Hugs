@@ -1,4 +1,4 @@
---!!! Testing the printing of infix constructors
+-- !!! Testing the printing of infix constructors
 data Music = Note
            | Music :+: Music
            | Scale Music

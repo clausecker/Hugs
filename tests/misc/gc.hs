@@ -1,4 +1,4 @@
---!!! Testing the garbage collector
+-- !!! Testing the garbage collector
 module TestGC where
 
 -- All these tests should be run in a freshly started system

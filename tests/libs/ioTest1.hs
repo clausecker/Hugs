@@ -1,4 +1,4 @@
---!!! Testing the IO module
+-- !!! Testing the IO module
 module Main where
 
 import IO

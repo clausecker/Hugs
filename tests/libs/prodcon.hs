@@ -1,4 +1,4 @@
---!!! Testing derived Concurrency primitives and producer-consumer code
+-- !!! Testing derived Concurrency primitives and producer-consumer code
 
 -- NB  Code which uses cooperative scheduling can be sensitive to the
 -- scheduling order if it calls any IO operations which might block

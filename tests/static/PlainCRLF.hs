@@ -1,4 +1,4 @@
---!!! Plain source using CRLF as newline
+-- !!! Plain source using CRLF as newline
 
 module PlainCRLF where
 

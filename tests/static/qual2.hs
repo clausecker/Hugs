@@ -1,4 +1,4 @@
---!!! Testing error checking in qualified names (type variables)
+-- !!! Testing error checking in qualified names (type variables)
 
 -- No qualified type variables
 module TestQual2 where

@@ -1,4 +1,4 @@
---!!! Testing Haskell 1.3 syntax
+-- !!! Testing Haskell 1.3 syntax
 
 -- Haskell 1.3 syntax differs from Haskell 1.2 syntax in several ways:
 

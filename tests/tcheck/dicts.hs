@@ -1,4 +1,4 @@
---!!! Testing (one aspect of) the dictionary bug
+-- !!! Testing (one aspect of) the dictionary bug
 {-
 Hello,
 

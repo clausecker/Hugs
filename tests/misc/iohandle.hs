@@ -1,4 +1,4 @@
---!!! Testing File I/O operations and errors
+-- !!! Testing File I/O operations and errors
 
 testFile    = "Tests/iohandle.tst"
 unreadable  = "Tests/unreadable.tst"

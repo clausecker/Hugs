@@ -1,4 +1,4 @@
---!!! Testing Read (assuming that Eq, Show and Enum work!)
+-- !!! Testing Read (assuming that Eq, Show and Enum work!)
 
 module TestRead where
 

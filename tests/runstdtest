@@ -7,7 +7,7 @@
 #	    [default: anything on the cmd line this script doesn't recognise ]
 #	  the first opt not starting w/ "-" is taken to be an input
 #	  file and (if it exists) is grepped for "what's going on here"
-#	  comments (^--!!!).
+#	  comments (^-- !!!).
 #	* a file to feed to stdin ( -i<file> ) [default: $dev_null ]
 #	* a "time" command to use (-t <cmd>).
 #       * a "start" line (-s <line>) - all preceeding lines of output 
@@ -31,12 +31,11 @@
 # 
 # (This is supposed to be a "prettier" replacement for runstdtest.)
 #
-
 die "$0 requires perl 5.0 or higher" unless $] >= 5.0;
 
 ($Pgm = $0) =~ s|.*/||;
 
-$tmpdir   = &fromEnv('TMPDIR',"/tmp");
+$tmpdir   = "c:/tmp"; #&fromEnv('TMPDIR',"/tmp");
 $shell    = "/bin/sh";
 $cmp      = "diff -q";
 $diff     = &fromEnv('CONTEXT_DIFF',"diff -c1");
@@ -107,7 +106,7 @@ exit 1 if $Status;
 
 # tidy up the pgm args:
 # (1) look for the "first input file"
-#     and grep it for "interesting" comments (--!!! )
+#     and grep it for "interesting" comments (-- !!! )
 # (2) quote any args w/ whitespace in them.
 $grep_done = 0;
 foreach $a ( @PgmArgs ) {
@@ -117,7 +116,7 @@ foreach $a ( @PgmArgs ) {
 	     exit 1;
 	 }
 	 while (<ARG>) {
-            if (/^(--!!![^\r\n]*)/) {
+            if (/^(-- !!![^\r\n]*)/) {
                 print $1,"\n";
             }
 	 }

@@ -1,4 +1,4 @@
---!!! Testing (List.\\) and related functions
+-- !!! Testing (List.\\) and related functions
 module T where
 
 import List( deleteBy, delete, (\\) )

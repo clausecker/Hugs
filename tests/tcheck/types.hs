@@ -1,4 +1,4 @@
---!!! Testing typechecker (fixed in Hugs 1.01)
+-- !!! Testing typechecker (fixed in Hugs 1.01)
 
 {-
 Hi again,

@@ -1,4 +1,4 @@
---!!! Testing Enum
+-- !!! Testing Enum
 
 module TestEnum where
 

@@ -1,4 +1,4 @@
---!!! Some simple examples using arrays.
+-- !!! Some simple examples using arrays.
 
 module ArrayEx where
 import Array

@@ -1,3 +1,3 @@
---!!! Importing unknown module
+-- !!! Importing unknown module
 module M where
 import N
