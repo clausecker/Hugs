@@ -231,7 +231,7 @@ runhugs.res	: msc\runhugs.rc ..\icons\hsxicon.ico
 
 hugs$(OBJ): hugs.c prelude.h config.h options.h storage.h HsFFI.h command.h \
   connect.h errors.h script.h opts.h strutil.h evaluator.h machdep.h \
-  goal.h output.h module.h
+  output.h module.h
 runhugs$(OBJ): runhugs.c prelude.h config.h options.h storage.h HsFFI.h \
   connect.h machdep.h observe.h builtin.h evaluator.h errors.h server.h \
   HugsAPI.h
@@ -244,7 +244,7 @@ observe$(OBJ): observe.c prelude.h config.h options.h storage.h HsFFI.h \
   connect.h command.h errors.h machdep.h builtin.h output.h observe.h
 builtin$(OBJ): builtin.c prelude.h config.h options.h storage.h HsFFI.h \
   connect.h errors.h machdep.h builtin.h bignums.c printer.c iomonad.c \
-  timeprim.c dirprim.c interns.c array.c
+  timeprim.c dirprim.c array.c
 compiler$(OBJ): compiler.c prelude.h config.h options.h storage.h HsFFI.h \
   connect.h errors.h goal.h output.h opts.h
 errors$(OBJ): errors.c prelude.h config.h options.h storage.h HsFFI.h \
@@ -255,7 +255,7 @@ evaluator$(OBJ): evaluator.c prelude.h config.h options.h storage.h HsFFI.h \
 ffi$(OBJ): ffi.c prelude.h config.h options.h storage.h HsFFI.h connect.h \
   errors.h output.h strutil.h
 goal$(OBJ): goal.c prelude.h config.h options.h storage.h HsFFI.h connect.h \
-  machdep.h opts.h goal.h
+  errors.h machdep.h opts.h goal.h
 input$(OBJ): input.c prelude.h config.h options.h storage.h HsFFI.h connect.h \
   command.h errors.h module.h script.h opts.h goal.h machdep.h parser.c
 machdep$(OBJ): machdep.c prelude.h config.h options.h storage.h HsFFI.h \
@@ -269,7 +269,7 @@ opts$(OBJ): opts.c prelude.h config.h options.h storage.h HsFFI.h connect.h \
 output$(OBJ): output.c prelude.h config.h options.h storage.h HsFFI.h \
   connect.h errors.h output.h
 plugin$(OBJ): plugin.c prelude.h config.h options.h storage.h HsFFI.h \
-  connect.h errors.h
+  connect.h
 script$(OBJ): script.c prelude.h config.h options.h storage.h HsFFI.h \
   connect.h errors.h machdep.h opts.h strutil.h script.h
 static$(OBJ): static.c prelude.h config.h options.h storage.h HsFFI.h \

@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: errors.h,v $
- * $Revision: 1.10 $
- * $Date: 2003/10/14 13:56:21 $
+ * $Revision: 1.11 $
+ * $Date: 2003/10/28 11:49:52 $
  * ------------------------------------------------------------------------*/
 #ifndef __ERRORS_H__
 #define __ERRORS_H__
@@ -16,6 +16,48 @@
 extern Void internal	    Args((String)) HUGS_noreturn;
 extern Void fatal	    Args((String)) HUGS_noreturn;
 extern Void stopAnyPrinting Args((Void));
+
+/*---------------------------------------------------------------------------
+ * Compiler output
+ * Tweaking this lets us redirect prompts, error messages, etc - but has no
+ * effect on output of Haskell programs (which should use hPutStr and friends).
+ *-------------------------------------------------------------------------*/
+
+#if REDIRECT_OUTPUT
+extern Void   hugsPrintf            Args((const char *, ...));
+extern Void   hugsPutchar           Args((int));
+extern Void   hugsFlushStdout       Args((Void));
+extern Void   hugsEnableOutput      Args((Bool));
+extern String hugsClearOutputBuffer Args((Void));
+			    
+extern Void   hugsFFlush    	    Args((FILE*));
+extern Void   hugsFPrintf   	    Args((FILE*, const char*, ...));
+extern Void   hugsPutc      	    Args((int, FILE*));
+
+#define Printf         	     hugsPrintf
+#define Putchar        	     hugsPutchar
+#define FlushStdout    	     hugsFlushStdout
+#define EnableOutput   	     hugsEnableOutput
+#define ClearOutputBuffer    hugsClearOutputBuffer
+
+#define FFlush               hugsFFlush
+#define FPrintf              hugsFPrintf
+#define Putc                 hugsPutc
+			     
+#else /* !REDIRECT_OUTPUT */
+			     
+#define Printf               printf
+#define Putchar              putchar
+#define FlushStdout()        fflush(stdout)
+#define EnableOutput(f)      doNothing()
+#define ClearOutputBuffer()  0
+
+#define FFlush               fflush
+#define FPrintf              fprintf
+#define Putc                 putc
+#endif /* REDIRECT_OUTPUT */
+
+/*-------------------------------------------------------------------------*/
 
 #if HUGS_FOR_WINDOWS
 /* output to stderr uses RED color already */

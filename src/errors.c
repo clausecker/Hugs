@@ -156,3 +156,168 @@ sigHandler(breakHandler) {              /* respond to break interrupt      */
     longjmp(catch_error,1);
     sigResume;/*NOTREACHED*/
 }
+
+/* --------------------------------------------------------------------------
+ * Compiler output
+ * We can redirect compiler output (prompts, error messages, etc) by
+ * tweaking these functions.
+ * ------------------------------------------------------------------------*/
+
+#if REDIRECT_OUTPUT && !HUGS_FOR_WINDOWS
+static Bool disableOutput = FALSE;      /* redirect output to buffer?      */
+
+#ifdef HAVE_STDARG_H
+#include <stdarg.h>
+#else
+#include <varargs.h>
+#endif
+
+/* ----------------------------------------------------------------------- */
+
+#define BufferSize 10000	      /* size of redirected output buffer  */
+
+typedef struct _HugsStream {
+    char buffer[BufferSize];          /* buffer for redirected output      */
+    Int  next;                        /* next space in buffer              */
+} HugsStream;
+
+static Void   local vBufferedPrintf  Args((HugsStream*, const char*, va_list));
+static Void   local bufferedPutchar  Args((HugsStream*, Char));
+static String local bufferClear      Args((HugsStream *stream));
+
+static Void local vBufferedPrintf(stream, fmt, ap)
+HugsStream* stream;
+const char* fmt;
+va_list     ap; {
+    Int spaceLeft = BufferSize - stream->next;
+    char* p = &stream->buffer[stream->next];
+    Int charsAdded = vsnprintf(p, spaceLeft, fmt, ap);
+    if (0 <= charsAdded && charsAdded < spaceLeft)
+	stream->next += charsAdded;
+#if 1 /* we can either buffer the first n chars or buffer the last n chars */
+    else
+	stream->next = 0;
+#endif
+}
+
+static Void local bufferedPutchar(stream, c)
+HugsStream *stream;
+Char        c; {
+    if (BufferSize - stream->next >= 2) {
+	stream->buffer[stream->next++] = c;
+	stream->buffer[stream->next] = '\0';
+    }
+}
+
+static String local bufferClear(stream)
+HugsStream *stream; {
+    if (stream->next == 0) {
+	return "";
+    } else {
+	stream->next = 0;
+	return stream->buffer;
+    }
+}
+
+/* ----------------------------------------------------------------------- */
+
+static HugsStream outputStream;
+/* ADR note:
+ * We rely on standard C semantics to initialise outputStream.next to 0.
+ */
+
+Void hugsEnableOutput(f)
+Bool f; {
+    disableOutput = !f;
+}
+
+String hugsClearOutputBuffer() {
+    return bufferClear(&outputStream);
+}
+
+#ifdef HAVE_STDARG_H
+Void hugsPrintf(const char *fmt, ...) {
+    va_list ap;                    /* pointer into argument list           */
+    va_start(ap, fmt);             /* make ap point to first arg after fmt */
+    if (!disableOutput) {
+	vprintf(fmt, ap);
+    } else {
+	vBufferedPrintf(&outputStream, fmt, ap);
+    }
+    va_end(ap);                    /* clean up                             */
+}
+#else
+Void hugsPrintf(fmt, va_alist)
+const char *fmt;
+va_dcl {
+    va_list ap;                    /* pointer into argument list           */
+    va_start(ap);                  /* make ap point to first arg after fmt */
+    if (!disableOutput) {
+	vprintf(fmt, ap);
+    } else {
+	vBufferedPrintf(&outputStream, fmt, ap);
+    }
+    va_end(ap);                    /* clean up                             */
+}
+#endif
+
+Void hugsPutchar(c)
+int c; {
+    if (!disableOutput) {
+	putchar(c);
+    } else {
+	bufferedPutchar(&outputStream, c);
+    }
+}
+
+Void hugsFlushStdout() {
+    if (!disableOutput) {
+	fflush(stdout);
+    }
+}
+
+Void hugsFFlush(fp)
+FILE* fp; {
+    if (!disableOutput) {
+	fflush(fp);
+    }
+}
+
+#ifdef HAVE_STDARG_H
+Void hugsFPrintf(FILE *fp, const char* fmt, ...) {
+    va_list ap;
+    va_start(ap, fmt);
+    if (!disableOutput) {
+	vfprintf(fp, fmt, ap);
+    } else {
+	vBufferedPrintf(&outputStream, fmt, ap);
+    }
+    va_end(ap);
+}
+#else
+Void hugsFPrintf(FILE *fp, const char* fmt, va_list)
+FILE* fp;
+const char* fmt;
+va_dcl {
+    va_list ap;
+    va_start(ap);
+    if (!disableOutput) {
+	vfprintf(fp, fmt, ap);
+    } else {
+	vBufferedPrintf(&outputStream, fmt, ap);
+    }
+    va_end(ap);
+}
+#endif
+
+Void hugsPutc(c, fp)
+int   c;
+FILE* fp; {
+    if (!disableOutput) {
+	putc(c,fp);
+    } else {
+	bufferedPutchar(&outputStream, c);
+    }
+}
+
+#endif /* REDIRECT_OUTPUT && !HUGS_FOR_WINDOWS */
