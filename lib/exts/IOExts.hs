@@ -31,13 +31,14 @@ module IOExts
 	, unsafePtrToInt
 	) where
 
-import Trace( trace )
 import IO( ioeGetErrorString )
 import Array
 
 -----------------------------------------------------------------------------
 
 primitive performGC "primGC" :: IO ()
+
+primitive trace :: String -> a -> a
 
 unsafePerformIO :: IO a -> a
 unsafePerformIO m = performIO (runAndShowError m)
