@@ -11,8 +11,8 @@
  * included in the distribution.
  *
  * $RCSfile: server.c,v $
- * $Revision: 1.8 $
- * $Date: 2002/02/24 04:54:23 $
+ * $Revision: 1.9 $
+ * $Date: 2002/02/24 12:11:34 $
  * ------------------------------------------------------------------------*/
 
 #define NO_MAIN
@@ -65,7 +65,7 @@ static void*  EvalAddr        Args((void));
 static String EvalString      Args((Void));
 static Int    DoIO            Args((Void));
 static Int    DoIO_Int        Args((int*));
-static Int    DoIO_Addr       Args((void*));
+static Int    DoIO_Addr       Args((void**));
 static HVal   PopHVal         Args((Void));
 static Void   PushHVal        Args((HVal));
 static Void   FreeHVal        Args((HVal));
