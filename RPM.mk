@@ -39,12 +39,17 @@ ${PACKAGE}.tar.gz:
 	cd ${TARTMP}/hugs98; rm -rf fptools/libraries/parsec/examples
 	# preprocess these, so the package can be built without happy & ghc
 	# changes here should be reflected also in Makefile (sorry)
-	find ${TARTMP}/hugs98/fptools/libraries -name "*.ly" -o -name "*.y" |\
-		xargs -l happy
-	find ${TARTMP}/hugs98/fptools/libraries -name "*.hsc" |\
-		xargs -l hsc2hs --no-compile
-	find ${TARTMP}/hugs98/fptools/libraries -name "*_hsc_make.c" |\
+	$(FIND) ${TARTMP}/hugs98/fptools/libraries -name "*.ly" -o -name "*.y" |\
+		xargs -l $(HAPPY)
+ifneq "$(USING_AN_OLDER_HSC2HS)" "YES"
+	$(FIND) ${TARTMP}/hugs98/fptools/libraries -name "*.hsc" |\
+		xargs -l $(HSC2HS) --no-compile --template=template-hsc.h
+else
+	$(FIND) ${TARTMP}/hugs98/fptools/libraries -name "*.hsc" |\
+		xargs -l $(HSC2HS) --no-compile
+	$(FIND) ${TARTMP}/hugs98/fptools/libraries -name "*_hsc_make.c" |\
 		xargs src/unix/hsc_kludge
+endif
 	cp ${TARTMP}/hugs98/src/version.c /tmp/mktar
 	cd ${TARTMP}/hugs98/src; sed ${VERSION_SUBSTS} < ${TARTMP}/version.c > ${TARTMP}/hugs98/src/version.c
 	# using `make parser.c' would be best, but by default yacc
