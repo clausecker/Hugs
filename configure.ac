@@ -1,14 +1,15 @@
 dnl--------------------------------------------------------------------
 dnl
-dnl Hugs98 configure script template. Process this file with autoconf to
-dnl produce a configure script.
+dnl Hugs98 configure script template. Process this file with autoreconf
+dnl to produce a configure script.
 dnl
 dnl--------------------------------------------------------------------
 
-dnl We need 2.50 for AC_HELP_STRING.
-AC_PREREQ(2.50)
+AC_INIT([Hugs98], [1.0], [hugs-bugs@haskell.org], [hugs98])
+AC_CONFIG_SRCDIR([src/hugs.c])
 
-AC_INIT(src/hugs.c)
+dnl We need 2.50 for AC_HELP_STRING.
+AC_PREREQ([2.50])
 
 AC_CONFIG_SUBDIRS([fptools/libraries])
 
