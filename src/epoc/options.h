@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: options.h,v $
- * $Revision: 1.5 $
- * $Date: 2002/09/13 15:08:08 $
+ * $Revision: 1.6 $
+ * $Date: 2002/10/01 03:27:14 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -32,8 +32,13 @@
  * HUGSFLAGS environment variable or by storing an appropriate value
  * for HUGSFLAGS in the registry (Win32 only).  In all cases, use a 
  * string of the form -P"...".  
+ *
+ * HUGSPATH2 is the version to use with the new, hierarchical library
+ * setup.
+ *
  */
 #define HUGSPATH "{Hugs}\\lib;{Hugs}\\lib\\hugs;{Hugs}\\lib\\exts"
+#define HUGSPATH2 "{Hugs}\\libraries:{Hugs}\\oldlib"
 
 /* The list of suffixes used by Haskell source files, separated either
  * by colons (Unix) or semicolons (Macintosh, Windows, DOS).
