@@ -1730,9 +1730,6 @@ data IOFinished a
   | Finished_Error    IOError
   | Finished_Return   a
 
-hugsPutStr :: String -> IO ()
-hugsPutStr  = putStr
-
 data HugsException
 primitive primCatchException :: a -> Either HugsException a
 primitive primThrowException :: HugsException -> a
