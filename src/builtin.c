@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: builtin.c,v $
- * $Revision: 1.40 $
- * $Date: 2003/01/21 10:41:31 $
+ * $Revision: 1.41 $
+ * $Date: 2003/01/23 10:37:36 $
  * ------------------------------------------------------------------------*/
 
 /* We include math.h before prelude.h because SunOS 4's cpp incorrectly
@@ -677,6 +677,7 @@ PROTO_PRIM(primPlusAddr);
 PROTO_PRIM(primMinusAddr);
 PROTO_PRIM(primAddrToInt);
 PROTO_PRIM(primEqAddr);
+PROTO_PRIM(primCmpAddr);
 
 PROTO_PRIM(primEqInt);
 PROTO_PRIM(primCmpInt);
@@ -880,6 +881,7 @@ static struct primitive builtinPrimTable[] = {
   {"plusAddr",          2, primPlusAddr},
   {"minusAddr",         2, primMinusAddr},
   {"primEqAddr",        2, primEqAddr},
+  {"primCmpAddr",       2, primCmpAddr},
 
   {"primEqInt",         2, primEqInt},
   {"primCmpInt",        2, primCmpInt},
@@ -1533,6 +1535,15 @@ PtrInt2Ptr(primPlusAddr,(char*)x+y)    /* Pointer arithmetic               */
 PtrPtr2Int(primMinusAddr,(char*)x-(char*)y) /* Pointer arithmetic          */
 PtrPtr2Bool(primEqAddr,x==y)           /* Addr equality primitive          */
 Ptr2Int(primAddrToInt,((Int)x))        /* geting the pointer               */
+
+primFun(primCmpAddr) {                 /* Pointer compare primitive        */
+    Pointer x, y;
+    PtrArg(x,2);
+    PtrArg(y,1);
+    updateRoot( x<y ? nameLT :
+	      ( x>y ? nameGT : 
+		      nameEQ ));
+}
 
 /* --------------------------------------------------------------------------
  * Comparison primitives:
