@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: builtin.c,v $
- * $Revision: 1.37 $
- * $Date: 2002/11/29 13:20:29 $
+ * $Revision: 1.38 $
+ * $Date: 2002/12/12 13:27:25 $
  * ------------------------------------------------------------------------*/
 
 /* We include math.h before prelude.h because SunOS 4's cpp incorrectly
@@ -321,6 +321,16 @@ Name nameIntToFloat;
     BoolResult(e);                                 \
 }
 
+/* e is an expression with free variables x and y */
+#define PtrPtr2Int(nm,e)                          \
+  primFun(nm) {                                    \
+    Pointer x, y;                                  \
+    Int r;                                         \
+    PtrArg(x,2);                                   \
+    PtrArg(y,1);                                   \
+    r = e;                                         \
+    IntResult(r);                                  \
+}
 
 /* e is an expression with free variables x and y */
 /* pre is a precondition (fvs x,y) to test        */
@@ -665,6 +675,7 @@ PROTO_PRIM(primFloatEncode);
 
 PROTO_PRIM(primNullAddr);
 PROTO_PRIM(primPlusAddr);
+PROTO_PRIM(primMinusAddr);
 PROTO_PRIM(primAddrToInt);
 PROTO_PRIM(primEqAddr);
 
@@ -869,6 +880,7 @@ static struct primitive builtinPrimTable[] = {
   {"nullAddr",          0, primNullAddr},
   {"addrToInt",         1, primAddrToInt},
   {"plusAddr",          2, primPlusAddr},
+  {"minusAddr",         2, primMinusAddr},
   {"primEqAddr",        2, primEqAddr},
 
   {"primEqInt",         2, primEqInt},
@@ -1531,6 +1543,7 @@ primFun(primFloatEncode) {             /* Float encode primitive           */
 
 CAFPtr(primNullAddr,0)                 /* Null pointer                     */
 PtrInt2Ptr(primPlusAddr,(char*)x+y)    /* Pointer arithmetic               */
+PtrPtr2Int(primMinusAddr,(char*)x-(char*)y) /* Pointer arithmetic          */
 PtrPtr2Bool(primEqAddr,x==y)           /* Addr equality primitive          */
 Ptr2Int(primAddrToInt,((Int)x))        /* geting the pointer               */
 

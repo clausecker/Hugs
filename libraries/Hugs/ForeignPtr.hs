@@ -1,4 +1,4 @@
-module ForeignPtr
+module Hugs.ForeignPtr
         ( 
 	  ForeignPtr             -- abstract, instance of: Eq
         , newForeignPtr          -- :: Ptr a -> FunPtr (Ptr a -> IO ()) -> IO (ForeignPtr a)
@@ -12,14 +12,10 @@ module ForeignPtr
         ) 
 	where
 
-import Prelude
-import Ptr
-import Dynamic
-import Storable         ( Storable )
-import MarshalAlloc     ( malloc, mallocBytes, finalizerFree )
-
--- #include "Dynamic.h"
--- INSTANCE_TYPEABLE1(ForeignPtr,foreignPtrTc,"ForeignPtr")
+import Hugs.Prelude
+import Foreign.Ptr
+import Foreign.Storable		( Storable )
+import Foreign.Marshal.Alloc	( malloc, mallocBytes, finalizerFree )
 
 -- data ForeignPtr a -- defined in Prelude.hs
 

@@ -133,23 +133,11 @@ nocvt() {
 	old_module=`basename $3 $old_extension`
 	sed "	s/module[ 	][ 	]*$old_module\$/module $new_module/g
 		s/module[ 	][ 	]*$old_module\\([ (]\\)/module $new_module\\1/g
-		s/import IOExts/import Hugs.IOExts/
-		s/import Array/import Hugs.Array/
 		s/import Char/import Data.Char/
-		s/import List/import Data.List/
-		s/import Ratio/import Data.Ratio/
+		s/import IOExts/import Hugs.IOExts/
 		s/import Locale/import System.Locale/
+		s/import Ratio/import Data.Ratio/
 		s/import Time/import System.Time/
-		s/import Ptr/import Foreign.Ptr/
-		s/import CTypes/import Foreign.C.Types/
-		s/import Marshal/import Foreign.Marshal./
-		s/import Exception/import Control.Exception/
-		s/import Storable/import Foreign.Storable/
-		s/import ForeignPtr/import Foreign.ForeignPtr/
-		s/import ST/import Hugs.ST/
-		s/import Dynamic/import Data.Dynamic/
-		/hiding (print/!s/import Prelude/import Hugs.Prelude/
-		s/import HugsInternals/import Hugs.Internals/
 		" $hugs_src/$3 >$dst/$new_stem$old_extension
 }
 
@@ -290,12 +278,12 @@ hslibs() {
   cvt base Foreign/C/String.hs		
   cvt base Foreign/C/Types.hs
   cvt base Foreign/C/TypesISO.hs
-nocvt base Foreign/ForeignPtr.hs        exts/ForeignPtr.hs
+  cvt base Foreign/ForeignPtr.hs
   cvt base Foreign/Marshal/Alloc.hs
   cvt base Foreign/Marshal/Array.hs
   cvt base Foreign/Marshal/Error.hs
   cvt base Foreign/Marshal/Utils.hs
-nocvt base Foreign/Ptr.hs		exts/Ptr.hs	# incomplete
+  cvt base Foreign/Ptr.hs
   cvt base Foreign/StablePtr.hs
   cvt base Foreign/Storable.hs		
   cvt base Numeric.hs

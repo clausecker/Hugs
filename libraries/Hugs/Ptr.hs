@@ -2,45 +2,56 @@
 -- Machine Addresses:
 -- Suitable for use with Hugs 98 on 32 bit machines.
 -----------------------------------------------------------------------------
-module Ptr
+module Hugs.Ptr
 	( Ptr
 	, nullPtr          -- :: Ptr a
  	, plusPtr          -- :: Ptr a -> Int -> Ptr b
         , castPtr          -- :: Ptr a -> Ptr b
+	, alignPtr         -- :: Ptr a -> Int -> Ptr a
+	, minusPtr         -- :: Ptr a -> Ptr b -> Int
 	, ptrToInt         -- :: Ptr a -> Int
 	-- instance Eq   (Ptr a)
 	-- instance Show (Ptr a)
 
         , FunPtr
 	, nullFunPtr        -- :: FunPtr a
+	, castFunPtr        -- :: FunPtr a -> FunPtr b
+	, castFunPtrToPtr   -- :: FunPtr a -> Ptr b
+	, castPtrToFunPtr   -- :: Ptr a -> FunPtr b
         , freeHaskellFunPtr -- :: FunPtr a -> IO ()
 	-- instance Eq   (FunPtr a)
 	-- instance Show (FunPtr a)
 	) where
 
-import Prelude
+import Hugs.Prelude
 
--- data Ptr a -- in Prelude
+-- data Ptr a -- in Hugs.Prelude
 
 instance Eq   (Ptr a) where (==)      = primEqPtr
 instance Show (Ptr a) where showsPrec = primShowsPtr
 
 primitive nullPtr      "nullAddr"      :: Ptr a
 primitive plusPtr      "plusAddr"      :: Ptr a -> Int -> Ptr b
+primitive minusPtr     "minusAddr"     :: Ptr a -> Ptr b -> Int
 primitive castPtr      "primUnsafeCoerce" :: Ptr a -> Ptr b
 primitive primShowsPtr "primShowsAddr" :: Int -> Ptr a -> ShowS
 primitive primEqPtr    "primEqAddr"    :: Ptr a -> Ptr a -> Bool
 primitive ptrToInt     "addrToInt"     :: Ptr a -> Int
 
--- data FunPtr a -- in Prelude
+alignPtr :: Ptr a -> Int -> Ptr a
+alignPtr p n = p `plusPtr` ((n - ptrToInt p `mod` n) `mod` n)
+
+-- data FunPtr a -- in Hugs.Prelude
 
 instance Eq   (FunPtr a) where (==)      = primEqFPtr
 instance Show (FunPtr a) where showsPrec = primShowsFPtr
 
-primitive nullFunPtr   "nullAddr"      :: FunPtr a
-primitive freeHaskellFunPtr :: FunPtr a -> IO ()
+primitive nullFunPtr    "nullAddr"      :: FunPtr a
 primitive primShowsFPtr "primShowsAddr" :: Int -> FunPtr a -> ShowS
 primitive primEqFPtr    "primEqAddr"    :: FunPtr a -> FunPtr a -> Bool
-
+primitive castFunPtr "primUnsafeCoerce" :: FunPtr a -> FunPtr b
+primitive castFunPtrToPtr "primUnsafeCoerce" :: FunPtr a -> Ptr b
+primitive castPtrToFunPtr "primUnsafeCoerce" :: Ptr a -> FunPtr b
+primitive freeHaskellFunPtr             :: FunPtr a -> IO ()
 
 -----------------------------------------------------------------------------
