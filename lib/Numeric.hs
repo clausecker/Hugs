@@ -6,19 +6,30 @@
 
 module Numeric
 	( fromRat 	-- :: (RealFloat a) => Rational -> a
-	, showSigned	-- :: (Real a) => (a -> ShowS) -> Int -> a -> ShowS	
+
 	, readSigned	-- :: (Real a) => ReadS a -> ReadS a
-	, showInt	-- :: (Integral a) => a -> ShowS
+	, showSigned	-- :: (Real a) => (a -> ShowS) -> Int -> a -> ShowS	
+
 	, readInt	-- :: (Integral a) => a -> (Char -> Bool) -> (Char -> Int) -> ReadS a
 	, readDec	-- :: (Integral a) => ReadS a
 	, readOct	-- :: (Integral a) => ReadS a
 	, readHex	-- :: (Integral a) => ReadS a
 
+	, showOct	-- :: (Integral a) => a -> ShowS
+	, showInt	-- :: (Integral a) => a -> ShowS
+	, showHex	-- :: (Integral a) => a -> ShowS
+	, showIntAtBase -- :: Integral a 
+		        -- => a              -- base
+	                -- -> (Int -> Char)  -- digit to char
+			-- -> a              -- number to show
+			-- -> ShowS
+
 	, showEFloat	-- :: (RealFloat a) => Maybe Int -> a -> ShowS
 	, showFFloat	-- :: (RealFloat a) => Maybe Int -> a -> ShowS
 	, showGFloat	-- :: (RealFloat a) => Maybe Int -> a -> ShowS
 	, showFloat	-- :: (RealFloat a) => a -> ShowS
-	   -- not defined 
+
+	   -- defined in the Prelude.
 	, readFloat	-- :: (RealFloat a) => ReadS a
 
 	, floatToDigits -- :: (RealFloat a) => Integer -> a -> ([Int], Int)
@@ -104,6 +115,39 @@ integerLogBase b i =
         in  doDiv (i `div` (b^l)) l
 
 
+-- showInt, showOct, showHex are used for positive numbers only
+showOct, showHex :: Integral a => a -> ShowS
+showOct = showIntAtBase_help "Numeric.showOct"  8 intToDigit
+showHex = showIntAtBase_help "Numeric.showHex" 16 intToDigit
+
+-- sigh, defined separately in the Prelude for now.
+--showInt :: Integral a => a -> ShowS
+--showInt = showIntAtBase_help "Numeric.showInt" 10 intToDigit
+
+showIntAtBase :: Integral a 
+	      => a              -- base
+	      -> (Int -> Char)  -- digit to char
+	      -> a              -- number to show
+	      -> ShowS
+showIntAtBase b i2d v = showIntAtBase_help "Numeric.showIntAtBase" b i2d v
+
+showIntAtBase_help :: Integral a 
+	           => String	     -- loc
+		   -> a              -- base
+	           -> (Int -> Char)  -- digit to char
+	           -> a              -- number to show
+		   -> ShowS
+showIntAtBase_help loc base intToDig n rest
+  | n < 0     = error (loc ++ ": can't show negative numbers")
+  | otherwise = showIt n rest
+ where
+  showIt n rest
+   | n' == 0   = rest'
+   | otherwise = showIt n' rest'
+   where
+    (n',d) = quotRem n base
+    rest'  = intToDig (fromIntegral d) : rest
+
 {- ToDo: delay moving these out of the Prelude.
 -- Misc utilities to show integers and floats 
 showSigned    :: Real a => (a -> ShowS) -> Int -> a -> ShowS
@@ -111,14 +155,6 @@ showSigned showPos p x
  | x < 0 	= showParen (p > 6)
 		     	    (showChar '-' . showPos (-x))
  | otherwise	= showPos x
-
--- showInt is used for positive numbers only
-showInt    :: Integral a => a -> ShowS
-showInt n r | n < 0 = error "Numeric.showInt: can't show negative numbers"
-            | otherwise =
-              let (n',d) = quotRem n 10
-		  r'     = toEnum (fromEnum '0' + fromIntegral d) : r
-	      in  if n' == 0 then r' else showInt n' r'
 
 readSigned:: Real a => ReadS a -> ReadS a
 readSigned readPos = readParen False read'
