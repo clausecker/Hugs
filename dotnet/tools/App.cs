@@ -18,20 +18,24 @@ namespace HsWrapGen
 		{
             if (args.Length > 0) {
                 TypeInfo ti = new TypeInfo(args[0]);
-                HsOutput hs = new HsOutput(ti.Type,ti.Members);
-                String outFile;
-                if (args.Length > 1) {
+		if (ti.Type == null) {
+		  Console.WriteLine("Unknown type: {0}", args[0]);
+		} else {
+		  HsOutput hs = new HsOutput(ti.Type,ti.Members);
+		  String outFile;
+		  if (args.Length > 1) {
                     outFile = args[1];
-                } else {
+		  } else {
                     Int32 idx = args[0].LastIndexOf('.');
                     if (idx >= 0) {
                         outFile = String.Concat(args[0].Substring(idx+1), ".hs");
                     } else {
-                        outFile = String.Concat(args[0], ".hs");
+		      outFile = String.Concat(args[0], ".hs");
                     }
-                }
-                Console.WriteLine(outFile);
-                hs.OutputToFile(outFile);
+		  }
+		  Console.WriteLine(outFile);
+		  hs.OutputToFile(outFile);
+		}
             } else {
                 Console.WriteLine("Usage: hswrapgen classname [outfile]");
             }
