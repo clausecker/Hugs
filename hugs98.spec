@@ -1,8 +1,9 @@
-%define name       hugs98
-%define version    Apr2002
-%define release    1
+# Requires %defines of `name', `version' and `release'.
+# (`make rpm' takes care of these - you aren't expected to
+# use this spec directly)
 
-Vendor:       Galois Connections, Portland, Oregon.
+Summary:      Hugs - A Haskell Interpreter
+Vendor:       Galois Connections, Inc.
 Name:         %{name}
 Version:      %{version}
 Release:      %{release}
@@ -16,7 +17,6 @@ Prefix:       %{_prefix}
 Provides:     haskell
 Requires:     readline
 
-Summary:      A Haskell Interpreter
 %description
 Hugs 98 is an interpreter for Haskell, a lazy functional programming language.
 
