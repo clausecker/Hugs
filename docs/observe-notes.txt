@@ -158,80 +158,57 @@ fun
    
 Differences from Hood
 ---------------------
+
 HugsHood uses a similar style of display to Hood, though there are
 differences. One trivial difference is that Hood reports tags with a
 leading `--' while HugsHood does not.  
 
-Consider now more significant differences. Here we observe map.
+Consider now more significant differences. 
 
-Observe> take 3 $ observe "map" map (+1) [1..]
-[2,3,4]
-(138 reductions, 286 cells)
+Observing character strings
+...........................
 
->>>>>>> Observations <<<<<<
+HugsHood (and Hood) reports lists using the cons operator.
 
-map
-  { \ { \ 3  -> 4
-      , \ 2  -> 3
-      , \ 1  -> 2
-      } (1 : 2 : 3 : _)  -> 2 : 3 : 4 : _
-  }
-
-8 observations recorded
-
-Note that observe does not compromise laziness. map is seen to
-be a single application to the (+1) function and the list
-(1 : 2 : 3 : _),  returning 2 : 3 : 4 : _. Here the underscore
-denotes the unevaluated tail of a list.
-
-By comparison, observing fold looks quite different.
-
-Observe> observe "fold" foldr (+) 0 [1..3]
-6
-(92 reductions, 314 cells)
+Observe> observe "list" [1..3]
+[1,2,3]
 
 >>>>>>> Observations <<<<<<
 
-fold
-  { \ primPlusInteger 0 []  -> 0
-  , \ { \ 3 0  -> 3
-      } 0 (3 : [])  -> 3
-  , \ { \ 2 3  -> 5
-      } 0 (2 : 3 : [])  -> 5
-  , \ { \ 1 5  -> 6
-      } 0 (1 : 2 : 3 : [])  -> 6
-  }
+list
+  (1 : 2 : 3 : [])
 
-22 observations recorded
+This is too verbose for lists of characters, so HugsHood reports
+strings in the usual format:
 
-Here four invocations of foldr are reported. primPlusInteger is the 
-instance of the (+) function which is used by foldr, but it is not
-applied in the base case and so its argument/result cannot be shown.
-
-map is defined using a list comprehension, and so its recursive
-structure is not as clearly shown as is the fold case. To observe 
-the behaviour of the higher order function only, use
-
-Main> foldr (observe "plus" (+)) 0 [1..3]
-6
-(92 reductions, 201 cells)
+Observe> observe "string" ['a'..'d']
+"abcd"
 
 >>>>>>> Observations <<<<<<
 
-plus
-  { \ 3 0  -> 3
-  , \ 2 3  -> 5
-  , \ 1 5  -> 6
-  }
+string
+  "abcd"
 
-9 observations recorded
+If only the initial part of the string is evaluated, a trailing "..." is
+reported. 
 
-Hood reports both the map and fold expressions above in a style similar
-to the map example. We could modify the observation formatting scheme
-to (say) make recursive higher order functions report observations in
-the map-like style, but it is not clear that this is necessary,
-especially as argument functions can always be explicitly observed as
-in the "plus" example above.
+Observe> take 2  $ observe "string" ['a'..'d']
+"ab"
+
+>>>>>>> Observations <<<<<<
+
+string
+  "ab..."
+
+This is clearly ambiguous, because evaluating the expression
+
+observe "string" "ab..." 
+
+will give the same result, but in practice the ambiguity 
+should be easy to resolve.
+
+Unevaluated expressions
+.......................
 
 The `_' symbol is used to indicate an unevaluated expression.
 In Hood all unevaluated expressions will be displayed using _.
@@ -279,6 +256,66 @@ fst
 
 HugsHood should not be used to deduce the strictness behaviour of a
 function, or it should be done only with caution 
+
+Interaction with the root optimisation
+......................................
+
+The hugs compiler uses an optimisation when generating code that builds
+expressions on the heap. If a function definition has the form
+
+f arg1 .. argN = ..... f arg1 .. argM .....   where 1<=M<=N 
+
+then the expression graph for f arg1 .. argM is copied rather than
+rebuilt from individual application nodes. This interacts with the
+observation algorithm so that observing functions of the above form give
+unexpected results.
+
+For instance consider the expression
+
+observe "fold" foldl (+) 0 [1..3]
+
+When the root optimisation is applied to the compilation of foldl, we see
+
+fold
+  { \ primPlusInteger 6 []  -> 6
+  , \ { \ 3 3  -> 6
+      } 3 (3 : [])  -> 6
+  , \ { \ 1 2  -> 3
+      } 1 (2 : 3 : [])  -> 6
+  , \ { \ 0 1  -> 1
+      } 0 (1 : 2 : 3 : [])  -> 6
+
+instead of the expected
+
+fold
+  { \ { \ 0 1  -> 1
+      , \ 1 2  -> 3
+      , \ 3 3  -> 6
+      } 0 (1 : 2 : 3 : [])  -> 6
+  }
+
+The first form reports the arguments at each application of foldl,
+while the second reports the arguments for just the initial application 
+(the one marked by observe).
+
+The root optimisation can be disabled using the -R option. This can be
+done from the command line or by using :s -R at the Hugs prompt. If you
+want to compile the prelude definitions without the root optimisation
+you must invoke Hugs with the -R option. 
+
+Testing of execution time with and without the root optimisation for a
+selection of 23 benchmarks from the nofib suite has been carried out.
+All but 5 tests resulted in an execution time penalty of less than 3%
+when running without root optimisation (some even showed a very minor
+speedup).
+
+Known problems
+--------------
+
+Hugs can produce infinite (cyclic) dictionaries when implementing overloading.
+The observation reporting mechanism does not detect these at present, which
+leads to a non-terminating report. We plan to address this in a future
+release. 
 
 Bug Reports
 ------------
