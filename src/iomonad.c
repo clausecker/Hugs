@@ -6,10 +6,12 @@
  * believed to give a reasonably good implementation of the semantics
  * specified by the Haskell 1.3 report.  There are also some additional
  * primitives, particularly for dealing with IOError and Handle values
- * that are not included in the prelude, but have been suggested for
- * inclusion in standard libraries.  I don't know what semantics and
- * specifications will be specified for these operations in the final
- * version of the 1.3 I/O specification, so be prepared for changes.
+ * that are not included in the prelude, but are used by standard libraries.
+ *
+ * Note: the first argument of IO computations (a failure continuation)
+ * is no longer used, now that all exceptions are handled via the
+ * Exception interface, but is retained for binary compatibility with
+ * old extension DLLs.
  *
  * The Hugs 98 system is Copyright (c) Mark P Jones, Alastair Reid, the
  * Yale Haskell Group, and the OGI School of Science & Engineering at OHSU,
@@ -17,8 +19,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: iomonad.c,v $
- * $Revision: 1.42 $
- * $Date: 2003/01/31 01:40:46 $
+ * $Revision: 1.43 $
+ * $Date: 2003/01/31 11:51:06 $
  * ------------------------------------------------------------------------*/
  
 Name nameIORun;			        /* run IO code                     */
@@ -75,10 +77,8 @@ Int what; {
     }
 }
 
-PROTO_PRIM(primLunit);
-PROTO_PRIM(primRunit);
-PROTO_PRIM(primLbind);
-PROTO_PRIM(primRbind);
+PROTO_PRIM(primReturnIO);
+PROTO_PRIM(primBindIO);
 PROTO_PRIM(primPass);
 
 PROTO_PRIM(primGC);
@@ -181,10 +181,8 @@ PROTO_PRIM(primGetCurrentScript);
 #endif
 
 static struct primitive iomonadPrimTable[] = {
-  {"lunitIO",		1+IOArity, primLunit},
-  {"runitIO",		1+IOArity, primRunit},
-  {"lbindIO",		2+IOArity, primLbind},
-  {"rbindIO",		2+IOArity, primRbind},
+  {"primretIO",		1+IOArity, primReturnIO},
+  {"primbindIO",	2+IOArity, primBindIO},
   {"passIO",		2+IOArity, primPass},
 
   {"primGC",	        0+IOArity, primGC},
@@ -308,22 +306,11 @@ static struct primInfo iomonadPrims = { iomonadControl, iomonadPrimTable, 0 };
  * The monad combinators:
  * ------------------------------------------------------------------------*/
 
-primFun(primLunit) {			/* bimonad left unit		   */
-    updapRoot(primArg(2),primArg(3));	/* lunit 3 2 1 = 2 3		   */
+primFun(primReturnIO) {			/* IO monad unit		   */
+    IOReturn(IOArg(1));
 }
 
-primFun(primRunit) {			/* bimonad right unit		   */
-    updapRoot(primArg(1),primArg(3));	/* lunit 3 2 1 = 1 3		   */
-}
-
-primFun(primLbind) {			/* bimonad left bind		   */
-    push(ap(namePass,primArg(3)));	/* lbind 4 3 2 1 = 4 (pass 3 2 1) 1*/
-    toparg(primArg(2));
-    toparg(primArg(1));
-    updapRoot(ap(primArg(4),top()),primArg(1));
-}
-
-primFun(primRbind) {			/* bimonad right bind		   */
+primFun(primBindIO) {			/* IO monad bind		   */
     push(ap(namePass,primArg(3)));	/* rbind 4 3 2 1 = 4 2 (pass 3 2 1)*/
     toparg(primArg(2));
     toparg(primArg(1));

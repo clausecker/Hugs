@@ -1699,8 +1699,8 @@ instance Show IOException where
 
 type FilePath = String  -- file pathnames are represented by strings
 
-primitive primbindIO   "rbindIO" :: IO a -> (a -> IO b) -> IO b
-primitive primretIO    "runitIO" :: a -> IO a
+primitive primbindIO		 :: IO a -> (a -> IO b) -> IO b
+primitive primretIO		 :: a -> IO a
 primitive putChar		 :: Char -> IO ()
 primitive putStr		 :: String -> IO ()
 primitive getChar   		 :: IO Char
