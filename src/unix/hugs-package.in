@@ -81,12 +81,15 @@ fi
 
 # Canonicalize win32 paths 
 # (i.e., stay far away from unportable /cygdrive-paths)
-if [ "x${platform}" = "xWin32" ]; then
-    # stay away from -m (older versions of 'cygpath' doesn't support it.)
-    [ -n "${source_dir}" ] && source_dir=`cygpath -w $source_dir | sed -e 's@\\\\@/@g'`
-    [ -n "${HUGSDIR}" ] && HUGSDIR=`cygpath -w $HUGSDIR | sed -e 's@\\\\@/@g'`
-    [ -n "${target}" ] && target=`cygpath -w $target | sed -e 's@\\\\@/@g'`
-fi;
+case $platform in
+Win32)	# stay away from -m (older versions of 'cygpath' doesn't support it.)
+	[ -n "${source_dir}" ] &&
+		source_dir=`cygpath -w $source_dir | sed -e 's@\\\\@/@g'`
+	[ -n "${HUGSDIR}" ] &&
+		HUGSDIR=`cygpath -w $HUGSDIR | sed -e 's@\\\\@/@g'`
+	[ -n "${target}" ] &&
+		target=`cygpath -w $target | sed -e 's@\\\\@/@g'`
+esac
 
 includes="-I$HUGSDIR/include -I$source_dir/include"
 tmpdir=/tmp/cvt.$$
