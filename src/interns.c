@@ -11,8 +11,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: interns.c,v $
- * $Revision: 1.13 $
- * $Date: 2003/11/14 00:14:39 $
+ * $Revision: 1.14 $
+ * $Date: 2003/11/19 21:49:48 $
  * ------------------------------------------------------------------------*/
  
 /* --------------------------------------------------------------------------
@@ -333,13 +333,7 @@ primFun(primNameString) {              /* Get string of a name             */
       /* If textToStr generates result on the fly, we build the entire
        * string now.
        */
-      String s = textToStr(t);
-      Int    l = strlen(s);
-      push(nameNil);
-      while (--l >= 0) {
-	  Cell r = pop();  /* we take care to pop _before_ we push */
-	  push(ap(consChar(((unsigned char *)s)[l]),r));
-      }
+      pushString(textToStr(t));
       updateRoot(pop());
   }      
 }

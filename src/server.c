@@ -11,8 +11,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: server.c,v $
- * $Revision: 1.41 $
- * $Date: 2003/11/14 00:14:39 $
+ * $Revision: 1.42 $
+ * $Date: 2003/11/19 21:49:48 $
  * ------------------------------------------------------------------------*/
 #include "prelude.h"
 #include "storage.h"
@@ -488,20 +488,10 @@ void* a;
 static Void MkString(s)           /* Push a String onto the stack    */
 String s;
 {
-    Cell d;
     BEGIN_PROTECT
-	Cell   r = NIL;
-	String t = s;
-	push(nameNil);
-	while (*t) ++t;
-	while (t-- != s) {
-	    Cell ss = pop();
-	    push(ap(consChar(*(unsigned char *)t),ss));
-	}
+	pushString(s);
 #ifndef NO_DYNAMIC_TYPES
-	r = pop();
-	d = getTypeableDict(typeString);
-	push(ap(ap(nameToDyn,d),r));
+	topfun(ap(nameToDyn,getTypeableDict(typeString)));
 #endif
     END_PROTECT
 }
