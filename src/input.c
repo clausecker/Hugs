@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: input.c,v $
- * $Revision: 1.33 $
- * $Date: 2001/12/13 05:25:55 $
+ * $Revision: 1.34 $
+ * $Date: 2001/12/20 10:06:05 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -511,21 +511,24 @@ String line; {
 /* Returns line length (including \n) or 0 upon EOF. */
 static Int local nextLine()
 {
+    int ch;
+
     for (lineLength = 0; lineLength < LINEBUFFER_SIZE-1; lineLength++) {
-        lineBuffer[lineLength] = fgetc(inputStream);
-        if (lineBuffer[lineLength] == EOF)
+        lineBuffer[lineLength] = (ch = fgetc(inputStream));
+        if (ch == EOF)
             break;
 #if MULTI_LINEFEED
-        if (lineBuffer[lineLength] == '\r') {
-            char c = fgetc(inputStream);
-            if (c != '\n')
-                ungetc(c, inputStream);
+        if ((char)ch == '\r') {
+            ch = fgetc(inputStream);
+	    /* ToDo: verify that this behaves correctly re EOF */
+            if ((char)ch != '\n') 
+                ungetc(ch, inputStream);
             lineBuffer[lineLength] = '\n';
             lineLength++;
             break;
         } else 
 #endif
-        if (lineBuffer[lineLength] == '\n') {
+        if ((char)ch == '\n') {
             lineLength++;
             break;
         }
