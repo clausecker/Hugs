@@ -11,8 +11,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.71 $
- * $Date: 2002/10/26 17:55:41 $
+ * $Revision: 1.72 $
+ * $Date: 2002/10/31 01:43:02 $
  * ------------------------------------------------------------------------*/
 #include <math.h>
 
@@ -338,13 +338,14 @@ String hugsdir() {                   /* directory containing lib/Prelude.hs */
     if (hugsRoot)
 	return hugsRoot;
 
-    if (dir[0] == '\0') { /* not initialised yet */
+    if ( dir[0] == '\0' ) { /* not initialised yet */
 	String slash = NIL;
 	GetModuleFileName(hugsModule,dir,FILENAME_MAX+1);
-	if (dir[0] == '\0') { /* GetModuleFileName must have failed */
+	if ( dir[0] == '\0' ) { /* GetModuleFileName must have failed */
 	    return HUGSDIR;
 	}
-	if (slash = strrchr(dir,SLASH)) { /* truncate after directory name */
+	if ( (slash = strrchr(dir,SLASH)) != NULL ) {
+	    /* truncate after directory name */
 	    *slash = '\0';
 	}
     }
@@ -2075,8 +2076,6 @@ String file; {
     return path;
 }
 
-extern String scriptFile;
-
 #ifdef LEADING_UNDERSCORE
 #  define INIT_MODULE_FUN "_initModule"
 #else
@@ -2181,7 +2180,7 @@ Char c; {
 Void compileAndLink(fn,flags)
 String fn; 
 String flags; {
-    char* i = scriptFile;
+    char* i = fn;
  
     used    = 0;
 
