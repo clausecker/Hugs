@@ -12,8 +12,8 @@
  * included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.17 $
- * $Date: 2001/06/14 21:28:52 $
+ * $Revision: 1.18 $
+ * $Date: 2001/06/22 04:16:30 $
  * ------------------------------------------------------------------------*/
 
 #ifdef HAVE_SIGNAL_H
@@ -1082,27 +1082,46 @@ Int readTerminalChar() {                /* read character from terminal    */
         Int c;
  	DWORD mo;
  	HANDLE hIn;
+	static int initEmacs = 0;
+	static int isEmacs = 0;
  
- 	/* I don't quite understand why, but if the FILE*'s underlying file
-	   descriptor is in text mode, we seem to lose the first carriage
-	   return.
+ 	/* Cannot claim to fully understand, but if the FILE*s underling
+	   file derscriptor is in text mode, we seem to lose the first
+	   carriage return.
  	 */
  	setmode(fileno(stdin), _O_BINARY);
  	hIn = GetStdHandle(STD_INPUT_HANDLE);
  	GetConsoleMode(hIn, &mo);
  	SetConsoleMode(hIn, mo & ~(ENABLE_LINE_INPUT | ENABLE_ECHO_INPUT));
 	/* 
-	 * On Win9x, the first time you change the mode (as above) a
-	 * raw '\n' is inserted.  Since enter maps to a raw '\r', and we
-	 * map this (below) to '\n', we can just ignore all *raw* '\n's.
+	 * When using the read-eval-print loop inside of a Win32 console, a
+	 * lone '\n' is returned by getc() after switching to binary mode.
+	 * Since Enter maps to a raw '\r', and we map this (below) to '\n',
+	 * we can just ignore all *raw* '\n's.
+	 *
+	 * However, Emacs subshells (via comint) doesn't emit '\r's, just \n's,
+	 * which is incompatible with the above. The hack/workaround, is to
+	 * dynamically check whether we're exec'ing within Emacs and fall
+	 * back to the simple, non-\n stripping input mode if we are. sigh.
+	 * 
 	 */
-	do {
+	if (!initEmacs) {
+	  isEmacs = (getenv("EMACS") != NULL);
+	  initEmacs = 1;
+	}
+
+	if (isEmacs) {
 	  c = getc(stdin);
-	} while (c == '\n');
- 
+	} else {
+	  do {
+	    c = getc(stdin);
+	    fprintf(stderr,"getc: 0x%x\n", c);fflush(stderr);
+	  } while (c == '\n');
+	}
+
  	/* Same as it ever was - revert back state of stdin. */
  	SetConsoleMode(hIn, mo);
- 	setmode(fileno(stdin), _O_TEXT);
+	setmode(fileno(stdin), _O_TEXT);
 #else
 	Int c = getch();
 #endif
