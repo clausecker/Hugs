@@ -123,7 +123,9 @@ BASIC_FFI_LIBRARIES = \
 		$(BUILD_DIR)/libraries/Foreign/C/Error@DLL@
 
 EXTRA_FFI_LIBRARIES = \
-		$(BUILD_DIR)/libraries/Text/Regex/Posix@DLL@
+		$(BUILD_DIR)/libraries/Text/Regex/Posix@DLL@ \
+		$(BUILD_DIR)/libraries/Network/Socket@DLL@ \
+		$(BUILD_DIR)/libraries/Network/BSD@DLL@
 
 FFI_LIBRARIES = $(BASIC_FFI_LIBRARIES) $(EXTRA_FFI_LIBRARIES)
 
@@ -154,12 +156,11 @@ $(BUILD_DIR)/libraries/Foreign/C/Error@DLL@ : \
 $(BUILD_DIR)/libraries/Text/Regex/Posix@DLL@ : $(BASIC_FFI_LIBRARIES)
 		  $(BUILD_FFI) Text.Regex.Posix
 
-$(BUILD_DIR)/libraries/Network/Socket@DLL@ : \
-			$(BUILD_DIR)/libraries/Network/Socket@DLL@
-		  $(BUILD_FFI) +L'$(BUILD_DIR)/libraries/Network/initWinSock.c' Network.Socket
+$(BUILD_DIR)/libraries/Network/Socket@DLL@ : $(BASIC_FFI_LIBRARIES)
+		  $(BUILD_FFI) +L'$(BUILD_DIR)/libraries/Network/HsNet.c' +L'$(BUILD_DIR)/libraries/Network/initWinSock.c' +L'$(BUILD_DIR)/libraries/Network/ancilData.c' Network.Socket
 
-$(BUILD_DIR)/libraries/Network/BSD@DLL@ : \
-			$(BUILD_DIR)/libraries/Network/BSD@DLL@
+$(BUILD_DIR)/libraries/Network/BSD@DLL@ : $(BASIC_FFI_LIBRARIES) \
+			$(BUILD_DIR)/libraries/Network/Socket@DLL@
 		  $(BUILD_FFI) Network.BSD
 
 ################################################################

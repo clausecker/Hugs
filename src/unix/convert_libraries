@@ -85,8 +85,8 @@ cvt() {
 		fi
 		sed -n 's/^{-# OPTIONS -\(#include .*\) #-}/\1/p' $target >"$dstdir/$header"
 		# dreadful hack to perform CALLCONV substitution of Network/Socket.hs
-		sed -e 's/CALLCONV/stdcall/g' < $target > "$dstdir/$target.ok"
-		mv "$dstdir/$target.ok" $target
+		sed -e 's/CALLCONV/stdcall/g' < $target > "$target.ok"
+		mv "$target.ok" $target
 		;;
 	*.y|*.ly)
 		inname=`basename $2`
@@ -373,6 +373,7 @@ hslibs() {
   cp $src/base/include/*.h              $dst/Foreign/C
   cp ../config.h                        $dst/Network
   cp $src/network/include/HsNet.h       $dst/Network
+  cp $src/network/cbits/ancilData.c     $dst/Network
   cp $src/network/cbits/initWinSock.c   $dst/Network
   cp $src/network/cbits/HsNet.c         $dst/Network
 
