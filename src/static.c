@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.53 $
- * $Date: 2002/01/24 07:35:21 $
+ * $Revision: 1.54 $
+ * $Date: 2002/03/19 10:55:09 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -438,35 +438,43 @@ Cell   entity; { /* Entry from import/hiding list */
     Text t  = isIdent(entity) ? textOf(entity) : textOf(fst(entity));
     List es = module(exporter).exports; 
     for(; nonNull(es); es=tl(es)) {
-	Cell e = hd(es); /* :: Entity | (Entity, NIL|DOTDOT) */
+	Cell e = hd(es); /* :: Entity | (Entity, NIL|DOTDOT|[Entity]) */
 	if (isPair(e)) {
 	    Cell f = fst(e);
 	    if (isTycon(f)) {
 		if (tycon(f).text == t) {
-		    imports = cons(f,imports);
 		    if (!isIdent(entity)) {
 			switch (tycon(f).what) {
 			case NEWTYPE:
 			case DATATYPE:
 			    if (DOTDOT == snd(entity)) {
+				imports=cons(pair(f,tycon(f).defn),imports);
 				imports=dupOnto(tycon(f).defn,imports);
 			    } else {
-				imports=checkSubentities(imports,snd(entity),tycon(f).defn,"constructor of type",t);
+				List xs = NIL;
+				xs = checkSubentities(xs, snd(entity), tycon(f).defn,"constructor of type",t);
+				imports=cons(pair(f,xs),imports);
+				imports=dupOnto(xs,imports);
 			    }
 			    break;
 			default:;
 			  /* deliberate fall thru */
-			}
+			    }
+		    } else {
+			imports = cons(f,imports);
 		    }
 		}
 	    } else if (isClass(f)) {
 		if (cclass(f).text == t) {
-		    imports = cons(f,imports);
 		    if (!isIdent(entity)) {
 			if (DOTDOT == snd(entity)) {
+			    imports=cons(pair(f,cclass(f).members),imports);
 			    return dupOnto(cclass(f).members,imports);
 			} else {
-			    return checkSubentities(imports,snd(entity),cclass(f).members,"member of class",t);
+			    List xs = NIL;
+			    xs = checkSubentities(xs, snd(entity), cclass(f).members,"member of class",t);
+			    imports=cons(pair(f,xs),imports);
+			    imports=dupOnto(xs,imports);
 			}
 		    }
 		}
@@ -504,13 +512,42 @@ Bool   isHidden; {
 	    else {
 		Cell c = fst(e);
 		List subentities = NIL;
-		imports = cons(c,imports);
 		if (isTycon(c)
 		    && (tycon(c).what == DATATYPE 
-			|| tycon(c).what == NEWTYPE))
-		    subentities = tycon(c).defn;
-		else if (isClass(c))
-		    subentities = cclass(c).members;
+			|| tycon(c).what == NEWTYPE)) {
+		    if (snd(e) != DOTDOT) {
+			List ys = snd(e);
+			while (nonNull(ys)) {
+			    if (isPair(hd(ys))) {
+				subentities = cons (findQualName(hd(ys)),subentities);
+			    } else {
+				subentities = cons(hd(ys),subentities);
+			    }
+			    ys=tl(ys);
+			}
+		    } else {
+			subentities = tycon(c).defn;
+		    }
+		} else if (isClass(c)) {
+		    if (snd(e) != DOTDOT) {
+			List ys = snd(e);
+			while (nonNull(ys)) {
+			    if (isPair(hd(ys))) {
+				subentities = cons (findQualName(hd(ys)),subentities);
+			    } else {
+				subentities = cons(hd(ys),subentities);
+			    }
+			    ys=tl(ys);
+			}
+		    } else {
+			subentities = cclass(c).members;
+		    }
+		}
+		if (subentities != NIL && subentities != DOTDOT) {
+		    imports = cons(pair(c,subentities),imports);
+		} else {
+		    imports = cons(c,imports);
+		}
 		if (DOTDOT == snd(e)) {
 		    imports = dupOnto(subentities,imports);
 		}
@@ -558,7 +595,8 @@ Pair importSpec; {
     } else {
 	imports = resolveImportList(m, impList,FALSE);
         for(; nonNull(imports); imports=tl(imports)) {
-          modImps = cons(importEntity(m,hd(imports)), modImps);
+	  if (nonNull(hd(imports))) 
+	      modImps = cons(importEntity(m,hd(imports)), modImps);
 	}
     }
     /* To be able to handle re-exportation of modules, each module
@@ -585,13 +623,33 @@ Pair importSpec; {
 static Cell local importEntity(source,e)
 Module source;
 Cell e; {
-    switch (whatIs(e)) {
-      case NAME  : importName(source,e); 
+    Cell ent = e;
+    Cell cs  = NIL;
+
+    /* If a pair, then the snd component gives the
+     * constructors/methods that are specifically imported
+     * with the tycon/class.
+     */
+    if ( isPair(e) ) {
+	ent = fst(e);
+	cs  = snd(e);
+    }
+    if (cs != NIL && cs != DOTDOT) {
+	List xs = cs;
+	for (;nonNull(xs);xs=tl(xs)) {
+	    if (whatIs(hd(xs)) != 0) {
+		importEntity(source,hd(xs));
+	    }
+	}
+    }
+    switch (whatIs(ent)) {
+      case NAME  : importName(source,ent); 
 	           return e;
-      case TYCON : importTycon(source,e); 
-	           return pair(e,NIL);
-      case CLASS : importClass(source,e);
-	           return pair(e,NIL);
+      case TYCON : 
+	           importTycon(source,ent); 
+	           return pair(ent,cs);
+      case CLASS : importClass(source,ent);
+	           return pair(ent,cs);
       default: internal("importEntity");
 	       return NIL;
     }
@@ -745,7 +803,7 @@ Cell e; {
 		    exports = cons(hd(xs),exports);
 	    }
 	} else {
-	    /* Exporting other modules imports all things imported 
+	    /* Re-exporting a module exorts all things imported 
 	     * unqualified from it.  
 	     */
 	    List xs = NIL;
@@ -784,23 +842,77 @@ Cell e; {
 	    case NEWTYPE:
 	    case DATATYPE:
 		if (DOTDOT==parts) {
-		    return cons(pair(nm,DOTDOT),exports);
+		    Module thisModule = lastModule();
+		    if ( tycon(nm).mod == thisModule ) {
+			return cons(pair(nm,DOTDOT),exports);
+		    } else {
+			/* If we're re-exporting a tycon via (..),
+			 * only the constructors in scope are exported. 
+			 */
+			Cell xs;
+			Cell stuff;
+			for (xs = module(thisModule).modImports;nonNull(xs);xs=tl(xs)) {
+			    if (isPair(hd(xs)) && fst(hd(xs)) == tycon(nm).mod ) {
+				/* Found the effective import list for tycon's module */
+				List ns;
+				for(ns = snd(hd(xs)); nonNull(ns); ns=tl(ns)) {
+				    if (isPair(hd(ns)) && 
+					isTycon(fst(hd(ns))) &&
+					fst(hd(ns)) == nm) {
+					List xs;
+					stuff = snd(hd(ns));
+					xs = stuff;
+					break;
+				    }
+				}
+				break;
+			    }
+			}
+			return cons(pair(nm,stuff),exports);
+		    }
 		} else {
 		    exports = checkSubentities(exports,parts,tycon(nm).defn,
 					       "constructor of type",
 					       tycon(nm).text);
-		    return cons(pair(nm,DOTDOT), exports);
+ 		    return cons(pair(nm,parts), exports);
 		}
 	    default:
 		internal("checkExport1");
 	    }
 	} else if (isQCon(ident) && nonNull(nm=findQualClass(ident))) {
 	    if (DOTDOT == parts) {
-		return cons(pair(nm,DOTDOT),exports);
+		Module thisModule = lastModule();
+		if ( cclass(nm).mod == thisModule ) {
+		    return cons(pair(nm,DOTDOT),exports);
+		} else {
+		    /* If we're re-exporting a class via (..),
+		     * only the metods in scope are exported. 
+		     */
+		    Cell xs;
+		    Cell stuff;
+		    for (xs = module(thisModule).modImports;nonNull(xs);xs=tl(xs)) {
+			if (isPair(hd(xs)) && fst(hd(xs)) == cclass(nm).mod ) {
+			   /* Found the effective import list for tycon's module */
+			    List ns;
+			    for(ns = snd(hd(xs)); nonNull(ns); ns=tl(ns)) {
+				if (isPair(hd(ns)) && 
+				    isClass(fst(hd(ns))) &&
+				    fst(hd(ns)) == nm) {
+				    List xs;
+				    stuff = snd(hd(ns));
+				    xs = stuff;
+				    break;
+				}
+			    }
+			    break;
+			}
+		    }
+		    return cons(pair(nm,stuff),exports);
+		}
 	    } else {
 		exports = checkSubentities(exports,parts,cclass(nm).members,
 					   "member of class",cclass(nm).text);
-		return cons(pair(nm,DOTDOT), exports);
+		return cons(pair(nm,parts), exports);
 	    }
 	} else {
 	    ERRMSG(0) "Explicit export list given for non-class/datatype \"%s\" in export list of module \"%s\"",

@@ -9,8 +9,8 @@
  * included in the distribution.
  *
  * $RCSfile: storage.h,v $
- * $Revision: 1.26 $
- * $Date: 2002/02/03 19:00:11 $
+ * $Revision: 1.27 $
+ * $Date: 2002/03/19 10:55:10 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -566,7 +566,7 @@ struct Module {
     List  tycons;
     List  names;
     List  classes;
-    List  exports; /* [ Entity | (Entity, NIL|DOTDOT) ] */
+    List  exports; /* [ Entity | (Entity, NIL|DOTDOT|[Entity]) ] */
     /* List of qualified imports.  Used both during compilation and when
      * evaluating an expression in the context of the current module.
      */
