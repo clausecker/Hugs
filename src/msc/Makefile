@@ -54,7 +54,7 @@ YFILES		= parser.y
 SOURCES		= $(HFILES) $(CFILES) $(INCFILES) $(YFILES) 
 OBJECTS		= storage.obj input.obj static.obj type.obj subst.obj \
           compiler.obj plugin.obj builtin.obj machine.obj output.obj ffi.obj
-IOBJECTS	= hugs.obj $(OBJECTS)
+IOBJECTS	= hugs.obj hugs.res $(OBJECTS)
 PRELUDE		= config.h options.h prelude.h
 
 ################################################################
@@ -65,7 +65,7 @@ hugs.exe	: $(IOBJECTS)
 		  $(CC) $(LDFLAGS) $(IOBJECTS)  $(LIBS) -o hugs.exe 
 		  
 
-SERVER_OBJECTS	= server.obj $(OBJECTS) 
+SERVER_OBJECTS	= server.obj runhugs.res $(OBJECTS) 
 runhugs.obj	: $(PRELUDE) hugs.c machdep.c timer.c runhugs.c
 runhugs.exe	: runhugs.obj $(SERVER_OBJECTS)
 		  $(CC) $(LDFLAGS) runhugs.obj $(SERVER_OBJECTS) $(LIBS) -o runhugs.exe
@@ -90,6 +90,7 @@ clean		::
 		  $(RM) *.CSM
 		  $(RM) *.TR2
 		  $(RM) *.DSW
+		  $(RM) *.RES
 		  $(RM) *.aux
 		  $(RM) *.hp
 distclean	:: clean
@@ -146,6 +147,12 @@ machine.obj	: $(PRELUDE) storage.h connect.h errors.h
 plugin.obj	: $(PRELUDE) storage.h connect.h errors.h
 builtin.obj	: $(PRELUDE) storage.h connect.h errors.h \
 		  bignums.c printer.c iomonad.c interns.c stmonad.c array.c dirprim.c timeprim.c
+
+hugs.res	: msc\hugs.rc ..\icons\hugsicon.ico
+		rc /imsc /i..\icons /r /fo hugs.res msc\hugs.rc 
+
+runhugs.res	: msc\runhugs.rc ..\icons\hsxicon.ico
+		rc /imsc /I..\icons /r /fo runhugs.res msc\runhugs.rc 
 
 ################################################################
 # Regression tests (none supplied)
