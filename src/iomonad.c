@@ -14,8 +14,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: iomonad.c,v $
- * $Revision: 1.67 $
- * $Date: 2003/12/02 12:24:02 $
+ * $Revision: 1.68 $
+ * $Date: 2003/12/03 13:32:00 $
  * ------------------------------------------------------------------------*/
  
 Name nameIORun;			        /* run IO code                     */
@@ -489,6 +489,10 @@ String loc; {
     if (hmode&HREADWRITE) {
 	handles[i].hHaveRead = FALSE;
     }
+#if CHAR_ENCODING
+    handles[i].hBinaryMode = binary;
+    handles[i].hLookAhead = -1;
+#endif
     return (handles[i].hcell = ap(HANDCELL,i));
 }
 
@@ -1098,7 +1102,7 @@ primFun(primHIsEOF) {	/* Test for end of file on handle  */
 	IOBoolResult(isEOF);
 #if CHAR_ENCODING
       } else if (handles[h].hLookAhead>=0) {
-	IOReturn(nameTrue);
+	IOReturn(nameFalse);
 #endif
       } else {
 	Int c = fgetc(fp);

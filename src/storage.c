@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: storage.c,v $
- * $Revision: 1.81 $
- * $Date: 2003/11/14 01:55:16 $
+ * $Revision: 1.82 $
+ * $Date: 2003/12/03 13:32:01 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -3570,7 +3570,13 @@ Int what; {
 		       handles[HSTDOUT].hbufMode = HUNKNOWN_BUFFERING;
 		       handles[HSTDERR].hmode = HAPPEND;
 		       handles[HSTDERR].hbufMode = HUNKNOWN_BUFFERING;
-#endif
+#if CHAR_ENCODING
+		       handles[HSTDIN].hLookAhead = -1;
+		       handles[HSTDIN].hBinaryMode = FALSE;
+		       handles[HSTDOUT].hBinaryMode = FALSE;
+		       handles[HSTDERR].hBinaryMode = FALSE;
+#endif /* CHAR_ENCODING */
+#endif /* IO_HANDLES */
 #ifdef DOTNET
 		       zeroDotNetTable();
 #endif
