@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: array.c,v $
- * $Revision: 1.4 $
- * $Date: 2002/04/11 23:20:17 $
+ * $Revision: 1.5 $
+ * $Date: 2002/12/11 16:07:18 $
  * ------------------------------------------------------------------------*/
 
 static Name nameEltUndef;		/* undefined element in array	   */
@@ -38,28 +38,28 @@ PROTO_PRIM(primIOArrEq);
 #endif
 
 static struct primitive arrayPrimTable[] = {
-  {"primArray",		4, primArray},
-  {"primUpdate",	3, primUpdate},
-  {"primAccum",		4, primAccum},
-  {"primAccumArray",	6, primAccumArray},
+  {"primArray",		3, primArray},
+  {"primUpdate",	2, primUpdate},
+  {"primAccum",		3, primAccum},
+  {"primAccumArray",	5, primAccumArray},
   {"primAmap",		2, primAmap},
-  {"primSubscript",	3, primSubscript},
+  {"primSubscript",	2, primSubscript},
   {"primBounds",	1, primBounds},
   {"primElems",		1, primElems},
   {"eltUndef",		0, primFail},
   {"outBounds",		2, primFail},
 #if LAZY_ST
   {"STNewArr",		4, primSTNewArr},
-  {"STReadArr",		4, primSTReadArr},
-  {"STWriteArr",	5, primSTWriteArr},
+  {"STReadArr",		3, primSTReadArr},
+  {"STWriteArr",	4, primSTWriteArr},
   {"STFreeze",		2, primSTFreeze},
   {"STBounds",	        1, primBounds},
   {"STArrEq",	        2, primSTArrEq},
 #endif
 #if IO_MONAD
   {"IONewArr",		5, primIONewArr},
-  {"IOReadArr",		5, primIOReadArr},
-  {"IOWriteArr",	6, primIOWriteArr},
+  {"IOReadArr",		4, primIOReadArr},
+  {"IOWriteArr",	5, primIOWriteArr},
   {"IOFreeze",		3, primIOFreeze},
   {"IOBounds",	        1, primBounds},
   {"IOArrEq",	        2, primIOArrEq},
@@ -134,12 +134,11 @@ static struct primInfo arrayPrims = { arrayControl, arrayPrimTable, 0 };
  * aEvalModel(a);	Evaluate model array primArg(a), and overwrite it
  *			on stack with an indirection free pointer to the
  *			resulting array.
- * aAssocs(r,as,p);	Move list of assocs -- (index,value) pairs -- from
+ * aAssocs(as,p);	Move list of assocs -- (offset,value) pairs -- from
  *			primArg(as) (which is NIL'd to prevent space leak)
  *			to top of stack and evaluate, in sequence, until all
- *			assocs have been processed.  For each pair, we use
- *			primArg(r) to calculate the integer offset and then
- *			run procedure p with this offset in whnfInt and the
+ *			assocs have been processed.  For each pair, we
+ *			run procedure p with the offset in whnfInt and the
  *			associated value in top(), to be popped before p is
  *			done.
  * aSetElt;		To be used with aAssocs: if arr[whnfInt] is NIL,
@@ -247,14 +246,14 @@ static struct primInfo arrayPrims = { arrayControl, arrayPrimTable, 0 };
 			updapRoot(primArg(1),arr);		\
 			arr = NIL;
 
-/* The implementation of aAssocs(r,p) should be independent of the
+/* The implementation of aAssocs(as,p) should be independent of the
  * representation for arrays:
  */
-#define aAssocs(r,as,p)	push(primArg(as)); primArg(as)=NIL;	\
+#define aAssocs(as,p)	push(primArg(as)); primArg(as)=NIL;	\
 			eval(pop());				\
 			while (whnfHead==nameCons) {		\
 			    eval(pop());			\
-			    eval(ap(primArg(r),top()));		\
+			    eval(top());			\
 			    if (whnfInt<0 || whnfInt>=alen) {	\
 				updapRoot(ap(nameOutBounds,aBounds()),top());\
 				cantReduce();			\
@@ -266,33 +265,33 @@ static struct primInfo arrayPrims = { arrayControl, arrayPrimTable, 0 };
 
 primFun(primArray) {			/* :: (a,a)			   */
     declArr;				/*    -> Int			   */
-    aNewNil(4,3);			/*	 -> (a -> Int)		   */
-    aAssocs(2,1,aSetElt);		/*	    -> [(a,b)]		   */
-    aNullElts;				/*	       -> Array a b	   */
+    aNewNil(3,2);			/*	 -> [(Int,b)]		   */
+    aAssocs(1,aSetElt);			/*	    -> Array a b	   */
+    aNullElts;
     updarrRoot();
 }
 
-primFun(primUpdate) {			/* :: [(a,b)]			   */
+primFun(primUpdate) {			/* :: [(Int,b)]			   */
     declArr;				/*    -> Array a b		   */
-    aEvalModel(2);			/*       -> (a -> Int)		   */
-    aNewLike(2,NIL);			/*          -> Array a b	   */
-    aAssocs(1,3,aSetElt);
-    aCopyNull(2);
+    aEvalModel(1);			/*       -> Array a b		   */
+    aNewLike(1,NIL);
+    aAssocs(2,aSetElt);
+    aCopyNull(1);
     updarrRoot();
 }
 
-primFun(primAccum) {			/* :: [(a,c)] -> Array a b	   */
-    declArr;				/*    -> (b -> c -> b) -> (a->Int) */
-    aEvalModel(3);			/*	 -> Array a b		   */
-    aNewCopy(3);
-    aAssocs(1,4,aAddElt(2));
+primFun(primAccum) {			/* :: [(Int,c)] -> Array a b	   */
+    declArr;				/*    -> (b -> c -> b)		   */
+    aEvalModel(2);			/*	 -> Array a b		   */
+    aNewCopy(2);
+    aAssocs(3,aAddElt(1));
     updarrRoot();
 }
 
 primFun(primAccumArray) {		/* :: (a,a) -> Int		   */
     declArr;				/*    -> (b -> c -> b) -> b	   */
-    aNewSet(6,5,primArg(3));		/*	 -> (a -> Int) -> [(a,c)]  */
-    aAssocs(2,1,aAddElt(4));		/*	    -> Array a b	   */
+    aNewSet(5,4,primArg(2));		/*	 -> [(Int,c)]		   */
+    aAssocs(1,aAddElt(3));		/*	    -> Array a b	   */
     updarrRoot();
 }
 
@@ -304,11 +303,9 @@ primFun(primAmap) {			/* :: (a -> b)			   */
     updarrRoot();
 }
 
-primFun(primSubscript) {		/* :: ((a,a) -> a -> Int)	   */
-    aEvalModel(2);			/*    -> Array a b		   */
-    primArg(3) = ap(primArg(3),		/*	 -> a			   */
-		    aGetBounds(2));	/*	    -> b		   */
-    eval(ap(primArg(3),primArg(1)));
+primFun(primSubscript) {		/* :: Array a b -> Int -> b        */
+    aEvalModel(2);
+    eval(primArg(1));
     aGetElt(2);
     updateRoot(top());
 }
@@ -332,23 +329,19 @@ primFun(primSTNewArr) {			/* :: (a,a)			   */
     aRetForST();
 }
 
-primFun(primSTReadArr) {		/* :: ((a,a) -> a -> Int)	   */
-    eval(primArg(1));			/*    -> MutArr s a b		   */
-    aEvalModel(3);			/*	 -> a			   */ 
-    primArg(4) = ap(primArg(4),		/*	    -> ST s b		   */
-		    aGetBounds(3));
-    eval(ap(primArg(4),primArg(2)));
+primFun(primSTReadArr) {		/* :: MutArr s a b -> Int	   */
+    eval(primArg(1));			/*    -> ST s b			   */
+    aEvalModel(3);
+    eval(primArg(2));
     aGetElt(3);
     topfun(mkTuple(2));
     updapRoot(top(),primArg(1));
 }
 
-primFun(primSTWriteArr) {		/* :: ((a,a) -> a -> Int)	   */
-    eval(primArg(1));			/*    -> MutArr s a b		   */
-    aEvalModel(4);			/*	 -> a			   */
-    primArg(5) = ap(primArg(5),		/*	    -> b		   */
-		    aGetBounds(4));	/*	       -> ST s ()	   */
-    eval(ap(primArg(5),primArg(3)));
+primFun(primSTWriteArr) {		/* :: MutArr s a b -> Int -> b	   */
+    eval(primArg(1));			/*    -> ST s ()		   */
+    aEvalModel(4);
+    eval(primArg(3));
     aPutElt(4,primArg(2));
     updapRoot(ap(mkTuple(2),nameUnit),primArg(1));
 }
@@ -376,20 +369,16 @@ primFun(primIONewArr) {			/* :: (a,a)			   */
     aRetForIO();			/*	    -> IO (IOArray a b)	   */
 }
 
-primFun(primIOReadArr) {		/* :: ((a,a) -> a -> Int)	   */
-    aEvalModel(4);			/*    -> IOArray a b		   */
-    primArg(5) = ap(primArg(5),		/*	 -> a			   */ 
-		    aGetBounds(4));	/*	    -> IO b		   */
-    eval(ap(primArg(5),primArg(3)));
+primFun(primIOReadArr) {		/* :: IOArray a b -> Int -> IO b   */
+    aEvalModel(4);
+    eval(primArg(3));
     aGetElt(4);
     updapRoot(primArg(1),top());
 }
 
-primFun(primIOWriteArr) {		/* :: ((a,a) -> a -> Int)	   */
-    aEvalModel(5);			/*    -> IOArray a b		   */
-    primArg(6) = ap(primArg(6),		/*	 -> a			   */
-	            aGetBounds(5));	/*	    -> b		   */
-    eval(ap(primArg(6),primArg(4)));	/*	       -> IO ()		   */
+primFun(primIOWriteArr) {		/* :: IOArray a b -> Int -> b	   */
+    aEvalModel(5);			/*    -> IO ()			   */
+    eval(primArg(4));
     aPutElt(5,primArg(3));
     updapRoot(primArg(1),nameUnit);
 }

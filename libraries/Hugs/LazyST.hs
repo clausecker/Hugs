@@ -100,10 +100,10 @@ freezeSTArray       :: Ix ix => STArray s ix elt -> ST s (Array ix elt)
 unsafeFreezeSTArray :: Ix ix => STArray s ix elt -> ST s (Array ix elt)
 
 unsafeReadSTArray   :: Ix i => STArray s i e -> Int -> ST s e
-unsafeReadSTArray    = primReadArr (const id)
+unsafeReadSTArray    = primReadArr
 
 unsafeWriteSTArray  :: Ix i => STArray s i e -> Int -> e -> ST s ()
-unsafeWriteSTArray   = primWriteArr (const id)
+unsafeWriteSTArray   = primWriteArr
 
 newSTArray bs e      = primNewArr bs (rangeSize bs) e
 boundsSTArray a      = primBounds a
@@ -126,9 +126,9 @@ instance Eq (STArray s ix elt) where
 primitive primNewArr   "STNewArr"
           :: (a,a) -> Int -> b -> ST s (STArray s a b)
 primitive primReadArr  "STReadArr"
-          :: ((i,i) -> a -> Int) -> STArray s i b -> a -> ST s b
+          :: STArray s a b -> Int -> ST s b
 primitive primWriteArr "STWriteArr"
-          :: ((i,i) -> a -> Int) -> STArray s i b -> a -> b -> ST s ()
+          :: STArray s a b -> Int -> b -> ST s ()
 primitive primFreeze   "STFreeze"
           :: STArray s a b -> ST s (Array a b)
 primitive primBounds   "STBounds"

@@ -33,10 +33,10 @@ freezeIOArray       :: Ix ix => IOArray ix elt -> IO (Array ix elt)
 unsafeFreezeIOArray :: Ix ix => IOArray ix elt -> IO (Array ix elt)
 
 unsafeReadIOArray   :: Ix i => IOArray i e -> Int -> IO e
-unsafeReadIOArray    = primReadArr (const id)
+unsafeReadIOArray    = primReadArr
 
 unsafeWriteIOArray  :: Ix i => IOArray i e -> Int -> e -> IO ()
-unsafeWriteIOArray   = primWriteArr (const id)
+unsafeWriteIOArray   = primWriteArr
 
 newIOArray bs e      = primNewArr bs (rangeSize bs) e
 boundsIOArray a      = primBounds a
@@ -58,9 +58,9 @@ instance Eq (IOArray ix elt) where
 primitive primNewArr   "IONewArr"
           :: (a,a) -> Int -> b -> IO (IOArray a b)
 primitive primReadArr  "IOReadArr"
-          :: ((i,i) -> a -> Int) -> IOArray i b -> a -> IO b
+          :: IOArray a b -> Int -> IO b
 primitive primWriteArr "IOWriteArr"
-          :: ((i,i) -> a -> Int) -> IOArray i b -> a -> b -> IO ()
+          :: IOArray a b -> Int -> b -> IO ()
 primitive primFreeze   "IOFreeze"
           :: IOArray a b -> IO (Array a b)
 primitive primBounds   "IOBounds"
