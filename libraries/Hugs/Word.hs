@@ -20,7 +20,7 @@ module Hugs.Word
 	, intToWord32    -- :: Int    -> Word32
 	) where
 
-import PrelImpl
+import Hugs.Prelude
 import Data.Bits
 import Data.Int
 import Data.Ix ( Ix(..) )

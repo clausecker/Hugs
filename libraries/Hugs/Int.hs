@@ -20,7 +20,7 @@ module Hugs.Int
 	--  Show and Bits instances for each of Int8, Int16 and Int32
 	) where
 
-import PrelImpl
+import Hugs.Prelude
 import Data.Bits
 
 -----------------------------------------------------------------------------
