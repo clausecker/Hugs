@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.57 $
- * $Date: 2002/01/08 00:30:55 $
+ * $Revision: 1.58 $
+ * $Date: 2002/01/09 13:16:40 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1798,8 +1798,13 @@ static Void local info() {              /* describe objects                */
 	 describe(findText(nm));
 
 cleanup:
-	 if (mod) { free(mod); mod = NULL; }
-	 if (nm)  { free(nm);  nm  = NULL; }
+	 if (mod) { 
+	   free(mod);  mod = NULL;
+	   /* Only allocated 'nm' if the name was qualified. */
+	   if (nm) { 
+	     free(nm); nm  = NULL;
+	   }
+	 }
     }
     if (count == 0) {
 	whatScripts();
