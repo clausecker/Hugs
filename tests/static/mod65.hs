@@ -1,3 +1,4 @@
--- !!! Malformed lhs (pointless but legal in Haskell 1.3, rejected by Hugs)
+-- !!! Malformed lhs (legal Haskell, rejected by Hugs)
 module M where
-x = let [] = "a" in 'a'
+
+f x = let [] = x in x
