@@ -1,7 +1,7 @@
-<chapter>
+<chapter id="running">
 <title>Running Hugs</title>
 
-<sect1>
+<sect1 id="passing-options">
 <title>Passing options to Hugs</title>
 
 <cmdsynopsis>

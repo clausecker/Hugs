@@ -1,4 +1,4 @@
-<chapter>
+<chapter id="install">
 <title>Installing Hugs from source</title>
 
 <para>
@@ -8,10 +8,10 @@ Similar installation procedures can be used for most machines
 if you have a suitable C compiler.
 <para>
 
-<sect1>
+<sect1 id="install-unix">
 <title>Installing on Unix, MacOs X or similar</title>
 
-<sect2>
+<sect2 id="install-unix-short">
 <title>Short version</title>
 
 <programlisting>
@@ -27,7 +27,7 @@ if you have a suitable C compiler.
 
 </sect2>
 
-<sect2>
+<sect2 id="install-unix-long">
 <title>Long version</title>
 
 <orderedlist>
@@ -55,7 +55,7 @@ This tests the capabilities of your C compiler and OS
 and arranges to install binaries in the directories places.
 Read <filename>hugs98/src/unix/INSTALL</filename> to find out about
 general configuration options.
-See <xref linkend="hugs-configure-options"> for Hugs-specific options.
+See <xref linkend="hugs-configure"> for Hugs-specific options.
 </para>
 </listitem>
 
@@ -151,7 +151,7 @@ but you might want to keep the <filename>hugs98/docs</filename> directory.
 
 </sect1>
 
-<sect1>
+<sect1 id="install-windows">
 <title>Installing on Windows</title>
 
 <para>
@@ -186,7 +186,7 @@ before running it.
 
 </sect1>
 
-<sect1>
+<sect1 id="install-mac">
 <title>Installing on MacOS (pre MacOS X)</title>
 
 <para>
@@ -208,7 +208,7 @@ in the same folder as the application.
 
 </sect1>
 
-<sect1>
+<sect1 id="install-other">
 <title>Installing on another platform</title>
 
 <para>
@@ -224,7 +224,7 @@ following files
 
 </sect1>
 
-<sect1 id="hugs-configure-options">
+<sect1 id="hugs-configure">
 <title>Configuration options</title>
 
 <para>

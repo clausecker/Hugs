@@ -1,4 +1,4 @@
-<chapter id="bugs">
+<chapter id="haskell98">
 <title>Hugs <foreignphrase>vs</foreignphrase> Haskell 98 and addenda</title>
 
 <para>
@@ -10,7 +10,7 @@ and the Haskell compilers
 <ulink url="http://www.cs.york.ac.uk/fp/nhc98/">Nhc</ulink>.
 <para>
 
-<sect1 id="extensions">
+<sect1 id="addenda">
 <title>Addenda to Haskell 98</title>
 
 <sect2 id="ffi">

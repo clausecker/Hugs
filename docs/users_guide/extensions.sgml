@@ -1,4 +1,4 @@
-<chapter>
+<chapter id="extensions">
 <title>Non-standard language extensions</title>
 
 <para>Several experimental features are enabled with the <option>-98</option>
@@ -14,7 +14,7 @@ the principal exception being TRex (typed extensible records).
 GHC provides some of these extensions in a more general form.
 </para>
 
-<sect1>
+<sect1 id="recursive-do">
 <title>Recursive do-notation</title>
 
 <para>
@@ -101,7 +101,7 @@ for the class and the corresponding library.
 
 </sect1>
 
-<sect1>
+<sect1 id="zip-comprehension">
 <title>Parallel list comprehensions (a.k.a. zip-comprehensions)</title>
 
 <para>

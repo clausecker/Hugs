@@ -1,6 +1,7 @@
 ROOT	= users_guide
 PARTS	= $(ROOT).sgml commands.sgml extensions.sgml haskell98.sgml \
 	  install.sgml introduction.sgml license.sgml running.sgml
+HTML_OPTS = -V '%use-id-as-filename%'
 
 HTML	= $(ROOT)/index.html
 
@@ -15,7 +16,8 @@ ps: $(ROOT).ps
 pdf: $(ROOT).pdf
 
 $(HTML): $(PARTS)
-	docbook2html $(ROOT).sgml
+	rm -rf $(ROOT)
+	docbook2html -o $(ROOT) $(HTML_OPTS) $(ROOT).sgml
 
 $(ROOT).dvi: $(PARTS)
 	docbook2dvi $(ROOT).sgml

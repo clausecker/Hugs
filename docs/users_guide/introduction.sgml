@@ -8,15 +8,15 @@ Hugs comes with a large collection of libraries,
 which are described in separate documentation.
 </para>
 
-<sect1>
+<sect1 id="other">
 <title>Other sources of information</title>
 
-<sect2 id="user-manual">
+<sect2 id="other-documentation">
 <title>Other documentation</title>
 
 <variablelist>
 
-<varlistentry>
+<varlistentry id="user-manual">
 <term><citetitle>The Hugs 98 User Manual</citetitle></term>
 <listitem>
 <para>
@@ -36,7 +36,7 @@ The manual is available in several formats:
 </listitem>
 </varlistentry>
 
-<varlistentry>
+<varlistentry id="haskell98-report">
 <term><citetitle>Haskell 98 Language and Libraries: the Revised Report</citetitle></term>
 <listitem>
 <para>
@@ -47,7 +47,7 @@ published by Cambridge University Press, and also available
 </listitem>
 </varlistentry>
 
-<varlistentry>
+<varlistentry id="libraries">
 <term>Haskell Core Libraries</term>
 <listitem>
 <para>
@@ -78,7 +78,7 @@ and the Hugs home page
 
 </sect2>
 
-<sect2>
+<sect2 id="mailing-lists">
 <title>Mailing lists</title>
 
 <para>

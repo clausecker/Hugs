@@ -1,4 +1,4 @@
-<chapter>
+<chapter id="commands">
 <title>Hugs commands</title>
 
 <sect1 id="basic-commands">
