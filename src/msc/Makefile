@@ -23,14 +23,14 @@
 # TAGS:          build emacs TAGS table
 
 # This rule goes first to make it the default choice
-default		:: hugs.exe runhugs.exe
+default		:: hugs.exe runhugs.exe hugsscript.dll
 
 CC		= cl /nologo
-CFLAGS		= -ML 
+CFLAGS		= -ML
 OPTFLAGS	= -O2
 
 LD		= ld
-LDFLAGS    	=   
+LDFLAGS    	= 
 DLL_FLAGS	= /LD
 PIC_FLAGS	= 
 LIBS		=  kernel32.lib advapi32.lib
@@ -69,6 +69,11 @@ SERVER_OBJECTS	= server.obj runhugs.res $(OBJECTS)
 runhugs.obj	: $(PRELUDE) hugs.c machdep.c timer.c runhugs.c
 runhugs.exe	: runhugs.obj $(SERVER_OBJECTS)
 		  $(CC) $(LDFLAGS) runhugs.obj $(SERVER_OBJECTS) $(LIBS) -o runhugs.exe
+
+
+
+hugsscript.dll  : $(SERVER_OBJECTS)
+		  $(CC) $(DLL_FLAGS) $(LDFLAGS) $(SERVER_OBJECTS) $(LIBS) -o hugsscript.dll
 
 ################################################################
 # Clean, distclean, veryclean, TAGS
@@ -152,7 +157,7 @@ hugs.res	: msc\hugs.rc ..\icons\hugsicon.ico
 		rc /imsc /i..\icons /r /fo hugs.res msc\hugs.rc 
 
 runhugs.res	: msc\runhugs.rc ..\icons\hsxicon.ico
-		rc /imsc /I..\icons /r /fo runhugs.res msc\runhugs.rc 
+		rc /imsc /i..\icons /r /fo runhugs.res msc\runhugs.rc 
 
 ################################################################
 # Regression tests (none supplied)
