@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: machine.c,v $
- * $Revision: 1.22 $
- * $Date: 2003/12/04 13:53:51 $
+ * $Revision: 1.23 $
+ * $Date: 2004/01/06 19:45:11 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -68,6 +68,22 @@ typedef union {
 
 typedef MemCell far *Memory;
 static  Memory      memory;
+#if !WANT_FIXED_SIZE_TABLES
+/* (Dynamically) growable memory. */
+DynTable* dynMemory = NULL;
+#endif
+
+#if !WANT_FIXED_SIZE_TABLES
+void
+growMemory(void)
+{
+    growDynTable(dynMemory);
+    memory = (Memory)(dynMemory->data);
+    if (memory==0)
+	fatal("Cannot allocate program memory");
+}
+#endif
+
 #define intAt(m)    memory[m].mint
 #if !BREAK_FLOATS
 #define floatAt(m)  memory[m].mfloat
@@ -1879,7 +1895,14 @@ Cell ex; {
 Void machine(what)
 Int what; {
     switch (what) {
-	case INSTALL : memory  = (Memory)farCalloc(NUM_ADDRS,sizeof(MemCell));
+	case INSTALL : 
+#if WANT_FIXED_SIZE_TABLES
+	               memory  = (Memory)farCalloc(NUM_ADDRS,sizeof(MemCell));
+#else
+		       /* prelude.h defines NUM_ADDRS; 0 is the upper bound (=> unbounded.) */
+		       dynMemory = allocDynTable(sizeof(Memory), NUM_ADDRS, 0, "memory");
+		       memory    = (Memory)(dynMemory->data);
+#endif
 		       if (memory==0)
 			   fatal("Cannot allocate program memory");
 		       instrNone(iFAIL);
@@ -1899,7 +1922,12 @@ Int what; {
 	               break;
 #endif
 
-        case EXIT    : free(memory);
+        case EXIT    : 
+#if WANT_FIXED_SIZE_TABLES
+	               free(memory);
+#else
+		       if (dynMemory) freeDynTable(dynMemory);
+#endif
 	               break;
     }
 }

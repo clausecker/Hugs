@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: storage.c,v $
- * $Revision: 1.85 $
- * $Date: 2003/12/18 17:02:25 $
+ * $Revision: 1.86 $
+ * $Date: 2004/01/06 19:45:11 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -287,10 +287,16 @@ Addr getMem(n)                         /* Get some more memory             */
 Int n; {
     Addr newAddr = addrHw;
     addrHw += n;
+#if WANT_FIXED_SIZE_TABLES
     if (addrHw>=NUM_ADDRS) {
 	ERRMSG(0) "Program code storage space exhausted"
 	EEND;
     }
+#else
+    while (addrHw>=(Int)(dynMemory->maxIdx)) {
+	growMemory();
+    }
+#endif
     return newAddr;
 }
 
