@@ -21,25 +21,26 @@ o "foreign export dynamic" is implemented but only for the x86
 
 
 
-Suppose you have some C functions in foo/test.c and some ffi
-declarations for those functions in foo/Test.hs, you can use them with
+Suppose you have some C functions in test.c and some ffi
+declarations for those functions in Test.hs, you can use them with
 Hugs as follows:
 
-  # Generate Test.c (note that it is _not_ foo/test.c)
+  # Generate Test.c (note that it is _not_ test.c)
   #
   # [For every Haskell file loaded which contains ffi declarations,
   # this will generate a .c file _in the current working directory_.]
   hugs +G Test.hs
 
-  # Compile and partially link Test.c and foo/test.c putting the
-  # result in foo/Test.so.
+  # Compile and partially link Test.c and test.c putting the
+  # result in Test.so.
   #
   # Details on how to partially link files vary from one platform to
   # another.
-  cc -shared Test.c foo/test.c -o foo/Test.so
+  cc -shared Test.c test.c -o Test.so                     # Most Unixen
+  cc -bundle -undefined suppress Test.c test.c -o Test.so # MacOS X
 
-  # Run Hugs as normal - when foo/Test.hs is loaded, it will load foo/Test.so
-  hugs foo/Test.hs
+  # Run Hugs as normal - when Test.hs is loaded, it will load Test.so
+  hugs Test.hs
 
   # And now try using the imported or exported functions.
 
