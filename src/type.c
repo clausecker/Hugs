@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: type.c,v $
- * $Revision: 1.66 $
- * $Date: 2003/02/20 16:44:37 $
+ * $Revision: 1.67 $
+ * $Date: 2003/03/03 06:31:06 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -55,6 +55,9 @@ Type typeForeign;
 Type typeStable;
 Type typeBool;
 Type typeString;
+#ifdef DOTNET
+Type typeObject;
+#endif
 
 static Type typeInteger; 
 static Type typeMaybe;
@@ -139,6 +142,11 @@ Type  typeNoRow;			/* Empty row			   */
 Type  typeRec;				/* Record formation		   */
 Name  nameNoRec;			/* Empty record			   */
 #endif
+
+#if DOTNET
+Name   nameNetException;
+#endif
+
 
 /* --------------------------------------------------------------------------
  * Local function prototypes:
@@ -3208,11 +3216,15 @@ Void linkPreludeTC() {			/* Hook to tycons and classes in   */
 	typeForeignP = linkTycon("ForeignPtr");
 	typeForeign  = linkTycon("ForeignObj"); /* deprecated */
 	typeStable   = linkTycon("StablePtr");
+#ifdef DOTNET
+	typeObject   = linkTycon("Object");
+#endif
 	typeBool     = linkTycon("Bool");
 	typeString   = linkTycon("String");
 	typeInteger  = linkTycon("Integer");
 	typeMaybe    = linkTycon("Maybe");
 	typeOrdering = linkTycon("Ordering");
+
 	stdDefaults  = cons(typeInteger,cons(typeDouble,NIL));
 
 	classEq      = linkClass("Eq");
@@ -3336,6 +3348,9 @@ Void linkPreludeCM() {			/* Hook to cfuns and mfuns in	   */
 	nameIllegal        = linkName("IllegalOperation");
 	namePermDenied     = linkName("PermissionDenied");
 	nameUserErr        = linkName("UserError");
+#ifdef DOTNET
+	nameNetException   = linkName("DotNetException");
+#endif
 #endif
 
 	nameArithException = linkName("ArithException");

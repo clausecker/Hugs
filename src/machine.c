@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: machine.c,v $
- * $Revision: 1.15 $
- * $Date: 2003/02/28 16:49:19 $
+ * $Revision: 1.16 $
+ * $Date: 2003/03/03 06:31:04 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1333,6 +1333,11 @@ unw:switch (whatIs(n)) {                /* unwind spine of application     */
 				 } while (--ar>0);
 
 				 saveProducer(n);
+#ifdef DOTNET
+				 if (name(n).foreignInfo != NIL) 
+				    primInvoker(root,n);
+				 else
+#endif
 				 if (name(n).primDef)       /* reduce      */
 				     (*name(n).primDef)(root);
 				 else
@@ -1348,6 +1353,11 @@ unw:switch (whatIs(n)) {                /* unwind spine of application     */
 				     StackPtr root = sp;
 				     push(n);               /* save CAF    */
 				     saveProducer(n);
+#ifdef DOTNET
+				     if (name(n).foreignInfo != NIL) 
+				       primInvoker(root,n);
+				     else
+#endif
 				     if (name(n).primDef)
 					 (*name(n).primDef)(sp);
 				     else
@@ -1437,6 +1447,11 @@ unw:switch (whatIs(n)) {                /* unwind spine of application     */
                 }
 
                 saveProducer(n);
+#ifdef DOTNET
+		if (name(n).foreignInfo != NIL) 
+		  primInvoker(root,n);
+		else
+#endif
                 if (name(n).primDef){      /* reduce      */
                     (*name(n).primDef)(root);
                 }   
@@ -1463,6 +1478,11 @@ unw:switch (whatIs(n)) {                /* unwind spine of application     */
                     StackPtr root = sp;
                     push(n);               /* save CAF    */
                     saveProducer(n);
+#ifdef DOTNET
+		    if (name(n).foreignInfo != NIL)
+		      primInvoker(root,n);
+		    else
+#endif
                     if (name(n).primDef)
                         (*name(n).primDef)(sp);
                     else

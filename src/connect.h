@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: connect.h,v $
- * $Revision: 1.68 $
- * $Date: 2003/02/28 16:49:19 $
+ * $Revision: 1.69 $
+ * $Date: 2003/03/03 06:31:02 $
  * ------------------------------------------------------------------------*/
 #ifndef __CONNECT_H__
 #define __CONNECT_H__
@@ -107,6 +107,10 @@ extern Name   nameIllegal;
 extern Name   nameEOFErr;
 #endif
 
+#if DOTNET
+extern Name   nameNetException;
+#endif
+
 extern Name   namePrimThrow;
 
 extern Name   nameArithException;
@@ -130,6 +134,12 @@ extern Text  textSafe;
 extern Text  textUnsafe;
 extern Text  textThreadsafe;
 extern Text  textExport;
+#ifdef _WIN32
+extern Text  textStdcall;
+#endif
+#ifdef DOTNET
+extern Text  textDotnet;
+#endif
 
 extern Text  textPrelude;
 extern Text  textUserPrelude;
@@ -191,6 +201,9 @@ extern Type  typeForeign;
 extern Type  typeStable;
 extern Type  typeBool;
 extern Type  typeString;
+#ifdef DOTNET
+extern Type  typeObject;
+#endif
 
 #define fn(from,to)  ap(ap(typeArrow,from),to)	/* make type: from -> to   */
 
@@ -371,11 +384,12 @@ extern  Void   ffi              Args((Int));
 extern  Void   foreignHeader    Args((String));
 extern  Void   foreignFooter    Args((String,Text,List,List));
 extern  Void   ffiSetFlags      Args((String));
-extern  Void   implementForeignImport        Args((Int,Int,Text,Text,List,Bool,Type));
+extern  Void   implementForeignImport Args((Int,Name,Int,Text,Text,Bool,Text,List,Bool,Type));
 extern  Void   implementForeignImportDynamic Args((Int,Int,Text,List,Bool,Type));
 extern  Void   implementForeignImportWrapper Args((Int,Int,Text,List,Bool,Type));
 extern  Void   implementForeignImportLabel   Args((Int,Int,Text,Text,Text,Type));
 extern  Void   implementForeignExport        Args((Int,Int,Text,List,Bool,Type));
+extern  Bool   foreignNeedStubs              Args((List,List));
 extern  Bool   generate_ffi;
 
 extern  Void   typeChecker      Args((Int));

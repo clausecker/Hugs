@@ -10,8 +10,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: parser.y,v $
- * $Revision: 1.36 $
- * $Date: 2003/02/14 02:01:01 $
+ * $Revision: 1.37 $
+ * $Date: 2003/03/03 06:31:04 $
  * ------------------------------------------------------------------------*/
 
 %{
@@ -37,6 +37,10 @@ extern String scriptFile;
 # if !defined(__GNUC__) || __GNUC__ <= 1
 static void __yy_memcpy Args((char*,char*, unsigned int));
 # endif
+#endif
+
+#ifdef _MANAGED
+static void yymemcpy (char *yyto, const char *yyfrom, size_t yycount);
 #endif
 
 static Cell   local gcShadow	 Args((Int,Cell));

@@ -1,0 +1,42 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html> <head>
+<title>Hugs98 for .NET examples</title>
+<link rel=stylesheet href="style.css">
+</head>
+
+<body>
+<h1>Hugs98 for .NET examples</h1>
+
+The <tt>examples/</tt> directory contains some simple demos
+of the .NET extensions:
+
+<ul>
+<li><tt>Env.hs</tt> -- static method invocation example. 
+<li><tt>Http.hs</tt> -- slurping URLs.
+<li><tt>Mail.hs</tt> -- sending mail using the .NET framework classes.
+<li><tt>Delegate.hs</tt> -- wrapping up Haskell function value as a
+delegator; demonstrates in the context of an ultra-simple WinForms C#
+application.
+<li><tt>CallIn.hs</tt> -- low-level example of how to call into
+    Haskell from .NET code.
+<li><tt>NewObj.hs</tt> -- shows how to dynamically generate a .NET
+class whose methods are all implemented by Haskell functions.
+</ul>
+
+<strong>Note:</strong>For reasons yet unknown, you need to <tt>cd</tt>
+into the installation directory of Hugs98 for .NET before running the
+<tt>Delegate</tt> example:
+
+<pre>
+c:\> cd c:\Program Files\Hugs98.NET
+c:\Program Files\Hugs98.NET> hugs examples/Delegate
+...
+Delegate> delegate
+</pre>
+
+
+<hr>
+<address>
+</address>
+<!-- hhmts start --> Last modified: Wed Apr 10 00:18:44 Pacific Daylight Time 2002 <!-- hhmts end -->
+</body> </html>

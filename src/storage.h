@@ -8,8 +8,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: storage.h,v $
- * $Revision: 1.52 $
- * $Date: 2003/02/17 03:08:00 $
+ * $Revision: 1.53 $
+ * $Date: 2003/03/03 06:31:06 $
  * ------------------------------------------------------------------------*/
 #ifndef __STORAGE_H__
 #define __STORAGE_H__
@@ -56,6 +56,10 @@ typedef Int          Observe;                    /* observation            */
 typedef Int          Breakpt;                    /* Breakpoint             */
 #endif
 
+#ifdef DOTNET
+extern  Void         primInvoker Args((StackPtr,Name));
+#endif
+
 /* --------------------------------------------------------------------------
  * Text storage:
  * provides storage for the characters making up identifier and symbol
@@ -98,7 +102,47 @@ extern  Text         subText            Args((String,Int));
 #define FFI_NOSAFETY   0
 #define FFI_SAFE       1
 #define FFI_UNSAFE     2
-#define FFI_THREADSAFE 3
+#define FFI_THREADSAFE 4
+
+/* Note: cconv flags are combined with the above safety flags,
+ * so need to be disjoint.
+ */
+#define FFI_CCONV_UNKNOWN  0
+#define FFI_CCONV_CCALL    8
+#define FFI_CCONV_STDCALL 16
+#define FFI_CCONV_DOTNET  32
+
+#define FFI_TYPE_UNIT      0
+#define FFI_TYPE_CHAR      1
+#define FFI_TYPE_INT       2
+#define FFI_TYPE_INT8      3
+#define FFI_TYPE_INT16     4
+#define FFI_TYPE_INT32     5
+#define FFI_TYPE_INT64     6
+#define FFI_TYPE_WORD8     7
+#define FFI_TYPE_WORD16    8
+#define FFI_TYPE_WORD32    9
+#define FFI_TYPE_WORD64   10
+#define FFI_TYPE_FLOAT    11
+#define FFI_TYPE_DOUBLE   12
+#define FFI_TYPE_BOOL     13
+#define FFI_TYPE_ADDR     14
+#define FFI_TYPE_PTR      15
+#define FFI_TYPE_FUNPTR   16
+#define FFI_TYPE_FOREIGN  17
+#define FFI_TYPE_STABLE   18
+#ifdef DOTNET
+#define FFI_TYPE_OBJECT   19
+#define FFI_TYPE_STRING   20
+#endif
+
+#ifdef DOTNET
+#define FFI_DOTNET_STATIC 1
+#define FFI_DOTNET_FIELD  2
+#define FFI_DOTNET_CTOR   4
+#define FFI_DOTNET_METHOD 8
+#endif
+
 
 /* --------------------------------------------------------------------------
  * Primitive functions:
@@ -114,7 +158,7 @@ extern struct primitive {		/* table of primitives		   */
  * function (defining INSTALL, RESET, etc code) and a (null-terminated)
  * table of primitive functions.
  *
- * They are stored as a linked list - so there's no wired in limits. 
+ * They are stored as a linked list - so there's no wired in limits.
  * Control functions are called in the order they are registered
  * after all other control functions have been called.
  * (At the moment) there's no way of unregistering a module.
@@ -126,7 +170,7 @@ struct primInfo {
     struct primInfo   *nextPrimInfo;
 };
 
-extern  Void registerPrims Args((struct primInfo*)); 
+extern  Void registerPrims Args((struct primInfo*));
 extern  Void controlFuns   Args((Int)); /* Call all control functions in   */
 					/* prim list.                      */
 extern  struct primInfoDef* setPrimInfoDll Args((void*));
@@ -243,6 +287,9 @@ extern	Cell	     whatIs    Args((Cell));
 #define IPCELL       19		  /* Imp Param Cell:	      snd :: Text  */
 #define IPVAR	     20		  /* ?x:		      snd :: Text  */
 #endif
+#if DOTNET
+#define NPCELL       21		  /* .NET Ptr Cell:           snd :: Int   */
+#endif
 
 #define textOf(c)	((Text)(snd(c)))         /* c ::  (VAR|CON)(ID|OP) */
 #define qmodOf(c)       (textOf(fst(snd(c))))    /* c ::  QUALIDENT        */
@@ -339,7 +386,7 @@ extern void growDynTable       Args((DynTable*));
 
 #if MUDO
 #define MDOCOMP	     44		  /* MDOCOMP	snd :: (Exp,[Qual])	   */
-#endif 
+#endif
 
 #define BANG	     35		  /* BANG	snd :: Type		   */
 #define COMP         36 	  /* COMP	snd :: (Exp,[Qual])	   */
@@ -569,7 +616,7 @@ extern Ext           mkExt Args((Text));
 #define OBSMIN	      (OFFMIN+NUM_OFFSETS)
 #define observe(n)    tabObserve[(n)-OBSMIN]
 
-struct Observe {
+struct strObserve {
 	Text tag;		/* tag in observe primitive		*/
 	Cell head;
 };
@@ -584,7 +631,7 @@ struct Observe {
 #define markedExpr(c) snd3(c)
 #define markedObs(c)  thd3(c)
 
-extern struct    Observe          DECTABLE(tabObserve);
+extern struct strObserve          DECTABLE(tabObserve);
 extern Observe   firstObserve	  Args((Void));
 extern Observe   nextObserve	  Args((Void));
 extern Void      clearObserve	  Args((Void));
@@ -598,7 +645,7 @@ extern Void      insertAfterObs   Args((Cell,Cell));
 #define BRKMIN	      (OBSMIN+NUM_OBS_TAGS)
 #define breakpt(n)    tabBreakpt[(n)-BRKMIN]
 
-struct Breakpt {
+struct strBreakpt {
 	Text tag;
 	Bool enabled;
 	Int  count;			/* number of breaks to skip 	   */
@@ -606,7 +653,7 @@ struct Breakpt {
 
 extern Void     clearAllBreak   Args((Void));
 extern Bool     breakNow	Args((String));
-extern Void     setBreakpt	Args((String,Bool)); 
+extern Void     setBreakpt	Args((String,Bool));
 extern Void     setBreakCount   Args((String,Int));
 #endif
 
@@ -741,9 +788,11 @@ struct strName {
     Cell defn;
     Addr code;
     Text extFun;                        /* for foreign import/export       */
-    Int  safety;                        /* for foreign import/export       */
     Int  foreignId;                     /* per module identifier           */
-    Text lib;                           /* library from impent             */
+    Int  foreignFlags;                  /* encoding safety + calling conv  */
+#ifdef DOTNET
+    Cell foreignInfo;                   /* (funName,libName,isStatic,isIO,resultType, [paramType])       */
+#endif
     Prim primDef;
     Name nextNameHash;
 #if PROFILING
@@ -874,7 +923,11 @@ extern Text   findModAlias   Args((Text));
 #define CHARMIN      (CLASSMIN+NUM_CLASSES)
 #define MAXCHARVAL   (NUM_CHARS-1)
 #define isChar(c)    (CHARMIN<=(c) && (c)<INTMIN)
+#if defined(_MANAGED) && defined(__cplusplus)
+#define charOf(c)    ((::Char)(c-CHARMIN))
+#else
 #define charOf(c)    ((Char)(c-CHARMIN))
+#endif
 #define mkChar(c)    ((Cell)(CHARMIN+(((unsigned)(c))%NUM_CHARS)))
 
 /* --------------------------------------------------------------------------
@@ -1085,7 +1138,7 @@ struct strHandle {		/* Handle description and status flags	   */
     Int   hmode;		/* Current mode: see below		   */
     Int   hbufMode;             /* Buffering mode.                         */
     Int   hbufSize;             /* < 0 => not yet known.                   */
-    Bool  hHaveRead;            /* TRUE => chars have been read from handle 
+    Bool  hHaveRead;            /* TRUE => chars have been read from handle
 				   (used for R/W handles to determine whether
 				    a fflush() is required before writing).
 				   FALSE=> for R/W handles, a read needs to
@@ -1169,7 +1222,7 @@ extern HsInt64          int64FromParts  Args((Int,Int));
 typedef struct {
 
   /* evaluate next argument */
-  int            (*getInt   )     Args(());  
+  int            (*getInt   )     Args(());
   unsigned int   (*getWord  )     Args(());
   void*     	 (*getAddr  )     Args(());
   float     	 (*getFloat )     Args(());
@@ -1179,7 +1232,7 @@ typedef struct {
   HugsStablePtr  (*getStablePtr)  Args(());
 
   /* push part of result   */
-  void      	 (*putInt   )     Args((int));           
+  void      	 (*putInt   )     Args((int));
   void      	 (*putWord  )     Args((unsigned int));
   void      	 (*putAddr  )     Args((void*));
   void      	 (*putFloat )     Args((double));
@@ -1193,12 +1246,12 @@ typedef struct {
   void      	 (*returnId)      Args((HugsStackPtr, int));
   int      	 (*runIO)         Args((int));
 
-  /* free a stable pointer */	    			 
+  /* free a stable pointer */
   void      	 (*freeStablePtr) Args((HugsStablePtr));
 
-  /* register the prim table */	    			 
+  /* register the prim table */
   void      	 (*registerPrims) Args((struct primInfo*));
-			   
+
   /* garbage collect */
   void		 (*garbageCollect) Args(());
 
@@ -1219,7 +1272,7 @@ typedef Void (*InitModuleFun3) Args((HugsAPI3*));
 typedef struct {
 
   /* evaluate next argument */
-  int            (*getInt   )     Args(());  
+  int            (*getInt   )     Args(());
   unsigned int   (*getWord  )     Args(());
   void*     	 (*getAddr  )     Args(());
   float     	 (*getFloat )     Args(());
@@ -1229,7 +1282,7 @@ typedef struct {
   HugsStablePtr  (*getStablePtr)  Args(());
 
   /* push part of result   */
-  void      	 (*putInt   )     Args((int));           
+  void      	 (*putInt   )     Args((int));
   void      	 (*putWord  )     Args((unsigned int));
   void      	 (*putAddr  )     Args((void*));
   void      	 (*putFloat )     Args((double));
@@ -1243,12 +1296,12 @@ typedef struct {
   void      	 (*returnId)      Args((HugsStackPtr, int));
   int      	 (*runIO)         Args((int));
 
-  /* free a stable pointer */	    			 
+  /* free a stable pointer */
   void      	 (*freeStablePtr) Args((HugsStablePtr));
 
-  /* register the prim table */	    			 
+  /* register the prim table */
   void      	 (*registerPrims) Args((struct primInfo*));
-			   
+
   /* garbage collect */
   void		 (*garbageCollect) Args(());
 
@@ -1266,29 +1319,29 @@ typedef struct {
   Name  nameIORun;
 
   Cell  (*makeInt)         Args((Int));
-			   
+
   Cell  (*makeChar)        Args((Char));
   Char  (*CharOf)          Args((Cell));
-			   
+
   Cell  (*makeFloat)       Args((FloatPro));
   Cell  (*makeTuple)       Args((Int));
   Pair  (*pair)            Args((Cell,Cell));
-			   
+
   Cell  (*mkMallocPtr)     Args((Void *, CFinalizer));
   Void *(*derefMallocPtr)  Args((Cell));
-			   
+
   Int   (*mkStablePtr)     Args((Cell));
   Cell  (*derefStablePtr)  Args((Int));
   Void  (*freeStablePtr)   Args((Int));
-			   
+
   Void  (*eval)            Args((Cell));
   Cell  (*evalWithNoError) Args((Cell));
   Void  (*evalFails)       Args((StackPtr));
-  Int   *whnfArgs;	   
-  Cell  *whnfHead;	   
-  Int   *whnfInt;	   
-  Float *whnfFloat;	   
-			   
+  Int   *whnfArgs;
+  Cell  *whnfHead;
+  Int   *whnfInt;
+  Float *whnfFloat;
+
   Void  (*garbageCollect)  Args(());
   Void  (*stackOverflow)   Args(());
   Void  (*internal)        Args((String)) HUGS_noreturn;

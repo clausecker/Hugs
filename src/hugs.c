@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.117 $
- * $Date: 2003/02/28 16:49:19 $
+ * $Revision: 1.118 $
+ * $Date: 2003/03/03 06:31:02 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -244,9 +244,9 @@ static Void printBanner()
  * Hugs entry point:
  * ------------------------------------------------------------------------*/
 
-Main main Args((Int, String []));       /* now every func has a prototype  */
+int main Args((Int, String []));       /* now every func has a prototype  */
 
-Main main(argc,argv)
+int main(argc,argv)
 int  argc;
 char *argv[]; {
 
@@ -254,7 +254,7 @@ char *argv[]; {
 
     if (!initSystem()) {
       Printf("%0: failed to initialize, exiting\n", (argv ? argv[0] : ""));
-      exit(0);
+      return 1;
     }
 
     printBanner();
@@ -266,11 +266,8 @@ char *argv[]; {
 #endif
     everybody(EXIT);
     shutdownHugs();
-#if HUGS_FOR_WINDOWS
-    return 0; /* return to Winmain */
-#endif
-    exit(0);
-    MainDone();
+
+    return 0;
 }
 #endif
 
@@ -327,6 +324,10 @@ String argv[]; {
     FILE *f;
     FileName hugsPrefsFile = "\0";
 #endif
+
+#ifdef HUGS_SERVER
+    setHugsAPI();
+#endif 
 
     setLastEdit((String)0,0);
     lastEdit      = 0;

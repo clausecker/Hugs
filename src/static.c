@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.143 $
- * $Date: 2003/02/26 21:10:20 $
+ * $Revision: 1.144 $
+ * $Date: 2003/03/03 06:31:04 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -358,7 +358,7 @@ static Void local checkQualImport(i)   /* Process qualified import         */
 Pair i; {
     Module m = findModid(snd(i));
     if (isNull(m)) {
-	ERRMSG(0) "Module \"%s\" not previously loaded", 
+	ERRMSG(0) "Module \"%s\" not previously loaded",
 		  textToStr(textOf(snd(i)))
 	EEND;
     }
@@ -369,7 +369,7 @@ static Void local checkUnqualImport(i) /* Process unqualified import       */
 Pair i; {
     Module m = findModid(fst(i));
     if (isNull(m)) {
-	ERRMSG(0) "Module \"%s\" not previously loaded", 
+	ERRMSG(0) "Module \"%s\" not previously loaded",
 		  textToStr(textOf(fst(i)))
 	EEND;
     }
@@ -748,7 +748,7 @@ Name c; {				/* CDICTS parameters		   */
     }
     if ((w=whatIs(t))==QUAL) {
 #if FAST_WHATIS			  /* decompose expression for whatIs macro */
-	t=snd(snd(t));   
+	t=snd(snd(t));
 	w = whatIs(t);
 #else
 	w = whatIs(t=snd(snd(t)));
@@ -1379,7 +1379,7 @@ Int o; {
     if (!matchPred(pi,o,cclass(c).head,alpha)) {
 	/* If the qualified type is not valid, for instance by
 	 * having type variables occurring free in the context,
-	 * but not in the head -- we will end up here. 
+	 * but not in the head -- we will end up here.
 	 *
 	 * Silently give up & assume that checkClassDefn2() will
 	 * catch the error condition.
@@ -1450,8 +1450,8 @@ Cell pred; {
 	  ERRTEXT "\n*** Could refer to: " ETHEN
 	  ERRTEXT "%s.%s ", textToStr(module(cclass(c).mod).text), textToStr(cclass(c).text) ETHEN
 	  for(;nonNull(ls);ls=tl(ls)) {
-	    ERRTEXT "%s.%s ", 
-		    textToStr(module(cclass(hd(ls)).mod).text), 
+	    ERRTEXT "%s.%s ",
+		    textToStr(module(cclass(hd(ls)).mod).text),
 		    textToStr(cclass(hd(ls)).text)
 		    ETHEN
   	  }
@@ -1479,7 +1479,7 @@ Cell pred; {
 	}
     }
 #endif
-    else 
+    else
 #if IPARAM
          if (whatIs(h) != IPCELL)
 #endif
@@ -1605,7 +1605,7 @@ static Name local newMember(l,no,v,t,parent)
 Int   l;				/* Make definition for member fn   */
 Int   no;
 Cell  v;
-Type  t; 
+Type  t;
 Class parent; {
     Name m = findName(textOf(v));
 
@@ -1677,12 +1677,12 @@ Class c; {				/* class hierarchy is acyclic	   */
 	for (; nonNull(scs); scs=tl(scs)) {
 #ifdef IPARAM
 	  if ( !isIP(getHead(hd(scs))) ) {
-#endif 
+#endif
 	    Int l = visitClass(getHead(hd(scs)));
 	    if (l>lev) lev=l;
 #ifdef IPARAM
 	  }
-#endif	    
+#endif
 	}
 	cclass(c).level = 1+lev;	/* level = 1 + max level of supers */
     }
@@ -1710,7 +1710,7 @@ List   bs; {				/* sort into approp. member order  */
 		"Pattern binding illegal in %s declaration", where
 	    EEND;
 	}
-	
+
 	nm = textOf(fst(b));
 
 	if (isNull(mnm=memberName(c,nm))) {
@@ -2129,7 +2129,7 @@ List os; {				/* find list of offsets in those   */
 
 static List local otvarsZonk(pi,os,o)	/* same as above, but zonks	   */
 Cell pi;
-List os; 
+List os;
 Int  o; {
     List us = NIL;
     for (; nonNull(os); os=tl(os)) {
@@ -2466,7 +2466,7 @@ List tcs; {				/* of tycons and classes	   */
     fixKinds();
     emptySubstitution();
 }
-    
+
 static Void local initTCKind(c)		/* build initial kind/arity for	c  */
 Cell c; {
     if (isTycon(c)) {			/* Initial kind of tycon is:	   */
@@ -2667,7 +2667,7 @@ Inst in; {
 	ERRMSG(line) "Illegal predicate in instance declaration"
 	EEND;
     }
-    
+
     /* should this be over xfds? */
     if (nonNull(cclass(inst(in).c).fds)) {
         List fds = cclass(inst(in).c).fds;
@@ -3721,14 +3721,14 @@ Int  a; {
  * ------------------------------------------------------------------------*/
 
 #define Tuple2(f,s)      ap2(mkTuple(2),f,s)
-#define Lex(r)           ap(nameLex,r)  
+#define Lex(r)           ap(nameLex,r)
 #define ZFexp(h,q)       ap(FROMQUAL, pair(h,q))
 #define ReadsPrec(n,e)   ap2(nameReadsPrec,n,e)
 #define Lambda(v,e)      ap(LAMBDA,pair(v, pair(mkInt(0),e)))
 #define ReadParen(a,b,c) ap(ap2(nameReadParen,a,b),c)
 #define ReadField(f,s)   ap2(nameReadField,f,s)
 #define GT(l,r)          ap2(nameGt,l,r)
-#define Append(a,b)      ap2(nameApp,a,b)      
+#define Append(a,b)      ap2(nameApp,a,b)
 
 /*  Construct the readsPrec function of the form:
  *
@@ -3763,7 +3763,7 @@ Cell t; {
 	exp = ap(mkReadTuple(t),r);
     }
     /* printExp(stdout,exp); putc('\n',stdout); */
-    alt  = pair(pat,pair(mkInt(line),exp)); 
+    alt  = pair(pat,pair(mkInt(line),exp));
     return singleton(mkBind("readsPrec",singleton(alt)));
 }
 
@@ -3782,7 +3782,7 @@ Cell r; {
     Int  p   = 0;
     Syntax s = syntaxOf(con);
     List cfs = cfunSfuns;
-    
+
     for (; nonNull(cfs) && con!=fst(hd(cfs)); cfs=tl(cfs)) {
     }
     if (nonNull(cfs)) {
@@ -3805,7 +3805,7 @@ Cell r; {
  *
  *   data T ... = Constr a1 a2 .. an | ....
  *
- * derives 
+ * derives
  *
  *   \ r -> [ (Constr t1 t2 ... tn, sn) | ("Constr",s0) <- lex r,
  *                                        (t1,s1) <- readsPrec (APP_PREC+1) s0,
@@ -3826,7 +3826,7 @@ Cell con; {
 
     /* build (reversed) list of qualifiers and constructor */
     quals = cons(ZFexp(Tuple2(cn,prev_s),Lex(r)),quals);
-    for(i=0; i<arity; i++) { 
+    for(i=0; i<arity; i++) {
 	Cell t = inventVar();
 	Cell s = inventVar();
 	quals  = cons(ZFexp(Tuple2(t,s),ReadsPrec(mkInt(APP_PREC+1),prev_s)), quals);
@@ -3841,7 +3841,7 @@ Cell con; {
 /* Given a binary infix constructor of precedence p
  *
  *   ... | T1 `con` T2 | ...
- * 
+ *
  * generate the lambda expression
  *
  *   \ r -> [ (u `con` v, s2) | (u,s0)     <- readsPrec lp r,
@@ -3854,10 +3854,10 @@ static Cell local mkReadInfix( con )
 Cell con;
 {
     Syntax s  = syntaxOf(con);
-    Int    p  = precOf(s); 
+    Int    p  = precOf(s);
     Int    lp = (p+1); /* how it was in Haskell from Day 1 until 11/4/2002: assocOf(s)==LEFT_ASS  ? p : (p+1); */
     Int    rp = (p+1); /* ditto: assocOf(s)==RIGHT_ASS ? p : (p+1); */
-    Cell   cn = mkStr(name(con).text);  
+    Cell   cn = mkStr(name(con).text);
     Cell   r  = inventVar();
     Cell   s0 = inventVar();
     Cell   s1 = inventVar();
@@ -3870,7 +3870,7 @@ Cell con;
     quals = cons(ZFexp(Tuple2(cn,s1), Lex(s0)),                 quals);
     quals = cons(ZFexp(Tuple2(v, s2), ReadsPrec(mkInt(rp),s1)), quals);
 
-    return Lambda(singleton(r), 
+    return Lambda(singleton(r),
 		  ap(COMP,pair(Tuple2(ap2(con,u,v),s2),rev(quals))));
 }
 
@@ -3898,11 +3898,11 @@ Cell tup; {
     Int  i;
 
     /* build (reversed) list of qualifiers and constructor */
-    for(i=0; i<arity; i++) { 
+    for(i=0; i<arity; i++) {
 	Cell t  = inventVar();
 	Cell si = inventVar();
 	Cell sj = inventVar();
-	quals  = cons(ZFexp(Tuple2(sep,si),Lex(prev_s)),quals); 
+	quals  = cons(ZFexp(Tuple2(sep,si),Lex(prev_s)),quals);
 	quals  = cons(ZFexp(Tuple2(t,sj),ReadsPrec(mkInt(0),si)), quals);
 	exp    = ap(exp,t);
 	prev_s = sj;
@@ -3914,7 +3914,7 @@ Cell tup; {
     return Lambda(singleton(r),ap(COMP,pair(Tuple2(exp,s),rev(quals))));
 }
 
-/* Given a record constructor 
+/* Given a record constructor
  *
  *   ... | C { f1 :: T1, ... fn :: Tn } | ...
  *
@@ -3936,9 +3936,9 @@ Cell tup; {
  *   			    r        <- reads s2 ]
  */
 static Cell local mkReadRecord(con, fs) /* readsPrec for record constructor */
-Cell con; 
+Cell con;
 List fs; {
-    Cell cn     = mkStr(name(con).text);  
+    Cell cn     = mkStr(name(con).text);
     Cell lb     = mkStr(findText("{"));
     Cell rb     = mkStr(findText("}"));
     Cell co     = mkStr(findText(","));
@@ -3951,13 +3951,13 @@ List fs; {
     List quals  = NIL;
 
     /* build (reversed) list of qualifiers and constructor */
-    quals  = cons(ZFexp(Tuple2(cn,s0),Lex(r)), quals); 
-    for(; nonNull(fs); fs=tl(fs)) { 
-	Cell f  = mkStr(textOf(hd(fs))); 
+    quals  = cons(ZFexp(Tuple2(cn,s0),Lex(r)), quals);
+    for(; nonNull(fs); fs=tl(fs)) {
+	Cell f  = mkStr(textOf(hd(fs)));
 	Cell t  = inventVar();
 	Cell si = inventVar();
 	Cell sj = inventVar();
-	quals  = cons(ZFexp(Tuple2(sep,si),Lex(prev_s)),     quals); 
+	quals  = cons(ZFexp(Tuple2(sep,si),Lex(prev_s)),     quals);
 	quals  = cons(ZFexp(Tuple2(t,  sj),ReadField(f,si)), quals);
 	exp    = ap(exp,t);
 	prev_s = sj;
@@ -4132,16 +4132,32 @@ Cell   t;{
  */
 Bool generate_ffi = FALSE;
 
+static Int checkCallConv  Args((Int,Text));
+
+/* Checking if the calling convention is supported */
+static Int checkCallConv(line,t)
+Int line;
+Text t; {
+  if (t == textCCall ) return FFI_CCONV_CCALL;
+#ifdef _WIN32
+  /* also support the stdcall calling convention */
+  if (t == textStdcall) return FFI_CCONV_STDCALL;
+#endif
+#ifdef DOTNET
+  if (t == textDotnet) return FFI_CCONV_DOTNET;
+#endif
+  return FFI_CCONV_UNKNOWN;
+}
+
 /* Tricky naming detail:
- * 
+ *
  * When we generate C function names, we need to make sure they
  * are unique within each module.  This is done using the foreignCount
  * variable.
  */
-
-Void foreignImport(line,callconv,safety,ext,intName,type) 
+Void foreignImport(l,callconv,safety,ext,intName,type)
                                               /* Handle foreign imports    */
-Cell line;
+Cell l;
 Cell callconv;
 Cell safety;
 Cell ext;
@@ -4150,6 +4166,8 @@ Cell type; {
     Text t   = textOf(intName);
     Name n   = findName(t);
     Int sfty;
+    Int cconv;
+    Int line = intOf(l);
 
     if (isNull(n)) {
         n = newName(t,NIL);
@@ -4157,15 +4175,13 @@ Cell type; {
         ERRMSG(line) "Redeclaration of foreign \"%s\"", textToStr(t)
         EEND;
     }
-#if 0
-    /* As long as we're not emitting externs for the imports we're calling in
-     * the generated C code, ignore the calling convention.
-     */
-    if (textOf(callconv) != textCCall) {
-        ERRMSG(line) "Foreign import calling convention \"%s\" not supported", textToStr(textOf(callconv))
-        EEND;
+    cconv = checkCallConv(line,textOf(callconv));
+    if ( cconv == FFI_CCONV_UNKNOWN ) {
+      ERRMSG(line) "Foreign export calling convention \"%s\" not supported",
+  	           textToStr(textOf(callconv))
+      EEND;
     }
-#endif
+
     if (isNull(safety) || textOf(safety) == textSafe) {
         sfty = FFI_SAFE;
     } else if (textOf(safety) == textUnsafe) {
@@ -4176,12 +4192,12 @@ Cell type; {
         ERRMSG(line) "Foreign import safety level \"%s\" not supported", textToStr(textOf(safety))
         EEND;
     }
-    name(n).line     = intOf(line);
-    name(n).type     = type;
-    name(n).extFun   = textOf(ext);
-    name(n).safety   = sfty;
-    name(n).foreignId = foreignCount++;
-    foreignImports   = cons(n,foreignImports);
+    name(n).line         = line;
+    name(n).type         = type;
+    name(n).extFun       = textOf(ext);
+    name(n).foreignId    = foreignCount++;
+    name(n).foreignFlags = sfty | cconv;
+    foreignImports       = cons(n,foreignImports);
 }
 
 Void foreignExport(l,v,callconv,ext,intName,type)
@@ -4192,9 +4208,9 @@ Cell callconv;
 Cell ext;
 Cell intName;
 Cell type; {
-    /* 
+    /*
      * Export attaches to an existing name in the symbol table.
-     * We generate a new name whose definition is 
+     * We generate a new name whose definition is
      *   newName :: type
      *   newName = intName;
      * and pass the whole thing through the typechecker.
@@ -4210,7 +4226,7 @@ Cell type; {
      * to the start which cannot conflict with normal identifiers.
      */
     Int  line    = intOf(l);
-
+    Int  cconv;
     Text t   = concatText("--FFI_",textToStr(textOf(intName)));
     Name n   = newName(t,NIL);
 
@@ -4218,21 +4234,27 @@ Cell type; {
         ERRMSG(line) "Foreign declarations must be either import or export not \"%s\"", textToStr(textOf(v))
         EEND;
     }
-    if (textOf(callconv) != textCCall) {
-        ERRMSG(line) "Foreign export calling convention \"%s\" not supported", textToStr(textOf(callconv))
-        EEND;
+    cconv = checkCallConv(line,textOf(callconv));
+    if ( cconv == FFI_CCONV_UNKNOWN ) {
+      ERRMSG(line) "Foreign export calling convention \"%s\" not supported",
+  	           textToStr(textOf(callconv))
+      EEND;
     }
 
-    name(n).line     = intOf(l);
+    name(n).line     = line;
     name(n).type     = type;
     name(n).extFun   = textOf(ext);
     name(n).defn     = intName;
     name(n).foreignId = foreignCount++;
+    name(n).foreignFlags = FFI_NOSAFETY | cconv;
     foreignExports   = cons(n,foreignExports);
 }
 
-static String skipSpaces Args((String));
-static String matchToken Args((String,String));
+static String skipSpaces  Args((String));
+static String matchToken  Args((String,String));
+static String skipToSpace Args((String));
+static String skipToChar  Args((String,char));
+static String matchFname  Args((String));
 
 static String skipSpaces(s)
 String s; {
@@ -4251,7 +4273,7 @@ String s; {
 }
 
 static String skipToChar(s,c)
-String s; 
+String s;
 char   c; {
     while (*s != '\0' && *s != c) {
         ++s;
@@ -4290,6 +4312,12 @@ Name p; {
     String e       = 0;
     Type t         = NIL;
     List argTys    = NIL;
+
+    Bool generate_stub = generate_ffi
+#ifdef DOTNET
+      ||  (name(p).foreignFlags & FFI_CCONV_DOTNET != 0)
+#endif
+      ;
 
     emptySubstitution();
     name(p).type = checkSigType(name(p).line,
@@ -4340,13 +4368,13 @@ Name p; {
             t = fullerExpand(hd(getArgs(t)));
         }
 
-        if (generate_ffi) {
+        if (generate_stub) {
             name(p).arity = 1 + length(argTys) + (isIO ? IOArity : 0);
             name(p).extFun = inventText();
             implementForeignImportDynamic(line,name(p).foreignId,name(p).extFun,argTys,isIO,t);
         }
 
-    } else if (e = matchToken("wrapper",ext)) { /* thunk builder */  
+    } else if (e = matchToken("wrapper",ext)) { /* thunk builder */
         Bool isIO = FALSE;
         Type ta = NIL;
 
@@ -4381,49 +4409,79 @@ Name p; {
         }
 	t = fullerExpand(t);
 
-        if (generate_ffi) {
+        if (generate_stub) {
             name(p).arity = 1+IOArity;
             name(p).extFun = inventText();
             implementForeignImportWrapper(line,name(p).foreignId,name(p).extFun,argTys,isIO,t);
         }
 
-    } else { 
+    } else {
         /* static function or address:
          *
          *  ['static'] [fname] ['[' lib ']'] [&] [cid]
+	 *
+         * or, for .NET bindings:
+         *
+	 *  ['static'] ['ctor' | 'field' | 'method' ] ['[' lib ']'] [cid]
          *
          */
-        Text fn   = -1;
-        Text libn = -1;
-        Text cid  = -1;
-        Bool isLabel = FALSE;
+	Bool isStatic = FALSE;
+        Text fn       = -1;
+        Text libn     = -1;
+        Text cid      = -1;
+        Bool isLabel  = FALSE;
+#ifdef DOTNET
+	Int  methFlags = FFI_DOTNET_METHOD;
+#endif
 
         if (e = matchToken("static",ext)) {
+	    isStatic = TRUE;
+#ifdef DOTNET
+	    methFlags |= FFI_DOTNET_STATIC;
+#endif
             ext = skipSpaces(e);
         }
-        
+#ifdef DOTNET
+	if ( name(p).foreignFlags & FFI_CCONV_DOTNET ) {
+	  if ( e = matchToken("ctor", ext) ) {
+	      methFlags = ((methFlags & ~FFI_DOTNET_METHOD) | FFI_DOTNET_CTOR) ;
+	      ext = skipSpaces(e);
+	  } else if ( e = matchToken("field", ext) ) {
+	      methFlags = ((methFlags & ~FFI_DOTNET_METHOD) | FFI_DOTNET_FIELD) ;
+	      ext = skipSpaces(e);
+	  }  else if ( e = matchToken("method", ext) ) {
+	      /* redundant */
+	      methFlags |= FFI_DOTNET_METHOD;
+	      ext = skipSpaces(e);
+	  }
+	} else {
+#endif
         if (e = matchFname(ext)) {
             fn = subText(ext,e-ext);
             ext = skipSpaces(e);
         }
+#ifdef DOTNET
+	}
+#endif
 
         if (e = matchToken("&",ext)) {
             isLabel = TRUE;
             ext = skipSpaces(e);
+#ifdef DOTNET
+	    if ( name(p).foreignFlags & FFI_CCONV_DOTNET ) goto no_dnet_label;
+#endif
         }
-        
+
         if (e = matchToken("[",ext)) {
-            e   = skipSpaces(e);
             ext = skipToChar(e,']');
             if (*ext != ']' || ext == e) goto cantparse;
-            libn = subText(e,e-ext);
+            libn = subText(e,ext-e);
             ext = skipSpaces(ext+1);
-#ifndef SILENTLY_IGNORE_FFI_LIB_SPECS
+#if !defined(SILENTLY_IGNORE_FFI_LIB_SPECS) && !defined(DOTNET)
             ERRMSG(line) "Hugs doesn't use library specifications."
             EEND;
 #endif
         }
-
         if (*ext != '\0') {
             e = skipToSpace(ext);
             cid = subText(ext,e-ext);
@@ -4437,10 +4495,11 @@ Name p; {
         if (isLabel) {
             if (!isNull(argTys)) goto labelerr;
             if (!(  (getHead(t) == typePtr && argCount == 1)
-                 || (getHead(t) == typeFunPtr && argCount == 1))) {
+		 || (getHead(t) == typeFunPtr && argCount == 1)
+		 )) {
                 goto labelerr;
             }
-            if (generate_ffi) {
+            if (generate_stub) {
                 name(p).arity = 0;
                 implementForeignImportLabel(line,name(p).foreignId,fn,cid,name(p).text,t);
                 name(p).extFun = cid;
@@ -4453,11 +4512,18 @@ Name p; {
                 t = fullerExpand(hd(getArgs(t)));
             }
 
-            if (generate_ffi) {
-                name(p).arity 
-                    = length(argTys) 
+            if (generate_stub) {
+                name(p).arity
+                    = length(argTys)
                     + (isIO ? IOArity : 0);
-                implementForeignImport(line,name(p).foreignId,fn,cid,argTys,isIO,t);
+                implementForeignImport(line,p,name(p).foreignId,
+#ifndef DOTNET
+				       fn,
+#else
+				       (Text)methFlags,
+#endif
+				       cid,isStatic,
+				       libn, argTys,isIO,t);
                 name(p).extFun = cid;
             }
         }
@@ -4466,21 +4532,25 @@ Name p; {
     return;
 
   cantparse:
-     ERRMSG(line) "Can't parse external entity '" 
+     ERRMSG(line) "Can't parse external entity '"
      ETHEN ERRTEXT ext
      ETHEN ERRTEXT "'\n"
      EEND;
-  
+
   dynerr:
     ERRMSG(line) "foreign import dynamic must have type '(FunPtr ft) -> ft'"
     EEND;
-  
+
   wraperr:
     ERRMSG(line) "foreign import wrapper must have type 'ft -> IO (FunPtr ft)'"
     EEND;
-  
+
   labelerr:
     ERRMSG(line) "foreign import & must have type 'Ptr a' or 'FunPtr a'"
+    EEND;
+
+  no_dnet_label:
+    ERRMSG(line) "foreign import & with 'dotnet' calling convention not supported."
     EEND;
 }
 
@@ -4514,8 +4584,8 @@ Name p; {
     }
 
     if (generate_ffi) {
-        name(p).arity 
-          = length(argTys) 
+        name(p).arity
+          = length(argTys)
           + (isIO ? 2 : 0);
         implementForeignExport(line,name(p).foreignId,ext,argTys,isIO,t);
     }
@@ -4560,8 +4630,8 @@ Cell p; {
 	case AP        : return checkMaybeCnkPat(line,p);
 
 	case NAME      :
-	case QUALIDENT : 
-	case CONIDCELL : 
+	case QUALIDENT :
+	case CONIDCELL :
 	case CONOPCELL : return checkApPat(line,0,p);
 
 #if BIGNUMS
@@ -4694,7 +4764,7 @@ Cell v; {				/* for repeated variables.	   */
     }
 }
 
-static Name local conDefined(line,nm,check)  
+static Name local conDefined(line,nm,check)
 Int  line;		 /* check that nm is the name of a  */
 Cell nm;                 /* previously defined constructor  */
 Bool check; {		 /* function (and only one.)        */
@@ -5241,7 +5311,7 @@ Text t; {
  *     tidyNeg (Only e)      = Only (Negate e)
  *     tidyNeg (Infix a o b) = Infix a o (Negate b)
  *     tidyNeg (Neg e)       = tidyNeg (tidyNeg e)
- * 
+ *
  * On the other hand, if we want to sneak application of an infix operator
  * under a negation, then we use:
  *
@@ -5622,21 +5692,21 @@ List bs; {
     List xs = bs;
     Bool hasIParam = FALSE;
     Bool oldFlg = FALSE;
-    
+
     if (isNull(xs)) {
 	return FALSE;
     }
-    
+
     if (isPair(hd(xs)) && isPair(fst(hd(xs))) && fst(fst(hd(xs))) == IPVAR) {
 	hasIParam = TRUE;
     }
     xs = tl(xs);
-    
+
     while (nonNull(xs)) {
 	oldFlg = hasIParam;
-	hasIParam = 
-	    isPair(hd(xs))      && 
-	    isPair(fst(hd(xs))) && 
+	hasIParam =
+	    isPair(hd(xs))      &&
+	    isPair(fst(hd(xs))) &&
 	    (fst(fst(hd(xs))) == IPVAR);
 
 	if ( oldFlg != hasIParam ) {
@@ -5718,7 +5788,7 @@ Bool isRhs;
 Int  line;
 Cell e; {                                 /* expr, containing a set of bindings */
 #if IPARAM
-    Bool isIP = checkIBindings(line,fst(snd(e))); 
+    Bool isIP = checkIBindings(line,fst(snd(e)));
                                           /* check that i-param binders aren't */
 	                                  /* mixed with 'normal' ones. */
     if ( isIP ) {
@@ -5940,7 +6010,7 @@ List qs; {
 			    }
 			    break;
 
-	    case QWHERE   : 
+	    case QWHERE   :
 #if IPARAM
 		if ( checkIBindings(l,snd(q)) ) {
 		    /* It is unclear what the meaning of this is (by people in-the-know),
@@ -5993,7 +6063,7 @@ static Void local mdoLoad() {
     if (mdoLibsNeeded) {
 	String fixLib     = "Control.Monad.Fix";
 	String fixClass   = "MonadFix";
-    
+
 	/* Locate the module containing the MonadRec/MonadFix class */
 	Module m          = findModule(findText(fixLib));
 	Text t            = module(m).text;
@@ -6007,7 +6077,7 @@ static Void local mdoLoad() {
 	/* Reset this flag before signalling errors, so we won't inadvertently
 	 * loop.
 	 */
-	mdoLibsNeeded = FALSE; 
+	mdoLibsNeeded = FALSE;
 
 	if( !(classMonadRec = findQualClass(monadRecName)) &&
 	    !(classMonadRec = findClass(qtextOf(monadRecName))) ) {
@@ -6015,7 +6085,7 @@ static Void local mdoLoad() {
 		ERRTEXT   "\n*** Possible cause: \"%s\" module not imported", fixLib
 		EEND;
 	}
-	
+
 	if( !(nameMFix = findQualName(mfixName)) &&
 	    !(nameMFix = findName(qtextOf(mfixName))) ) {
 	    ERRMSG(0) "%s class does not define the mfix method", fixClass
@@ -6030,10 +6100,10 @@ static Void local mdoLoad() {
    the second is the defined vars
    the third is the used vars THAT are defined in that binding group
 */
-static Void local mdoExpandQualifiers(l,e,qs,defs)	
-Int  l;		
+static Void local mdoExpandQualifiers(l,e,qs,defs)
+Int  l;
 Cell e;
-List qs; 
+List qs;
 List defs; {
     if (isNull(qs)) {
 	List currDeps = mdepends;
@@ -6049,7 +6119,7 @@ List defs; {
 				enterBtyvs();
 				fst(snd(q)) = bindPat(l,fst(snd(q)));
 				snd(snd(q)) = depExpr(l,snd(snd(q)));
-				snd3(hd(qs)) = getPatVars(l,fst(snd(q)),NIL); 
+				snd3(hd(qs)) = getPatVars(l,fst(snd(q)),NIL);
 				thd3(hd(qs)) = mdoUsedVars(mdepends,currDeps,defs,NIL);
 				mdoExpandQualifiers(l,e,qs1,defs);
 				fst(snd(q)) = applyBtyvs(fst(snd(q)));
@@ -6057,12 +6127,12 @@ List defs; {
 			    }
 			    break;
 
-	    case QWHERE   : 
+	    case QWHERE   :
 #if IPARAM
 			    if ( checkIBindings(l,snd(q)) ) {
 				ERRMSG(l) "Currently illegal to bind implicit parameters in the recursive do-notation"
 				EEND;
-			    } else 
+			    } else
 #endif
 			    {	List currDeps = mdepends;
 				snd3(hd(qs)) = mdoGetPatVarsLet(l,snd(q),NIL);
@@ -6089,7 +6159,7 @@ List defs; {
 
 static List local mdoUsedVars(xs,c,ys,ls)/* copy elements of xs until the */
 List xs;                          	 /* sublist pointed to by c,      */
-Cell c; 
+Cell c;
 List ys; 				 /* if they are in ys		  */
 List ls; {				 /* but not in ls		  */
     List zs = NIL;
@@ -6121,7 +6191,7 @@ List fvs; {
     /* extract pattern variables from eqns.. */
     for(tmp = eqns; nonNull(tmp); tmp = tl(tmp)) {
 	switch (fst(hd(tmp))) {
-	    case PATBIND :  /* now, fst(snd(hd(tmp))) is the pattern.. */  
+	    case PATBIND :  /* now, fst(snd(hd(tmp))) is the pattern.. */
 			    fvs = getPatVars(l, fst(snd(hd(tmp))), fvs);
 			    break;
 	    case FUNBIND :  /* now, we only need to get the function name! */
@@ -6140,22 +6210,22 @@ List fvs; {
 
 static List local mdoBVars(l, qs)        /* return list of bound vars */
 Int l;                                   /* in an mdo                 */
-List qs; {      
+List qs; {
     List mdoBounds = NIL;
     for(; nonNull(qs); qs = tl(qs)) {
 	Cell q = hd(qs);
 	switch(whatIs(q)) {
 	    case FROMQUAL : mdoBounds = getPatVars(l, fst(snd(q)), mdoBounds);
 			    break;
-            case QWHERE	  : { 	List letVs = NIL; 
+            case QWHERE	  : { 	List letVs = NIL;
 				letVs = mdoGetPatVarsLet(l, snd(q), NIL);
 				for(; nonNull(letVs); letVs = tl(letVs)) {
-				    mdoBounds = addPatVar(l, hd(letVs), 
+				    mdoBounds = addPatVar(l, hd(letVs),
 								mdoBounds);
 				}
 			    }
 			    break;
-	    case DOQUAL	  : 
+	    case DOQUAL	  :
             case BOOLQUAL : break;
 	    default	  : internal("mdo: unknown statement");
 			    break;
@@ -6194,7 +6264,7 @@ Triple seg; {				/* storing rec and used vars first */
 		   in that let expression (because let is already recursive)
 		The following if statement exactly captures these rules:
 	    */
-	    if(     varIsMember(textOf(hd(vs)), segDefs(seg)) 
+	    if(     varIsMember(textOf(hd(vs)), segDefs(seg))
 		&& !varIsMember(textOf(hd(vs)), accumRecs)
 		&& !varIsMember(textOf(hd(vs)), segRecs(seg))
 		&& (    whatIs(qualBody(hd(tmp))) != QWHERE
@@ -6230,7 +6300,7 @@ Triple seg; {
 	    case FROMQUAL :
 	    case DOQUAL   :
 	    case BOOLQUAL : break;
-	    case QWHERE	  : 
+	    case QWHERE	  :
 		{   Cell p1,p2;
 		    Cell rhs;
 		    if(length(defs)==1) {
@@ -6274,7 +6344,7 @@ Cell e; {
     for(; nonNull(segs); segs = tl(segs)) {
 	List vs;
 	for(vs = segDefs(hd(segs)); nonNull(vs); vs = tl(vs)) {
-	    if(varIsMember(textOf(hd(vs)),eUses) 
+	    if(varIsMember(textOf(hd(vs)),eUses)
 		|| mdoUsedInAnySeg(textOf(hd(vs)), tl(segs))) {
 		segExps(hd(segs)) = cons(hd(vs), segExps(hd(segs)));
 	    }
@@ -6292,7 +6362,7 @@ List qs; {
     withinScope(NIL);
     mdoBounds = mdoBVars(l, qs);
     enterBtyvs();
-    obvs = saveBvars(); 
+    obvs = saveBvars();
     hd(bounds) = mdoBounds;
     mdoExpandQualifiers(l,e,qs,mdoBounds);
     restoreBvars(obvs);
@@ -6379,7 +6449,7 @@ List qs; {
 	hd(qs) = pair(triple(segRecs(hd(qs)),segExps(hd(qs)),segDefs(hd(qs))),
 		      segQuals(hd(qs)));
     }
-   
+
     fst(e) = fst(fst(e));	/* clean up e, completes depRecComp */
 
 
@@ -6402,11 +6472,11 @@ List qs; {
      **************************************************************/
 }
 
-#undef	segRecs   
+#undef	segRecs
 #undef	segExps
 #undef	segDefs
-#undef	segUses   
-#undef	segQuals  
+#undef	segUses
+#undef	segQuals
 #undef	qualBody
 #undef	qualDefs
 #undef	qualUses
@@ -6431,11 +6501,11 @@ List eqs; {
     Int i, j;
     List usesAccum = dupList(thd3(q));
     Cell qUses	   = usesAccum;
-      
+
     for(i = 1, j = 0; nonNull(eqs); i++, eqs = tl(eqs)) {
-	usesAccum = dupOnto(thd3(hd(eqs)), usesAccum);   
+	usesAccum = dupOnto(thd3(hd(eqs)), usesAccum);
 	if(mdoIsConnected(hd(eqs), qUses)) {
-	    qUses = usesAccum;                          
+	    qUses = usesAccum;
 	    j = i;
 	}
     }
@@ -6446,12 +6516,12 @@ List eqs; {
 static Void local mdoSCC(eqs)		/* SCC for mdo */
 List eqs; {
     /*  The input eqs is the extended qualifier list. I.e. each qualifier
-	is a triple where the first element is the qualifier itself, second 
+	is a triple where the first element is the qualifier itself, second
 	element is the defined variables and third is the used ones.
-	After SCC, eqs becomes a list of list of qualifiers, where each 
+	After SCC, eqs becomes a list of list of qualifiers, where each
 	inner list is a strongly connected component, i.e. a segment.
     */
- 
+
     Int covers;
     List eqs1;
 
@@ -6597,13 +6667,13 @@ Int line;
 Text t;
 Cell e; {
     Name n;
-    
+
     if (isName(e)) {
 	n = e;
     } else {
 	n = findName(t);
     }
-    
+
     if (!isNull(n) && nonNull(name(n).clashes)) {
 	Text t = name(n).text;
 	List ls = name(n).clashes;
@@ -6625,13 +6695,13 @@ Int line;
 Text t;
 Cell e; {
     Tycon tc;
-    
+
     if (isTycon(e)) {
 	tc = e;
     } else {
 	tc = findTycon(t);
     }
-    
+
     if (!isNull(tc) && nonNull(tycon(tc).clashes)) {
 	Text t = tycon(tc).text;
 	List ls = tycon(tc).clashes;
@@ -6693,7 +6763,7 @@ Bool check; {
     if (check) {
 	checkNameAmbig(line,t,n);
     }
-    
+
     if (!moduleThisScript(name(n).mod)) {
 	return n;
     }
@@ -6935,7 +7005,7 @@ static Void local trexUsed() {
 static Void local trexLoad() {
     if (trexLibNeeded) {
 	String trexLib    = "Hugs.Trex";
-    
+
 	/* Locate the module */
 	Module m          = findModule(findText(trexLib));
 	Text t            = module(m).text;
@@ -6960,14 +7030,14 @@ static Void local trexLoad() {
 		ERRTEXT   "\n*** Possible cause: \"Trex\" module not imported"
 		EEND;
 	}
-	
+
 	if( !(nameShowRecRow = findQualName(showRecName)) &&
 	    !(nameShowRecRow = findName(qtextOf(showRecName))) ) {
 	    ERRMSG(0) "Trex.showRecRow not in scope" ETHEN
 		ERRTEXT   "\n*** Possible cause: \"Trex\" module not imported"
 		EEND;
 	}
-	
+
 	if( !(nameEqRecRow = findQualName(eqRecRowName)) &&
 	    !(nameEqRecRow = findName(qtextOf(eqRecRowName))) ) {
 	    ERRMSG(0) "Trex.eqRecRow not in scope" ETHEN
@@ -6981,14 +7051,14 @@ static Void local trexLoad() {
 		ERRTEXT   "\n*** Possible cause: \"Trex\" module not imported"
 		EEND;
 	}
-	
+
 	if( !(nameEqRecRowCls = findQualClass(EqRecName)) &&
 	    !(nameEqRecRowCls = findClass(qtextOf(EqRecName))) ) {
 	    ERRMSG(0) "Trex.EqRecRow not in scope" ETHEN
 		ERRTEXT   "\n*** Possible cause: \"Trex\" module not imported"
 		EEND;
 	}
-	
+
 
     }
     trexLibNeeded = FALSE;
@@ -7032,7 +7102,7 @@ Cell e; {				/* to make construction and update */
     return revOnto(exts,r);
 }
 #endif
-  
+
 /* --------------------------------------------------------------------------
  * Several parts of this program require an algorithm for sorting a list
  * of values (with some added dependency information) into a list of strongly
@@ -7160,18 +7230,22 @@ Void checkDefns() {			/* Top level static analysis	   */
          * Otherwise, we try to load a C file and look for those
          * primitives.
          */
-        if (generate_ffi) {
+        Bool need_stubs = foreignNeedStubs(foreignImports, foreignExports);
+
+        if (generate_ffi && need_stubs) {
             foreignHeader(scriptFile);
         }
         mapProc(checkForeignImport,foreignImports);
         mapProc(checkForeignExport,foreignExports);
-        if (generate_ffi) {
+        if (generate_ffi && need_stubs) {
             foreignFooter(scriptFile, module(thisModule).text,
 			  foreignImports, foreignExports);
         }
-        needPrims(0);
-        mapProc(linkForeign,foreignImports);
-        mapProc(linkForeign,foreignExports);
+	if (need_stubs) {
+	  needPrims(0);
+	  mapProc(linkForeign,foreignImports);
+	  mapProc(linkForeign,foreignExports);
+	}
 
         /* We are now finished with foreign import declarations but
          * foreign export declarations need to pass through the
@@ -7266,7 +7340,7 @@ Module mod;
 Text   t;
 String kind; {
     if (mod == currentModule) {
-	ERRMSG(line) "Repeated definition for %s \"%s\"", kind, 
+	ERRMSG(line) "Repeated definition for %s \"%s\"", kind,
 		     textToStr(t)
 	EEND;
     } else {
@@ -7299,7 +7373,7 @@ Bool h98Pred(allowArgs,pi)		/* Check syntax of Hask98 predicate*/
 Bool allowArgs;
 Cell pi; {
     return isClass(getHead(pi)) && argCount==1 &&
-	   (isOffset(getHead(arg(pi))) || isInt(getHead(arg(pi)))) && 
+	   (isOffset(getHead(arg(pi))) || isInt(getHead(arg(pi)))) &&
            (argCount==0 || allowArgs);
 }
 
@@ -7388,7 +7462,7 @@ String wh; {
 Void staticAnalysis(what)
 Int what; {
     switch (what) {
-	case RESET   : 
+	case RESET   :
 #if MUDO
 	               mdoLoad();
 #endif

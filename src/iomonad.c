@@ -14,8 +14,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: iomonad.c,v $
- * $Revision: 1.46 $
- * $Date: 2003/02/17 11:12:04 $
+ * $Revision: 1.47 $
+ * $Date: 2003/03/03 06:31:04 $
  * ------------------------------------------------------------------------*/
  
 Name nameIORun;			        /* run IO code                     */
@@ -28,9 +28,9 @@ static Name nameHreader;	        /* auxiliary function		   */
 #endif
 
 #if IO_HANDLES
+Cell                mkIOError      Args((Cell,Name,String,String,Cell));
 static String local toIOErrorDescr Args((int,Bool));
 static Name   local toIOError      Args((int));
-static Cell   local mkIOError      Args((Cell,Name,String,String,Cell));
 static Cell   local openHandle     Args((StackPtr,Cell,Int,Bool,String));
 static Cell   local openFdHandle   Args((StackPtr,Int,Bool,Int,Bool,String));
 #endif
@@ -43,7 +43,7 @@ static Cell   local openFdHandle   Args((StackPtr,Int,Bool,Int,Bool,String));
 # endif
 #endif
 
-static Void local pushString       Args((String));
+extern Void local pushString       Args((String));
 
 /* --------------------------------------------------------------------------
  * IO monad control:
@@ -178,6 +178,29 @@ PROTO_PRIM(primEqSN);
 PROTO_PRIM(primGetCurrentScript);
 #endif
 
+#ifdef DOTNET
+/* These primops are remnants from the first attempt at
+ * providing .NET interop for Haskell / Hugs. They've been
+ * mostly superceeded by the integration of .NET interop
+ * with the Haskell FFI, but we'll keep these primops around
+ * for a little bit longer.
+ */
+EXT_PROTO_PRIM(primCreateObject);
+EXT_PROTO_PRIM(primInvokeMethod);
+EXT_PROTO_PRIM(primInvokeStaticMethod);
+EXT_PROTO_PRIM(primNewString);
+EXT_PROTO_PRIM(primToHsString);
+EXT_PROTO_PRIM(primNewArgArray);
+EXT_PROTO_PRIM(primSetArg);
+EXT_PROTO_PRIM(primGetArg);
+EXT_PROTO_PRIM(primGetField);
+EXT_PROTO_PRIM(primSetField);
+EXT_PROTO_PRIM(primGetStaticField);
+EXT_PROTO_PRIM(primSetStaticField);
+EXT_PROTO_PRIM(primIsNullPtr);
+EXT_PROTO_PRIM(primMkPrimVector);
+#endif
+
 static struct primitive iomonadPrimTable[] = {
   {"primretIO",		1+IOArity, primReturnIO},
   {"primbindIO",	2+IOArity, primBindIO},
@@ -282,24 +305,26 @@ static struct primitive iomonadPrimTable[] = {
   {"getCurrentScript",  0+IOArity, primGetCurrentScript},
 #endif
 
+#ifdef DOTNET
+  {"createObject",       2+IOArity, primCreateObject},
+  {"invokeMethod",       3+IOArity, primInvokeMethod},
+  {"invokeStaticMethod", 2+IOArity, primInvokeStaticMethod},
+  {"newString",          1+IOArity, primNewString},
+  {"toString",           1+IOArity, primToHsString},
+  {"newArgArray",        1+IOArity, primNewArgArray},
+  {"setArrayArg",        3+IOArity, primSetArg},
+  {"getArrayArg",        2+IOArity, primGetArg},
+  {"getField",           2+IOArity, primGetField},
+  {"setField",           3+IOArity, primSetField},
+  {"getStaticField",     2+IOArity, primGetStaticField},
+  {"setStaticField",     3+IOArity, primSetStaticField},
+  {"isNullPtr",          1+IOArity, primIsNullPtr},
+  {"mkPrimVector",       2+IOArity, primMkPrimVector},
+#endif
   {0,			0, 0}
 };
 
 static struct primInfo iomonadPrims = { iomonadControl, iomonadPrimTable, 0 };
-
-/* --------------------------------------------------------------------------
- * Macros
- *
- * Note: the IOReturn and IOFail macros do not use the standard "do while"
- * trick to create a single statement because some C compilers (eg sun)
- * report warning messages "end-of-loop code not reached".
- * This may lead to syntax errors if used where a statement is required - such
- * errors can be fixed by adding braces round the call.  Blech!
- * ------------------------------------------------------------------------*/
-
-#define IOArg(n)    primArg((n)+IOArity)
-#define IOReturn(r) { updapRoot(primArg(1),r); return; }
-#define IOFail(r)   { throwException(ap(nameIOException,r)); return; }
 
 /* --------------------------------------------------------------------------
  * The monad combinators:
@@ -508,7 +533,7 @@ String loc; {
  * Building strings:
  * ------------------------------------------------------------------------*/
 
-static Void local pushString(s)       /* push pointer to string onto stack */
+Void pushString(s)       /* push pointer to string onto stack */
 String s; {
     Int  l      = strlen(s);
     push(nameNil);
@@ -522,8 +547,7 @@ String s; {
  * do.
  */
   
-static
-Cell local
+Cell
 mkIOError(mbH, kind, loc, desc, mbF)
 Cell   mbH;	/* a Handle or NIL */
 Name   kind;	/* an IOErrorType */

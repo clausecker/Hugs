@@ -10,8 +10,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: server.c,v $
- * $Revision: 1.28 $
- * $Date: 2003/02/17 03:07:59 $
+ * $Revision: 1.29 $
+ * $Date: 2003/03/03 06:31:04 $
  * ------------------------------------------------------------------------*/
 
 #define HUGS_SERVER
@@ -21,13 +21,21 @@
 DLLEXPORT(HugsServerAPI*) initHugsServer Args((Int, String[]));
 DLLEXPORT(Void) shutdownHugsServer Args((HugsServerAPI*));
 
-static Void   setError     Args((String));
+/* These have non-local scope, as they're used when creating 
+ * extended/delegated versions of the server API (cf. the server
+ * interface provided by the .NET extensions.)
+ */
+extern Void   setError        Args((String));
+extern Void   startEval       Args((Void));
+extern Bool   safeEval        Args((Cell));
+extern String ClearError      Args((Void));
+extern Cell   getTypeableDict Args((Type));
+extern char*  lastError;
+
 static Void   setHugsAPI   Args((Void));
-static Void   startEval    Args((Void));
 static Bool   SetModule    Args((String));
 #ifndef NO_DYNAMIC_TYPES
 static Bool   linkDynamic     Args((Void));
-static Cell   getTypeableDict Args((Type));
 #endif
 
 /* --------------------------------------------------------------------------
@@ -42,7 +50,6 @@ static Cell   getTypeableDict Args((Type));
  *    functions and variables that we need to access.
  * ------------------------------------------------------------------------*/
 
-static String ClearError      Args((Void));
 static Int    GetNumScripts   Args((Void));
 static Void   Reset           Args((Int));
 static Void   SetOutputEnable Args((Bool));
@@ -127,7 +134,7 @@ static String ClearError()
     return err;
 }
 
-static Void setError(s)            /* Format an error message        */
+Void setError(s)            /* Format an error message        */
 String s; {
     Int    n = 0;
     String err = ClearOutputBuffer();
@@ -527,7 +534,7 @@ static Void Apply()              /* Apply stack[sp-1] to stack[sp]   */
  * Evaluate top of stack
  * ------------------------------------------------------------------------*/
 
-static Void startEval()
+Void startEval()
 {
     numCells      = 0;
     numReductions = 0;
@@ -578,7 +585,7 @@ static Bool tryEval(Cell c)
 }
 
 
-static Bool safeEval(Cell c)
+Bool safeEval(Cell c)
 {
         Bool ok;
         startEval();
@@ -838,8 +845,8 @@ HVal   hval;
  * Testing for class membership:
  * ------------------------------------------------------------------------*/
 
-static Cell getTypeableDict(t) /* Find a Typeable dictionary for instance t, */
-Type  t; {                     /* or NIL if none found                       */
+Cell getTypeableDict(t) /* Find a Typeable dictionary for instance t, */
+Type  t; {              /* or NIL if none found                       */
     Class c = classTypeable;
     Kinds ks = NIL;
     if (isPolyType(t)) {

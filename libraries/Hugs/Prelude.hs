@@ -66,7 +66,7 @@ module Hugs.Prelude (
     Word, StablePtr, ForeignObj, ForeignPtr,
     Int8, Int16, Int32, Int64,
     Word8, Word16, Word32, Word64,
-    Handle,
+    Handle, Object,
     basicIORun, blockIO, IOFinished(..),
     threadToIOResult,
     catchException, throw,
@@ -1673,6 +1673,8 @@ data IOErrorType
   | IllegalOperation
   | PermissionDenied
   | UserError
+     -- DOTNET only
+  | DotNetException
     deriving (Eq)
 
 instance Show IOErrorType where
@@ -1686,6 +1688,7 @@ instance Show IOErrorType where
       IllegalOperation  -> "illegal operation"
       PermissionDenied  -> "permission denied"
       UserError         -> "user error"
+      DotNetException   -> ".NET exception"
 
 instance Show IOException where
   showsPrec p (IOError mbHandle kind loc descr mbFile) = 
@@ -1803,6 +1806,9 @@ data ForeignObj  -- builtin datatype of C pointers with finalizers (deprecated)
 data ForeignPtr a -- builtin datatype of C pointers with finalizers
 data StablePtr a
 data Handle
+
+data Object a -- builtin datatype of external object references.
+              -- (needed as primitive since they're supported in FFI decls.)
 
 instance Eq Handle where (==) = primEqHandle
 primitive primEqHandle :: Handle -> Handle -> Bool

@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: input.c,v $
- * $Revision: 1.59 $
- * $Date: 2003/02/10 14:52:00 $
+ * $Revision: 1.60 $
+ * $Date: 2003/03/03 06:31:04 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -136,6 +136,14 @@ Text   textSafe;                        /* safe                            */
 Text   textUnsafe;                      /* unsafe                          */
 Text   textThreadsafe;                  /* threadsafe                      */
 Text   textExport;                      /* export                          */
+
+/* Platform-specific calling conventions */
+#ifdef _WIN32
+Text   textStdcall;                     /* stdcall                         */
+#endif
+#ifdef DOTNET
+Text   textDotnet;                      /* dotnet                          */
+#endif
 
 Text   textNum;                         /* Num                             */
 Text   textPrelude;                     /* Prelude / Hugs.Prelude          */
@@ -1992,6 +2000,12 @@ Int what; {
 		       textSafe       = findText("safe");
 		       textUnsafe     = findText("unsafe");
 		       textThreadsafe = findText("threadsafe");
+#ifdef _WIN32		       
+		       textStdcall    = findText("stdcall");
+#endif
+#ifdef DOTNET
+		       textDotnet     = findText("dotnet");
+#endif
 		       textAsMod      = findText("as");
 		       textWildcard   = findText("_");
 		       textAll	      = findText("forall");

@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: storage.c,v $
- * $Revision: 1.63 $
- * $Date: 2003/02/10 14:52:03 $
+ * $Revision: 1.64 $
+ * $Date: 2003/03/03 06:31:05 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -49,6 +49,11 @@ static Observe  local newObserve        Args((Text));
 static Void     local appendObs         Args((Cell,Cell));
 static Breakpt  local addBreakpt        Args((String));
 static Breakpt  local findBreakpt       Args((String));
+#endif
+
+#ifdef DOTNET
+extern Void markDotNetPtrs(Int* masks);
+extern Void zeroDotNetTable();
 #endif
 
 /* --------------------------------------------------------------------------
@@ -534,9 +539,11 @@ Cell parent; {
     name(nameHw).defn         = NIL;
     name(nameHw).type         = NIL;
     name(nameHw).extFun       = 0;
-    name(nameHw).safety       = FFI_NOSAFETY;
     name(nameHw).foreignId    = -1; 
-    name(nameHw).lib          = -1;
+    name(nameHw).foreignFlags = FFI_NOSAFETY | FFI_CCONV_UNKNOWN;
+#ifdef DOTNET
+    name(nameHw).foreignInfo  = NIL;
+#endif
     name(nameHw).primDef      = 0;
     name(nameHw).code         = 0;
     name(nameHw).mod          = currentModule;
@@ -1268,9 +1275,9 @@ Void hugsStackOverflow() {          /* Report stack overflow               */
  * ------------------------------------------------------------------------*/
 
 #if OBSERVATIONS
-static Observe observeHw;                          /* next unused Observe  */
-struct Observe DEFTABLE(tabObserve,NUM_OBS_TAGS);  /* Observe storage      */
-static Observe currentObs;			   /* for table iterators  */
+static Observe observeHw;                            /* next unused Observe  */
+struct strObserve DEFTABLE(tabObserve,NUM_OBS_TAGS); /* Observe storage      */
+static Observe currentObs;			     /* for table iterators  */
 
 Observe newObserve(t)
 Text t; {
@@ -1340,7 +1347,7 @@ Cell new; {
  * ------------------------------------------------------------------------*/
 
 static Breakpt breakptHw;                          /* next unused Breakpt  */
-struct Breakpt DEFTABLE(tabBreakpt,NUM_BRKPTS);    /* Breakpt storage      */
+struct strBreakpt DEFTABLE(tabBreakpt,NUM_BRKPTS); /* Breakpt storage      */
 
 Void    clearAllBreak(){
     breakptHw = BRKMIN;
@@ -2184,6 +2191,10 @@ Void garbageCollect()     {             /* Run garbage collector ...       */
 	}
     }
 #endif /* GC_MALLOCPTRS */
+#ifdef DOTNET
+    markDotNetPtrs(marks);
+#endif /* DOTNET */
+
 #if GC_WEAKPTRS
     /* After GC completes, we scan the list of weak pointers that are
      * still live and zap their contents unless the contents are still
@@ -3608,6 +3619,9 @@ Int what; {
 		       handles[HSTDERR].hmode = HAPPEND;
 		       handles[HSTDERR].hbufMode = HUNKNOWN_BUFFERING;
 #endif
+#ifdef DOTNET
+		       zeroDotNetTable();
+#endif
 #if !HSCRIPT
 #if GC_STABLEPTRS
 		       resetStablePtrs();
@@ -3627,6 +3641,9 @@ Int what; {
 			   mark(name(i).defn);
 			   mark(name(i).type);
 			   mark(name(i).clashes);
+#ifdef DOTNET
+			   mark(name(i).foreignInfo);
+#endif
 		       }
 		       end("Names", nameHw-NAMEMIN);
 #if OBSERVATIONS

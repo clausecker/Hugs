@@ -1,0 +1,423 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html> <head>
+<title>DotNet</title>
+<link rel=stylesheet href="style.css">
+</head>
+
+<body>
+<!-- *********************************** -->
+<h1>The DotNet helper library</h1>
+
+The <tt>DotNet</tt> library provides you with functions
+to help you create and manipulate .NET objects in Haskell.
+
+<!-- *********************************** -->
+<h2>Representing object references</h2>
+At the base, it exports a typed representation of object
+references:
+
+<pre>
+newtype Object a = ...abstract...
+
+instance Eq (Object a)   where {...}
+instance Show (Object a) where {...}
+</pre>
+
+The <tt>Object</tt> type is parameterised over a type that
+encodes the .NET class reference it is representing. To illustrate how,
+the <tt>System.Object</tt> and <tt>System.String</tt> modules define
+the following:
+
+<pre>
+module System.Object where 
+
+import qualified DotNet ( Object )
+
+data Object_ a
+type Object a = DotNet.Object (Object_ a)
+
+getHashCode :: Object a -> IO Int
+getHashCode = ...
+...
+
+module System.String where
+
+import System.Object
+...
+data String_ a
+type StringTy a = System.Object.Object (String_ a)
+...
+new :: String -> IO (StringTy ())
+new str = ...
+
+lengthString :: StringTy a -> IO Int
+lengthString = ...
+</pre>
+
+Notice the type of <tt>System.String.new</tt> -- it returns a
+<tt>StringTy ()</tt>, capturing the fact that precisely a .NET
+<tt>System.String</tt> reference is returned as result of 
+instantiating a new character string. Given the type synonyms above,
+<tt>StringTy ()</tt> can be expanded to
+
+<pre>
+StringTy () == DotNet.Object (System.Object.Object_ (System.String.String_ ())
+</pre>
+
+Notice how the type argument to <tt>DotNet.Object</tt> encodes the inheritance
+structure, i.e., in the .NET framework, <tt>System.String</tt> is a
+subclass of <tt>System.Object</tt>. 
+<p>
+Polymorphism is used to constrain object references to a particular subtype:
+
+<pre>
+System.String.lengthString :: StringTy a -> IO Int
+System.Object.getHashCode  :: Object a -> IO Int
+</pre>
+
+So, if you've got a <tt>System.String</tt> or one of its sub-classes,
+you can safely apply <tt>System.String.lengthString</tt> -- the type
+variable <em>a</em> permitting the use of any subtype of <tt>System.String</tt>.
+
+
+<p>
+If you're already familiar with the work on
+<a href="http://haskell.org/hdirect/">integrating</a> COM with Haskell,
+the type encoding of .NET object references is identical to how COM
+interface pointers are typed in Haskell.
+
+<!-- *********************************** -->
+<h2>OO-style application</h2>
+
+To support the syntax for conventional OO-style method invocation, the 
+<tt>DotNet</tt> provides the following two combinators:
+
+<pre>
+infix 8 #
+infix 9 ##
+
+( # )  :: a -> (a -> IO b) -> IO b
+obj # method = method obj
+
+( ## ) :: IO a -> (a -> IO b) -> IO b
+mObj ## method = mObj >>= method
+</pre>
+
+Using these, method invocation can be expressed as follows:
+
+<pre>
+  l <- str # System.String.lengthString 
+  putStrLn ("Length of string: " ++ show l)
+</pre>
+
+<!-- *********************************** -->
+<h2>Supporting marshaling</h2>
+
+To support the automatic marshaling of values between the .NET and
+Haskell worlds, <tt>DotNet</tt> provides two Haskell type classes:
+
+<pre>
+class NetType a where
+   arg    :: a -> InArg
+   result :: DotNetPtr -> IO a
+
+type InArg = IO DotNetPtr
+
+class NetArg a where
+  marshal :: a -> IO [DotNetPtr]
+</pre>
+
+Both <tt>NetType</tt> and <tt>NetArg</tt> work in terms of
+<tt>DotNetPtr</tt> - the primitive, untyped representation of
+an object reference (which the <tt>DotNet.Object</tt> type just so
+happens to be defined in terms of.)
+<p>
+The following instances are provided:
+
+<pre>
+instance NetType (Object a)
+instance NetType ()
+instance NetType Int
+instance NetType {Int8, Int16, Int32}
+instance NetType {Word8, Word16, Word32}
+instance NetType Bool
+instance NetType Char
+instance NetType String
+instance NetType Float
+instance NetType Double
+</pre>
+
+In addition to object references, instances also let you convert
+to/from the 'standard' unboxed types that the .NET framework provides.
+<p>
+The <tt>NetType</tt> class takes care of marshaling single arguments
+to/from their .NET representations; the <tt>NetArg</tt> deals with
+marshaling a collection of such arguments:
+
+<pre>
+instance NetArg ()  -- no args
+instance NetType a => NetArg a  -- one arg
+instance (NetArg a1, NetArg a2) => NetArg (a1,a2)     -- 2 args
+...
+instance (NetArg a1, NetArg a2, NetArg a3,
+	  NetArg a4, NetArg a5, NetArg a6,
+	  NetArg a7) => NetArg (a1,a2,a3,a4,a5,a6,a7) -- 7 args
+</pre>
+
+The idea is here to use tuples to do uncurried method application;
+details of which will be introduced in the next section.
+
+<!-- *********************************** -->
+<h2>Creating .NET objects</h2>
+
+To create a new object, use one of the following actions:
+
+<pre>
+type ClassName = String
+
+new    :: ClassName -> IO (Object a)
+newObj :: (NetArg a)
+       => ClassName
+       -> a
+       -> IO (Object res)
+createObj :: ClassName -> [InArg] -> IO (Object a)
+</pre>
+
+To call the nullary constructor for an object, simply use <tt>new</tt>:
+
+<pre>
+main = do
+   x <- new "System.Object"
+   print x -- under-the-hood, calls ToString() on 'x' 
+</pre>
+
+To use a parameterised constructor instead, you can use
+<tt>newObj</tt> or <tt>createObject</tt>:
+
+<pre>
+newXPathDoc :: String
+            -> System.Xml.XmlSpace
+	    -> IO (System.Xml.XPath.XPathDocument ())
+newXPathDoc uri spc = newObj "System.Xml.XPath.XPathDocument" (uri,spc)
+
+newBitmap :: Int -> Int -> IO (System.Drawing.Bitmap ())
+newBitmap w h = createObj "System.Drawing.Bitmap" [arg w, arg h]
+</pre>
+
+<tt>createObj</tt> lets you pass a list of arguments, but you have to
+explicitly apply <tt>arg</tt> to each of them. <tt>newObj</tt> takes
+care of this automatically provided you 'tuple up' the arguments. 
+<p>
+<tt>new</tt> can clearly be expressed in terms of these more general
+constructor actions:
+
+<pre>
+-- 
+new cls = newObj cls ()
+-- or
+-- new cls = createObj cls []
+</pre>
+
+<strong>Note:</strong> the reason why both <tt>createObj</tt> and
+<tt>newObj</tt>, which perform identical functions, are provided,
+is to gain experience as to what is the preferred invocation
+style. Unsurprisingly, these two different forms of marshaling
+arguments are also used when dealing with method invocation, which we
+look at next.
+
+<!-- *********************************** -->
+<h2>Calling .NET methods</h2>
+
+To invoke a static method, use <tt>invokeStatic</tt> or
+<tt>staticMethod</tt>:
+
+<pre>
+type MethodName = String
+
+invokeStatic :: (NetArg a, NetType res)
+	     => ClassName
+	     -> MethodName
+             -> a
+             -> IO res
+staticMethod :: (NetType a)
+             => ClassName
+	     -> MethodName
+             -> [InArg]
+             -> IO a
+staticMethod_ :: ClassName
+	      -> MethodName
+              -> [InArg]
+              -> IO ()
+</pre>
+
+<tt>invokeStatic</tt> uses the <tt>NetArg</tt> type class, so you need
+to tuple the arguments you pass to the static method:
+
+<pre>
+getEnv :: String -> IO String
+getEnv var = invokeStatic "System.Environment" "GetEnvironmentVariable" var
+</pre>
+
+<tt>staticMethod</tt> uses a list to pass arguments to the static
+method, requiring you to apply the (overloaded) marshaling function
+first:
+
+<pre>
+urlEncode :: String -> IO String
+urlEncode url = staticMethod "System.Web.HttpUtility"
+                             "UrlEncode"
+			     [arg url]
+</pre>
+
+Invoking instance methods is very similar, but of course requires
+an extra 'this' argument:
+
+<pre>
+invoke :: (NetArg a, NetType res)
+       => MethodName
+       -> a
+       -> Object b
+       -> IO res
+
+method :: (NetType a)
+       => MethodName
+       -> [InArg]
+       -> Object b
+       -> IO a
+
+method_ :: MethodName
+        -> [InArg]
+        -> Object a
+        -> IO ()
+</pre>
+
+For example,
+
+<pre>
+main = do
+  obj <- new "System.Object"
+  x   <- obj # invoke "GetHashCode" ()
+  print ("The hash code is: " ++ show (x::Int))
+</pre>
+
+As a convenience, the <tt>DotNet</tt> also provides an (uncurried)
+family of method invocating actions:
+
+<pre>
+method_1 :: (NetType a1, NetType res)
+	 => MethodName -> a1 -> Object c -> IO res
+method_2 :: (NetType a1, NetType a2, NetType res)
+	 => MethodName -> a1 -> a2 -> Object c -> IO res
+...
+method_7 :: (NetType a1, NetType a2, NetType a3, 
+	     NetType a4, NetType a5, NetType a6,
+	     NetType a7, NetType res)
+	 => MethodName -> a1 -> a2 -> a3 -> a4 
+	 -> a5 -> a6 -> a7 -> Object c -> IO res
+</pre>
+
+
+<!-- *********************************** -->
+<h2>Field access</h2>
+
+As with methods, the <tt>DotNet</tt> library provides access to both
+static and instance fields:
+
+<pre>
+type FieldName = String
+
+getField :: (NetType a) => FieldName -> Object b -> IO a
+setField :: (NetType a) => FieldName -> Object b -> a -> IO ()
+
+getStaticField :: (NetType a) => ClassName -> FieldName -> IO a
+setStaticField :: (NetType a) => ClassName -> FieldName -> a -> IO ()
+</pre>
+
+<!-- *********************************** -->
+<h2>Using delegators</h2>
+
+To assist in the interoperation with the .NET framework (the UI
+bits, in particular), the <tt>DotNet</tt> library lets you
+wrap up Haskell function values as .NET delegators:
+
+<pre>
+newDelegator :: (Object a -> Object b -> IO ())
+	     -> IO (Object (System (EventHandler ())))
+</pre>
+
+When the <tt>System.EventHandler</tt> object reference is passed to
+another .NET method, it can invoke it just like any other
+<tt>EventHandler</tt> delegate. When that happens, the Haskell
+function value you passed to <tt>newDelegator</tt> is invoked. (The
+way this is done under the hood is kind of funky, requiring some
+dynamic code (and class) generation, but I digress.)
+<p>
+To see the delegator support in action, have a look at the UI example
+in the distribution.
+
+<!-- *********************************** -->
+<h2>Creating a Haskell-based .NET class</h2>
+
+The <tt>DotNet</tt> library provides experimental support for
+creating new classes that wrap up Haskell IO actions:
+
+<pre>
+defineClass :: Class -> IO (Object b)
+
+data Class 
+ = Class String		-- type/class name
+ 	 (Maybe String) -- Just x => derive from x
+ 	 [Method]
+
+data Method
+ = Method MethodName       -- .NET name (unqualified).
+	  Bool             -- True => override.
+ 	  String           -- Haskell function to call.
+	  [BaseType]       -- Argument types
+	  (Maybe BaseType) -- result (Nothing => void).
+</pre>
+
+See the <tt>NewObj</tt> example in the distribution for more.
+
+<!-- *********************************** -->
+<h2>Interfacing with the .NET framework classes</h2>
+
+One thing that immediately strikes most people when looking at the
+.NET Framework for the first time is its large size. Clearly, it
+wouldn't be practical to manually type out Haskell wrappers for each
+and everyone of the classes provided.
+<p>
+To assist in the interfacing to .NET classes, a utility
+<tt>HsWrapGen</tt> is provided. Given the name of a .NET class,
+it generates a Haskell module wrapper for the class, containing method
+wrappers that use the <tt>DotNet</tt> library to call the .NET
+methods. See the <tt>tools/</tt> directory, if interested.
+
+<p>
+<strong>Note:</strong> Hugs98 for .NET makes good use of the
+hierarchical module extension to Haskell, so if you do write /
+generate your own class wrappers, you may want to consider putting
+them inside the (sparse) .NET module tree that Hugs98 for .NET
+provides.
+<p>
+To demonstrate where and how, supposing you had written a Haskell
+wrapper for <tt>System.Xml.Schema.XmlSchema</tt>, you need to name the
+Haskell module just that, i.e.,: 
+
+<pre>
+module System.Xml.Schema.XmlSchema where { .... }
+</pre>
+
+and place it in <tt>lib/dotnet/System/Xml/Schema/</tt> directory
+inside the Hugs98 for .NET installation tree. You can then utilise
+the wrapper module in your own code by importing it as
+
+<pre>
+import System.Xml.Schema.XmlSchema
+</pre>
+
+<hr>
+<address> 
+<!-- hhmts start --> Last modified: Wed Apr 10 00:26:03 Pacific Daylight Time 2002 <!-- hhmts end -->
+</address>
+</body> </html>

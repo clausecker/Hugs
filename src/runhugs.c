@@ -7,14 +7,13 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: runhugs.c,v $
- * $Revision: 1.13 $
- * $Date: 2002/10/31 01:38:34 $
+ * $Revision: 1.14 $
+ * $Date: 2003/03/03 06:31:04 $
  * ------------------------------------------------------------------------*/
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "config.h"
-#include "options.h"
+#include "prelude.h"
 #include "server.h"
 
 /* In case the server API couldn't

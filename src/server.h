@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: server.h,v $
- * $Revision: 1.7 $
- * $Date: 2002/07/05 12:54:25 $
+ * $Revision: 1.8 $
+ * $Date: 2003/03/03 06:31:04 $
  * ------------------------------------------------------------------------*/
 
 #ifndef Args
@@ -18,6 +18,10 @@
 #  define Args(x) ()
 # endif
 #endif /* !defined Args */
+
+#ifdef __cplusplus 
+extern "C" {
+#endif
 
 typedef int HVal;     /* Haskell values are represented by stable pointers */
 
@@ -61,5 +65,11 @@ typedef struct _HugsServerAPI {
 typedef HugsServerAPI *(*HugsServerInitFun) Args((int, char**));
 /* type of "shutdownHugsServer" function */
 typedef void (*HugsServerShutdownFun) Args((HugsServerAPI*));
+
+  //extern HugsServerAPI* initHugsServer Args((int, char**));
+DLLEXPORT(HugsServerAPI*) initHugsServer Args((Int, String[]));
+#ifdef __cplusplus 
+};
+#endif
 
 /* ------------------------------------------------------------------------*/

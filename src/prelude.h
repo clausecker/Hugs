@@ -8,8 +8,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: prelude.h,v $
- * $Revision: 1.42 $
- * $Date: 2003/02/17 03:07:57 $
+ * $Revision: 1.43 $
+ * $Date: 2003/03/03 06:31:04 $
  * ------------------------------------------------------------------------*/
 #ifndef __PRELUDE_H__
 #define __PRELUDE_H__
@@ -253,13 +253,6 @@ extern HWND		hWndMain;	/* main window handle		   */
 #define HUGS_noreturn  
 #define HUGS_unused
 #endif
-
-/* result type of main function */
-/* Hugs 1.01 could be configured to return void on Unix-like systems
- * but I don't think this is necessary.  ADR
- */
-#define Main int
-#define MainDone() return 0/*NOTUSED*/
 
 /*---------------------------------------------------------------------------
  * Dynamic linking tricks
@@ -796,6 +789,9 @@ typedef void*    Pointer;
 #define MAXHUGSWORD        Pick(0xffffU, 0xffffffffU, 0xffffffffU)
 #define NUM_STABLEPTRS	   Pick(10,     100,        10000)
 #define NUM_MALLOCPTRS	   Pick(10,     100,        10000)
+#ifdef DOTNET
+#define NUM_DOTNETPTRS	   Pick(10,     100,        10000)
+#endif
 #define NUM_DTUPLES	   Pick(3,      5,          5)
 #define BIGBASE		   Pick(100,    10000,      10000)
 #define BIGEXP		   Pick(2,      4,          4)

@@ -163,7 +163,7 @@ output.obj	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h
 compiler.obj	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h 
 machine.obj	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h
 plugin.obj	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h
-builtin.obj	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h \
+builtin.obj	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h builtin.h \
 		  bignums.c printer.c iomonad.c interns.c stmonad.c array.c dirprim.c timeprim.c
 ffi.obj		: $(PRELUDE) storage.h HsFFI.h connect.h errors.h
 module.obj	: $(PRELUDE) storage.h HsFFI.h connect.h errors.h module.h

@@ -11,17 +11,16 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.79 $
- * $Date: 2003/02/17 10:41:35 $
+ * $Revision: 1.80 $
+ * $Date: 2003/03/03 06:31:04 $
  * ------------------------------------------------------------------------*/
 #include <math.h>
-#include "machdep.h"
 #include "prelude.h"
+#include "machdep.h"
 #include "storage.h"
 #include "command.h"
 #include "connect.h"
 #include "errors.h"
-
 
 #ifdef HAVE_SIGNAL_H
 # include <signal.h>
@@ -109,6 +108,7 @@ int time_release = 20000;
 int allow_break_count = 0;
 #endif
 
+extern String readRegString       Args((HKEY, String, String, String));
 /* --------------------------------------------------------------------------
  * Prototypes for registry reading
  * ------------------------------------------------------------------------*/
@@ -269,6 +269,9 @@ FileName macHugsDir; /* Directory where Hugs was found. */
 #if HAVE_GETMODULEFILENAME && !DOS && !__CYGWIN32__
 static HMODULE hugsModule = (HMODULE)0;
 static String  hugsRoot   = 0;
+
+extern Void setHugsModule Args((HMODULE));
+extern Bool setHugsRoot   Args((String));
 
 Void setHugsModule(hmod)
 HMODULE hmod; {
@@ -2261,6 +2264,8 @@ Int  version; {
 #define BUFSIZE 1000
 static char buffer[BUFSIZE];
 static Int used = 0;
+static Void local insert     Args((String));
+static Void local insertChar Args((Char));
 
 static Void local insert(s)
 String s; {
@@ -2417,11 +2422,8 @@ DWORD  bufSize; {
     }
 }
 
-String readRegString(key,regPath,var,def) /* read String from registry */
-HKEY   key;
-String regPath;
-String var; 
-String def; {
+String readRegString(HKEY key, String regPath, String var, String def) /* read String from registry */
+{
     char* stringVal;
     
     if (queryString(key, regPath, var, &stringVal)) {
@@ -2479,11 +2481,7 @@ Int    def; {
 /* concatenate together all strings from registry of the form regPath\\*\\var,
  * seperated by character sep.
  */
-String readRegChildStrings(key,regPath,var,def)
-HKEY	key;
-String	regPath;
-String	var;
-String  def;
+String readRegChildStrings(HKEY key, String regPath, String var, String def)
 {
   HKEY baseKey;
   ULONG ulResult;
@@ -2511,6 +2509,7 @@ String  def;
  * care of (re)allocating the string buffer, so that it'll fit.
  */
 #define APPEND_STRING__(x) \
+    if (x) {\
     if ( (strLength = strlen(x)) > resRoom || (resRoom == 0 && (x) != NULL) ) { \
        maxLen = max(strLength, strIncrement); \
        if (resPath == NULL) { \
@@ -2532,7 +2531,7 @@ String  def;
        } \
     } \
     strcat(resPath, x); \
-    resRoom -= strLength;
+    resRoom -= strLength;}
   
   ulResult = RegOpenKeyEx(key, regPath, 0, KEY_READ, &baseKey);
   if (ulResult != ERROR_SUCCESS) {
