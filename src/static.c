@@ -8,8 +8,8 @@
  * included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.44 $
- * $Date: 2001/11/21 07:26:26 $
+ * $Revision: 1.45 $
+ * $Date: 2001/12/04 00:20:45 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -5109,10 +5109,10 @@ List ds; {				/* given list of equations	   */
 	    if ( !(isVar(v) || isQVar(v)) ) {
 		internal("FUNBIND");
 	    }
-	    if (nonNull(lastVar) && textOf(v)==textOf(lastVar)) {
+	    if (nonNull(lastVar) && (qualTextOf(v))==qualTextOf(lastVar)) {
 		if (argCount!=lastArity) {
 		    ERRMSG(line) "Equations give different arities for \"%s\"",
-				 textToStr(textOf(v))
+				 textToStr(qualTextOf(v))
 		    EEND;
 		}
 		fbindAlts(hd(bs)) = cons(newAlt,fbindAlts(hd(bs)));
@@ -5237,8 +5237,8 @@ static Void local notDefined(line,bs,v)/* check if name already defined in */
 Int  line;			       /* list of bindings		   */
 List bs;
 Cell v; {
-    if (nonNull(findBinding(textOf(v),bs))) {
-	ERRMSG(line) "\"%s\" multiply defined", textToStr(textOf(v))
+    if (nonNull(findBinding(qualTextOf(v),bs))) {
+	ERRMSG(line) "\"%s\" multiply defined", textToStr(qualTextOf(v))
 	EEND;
     }
 }
@@ -5247,8 +5247,8 @@ static Cell local findBinding(t,bs)    /* look for binding for variable t  */
 Text t; 			       /* in list of bindings bs	   */
 List bs; {
     for (; nonNull(bs); bs=tl(bs)) {
-	if (isVar(fst(hd(bs)))) {		      /* function-binding? */
-	    if (textOf(fst(hd(bs)))==t) {
+	if (isQVar(fst(hd(bs)))) {		      /* function-binding? */
+	    if (qualTextOf(fst(hd(bs)))==t) {
 		return hd(bs);
 	    }
 	} else if (nonNull(varIsMember(t,fst(hd(bs))))){/* pattern-binding?*/
