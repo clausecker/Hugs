@@ -324,9 +324,8 @@ dnl Check for libraries
 dnl
 dnl--------------------------------------------------------------------
 
-
-AC_CHECK_LIB_NOWARN(dl, dlopen)
-AC_CHECK_LIB_NOWARN(dld, shl_load)
+AC_CHECK_LIB([dl], [dlopen])
+AC_CHECK_LIB([dld], [shl_load])
 AC_CHECK_LIB([m], [atan])
 FP_CHECK_GLUT
 

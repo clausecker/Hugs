@@ -121,8 +121,6 @@
    ignoring punctuation (such as underscores).  */
 
 
-/* autoheader doesn't grok AC_CHECK_LIB_NOWARN so we have to add them
-   manually.  */
 
 @BOTTOM@
 
