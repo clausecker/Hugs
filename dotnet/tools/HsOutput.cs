@@ -94,49 +94,52 @@ namespace HsWrapGen
         protected void OutputHaskellType(System.Text.StringBuilder sb,
                                          System.Type ty,
                                          System.Int32 idx) {
-            if (ty.FullName == "System.Boolean") {
+	  /* Curiously, &-versions of prim types are showing up (cf. System.Uri.HexUnescape).
+	   * Just ignore them.
+	   */
+            if (ty.FullName == "System.Boolean" || ty.FullName == "System.Boolean&" ) {
               sb.Append("Bool"); return;
             }
             if (ty.FullName == "System.String") {
                 sb.Append("String"); return;
             }
-            if (ty.FullName == "System.Char") {
+            if (ty.FullName == "System.Char" || ty.FullName == "System.Char&") {
               sb.Append("Char"); return;
             }
-            if (ty.FullName == "System.Double") {
+            if (ty.FullName == "System.Double" || ty.FullName == "System.Double&") {
               sb.Append("Double"); return;
             }
-            if (ty.FullName == "System.Single") {
+            if (ty.FullName == "System.Single" || ty.FullName == "System.Single&") {
               sb.Append("Double"); return;
             }
-            if (ty.FullName == "System.SByte") {
+            if (ty.FullName == "System.SByte" || ty.FullName == "System.SByte&") {
 	      AddImport("Data.Int");
               sb.Append("Data.Int.Int8"); return;
             }
-            if (ty.FullName == "System.Int16") {
+            if (ty.FullName == "System.Int16" || ty.FullName == "System.Int16&") {
 	      AddImport("Data.Int");
               sb.Append("Data.Int.Int16"); return;
             }
-            if (ty.FullName == "System.Int32") {
+            if (ty.FullName == "System.Int32" || ty.FullName == "System.Int32&") {
               sb.Append("Int"); return;
             }
-            if (ty.FullName == "System.Int64") {
+            if (ty.FullName == "System.Int64" || ty.FullName == "System.Int64&") {
 	      AddImport("Data.Int");
               sb.Append("Data.Int.Int64"); return;
             }
-            if (ty.FullName == "System.Byte") {
+            if (ty.FullName == "System.Byte" || ty.FullName == "System.Byte&") {
 	      AddImport("Data.Word");
               sb.Append("Data.Word.Word8"); return;
             }
-            if (ty.FullName == "System.UInt16") {
+            if (ty.FullName == "System.UInt16" || ty.FullName == "System.UInt16&") {
 	      AddImport("Data.Word");
               sb.Append("Data.Word.Word16"); return;
             }
-            if (ty.FullName == "System.UInt32") {
+            if (ty.FullName == "System.UInt32" || ty.FullName == "System.UInt32&") {
 	      AddImport("Data.Word");
               sb.Append("Data.Word.Word32"); return;
             }
-            if (ty.FullName == "System.UInt64") {
+            if (ty.FullName == "System.UInt64" || ty.FullName == "System.UInt64&") {
 	      AddImport("Data.Word");
               sb.Append("Data.Word.Word64"); return;
             }
