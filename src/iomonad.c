@@ -19,8 +19,8 @@
  * included in the distribution.
  *
  * $RCSfile: iomonad.c,v $
- * $Revision: 1.12 $
- * $Date: 2001/06/08 23:33:13 $
+ * $Revision: 1.13 $
+ * $Date: 2001/06/22 16:37:08 $
  * ------------------------------------------------------------------------*/
  
 Name nameIORun;			        /* run IO code                     */
@@ -86,12 +86,6 @@ PROTO_PRIM(primGetRandomSeed);
 PROTO_PRIM(primArgc);
 PROTO_PRIM(primArgv);
 
-PROTO_PRIM(primUserError);
-PROTO_PRIM(primIsUserErr);
-
-PROTO_PRIM(primIsPermDenied);
-/* PROTO_PRIM(primIsNameErr); */
-
 PROTO_PRIM(primGetCh);
 PROTO_PRIM(primGetChar);
 PROTO_PRIM(primPutChar);
@@ -139,13 +133,13 @@ PROTO_PRIM(primWriteBinaryFile);
 PROTO_PRIM(primAppendBinaryFile);
 
 PROTO_PRIM(primIsIllegal);
-PROTO_PRIM(primIsWriteErr);
 PROTO_PRIM(primIsEOFError);
 PROTO_PRIM(primIsAlreadyExist);
 PROTO_PRIM(primIsAlreadyInUse);
 PROTO_PRIM(primIsDoesNotExist);
 PROTO_PRIM(primIsFull);
-PROTO_PRIM(primIsUnsupported);
+PROTO_PRIM(primIsUserErr);
+PROTO_PRIM(primIsPermDenied);
 
 PROTO_PRIM(primGetErrorString);
 PROTO_PRIM(primGetHandle);
@@ -230,11 +224,7 @@ static struct primitive iomonadPrimTable[] = {
   {"putChar",		3, primPutChar},
   {"putStr",		3, primPutStr},
 
-  /*  {"userError",		1, primUserError}, */
   {"isUserError",	1, primIsUserErr},
-  /* non-standard tests */
-  /*  {"hugsIsNameErr",	1, primIsNameErr}, */
-  /* end non-standard tests */
 
 #if IO_HANDLES
   {"hGetChar",		3, primHGetChar},
@@ -279,12 +269,9 @@ static struct primitive iomonadPrimTable[] = {
   {"isEOFError",	   1, primIsEOFError},
   {"isIllegalOperation",   1, primIsIllegal},
   {"isPermissionError",	   1, primIsPermDenied},
-  /* non-standard tests */
-  {"hugsIsWriteErr",       1, primIsWriteErr},
-  /* end non-standard tests */
-  {"ioeGetErrorString",	1, primGetErrorString},
-  {"ioeGetHandle",	1, primGetHandle},
-  {"ioeGetFileName",	1, primGetFileName},
+  {"ioeGetErrorString",	   1, primGetErrorString},
+  {"ioeGetHandle",	   1, primGetHandle},
+  {"ioeGetFileName",	   1, primGetFileName},
 #endif
 
 #if IO_REFS
@@ -616,23 +603,11 @@ primFun(primIsPermDenied) {		/* :: IOError -> Bool		   */
     BoolResult(whnfHead==namePermDenied);
 }
 
-primFun(primIsUnsupported) {		/* :: IOError -> Bool		   */
-    updateRoot(nameFalse);
-}
-
-
 primFun(primIsIllegal) {		/* :: IOError -> Bool	   */
     eval(primArg(1));
     eval(primArg(5));
     checkCon();
     BoolResult(whnfHead==nameIllegal);
-}
-
-primFun(primIsWriteErr) {		/* :: IOError -> Bool	   */
-    eval(primArg(1));
-    eval(primArg(5));
-    checkCon();
-    BoolResult(whnfHead==nameWriteErr);
 }
 
 primFun(primIsEOFError) {		/* :: IOError -> Bool	   */
@@ -881,14 +856,14 @@ primFun(primHPutStr) {			/* print string on handle	   */
 	    eval(pop());
 	    putc(charOf(whnfHead),handles[h].hfp);
 #if FLUSHEVERY
-	    if ( h < 2 ) {  /* Only flush the standard handles */
+	    if ( h <= 2 ) {  /* Only flush the standard handles */
 	      fflush(handles[h].hfp);
 	    }
 #endif
 	    eval(pop());
 	}
 #if !FLUSHEVERY
-	if (h < 2) { /* Only flush the standard handles */
+	if (h <= 2) { /* Only flush the standard handles */
 	  fflush(handles[h].hfp);
 	}
 #endif
