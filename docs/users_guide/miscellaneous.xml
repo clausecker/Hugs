@@ -48,8 +48,12 @@ The module system and dynamic linking facilities of Hugs 1.4 (June 1998);
 </para></listitem>
 
 <listitem><para>
-The type system extensions (multi-parameter classes, TREX, rank-2
-polymorphism, existentials, etc.) of Hugs 1.3c p1 (March 1998);
+The type system extensions
+(<link linkend="multi-param">multi-parameter classes</link>,
+<link linkend="trex">TREX</link>,
+<link linkend="rank-2-types">rank-2 polymorphism</link>,
+<link linkend="existential-quantification">existentials</link>,
+etc.) of Hugs 1.3c p1 (March 1998);
 </para></listitem>
 
 <listitem><para>
@@ -118,7 +122,9 @@ BSD-style license (replacing the Artistic License)
 </para></listitem>
 
 <listitem><para>
-new commands <command>:browse</command> and <command>:version</command>
+new commands
+<link linkend="browse-command"><command>:browse</command></link> and
+<link linkend="version-command"><command>:version</command></link>
 </para></listitem>
 
 <listitem><para>
@@ -126,7 +132,7 @@ experimental multi-instance resolution and <command>:xplain</command> command
 </para></listitem>
 
 <listitem><para>
-functional dependencies
+<link linkend="functional-dependencies">functional dependencies</link>
 </para></listitem>
 
 <listitem><para>
@@ -207,15 +213,16 @@ provided by GHC.
 </para></listitem>
 
 <listitem><para>
-Built-in, Hood-like debugging support.
+Built-in, <link linkend="observe">Hood-like debugging support</link>.
 </para></listitem>
 
 <listitem><para>
-Parallel list comprehensions, a.k.a. zip-comprehensions.
+<link linkend="zip-comprehension">Parallel list comprehensions</link>,
+a.k.a. zip-comprehensions.
 </para></listitem>
 
 <listitem><para>
-A new syntax for recursive monad bindings.
+A new syntax for <link linkend="recursive-do">recursive monad bindings</link>.
 </para></listitem>
 
 <listitem><para>
@@ -405,7 +412,7 @@ that require two or more options (see <xref linkend="runhugs"/>).
 The syntax of the <command>ffihugs</command> command has changed
 (see <xref linkend="ffihugs"/>).
 The <option>+G</option> and <option>+L</option> options are gone,
-and a new <option>+i</option> option can be used to specify include files.
+and a new <option>-i</option> option can be used to specify include files.
 </para></listitem>
 
 <listitem><para>
