@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: builtin.c,v $
- * $Revision: 1.59 $
- * $Date: 2003/05/12 08:48:14 $
+ * $Revision: 1.60 $
+ * $Date: 2003/07/24 13:07:36 $
  * ------------------------------------------------------------------------*/
 
 /* We include math.h before prelude.h because SunOS 4's cpp incorrectly
@@ -1910,7 +1910,7 @@ struct thunk_data {
     struct thunk_data* prev;
     HugsStablePtr      stable;
 #if defined(__i386__) || defined(_X86_)
-    char               code[16];
+    char               code[17];
 #elif defined(__ppc__)
      char               code[13*4];
 #elif defined(__sparc__) && defined(__GNUC__)
@@ -1930,6 +1930,34 @@ static void freeAllThunks Args((void));
 
 static struct thunk_data* foreignThunks = 0;
 
+#if defined(__i386__) || defined(_X86_)
+/* Comment from GHC's Adjustor.c:
+
+   Now here's something obscure for you:
+
+   When generating an adjustor thunk that uses the C calling
+   convention, we have to make sure that the thunk kicks off
+   the process of jumping into Haskell with a tail jump. Why?
+   Because as a result of jumping in into Haskell we may end
+   up freeing the very adjustor thunk we came from using
+   freeHaskellFunctionPtr(). Hence, we better not return to
+   the adjustor code on our way  out, since it could by then
+   point to junk.
+
+   The fix is readily at hand, just include the opcodes
+   for the C stack fixup code that we need to perform when
+   returning in some static piece of memory and arrange
+   to return to it before tail jumping from the adjustor thunk.
+
+   For this to work we make the assumption that bytes in .data
+   are considered executable.
+*/
+static unsigned char obscure_ccall_ret_code [] =
+  { 0x83, 0xc4, 0x04 /* addl $0x4, %esp */
+  , 0xc3             /* ret */
+  };
+#endif
+
 static void* mkThunk(void (*app)(void), HugsStablePtr s) {
     struct thunk_data* thunk 
         = (struct thunk_data*)malloc(sizeof(struct thunk_data));
@@ -1948,16 +1976,23 @@ static void* mkThunk(void (*app)(void), HugsStablePtr s) {
     thunk->stable = s;
     pc = &thunk->code[0];
 #if defined(__i386__) || defined(_X86_)
-    /* 3 bytes: pushl (%esp) */
-    *pc++ = (char)0xff; *pc++ = 0x34; *pc++ = 0x24;  
+    /* Mostly cut-n-pasted from GHC's Adjustor.c. */
 
-    /* 8 bytes: movl s,4(%esp) */
-    *pc++ = (char)0xc7; *pc++ = 0x44; *pc++ = 0x24; *pc++ = 0x04; 
+    /* 5 bytes: pushl s */
+    *pc++ = (char)0x68;
     *((HugsStablePtr*)pc)++ = s;
 
-    /* 5 bytes: jmp app */
-    *pc++ = (char)0xe9;
-    *((int*)pc)++ = (char*)app - ((char*)&(thunk->code[16]));
+    /* 5 bytes: movl app, %eax */
+    *pc++ = (char)0xb8;
+    *((void(**)(void))pc)++ = app;
+
+    /* 5 bytes: pushl obscure_ccall_ret_code */
+    *pc++ = (char)0x68;
+    *((char**)pc)++ = obscure_ccall_ret_code;
+
+    /* 2 bytes: jmp *%eax */
+    *pc++ = 0xff; *pc++ = 0xe0;
+
 #elif defined(__ppc__) && defined(__GNUC__)
      /* This is only for MacOS X.
       * It does not work on MacOS 9 because of the very strange

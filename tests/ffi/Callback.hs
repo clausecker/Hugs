@@ -20,20 +20,12 @@ foreign import ccall safe "callback.h invokeDisplayCB" invokeDisplayCB ::
 display :: DisplayCallback
 display = putStrLn "Hello, I'm the display callback!"
 
--- foreign import ccall "dynamic" dynDisplayCB ::
---    FunPtr DisplayCallback -> DisplayCallback
-
 -------------------------------------------------------------------------------
 
 main :: IO ()
 main = do
    displayFunPtr <- makeDisplayCallback display
-
-   -- This seems to work
-   -- dynDisplayCB displayFunPtr
-   -- dynDisplayCB displayFunPtr
-
-   -- This doesn't
    registerDisplayCB displayFunPtr
    invokeDisplayCB
    invokeDisplayCB
+   freeHaskellFunPtr displayFunPtr

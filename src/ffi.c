@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: ffi.c,v $
- * $Revision: 1.30 $
- * $Date: 2003/07/16 16:29:43 $
+ * $Revision: 1.31 $
+ * $Date: 2003/07/24 13:07:37 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -440,9 +440,13 @@ List resultTy; {
     }
     fprintf(out,"(");
     if (extraArg) {
-#ifdef __sparc__
+#if defined(__sparc__) || defined(__i386__) || defined(_X86_)
         /* On SPARC we need an additional dummy argument due to stack alignment
-           restrictions, see the comment in mkThunk in builtin.c. */
+           restrictions, see the comment in mkThunk in builtin.c. On x86
+           platforms we need it, too, but for a different reason: The "real"
+           return address is still visible on the stack as an additional
+           argument, but we return to a small stub which pops the stable pointer
+           before the "real" return. */
         fprintf(out,"HugsStablePtr fun1, void* unusedArg");
 #else
         fprintf(out,"HugsStablePtr fun1");
