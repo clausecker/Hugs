@@ -44,7 +44,7 @@ module Hugs.Prelude (
     getChar, getLine, getContents, interact,
     readFile, writeFile, appendFile, readIO, readLn,
 --  module Ix,
-    Ix(range, index, unsafeIndex, inRange, rangeSize, unsafeRangeSize),
+    Ix(range, index, unsafeIndex, inRange, rangeSize),
 --  module Char,
     isSpace, isUpper, isLower,
     isAlpha, isDigit, isOctDigit, isHexDigit, isAlphaNum,
@@ -333,26 +333,18 @@ realToFrac      = fromRational . toRational
 
 class (Ord a) => Ix a where
     range                :: (a,a) -> [a]
+	-- The unchecked variant unsafeIndex is non-standard, but useful
     index, unsafeIndex   :: (a,a) -> a -> Int
     inRange              :: (a,a) -> a -> Bool
     rangeSize            :: (a,a) -> Int
-    unsafeRangeSize      :: (a,a) -> Int
 
 	-- Must specify one of index, unsafeIndex
     index b i | inRange b i = unsafeIndex b i
-              | otherwise   = error "Ix.index: Error in array index"
+              | otherwise   = error "Ix.index: index out of range"
     unsafeIndex b i = index b i
 
-	-- As long as you don't override the default rangeSize,
-	-- you can specify unsafeRangeSize as follows, to speed up
-	-- some operations:
-	--
-	--    unsafeRangeSize b@(_l,h) = unsafeIndex b h + 1
-	--
     rangeSize b@(_l,h) | inRange b h = unsafeIndex b h + 1
                        | otherwise   = 0
-    unsafeRangeSize b = rangeSize b
-
 	-- NB: replacing "inRange b h" by  "l <= u"
 	-- fails if the bounds are tuples.  For example,
 	-- 	(1,2) <= (2,1)
@@ -520,11 +512,8 @@ instance Enum Char where
 
 instance Ix Char where
     range (c,c')      = [c..c']
-    index b@(c,c') ci
-       | inRange b ci = fromEnum ci - fromEnum c
-       | otherwise    = error "Ix{Char}.index: Index out of range."
-    inRange (c,c') ci = fromEnum c <= i && i <= fromEnum c'
-			where i = fromEnum ci
+    unsafeIndex (c,_) i = fromEnum i - fromEnum c
+    inRange (c,c') i  = c <= i && i <= c'
 
 instance Read Char where
     readsPrec p      = readParen False
@@ -726,16 +715,12 @@ instance Integral Integer where
 
 instance Ix Int where
     range (m,n)          = [m..n]
-    index b@(m,n) i
-	   | inRange b i = i - m
-	   | otherwise   = error "Ix{Int}.index: Index out of range"
+    unsafeIndex (m,_) i  = i - m
     inRange (m,n) i      = m <= i && i <= n
 
 instance Ix Integer where
     range (m,n)          = [m..n]
-    index b@(m,n) i
-	   | inRange b i = fromInteger (i - m)
-	   | otherwise   = error "Ix{Integer}.index: Index out of range"
+    unsafeIndex (m,_) i  = toInt (i - m)
     inRange (m,n) i      = m <= i && i <= n
 
 instance Enum Int where

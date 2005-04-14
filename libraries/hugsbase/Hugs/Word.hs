@@ -58,9 +58,7 @@ instance Integral Word where
 
 instance Ix Word where
     range (m,n)          = [m..n]
-    index b@(m,n) i
-	   | inRange b i = toInt (i - m)
-	   | otherwise   = error "index: Index out of range"
+    unsafeIndex (m,_) i  = toInt (i - m)
     inRange (m,n) i      = m <= i && i <= n
 
 instance Enum Word where
@@ -131,9 +129,7 @@ instance Integral Word8 where
 
 instance Ix Word8 where
     range (m,n)          = [m..n]
-    index b@(m,n) i
-	   | inRange b i = toInt (i - m)
-	   | otherwise   = error "index: Index out of range"
+    unsafeIndex (m,_) i  = toInt (i - m)
     inRange (m,n) i      = m <= i && i <= n
 
 instance Enum Word8 where
@@ -202,9 +198,7 @@ instance Integral Word16 where
 
 instance Ix Word16 where
     range (m,n)          = [m..n]
-    index b@(m,n) i
-	   | inRange b i = toInt (i - m)
-	   | otherwise   = error "index: Index out of range"
+    unsafeIndex (m,_) i  = toInt (i - m)
     inRange (m,n) i      = m <= i && i <= n
 
 instance Enum Word16 where
@@ -273,9 +267,7 @@ instance Integral Word32 where
 
 instance Ix Word32 where
     range (m,n)          = [m..n]
-    index b@(m,n) i
-	   | inRange b i = toInt (i - m)
-	   | otherwise   = error "index: Index out of range"
+    unsafeIndex (m,_) i  = toInt (i - m)
     inRange (m,n) i      = m <= i && i <= n
 
 instance Enum Word32 where
@@ -354,9 +346,7 @@ instance Real Word64 where
 
 instance Ix Word64 where
     range (m,n)          = [m..n]
-    index b@(m,n) i
-	   | inRange b i = toInt (i - m)
-	   | otherwise   = error "index: Index out of range"
+    unsafeIndex (m,_) i  = toInt (i - m)
     inRange (m,n) i      = m <= i && i <= n
 
 instance Enum Word64 where

@@ -62,9 +62,7 @@ instance Integral Int8 where
 
 instance Ix Int8 where
     range (m,n)          = [m..n]
-    index b@(m,n) i
-	      | inRange b i = toInt (i - m)
-	      | otherwise   = error "index: Index out of range"
+    unsafeIndex (m,_) i  = toInt (i - m)
     inRange (m,n) i      = m <= i && i <= n
 
 instance Enum Int8 where
@@ -134,9 +132,7 @@ instance Integral Int16 where
 
 instance Ix Int16 where
     range (m,n)          = [m..n]
-    index b@(m,n) i
-	      | inRange b i = toInt (i - m)
-	      | otherwise   = error "index: Index out of range"
+    unsafeIndex (m,_) i  = toInt (i - m)
     inRange (m,n) i      = m <= i && i <= n
 
 instance Enum Int16 where
@@ -206,9 +202,7 @@ instance Integral Int32 where
 
 instance Ix Int32 where
     range (m,n)          = [m..n]
-    index b@(m,n) i
-	      | inRange b i = toInt (i - m)
-	      | otherwise   = error "index: Index out of range"
+    unsafeIndex (m,_) i  = toInt (i - m)
     inRange (m,n) i      = m <= i && i <= n
 
 instance Enum Int32 where
@@ -288,9 +282,7 @@ instance Real Int64 where
 
 instance Ix Int64 where
     range (m,n)          = [m..n]
-    index b@(m,n) i
-	      | inRange b i = toInt (i - m)
-	      | otherwise   = error "index: Index out of range"
+    unsafeIndex (m,_) i  = toInt (i - m)
     inRange (m,n) i      = m <= i && i <= n
 
 instance Enum Int64 where

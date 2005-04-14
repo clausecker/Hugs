@@ -6,7 +6,7 @@
 
 module Hugs.Array ( 
     module Data.Ix,  -- export all of Ix 
-    unsafeIndex, unsafeRangeSize,
+    unsafeIndex,
 
     Array, array, listArray, (!), bounds, indices, elems, assocs, 
     accumArray, (//), accum, ixmap,
@@ -14,7 +14,7 @@ module Hugs.Array (
     ) where
 
 import Data.Ix
-import Hugs.Prelude( unsafeIndex, unsafeRangeSize )
+import Hugs.Prelude( unsafeIndex )
 
 infixl 9  !, //
 
