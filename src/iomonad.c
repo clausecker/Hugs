@@ -14,8 +14,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: iomonad.c,v $
- * $Revision: 1.96 $
- * $Date: 2005/03/28 00:13:23 $
+ * $Revision: 1.97 $
+ * $Date: 2005/04/21 09:24:27 $
  * ------------------------------------------------------------------------*/
  
 Name nameIORun;			        /* run IO code                     */
@@ -538,7 +538,7 @@ static Char local hGetChar(Int h, String fname) {
 	IOFail(mkIOError(&handles[h].hcell,
 			 nameProtocolError,
 			 fname,
-			 "invalid character encoding",
+			 "input contains non-character data - use binary I/O for binary data",
 			 NULL));
     }
 #endif /* CHAR_ENCODING */
