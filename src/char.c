@@ -411,8 +411,10 @@ int fputc_mb(Char c, FILE *f) {
 Bool charIsRepresentable(Char c) {
     char buf[MAX_CHAR_ENCODING];
     size_t n;
-    wchar_t wc = '\0';				/* in case c is '\0' */
+    wchar_t wc;
     mbstate_t st;
+    if (c == '\0')
+	return TRUE;
     memset(&st, 0, sizeof(st));
     n = wcrtomb(buf, c, &st);
     if (n == (size_t)(-1))
@@ -428,7 +430,7 @@ int fgetc_mb(FILE *f) {
     char buf[MAX_CHAR_ENCODING];
     Int n = 0;
     size_t size;
-    wchar_t wc = 0;				/* in case \0 is read */
+    wchar_t wc;
     mbstate_t st;
     for (;;) {
 	int c = fgetc(f);
@@ -445,14 +447,16 @@ int fgetc_mb(FILE *f) {
 	    if (n == MAX_CHAR_ENCODING)
 		return BAD_CHAR;
 	    break;
+	case 0:					/* null character */
+	    return 0;
 	default:				/* successful decoding */
-	    if (n > 1 && size < n)
-		/* Some encodings (e.g. TCVN) use lookahead, we have to
-		 * read extra bytes to detect the end of an encoding.
-		 * If it's just one byte (size == n-1) we can push it
-		 * back onto the input.  This won't work for encodings
-		 * that need more than 1 byte of lookahead, but I don't
-		 * know of any. */
+	    if (size < n)
+		/* If the encoding uses lookahead, we have to read extra
+		 * bytes to detect the end of an encoding.  If it's
+		 * just one byte (size == n-1) we can push it back onto
+		 * the input.  This won't work for encodings that need
+		 * more than 1 byte of lookahead, but I don't think
+		 * there are any. */
 		ungetc(c, f);
 	    return wc;
 	}
