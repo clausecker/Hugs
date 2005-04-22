@@ -89,7 +89,8 @@ extern	Int	uni_gencat	Args((Char));
  *
  * CHAR_ENCODING_LOCALE: the encoding determined by the current setting
  *	of LC_CTYPE.  The encodings in some locales cannot represent all
- *	Unicode characters.
+ *	Unicode characters.  Note that this works only for stateless
+ *	encodings; the most widely used exception is ISO 2022-JP.
  *
  * CHAR_ENCODING_UTF8: the UTF-8 encoding, which covers all of Char.
  *
