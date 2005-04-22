@@ -5,9 +5,9 @@ fptools testsuite:
 
 * print top-level exceptions in the same way as GHC-generated programs do.
 
---- Hugs/Prelude.hs	2004-11-17 10:39:58.000000000 +0000
-+++ Hugs/Prelude.hs.new	2004-11-17 11:59:16.000000000 +0000
-@@ -1633,7 +1633,7 @@
+--- Hugs/Prelude.hs	2005-04-14 12:42:12.000000000 +0100
++++ Hugs/Prelude.hs.new	2005-04-22 15:17:26.000000000 +0100
+@@ -1618,7 +1618,7 @@
    showsPrec _ (IOException err)	  = shows err
    showsPrec _ (NoMethodError s)   = showException "undefined member" s
    showsPrec _ NonTermination	  = showString "<<loop>>"
@@ -16,19 +16,24 @@ fptools testsuite:
    showsPrec _ (RecConError s)     = showException "undefined field" s
    showsPrec _ (RecSelError s)     = showException "select of missing field" s
    showsPrec _ (RecUpdError s)     = showException "update of missing field" s
-@@ -1929,11 +1929,15 @@
+@@ -1914,11 +1914,20 @@
    exceptionHandler (ExitException ExitSuccess) = primExitWith 0
    exceptionHandler (ExitException (ExitFailure n)) = primExitWith n
    exceptionHandler err = runAndShowError $ do
 -	putChar '\n'
 -	putStr "Program error: "
 -	putStrLn (show err)
-+	hPutStr stderr "Fail: "
++	pname <- getProgName
++	let shortName = reverse $ takeWhile (/= '/') $ tail $
++				dropWhile (/= '.') $ reverse pname
++	hPutStr stderr shortName
++	hPutStr stderr ": "
 +	hPutStr stderr (show err)
 +	hPutChar stderr '\n'
  	primExitWith 1
  
-+primitive stderr      :: Handle
++primitive getProgName "primGetProgName" :: IO String
++primitive stderr        :: Handle
 +primitive hPutChar      :: Handle -> Char -> IO ()
 +primitive hPutStr       :: Handle -> String -> IO ()
 +
