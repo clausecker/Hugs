@@ -5,7 +5,7 @@
  *
  * The Hugs 98 system is Copyright (c) Mark P Jones, Alastair Reid, the
  * Yale Haskell Group, and the OGI School of Science & Engineering at OHSU,
- * 1994-2003, All rights reserved.  It is distributed as free software under
+ * 1994-2005, All rights reserved.  It is distributed as free software under
  * the license in the file "License", which is included in the distribution.
  * ------------------------------------------------------------------------*/
 
@@ -405,73 +405,93 @@ int fputc_mb(Char c, FILE *f) {
 /* Using the encoding specified by the current locale (LC_CTYPE).
  * Note that ISO C does not permit both byte-oriented and wchar I/O
  * on the same stream, so we use byte-oriented I/O, and do the conversion
- * ourselves using mbtowc/wctomb.
+ * ourselves using mbrtowc/wcrtomb.
  */
 
 Bool charIsRepresentable(Char c) {
     char buf[MAX_CHAR_ENCODING];
-    int n = wctomb(buf, c);
+    size_t n;
     wchar_t wc = '\0';				/* in case c is '\0' */
-    if (n>=0) {
-	if (mbtowc(&wc, buf, n) >= 0)
-	    return wc==c;
-	mbtowc(NULL, NULL, 0);			/* reset shift state */
-    } else {
-	wctomb(NULL, 0);
+    mbstate_t st;
+    memset(&st, 0, sizeof(st));
+    n = wcrtomb(buf, c, &st);
+    if (n == (size_t)(-1))
 	errno = 0;
-    }
+    else if (mbrtowc(&wc, buf, n, &st) == n)
+	return wc==c;
     return FALSE;
 }
 
 /* Read a Char encoded as a multi-byte sequence.
- *
- * We have no way to know how long the multi-byte sequence is, except
- * by trying to convert all prefixes.  If that goes on for too long,
- * it's an error we can't recover from, so return EOF.
  */
 int fgetc_mb(FILE *f) {
     char buf[MAX_CHAR_ENCODING];
     Int n = 0;
+    size_t size;
     wchar_t wc = 0;				/* in case \0 is read */
+    mbstate_t st;
     for (;;) {
 	int c = fgetc(f);
 	if (c == EOF)
 	    return n == 0 ? EOF : BAD_CHAR;
 	buf[n++] = c;
-	if (mbtowc(&wc, buf, n) >= 0)
-	    return wc;
-	mbtowc(NULL, NULL, 0);			/* reset shift state */
-	errno = 0;
-	if (n == MAX_CHAR_ENCODING)
+	memset(&st, 0, sizeof(st));
+	size = mbrtowc(&wc, buf, n, &st);
+	switch (size) {
+	case (size_t)(-1):			/* decoding error */
+	    errno = 0;
 	    return BAD_CHAR;
+	case (size_t)(-2):			/* incomplete sequence */
+	    if (n == MAX_CHAR_ENCODING)
+		return BAD_CHAR;
+	    break;
+	default:				/* successful decoding */
+	    if (n > 1 && size < n)
+		/* Some encodings (e.g. TCVN) use lookahead, we have to
+		 * read extra bytes to detect the end of an encoding.
+		 * If it's just one byte (size == n-1) we can push it
+		 * back onto the input.  This won't work for encodings
+		 * that need more than 1 byte of lookahead, but I don't
+		 * know of any. */
+		ungetc(c, f);
+	    return wc;
+	}
     }
 }
 
 /* Add a Char to a multi-byte encoded string, moving the pointer. */
 Void addc_mb(Char c, String *sp) {
-    Int size = wctomb(*sp, c);
-    if (size>0)
-	*sp += size;
-    else {
+    size_t size;
+    mbstate_t st;
+    memset(&st, 0, sizeof(st));
+    size = wcrtomb(*sp, c, &st);
+    if (size == (size_t)-1) {			/* encoding error */
 	*(*sp)++ = '?';
-	wctomb(NULL, 0);
 	errno = 0;
-    }
+    } else
+	*sp += size;
 }
 
 /* Get a Char from a multi-byte encoded string, moving the pointer. */
 Char extc_mb(String *sp) {
     wchar_t c = '\0';
-    Int size = mbtowc(&c, *sp, MAX_CHAR_ENCODING);
-    if (size>0)
-	*sp += size;
-    else if (size==0)				/* string starts with \0 */
-	(*sp)++;
-    else {
-	(*sp)++;
-	c = BAD_CHAR;
-	mbtowc(NULL, NULL, 0);			/* reset shift state */
+    size_t size;
+    mbstate_t st;
+    memset(&st, 0, sizeof(st));
+    size = mbrtowc(&c, *sp, MAX_CHAR_ENCODING, &st);
+    switch (size) {
+    case (size_t)(-1):				/* decoding error */
 	errno = 0;
+	/* fall through to ... */
+    case (size_t)(-2):				/* incomplete sequence */
+	c = BAD_CHAR;
+	(*sp)++;
+	break;
+    case 0:					/* string starts with \0 */
+	(*sp)++;
+	break;
+    default:					/* successful decoding */
+	*sp += size;
     }
     return c;
 }
@@ -743,12 +763,6 @@ Int what; {
 	case INSTALL : initCharTab();
 		       initConsCharTable();
 		       break;
-
-#if CHAR_ENCODING_LOCALE
-	case RESET   : mbtowc(NULL, NULL, 0);
-		       wctomb(NULL, 0);
-		       break;
-#endif
 
 	case MARK    : markConsCharTable();
 		       break;
