@@ -69,7 +69,7 @@ done
 ffi_args="$cpp_flags $cc_args"
 
 for f in $sources; do
-	src_opts=`grep '^>*{-# OPTIONS ' $f | sed -e 's/.*{-# OPTIONS //' -e 's/ #-}//'`
+	src_opts=`egrep '^>*{-# OPTIONS(_GHC)? ' $f | sed -e 's/.*{-# OPTIONS[_A-Z]* //' -e 's/ #-}//'`
 	for flag in $src_opts
 	do	handle_flag $flag
 	done
