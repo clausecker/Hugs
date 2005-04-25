@@ -744,15 +744,16 @@ GCC_LINT_FLAGS="-Wall \
   "
 
 if test "$enable_lint" = yes; then
-    if test "$CC" = "gcc"; then
-        LINT_FLAGS="$GCC_LINT_FLAGS"
-#    elif test "$CC" = "bcc32"; then
-#        LINT_FLAGS="$BCC32_LINT_FLAGS"
-    else
+    case "$CC" in
+    gcc|gcc-*)
+        LINT_FLAGS="$GCC_LINT_FLAGS" ;;
+#    bcc32)
+#        LINT_FLAGS="$BCC32_LINT_FLAGS" ;;
+    *)
         AC_MSG_WARN(dnl
 [lint flags only defined for gcc (at present)
-(ignoring --enable-lint)])
-    fi
+(ignoring --enable-lint)]) ;;
+    esac
 
     CFLAGS="$CFLAGS $LINT_FLAGS"
     dnl AC_MSG_WARN(using lint $CFLAGS)
