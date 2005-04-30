@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.134 $
- * $Date: 2005/02/28 16:59:21 $
+ * $Revision: 1.135 $
+ * $Date: 2005/04/30 15:33:44 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -600,38 +600,24 @@ static Void local info() {              /* describe objects                */
     setCurrModule(evMod);
     startNewScript(0);                  /* for recovery of storage         */
     for (; (s=readFilename())!=0; count++) {
-         String mod=NULL;
-	 String nm=NULL;
+        String mod=NULL;
+	String nm=NULL;
 	 
-	 /* In the event of a qualified name, decompose it. */
-	 splitQualString(s, &mod,&nm);
-	 
-	 if (mod != NULL && mod[0] == '\0') {
-	     /* ".<whatever>"  is assumed to be a non-qualified name */
-	     free(mod); mod = NULL;
-	     free(nm);  nm = s;
-	 }
-	 
-	 if ( mod != NULL ) {
-	   Module homeMod = findModule(findText(mod));
-	   if (nonNull(homeMod)) {
-	     setCurrModule(homeMod);
-	   } else {
-	     Printf("Unknown module `%s'\n",mod);
-	     /* With the module unknown, don't check the name. */
-	     goto cleanup;
-	   }
-	 }
-	 describe(findText(nm));
+	/* In the event of a qualified name, decompose it. */
+	splitQualString(s, &mod, &nm);
 
-cleanup:
-	 if (mod) { 
-	   free(mod);  mod = NULL;
-	   /* Only allocated 'nm' if the name was qualified. */
-	   if (nm) { 
-	     free(nm); nm  = NULL;
-	   }
-	 }
+	if (mod == NULL) {
+	    describe(findText(nm));
+	} else {
+	    Module homeMod = findModule(findText(mod));
+	    if (nonNull(homeMod)) {
+		setCurrModule(homeMod);
+		describe(findText(nm));
+	    } else
+		Printf("Unknown module `%s'\n",mod);
+		/* With the module unknown, don't check the name. */
+	    free(mod); mod = NULL;
+	}
     }
     if (count == 0) {
 	whatScripts();

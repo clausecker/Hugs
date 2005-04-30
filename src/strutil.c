@@ -6,6 +6,7 @@
 #include "connect.h"
 #include "errors.h"
 #include "strutil.h"
+#include "char.h"
 
 /* --------------------------------------------------------------------------
  * String manipulation routines:
@@ -50,21 +51,23 @@ Void splitQualString(nm, pMod, pName)
 String nm;
 String* pMod;
 String* pName; {
-  String dot;
+    String dot;
 
-  /* Find the last occurrence of '.' */
-  dot = strrchr(nm, '.');
-  
-  if (!dot) {
-    *pMod = NULL;
-    *pName = nm;
-  } else {
-    /* The module portion consists of everything upto the last dot. */
-    *pMod = strnCopy(nm, dot - nm);
+    /* Find the last occurrence of '.' preceded by an identifier */
+    dot = nm + strlen(nm) - 1;
+    while (dot != nm && !(*dot == '.' && isIn(dot[-1],IDAFTER)))
+	dot--;
 
-    /* Copy everything after the last '.' to the name string */
-    *pName = strCopy(dot+1);
-  }
+    if (dot == nm) {
+	*pMod = NULL;
+	*pName = nm;
+    } else {
+	/* The module portion consists of everything upto the last dot. */
+	*pMod = strnCopy(nm, dot - nm);
+
+	/* Everything after the last '.' is the name string */
+	*pName = dot+1;
+    }
 }
 
 /* Cheap&cheerful expandable strings / StringBuilders.
