@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.135 $
- * $Date: 2005/04/30 15:33:44 $
+ * $Revision: 1.136 $
+ * $Date: 2005/05/04 08:58:37 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -60,6 +60,7 @@ static Void   local listNames         Args((Void));
 static Void   local expandPath        Args((String,String,unsigned int));
 static Void   local browse	      Args((Void));
 static Void   local initialize        Args((Int, String []));
+static Void   local clearEvalModule   Args((Void));
 
 #if HUGS_FOR_WINDOWS
 static Void   local autoReloadFiles   Args((Void));
@@ -153,7 +154,7 @@ String argv[]; {
     addScriptsFromArgs(argc,argv);
     setHugsArgs(1, defaultArgv);
 
-    evalModule = findText("");      /* evaluate wrt last module by default */
+    clearEvalModule();		/* evaluate wrt last module by default */
     readScripts(0);
 }
 
@@ -362,6 +363,7 @@ static Void local printDir() {         /* print directory                */
 static Void local load() {           /* read filenames from command line   */
     String s;                        /* and add to list of scripts waiting */
 				     /* to be read                         */
+    clearEvalModule();
     while ((s=readFilename())!=0)
 	addScriptName(s,TRUE);
     readScripts(1);
@@ -448,7 +450,7 @@ static Void local setModule(){/*set module in which to evaluate expressions*/
 	}
     }
     else {			/* :m clears the current module selection */
-	evalModule = findText("");
+	clearEvalModule();
 	setLastEdit(fileOfModule(lastModule()),0);
     }
 }
@@ -458,6 +460,10 @@ Module findEvalModule() { /*Module in which to eval expressions*/
     if (isNull(m))
 	m = lastModule();
     return m;
+}
+
+static Void local clearEvalModule() {
+    evalModule = findText("");
 }
 
 /* --------------------------------------------------------------------------
