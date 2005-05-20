@@ -14,8 +14,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: iomonad.c,v $
- * $Revision: 1.97 $
- * $Date: 2005/04/21 09:24:27 $
+ * $Revision: 1.98 $
+ * $Date: 2005/05/20 22:42:54 $
  * ------------------------------------------------------------------------*/
  
 Name nameIORun;			        /* run IO code                     */
@@ -548,7 +548,7 @@ static Char local hGetChar(Int h, String fname) {
 static Void local hPutChar(Char c, Int h, String fname) {
     Int retval;
 #if CHAR_ENCODING
-    retval = handles[h].hBinaryMode ? fputc(c, handles[h].hfp) :
+    retval = handles[h].hBinaryMode ? putc(c, handles[h].hfp) :
 				      FPutChar(c, handles[h].hfp);
 #else
     retval = FPutChar(c, handles[h].hfp);
@@ -1586,7 +1586,7 @@ String   loc; {
 	checkChar();
 	c = charOf(whnfHead);
 #if CHAR_ENCODING
-	retval = binary ? fputc(c, wfp) : FPutChar(c, wfp);
+	retval = binary ? putc(c, wfp) : FPutChar(c, wfp);
 #else
 	retval = FPutChar(c, wfp);
 #endif
