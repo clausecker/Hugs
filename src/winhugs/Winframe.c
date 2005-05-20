@@ -15,7 +15,6 @@
 #define STRICT 1
 
 #include <malloc.h>
-#include <ctl3d.h>
 #include <shellapi.h>
 
 #include "WinFrame.h"
