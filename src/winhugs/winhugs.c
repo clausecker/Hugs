@@ -14,6 +14,7 @@
 #define STRICT 1
 
 #include <windows.h>
+#include <commctrl.h>
 #include <shellapi.h>
 #include <commdlg.h>
 #include <time.h>
@@ -37,7 +38,6 @@
 
 #include "WinFrame.h"
 #include "WinToolB.h"
-#include "WinSTLN.h"
 #include "WinUtils.h"
 
 /* --------------------------------------------------------------------------
@@ -861,6 +861,8 @@ static Void local copyArgs(LPSTR lpszCmdLine) {
 INT APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLine, INT nCmdShow)
 {
   INT i;
+
+  InitCommonControls();
 
   /* Save application instance */
   hThisInstance = hInstance;

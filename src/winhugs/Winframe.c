@@ -61,9 +61,6 @@ BOOL FRAMERegisterClass(HINSTANCE hInstance)
   /* Register tool bar class */
   TBRegisterClass(hInstance);
 
-  /* Register status line class */
-  STLNRegisterClass(hInstance);
-
   /* Register frame window class */
   wc.style		= CS_VREDRAW | CS_HREDRAW;
   wc.lpfnWndProc	= FRAMEWndProc;
@@ -164,7 +161,7 @@ HWND FRAMECreateWindow (HINSTANCE hInstance,
   hFRAME->hWndChild = hWndChild;
 
   /* Create its status line */
-  hFRAME->hWndSTLN = STLNCreateWindow(hInstance, hWnd, ResizeBitmapName);
+  hFRAME->hWndSTLN = CreateStatusWindow(WS_CHILD | WS_VISIBLE, "", hWnd, 0);
   if (!hFRAME->hWndSTLN)
     return NULL;
 

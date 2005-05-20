@@ -8,8 +8,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: prelude.h,v $
- * $Revision: 1.73 $
- * $Date: 2005/03/28 00:13:23 $
+ * $Revision: 1.74 $
+ * $Date: 2005/05/20 15:22:18 $
  * ------------------------------------------------------------------------*/
 #ifndef __PRELUDE_H__
 #define __PRELUDE_H__
@@ -200,6 +200,7 @@ int macsystem(char *filenames);
 
 #if     HUGS_FOR_WINDOWS
 #include <windows.h>			/* Misc. Windows hackery	   */
+#include <commctrl.h>			/* standard Windows GUI components */
 
 #if	__MSDOS__
 # define INT           int
