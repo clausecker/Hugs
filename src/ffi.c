@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: ffi.c,v $
- * $Revision: 1.39 $
- * $Date: 2005/03/28 00:13:23 $
+ * $Revision: 1.40 $
+ * $Date: 2005/06/21 11:17:48 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -125,6 +125,7 @@ String fn; {
     }
     out = f;
     fprintf(out,"/* Machine generated file, do not modify */\n");
+    fprintf(out,"#include <stdlib.h>\n");
     fprintf(out,"#include \"HsFFI.h\"\n");
     if (cppDirectives)
 	fprintf(out,"%s",cppDirectives);
