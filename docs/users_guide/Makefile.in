@@ -21,7 +21,7 @@ SGMLDocWays	= html
 ROOT		= users_guide
 PARTS		= $(ROOT).sgml faq.sgml haskell98.sgml hugs_ghc.sgml \
 		  hugs_only.sgml introduction.sgml license.sgml \
-		  miscellaneous.sgml options.sgml using_hugs.sgml
+		  miscellaneous.sgml options.sgml others.sgml using_hugs.sgml
 CSS_FILE	= hugs-ug.css
 DSL_FILE	= hugs-ug.dsl
 

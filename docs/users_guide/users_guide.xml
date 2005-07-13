@@ -10,6 +10,7 @@
 <!ENTITY license        SYSTEM "license.xml">
 <!ENTITY miscellaneous  SYSTEM "miscellaneous.xml">
 <!ENTITY options        SYSTEM "options.xml">
+<!ENTITY others         SYSTEM "others.xml">
 <!ENTITY using-hugs     SYSTEM "using_hugs.xml">
 <!ENTITY % ISOpub PUBLIC
        "ISO 8879:1986//ENTITIES Publishing//EN//XML"
@@ -29,6 +30,7 @@
 &introduction;
 &using-hugs;
 &options;
+&others;
 &haskell98;
 &hugs-ghc;
 &hugs-only;
