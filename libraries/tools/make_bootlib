@@ -22,6 +22,7 @@ source=fptools/libraries
 target=libraries/bootlib
 cpphs=libraries/tools/cpphs
 fp_includes=fptools/ghc/includes
+tmpdir_root=/tmp
 
 HUGSDIR=hugsdir
 HUGSFLAGS="-P$target"
@@ -30,21 +31,21 @@ export HUGSDIR HUGSFLAGS
 # platform sensitive settings
 
 case `uname -a` in
-*CYGWIN*) platform=Win32 ;;
+*CYGWIN*)
+	# Canonicalize win32 paths 
+	# (i.e., stay far away from unportable /cygdrive-paths)
+	case $platform in
+	Cygwin)	# stay away from -m
+		# (older versions of 'cygpath' don't support it.)
+		source=`cygpath -w $source | sed -e 's@\\\\@/@g'`
+		target=`cygpath -w $target | sed -e 's@\\\\@/@g'`
+		tmpdir_root=`cygpath -w $tmpdir_root | sed -e 's@\\\\@/@g'`
+	esac
+
+	platform=Win32 ;;
+*MINGW*)
+	platform=Win32 ;;
 *)	platform=Unix ;;
-esac
-
-case $platform in
-Win32)	tmpdir_root=`cygpath -w /tmp | sed -e 's%\\\\%/%g' `;;
-*)	tmpdir_root="/tmp" ;;
-esac
-
-# Canonicalize win32 paths 
-# (i.e., stay far away from unportable /cygdrive-paths)
-case $platform in
-Win32)	# stay away from -m (older versions of 'cygpath' doesn't support it.)
-	source=`cygpath -w $source | sed -e 's@\\\\@/@g'`
-	target=`cygpath -w $target | sed -e 's@\\\\@/@g'`
 esac
 
 # create all scratch files in $tmpdir
@@ -130,23 +131,28 @@ ffihugs=src/ffihugs
 
 base_includes="-I$source/base/include -I$fp_includes"
 
+case $platform in
+Unix)	base_libs= ;;
+Win32)	base_libs='-lwsock32' ;;
+esac
+
 $ffihugs Hugs.Storable \
 	libraries/hugsbase/Hugs/Storable_aux.c
 
 $ffihugs '-i"HsBase.h"' Foreign.C.Error $base_includes \
-	$source/base/cbits/PrelIOUtils.c
+	$source/base/cbits/PrelIOUtils.c $base_libs
 $ffihugs '-i"HsBase.h"' Foreign.Marshal.Alloc $base_includes \
 	$source/base/cbits/PrelIOUtils.c \
 	$source/base/cbits/dirUtils.c \
-	$source/base/cbits/consUtils.c
-$ffihugs '-i"HsBase.h"' Foreign.Marshal.Utils $base_includes
+	$source/base/cbits/consUtils.c $base_libs
+$ffihugs '-i"HsBase.h"' Foreign.Marshal.Utils $base_includes $base_libs
 
 case $platform in
 Unix)
 	$ffihugs '-i"HsBase.h"' System.Posix.Internals $base_includes
 	;;
 Win32)
-	$ffihugs Distribution.Simple.Configure
+	$ffihugs -98 Distribution.Simple.Configure
 	$ffihugs Distribution.Simple.Utils
 	;;
 esac
