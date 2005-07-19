@@ -33,7 +33,7 @@ The following alternatives might work, but are untried:
 
 2) Build the interpreter and libraries with
 
-     foo$ make EXTRA_CONFIGURE_OPTS=--build=i386-unknown-mingw32
+     foo$ make EXTRA_CONFIGURE_OPTS=--host=i386-unknown-mingw32
 
    Other configure options you might add are listed in unix.txt.
 
