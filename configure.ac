@@ -391,6 +391,8 @@ utf8)
     [Define to 1 to use the UTF-8 Char encoding.]) ;;
 esac
 
+AC_SEARCH_LIBS([wcrtomb], [msvcp60])
+
 dnl--------------------------------------------------------------------
 dnl
 dnl Check for library functions.
@@ -745,7 +747,7 @@ GCC_LINT_FLAGS="-Wall \
 
 if test "$enable_lint" = yes; then
     case "$CC" in
-    gcc|gcc-*)
+    gcc|gcc-*|*/gcc|*/gcc-*)
         LINT_FLAGS="$GCC_LINT_FLAGS" ;;
 #    bcc32)
 #        LINT_FLAGS="$BCC32_LINT_FLAGS" ;;
