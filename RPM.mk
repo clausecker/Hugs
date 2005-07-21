@@ -65,6 +65,7 @@ $(PACKAGE).tar.gz:
 	  cvs export -r $(HSLIBSTAG) `for lib in $(HSLIBSDIRS); do echo fptools/hslibs/$$lib; done`; \
 	  cvs export -r $(LIBRARIESTAG) fptools/config.sub fptools/config.guess fptools/install-sh `for lib in $(LIBRARIESDIRS); do echo fptools/libraries/$$lib; done`; \
 	  cvs export -r $(HSC2HSTAG) fptools/ghc/utils/hsc2hs
+	  cvs export -r $(CPPHSTAG) cpphs
 # preprocess these, so the package can be built without happy & ghc
 	$(FIND) $(TARTMP)/hugs98/fptools/libraries -name "*.ly" -o -name "*.y" | \
 		xargs -l $(HAPPY)
@@ -74,7 +75,7 @@ $(PACKAGE).tar.gz:
 # will be used, and yacc is, for some reason, incompatible
 	cd $(TARTMP)/hugs98/src; bison -y parser.y; mv y.tab.c parser.c
 # Siggy deren't like these in distros
-	cd $(TARTMP)/hugs98; rm -rf tests
+	if test "$(MAJOR_RELEASE)" -eq 1; then cd $(TARTMP)/hugs98; rm -rf tests; fi
 	cd $(TARTMP)/hugs98; make configure
 	mv $(TARTMP)/hugs98 $(TARTMP)/$(PACKAGE)
 	cd $(TARTMP); tar cf $(TMP)/$(NAME).tar $(PACKAGE)

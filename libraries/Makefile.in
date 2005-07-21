@@ -18,6 +18,8 @@ BUILD_DIR	= ../hugsdir
 
 HEADERS		= ../src/HsFFI.h
 FP_HEADERS	= ../src/platform.h include/MachDeps.h include/ghcconfig.h
+CPPHS_SRC	= ../cpphs
+HSC2HS_SRC	= ../fptools/ghc/utils/hsc2hs
 
 # a file created by make include
 INCLUDES	= $(BUILD_DIR)/include/HsFFI.h
@@ -25,42 +27,48 @@ INCLUDES	= $(BUILD_DIR)/include/HsFFI.h
 # We use a bootstrap procedure to construct the libraries:
 #
 # 1. Preprocess hugsbase, base, haskell98 and Cabal into bootlibs
-#    using the shell script make_bootlibs.  The result is incomplete,
+#    using the shell script make_bootlib.  The result is incomplete,
 #    in particular because hsc2hs wasn't available yet, but it's enough
-#    to get ffihugs, runhugs, hsc2hs and Cabal working,
+#    to get ffihugs, runhugs, cpphs, hsc2hs and Cabal working,
 #
-# 2. Build all the packages into ../hugsdir, using Cabal.
+# 2. Build all the packages into ../hugsdir, using cpphs, hsc2hs and Cabal.
 #
 # Unfortunately that means building (and configuring) base twice.
 
-HSC2HS		= tools/hsc2hs
 CPPHS		= tools/cpphs
+HSC2HS		= tools/hsc2hs
 MAKE_BOOT	= tools/make_bootlib
 CONVERT		= tools/convert_libraries
+BOOTLIB		= bootlib/.stamp
 
 all: $(BUILD_DIR)/.stamp
 
-$(BUILD_DIR)/.stamp: bootlib/.stamp $(INCLUDES) $(HSC2HS) $(CONVERT)
+$(BUILD_DIR)/.stamp: bootlib/.stamp $(INCLUDES) $(CPPHS) $(HSC2HS) $(CONVERT)
 	$(RM) -r $(BUILD_DIR)/libraries $(BUILD_DIR)/packages $(BUILD_DIR)/oldlib
 	cd ..; libraries/$(CONVERT) fptools hugsdir
 	echo timestamp for libraries >$@
 
-bootlib/.stamp: hugsbase/Hugs/*.* $(MAKE_BOOT) $(INCLUDES) $(CPPHS)
+$(HSC2HS): $(HSC2HS_SRC)/Main.hs $(BOOTLIB) $(INCLUDES) $(CPPHS)
+	mkdir -p $(BUILD_DIR)/programs/hsc2hs
+	$(CPPHS) $(CPPFLAGS) --noline --strip $(HSC2HS_SRC)/Main.hs -O$(BUILD_DIR)/programs/hsc2hs/Main.hs
+	cp $(HSC2HS_SRC)/template-hsc.h $(BUILD_DIR)/programs/hsc2hs
+	(echo '#! /bin/sh'; \
+	 echo "rootdir='`cd ..; pwd`'"; \
+	 echo '$$rootdir/src/runhugs -P$$rootdir/libraries/bootlib $$rootdir/hugsdir/programs/hsc2hs/Main.hs -I$$rootdir/hugsdir/include "$$@"') >$@
+	chmod 755 $@
+
+$(CPPHS): $(BOOTLIB)
+	mkdir -p $(BUILD_DIR)/programs/cpphs
+	cp $(CPPHS_SRC)/*.hs $(BUILD_DIR)/programs/cpphs
+	cd $(BUILD_DIR)/programs/cpphs; mv cpphs.hs Main.hs
+	(echo '#! /bin/sh'; \
+	 echo "rootdir='`cd ..; pwd`'"; \
+	 echo '$$rootdir/src/runhugs -P$$rootdir/libraries/bootlib $$rootdir/hugsdir/programs/cpphs/Main.hs "$$@"') >$@
+	chmod 755 $@
+
+$(BOOTLIB): hugsbase/Hugs/*.* $(MAKE_BOOT) $(INCLUDES)
 	CPPFLAGS='$(CPPFLAGS)' $(MAKE_BOOT)
 	echo timestamp for bootlib >$@
-
-$(HSC2HS): ../fptools/ghc/utils/hsc2hs/Main.hs $(BOOTLIB) $(INCLUDES) $(CPPHS)
-	test -d hsc2hs || mkdir hsc2hs
-	$(CPPHS) $(CPPFLAGS) ../fptools/ghc/utils/hsc2hs/Main.hs hsc2hs/Main.hs
-	cp ../fptools/ghc/utils/hsc2hs/template-hsc.h hsc2hs/template-hsc.h
-	(echo '#! /bin/sh'; \
-	 echo "libdir='`pwd`'"; \
-	 echo '$$libdir/../src/runhugs -P$$libdir/bootlib $$libdir/hsc2hs/Main.hs -I$$libdir/../hugsdir/include "$$@"') >$@
-	chmod 755 $@
-
-$(CPPHS): $(CPPHS).sh
-	sed 's:<HUGSDIR>:$(hugsdir):' $(CPPHS).sh >$@
-	chmod 755 $@
 
 $(INCLUDES): $(HEADERS)
 	mkdir -p $(BUILD_DIR)/include
@@ -92,9 +100,8 @@ distclean: clean
 	$(RM) -r autom4te.cache
 	$(RM) include/ghcconfig.h
 	$(RM) Makefile
-	$(RM) tools/config tools/cpphs.sh
+	$(RM) tools/config
 	$(RM) tools/cpphs
-	$(RM) -r hsc2hs
 	$(RM) tools/hsc2hs
 
 veryclean: distclean
@@ -126,12 +133,17 @@ install: all
 			$(INSTALL) -d $(DESTDIR)$(hugsdir)/$$dir;\
 			$(INSTALL) -c -m 0644 $(BUILD_DIR)/$$file $(DESTDIR)$(hugsdir)/$$file;\
 		done
-	$(INSTALL) -d $(DESTDIR)$(hugsdir)/programs/hsc2hs
-	$(INSTALL_DATA) hsc2hs/Main.hs hsc2hs/template-hsc.h $(DESTDIR)$(hugsdir)/programs/hsc2hs
+	(cd $(BUILD_DIR); find programs -type f -print) | while read file;\
+		do	dir=`dirname $$file`;\
+			$(INSTALL) -d $(DESTDIR)$(hugsdir)/$$dir;\
+			$(INSTALL) -c -m 0644 $(BUILD_DIR)/$$file $(DESTDIR)$(hugsdir)/$$file;\
+		done
+	(echo '#! /bin/sh'; \
+	 echo 'runhugs $(hugsdir)/programs/cpphs/Main.hs "$$@"') >$(DESTDIR)$(bindir)/cpphs-hugs
+	chmod 755 $(DESTDIR)$(bindir)/cpphs-hugs
 	(echo '#! /bin/sh'; \
 	 echo 'runhugs $(hugsdir)/programs/hsc2hs/Main.hs -I$(hugsdir)/include "$$@"') >$(DESTDIR)$(bindir)/hsc2hs-hugs
 	chmod 755 $(DESTDIR)$(bindir)/hsc2hs-hugs
-	$(INSTALL) -c $(CPPHS) $(DESTDIR)$(bindir)/cpphs-hugs
 
 LibStatus: all
 	tools/test_libraries ../fptools >$@

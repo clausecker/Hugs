@@ -1,6 +1,7 @@
 #!/bin/sh
 
-# Create libraries sufficient for runhugs, ffihugs, hsc2hs and Cabal scripts.
+# Create libraries sufficient for runhugs, ffihugs, cpphs, hsc2hs and
+# Cabal scripts.
 
 boot_packages='base haskell98 Cabal'
 
@@ -20,7 +21,6 @@ cd $toolsdir/../..
 
 source=fptools/libraries
 target=libraries/bootlib
-cpphs=libraries/tools/cpphs
 fp_includes=fptools/ghc/includes
 tmpdir_root=/tmp
 
@@ -54,6 +54,19 @@ tmpdir=$tmpdir_root/cvt.$$
 [ -d $tmpdir ] && rm -r $tmpdir
 trap "rm -rf $tmpdir; exit 0" 0 1 2 3 15
 mkdir $tmpdir
+
+# K&R-style C preprocessor
+
+function through_cpp {
+	# The input file need not be called *.c, but for
+	# portability we run the preprocessor on a .c file.
+	cpp_input=$tmpdir/cppinput.c
+
+	cp "$1" $cpp_input
+
+	# gcc-3.3 on MacOS X 10.3 is reported to add #pragma
+	$cpp $cpp_flags $cpp_input | grep -v '^#' | cat -s
+}
 
 # internal Hugs modules
 
@@ -106,19 +119,19 @@ do
 		target_stem=$target/$modname
 		dstdir=`dirname $target_stem`
 		basename=`basename $stem`
-		cpp_flags="$CPPFLAGS -I$package_dir/include -I$fp_includes"
+		cpp_flags="$CPPFLAGS -I$HUGSDIR/include -I$package_dir/include -I$fp_includes"
 
 		mkdir -p $dstdir
 
 		# Hack: can't assume hsc2hs at this point, so just use cpp.
 		# This works for System.Time and System.CPUTime, but not
-		# Text.Regex.Posix, so drop that.
+		# Text.Regex.Posix, so we won't be compiling that.
 		if [ -f $stem.hsc ]; then
-			$cpphs $cpp_flags $stem.hsc $target_stem.hs
+			through_cpp $stem.hsc >$target_stem.hs
 		elif [ -f $stem.hs ]; then
-			$cpphs $cpp_flags $stem.hs $target_stem.hs
+			through_cpp $stem.hs >$target_stem.hs
 		elif [ -f $stem.lhs ]; then
-			$cpphs $cpp_flags $stem.lhs $target_stem.lhs
+			through_cpp $stem.lhs >$target_stem.lhs
 		else
 			echo "$0: don't know how to handle $stem" >&2
 		fi

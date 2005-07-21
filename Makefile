@@ -14,6 +14,7 @@ RELEASE = 1
 TAG = HEAD
 HSLIBSTAG = HEAD
 LIBRARIESTAG = HEAD
+CPPHSTAG = HEAD
 HSC2HSTAG = HEAD
 
 HSLIBSDIRS = concurrent data hssource lang net text util posix
@@ -129,9 +130,10 @@ src/stamp-h.in: configure.ac aclocal.m4 fptools
 		then (cd $$dir; autoreconf); fi; done
 	echo timestamp for config.h.in >$@
 
-# fetching library sources
+# fetching library sources and utility programs
 
 fptools:
 	cvs -d `cat CVS/Root` checkout -r $(HSLIBSTAG) `for lib in $(HSLIBSDIRS); do echo fptools/hslibs/$$lib; done`
 	cvs -d `cat CVS/Root` checkout -r $(LIBRARIESTAG) fptools/config.sub fptools/config.guess fptools/install-sh `for lib in $(LIBRARIESDIRS); do echo fptools/libraries/$$lib; done`
 	cvs -d `cat CVS/Root` checkout -r $(HSC2HSTAG) fptools/ghc/utils/hsc2hs
+	cvs -d `cat CVS/Root` checkout -r $(CPPHSTAG) cpphs
