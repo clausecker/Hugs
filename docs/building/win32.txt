@@ -7,24 +7,29 @@ Building from a source snapshot
 As the _build_ environment is Unix-slanted, you first need to have
 the following toolchains installed on your Windows platform:
 
-    * Install a recent version of Cygwin (a full set of Unix
-      tools) from
-
-        http://www.cygwin.com/
-
     * Install the MinGW compiler toolkit:
 
         http://www.mingw.org/
 
-    * Arrange for the mingw/bin directory to appear before
-      the cygwin directories in your PATH.  (That gets you the
-      MinGW compiler instead of the Cygwin one, so the binaries
-      you build won't require extra libraries to run.)
+    * You will also need a set of Unix tools, either MSYS and msysDTK
+      from the MinGW site (the lighter weight alternative) or Cygwin, 
+      from
 
-The following alternatives might work, but are untried:
- - Cygwin by itself, if don't mind Cygwin-dependent binaries.
- - MinGW with MSYS and msysDTK (a lighter weight alternative
-   to Cygwin).
+        http://www.cygwin.com/
+
+      If you use Cygwin, ensure that the mingw/bin directory appears
+      before the cygwin directories in your PATH.  (That gets you the
+      MinGW compiler instead of the Cygwin one, so the binaries you
+      build won't require extra libraries to run.)
+
+It may also be possible to use Cygwin by itself, though that will
+produce Cygwin-dependent binaries.
+
+NOTE (Windows 95/98/Me or NT 4): The Cabal package uses the function
+   SHGetFolderPathA, from the shfolder library (subsumed into shell32
+   from Windows 2000).  To build on those systems, you'll need to
+   uncomment -lshfolder in libraries/tools/make_bootlib and also add
+   "extra-libraries: shfolder" to fptools/libraries/Cabal/Cabal.cabal.
 
 0) Get a tarball from http://cvs.haskell.org/Hugs/downloads/snapshots/
    and unpack it using tar.
@@ -60,9 +65,9 @@ a source snapshot.)
 
      foo$ export happy=/path/to/happy
 
-2) Proceed from step 1 of the above procedure for building from
-   snapshots.  When you start from CVS, the make command will also
-   check out the fptools library code, and do extra preprocessing
+2) Proceed from step 1 of the above procedure for building from snapshots.
+   When you start from CVS, the make command will also check out the
+   fptools library code and other utilities, and do extra preprocessing
    that is prebaked in snapshots.
 
 Using Microsoft Visual C++

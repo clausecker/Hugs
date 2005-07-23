@@ -165,7 +165,9 @@ Unix)
 	$ffihugs '-i"HsBase.h"' System.Posix.Internals $base_includes
 	;;
 Win32)
-	$ffihugs -98 Distribution.Simple.Configure
+	# -lshfolder is needed for versions before Windows 2000
+	# (also add extra-libraries: shfolder to Cabal.cabal)
+	$ffihugs -98 Distribution.Simple.Configure	# -lshfolder
 	$ffihugs Distribution.Simple.Utils
 	;;
 esac

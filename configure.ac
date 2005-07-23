@@ -772,6 +772,7 @@ dnl--------------------------------------------------------------------
 dnl When building a Windows script, $host_os will be set to "mingw32".
 
 if test "x$host_os" = "xmingw32"; then
+    BAT=.bat
     DLL=".dll"          
     DLL_ENDING="-dll"   
     DEV_NULL="nul"
@@ -781,6 +782,7 @@ if test "x$host_os" = "xmingw32"; then
     MkInstall="src/MkInstal.in"
 elif test "x$host" = "xdos"; then
     # Much the same as for Windows
+    BAT=.bat
     DLL=".dll"          
     DLL_ENDING="-dll"   
     DEV_NULL="nul"
@@ -789,6 +791,7 @@ elif test "x$host" = "xdos"; then
     HUGSSUFFIXES=".hs;.lhs"
     MkInstall="src/MkNull.in"
 else
+    BAT=
     hugsdir_deflt='${libdir}/hugs'
     HUGSPATH=".:{Home}/lib/hugs/packages/*:/usr/local/lib/hugs/packages/*:{Hugs}/libraries:{Hugs}/packages/*:{Hugs}/oldlib"
     HUGSSUFFIXES=".hs:.lhs"
@@ -831,6 +834,7 @@ AC_SUBST_DEF(DLL_ENDING,"-so")
 AC_SUBST_DEF(DEV_NULL,"/dev/null")
 AC_SUBST_DEF(RM,"/bin/rm -f")
 AC_SUBST_DEF(CP,"/bin/cp")
+AC_SUBST(BAT)
 
 AC_SUBST_FILE(MkInstall)
 MkDepend=src/MkDepend.in

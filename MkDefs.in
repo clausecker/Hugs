@@ -20,5 +20,6 @@ HOST_OS		= @HostOS_CPP@
 HOST_ARCH	= @HostArch_CPP@
 
 DLL		= @DLL@
+BAT		= @BAT@
 # end of @configure_input@
 ##########################################################################
