@@ -419,8 +419,11 @@ Bool charIsRepresentable(Char c) {
     n = wcrtomb(buf, c, &st);
     if (n == (size_t)(-1))
 	errno = 0;
-    else if (mbrtowc(&wc, buf, n, &st) == n)
-	return wc==c;
+    else {
+	memset(&st, 0, sizeof(st));
+	if (mbrtowc(&wc, buf, n, &st) == n)
+	    return wc==c;
+    }
     return FALSE;
 }
 
