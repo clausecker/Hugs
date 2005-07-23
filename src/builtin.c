@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: builtin.c,v $
- * $Revision: 1.85 $
- * $Date: 2005/03/28 00:13:23 $
+ * $Revision: 1.86 $
+ * $Date: 2005/07/23 17:05:24 $
  * ------------------------------------------------------------------------*/
 
 /* We include math.h before prelude.h because SunOS 4's cpp incorrectly
@@ -1350,14 +1350,20 @@ primFun(primCmpDouble) {               /* Double compare primitive         */
  * Evaluate name, obtaining a C string from a Hugs string:
  * ------------------------------------------------------------------------*/
 
+#if FILENAME_MAX < 1024
+# define MAX_STRING 1024
+#else
+# define MAX_STRING FILENAME_MAX
+#endif
+
 String evalName(es)                     /* evaluate es :: [Char] and save  */
 Cell es; {                              /* in char array... return ptr to  */
-    static char buffer[FILENAME_MAX+1]; /* string or 0, if error occurs    */
+    static char buffer[MAX_STRING+1];   /* string or 0, if error occurs    */
     char	*bp = buffer;
     StackPtr    saveSp = sp;
 
     eval(es);
-    while (whnfHead==nameCons && bp<=buffer+FILENAME_MAX-MAX_CHAR_ENCODING) {
+    while (whnfHead==nameCons && bp<=buffer+MAX_STRING-MAX_CHAR_ENCODING) {
 	eval(pop());
 	AddChar(charOf(whnfHead), bp);
 	eval(pop());
