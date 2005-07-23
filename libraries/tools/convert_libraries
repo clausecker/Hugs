@@ -395,3 +395,45 @@ mkdir -p $compat
      stub SOEGraphics		Graphics.SOE
      stub GraphicsCore		Graphics.HGL.Core
      stub GraphicsUtils		Graphics.HGL
+
+# win32 library
+
+case `uname -a` in
+CYGWIN*|MINGW32*)
+
+     stub Win32			Graphics.Win32 System.Win32
+
+     stub GDITypes		Graphics.Win32.GDI.Types
+     stub Win32Bitmap		Graphics.Win32.GDI.Bitmap
+     stub Win32Brush		Graphics.Win32.GDI.Brush
+     stub Win32Clip		Graphics.Win32.GDI.Clip
+     stub Win32Font		Graphics.Win32.GDI.Font
+     stub Win32Graphics2D	Graphics.Win32.GDI.Graphics2D
+     stub Win32HDC		Graphics.Win32.GDI.HDC
+     stub Win32Palette		Graphics.Win32.GDI.Palette
+     stub Win32Path		Graphics.Win32.GDI.Path
+     stub Win32Pen		Graphics.Win32.GDI.Pen
+     stub Win32Region		Graphics.Win32.GDI.Region
+
+     stub Win32Control		Graphics.Win32.Control
+     stub Win32Dialogue		Graphics.Win32.Dialogue
+     stub Win32Icon		Graphics.Win32.Icon
+     stub Win32Key		Graphics.Win32.Key
+     stub Win32Menu		Graphics.Win32.Menu
+     stub Win32Misc		Graphics.Win32.Misc
+     stub Win32Resource		Graphics.Win32.Resource
+     stub Win32Window		Graphics.Win32.Window
+     stub Win32WinMessage	Graphics.Win32.Message
+
+     stub Win32DLL		System.Win32.DLL
+     stub Win32File		System.Win32.File
+     stub Win32MM		System.Win32.Mem
+     stub Win32NLS		System.Win32.NLS
+     stub Win32Process		System.Win32.Process
+     stub Win32Registry		System.Win32.Registry
+#    stub Win32Spawn
+     stub Win32SystemInfo	System.Win32.Info
+     stub Win32Types		System.Win32.Types
+
+     ;;
+esac

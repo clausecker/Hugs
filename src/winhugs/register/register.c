@@ -26,7 +26,7 @@ typedef CHAR    *String;
 #define PROGRAM_GROUP           "Hugs 98"
 
 
-#define HUGSPATH 		"{Hugs}\\libraries;{Hugs}\\oldlib;{Hugs}\\lib\\win32;{Hugs}\\lib\\graphics\\lib\\win32"
+#define HUGSPATH 		"{Hugs}\\libraries;{Hugs}\\oldlib"
 
 
 static char hugsHome[MAX_PATH]       = "";  /* hugs folder              */

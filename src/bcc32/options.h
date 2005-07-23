@@ -8,8 +8,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: options.h,v $
- * $Revision: 1.14 $
- * $Date: 2004/02/16 11:45:17 $
+ * $Revision: 1.15 $
+ * $Date: 2005/07/23 22:56:16 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------
@@ -28,7 +28,7 @@
  * for HUGSFLAGS in the registry (Win32 only).  In all cases, use a 
  * string of the form -P"...".  
  */
-#define HUGSPATH ".;{Hugs}\\libraries;{Hugs}\\packages\\*;{Hugs}\\oldlib;{Hugs}\\lib\\win32"
+#define HUGSPATH ".;{Hugs}\\libraries;{Hugs}\\packages\\*;{Hugs}\\oldlib"
 
 /* The list of suffixes used by Haskell source files, separated either
  * by colons (Unix) or semicolons (Macintosh, Windows, DOS).
