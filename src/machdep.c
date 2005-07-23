@@ -11,8 +11,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.126 $
- * $Date: 2005/03/28 00:13:23 $
+ * $Revision: 1.127 $
+ * $Date: 2005/07/23 15:15:21 $
  * ------------------------------------------------------------------------*/
 #include "prelude.h"
 #include "storage.h"
@@ -2308,6 +2308,7 @@ void*  dll; {
 static char buffer[BUFSIZE];
 static Int used = 0;
 static Void local insert     Args((String));
+static Void local insertPath Args((String));
 static Void local insertChar Args((Char));
 
 static Void local insert(s)
@@ -2319,6 +2320,20 @@ String s; {
     }
     strcpy(buffer+used,s);
     used += l;
+}
+
+/* Convert backslashes, because they can cause problems with system() */
+static Void local insertPath(s)
+String s; {
+    Int l = strlen(s);
+    if (used + l + 1 >= BUFSIZE) {
+        ERRMSG(0) "Unable to build compilation command"
+        EEND;
+    }
+    while (*s) {
+	buffer[used++] = *s == SLASH ? '/' : *s;
+	s++;
+    }
 }
 
 static Void local insertChar(c)
@@ -2347,8 +2362,8 @@ String flags; {
 
     /* the path to HsFFI.h */
     insert(" \"-I");
-    insert(hugsdir());
-    insertChar(SLASH);
+    insertPath(hugsdir());
+    insertChar('/');
     insert("include\"");
 
     /* the file to compile */
