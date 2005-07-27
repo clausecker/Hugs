@@ -150,7 +150,8 @@ build_package() {
 	esac
 
 	if [ -f configure ]; then
-		extra_opts="$EXTRA_CONFIGURE_OPTS"
+		host="$HOST_ARCH-unknown-$HOST_OS"
+		extra_opts="--build=$host --host=$host"
 	else
 		extra_opts=
 	fi

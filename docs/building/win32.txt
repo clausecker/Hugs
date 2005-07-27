@@ -25,12 +25,6 @@ the following toolchains installed on your Windows platform:
 It may also be possible to use Cygwin by itself, though that will
 produce Cygwin-dependent binaries.
 
-NOTE (Windows 95/98/Me or NT 4): The Cabal package uses the function
-   SHGetFolderPathA, from the shfolder library (subsumed into shell32
-   from Windows 2000).  To build on those systems, you'll need to
-   uncomment -lshfolder in libraries/tools/make_bootlib and also add
-   "extra-libraries: shfolder" to fptools/libraries/Cabal/Cabal.cabal.
-
 0) Get a tarball from http://cvs.haskell.org/Hugs/downloads/snapshots/
    and unpack it using tar.
 
@@ -38,7 +32,11 @@ NOTE (Windows 95/98/Me or NT 4): The Cabal package uses the function
 
 2) Build the interpreter and libraries with
 
-     foo$ make EXTRA_CONFIGURE_OPTS=--host=i386-unknown-mingw32
+     foo$ make
+
+   If you're building uder Cygwin, you'll need to say
+
+     foo$ make EXTRA_CONFIGURE_OPTS='--build=i386-pc-mingw --host=i386-pc-mingw'
 
    Other configure options you might add are listed in unix.txt.
 
