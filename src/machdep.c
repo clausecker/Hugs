@@ -11,8 +11,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.127 $
- * $Date: 2005/07/23 15:15:21 $
+ * $Revision: 1.128 $
+ * $Date: 2005/07/27 23:34:22 $
  * ------------------------------------------------------------------------*/
 #include "prelude.h"
 #include "storage.h"
@@ -538,17 +538,11 @@ String s; {
 #if DOS_FILENAMES
 static Bool local isPathSep(sep)      /* does 'sep' mark the end of a valid path? */
 String sep; {
-
-  /* ';' is always a separator */
-  if (*sep == ';')
-    return TRUE;
-  if (*sep != ':') 
-    return FALSE;
-
-  /* ':' is a separator iff it doesn't appear as <x>:\ */
-  return (!(searchPos == 1 && sep[1] == SLASH));
+    /* ';' is always a separator */
+    /* ':' is a separator iff it is not followed by a backslash */
+    /* (should test for <x>:\ but that seems too difficult) */
+    return *sep == ';' || *sep == ':' && *(sep+1) != SLASH;
 }
-
 #endif
 
 /* scandir, June 98 Daan Leijen
