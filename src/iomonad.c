@@ -14,8 +14,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: iomonad.c,v $
- * $Revision: 1.98 $
- * $Date: 2005/05/20 22:42:54 $
+ * $Revision: 1.99 $
+ * $Date: 2005/07/27 00:51:13 $
  * ------------------------------------------------------------------------*/
  
 Name nameIORun;			        /* run IO code                     */
@@ -802,11 +802,15 @@ Void setHugsArgs(argc,argv)
 Int    argc;
 String argv[]; {
     int i;
+    Cell str;
 
     hugsArgs = nameNil;
-    hugsProgName = mkStr(findText(argv[0]));
+    pushString(argv[0]);
+    hugsProgName = pop();
     for (i=argc-1; i>0; i--) {
-	hugsArgs = ap2(nameCons, mkStr(findText(argv[i])), hugsArgs);
+	pushString(argv[i]);
+	str = pop();
+	hugsArgs = ap2(nameCons, str, hugsArgs);
     }
 }
 
