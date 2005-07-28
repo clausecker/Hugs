@@ -135,5 +135,7 @@ src/stamp-h.in: configure.ac aclocal.m4 fptools
 fptools:
 	cvs -d `cat CVS/Root` checkout -r $(HSLIBSTAG) `for lib in $(HSLIBSDIRS); do echo fptools/hslibs/$$lib; done`
 	cvs -d `cat CVS/Root` checkout -r $(LIBRARIESTAG) fptools/config.sub fptools/config.guess fptools/install-sh `for lib in $(LIBRARIESDIRS); do echo fptools/libraries/$$lib; done`
+	# We don't use this, so don't leave it there for Cabal to run
+	$(RM) fptools/libraries/HaXml/configure
 	cvs -d `cat CVS/Root` checkout -r $(HSC2HSTAG) fptools/ghc/utils/hsc2hs
 	cvs -d `cat CVS/Root` checkout -r $(CPPHSTAG) cpphs
