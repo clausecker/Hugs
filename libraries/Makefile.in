@@ -21,8 +21,9 @@ FP_HEADERS	= ../src/platform.h include/MachDeps.h include/ghcconfig.h
 CPPHS_SRC	= ../cpphs
 HSC2HS_SRC	= ../fptools/ghc/utils/hsc2hs
 
-# a file created by make include
 INCLUDES	= $(BUILD_DIR)/include/HsFFI.h
+# represents header files used by the base, network and unix packages
+FP_INCLUDES	= ../fptools/ghc/includes/ghcconfig.h
 
 # We use a bootstrap procedure to construct the libraries:
 #
@@ -82,13 +83,15 @@ $(BUILD_DIR)/programs/cpphs/Main.hs: $(BOOTLIB)
 	cp $(CPPHS_SRC)/*.hs $(BUILD_DIR)/programs/cpphs
 	cd $(BUILD_DIR)/programs/cpphs; mv cpphs.hs Main.hs
 
-$(BOOTLIB): hugsbase/Hugs/*.* $(MAKE_BOOT) $(INCLUDES)
+$(BOOTLIB): hugsbase/Hugs/*.* $(MAKE_BOOT) $(INCLUDES) $(FP_INCLUDES)
 	CPPFLAGS='$(CPPFLAGS)' $(MAKE_BOOT)
 	echo timestamp for bootlib >$@
 
 $(INCLUDES): $(HEADERS)
 	mkdir -p $(BUILD_DIR)/include
 	$(CP) $(HEADERS) $(BUILD_DIR)/include
+
+$(FP_INCLUDES): $(FP_HEADERS)
 	mkdir -p ../fptools/ghc/includes
 	$(CP) $(FP_HEADERS) ../fptools/ghc/includes
 
@@ -107,18 +110,15 @@ clean:
 	$(RM) ../fptools/libraries/*/config.log
 	$(RM) ../fptools/libraries/*/config.status
 	$(RM) -r ../fptools/libraries/*/autom4te.cache
-	$(RM) -r ../fptools/libraries/HaXml/obj
 	find ../fptools/libraries -name \*.in | sed 's/\.in$$//' | xargs $(RM)
 
 distclean: clean
+	$(RM) $(HSC2HS_FILE)
+	$(RM) $(CPPHS_FILE)
 	$(RM) -r $(BUILD_DIR)
+	$(RM) Makefile tools/config include/ghcconfig.h
 	$(RM) config.log config.status
 	$(RM) -r autom4te.cache
-	$(RM) include/ghcconfig.h
-	$(RM) Makefile
-	$(RM) tools/config
-	$(RM) tools/cpphs
-	$(RM) tools/hsc2hs
 
 veryclean: distclean
 
