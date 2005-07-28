@@ -16,6 +16,7 @@ hugsdir		= @hugsdir@
 RM		= @RM@
 CP		= @CP@
 
+HOST		= @HostPlatform@
 HOST_OS		= @HostOS_CPP@
 HOST_ARCH	= @HostArch_CPP@
 

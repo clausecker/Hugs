@@ -39,6 +39,8 @@ BuildPlatform=`./fp-platform $BuildPlatform`
 HostPlatform=`./fp-platform $HostPlatform`
 TargetPlatform=`./fp-platform $TargetPlatform`
 
+AC_SUBST([HostPlatform])
+
 if test x"$HostPlatform" != x"$BuildPlatform" ; then
   AC_MSG_ERROR([Hugs98 does not yet support differing build/host (i.e., cross-compiling)])
 fi

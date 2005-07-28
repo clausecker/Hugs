@@ -149,15 +149,15 @@ build_package() {
 	*)	happyflag="--with-happy=$top_dir/$happy" ;;
 	esac
 
-	if [ -f configure ]; then
-		host="$HOST_ARCH-unknown-$HOST_OS"
-		extra_opts="--build=$host --host=$host"
-	else
-		extra_opts=
-	fi
+	# HACK: network package expects host settings
+	case "$source_dir" in
+	*/network)
+		extra_opts="--build=$HOST --host=$HOST" ;;
+	*)	extra_opts= ;;
+	esac
 
 	$HugsSetup configure --verbose --hugs \
-			--builddir="$top_dir/$target_dir" \
+			--scratchdir="$top_dir/$target_dir" \
 			--with-hsc2hs="$top_dir/libraries/tools/hsc2hs" \
 			--with-cpphs="$top_dir/libraries/tools/cpphs" \
 			--with-compiler="$top_dir/src/ffihugs" $happyflag \
