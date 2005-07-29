@@ -24,10 +24,11 @@ test6 = do
     then
       putStr "getEnv \"SHELL\" returns known shell"
     else
-      putStr "getEnv \"SHELL\" returns unknown shell"
+      putStr ("getEnv \"SHELL\" returns unknown shell \"" ++ sh ++ "\"")
   return ()
  where
   shells = ["sh" 
+           ,"sh.exe"	-- for MSYS/MinGW
            ,"csh"
            ,"tcsh"
            ,"bash"

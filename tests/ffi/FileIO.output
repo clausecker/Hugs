@@ -8,9 +8,7 @@ import Control.Exception
 import Prelude hiding (read)
 import Foreign.C.Types
 import Foreign.C.String
-
-tests = do
-  putStrLn "\nTesting open, read and close"
+import System.Directory (removeFile)
 
 Testing open, write and close
 

@@ -11,10 +11,10 @@ type DisplayCallback = IO ()
 foreign import ccall "wrapper" makeDisplayCallback ::
    DisplayCallback -> IO (FunPtr DisplayCallback)
 
-foreign import ccall unsafe "callback.h registerDisplayCB" registerDisplayCB ::
+foreign import ccall unsafe "callbacks.h registerDisplayCB" registerDisplayCB ::
    FunPtr DisplayCallback -> IO ()
 
-foreign import ccall safe "callback.h invokeDisplayCB" invokeDisplayCB ::
+foreign import ccall safe "callbacks.h invokeDisplayCB" invokeDisplayCB ::
    IO ()
 
 display :: DisplayCallback

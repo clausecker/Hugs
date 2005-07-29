@@ -1,5 +1,5 @@
-#ifndef CALLBACK_H
-#define CALLBACK_H
+#ifndef CALLBACKS_H
+#define CALLBACKS_H
 
 typedef void (*displayCB_t)(void);
 

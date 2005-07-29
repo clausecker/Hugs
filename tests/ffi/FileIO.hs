@@ -5,14 +5,16 @@ import Control.Exception
 import Prelude hiding (read)
 import Foreign.C.Types
 import Foreign.C.String
+import System.Directory (removeFile)
 
 tests = do
   putStrLn "\nTesting open, read and close"
-  s <- testRead "ffi/FileIO.hs" 200
+  s <- testRead "ffi/FileIO.hs" 181
   putStrLn (map castCCharToChar s)
 
   putStrLn "\nTesting open, write and close"
-  testWrite "/tmp/test_write" "Test successful"
+  testWrite "test_write.tmp" "Test successful"
+  removeFile "test_write.tmp"
 
 -- Not permitted by a strict interpretation of the FFI, as errno may be
 -- a macro.

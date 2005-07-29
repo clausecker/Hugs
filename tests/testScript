@@ -374,7 +374,7 @@ test_ffi() {
   perl runstdtest $HUGS $STDOPTS    "-Offi/Sparc.hs" "-iffi/Sparc.input" "-o1ffi/Sparc.output"
 
   # This is a pair of tests: first build, then test runtime
-  perl runstdtest $FFIHUGS $STDOPTS "-Offi/Callback.hs" "-Offi/callback.c" "-o1ffi/Empty.output"
+  perl runstdtest $FFIHUGS $STDOPTS "-Offi/Callback.hs" "-Offi/callbacks.c" "-o1ffi/Empty.output"
   perl runstdtest $HUGS $STDOPTS    "-Offi/Callback.hs" "-iffi/Callback.input" "-o1ffi/Callback.output"
 
 } # End of test ffi
