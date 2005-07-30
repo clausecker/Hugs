@@ -137,5 +137,7 @@ fptools:
 	cvs -d `cat CVS/Root` checkout -r $(LIBRARIESTAG) fptools/config.sub fptools/config.guess fptools/install-sh `for lib in $(LIBRARIESDIRS); do echo fptools/libraries/$$lib; done`
 	# We don't use this, so don't leave it there for Cabal to run
 	$(RM) fptools/libraries/HaXml/configure
+	# Move this so that make_bootlib won't stumble over it
+	mv fptools/libraries/Cabal/DefaultSetup.lhs fptools/libraries/Cabal/examples
 	cvs -d `cat CVS/Root` checkout -r $(HSC2HSTAG) fptools/ghc/utils/hsc2hs
 	cvs -d `cat CVS/Root` checkout -r $(CPPHSTAG) cpphs
