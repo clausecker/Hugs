@@ -308,13 +308,10 @@ dnl--------------------------------------------------------------------
 AC_HEADER_STDC
 dnl checks for sys/wait.h
 AC_HEADER_SYS_WAIT
-AC_CHECK_HEADERS(
-  stdarg.h stdlib.h unistd.h assert.h ctype.h string.h limits.h \
-  fcntl.h sgtty.h termio.h termios.h signal.h \
-  sys/stat.h sys/types.h sys/ioctl.h sys/resource.h sys/param.h \
-  console.h Files.h errno.h stat.h direct.h \
-  dirent.h
-  )
+AC_CHECK_HEADERS(stdarg.h stdlib.h unistd.h assert.h ctype.h string.h limits.h)
+AC_CHECK_HEADERS(fcntl.h sgtty.h termio.h termios.h signal.h)
+AC_CHECK_HEADERS(sys/types.h sys/stat.h sys/ioctl.h sys/resource.h sys/param.h)
+AC_CHECK_HEADERS(console.h Files.h errno.h stat.h direct.h dirent.h)
 
 AC_HEADER_TIME
 AC_CHECK_HEADERS(time.h sys/time.h sys/timeb.h sys/times.h)
@@ -740,12 +737,7 @@ dnl by perfectly safe code so we usually turn them off.
 dnl We don't use -Wstrict-prototypes because some definitions in 
 dnl storage.h tickle this flag and can't be rewritten the 'correct' way
 dnl without generating a warning/error from Microsoft's compiler.
-GCC_LINT_FLAGS="-Wall \
-  -Wpointer-arith -Wbad-function-cast -Wcast-qual \
-  -Wmissing-prototypes \
-  -Wmissing-declarations -Wnested-externs \
-  -Wno-parentheses \
-  "
+GCC_LINT_FLAGS='-Wall -Wpointer-arith -Wbad-function-cast -Wcast-qual -Wmissing-prototypes -Wmissing-declarations -Wnested-externs -Wno-parentheses'
 
 if test "$enable_lint" = yes; then
     case "$CC" in
@@ -899,10 +891,8 @@ if test -f tests/config.in ; then
  TESTSCRIPT=tests/config
 fi
 
-AC_OUTPUT(MkDefs src/Makefile src/platform.h \
-	docs/Makefile docs/users_guide/Makefile \
-	docs/hugs.1 $TESTSCRIPT \
-	demos/Makefile)
+MAKEFILES='src/Makefile docs/Makefile docs/users_guide/Makefile demos/Makefile'
+AC_OUTPUT(MkDefs $MAKEFILES src/platform.h docs/hugs.1 $TESTSCRIPT)
 
 echo ''
 echo '************************************************'
