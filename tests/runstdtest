@@ -159,9 +159,7 @@ if [ \$progexit -ne $PgmExitStatus ]; then
     myexit=1
 else
     # Pipe that filters out stuff we don't want to check
-    # The strange sed command removes trailing \r characters (for Windows)
-    tail +$PgmStartLine ${tmpdir}/runtest$$.1 |
-	sed 's/[^	 -~]\$//' >${tmpdir}/runtest$$.3
+    tail +$PgmStartLine ${tmpdir}/runtest$$.1 >${tmpdir}/runtest$$.3
     for out_file in @PgmStdoutFile ; do
 	$diff \$out_file ${tmpdir}/runtest$$.3 > ${tmpdir}/diffs$$
 	if [ \$? -ne 0 ]; then
