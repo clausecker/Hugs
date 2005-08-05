@@ -14,11 +14,11 @@ DIV.NAVHEADER TD, DIV.NAVFOOTER TD {
 	font-size: 80%
 }
 
-H1, H2, H3, H4, DIV.QUESTION, DIV.NAVHEADER TH {
+H1, H2, H3, H4, .QUESTION, DIV.NAVHEADER TH {
 	color: #000099
 }
 H1, H2, H3, H4 { font-weight: bold }
-DIV.QUESTION { font-style: italic }
+.QUESTION { font-style: italic }
 
 H1.TITLE { font-size: 200% }
 H1 { font-size: 150% }
@@ -26,10 +26,10 @@ H2 { font-size: 130% }
 H3 { font-size: 115% }
 H4 { font-size: 100% }
 
-VAR, CODE.FUNCTION, SPAN.SYSTEMITEM {
+VAR, .FUNCTION, .SYSTEMITEM {
 	font-family: monospace; font-style: normal
 }
-B.COMMAND, VAR.OPTION {
+.COMMAND, .OPTION {
 	font-family: monospace; font-weight: bold
 }
 VAR.REPLACEABLE {
