@@ -11,8 +11,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.128 $
- * $Date: 2005/07/27 23:34:22 $
+ * $Revision: 1.129 $
+ * $Date: 2005/08/30 10:42:33 $
  * ------------------------------------------------------------------------*/
 #include "prelude.h"
 #include "storage.h"
@@ -1933,6 +1933,7 @@ int snprintf(char* buffer, size_t count, const char* fmt, ...) {
  * Dynamic loading:
  * ------------------------------------------------------------------------*/
 
+static void* local getModDLL Args((String));
 static void* local getDLL Args((String));
 static void* local getDLLSymbol Args((void*,String));
 
@@ -2173,23 +2174,26 @@ void* dll; {
 
 #endif /* Dynamic loading not available */
 
-String mkDLLFilename(file)                      /* get DLL path for module */
+static void* local getModDLL(file)		/* load DLL for module     */
 String file; {
+#if HAVE_REALPATH && !HAVE__FULLPATH
+    char dllPath[MAXPATHLEN+1];
+#else
+    char dllPath[FILENAME_MAX+1];
+#endif
     String dot;
-    String dllPath = RealPath(file);   /* find absolute pathname of module */
-    dot = strrchr(dllPath,'.');        /* patch file extension             */
+    strcpy(dllPath, file);			/* pathname for module     */
+    dot = strrchr(dllPath,'.');        		/* patch file extension    */
     if (!dot) {
 	dot = dot + strlen(dllPath);
     }
     strcpy(dot,DLL_ENDING);
-    return dllPath;
+    return getDLL(dllPath);
 }
 
 String mkFFIFilename2(file)    
 String file; {
-#if HAVE__FULLPATH
-    static char path[FILENAME_MAX+1];
-#elif HAVE_REALPATH
+#if HAVE_REALPATH && !HAVE__FULLPATH
     static char path[MAXPATHLEN+1];
 #else
     static char path[FILENAME_MAX+1];
@@ -2204,9 +2208,7 @@ String file; {
 
 String mkFFIFilename(file)                      /* get DLL path for module */
 String file; {
-#if HAVE__FULLPATH
-    static char path[FILENAME_MAX+1];
-#elif HAVE_REALPATH
+#if HAVE_REALPATH && !HAVE__FULLPATH
     static char path[MAXPATHLEN+1];
 #else
     static char path[FILENAME_MAX+1];
@@ -2244,7 +2246,7 @@ void*  dll; {
     case 4 :
 	{ 
 	    InitModuleFun4 initModule;
-	    if (!dll) dll = getDLL(mkDLLFilename(scriptFile));
+	    if (!dll) dll = getModDLL(scriptFile);
 	    initModule = (InitModuleFun4)getDLLSymbol(dll,INIT_MODULE_FUN);
 	    if (initModule) {
 	        Bool flg = setOldDLLFlag(TRUE);
@@ -2258,7 +2260,7 @@ void*  dll; {
     case 5 : 
 	{ 
 	    InitModuleFun5 initModule;
-	    if (!dll) dll = getDLL(mkDLLFilename(scriptFile));
+	    if (!dll) dll = getModDLL(scriptFile);
 	    initModule = (InitModuleFun5)getDLLSymbol(dll,INIT_MODULE_FUN);
 	    if (initModule) {
 	        Bool flg = setOldDLLFlag(FALSE);
@@ -2274,7 +2276,7 @@ void*  dll; {
 	    APIVersionFun versionFun;
 	    Int   version = 5;
 
-	    dll = getDLL(mkDLLFilename(scriptFile));
+	    dll = getModDLL(scriptFile);
 	    versionFun = (APIVersionFun)getDLLSymbol(dll,API_VERSION_FUN);
 	    if (versionFun) {
 	      version = (*versionFun)();
