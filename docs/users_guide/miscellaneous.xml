@@ -427,6 +427,20 @@ Hugs now has basic support for the
 
 </sect2>
 
+<sect2>
+<title>In development</title>
+
+<itemizedlist>
+
+<listitem><para>
+The default current module is now the empty module <literal>Hugs</literal>
+(see <xref linkend="module-commands"/>).
+</para></listitem>
+
+</itemizedlist>
+
+</sect2>
+
 </sect1>
 
 </chapter>

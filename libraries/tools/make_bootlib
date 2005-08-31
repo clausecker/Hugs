@@ -72,6 +72,7 @@ function through_cpp {
 
 mkdir -p $target/Hugs
 cp libraries/hugsbase/Hugs/*.* $target/Hugs
+cp libraries/hugsbase/Hugs.hs $target
 
 # Preprocess hierarchical modules
 

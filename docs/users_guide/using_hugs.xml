@@ -34,10 +34,10 @@ __   __ __  __  ____   ___      _________________________________________
 Haskell 98 mode: Restart with command line option -98 to enable extensions
 
 Type :? for help
-Hugs.Base>
+Hugs>
 </screen>
-The prompt string <prompt>Hugs.Base></prompt> indicates that the current
-module is an empty module called <literal>Hugs.Base</literal>
+The prompt string <prompt>Hugs></prompt> indicates that the current
+module is an empty module called <literal>Hugs</literal>
 (assuming no modules were specified on the command line).
 At this prompt, you can type Haskell expressions to be evaluated,
 and also enter commands of the form
@@ -63,7 +63,7 @@ The expression cannot be broken over multiple lines.
 Usually, the value is simply converted to a string
 (using <function>show</function>) and printed:
 <screen>
-Hugs.Base> 1+2
+Hugs> 1+2
 3
 </screen>
 The printing style can be changed with the
@@ -77,7 +77,7 @@ However, if <replaceable>expr</replaceable> has type
 for some type <replaceable>t</replaceable>,
 the resulting IO action is performed:
 <screen>
-Hugs.Base> print (1+2) >> putStrLn "bye"
+Hugs> print (1+2) >> putStrLn "bye"
 3
 bye
 </screen>
@@ -103,7 +103,7 @@ in modules, which requires a numeric class.)
 It is an error if any ambiguous type variables cannot be handled in this way.
 For example, consider
 <screen>
-Hugs.Base> reverse []
+Hugs> reverse []
 []
 </screen>
 Here a <literal>Show</literal> constraint on the list elements arises
@@ -189,7 +189,7 @@ You can load these files by name, or by specifying a module name.
 
 <para>
 Hugs maintains a notion of a <firstterm>current module</firstterm>,
-initially the empty module <literal>Hugs.Base</literal>
+initially the empty module <literal>Hugs</literal>
 and normally indicated by the prompt.
 Expressions presented to Hugs are interpreted within the scope of the
 current module, i.e. they may refer to unexported names within the module.
@@ -207,7 +207,7 @@ current module, i.e. they may refer to unexported names within the module.
 
 <listitem>
 <para>
-Clear all files except the empty module <literal>Hugs.Base</literal>,
+Clear all files except the empty module <literal>Hugs</literal>,
 the Haskell 98 <literal>Prelude</literal> and modules it uses,
 and then load the specified files or modules (if any).
 The last module loaded becomes the current module.
@@ -272,7 +272,7 @@ the importing module was found relative to that directory.
 <para>
 This fits nicely with the scenario where you load a module
 <screen>
-Hugs.Base> :load /path/to/my/project/code.hs
+Hugs> :load /path/to/my/project/code.hs
 Main>
 </screen>
 where the directory <literal>/path/to/my/project</literal> contains other
@@ -314,7 +314,7 @@ The last module loaded becomes the current module.
 
 <listitem>
 <para>
-Clear all files except the empty module <literal>Hugs.Base</literal>,
+Clear all files except the empty module <literal>Hugs</literal>,
 the Haskell 98 <literal>Prelude</literal> and modules it uses,
 and then reload all the previously loaded modules.
 </para>
@@ -471,7 +471,7 @@ If no modules are given, it describes the current module.
 Print the version of the Hugs interpreter.
 Major releases of Hugs are identified by a month and year:
 <screen>
-Hugs.Base> :version
+Hugs> :version
 -- Hugs Version November 2003
 </screen>
 Development snapshots are identified by a date in

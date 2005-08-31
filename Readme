@@ -18,8 +18,8 @@ __   __ __  __  ____   ___      _________________________________________
 
    Feature highlights of this new release are:
 
-   - The default current module is now the empty module Hugs.Base instead
-     of the Prelude.
+   - The default current module is now the empty module Hugs instead of
+     the Prelude.
    - The Char type and the Char module now support Unicode as specified
      in the Haskell 98 Report (contributed by Dmitry Golubovsky).
    - The new -X option groups several options into one argument.
