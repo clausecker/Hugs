@@ -4,7 +4,7 @@
 /^<!ENTITY/ s/\.xml/.sgml/
 /^<!DOCTYPE/,/\[/ {
 	s/ XML / /
-	s/[ 	]*"[a-z]*:[^"]*"[ 	]*//
-	/^$/d
+	s/xml/sgml/
+	s/docbookx/docbook/
 }
 s:/>:>:g
