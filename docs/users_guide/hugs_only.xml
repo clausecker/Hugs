@@ -7,10 +7,10 @@ they require the <option>-98</option> option.
 </para>
 
 <sect1 id="trex">
-<title>Typed extensible records</title>
+<title>Typed records with extensibility</title>
 
 <para>
-<literal>Trex</literal> is a very powerful and flexible record system.
+<acronym>Trex</acronym> is a very powerful and flexible record system.
 See
 <ulink url="http://cvs.haskell.org/Hugs/pages/hugsman/exts.html#sect7.2">Section 7.2 of the <citetitle pubwork="article">Hugs 98 User Manual</citetitle></ulink>
 for details.
