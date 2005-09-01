@@ -8,8 +8,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: output.c,v $
- * $Revision: 1.38 $
- * $Date: 2004/01/11 00:34:30 $
+ * $Revision: 1.39 $
+ * $Date: 2005/09/01 15:23:51 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1546,7 +1546,7 @@ String t;  {
     printingObservations = TRUE;
     outputStream = stdout;
 #if HUGS_FOR_WINDOWS
-    { INT svColor = SetForeColor(MAGENTA);
+    { int svColor = SetForeColor(MAGENTA);
 #endif
     putStr("\n>>>>>>> Observations <<<<<<");
     newLine(0);
