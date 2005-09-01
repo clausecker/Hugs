@@ -61,10 +61,10 @@ HBITMAP WINAPI CreateMenuBitmap(DRAWFUNC lpfnDraw)
 
 static local VOID SetMenuBitmap(HMENU hMenu, UINT MenuId, CHAR* BitmapName, UINT Sizex, UINT Sizey) 
 {
-  HBITMAP hBitmap;
-  hBitmap = ResizeBitmap(LoadMappedBitmap(hThisInstance, BitmapName), Sizex, Sizey);
-    
-  SetMenuItemBitmaps(hMenu, MenuId, MF_BYCOMMAND, hBitmap, hBitmap); 
+    HBITMAP hBitmap;
+    hBitmap = ResizeBitmap(LoadMappedBitmap(hThisInstance, BitmapName), Sizex, Sizey);
+      
+    SetMenuItemBitmaps(hMenu, MenuId, MF_BYCOMMAND, hBitmap, hBitmap); 
 }
  
 BOOL WINAPI SetMenuBitmaps(HWND hwnd) 

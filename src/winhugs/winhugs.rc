@@ -1,5 +1,6 @@
-//Microsoft Developer Studio generated resource script.
+// Microsoft Visual C++ generated resource script.
 //
+#include "resrc1.h"
 
 #define APSTUDIO_READONLY_SYMBOLS
 /////////////////////////////////////////////////////////////////////////////
@@ -7,87 +8,111 @@
 // Generated from the TEXTINCLUDE 2 resource.
 //
 #include "resource.h"
+#include "afxres.h"
 #include "winmenu.h"
-#include "winuser.h"
 
 /////////////////////////////////////////////////////////////////////////////
 #undef APSTUDIO_READONLY_SYMBOLS
 
+/////////////////////////////////////////////////////////////////////////////
+// Neutral resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_NEU)
+#ifdef _WIN32
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+#pragma code_page(1252)
+#endif //_WIN32
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// RT_MANIFEST
+//
+
+1                       RT_MANIFEST             "resource\\winhugs.manifest"
+#endif    // Neutral resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
+// English (U.K.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENG)
+#ifdef _WIN32
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_UK
+#pragma code_page(1252)
+#endif //_WIN32
 
 /////////////////////////////////////////////////////////////////////////////
 //
 // Bitmap
 //
 
-BUTTON                  BITMAP  FIXED IMPURE    "resource\\button.bmp"
-CLASSBMP                BITMAP  FIXED IMPURE    "resource\\classbmp.bmp"
-CLASSESDLGBMP           BITMAP  FIXED IMPURE    "resource\\classesd.bmp"
-COPYBUTTON              BITMAP  FIXED IMPURE    "resource\\copybutt.bmp"
-CUTBUTTON               BITMAP  FIXED IMPURE    "resource\\cutbutto.bmp"
-DATACONSBMP             BITMAP  FIXED IMPURE    "resource\\datacons.bmp"
-DELETEBUTTON            BITMAP  FIXED IMPURE    "resource\\deletebu.bmp"
-EDITBUTTON              BITMAP  FIXED IMPURE    "resource\\editbutt.bmp"
-EXITBUTTON              BITMAP  FIXED IMPURE    "resource\\exitbutt.bmp"
-HELPBUTTON              BITMAP  FIXED IMPURE    "resource\\helpbutt.bmp"
-HIERARCHYBUTTON         BITMAP  FIXED IMPURE    "resource\\hierarch.bmp"
-HUGS32BMP               BITMAP  FIXED IMPURE    "resource\\hugs32bm.bmp"
-INSTANCEBMP             BITMAP  FIXED IMPURE    "resource\\instance.bmp"
-LOGOBMP                 BITMAP  FIXED IMPURE    "resource\\logo.bmp"
-MAKEBUTTON              BITMAP  FIXED IMPURE    "resource\\relobutt.bmp"
-MEMBERBMP               BITMAP  FIXED IMPURE    "resource\\memberbm.bmp"
-NAMEBMP                 BITMAP  FIXED IMPURE    "resource\\namebmp.bmp"
-NAMESDLGBMP             BITMAP  FIXED IMPURE    "resource\\namesdlg.bmp"
-NEWTYPEBMP              BITMAP  FIXED IMPURE    "resource\\newtypeb.bmp"
-OPENFILEBUTTON          BITMAP  FIXED IMPURE    "resource\\openfile.bmp"
-OPENPROJECTBUTTON       BITMAP  FIXED IMPURE    "resource\\openproj.bmp"
-OPTIONSBUTTON           BITMAP  FIXED IMPURE    "resource\\optionsb.bmp"
-OPTIONSDLGBMP           BITMAP  FIXED IMPURE    "resource\\optionsd.bmp"
-PASTEBUTTON             BITMAP  FIXED IMPURE    "resource\\pastebut.bmp"
-PRIMBMP                 BITMAP  FIXED IMPURE    "resource\\primbmp.bmp"
-PUSHEDBUTTON            BITMAP  FIXED IMPURE    "resource\\pushedbu.bmp"
-RESIZECORNER            BITMAP  FIXED IMPURE    "resource\\resizeco.bmp"
-RUNBUTTON               BITMAP  FIXED IMPURE    "resource\\runbutto.bmp"
-SELECTORBMP             BITMAP  FIXED IMPURE    "resource\\selector.bmp"
-STOPBUTTON              BITMAP  FIXED IMPURE    "resource\\stopbutt.bmp"
-TYCONSDLGBMP            BITMAP  FIXED IMPURE    "resource\\tyconsdl.bmp"
-TYPECONSBMP             BITMAP  FIXED IMPURE    "resource\\typecons.bmp"
-TYPESINBMP              BITMAP  FIXED IMPURE    "resource\\typesinb.bmp"
-SCRIPTMANBUTTON         BITMAP  FIXED IMPURE    "resource\\smanbutt.bmp"
-SCRIPTMANDLGBMP         BITMAP  FIXED IMPURE    "resource\\smand.bmp"
+BUTTON                  BITMAP                  "resource\\button.bmp"
+CLASSBMP                BITMAP                  "resource\\classbmp.bmp"
+CLASSESDLGBMP           BITMAP                  "resource\\classesd.bmp"
+COPYBUTTON              BITMAP                  "resource\\copybutt.bmp"
+CUTBUTTON               BITMAP                  "resource\\cutbutto.bmp"
+DATACONSBMP             BITMAP                  "resource\\datacons.bmp"
+DELETEBUTTON            BITMAP                  "resource\\deletebu.bmp"
+EDITBUTTON              BITMAP                  "resource\\editbutt.bmp"
+EXITBUTTON              BITMAP                  "resource\\exitbutt.bmp"
+HELPBUTTON              BITMAP                  "resource\\helpbutt.bmp"
+HIERARCHYBUTTON         BITMAP                  "resource\\hierarch.bmp"
+HUGS32BMP               BITMAP                  "resource\\hugs32bm.bmp"
+INSTANCEBMP             BITMAP                  "resource\\instance.bmp"
+BMP_ABOUT               BITMAP                  "resource\\logo.bmp"
+MAKEBUTTON              BITMAP                  "resource\\relobutt.bmp"
+MEMBERBMP               BITMAP                  "resource\\memberbm.bmp"
+NAMEBMP                 BITMAP                  "resource\\namebmp.bmp"
+NAMESDLGBMP             BITMAP                  "resource\\namesdlg.bmp"
+NEWTYPEBMP              BITMAP                  "resource\\newtypeb.bmp"
+OPENFILEBUTTON          BITMAP                  "resource\\openfile.bmp"
+OPENPROJECTBUTTON       BITMAP                  "resource\\openproj.bmp"
+OPTIONSBUTTON           BITMAP                  "resource\\optionsb.bmp"
+OPTIONSDLGBMP           BITMAP                  "resource\\optionsd.bmp"
+PASTEBUTTON             BITMAP                  "resource\\pastebut.bmp"
+PRIMBMP                 BITMAP                  "resource\\primbmp.bmp"
+PUSHEDBUTTON            BITMAP                  "resource\\pushedbu.bmp"
+RESIZECORNER            BITMAP                  "resource\\resizeco.bmp"
+RUNBUTTON               BITMAP                  "resource\\runbutto.bmp"
+SELECTORBMP             BITMAP                  "resource\\selector.bmp"
+STOPBUTTON              BITMAP                  "resource\\stopbutt.bmp"
+TYCONSDLGBMP            BITMAP                  "resource\\tyconsdl.bmp"
+TYPECONSBMP             BITMAP                  "resource\\typecons.bmp"
+TYPESINBMP              BITMAP                  "resource\\typesinb.bmp"
+SCRIPTMANBUTTON         BITMAP                  "resource\\smanbutt.bmp"
+SCRIPTMANDLGBMP         BITMAP                  "resource\\smand.bmp"
+BMP_TOOLBAR             BITMAP                  "resource\\toolbar.bmp"
 
 /////////////////////////////////////////////////////////////////////////////
 //
 // Menu
 //
 
-HUGSMENU MENU FIXED IMPURE 
+HUGSMENU MENU 
 BEGIN
     POPUP "&File"
     BEGIN
-        MENUITEM "&New",                        ID_NEW
-        MENUITEM "&Open...",                    ID_OPEN
+        MENUITEM "&Open...\tCtrl+O",            ID_OPEN
         MENUITEM "&Module Manager...",          ID_SCRIPTMAN
         MENUITEM SEPARATOR
         MENUITEM "&Exit",                       ID_EXIT
         MENUITEM SEPARATOR
+        MENUITEM "Recently Used Files",         ID_MRU, GRAYED
     END
     POPUP "&Edit"
     BEGIN
-        MENUITEM "Cu&t                Shift+Del", ID_CUT
-        MENUITEM "&Copy             Ctrl+Ins",  ID_COPY
-        MENUITEM "&Paste             Shift+Ins", ID_PASTE
-        MENUITEM "C&lear             Ctrl+Del", ID_CLEAR
+        MENUITEM "Cu&t\tCtrl+X",                ID_CUT
+        MENUITEM "&Copy\tCtrl+C",               ID_COPY
+        MENUITEM "&Paste\tCtrl+V",              ID_PASTE
+        MENUITEM "Delete\tDel",                 ID_CLEAR
         MENUITEM SEPARATOR
-        MENUITEM "Previous line   &Up arrow",   ID_GOPREVIOUS
-        MENUITEM "Next line         &Down arrow", ID_GONEXT
-        MENUITEM SEPARATOR
-        MENUITEM "Change Font..",               ID_FONT
-        MENUITEM "T&ext Editor",                ID_GOEDIT
-        MENUITEM SEPARATOR
+        MENUITEM "Previous line\t&Up arrow",    ID_GOPREVIOUS
+        MENUITEM "Next line\t&Down arrow",      ID_GONEXT
     END
     POPUP "&Interpreter"
     BEGIN
-        MENUITEM "&Run",                        ID_RUN
+        MENUITEM "&Run\tF5",                    ID_RUN
         MENUITEM "&Stop program",               ID_STOP
         MENUITEM SEPARATOR
         MENUITEM "&Compile      Alt+F9",        ID_COMPILE, GRAYED
@@ -110,16 +135,12 @@ BEGIN
     END
     POPUP "\a&Help"
     BEGIN
-        MENUITEM "&Contents          F1 ",      ID_HELPINDEX
-        MENUITEM "&Using help",                 ID_HELPUSE
-        MENUITEM "C&ommands",                   ID_HELPCOMMANDS
-        MENUITEM "&Hugs documentation",         ID_HELPDOCS
-        MENUITEM "Hugs-Ghc &Extensions",        ID_HELPEXTS
+        MENUITEM "&Contents\tF1 ",              ID_HELPCONTENTS
+        MENUITEM "Hugs C&ommands",              ID_HELPCOMMANDS
+        MENUITEM "User &Guide",                 ID_USERSGUIDE
         MENUITEM SEPARATOR
-        MENUITEM "Haskell &Report",             ID_HELPREPORT
-        MENUITEM "Haskell &Libraries",          ID_HELPLIBS
-        MENUITEM "Haskell &Tutorial",           ID_HELPGENTLE
-        MENUITEM "Haskell on &WWW",             ID_HELPHASKELLORG
+        MENUITEM "&Hugs Website",               ID_WWWHUGS
+        MENUITEM "Haskell &Website",            ID_WWWHASKELL
         MENUITEM SEPARATOR
         MENUITEM "&About WinHugs...",           ID_ABOUT
     END
@@ -131,98 +152,88 @@ END
 // Dialog
 //
 
-ABOUTDLGBOX DIALOG FIXED IMPURE  35, 24, 339, 155
-STYLE DS_MODALFRAME | DS_3DLOOK | DS_FIXEDSYS | WS_POPUP | WS_CAPTION
+ABOUTDLGBOX DIALOGEX 35, 24, 289, 113
+STYLE DS_SETFONT | DS_MODALFRAME | DS_3DLOOK | DS_FIXEDSYS | DS_CENTER | 
+    WS_POPUP | WS_CAPTION
 CAPTION "About Hugs for Windows"
-FONT 8, "Ms Sans Serif"
+FONT 8, "MS Shell Dlg", 400, 0, 0x0
 BEGIN
-    PUSHBUTTON      "&Ok",IDOK,275,136,51,13
-    LTEXT           "Hugs 98: Based on the Haskell 98 standard",
-                    -1,130,32,247,10
-    LTEXT           "Copyright © 1994-2003",
-                    -1,130,42,238,10
-    LTEXT           "Bug reports to: hugs-bugs@haskell.org",
-                    -1,130,52,242,10
-    LTEXT           "Web: http://haskell.org/hugs",
-                    -1,130,62,242,10
-    LTEXT           "Please see the distribution for License and Credits info",
-                    -1,130,80,252,8
-//    LTEXT           "Based on a Windows interface by José E. Gallardo, 2002",
-//                    -1,130,80,250,8
-    CONTROL         "",-1,"Static",SS_WHITEFRAME,9,98,324,1
-    CONTROL         "",-1,"Static",SS_GRAYFRAME,9,97,324,1
-    LTEXT           "xxxx KB",ID_TOTALMEMORY,288,115,39,8
-    LTEXT           "Total physical memory:",-1,130,115,84,8
+    PUSHBUTTON      "OK",IDOK,221,90,53,16
+    LTEXT           "Hugs 98: Based on the Haskell 98 standard\nCopyright © 1994-2005\nBug reports to: hugs-bugs@haskell.org\nWebsite: http://www.haskell.org/hugs\n\nPlease see the distribution for License and Credits info",
+                    IDC_STATIC,103,22,178,66
 END
 
-OPTIONSDLGBOX DIALOG FIXED IMPURE  14, 24, 313, 234
-STYLE DS_MODALFRAME | DS_3DLOOK | DS_FIXEDSYS | WS_POPUP | WS_CAPTION |
-    WS_SYSMENU
+OPTIONSDLGBOX DIALOGEX 14, 24, 313, 234
+STYLE DS_SETFONT | DS_MODALFRAME | DS_3DLOOK | DS_FIXEDSYS | WS_POPUP | 
+    WS_CAPTION | WS_SYSMENU
 CAPTION "Options"
-FONT 8, "Ms Sans Serif"
+FONT 8, "MS Shell Dlg", 0, 0, 0x0
 BEGIN
-    GROUPBOX        " Fl&ags: ",-1,5,5,302,120
+    EDITTEXT        ID_HEAPSIZE,52,210,60,12
+    CONTROL         "",SPN_HEAPSIZE,"msctls_updown32",UDS_SETBUDDYINT | 
+                    UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS,112,209,
+                    11,14
+    GROUPBOX        " Fl&ags: ",IDC_STATIC,5,5,302,120
     CONTROL         "&s Print no. reductions/cells after eval",ID_OP,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,12,19,142,10
-    CONTROL         "&t Print type after evaluation",ID_OP+1,"Button",
+    CONTROL         "&t Print type after evaluation",151,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,12,29,142,10
-    CONTROL         "&f Terminate evaluation on first error",ID_OP+2,"Button",
+    CONTROL         "&f Terminate evaluation on first error",152,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,12,39,142,10
-    CONTROL         "&g Print no. cells recovered after gc",ID_OP+3,"Button",
+    CONTROL         "&g Print no. cells recovered after gc",153,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,12,49,142,10
-    CONTROL         "&G Generate FFI code for foreign import",ID_OP+4,"Button",
+    CONTROL         "&G Generate FFI code for foreign import",154,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,12,59,142,10
-    CONTROL         "&l Literate scripts as default",ID_OP+5,"Button",
+    CONTROL         "&l Literate scripts as default",155,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,12,69,142,10
-    CONTROL         "&e Warn about errors in literate scripts",ID_OP+6,"Button",
+    CONTROL         "&e Warn about errors in literate scripts",156,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,12,79,142,10
-    CONTROL         "&. Print dots to show progress",ID_OP+7,"Button",
+    CONTROL         "&. Print dots to show progress",157,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,12,89,135,10
-    CONTROL         "&q Print nothing to show progress",ID_OP+8,"Button",
+    CONTROL         "&q Print nothing to show progress",158,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,12,99,135,10
-    CONTROL         "&Q Qualify names when printing",ID_OP+9,"Button",
+    CONTROL         "&Q Qualify names when printing",159,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,12,109,135,10
-    CONTROL         "&w Always show which files loaded",ID_OP+10,"Button",
+    CONTROL         "&w Always show which files loaded",160,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,160,19,140,10
-    CONTROL         "&k Show kind errors in full",ID_OP+11,"Button",
+    CONTROL         "&k Show kind errors in full",161,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,160,29,140,10
-    CONTROL         "&o Allow overlapping instances",ID_OP+12,"Button",
+    CONTROL         "&o Allow overlapping instances",162,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,160,39,140,10
-    CONTROL         "&O Allow unsafe overlapping instances",ID_OP+13,"Button",
+    CONTROL         "&O Allow unsafe overlapping instances",163,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,160,49,140,10
-    CONTROL         "&u Use ""show"" to display results",ID_OP+14,"Button",
+    CONTROL         "&u Use ""show"" to display results",164,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,160,59,140,10
-    CONTROL         "&I Display results of IO programs",ID_OP+15,"Button",
+    CONTROL         "&I Display results of IO programs",165,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,160,69,140,10
-    CONTROL         "&i Chase imports while loading files",ID_OP+16,"Button",
+    CONTROL         "&i Chase imports while loading files",166,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,160,79,140,10
-    CONTROL         "&A Auto load files",ID_OP+17,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,160,89,140,10
-    CONTROL         "&R Enable root optimisation",ID_OP+18,"Button",
+    CONTROL         "&A Auto load files",167,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,160,89,140,10
+    CONTROL         "&R Enable root optimisation",168,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,160,99,140,10
-    CONTROL         "&H Enable `here documents'",ID_OP+19,"Button",
+    CONTROL         "&H Enable `here documents'",169,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,160,109,140,10
-    LTEXT           "Path:",-1,12,139,22,8
+    LTEXT           "Path:",IDC_STATIC,12,139,22,8
     EDITTEXT        ID_PATH,37,137,183,12,ES_AUTOHSCROLL
-    LTEXT           "Editor:",-1,12,155,25,8
+    LTEXT           "Editor:",IDC_STATIC,12,155,25,8
     EDITTEXT        ID_EDITOR,37,153,183,12,ES_AUTOHSCROLL
-    LTEXT           "Prompt string:",-1,12,169,47,8
+    LTEXT           "Prompt string:",IDC_STATIC,12,169,47,8
     EDITTEXT        ID_PROMPT,62,167,158,12
-    LTEXT           "Repeat last expression string:",-1,12,183,96,8
+    LTEXT           "Repeat last expression string:",IDC_STATIC,12,183,96,8
     EDITTEXT        ID_LASTEXPR,111,182,109,12
-    LTEXT           "Set constraint cutoff limit:",-1,12,198,80,8
+    LTEXT           "Set constraint cutoff limit:",IDC_STATIC,12,198,80,8
     EDITTEXT        ID_CUTOFF,97,195,123,12
-    LTEXT           "Heap size:",-1,12,214,36,8
-    EDITTEXT        ID_HEAPSIZE,52,210,168,12
-    PUSHBUTTON      "Ok",IDOK,256,139,40,14
-    PUSHBUTTON      "Cancel",IDCANCEL,256,160,40,14
-    GROUPBOX        "",-1,5,128,227,102
-    LTEXT           "",ID_PLACEBITMAP,246,188,73,1
+    LTEXT           "Heap size:",IDC_STATIC,12,214,36,8
+    PUSHBUTTON      "OK",IDOK,239,196,66,14
+    PUSHBUTTON      "Cancel",IDCANCEL,239,216,66,14
+    GROUPBOX        "",IDC_STATIC,5,128,227,102
+    LTEXT           "Kb",IDC_STATIC,126,213,9,8
 END
 
-BROWSECLASSESDLGBOX DIALOG DISCARDABLE  65535, 18, 344, 220
-STYLE DS_MODALFRAME | DS_3DLOOK | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | 
-    WS_SYSMENU
+BROWSECLASSESDLGBOX DIALOG  65535, 18, 344, 220
+STYLE DS_SETFONT | DS_MODALFRAME | DS_3DLOOK | DS_FIXEDSYS | WS_POPUP | 
+    WS_CAPTION | WS_SYSMENU
 CAPTION "Browse Classes"
 FONT 8, "Ms Sans Serif"
 BEGIN
@@ -244,14 +255,14 @@ BEGIN
     GROUPBOX        " Classes: ",-1,4,1,100,163
 END
 
-BROWSENAMESDLGBOX DIALOG FIXED IMPURE  24, 39, 288, 160
-STYLE DS_MODALFRAME | DS_3DLOOK | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | 
-    WS_SYSMENU
+BROWSENAMESDLGBOX DIALOG  24, 39, 288, 160
+STYLE DS_SETFONT | DS_MODALFRAME | DS_3DLOOK | DS_FIXEDSYS | WS_POPUP | 
+    WS_CAPTION | WS_SYSMENU
 CAPTION "Browse Names"
 FONT 8, "Ms Sans Serif"
 BEGIN
     LISTBOX         LB_NAMES,11,14,214,45,LBS_OWNERDRAWFIXED | 
-                    LBS_HASSTRINGS | WS_VSCROLL | WS_TABSTOP 
+                    LBS_HASSTRINGS | WS_VSCROLL | WS_TABSTOP
     LTEXT           "&Search:",-1,11,67,27,8
     EDITTEXT        IDC_SEARCHNAME,39,65,186,12
     LISTBOX         LB_NAMESTYPE,11,103,214,14,WS_VSCROLL | WS_TABSTOP
@@ -264,9 +275,9 @@ BEGIN
     LTEXT           "",ID_PLACEBITMAP,235,112,41,1
 END
 
-BROWSETYCONSDLGBOX DIALOG FIXED IMPURE  16, 16, 312, 226
-STYLE DS_MODALFRAME | DS_3DLOOK | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | 
-    WS_SYSMENU
+BROWSETYCONSDLGBOX DIALOG  16, 16, 312, 226
+STYLE DS_SETFONT | DS_MODALFRAME | DS_3DLOOK | DS_FIXEDSYS | WS_POPUP | 
+    WS_CAPTION | WS_SYSMENU
 CAPTION "Browse Type Constructors"
 FONT 8, "Ms Sans Serif"
 BEGIN
@@ -289,11 +300,11 @@ BEGIN
     GROUPBOX        " Instances: ",-1,5,177,226,45
 END
 
-SCRIPTMANDLGBOX DIALOG DISCARDABLE  84, 17, 301, 192
-STYLE DS_MODALFRAME | DS_3DLOOK | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | 
+SCRIPTMANDLGBOX DIALOGEX 84, 17, 301, 192
+STYLE DS_SETFONT | DS_MODALFRAME | DS_3DLOOK | WS_POPUP | WS_CAPTION | 
     WS_SYSMENU
 CAPTION "Module Manager"
-FONT 8, "Arial"
+FONT 8, "Arial", 0, 0, 0x0
 BEGIN
     GROUPBOX        "Module files: ",-1,5,5,220,184
     LISTBOX         LB_SCRIPTS,11,20,203,167,WS_VSCROLL | WS_HSCROLL | 
@@ -303,8 +314,100 @@ BEGIN
     PUSHBUTTON      "&Clear",ID_CLEARSCRIPTS,236,51,53,14
     PUSHBUTTON      "&Edit",ID_EDITSCRIPT,236,71,53,14
     PUSHBUTTON      "C&ancel",IDCANCEL,236,151,53,14
-    DEFPUSHBUTTON   "&Ok",IDOK,236,171,53,14
+    DEFPUSHBUTTON   "&OK",IDOK,236,171,53,14
     LTEXT           "",ID_PLACEBITMAP,238,95,73,1
+END
+
+DLG_MAIN DIALOGEX 0, 0, 186, 162
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | 
+    WS_VISIBLE | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
+EXSTYLE WS_EX_ACCEPTFILES | WS_EX_APPWINDOW
+CAPTION "Hugs for Windows"
+MENU HUGSMENU
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    CONTROL         "",ID_RTF,"RichEdit20A",ES_MULTILINE | ES_AUTOVSCROLL | 
+                    ES_NUMBER | WS_VSCROLL,48,34,70,72,WS_EX_CLIENTEDGE
+END
+
+DLG_OPTCOMPILE DIALOGEX 0, 0, 291, 131
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | 
+    WS_SYSMENU
+CAPTION "Compile Time"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    GROUPBOX        "Haskell Extensions [Not Implemented Yet]",IDC_STATIC,7,
+                    64,277,60,WS_DISABLED
+    LTEXT           "Path:",IDC_STATIC,12,21,42,13
+    EDITTEXT        txtPath,58,17,219,12,ES_AUTOHSCROLL
+    LTEXT           "These extensions are only available in Haskell Extension mode (-98)",
+                    IDC_STATIC,14,76,217,8,WS_DISABLED
+    CONTROL         "Overlapping instances",IDC_CHECK1,"Button",
+                    BS_AUTOCHECKBOX | WS_DISABLED | WS_TABSTOP,13,88,230,12
+    CONTROL         "Unsafe overlapping instances",IDC_CHECK2,"Button",
+                    BS_AUTOCHECKBOX | WS_DISABLED | WS_TABSTOP,24,99,230,12
+    CONTROL         "Here documents",IDC_CHECK3,"Button",BS_AUTOCHECKBOX | 
+                    WS_DISABLED | WS_TABSTOP,13,109,230,12
+    CONTROL         "Show list of scripts being loaded",chkListLoading,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,12,34,261,11
+    CONTROL         "Automatically reload modified files",chkAutoReload,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,12,45,265,10
+    GROUPBOX        "Loading Files",IDC_STATIC,7,7,277,53
+END
+
+DLG_OPTRUNTIME DIALOGEX 0, 0, 304, 113
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | 
+    WS_SYSMENU
+CAPTION "Runtime"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    EDITTEXT        txtHeapSize,54,18,60,12
+    CONTROL         "",spnHeapSize,"msctls_updown32",UDS_SETBUDDYINT | 
+                    UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS,115,17,11,
+                    14
+    LTEXT           "Heap size:",IDC_STATIC,16,20,36,8
+    LTEXT           "Mb",IDC_STATIC,131,21,10,8
+    GROUPBOX        "Debugging Options",IDC_STATIC,7,51,290,54
+    CONTROL         "Print statistics (heap cells, reductions) after each computation",
+                    chkPrintStats,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,
+                    63,214,10
+    CONTROL         "Print garbage collection messages",chkPrintGC,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,15,75,124,10
+    CONTROL         "Print type after evaluation",chkPrintType,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,15,88,101,10
+    CONTROL         "Use Show instance for results",chkUserShow,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,15,33,268,10
+    GROUPBOX        "Runtime Options",IDC_STATIC,7,7,290,40
+    LTEXT           "(Requires WinHugs restart to take effect)",IDC_STATIC,
+                    148,20,134,8
+END
+
+DLG_OPTHUGS DIALOGEX 0, 0, 304, 131
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | 
+    WS_SYSMENU
+CAPTION "WinHugs"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    GROUPBOX        "Output area / Font",IDC_STATIC,7,7,290,71
+    LTEXT           "Font face:",IDC_STATIC,13,20,34,8
+    LTEXT           "Font size:",IDC_STATIC,14,39,32,8
+    CONTROL         "Bold",chkFontBold,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,
+                    147,36,29,10
+    CONTROL         "Italic",chkFontItalic,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,193,36,31,10
+    EDITTEXT        txtFontSize,59,34,60,12
+    CONTROL         "",spnFontSize,"msctls_updown32",UDS_SETBUDDYINT | 
+                    UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS | 
+                    UDS_NOTHOUSANDS,121,33,11,14
+    GROUPBOX        "Editor",IDC_STATIC,7,82,290,42
+    LTEXT           "Use:",IDC_STATIC,15,92,29,10
+    EDITTEXT        txtEditor,59,106,225,12,ES_AUTOHSCROLL | WS_DISABLED
+    COMBOBOX        lstFontFace,59,17,225,58,CBS_DROPDOWN | CBS_SORT | 
+                    WS_VSCROLL | WS_TABSTOP
+    CONTROL         "",rtfPreview,"RichEdit20A",ES_CENTER | ES_AUTOHSCROLL | 
+                    ES_READONLY | WS_TABSTOP,13,50,271,22,WS_EX_STATICEDGE
+    COMBOBOX        lstEditor,59,89,225,65,CBS_DROPDOWNLIST | WS_VSCROLL | 
+                    WS_TABSTOP
 END
 
 
@@ -313,10 +416,12 @@ END
 // Accelerator
 //
 
-HUGSACCELERATORS ACCELERATORS FIXED IMPURE 
+HUGSACCELERATORS ACCELERATORS 
 BEGIN
-    VK_F9,          ID_COMPILE,             VIRTKEY 
-    VK_F1,          ID_HELPINDEX,           VIRTKEY 
+    VK_F9,          ID_COMPILE,             VIRTKEY, NOINVERT
+    VK_F1,          ID_HELPINDEX,           VIRTKEY, NOINVERT
+    VK_F5,          ID_RUN,                 VIRTKEY, NOINVERT
+    "O",            ID_OPEN,                VIRTKEY, CONTROL, NOINVERT
 END
 
 
@@ -325,8 +430,8 @@ END
 // Cursor
 //
 
-GARBAGECURSOR           CURSOR  DISCARDABLE     "resource\\gc.cur"
-MOVECLASSCURSOR         CURSOR  DISCARDABLE     "resource\\move.cur"
+GARBAGECURSOR           CURSOR                  "resource\\gc.cur"
+MOVECLASSCURSOR         CURSOR                  "resource\\move.cur"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -335,8 +440,8 @@ MOVECLASSCURSOR         CURSOR  DISCARDABLE     "resource\\move.cur"
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-HUGS                    ICON    DISCARDABLE     "resource\\hugs1.ico"
-HUGSDOC                 ICON    DISCARDABLE     "resource\\hugsdoc.ico"
+HUGS                    ICON                    "resource\\hugs1.ico"
+HUGSDOC                 ICON                    "resource\\hugsdoc.ico"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -344,23 +449,70 @@ HUGSDOC                 ICON    DISCARDABLE     "resource\\hugsdoc.ico"
 //
 
 #ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO DISCARDABLE 
+GUIDELINES DESIGNINFO 
 BEGIN
-    ABOUTDLGBOX, DIALOG
-    BEGIN
-        RIGHTMARGIN, 253
-    END
-
     OPTIONSDLGBOX, DIALOG
     BEGIN
-        BOTTOMMARGIN, 196
+        BOTTOMMARGIN, 232
     END
 
     BROWSECLASSESDLGBOX, DIALOG
     BEGIN
         BOTTOMMARGIN, 217
     END
+
+    DLG_OPTCOMPILE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 284
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 124
+    END
+
+    DLG_OPTRUNTIME, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 297
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 106
+    END
+
+    DLG_OPTHUGS, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 297
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 124
+    END
 END
+#endif    // APSTUDIO_INVOKED
+
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resrc1.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""resource.h""\r\n"
+    "#include ""afxres.h""\r\n"
+    "#include ""winmenu.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
 #endif    // APSTUDIO_INVOKED
 
 
@@ -369,7 +521,7 @@ END
 // String Table
 //
 
-STRINGTABLE FIXED IMPURE 
+STRINGTABLE 
 BEGIN
     ID_FILESMENU            "Manage script files (Open, New...)"
     ID_EDITMENU             "Cut, copy, paste and clear"
@@ -379,30 +531,16 @@ BEGIN
     ID_OPTIONSMENU          "Manage interpreter options (Set, Save...)"
 END
 
-STRINGTABLE FIXED IMPURE 
+STRINGTABLE 
 BEGIN
     ID_NEW                  "Edit a new script file"
     ID_OPEN                 "Load modules from specified file"
     ID_SCRIPTMAN            "Enter Module Manager"
     ID_SAVE                 "Load selected file"
     ID_EXIT                 "Exit Hugs interpreter"
-    109                     "Load this file"
-    110                     "Load this file"
-    111                     "Load this file"
 END
 
-STRINGTABLE FIXED IMPURE 
-BEGIN
-    112                     "Load this file"
-    113                     "Load this file"
-    114                     "Load this file"
-    115                     "Load this file"
-    116                     "Load this file"
-    117                     "Load this file"
-    118                     "Load this file"
-END
-
-STRINGTABLE FIXED IMPURE 
+STRINGTABLE 
 BEGIN
     ID_COPY                 "Copy selected text to clipboard"
     ID_PASTE                "Paste text from clipboard"
@@ -413,30 +551,20 @@ BEGIN
     ID_GOPREVIOUS           "Edit previous input line"
 END
 
-STRINGTABLE FIXED IMPURE 
+STRINGTABLE 
 BEGIN
     ID_GONEXT               "Edit next input line"
     ID_EDITSELECTED         "Edit selected file"
-    210                     "Edit this file"
-    211                     "Edit this file"
-    212                     "Edit this file"
-    213                     "Edit this file"
-    214                     "Edit this file"
-    215                     "Edit this file"
-    216                     "Edit this file"
-    217                     "Edit this file"
-    218                     "Edit this file"
-    219                     "Edit this file"
 END
 
-STRINGTABLE FIXED IMPURE 
+STRINGTABLE 
 BEGIN
     ID_RUN                  "Evaluate  ""main""  expression"
     ID_STOP                 "Stop program execution"
     ID_EVAL                 "Evaluate selected expression"
 END
 
-STRINGTABLE FIXED IMPURE 
+STRINGTABLE 
 BEGIN
     ID_TYPE                 "Show type of selected expression"
     ID_COMPILE              "Reload files"
@@ -445,12 +573,12 @@ BEGIN
     ID_INFO                 "Show information on selected text"
 END
 
-STRINGTABLE FIXED IMPURE 
+STRINGTABLE 
 BEGIN
     ID_SETOPTIONS           "Set Hugs interpreter options"
 END
 
-STRINGTABLE FIXED IMPURE 
+STRINGTABLE 
 BEGIN
     ID_BROWSECLASSES        "Browse defined classes, instances and members"
     ID_BROWSENAMES          "Browse defined names"
@@ -458,7 +586,7 @@ BEGIN
     ID_BROWSEHIERARCHY      "Show classes hierarchy"
 END
 
-STRINGTABLE FIXED IMPURE 
+STRINGTABLE 
 BEGIN
     ID_HELPINDEX            "Display help contents"
     ID_HELPFIND             "Buscar ayuda sobre una palabra"
@@ -467,93 +595,77 @@ BEGIN
     ID_HELPCOMMANDS         "Display Hugs commands"
     ID_HELPREPORT           "Display the Haskell Report"
     ID_HELPLIBS             "Display the Haskell Library Report"
-    ID_HELPHASKELLORG       "Go to haskell.org"
 END
 
-STRINGTABLE FIXED IMPURE 
+STRINGTABLE 
 BEGIN
     ID_HELPGENTLE           "Display the Gentle Introduction to Haskell"
     ID_HELPDOCS             "Display Hugs documentation"
     ID_HELPEXTS             "Display Hugs and Ghc libraries"
+    ID_HELPHASKELLORG       "Go to haskell.org"
 END
 
-STRINGTABLE FIXED IMPURE 
+STRINGTABLE 
 BEGIN
     IDS_FILTERPROJECT       "Hugs Projects(*.hp)|*.hp|Projects(*.prj)|*.prj|All files(*.*)|*.*|"
     IDS_FILTERFILE          "Haskell files(*.hs *.lhs)|*.hs;*.lhs|Gofer files(*.gs *.gof *.lgs)|*.gs;*.gof;*.lgs|Literate Scripts(*.lhs *.lgs *.ver *.lit)|*.lgs;*.lhs;*.ver;*.lit|Preludes(*.pre)|*.pre|All files(*.*)|*.*|"
 END
 
-STRINGTABLE FIXED IMPURE 
+STRINGTABLE 
 BEGIN
     61440                   "Changes the size of the window"
 END
 
-STRINGTABLE FIXED IMPURE 
+STRINGTABLE 
 BEGIN
     61456                   "Moves the window to another position"
 END
 
-STRINGTABLE FIXED IMPURE 
+STRINGTABLE 
 BEGIN
     61472                   "Reduces the window to an icon"
 END
 
-STRINGTABLE FIXED IMPURE 
+STRINGTABLE 
 BEGIN
     61488                   "Enlarges the window to it maximum size"
 END
 
-STRINGTABLE FIXED IMPURE 
+STRINGTABLE 
 BEGIN
     61504                   "Switches to next window"
 END
 
-STRINGTABLE FIXED IMPURE 
+STRINGTABLE 
 BEGIN
     61536                   "Closes the window"
 END
 
-STRINGTABLE FIXED IMPURE 
+STRINGTABLE 
 BEGIN
     61728                   "Restores the window to its previous size"
 END
 
-STRINGTABLE FIXED IMPURE 
+STRINGTABLE 
 BEGIN
     61744                   "Opens task list"
 END
 
-/////////////////////////////////////////////////////////////////////////////
-
-
-
-#ifdef APSTUDIO_INVOKED
-/////////////////////////////////////////////////////////////////////////////
-//
-// TEXTINCLUDE
-//
-
-1 TEXTINCLUDE DISCARDABLE 
+STRINGTABLE 
 BEGIN
-    "resrc1.h\0"
+    ID_MRU                  "Load recently loaded file"
+    151                     "Load recently loaded file"
+    152                     "Load recently loaded file"
+    153                     "Load recently loaded file"
+    154                     "Load recently loaded file"
+    155                     "Load recently loaded file"
+    156                     "Load recently loaded file"
+    157                     "Load recently loaded file"
+    158                     "Load recently loaded file"
+    159                     "Load recently loaded file"
 END
 
-2 TEXTINCLUDE DISCARDABLE 
-BEGIN
-    "#include ""resource.h""\r\n"
-    "#include ""afxres.h""\r\n"
-    "#include ""winmenu.h""\r\n"
-    "\0"
-END
-
-3 TEXTINCLUDE DISCARDABLE 
-BEGIN
-    "\r\n"
-    "\0"
-END
-
-#endif    // APSTUDIO_INVOKED
-
+#endif    // English (U.K.) resources
 /////////////////////////////////////////////////////////////////////////////
 
 
