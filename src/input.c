@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: input.c,v $
- * $Revision: 1.86 $
- * $Date: 2004/10/14 22:08:44 $
+ * $Revision: 1.87 $
+ * $Date: 2005/09/01 14:49:24 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -296,16 +296,12 @@ String prompt; {                       /* standard in (i.e. console/kbd)   */
 /* state of the input, to implement auto load of files        */
 static Int    	saveReading;
 static int    	savec0, savec1;
-static Char   	saveInputBuffer[256];
-static LRESULT  saveBufferPos;
 
 Void saveInputState(Void)
 {
     saveReading = reading;
     savec0 = c0;
     savec1 = c1;
-    SendMessage (hWndText, WM_GETINPUTBUFFER, 256, (LPARAM)saveInputBuffer);
-    saveBufferPos = SendMessage (hWndText, WM_GETBUFFERPOS, 0, 0L);
 }
 
 Void restoreInputState(Void)
@@ -313,8 +309,6 @@ Void restoreInputState(Void)
     reading = saveReading;
     c0 = savec0;
     c1 = savec1;
-    SendMessage (hWndText, WM_SETINPUTBUFFER, 0, (LPARAM)saveInputBuffer);
-    SendMessage (hWndText, WM_SETBUFFERPOS, (WPARAM) 0, saveBufferPos);
 }
 #endif
 
