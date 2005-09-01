@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: errors.h,v $
- * $Revision: 1.12 $
- * $Date: 2005/09/01 14:35:33 $
+ * $Revision: 1.13 $
+ * $Date: 2005/09/01 14:57:50 $
  * ------------------------------------------------------------------------*/
 #ifndef __ERRORS_H__
 #define __ERRORS_H__
@@ -65,7 +65,7 @@ extern Void   hugsPutc      	    Args((int, FILE*));
 #undef  Lolite
 #define Hilite()         doNothing()
 #define Lolite()         doNothing()
-#define SetForeColor(c)  WinTextcolor(hWndText,c);
+#define SetForeColor(c)  WinHugsColor(c);
 #define errorStream	 stderr
 #else
 #define Hilite()         doNothing()
