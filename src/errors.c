@@ -31,7 +31,7 @@ Void stopAnyPrinting() {  /* terminate printing of expression,*/
 	if (showStats) {
 #define plural(v)   v, (v==1?"":"s")
 #if HUGS_FOR_WINDOWS
-	    { INT svColor = SetForeColor(BLUE);
+	    { int svColor = SetForeColor(BLUE);
 #endif
 	    Printf("(%lu reduction%s, ",plural(numReductions));
 	    Printf("%lu cell%s",plural(numCells));
@@ -72,9 +72,22 @@ Int l; {
      * -- sof 9/01.
      */
     if (scriptFile) {
- 	FPrintf(errorStream," \"%s\"",scriptFile);
 	setLastEdit(scriptFile,l);
- 	if (l) FPrintf(errorStream,":%d",l);
+#ifdef HUGS_FOR_WINDOWS
+	{
+	    char buf[1000];
+	    FPrintf(errorStream," ");
+	    if (l)
+		sprintf(buf,"file:%s:%d",scriptFile,l);
+	    else
+		sprintf(buf,"file:%s",scriptFile);
+	    WinHugsHyperlink(buf);
+	}
+#else
+	FPrintf(errorStream," \"%s\"",scriptFile);
+	if (l)
+	    FPrintf(errorStream,":%d",l);
+#endif
 	scriptFile = 0;
     }
     FPrintf(errorStream," - ");
@@ -100,8 +113,8 @@ Void internal(msg)                      /* handle internal error           */
 String msg; {
 #if HUGS_FOR_WINDOWS
     char buf[300];
-    wsprintf(buf,"INTERNAL ERROR: %s",msg);
-    MessageBox(hWndMain, buf, appName, MB_ICONHAND | MB_OK);
+    sprintf(buf,"INTERNAL ERROR: %s",msg);
+    ErrorBox(buf);
 #endif
     failed();
     stopAnyPrinting();
@@ -117,8 +130,8 @@ Void fatal(msg)                         /* handle fatal error              */
 String msg; {
 #if HUGS_FOR_WINDOWS
     char buf[300];
-    wsprintf(buf,"FATAL ERROR: %s",msg);
-    MessageBox(hWndMain, buf, appName, MB_ICONHAND | MB_OK);
+    sprintf(buf,"FATAL ERROR: %s",msg);
+    ErrorBox(buf);
 #endif
     FlushStdout();
     Printf("\nFATAL ERROR: %s\n",msg);
@@ -131,11 +144,7 @@ String msg; {
  * ------------------------------------------------------------------------*/
 sigHandler(breakHandler) {              /* respond to break interrupt      */
 #if HUGS_FOR_WINDOWS
-#if USE_THREADS
-    MessageBox(hWndMain, "Interrupted!", appName, MB_ICONSTOP | MB_OK);
-#else
-    MessageBox(GetFocus(), "Interrupted!", appName, MB_ICONSTOP | MB_OK);
-#endif
+    ErrorBox("Interrupted!");
 #endif
 #if HUGS_FOR_WINDOWS
     FPrintf(errorStream,"{Interrupted!}\n");
