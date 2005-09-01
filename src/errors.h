@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: errors.h,v $
- * $Revision: 1.11 $
- * $Date: 2003/10/28 11:49:52 $
+ * $Revision: 1.12 $
+ * $Date: 2005/09/01 14:35:33 $
  * ------------------------------------------------------------------------*/
 #ifndef __ERRORS_H__
 #define __ERRORS_H__
@@ -29,7 +29,7 @@ extern Void   hugsPutchar           Args((int));
 extern Void   hugsFlushStdout       Args((Void));
 extern Void   hugsEnableOutput      Args((Bool));
 extern String hugsClearOutputBuffer Args((Void));
-			    
+
 extern Void   hugsFFlush    	    Args((FILE*));
 extern Void   hugsFPrintf   	    Args((FILE*, const char*, ...));
 extern Void   hugsPutc      	    Args((int, FILE*));
@@ -43,9 +43,9 @@ extern Void   hugsPutc      	    Args((int, FILE*));
 #define FFlush               hugsFFlush
 #define FPrintf              hugsFPrintf
 #define Putc                 hugsPutc
-			     
+
 #else /* !REDIRECT_OUTPUT */
-			     
+
 #define Printf               printf
 #define Putchar              putchar
 #define FlushStdout()        fflush(stdout)
