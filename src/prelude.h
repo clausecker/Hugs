@@ -8,8 +8,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: prelude.h,v $
- * $Revision: 1.75 $
- * $Date: 2005/08/31 13:59:51 $
+ * $Revision: 1.76 $
+ * $Date: 2005/09/01 15:26:38 $
  * ------------------------------------------------------------------------*/
 #ifndef __PRELUDE_H__
 #define __PRELUDE_H__
@@ -195,42 +195,13 @@ int macsystem(char *filenames);
 
 
 /*---------------------------------------------------------------------------
- * Include windows.h and friends:
+ * Include stuff required for WinHugs:
+ *  mainly redirect get/put console functions
+ *  also required API definitions
  *-------------------------------------------------------------------------*/
 
-#if     HUGS_FOR_WINDOWS
-#include <windows.h>			/* Misc. Windows hackery	   */
-#include <commctrl.h>			/* standard Windows GUI components */
-
-#if	__MSDOS__
-# define INT           int
-# define UNSIGNED      unsigned
-# define CHAR	       char
-# define TCHAR         char
-# define UCHAR	       UNSIGNED CHAR
-# define ULONG	       unsigned long
-# define APIENTRY      PASCAL
-# define HUGE          huge
-# define LPOFNHOOKPROC FARPROC
-# define CMDdata(w,l)  (HIWORD(l))	/* decoding WM_COMMAND message	   */
-# define CMDitem(w,l)  (w)
-# define CMDhwnd(w,l)  ((HWND)(LOWORD(l)))
-#else
-# define HUGE
-# define CMDdata(w,l)  (HIWORD(w))	/* decoding WM_COMMAND message	   */
-# define CMDitem(w,l)  (LOWORD(w))
-# define CMDhwnd(w,l)  ((HWND)(l))
-#endif
-
 #if HUGS_FOR_WINDOWS
-#include "winhugs\winmenu.h"
-#endif
-extern char *appName;
-extern HWND		hWndText;	/* text output window handle	   */
-extern HWND		hWndMain;	/* main window handle		   */
-#if HUGS_FOR_WINDOWS
-#include "winhugs\wintext.h"
-#endif
+#include "winhugs\IORemap.h"
 #endif
 
 
