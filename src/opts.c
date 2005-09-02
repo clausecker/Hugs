@@ -12,9 +12,6 @@
 #include "opts.h"
 #include "char.h"
 
-#if HUGS_FOR_WINDOWS
-#include "winhugs/winhugs.h"
-#endif
 /* --------------------------------------------------------------------------
  * Flags and options:
  * ------------------------------------------------------------------------*/
@@ -548,8 +545,8 @@ String s; {
 	if (heapBuilt() && hpSize != heapSize) {
 #define HEAP_RESIZE_MSG "Change to heap size will not take effect until you rerun Hugs"
 #if HUGS_FOR_WINDOWS
-            MessageBox(hWndMain, HEAP_RESIZE_MSG, appName, MB_ICONHAND | MB_OK);
-#endif            
+	    InfoBox(HEAP_RESIZE_MSG);
+#endif
 #if USE_REGISTRY
 	    FPrintf(stderr,HEAP_RESIZE_MSG "\n");
 #else
@@ -678,9 +675,6 @@ Void readOptionSettings() {
 	  } /* else: take default preferences */
     readOptions(hugsFlags,FALSE);
 #else
-# if HUGS_FOR_WINDOWS
-    ReadGUIOptions();
-# endif
     readOptions(fromEnv("HUGSFLAGS",""),FALSE);
 #endif
 }
