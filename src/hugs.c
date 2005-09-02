@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.137 $
- * $Date: 2005/09/02 12:58:43 $
+ * $Revision: 1.138 $
+ * $Date: 2005/09/02 13:03:11 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -27,15 +27,6 @@
 #include <ctype.h>
 
 #include <stdio.h>
-
-#if HAVE_WINDOWS_H
-#include <windows.h>
-#endif
-
-#if HUGS_FOR_WINDOWS
-#include "winhugs\WinHugs.h"
-#include "winhugs\WinUtils.h"
-#endif
 
 /* --------------------------------------------------------------------------
  * Local function prototypes:
@@ -222,9 +213,6 @@ char *argv[]; {
 
     interpreter(argc,argv);
     Printf("[Leaving Hugs]\n");
-#if HUGS_FOR_WINDOWS
-    SaveGUIOptions();
-#endif
     everybody(EXIT);
     shutdownHugs();
 
