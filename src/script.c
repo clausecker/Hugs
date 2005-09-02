@@ -16,10 +16,6 @@
 #include "strutil.h"
 #include "script.h"
 
-#if HUGS_FOR_WINDOWS
-#include "winhugs\WinHugs.h"
-#endif
-
 /* --------------------------------------------------------------------------
  * Local script state:
  * ------------------------------------------------------------------------*/
@@ -380,8 +376,16 @@ Void whatScripts() {       /* list scripts in current session */
     if (!InAutoReloadFiles) {
 #endif
     Printf("\nHugs session for:");
-    for (i=0; i<numScripts; ++i)
+    for (i=0; i<numScripts; ++i) {
+#if HUGS_FOR_WINDOWS
+	char buf[1000];
+	Putchar('\n');
+	sprintf(buf, "file:%s", scriptTable[i].fileName);
+	WinHugsHyperlink(buf);
+#else
 	Printf("\n%s",scriptTable[i].fileName);
+#endif
+    }
     Putchar('\n');
 #if HUGS_FOR_WINDOWS
     }
