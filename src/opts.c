@@ -67,11 +67,6 @@ Int    line; {
     }
     lastEdit = strCopy(fname);
     lastLine = line;
-#if HUGS_FOR_WINDOWS
-    /* Add file to Edit menu */
-    if (lastEdit)
-      AddFileToFileNamesMenu(&EditMenu, RealPath(lastEdit));
-#endif
 }
 
 String getLastEdit(Int* pLastLine) {

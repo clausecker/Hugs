@@ -184,7 +184,6 @@ Long   len; {                           /* length of script file   */
 #if HUGS_FOR_WINDOWS         /* Set clock cursor while loading   */
     allowBreak();
     SetCursor(LoadCursor(NULL, IDC_WAIT));
-    AddFileToFileNamesMenu(&FilesMenu, RealPath(fname));
 #endif
 
     if (!quiet) {

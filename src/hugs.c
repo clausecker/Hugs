@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.138 $
- * $Date: 2005/09/02 13:03:11 $
+ * $Revision: 1.139 $
+ * $Date: 2005/09/02 13:56:09 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -356,8 +356,12 @@ static Void local load() {           /* read filenames from command line   */
     String s;                        /* and add to list of scripts waiting */
 				     /* to be read                         */
     clearEvalModule();
-    while ((s=readFilename())!=0)
+    while ((s=readFilename())!=0) {
+#if HUGS_FOR_WINDOWS
+	WinHugsAddMruFile(s);
+#endif
 	addScriptName(s,TRUE);
+    }
     readScripts(1);
 }
 
