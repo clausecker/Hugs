@@ -136,7 +136,7 @@ void InfoBox(LPCSTR Msg)
     MessageBox(hThisWindow, Msg, appName, MB_ICONINFORMATION | MB_OK);
 }
 
-void KillWindow()
+void WinHugsExit()
 {
     DestroyWindow(hThisWindow);
 }

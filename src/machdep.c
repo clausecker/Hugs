@@ -11,8 +11,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.130 $
- * $Date: 2005/09/02 10:49:32 $
+ * $Revision: 1.131 $
+ * $Date: 2005/09/02 10:54:52 $
  * ------------------------------------------------------------------------*/
 #include "prelude.h"
 #include "storage.h"
@@ -2634,7 +2634,7 @@ Int what; {                             /* initialisation etc..            */
 	case EXIT    : normalTerminal();
 #if HUGS_FOR_WINDOWS
 		       if (what==EXIT)
-			   DestroyWindow(hWndMain);
+			   WinHugsExit();
 		       else
 			   SetCursor(LoadCursor(NULL,IDC_ARROW));
 #endif

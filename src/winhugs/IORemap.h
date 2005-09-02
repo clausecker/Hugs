@@ -4,6 +4,8 @@
 void ErrorBox(const char* Msg);
 void InfoBox(const char* Msg);
 
+void WinHugsExit();
+
 extern int InAutoReloadFiles;
 void SetWorkingDir(const char* Src);
 void startEvaluatorThread();
