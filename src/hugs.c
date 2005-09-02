@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.136 $
- * $Date: 2005/05/04 08:58:37 $
+ * $Revision: 1.137 $
+ * $Date: 2005/09/02 12:58:43 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -178,9 +178,13 @@ static Void printBanner()
     svColor = SetForeColor(BLUE);    Printf("||___|| ||__|| ||__||  __||");
     SetForeColor(svColor);           Printf("     Copyright (c) 1994-2005\n");
     svColor = SetForeColor(RED);     Printf("||---||         ___||      ");
-    SetForeColor(svColor);           Printf("     World Wide Web: http://haskell.org/hugs\n");
+    SetForeColor(svColor);           Printf("     World Wide Web: ");
+    WinHugsHyperlink("http://haskell.org/hugs");
+    Printf("\n");
     svColor = SetForeColor(BLUE);    Printf("||   ||                    ");
-    SetForeColor(svColor);           Printf("     Report bugs to: hugs-bugs@haskell.org\n");
+    SetForeColor(svColor);           Printf("     Report bugs to: ");
+    WinHugsHyperlink("mailto:hugs-bugs@haskell.org");
+    Printf("\n");
     svColor = SetForeColor(RED);     Printf("||   || ");
     SetForeColor(svColor);           Printf("Version: %-14s",versionString);
     svColor = SetForeColor(BLUE);    Printf(" _______________________________________________\n\n");
