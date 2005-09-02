@@ -198,7 +198,6 @@ void MainSize(HWND hWnd, int x, int y)
     HeightStatus = rc.bottom;
 
     GetClientRect(hToolbar, &rc);
-    MoveWindow(hToolbar, 0, 0, x, rc.bottom, FALSE);
     HeightToolbar = rc.bottom;
 
     // hack-o-rama
