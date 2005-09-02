@@ -7,6 +7,10 @@
 #include "connect.h"
 #include "machdep.h"
 
+// Taken from Options.c
+// allow the font to be specified sensibly
+int PointToTwip(x);
+
 LPSTR readRegStrDup(LPSTR Key, LPSTR Default)
 {
     return readRegString(HKEY_CURRENT_USER, hugsRegRoot, Key, Default);
@@ -56,7 +60,7 @@ void RegistryReadFont(CHARFORMAT* cf)
     cf->dwEffects = 0;
 
     readRegStr("FontName", "Courier New", cf->szFaceName);
-    cf->yHeight = readRegInt("FontSize", 16);
+    cf->yHeight = readRegInt("FontSize", PointToTwip(10));
     if (readRegInt("FontWeight", 0)) cf->dwEffects |= CFE_BOLD;
     if (readRegInt("FontItalic", 0)) cf->dwEffects |= CFE_ITALIC;
 }
