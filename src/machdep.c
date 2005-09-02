@@ -11,8 +11,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.129 $
- * $Date: 2005/08/30 10:42:33 $
+ * $Revision: 1.130 $
+ * $Date: 2005/09/02 10:49:32 $
  * ------------------------------------------------------------------------*/
 #include "prelude.h"
 #include "storage.h"
@@ -84,13 +84,6 @@
 #endif
 #if HAVE_WINDOWS_H
 # include <windows.h>
-#endif
-
-#if HUGS_FOR_WINDOWS
-extern HCURSOR HandCursor;            /* Forward references to cursors   */
-extern HCURSOR GarbageCursor;
-extern HCURSOR SaveCursor;
-static void    local DrawStatusLine     Args((HWND));
 #endif
 
 #if DOS
@@ -987,9 +980,6 @@ String timeString() {                   /* return time&date string         */
 Bool gcMessages = FALSE;                /* TRUE => print GC messages       */
 
 Void gcStarted() {                      /* Notify garbage collector start  */
-#if HUGS_FOR_WINDOWS
-    SaveCursor = SetCursor(GarbageCursor);
-#endif
     if (gcMessages) {
 	Printf("{{Gc");
 	FlushStdout();
@@ -1009,9 +999,6 @@ Int recovered; {
 	Printf("%d}}",recovered);
 	FlushStdout();
     }
-#if HUGS_FOR_WINDOWS
-    SetCursor(SaveCursor);
-#endif
 }
 
 Cell *CStackBase;                       /* Retain start of C control stack */
