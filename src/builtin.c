@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: builtin.c,v $
- * $Revision: 1.86 $
- * $Date: 2005/07/23 17:05:24 $
+ * $Revision: 1.87 $
+ * $Date: 2005/09/04 14:27:05 $
  * ------------------------------------------------------------------------*/
 
 /* We include math.h before prelude.h because SunOS 4's cpp incorrectly
@@ -1487,11 +1487,12 @@ primFun(primRecExt) {                   /* :: Int -> a -> Rec ? -> Rec ?   */
 
 primFun(primRecBrk) {                   /* :: Int -> Rec ? -> (?, Rec ?)   */
     Int  n;
-    Cell b = cons(RECORD,NIL);
+    Cell b;
     Cell r;
     eval(primArg(2));
     n = whnfInt;
     eval(primArg(1));
+    b = cons(RECORD,NIL);
     for (r=arg(whnfHead); n>0; n--) {
 	b = cons(fun(r),b);
 	r = arg(r);
