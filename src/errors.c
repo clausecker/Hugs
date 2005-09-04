@@ -119,6 +119,15 @@ String msg; {
     failed();
     stopAnyPrinting();
     Printf("INTERNAL ERROR: %s\n",msg);
+
+    Printf("Please report this Hugs bug to ");
+#if HUGS_FOR_WINDOWS
+    WinHugsHyperlink("mailto:hugs-bugs@haskell.org");
+#else
+    Printf("hugs-bugs@haskell.org");
+#endif
+    Printf("\n");
+
     FlushStdout();
 #if USE_THREADS
     stopEvaluatorThread();
