@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.139 $
- * $Date: 2005/09/02 13:56:09 $
+ * $Revision: 1.140 $
+ * $Date: 2005/09/05 00:16:07 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -104,8 +104,9 @@ String argv[]; {
 #else
           _alloca
 #endif
-                  (sizeof(char)*(MAX_PATH + notePadLen + 1));
-      rc = GetWindowsDirectory(notePadLoc, MAX_PATH);
+		  (sizeof(char)*(MAX_PATH + notePadLen + 2));
+      notePadLoc[0] = '&';
+      rc = GetWindowsDirectory(notePadLoc+1, MAX_PATH);
       if ( !(rc == 0 || rc > MAX_PATH) ) {
 	strcat(notePadLoc, DEFAULT_EDITOR);
 	hugsEdit = strCopy(notePadLoc);
