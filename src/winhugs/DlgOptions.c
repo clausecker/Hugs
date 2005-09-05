@@ -334,6 +334,16 @@ LRESULT CALLBACK OptionsRuntimeProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM l
 /////////////////////////////////////////////////////////////////////
 // OPTCOMPILE related code
 
+void EnableHaskellExts(HWND hDlg)
+{
+    BOOL Ext = GetDlgItemBool(hDlg, optExtensions);
+
+    EnableWindow(GetDlgItem(hDlg, chkOverlap), Ext);
+    EnableWindow(GetDlgItem(hDlg, chkHereDocs), Ext);
+    EnableWindow(GetDlgItem(hDlg, chkOverlapUnsafe),
+	Ext && GetDlgItemBool(hDlg, chkOverlap));
+}
+
 LRESULT CALLBACK OptionsCompileProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 {
     switch (msg) {
@@ -341,6 +351,13 @@ LRESULT CALLBACK OptionsCompileProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM l
 	    SetDlgItemText(hDlg, txtPath, hugsPath);
 	    SetDlgItemBool(hDlg, chkListLoading, listScripts);
 	    SetDlgItemBool(hDlg, chkAutoReload, autoLoadFiles);
+
+	    SetDlgItemBool(hDlg, optCompatible, haskell98);
+	    SetDlgItemBool(hDlg, optExtensions, !haskell98);
+	    SetDlgItemBool(hDlg, chkOverlap, allowOverlap);
+	    SetDlgItemBool(hDlg, chkOverlapUnsafe, allowUnsafeOverlap);
+	    SetDlgItemBool(hDlg, chkHereDocs, hereDocs);
+	    EnableHaskellExts(hDlg);
 	    break;
 
 	case WM_NOTIFY:
@@ -353,9 +370,20 @@ LRESULT CALLBACK OptionsCompileProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM l
 
 		listScripts = GetDlgItemBool(hDlg, chkListLoading);
 		autoLoadFiles = GetDlgItemBool(hDlg, chkAutoReload);
+		haskell98 = GetDlgItemBool(hDlg, optCompatible);
+		allowOverlap = GetDlgItemBool(hDlg, chkOverlap);
+		allowUnsafeOverlap = GetDlgItemBool(hDlg, chkOverlapUnsafe);
+		hereDocs = GetDlgItemBool(hDlg, chkHereDocs);
 
 		WriteOptions();
 	    }
+	    break;
+
+	case WM_COMMAND:
+	    if (LOWORD(wParam) == chkOverlap ||
+		LOWORD(wParam) == optExtensions ||
+		LOWORD(wParam) == optCompatible)
+		EnableHaskellExts(hDlg);
 	    break;
     }
     return 0;

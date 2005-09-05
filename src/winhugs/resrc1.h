@@ -14,8 +14,11 @@
 #define txtPath                         1005
 #define ID_RTF                          1006
 #define IDC_CHECK1                      1012
+#define chkOverlap                      1012
 #define IDC_CHECK2                      1013
+#define chkOverlapUnsafe                1013
 #define IDC_CHECK3                      1014
+#define chkHereDocs                     1014
 #define lstFontFace                     1016
 #define chkUserShow                     1016
 #define lstEditor                       1017
@@ -31,6 +34,9 @@
 #define chkPrintType                    1031
 #define chkListLoading                  1034
 #define chkAutoReload                   1035
+#define optCompatible                   1036
+#define IDC_RADIO2                      1037
+#define optExtensions                   1037
 #define DLG_MAIN                        28445
 #define DLG_OPTHUGS                     28446
 #define ID_USERSGUIDE                   40007
@@ -44,7 +50,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        110
 #define _APS_NEXT_COMMAND_VALUE         40015
-#define _APS_NEXT_CONTROL_VALUE         1036
+#define _APS_NEXT_CONTROL_VALUE         1037
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif
