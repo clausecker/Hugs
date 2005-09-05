@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.141 $
- * $Date: 2005/09/05 16:07:52 $
+ * $Revision: 1.142 $
+ * $Date: 2005/09/05 16:08:35 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1011,7 +1011,7 @@ static Void local initInterpreter()
 }
 
 Bool doCommand()		    /* read and execute a command      */
-{
+{				    /* returns TRUE on QUIT (:quit)    */
 	Command cmd;
 	cmd = readCommand(cmds, (Char)':', (Char)'!');
 #if WANT_TIMER
