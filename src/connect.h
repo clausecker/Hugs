@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: connect.h,v $
- * $Revision: 1.90 $
- * $Date: 2005/08/30 10:42:33 $
+ * $Revision: 1.91 $
+ * $Date: 2005/09/05 16:07:52 $
  * ------------------------------------------------------------------------*/
 #ifndef __CONNECT_H__
 #define __CONNECT_H__
@@ -259,9 +259,10 @@ extern Bool  preludeLoaded;		/* TRUE => prelude has been loaded */
 /* hugs.c exports: */
 extern  Void   shutdownHugs     Args((Void));
 extern  Void   promptForInput   Args((String));
-/* The next two are only reqd by winhugs */
+/* The next three are required only by winhugs */
+extern  Bool   doCommand        Args((Void));
 extern  Void   runEditor        Args((Void));
-extern Module  findEvalModule   Args((Void));
+extern  Module findEvalModule   Args((Void));
 
 extern  Void   storage          Args((Int));
 

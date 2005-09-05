@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.140 $
- * $Date: 2005/09/05 00:16:07 $
+ * $Revision: 1.141 $
+ * $Date: 2005/09/05 16:07:52 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -33,6 +33,7 @@
  * ------------------------------------------------------------------------*/
 
 static Void   local interpreter       Args((Int,String []));
+static Void   local initInterpreter   Args((Void));
 static Void   local menu              Args((Void));
 static Void   local guidance          Args((Void));
 static Void   local forHelp           Args((Void));
@@ -945,18 +946,73 @@ String argv[]; {
     __try {
 #endif
 
+#ifdef HUGS_FOR_WINDOWS
+    initInterpreter();
+    InAutoReloadFiles = FALSE;
+    MessagePump();
+#else
     for (;;) {
-	Command cmd;
-	everybody(RESET);               /* reset to sensible initial state */
-	dropScriptsFrom(numLoadedScripts()-1); 
-	                                /* remove partially loaded scripts */
-					/* not counting prelude as a script*/
-
-	promptForInput(textToStr(module(findEvalModule()).text));
-#if HUGS_FOR_WINDOWS
-        InAutoReloadFiles = FALSE;
+	initInterpreter();
+	if (doCommand())
+	    break;
+    }
 #endif
 
+    breakOn(FALSE);
+    
+#if defined(_MSC_VER) && !defined(_MANAGED)
+    } __except ( ((GetExceptionCode() == EXCEPTION_STACK_OVERFLOW) ?
+		  EXCEPTION_EXECUTE_HANDLER :
+		  EXCEPTION_CONTINUE_SEARCH) ) {
+	/* Closely based on sample code in Nov 1999 Dr GUI MSDN column */
+	char* stackPtr;
+	static SYSTEM_INFO si;
+	static MEMORY_BASIC_INFORMATION mi;
+	static DWORD protect;
+
+	/* get at the current stack pointer */
+	_asm mov stackPtr, esp;
+
+	/* query for page size + VM info for the allocation chunk
+	   we're currently in. */
+	GetSystemInfo(&si);
+	VirtualQuery(stackPtr, &mi, sizeof(mi));
+
+	/* Abandon the C stack and, most importantly, re-insert
+	   the page guard bit. Do this on the page above the
+	   current one, not the one where the exception was raised. */
+	stackPtr = (LPBYTE) (mi.BaseAddress) - si.dwPageSize;
+	if ( VirtualFree(mi.AllocationBase,
+			 (LPBYTE)stackPtr - (LPBYTE) mi.AllocationBase,
+			 MEM_DECOMMIT) &&
+	     VirtualProtect(stackPtr, si.dwPageSize,
+			    PAGE_GUARD | PAGE_READWRITE, &protect) ) {
+
+	    /* careful not to do a garbage collection here
+	       (as it may have caused the overflow). */
+	    ERRTEXT "ERROR - C stack overflow"
+	    /* EEND does a longjmp back to a sane state. */
+	    EEND;
+	} else {
+	    fatal("C stack overflow; unable to recover.");
+	}
+    }
+#endif
+}
+
+static Void local initInterpreter()
+{
+    everybody(RESET);               /* reset to sensible initial state */
+    dropScriptsFrom(numLoadedScripts()-1); 
+				    /* remove partially loaded scripts */
+				    /* not counting prelude as a script*/
+
+    promptForInput(textToStr(module(findEvalModule()).text));
+}
+
+Bool doCommand()		    /* read and execute a command      */
+{
+	Command cmd;
 	cmd = readCommand(cmds, (Char)':', (Char)'!');
 #if WANT_TIMER
 	updateTimers();
@@ -1029,8 +1085,7 @@ String argv[]; {
 			  break;
 	    case PNTVER: Printf("-- Hugs Version %s\n", versionString);
 			  break;
-	    case QUIT   : breakOn(FALSE);
-			  return;
+	    case QUIT   : return TRUE;
 	    case COLLECT: consGC = FALSE;
 			  garbageCollect();
 			  consGC = TRUE;
@@ -1048,44 +1103,7 @@ String argv[]; {
 	Printf("Elapsed time (ms): %ld (user), %ld (system)\n",
 	       millisecs(userElapsed), millisecs(systElapsed));
 #endif
-    }
-    breakOn(FALSE);
-#if defined(_MSC_VER) && !defined(_MANAGED)
-    } __except ( ((GetExceptionCode() == EXCEPTION_STACK_OVERFLOW) ? 
-		  EXCEPTION_EXECUTE_HANDLER : 
-		  EXCEPTION_CONTINUE_SEARCH) ) {
-	/* Closely based on sample code in Nov 1999 Dr GUI MSDN column */
-	char* stackPtr;
-	static SYSTEM_INFO si;
-	static MEMORY_BASIC_INFORMATION mi;
-	static DWORD protect;
- 
-      /* get at the current stack pointer */
-      _asm mov stackPtr, esp;
-
-      /* query for page size + VM info for the allocation chunk we're currently in. */
-      GetSystemInfo(&si);
-      VirtualQuery(stackPtr, &mi, sizeof(mi));
-
-      /* Abandon the C stack and, most importantly, re-insert
-         the page guard bit. Do this on the page above the
-	 current one, not the one where the exception was raised. */
-      stackPtr = (LPBYTE) (mi.BaseAddress) - si.dwPageSize;
-      if ( VirtualFree(mi.AllocationBase,
-		       (LPBYTE)stackPtr - (LPBYTE) mi.AllocationBase, 
-		       MEM_DECOMMIT) &&
-	   VirtualProtect(stackPtr, si.dwPageSize, 
-			  PAGE_GUARD | PAGE_READWRITE, &protect) ) {
-
-	  /* careful not to do a garbage collection here (as it may have caused the overflow). */
-          ERRTEXT "ERROR - C stack overflow"
-          /* EEND does a longjmp back to a sane state. */
-          EEND;
-      } else {
-	  fatal("C stack overflow; unable to recover.");
-      }
-    }
-#endif
+	return FALSE;
 }
 
 /*-------------------------------------------------------------------------*/

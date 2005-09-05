@@ -135,7 +135,6 @@ void FireCommandDelay(LPCSTR Command)
 }
 
 void FireCommand(LPCSTR Command);
-void invoke();
 
 void EnableButton(int id, BOOL Enable)
 {
@@ -174,7 +173,7 @@ void FireCommand(LPCSTR Command)
 
     stringInput((LPSTR) Command);
     input(BREAK);
-    invoke();
+    doCommand();
 
     RtfWindowFlushBuffer();
     Running = FALSE;
