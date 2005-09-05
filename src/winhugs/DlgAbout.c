@@ -2,10 +2,20 @@
 #include "Header.h"
 #include "resrc1.h"
 #include "Winmenu.h"
+#include "connect.h"
 
 const int BmpWidth = 111;
 const int BmpHeight = 112;
 const int BmpTransparent = RGB(253,5,255);
+
+LPCTSTR AboutText = 
+    "Hugs 98: Based on the Haskell 98 standard\n"
+    "Copyright © 1994-2005\n"
+    "Bug reports to: mailto:hugs-bugs@haskell.org\n"
+    "Website: http://www.haskell.org/hugs\n"
+    "\n"
+    "Please see the distribution for License and Credits info\n"
+    "Version: ";
 
 typedef struct _AboutData
 {
@@ -24,6 +34,7 @@ LRESULT CALLBACK AboutDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
     switch (Msg) {
 	case WM_INITDIALOG:
 	    {
+		HWND hRTF = GetDlgItem(hDlg, rtfAbout);
 		AboutData* ad = malloc(sizeof(AboutData));
 		HBITMAP hBmp;
 		SetWindowLongPtr(hDlg, GWL_USERDATA, (LONG) ad);
@@ -34,6 +45,12 @@ LRESULT CALLBACK AboutDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
 	    hBmp = LoadBitmap(hThisInstance, MAKEINTRESOURCE(BMP_ABOUT));
 	    ImageList_AddMasked(ad->hImgList, hBmp, BmpTransparent);
 	    DeleteObject(hBmp);
+
+	    SendMessage(hRTF, EM_AUTOURLDETECT, TRUE, 0);
+	    SetWindowText(hRTF, AboutText);
+	    SendMessage(hRTF, EM_SETSEL, -1, -1);
+	    SendMessage(hRTF, EM_REPLACESEL, FALSE, (LPARAM) versionString);
+	    SendMessage(hRTF, EM_SETEVENTMASK, 0, ENM_LINK);
 	}
 	return TRUE;
 
@@ -53,6 +70,25 @@ LRESULT CALLBACK AboutDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
 		case IDOK: case IDCANCEL:
 		    EndDialog(hDlg, TRUE);
 		    return TRUE;
+	    }
+	    break;
+
+	case WM_NOTIFY:
+	    if (wParam == rtfAbout && ((LPNMHDR) lParam)->code == EN_LINK)
+	    {
+		TEXTRANGE tr;
+		char Buffer[1000];
+	        ENLINK* enl = (ENLINK*) lParam;
+
+		if (enl->msg == WM_LBUTTONUP)
+		{
+		    tr.lpstrText = Buffer;
+		    tr.chrg.cpMin = enl->chrg.cpMin;
+		    tr.chrg.cpMax = enl->chrg.cpMax;
+
+		    SendMessage(enl->nmhdr.hwndFrom, EM_GETTEXTRANGE, 0, (LPARAM) &tr);
+		    ExecuteFile(Buffer);
+		}
 	    }
 	    break;
 

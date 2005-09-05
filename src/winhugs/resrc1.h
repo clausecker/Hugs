@@ -12,6 +12,7 @@
 #define IDC_RICHEDIT21                  1005
 #define rtfPreview                      1005
 #define txtPath                         1005
+#define rtfAbout                        1005
 #define ID_RTF                          1006
 #define IDC_CHECK1                      1012
 #define chkOverlap                      1012

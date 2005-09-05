@@ -152,15 +152,15 @@ END
 // Dialog
 //
 
-ABOUTDLGBOX DIALOGEX 35, 24, 289, 113
+ABOUTDLGBOX DIALOGEX 35, 24, 318, 113
 STYLE DS_SETFONT | DS_MODALFRAME | DS_3DLOOK | DS_FIXEDSYS | DS_CENTER | 
     WS_POPUP | WS_CAPTION
 CAPTION "About Hugs for Windows"
 FONT 8, "MS Shell Dlg", 400, 0, 0x0
 BEGIN
-    PUSHBUTTON      "OK",IDOK,221,90,53,16
-    LTEXT           "Hugs 98: Based on the Haskell 98 standard\nCopyright © 1994-2005\nBug reports to: hugs-bugs@haskell.org\nWebsite: http://www.haskell.org/hugs\n\nPlease see the distribution for License and Credits info",
-                    IDC_STATIC,103,22,178,66
+    PUSHBUTTON      "OK",IDOK,252,90,53,16
+    CONTROL         "",rtfAbout,"RichEdit20A",ES_MULTILINE | ES_AUTOHSCROLL | 
+                    ES_READONLY | WS_TABSTOP,103,17,201,67,WS_EX_TRANSPARENT
 END
 
 OPTIONSDLGBOX DIALOGEX 14, 24, 313, 234
