@@ -29,8 +29,8 @@ DSL_FILE	= hugs-ug.dsl
 # could be $(ROOT)/$(ROOT).html instead.
 HTML		= $(ROOT)/license.html
 
-%.sgml: %.xml
-	LC_ALL=C sed -f xml2sgml.sed $*.xml >$@
+%.sgml: %.xml xml2sgml-no-cr.sed
+	LC_ALL=C sed -f xml2sgml-no-cr.sed $*.xml >$@
 
 all: $(SGMLDocWays)
 
@@ -48,6 +48,7 @@ install: $(SGMLDocWays)
 clean:
 	$(RM) $(PARTS)
 	$(RM) *~
+	$(RM) xml2sgml-no-cr.sed
 
 distclean: clean
 	$(RM) $(ROOT).dvi $(ROOT).ps $(ROOT).pdf
@@ -55,6 +56,12 @@ distclean: clean
 	$(RM) Makefile
 
 veryclean: distclean
+
+# MSYS sed cannot handle carriage returns in sed scripts,
+# so generate one that is guaranteed not to have any.
+# (The wierd sed command below is a portable way of stripping CRs.)
+xml2sgml-no-cr.sed: xml2sgml.sed
+	cat xml2sgml.sed | LC_ALL=C sed 's/[^	 -~]//g' >$@
 
 html: $(HTML)
 
