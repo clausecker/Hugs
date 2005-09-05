@@ -1,7 +1,9 @@
-
 #include "Header.h"
 #include "resrc1.h"
 #include "Winmenu.h"
+
+#include "prelude.h"
+#include "storage.h"
 #include "connect.h"
 
 const int BmpWidth = 111;
