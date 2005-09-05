@@ -133,10 +133,11 @@ void InitOptionsFont(HWND hDlg)
     UpdateFontPreview(hDlg);
 }
 
-BOOL CalcPath(int n, char* Buffer)
+/* editorIndex refers to the Editors array in InitOptionsEditor() */
+BOOL EditorPath(int editorIndex, char* Buffer)
 {
     DWORD Size = MAX_PATH;
-    switch (n) {
+    switch (editorIndex) {
 	case 0: //Notepad
 	    GetWindowsDirectory(Buffer, MAX_PATH);
 	    strcat(Buffer, "\\notepad.exe");
@@ -161,6 +162,29 @@ BOOL CalcPath(int n, char* Buffer)
 	    }
 	    break;
 
+	case 2: //Vim
+	    // x = HKEY_LOCAL_MACHINE\SOFTWARE\Classes\Vim.Application\CLSID
+	    // vi = HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\$x$\LocalServer32
+	    // cmd = "$vi$" +%d %s
+	    {
+		char Buf2[1000];
+		Buffer[0] = 0;
+
+		if (RegQueryValue(HKEY_LOCAL_MACHINE,
+		    "SOFTWARE\\Classes\\Vim.Application\\CLSID",
+		    Buffer, &Size) != ERROR_SUCCESS)
+		    return FALSE;
+
+		sprintf(Buf2, "SOFTWARE\\Classes\\CLSID\\%s\\LocalServer32", Buffer);
+		if (RegQueryValue(HKEY_LOCAL_MACHINE, Buf2,
+		    &Buffer[1], &Size) != ERROR_SUCCESS)
+		    return FALSE;
+
+		Buffer[0] = '\"';
+		strcat(Buffer, "\" --remote-silent +%d %s");
+	    }
+	    break;
+
 	default:
 	    Buffer[0] = 0;
 	    break;
@@ -175,6 +199,7 @@ void InitOptionsEditor(HWND hDlg)
     const LPCTSTR Editors[] = {
 	"Notepad",
 	"Textpad (www.textpad.com)",
+	"Vim (www.vim.org)",
 	NULL
     };
     char* s;
@@ -191,7 +216,7 @@ void InitOptionsEditor(HWND hDlg)
     SetDlgItemText(hDlg, txtEditor, s);
 
     for (i = 0; Editors[i]; i++) {
-	BOOL Res = CalcPath(i, Buffer);
+	BOOL Res = EditorPath(i, Buffer);
 	if (Res) {
 	    int NewIndex = (int) SendMessage(hLst, CB_ADDSTRING, 0, (LPARAM) Editors[i]);
 	    SendMessage(hLst, CB_SETITEMDATA, NewIndex, i);
@@ -242,7 +267,7 @@ LRESULT CALLBACK OptionsHugsProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPar
 
 		if (CurData != -1) {
 		    CHAR Buffer[MAX_PATH];
-		    CalcPath(CurData, Buffer);
+		    EditorPath(CurData, Buffer);
 		    SetWindowText(hTxt, Buffer);
 		}
 	    }
