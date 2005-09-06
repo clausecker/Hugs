@@ -173,7 +173,8 @@ void FireCommand(LPCSTR Command)
 
     stringInput((LPSTR) Command);
     input(BREAK);
-    doCommand();
+    if (doCommand())
+	SendMessage(hThisWindow, WM_CLOSE, 0, 0);
 
     RtfWindowFlushBuffer();
     Running = FALSE;
