@@ -1,10 +1,13 @@
 #include "Header.h"
+#include <stdio.h>
+#include "IORemap.h"
 #include "setjmp.h"
 
 #include "prelude.h"
 #include "storage.h"
 #include "evaluator.h"
 #include "connect.h"
+#include "errors.h"
 
 // store the extern HINSTANCE
 HINSTANCE hThisInstance;
@@ -195,51 +198,51 @@ DWORD evaluatorThreadBody(LPDWORD notUsed) {
 
     int evaluatorNumber = setjmp(goToEvaluator);
 
-//#if defined(_MSC_VER) && !defined(_MANAGED)
+#if defined(_MSC_VER) && !defined(_MANAGED)
     /* Under Win32 (when compiled with MSVC), we specially
      * catch and handle SEH stack overflows.
      */
-//    __try {
-//#endif
+    __try {
+#endif
+
     evaluator(findEvalModule());
     stopEvaluatorThread();
 
-//#if defined(_MSC_VER) && !defined(_MANAGED)
-//    } __except ( ((GetExceptionCode() == EXCEPTION_STACK_OVERFLOW) ?
-//		  EXCEPTION_EXECUTE_HANDLER :
-//		  EXCEPTION_CONTINUE_SEARCH) ) {
-//	/* Closely based on sample code in Nov 1999 Dr GUI MSDN column */
-//	char* stackPtr;
-//	static SYSTEM_INFO si;
-//	static MEMORY_BASIC_INFORMATION mi;
-//	static DWORD protect;
-//
-//      /* get at the current stack pointer */
-//      _asm mov stackPtr, esp;
-//
-//      /* query for page size + VM info for the allocation chunk we're currently in. */
-//      GetSystemInfo(&si);
-//      VirtualQuery(stackPtr, &mi, sizeof(mi));
-//
-//      /* Abandon the C stack and, most importantly, re-insert
-//         the page guard bit. Do this on the page above the
-//	 current one, not the one where the exception was raised. */
-//      stackPtr = (LPBYTE) (mi.BaseAddress) - si.dwPageSize;
-//      if ( VirtualFree(mi.AllocationBase,
-//		       (LPBYTE)stackPtr - (LPBYTE) mi.AllocationBase,
-//		       MEM_DECOMMIT) &&
-//	   VirtualProtect(stackPtr, si.dwPageSize,
-//			  PAGE_GUARD | PAGE_READWRITE, &protect) ) {
-//
-//	  /* careful not to do a garbage collection here (as it may have caused the overflow). */
-//          ERRTEXT "ERROR - C stack overflow"
-//          /* EEND does a longjmp back to a sane state. */
-//          EEND;
-//      } else {
-//	  fatal("C stack overflow; unable to recover.");
-//      }
-//    }
-//#endif
+#if defined(_MSC_VER) && !defined(_MANAGED)
+    } __except ( ((GetExceptionCode() == EXCEPTION_STACK_OVERFLOW) ?
+		  EXCEPTION_EXECUTE_HANDLER :
+		  EXCEPTION_CONTINUE_SEARCH) ) {
+	/* Closely based on sample code in Nov 1999 Dr GUI MSDN column */
+	char* stackPtr;
+	static SYSTEM_INFO si;
+	static MEMORY_BASIC_INFORMATION mi;
+	static DWORD protect;
+
+      /* get at the current stack pointer */
+      _asm mov stackPtr, esp;
+
+      /* query for page size + VM info for the allocation chunk we're currently in. */
+      GetSystemInfo(&si);
+      VirtualQuery(stackPtr, &mi, sizeof(mi));
+
+      /* Abandon the C stack and, most importantly, re-insert
+         the page guard bit. Do this on the page above the
+	 current one, not the one where the exception was raised. */
+      stackPtr = (LPBYTE) (mi.BaseAddress) - si.dwPageSize;
+      if ( VirtualFree(mi.AllocationBase,
+		       (LPBYTE)stackPtr - (LPBYTE) mi.AllocationBase,
+		       MEM_DECOMMIT) &&
+	   VirtualProtect(stackPtr, si.dwPageSize,
+			  PAGE_GUARD | PAGE_READWRITE, &protect) ) {
+
+	  /* careful not to do a garbage collection here (as it may have caused the overflow). */
+	  WinHugsPutS(stderr, "ERROR - C stack overflow");
+	  errFail();
+      } else {
+	  fatal("C stack overflow; unable to recover.");
+      }
+    }
+#endif
     /* not reached*/
     return 0;
 }

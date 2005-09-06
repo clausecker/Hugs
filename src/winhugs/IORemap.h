@@ -30,6 +30,7 @@ extern char stdstrbuff[];
 #define YELLOW          rgb(175,175,0)
 #define WHITE           rgb(255,255,255)
 
+void WinHugsPutS(FILE* f, char* Buffer);
 int WinHugsPrintf(const char* format, ...);
 int WinHugsFPrintf(FILE* f, const char* format, ...);
 int WinHugsPutC(FILE* f, char c);
