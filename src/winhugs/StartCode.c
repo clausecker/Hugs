@@ -1,7 +1,7 @@
 #include "Header.h"
 #include <stdio.h>
-#include "IORemap.h"
-#include "setjmp.h"
+#include <setjmp.h>
+#include "Winhugs.h"
 
 #include "prelude.h"
 #include "storage.h"

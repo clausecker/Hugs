@@ -8,8 +8,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: prelude.h,v $
- * $Revision: 1.76 $
- * $Date: 2005/09/01 15:26:38 $
+ * $Revision: 1.77 $
+ * $Date: 2005/09/06 23:38:15 $
  * ------------------------------------------------------------------------*/
 #ifndef __PRELUDE_H__
 #define __PRELUDE_H__
@@ -201,7 +201,7 @@ int macsystem(char *filenames);
  *-------------------------------------------------------------------------*/
 
 #if HUGS_FOR_WINDOWS
-#include "winhugs\IORemap.h"
+# include "winhugs\Winhugs.h"
 #endif
 
 
