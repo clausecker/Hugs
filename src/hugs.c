@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.143 $
- * $Date: 2005/09/06 09:34:45 $
+ * $Revision: 1.144 $
+ * $Date: 2005/09/06 19:48:29 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -965,6 +965,7 @@ String argv[]; {
 		  EXCEPTION_EXECUTE_HANDLER :
 		  EXCEPTION_CONTINUE_SEARCH) ) {
 	/* Closely based on sample code in Nov 1999 Dr GUI MSDN column */
+	/* http://msdn.microsoft.com/archive/en-us/dnaraskdr/html/drgui49.asp */
 	char* stackPtr;
 	static SYSTEM_INFO si;
 	static MEMORY_BASIC_INFORMATION mi;
