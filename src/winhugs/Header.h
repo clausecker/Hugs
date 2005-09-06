@@ -45,6 +45,7 @@ void MruInit();
 void ShowAboutDialog(HWND hParent);
 BOOL ShowOptionsDialog(HWND hParent);
 LPSTR ExpandFileName(LPSTR what);
+LPCTSTR GetEditor(int Index, LPTSTR Buffer);
 
 // From WinBrowse2.c
 void DrawClassesHierarchy();

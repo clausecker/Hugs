@@ -133,75 +133,10 @@ void InitOptionsFont(HWND hDlg)
     UpdateFontPreview(hDlg);
 }
 
-/* editorIndex refers to the Editors array in InitOptionsEditor() */
-BOOL EditorPath(int editorIndex, char* Buffer)
-{
-    DWORD Size = MAX_PATH;
-    switch (editorIndex) {
-	case 0: //Notepad
-	    GetWindowsDirectory(Buffer, MAX_PATH);
-	    strcat(Buffer, "\\notepad.exe");
-	    break;
-
-	case 1: //Textpad
-	    //[HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\TextPad.exe]
-	    //@="D:\\Program Files\\TextPad 4\\TextPad.exe"
-	    {
-		char* s;
-
-		Buffer[0] = 0;
-		if (RegQueryValue(HKEY_LOCAL_MACHINE,
-		    "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\TextPad.exe",
-		    Buffer, &Size) != ERROR_SUCCESS)
-		    return FALSE;
-
-		s = strrchr(Buffer, '\\');
-		if (s == NULL) return FALSE;
-
-		strcpy(&s[1], "System\\DDEOPN32.EXE TextPad %s(%d)");
-	    }
-	    break;
-
-	case 2: //Vim
-	    // x = HKEY_LOCAL_MACHINE\SOFTWARE\Classes\Vim.Application\CLSID
-	    // vi = HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\$x$\LocalServer32
-	    // cmd = "$vi$" +%d %s
-	    {
-		char Buf2[1000];
-		Buffer[0] = 0;
-
-		if (RegQueryValue(HKEY_LOCAL_MACHINE,
-		    "SOFTWARE\\Classes\\Vim.Application\\CLSID",
-		    Buffer, &Size) != ERROR_SUCCESS)
-		    return FALSE;
-
-		sprintf(Buf2, "SOFTWARE\\Classes\\CLSID\\%s\\LocalServer32", Buffer);
-		if (RegQueryValue(HKEY_LOCAL_MACHINE, Buf2,
-		    &Buffer[1], &Size) != ERROR_SUCCESS)
-		    return FALSE;
-
-		Buffer[0] = '\"';
-		strcat(Buffer, "\" --remote-silent +%d %s");
-	    }
-	    break;
-
-	default:
-	    Buffer[0] = 0;
-	    break;
-    }
-    return TRUE;
-}
-
 void InitOptionsEditor(HWND hDlg)
 {
     HWND hLst = GetDlgItem(hDlg, lstEditor);
 
-    const LPCTSTR Editors[] = {
-	"Notepad",
-	"Textpad (www.textpad.com)",
-	"Vim (www.vim.org)",
-	NULL
-    };
     char* s;
     char Buffer[MAX_PATH];
     int i;
@@ -215,10 +150,11 @@ void InitOptionsEditor(HWND hDlg)
     // and figure out if it corresponds to any defaults
     SetDlgItemText(hDlg, txtEditor, s);
 
-    for (i = 0; Editors[i]; i++) {
-	BOOL Res = EditorPath(i, Buffer);
-	if (Res) {
-	    int NewIndex = (int) SendMessage(hLst, CB_ADDSTRING, 0, (LPARAM) Editors[i]);
+    for (i = 0; ; i++) {
+        LPCTSTR EditorName = GetEditor(i, Buffer);
+	if (EditorName == NULL) break;
+	if (Buffer[0]) {
+	    int NewIndex = (int) SendMessage(hLst, CB_ADDSTRING, 0, (LPARAM) EditorName);
 	    SendMessage(hLst, CB_SETITEMDATA, NewIndex, i);
 	    if (stricmp(Buffer, s) == 0)
 		SendMessage(hLst, CB_SETCURSEL, NewIndex, 0);
@@ -267,7 +203,7 @@ LRESULT CALLBACK OptionsHugsProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPar
 
 		if (CurData != -1) {
 		    CHAR Buffer[MAX_PATH];
-		    EditorPath(CurData, Buffer);
+		    GetEditor(CurData, Buffer);
 		    SetWindowText(hTxt, Buffer);
 		}
 	    }
