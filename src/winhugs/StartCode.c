@@ -150,7 +150,7 @@ DWORD   evaluatorThreadId;
 BOOL    evaluatorThreadRunning = FALSE;
 jmp_buf goToEvaluator;
 
-void MessagePump()
+void WinHugsMessagePump()
 {
     MSG msg;
     while (GetMessage(&msg, NULL, 0, 0) > 0) {

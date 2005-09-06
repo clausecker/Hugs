@@ -39,6 +39,7 @@ void WinHugsHyperlink(const char* msg);
 
 // Add support for Most Recently Used Files
 void WinHugsAddMruFile(const char* file);
+void WinHugsMessagePump();
 
 // undefine everything that is a macro already
 #undef getc

@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.142 $
- * $Date: 2005/09/05 16:08:35 $
+ * $Revision: 1.143 $
+ * $Date: 2005/09/06 09:34:45 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -949,7 +949,7 @@ String argv[]; {
 #ifdef HUGS_FOR_WINDOWS
     initInterpreter();
     InAutoReloadFiles = FALSE;
-    MessagePump();
+    WinHugsMessagePump();
 #else
     for (;;) {
 	initInterpreter();
