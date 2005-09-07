@@ -137,8 +137,31 @@ BOOL RtfNotify(HWND hDlg, NMHDR* nmhdr)
 	// we don't want to paste rich text, as that makes it look weird
 	// so send only plain text paste commands
 	if ((enp->msg == WM_PASTE) && !Disallow) {
+	    LPTSTR Buffer = NULL;
 	    Disallow = TRUE;
-	    SendMessage(hRTF, EM_PASTESPECIAL, CF_TEXT, (LPARAM) NULL);
+	    if (IsClipboardFormatAvailable(CF_TEXT) &&
+		OpenClipboard(hThisWindow)) {
+		HGLOBAL hGlb; 
+		LPTSTR str; 
+
+	        if ((hGlb = GetClipboardData(CF_TEXT)) != NULL &&
+		    (str = GlobalLock(hGlb)) != NULL) {
+		    Buffer = strdup(str);
+		    GlobalUnlock(hGlb);
+		}
+		CloseClipboard();
+	    }
+
+	    if (Buffer != NULL) {
+		// strip trailing new line characters
+		int i;
+		for (i = strlen(Buffer)-1;
+		    i >= 0 && (Buffer[i] == '\r' || Buffer[i] == '\n');
+		    i--)
+		    Buffer[i] = 0;
+		SendMessage(hRTF, EM_REPLACESEL, FALSE, (LPARAM)Buffer);
+		free(Buffer);
+	    }
 	}
 
 	SetWindowLong(hDlg, DWL_MSGRESULT, (Disallow ? 1 : 0));
