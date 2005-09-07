@@ -358,6 +358,22 @@ void MainDropFiles(HWND hWnd, HDROP hDrop)
     FireCommand(Command);
 }
 
+void ShowContextMenu(int x, int y)
+{
+    HMENU hEdit = GetSubMenu(GetMenu(hThisWindow), 1);
+
+    if (x == 0xffff && y == 0xffff)
+    {
+	RECT rc;
+        GetWindowRect(GetDlgItem(hThisWindow, ID_RTF), &rc);
+	x = rc.left+2;
+	y = rc.top+2;
+    }
+
+    TrackPopupMenu(hEdit, 0, x, y, 0, hThisWindow, NULL);
+    CreatePopupMenu();
+}
+
 INT_PTR CALLBACK MainDlgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     switch (uMsg) {
@@ -391,6 +407,15 @@ INT_PTR CALLBACK MainDlgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 	case WM_TIMER:
 	    RtfWindowTimer();;
+	    break;
+
+	case WM_CONTEXTMENU:
+	    {
+		HWND hParam = (HWND) wParam;
+		HWND hRtfChild = GetDlgItem(hWnd, ID_RTF);
+		if (hParam == hWnd || hParam == hRtfChild)
+		    ShowContextMenu(LOWORD(lParam), HIWORD(lParam));
+	    }
 	    break;
 
 	case WM_HELP:
