@@ -95,6 +95,7 @@ BEGIN
     BEGIN
         MENUITEM "&Open...\tCtrl+O",            ID_OPEN
         MENUITEM "&Module Manager...",          ID_SCRIPTMAN
+        MENUITEM "Options",                     ID_SETOPTIONS
         MENUITEM SEPARATOR
         MENUITEM "&Exit",                       ID_EXIT
         MENUITEM SEPARATOR
@@ -105,25 +106,23 @@ BEGIN
         MENUITEM "Cu&t\tCtrl+X",                ID_CUT
         MENUITEM "&Copy\tCtrl+C",               ID_COPY
         MENUITEM "&Paste\tCtrl+V",              ID_PASTE
-        MENUITEM "Delete\tDel",                 ID_CLEAR
+        MENUITEM SEPARATOR
+        MENUITEM "Delete\tDel",                 ID_DELETE
+        MENUITEM "Select All\tCtrl+A",          ID_SELECTALL
+        MENUITEM "Clear Screen",                ID_CLEARSCREEN
         MENUITEM SEPARATOR
         MENUITEM "Previous line\t&Up arrow",    ID_GOPREVIOUS
         MENUITEM "Next line\t&Down arrow",      ID_GONEXT
     END
-    POPUP "&Interpreter"
+    POPUP "&Actions"
     BEGIN
         MENUITEM "&Run\tF5",                    ID_RUN
-        MENUITEM "&Stop program",               ID_STOP
+        MENUITEM "&Stop",                       ID_STOP
         MENUITEM SEPARATOR
-        MENUITEM "&Compile      Alt+F9",        ID_COMPILE, GRAYED
-        MENUITEM "C&lear all",                  ID_CLEARALL, GRAYED
+        MENUITEM "Re&load",                     ID_COMPILE
+        MENUITEM "&Clear Modules",              ID_CLEARALL
         MENUITEM SEPARATOR
-        MENUITEM "&Evaluate",                   ID_EVAL
-        MENUITEM "&Type",                       ID_TYPE
-        MENUITEM "&Info",                       ID_INFO
-        MENUITEM "&Find",                       ID_FIND
-        MENUITEM SEPARATOR
-        MENUITEM "&Options ...",                ID_SETOPTIONS
+        MENUITEM "Open Text Editor",            ID_GOEDIT
     END
     POPUP "&Browse"
     BEGIN

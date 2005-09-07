@@ -143,23 +143,24 @@ void EnableButton(int id, BOOL Enable)
     tbi.dwMask = TBIF_STATE;
     tbi.fsState = (Enable ? TBSTATE_ENABLED : 0);
     SendDlgItemMessage(hThisWindow, ID_TOOLBAR, TB_SETBUTTONINFO, id, (LPARAM) &tbi);
+
+    EnableMenuItem(GetMenu(hThisWindow), id,
+	    MF_BYCOMMAND | (Enable ? MF_ENABLED : MF_GRAYED));
 }
 
 void EnableButtons()
 {
+    int CopyState = (Running ? 0 : RtfWindowCanCutCopy());
+
     EnableButton(ID_STOP, Running);
     EnableButton(ID_RUN, !Running);
 
-    if (Running) {
-	EnableButton(ID_CUT, FALSE);
-	EnableButton(ID_COPY, FALSE);
-	EnableButton(ID_PASTE, FALSE);
-    } else {
-	int CopyState = RtfWindowCanCutCopy();
-	EnableButton(ID_CUT, CopyState & DROPEFFECT_MOVE);
-	EnableButton(ID_COPY, CopyState & DROPEFFECT_COPY);
-	EnableButton(ID_PASTE, TRUE);
-    }
+    EnableButton(ID_CUT, CopyState & DROPEFFECT_MOVE);
+    EnableButton(ID_DELETE, CopyState & DROPEFFECT_MOVE);
+    EnableButton(ID_COPY, CopyState & DROPEFFECT_COPY);
+    EnableButton(ID_PASTE, !Running);
+    EnableButton(ID_CLEARSCREEN, !Running);
+    EnableButton(ID_SELECTALL, !Running);
 }
 
 void FireCommand(LPCSTR Command)
@@ -242,51 +243,10 @@ void MainOpenFile(HWND hWnd)
 void MainCommand(HWND hWnd, int ID)
 {
     switch (ID) {
-	case IDCANCEL:
-	    EndDialog(hWnd, 0);
-	    break;
-
-	case IDOK:
-	    MessageBox(hWnd, "OK", "OK", 0);
-	    break;
-
-	/* Load a sript file from disk */
-	case ID_OPEN:
-	    MainOpenFile(hWnd);
-
-		/*	{ CHAR *ScriptName;
-		      CHAR Command[2048];
-
-		      if ((ScriptName = GetaFileName(GetFocus(), IDS_FILTERFILE)) != NULL) {
-			wsprintf(Command, ":l %s\n", ExpandFileName((String)ScriptName));
-			AbortInterpreter;
-			SetInterpreterCommand(Command);
-			GotoInterpreter;
-		      }
-		    }*/
-		    break;
-
-	/* Enter Script Manager */
-	case ID_SCRIPTMAN:
-	    ShowScriptMan();
-	    break;
-
-	/* Load a sript file from disk (the name of the script is currently selected) */
-	case ID_OPENSELECTED:/*	{ CHAR *ScriptName;
-		      CHAR Command[2048];
-
-		      ScriptName = GetSelectedText(hWndText);
-		      wsprintf(Command, ":l %s\n", ExpandFileName((String)ScriptName));
-		      AbortInterpreter;
-		      SetInterpreterCommand(Command);
-		      GotoInterpreter;
-		    }*/
-		    break;
-
-	/* Exit Hugs interpreter */
-	case ID_EXIT:
-	    FireCommand(":q\n");
-	    break;
+	case IDCANCEL: EndDialog(hWnd, 0); break;
+	case ID_OPEN: MainOpenFile(hWnd); break;
+	case ID_SCRIPTMAN: ShowScriptMan(); break;
+	case ID_EXIT: FireCommand(":quit\n"); break;
 
 	/* Load one of the last 10 open files */
 	case ID_MRU+0: case ID_MRU+1: case ID_MRU+2: case ID_MRU+3:
@@ -299,81 +259,22 @@ void MainCommand(HWND hWnd, int ID)
 	    }
 	    break;
 
-	// Clilpboard operations
+	// EDIT MENU
 	case ID_CUT: RtfWindowClipboard(WM_CUT); break;
 	case ID_COPY: RtfWindowClipboard(WM_COPY); break;
 	case ID_PASTE: RtfWindowClipboard(WM_PASTE); break;
+	case ID_CLEARSCREEN: RtfWindowClear(); break;
+	case ID_DELETE: RtfWindowDelete(); break;
+	case ID_SELECTALL: RtfWindowSelectAll(); break;
+	case ID_GOPREVIOUS: RtfWindowHistory(-1); break;
+	case ID_GONEXT: RtfWindowHistory(+1); break;
 
-	/* Clipboard clear */
-	//case ID_CLEAR:		SendMessage(hWndText, WM_CLEAR, 0, 0L);
-	//			break;
 
-	/* Edit previous line */
-	//case ID_GOPREVIOUS: 	SendMessage(hWndText, WM_KEYDOWN, (WPARAM) VK_UP, 0x1000000L);
-	//			SendMessage(hWndText, WM_KEYUP,   (WPARAM) VK_UP, 0x1000000L);
-	//			break;
-
-	/* Edit next line */
-	//case ID_GONEXT:		SendMessage(hWndText, WM_KEYDOWN, (WPARAM) VK_DOWN, 0x1000000L);
-	//			SendMessage(hWndText, WM_KEYUP,   (WPARAM) VK_DOWN, 0x1000000L);
-	//			break;
-
-	/* Open text editor */
-	case ID_GOEDIT:
-	    FireCommand(":edit");
-	    break;
-
-	/* Open text editor for selected text */
-	case ID_EDITSELECTED:
-	    /* { CHAR Command[2048];
-
-		wsprintf(Command, ":e %s\n", ExpandFileName((String)GetSelectedText(hWndText)));
-		AbortInterpreter;
-		SetInterpreterCommand(Command);
-		GotoInterpreter;
-	    } */
-	    break;
-
-	/* Find definition of selected text */
-	case ID_FIND:
-	    /* { String SelectedText;
-
-		SelectedText = GetSelectedText(hWndText);
-		AbortInterpreter;
-		SetInterpreterCommand(":f %s\n",(LPSTR)SelectedText);
-		GotoInterpreter;
-	    } */
-	    break;
-
-	/* Show type of selected text */
-	case ID_TYPE:
-	    /* { String SelectedText;
-		SelectedText = GetSelectedText(hWndText);
-		AbortInterpreter;
-		SetInterpreterCommand(":t %s\n",(LPSTR)SelectedText);
-		GotoInterpreter;
-	    } */
-	    break;
-
-	/* Show info on selected text */
-	case ID_INFO:
-	    /* { String SelectedText;
-		SelectedText = GetSelectedText(hWndText);
-		AbortInterpreter;
-		SetInterpreterCommand(":i %s\n",(LPSTR)SelectedText);
-		GotoInterpreter;
-	    } */
-	    break;
-
-	/* Eval selected text */
-	case ID_EVAL:
-	    /* { String SelectedText;
-		SelectedText = GetSelectedText(hWndText);
-		AbortInterpreter;
-		SetInterpreterCommand("%s\n",(LPSTR)SelectedText);
-		GotoInterpreter;
-	    } */
-	    break;
+	// ACTIONS MENU
+	// Reload script files
+	case ID_COMPILE: case ID_MAKE: FireCommand(":reload"); break;
+	case ID_CLEARALL: FireCommand(":load"); break;
+	case ID_GOEDIT: FireCommand(":edit"); break;
 
 	/* Stop program execution */
 	case ID_STOP:
@@ -399,16 +300,6 @@ void MainCommand(HWND hWnd, int ID)
 		RtfWindowUpdateFont();
 	    break;
 
-	/* Reload script files */
-	case ID_COMPILE:
-	case ID_MAKE:
-	    FireCommand(":reload");
-	    break;
-
-	/* Clear all files loaded but Prelude */
-	case ID_CLEARALL:
-	    FireCommand(":load");
-	    break;
 
 	// BROWSE MENU
 	case ID_BROWSEHIERARCHY: DrawClassesHierarchy(); break;

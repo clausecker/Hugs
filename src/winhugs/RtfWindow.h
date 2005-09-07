@@ -8,3 +8,8 @@ void RtfWindowPutChars(char* s);
 BOOL RtfNotify(HWND hDlg, NMHDR* nmhdr);
 int RtfWindowCanCutCopy();
 void RtfWindowClipboard(UINT Msg);
+
+void RtfWindowClear();
+void RtfWindowDelete();
+void RtfWindowHistory(int Delta);
+void RtfWindowSelectAll();

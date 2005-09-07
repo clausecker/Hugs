@@ -61,6 +61,47 @@ int RtfWindowCanCutCopy()
 	return DROPEFFECT_COPY;
 }
 
+void RtfWindowClear()
+{
+    CHARRANGE cr;
+    int Lines = SendMessage(hRTF, EM_GETLINECOUNT, 0, 0);
+    int ThisLine = SendMessage(hRTF, EM_LINEINDEX, Lines-1, 0);
+
+    SendMessage(hRTF, EM_EXGETSEL, 0, (LPARAM) &cr);
+    SendMessage(hRTF, EM_SETSEL, 0, ThisLine);
+    PuttingChar = TRUE;
+    SendMessage(hRTF, EM_REPLACESEL, FALSE, (LPARAM) "");
+    PuttingChar = FALSE;
+
+    cr.cpMax -= ThisLine;
+    cr.cpMin -= ThisLine;
+
+    Length -= ThisLine;
+    if (cr.cpMin < 0)
+        SendMessage(hRTF, EM_SETSEL, Length, Length);
+    else
+	SendMessage(hRTF, EM_EXSETSEL, 0, (LPARAM) &cr);
+}
+
+void RtfWindowDelete()
+{
+    SendMessage(hRTF, EM_REPLACESEL, FALSE, (LPARAM) "");
+}
+
+void RtfWindowHistory(int Delta)
+{
+    LPCSTR x = GetHistory(Delta);
+    if (x == NULL)
+	MessageBeep((UINT) -1);
+    else
+	RtfWindowSetCommand(x);
+}
+
+void RtfWindowSelectAll()
+{
+    SendMessage(hRTF, EM_SETSEL, 0, -1);
+}
+
 BOOL RtfNotify(HWND hDlg, NMHDR* nmhdr)
 {
     if (nmhdr->code == EN_PROTECTED && !PuttingChar) {
@@ -128,11 +169,7 @@ BOOL RtfNotify(HWND hDlg, NMHDR* nmhdr)
 		CHARRANGE cr;
 		SendMessage(hRTF, EM_EXGETSEL, 0, (LPARAM) &cr);
 		if ((DWORD) cr.cpMin >= Length) {
-		    LPCSTR x = GetHistory(mf->wParam == VK_UP ? -1 : +1);
-		    if (x == NULL)
-			MessageBeep((UINT) -1);
-		    else
-			RtfWindowSetCommand(x);
+		    RtfWindowHistory(mf->wParam == VK_UP ? -1 : +1);
 		    SetWindowLong(hDlg, DWL_MSGRESULT, 1);
 		    return TRUE;
 		}
