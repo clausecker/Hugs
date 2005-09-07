@@ -254,7 +254,7 @@ void MainCommand(HWND hWnd, int ID)
 	case ID_MRU+8: case ID_MRU+9:
 	    {
 		char Command[1000];
-		wsprintf(Command, ":load %s\n", ExpandFileName(MruGetItem(ID-ID_MRU)));
+		wsprintf(Command, ":load %s", ExpandFileName(MruGetItem(ID-ID_MRU)));
 		FireCommand(Command);
 	    }
 	    break;

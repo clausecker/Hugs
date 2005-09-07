@@ -26,7 +26,7 @@ void ShowMruMenu()
     //add enough entries
     for (i = MenusShown; i < n; i++)
 	AppendMenu(hMenu, MF_STRING, ID_MRU+i, MruBuffer[i]);
-    MenusShown = n;
+    MenusShown = (n == 0 ? 1 : n);
 
     //then change them
     for (i = 0; i < n; i++)
@@ -56,7 +56,7 @@ void WinHugsAddMruFile(const char* file)
     }
 
     // if the last entry would die, kill it now
-    if (MruBuffer[MruCount-1] != 0)
+    if (MruBuffer[MruCount-1] != NULL)
 	free(MruBuffer[MruCount-1]);
 
     // shift everything along by one
