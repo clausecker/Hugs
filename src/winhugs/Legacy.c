@@ -238,7 +238,7 @@ VOID MapBitmap(HBITMAP hbmSrc, COLORREF rgbOld, COLORREF rgbNew)
 #define MAPPED_BUTTONHILIGHT   (RGB(255,255,255))	/* white          */
 
 /* Executes the dialog with DlgId identifier using lpDlgProc */
-BOOL ExecDialog(HINSTANCE hInstance, WORD DlgId, WNDPROC lpDlgProc)
+BOOL ExecDialog(HINSTANCE hInstance, WORD DlgId, DLGPROC lpDlgProc)
 {
     return (BOOL) (DialogBox
 	       (hInstance, MAKEINTRESOURCE(DlgId), GetFocus(),
@@ -333,7 +333,7 @@ static local VOID SetClass(HWND hDlg, Class currClass)
 }
 
 /* Handles browse classes dialog box */
-LRESULT CALLBACK BrowseClassesDlgProc(HWND hDlg, UINT msg, WPARAM wParam,
+INT_PTR CALLBACK BrowseClassesDlgProc(HWND hDlg, UINT msg, WPARAM wParam,
 		      LPARAM lParam)
 {
     INT i;
@@ -404,7 +404,7 @@ LRESULT CALLBACK BrowseClassesDlgProc(HWND hDlg, UINT msg, WPARAM wParam,
 	    hMSelBm = LoadBitmap(hThisInstance, "MEMBERBMP");
 	    MapBitmap(hMSelBm, RGB(0, 128, 128),
 		  GetSysColor(COLOR_HIGHLIGHT));
-	    return TRUE;
+	    return (INT_PTR)TRUE;
 
 	case WM_DESTROY:
 	    /* Destroy Bitmaps */
@@ -519,7 +519,7 @@ LRESULT CALLBACK BrowseClassesDlgProc(HWND hDlg, UINT msg, WPARAM wParam,
 		lpmis->itemHeight = bm.bmHeight + 1;
 		lpmis->itemWidth = 50000;
 
-		return TRUE;
+		return (INT_PTR)TRUE;
 	    }
 	    break;
 
@@ -532,7 +532,7 @@ LRESULT CALLBACK BrowseClassesDlgProc(HWND hDlg, UINT msg, WPARAM wParam,
 		lpdis->CtlID == LB_MEMBERS) {
 
 		if (lpdis->itemID == (UINT) - 1) {
-		    return TRUE;
+		    return (INT_PTR)TRUE;
 		}
 
 		switch (lpdis->itemAction) {
@@ -560,7 +560,7 @@ LRESULT CALLBACK BrowseClassesDlgProc(HWND hDlg, UINT msg, WPARAM wParam,
 			}
 			break;
 		    default:
-			return FALSE;
+			return (INT_PTR)FALSE;
 		}
 
 		switch (lpdis->CtlID) {
@@ -648,7 +648,7 @@ LRESULT CALLBACK BrowseClassesDlgProc(HWND hDlg, UINT msg, WPARAM wParam,
 			      &(lpdis->rcItem));
 		}
 
-		return TRUE;
+		return (INT_PTR)TRUE;
 	    }
 
 	case WM_COMMAND:
@@ -759,16 +759,16 @@ LRESULT CALLBACK BrowseClassesDlgProc(HWND hDlg, UINT msg, WPARAM wParam,
 
 		case IDCANCEL:	/* Close dialog */
 		    EndDialog(hDlg, FALSE);
-		    return TRUE;
+		    return (INT_PTR)TRUE;
 		case IDOK:
 		    EndDialog(hDlg, TRUE);
-		    return TRUE;
+		    return (INT_PTR)TRUE;
 
 		default:
-		    return TRUE;
+		    return (INT_PTR)TRUE;
 	    }
     }
-    return FALSE;
+    return (INT_PTR)FALSE;
 }
 
 /* When the name  selected changes to currName gets its type and definition */
@@ -802,7 +802,7 @@ static local VOID SetName(HWND hDlg, UINT currName, List names)
 }
 
 /* Handles browse names dialog box */
-LRESULT CALLBACK BrowseNamesDlgProc(HWND hDlg, UINT msg, WPARAM wParam,
+INT_PTR CALLBACK BrowseNamesDlgProc(HWND hDlg, UINT msg, WPARAM wParam,
 		    LPARAM lParam)
 {
     static List namesList = NIL;
@@ -891,7 +891,7 @@ LRESULT CALLBACK BrowseNamesDlgProc(HWND hDlg, UINT msg, WPARAM wParam,
 
 	    /* set focus to search box (must return FALSE) */
 	    SetFocus(GetDlgItem(hDlg, IDC_SEARCHNAME));
-	    return FALSE;
+	    return (INT_PTR)FALSE;
 
 	case WM_DESTROY:
 	    DeleteObject(hPBm);
@@ -930,7 +930,7 @@ LRESULT CALLBACK BrowseNamesDlgProc(HWND hDlg, UINT msg, WPARAM wParam,
 
 		lpmis->itemHeight = bm.bmHeight + 1;
 
-		return TRUE;
+		return (INT_PTR)TRUE;
 	    }
 	    break;
 
@@ -941,7 +941,7 @@ LRESULT CALLBACK BrowseNamesDlgProc(HWND hDlg, UINT msg, WPARAM wParam,
 	    if (lpdis->CtlID == LB_NAMES) {
 
 		if (lpdis->itemID == (UINT) - 1) {
-		    return TRUE;
+		    return (INT_PTR)TRUE;
 		}
 
 		switch (lpdis->itemAction) {
@@ -970,7 +970,7 @@ LRESULT CALLBACK BrowseNamesDlgProc(HWND hDlg, UINT msg, WPARAM wParam,
 			break;
 
 		    default:
-			return FALSE;
+			return (INT_PTR)FALSE;
 		}
 
 		SendDlgItemMessage(hDlg, lpdis->CtlID, LB_GETTEXT,
@@ -1003,7 +1003,7 @@ LRESULT CALLBACK BrowseNamesDlgProc(HWND hDlg, UINT msg, WPARAM wParam,
 			      &(lpdis->rcItem));
 		}
 
-		return TRUE;
+		return (INT_PTR)TRUE;
 	    }
 
 	case WM_PAINT: {
@@ -1108,16 +1108,16 @@ LRESULT CALLBACK BrowseNamesDlgProc(HWND hDlg, UINT msg, WPARAM wParam,
 
 		case IDCANCEL:	/* Close dialog */
 		    EndDialog(hDlg, FALSE);
-		    return TRUE;
+		    return (INT_PTR)TRUE;
 		case IDOK:
 		    EndDialog(hDlg, TRUE);
-		    return TRUE;
+		    return (INT_PTR)TRUE;
 
 		default:
-		    return TRUE;
+		    return (INT_PTR)TRUE;
 	    }
     }
-    return FALSE;
+    return (INT_PTR)FALSE;
 }
 
 static Int numCfuns;
@@ -1234,7 +1234,7 @@ static local VOID SetTycon(HWND hDlg, UINT currTycon, List tycons)
 }
 
 /* Handles browse Tycons dialog box */
-LRESULT CALLBACK BrowseTyconsDlgProc(HWND hDlg, UINT msg, WPARAM wParam,
+INT_PTR CALLBACK BrowseTyconsDlgProc(HWND hDlg, UINT msg, WPARAM wParam,
 		     LPARAM lParam)
 {
     static List tyconList = NIL;
@@ -1332,7 +1332,7 @@ LRESULT CALLBACK BrowseTyconsDlgProc(HWND hDlg, UINT msg, WPARAM wParam,
 
 	    /* set focus to search box (must return FALSE) */
 	    SetFocus(GetDlgItem(hDlg, IDC_SEARCHTYCON));
-	    return FALSE;
+	    return (INT_PTR)FALSE;
 
 	case WM_DESTROY:
 	    DeleteObject(hTCBm);
@@ -1376,7 +1376,7 @@ LRESULT CALLBACK BrowseTyconsDlgProc(HWND hDlg, UINT msg, WPARAM wParam,
 
 		lpmis->itemHeight = bm.bmHeight + 1;
 
-		return TRUE;
+		return (INT_PTR)TRUE;
 	    }
 	    break;
 
@@ -1389,7 +1389,7 @@ LRESULT CALLBACK BrowseTyconsDlgProc(HWND hDlg, UINT msg, WPARAM wParam,
 		lpdis->CtlID == LB_TYCONSINST) {
 
 		if (lpdis->itemID == (UINT) - 1) {
-		    return TRUE;
+		    return (INT_PTR)TRUE;
 		}
 
 		switch (lpdis->itemAction) {
@@ -1418,7 +1418,7 @@ LRESULT CALLBACK BrowseTyconsDlgProc(HWND hDlg, UINT msg, WPARAM wParam,
 		    break;
 
 		default:
-		    return FALSE;
+		    return (INT_PTR)FALSE;
 		}
 
 		SendDlgItemMessage(hDlg, lpdis->CtlID, LB_GETTEXT,
@@ -1496,7 +1496,7 @@ LRESULT CALLBACK BrowseTyconsDlgProc(HWND hDlg, UINT msg, WPARAM wParam,
 			      &(lpdis->rcItem));
 		}
 
-		return TRUE;
+		return (INT_PTR)TRUE;
 	    }
 
 	case WM_PAINT: {
@@ -1658,16 +1658,16 @@ LRESULT CALLBACK BrowseTyconsDlgProc(HWND hDlg, UINT msg, WPARAM wParam,
 
 	    case IDCANCEL:	/* Close dialog */
 		EndDialog(hDlg, FALSE);
-		return TRUE;
+		return (INT_PTR)TRUE;
 	    case IDOK:
 		EndDialog(hDlg, TRUE);
-		return TRUE;
+		return (INT_PTR)TRUE;
 
 	    default:
-		return TRUE;
+		return (INT_PTR)TRUE;
 	    }
     }
-    return FALSE;
+    return (INT_PTR)FALSE;
 }
 
 /*-----------------------------------------------------------------------------
@@ -2244,7 +2244,7 @@ LRESULT CALLBACK ClassesWndProc(HWND hWnd, UINT msg, WPARAM wParam,
 	default:
 	    return DefWindowProc(hWnd, msg, wParam, lParam);
     }
-    return (LONG) TRUE;
+    return (LRESULT)TRUE;
 }
 
 /* Create class hierarchy and show it on a window */
@@ -2325,7 +2325,7 @@ void DoBrowseNames()
 ** SCRIPT MAN
 *********************************************************/
 
-LRESULT CALLBACK ScriptManDlgProc(HWND hDlg, UINT msg, WPARAM wParam,
+INT_PTR CALLBACK ScriptManDlgProc(HWND hDlg, UINT msg, WPARAM wParam,
 		  LPARAM lParam);
 
 void ShowScriptMan()
@@ -2437,7 +2437,7 @@ static CHAR *local GetaFileName(HWND hWnd, UINT Mask)
     }
 }
 
-LRESULT CALLBACK ScriptManDlgProc(HWND hDlg, UINT msg,
+INT_PTR CALLBACK ScriptManDlgProc(HWND hDlg, UINT msg,
 		  WPARAM wParam, LPARAM lParam)
 {
     switch (msg) {

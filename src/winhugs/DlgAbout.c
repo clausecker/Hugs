@@ -24,14 +24,14 @@ typedef struct _AboutData
     HIMAGELIST hImgList;
 } AboutData;
 
-LRESULT CALLBACK AboutDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
+INT_PTR CALLBACK AboutDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
 
 void ShowAboutDialog(HWND hParent)
 {
     DialogBox(hThisInstance, MAKEINTRESOURCE(ABOUTDLGBOX), hParent, AboutDlgProc);
 }
 
-LRESULT CALLBACK AboutDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
+INT_PTR CALLBACK AboutDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
 {
     switch (Msg) {
 	case WM_INITDIALOG:
@@ -54,7 +54,7 @@ LRESULT CALLBACK AboutDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
 	    SendMessage(hRTF, EM_REPLACESEL, FALSE, (LPARAM) versionString);
 	    SendMessage(hRTF, EM_SETEVENTMASK, 0, ENM_LINK);
 	}
-	return TRUE;
+	return (INT_PTR)TRUE;
 
 	case WM_PAINT:
 	    {
@@ -71,7 +71,7 @@ LRESULT CALLBACK AboutDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
 	    switch (LOWORD(wParam)) {
 		case IDOK: case IDCANCEL:
 		    EndDialog(hDlg, TRUE);
-		    return TRUE;
+		    return (INT_PTR)TRUE;
 	    }
 	    break;
 
@@ -101,5 +101,5 @@ LRESULT CALLBACK AboutDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
 		free(ad);
 	    }
     }
-    return FALSE;
+    return (INT_PTR)FALSE;
 }

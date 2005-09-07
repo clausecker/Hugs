@@ -6,11 +6,9 @@
 #include "storage.h"
 #include "machdep.h"
 
-LRESULT CALLBACK OptionsDialogProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
-
-LRESULT CALLBACK OptionsHugsProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
-LRESULT CALLBACK OptionsRuntimeProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
-LRESULT CALLBACK OptionsCompileProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
+INT_PTR CALLBACK OptionsHugsProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
+INT_PTR CALLBACK OptionsRuntimeProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
+INT_PTR CALLBACK OptionsCompileProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
 
 BOOL ShowOptionsDialog(HWND hParent)
 {
@@ -174,7 +172,7 @@ void WriteOptions()
     writeRegString("Options", optionsToStr());
 }
 
-LRESULT CALLBACK OptionsHugsProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
+INT_PTR CALLBACK OptionsHugsProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 {
     switch (msg) {
     case WM_INITDIALOG:
@@ -229,7 +227,7 @@ LRESULT CALLBACK OptionsHugsProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPar
 	}
 	break;
     }
-    return 0;
+    return (INT_PTR)FALSE;
 }
 
 /////////////////////////////////////////////////////////////////////
@@ -238,7 +236,7 @@ LRESULT CALLBACK OptionsHugsProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPar
 int Heap2Mb(int heap){return max(1, heap * 8 / (1024 * 1024));}
 int Mb2Heap(int mb){return (mb * 1024 * 1024) / 8;}
 
-LRESULT CALLBACK OptionsRuntimeProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
+INT_PTR CALLBACK OptionsRuntimeProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 {
     switch (msg) {
 	case WM_INITDIALOG:
@@ -264,7 +262,7 @@ LRESULT CALLBACK OptionsRuntimeProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM l
 	    }
 	    break;
     }
-    return 0;
+    return (INT_PTR)FALSE;
 }
 
 /////////////////////////////////////////////////////////////////////
@@ -280,7 +278,7 @@ void EnableHaskellExts(HWND hDlg)
 	Ext && GetDlgItemBool(hDlg, chkOverlap));
 }
 
-LRESULT CALLBACK OptionsCompileProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
+INT_PTR CALLBACK OptionsCompileProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 {
     switch (msg) {
 	case WM_INITDIALOG:
@@ -322,5 +320,5 @@ LRESULT CALLBACK OptionsCompileProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM l
 		EnableHaskellExts(hDlg);
 	    break;
     }
-    return 0;
+    return (INT_PTR)FALSE;
 }
