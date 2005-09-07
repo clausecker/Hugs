@@ -15,6 +15,7 @@ extern void	WinHugsExit(void);
 extern int	InAutoReloadFiles;
 extern void	SetWorkingDir(const char* Src);
 extern void	startEvaluatorThread(void);
+extern void	stopEvaluatorThread(void);
 extern void	loopInBackground(void);
 
 // support for Most Recently Used Files
