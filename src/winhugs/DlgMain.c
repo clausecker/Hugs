@@ -39,10 +39,9 @@ void EnableButtons();
 
 int Buttons[] = {
     // -1 is a separator, 0 is the end
-    ID_OPEN, ID_SCRIPTMAN, -1,
+    ID_OPEN, -1,
     ID_CUT, ID_COPY, ID_PASTE, -1,
-    ID_GOEDIT, ID_RUN, ID_STOP, ID_MAKE, ID_SETOPTIONS, -1,
-    ID_BROWSEHIERARCHY, -1,
+    ID_RUN, ID_STOP, ID_MAKE, ID_SETOPTIONS, -1,
     ID_HELPCONTENTS,
     0
 };
