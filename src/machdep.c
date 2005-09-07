@@ -11,8 +11,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.131 $
- * $Date: 2005/09/02 10:54:52 $
+ * $Revision: 1.132 $
+ * $Date: 2005/09/07 23:12:48 $
  * ------------------------------------------------------------------------*/
 #include "prelude.h"
 #include "storage.h"
@@ -606,7 +606,7 @@ String s;
 	    searchReset(save);
 	    searchStr(findInfo.name);
 	    searchChr(SLASH);
-	    if (tryEndings(s)) {
+	    if (find2(s)) {
 		_findclose( handle );
 		return TRUE;
 	    }
@@ -643,7 +643,7 @@ String s;
     save = searchPos;
     
     /* is it in the current directory ? */
-    if (tryEndings(s)) return TRUE;
+    if (find2(s)) return TRUE;
 
     searchReset(save);
     
@@ -670,7 +670,7 @@ String s;
           searchStr(subdir);
           searchChr(SLASH);
 
-          if (tryEndings(s))
+          if (find2(s))
              return TRUE;
           searchReset(save);
         }
