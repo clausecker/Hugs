@@ -47,40 +47,20 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_UK
 // Bitmap
 //
 
-BUTTON                  BITMAP                  "resource\\button.bmp"
 CLASSBMP                BITMAP                  "resource\\classbmp.bmp"
 CLASSESDLGBMP           BITMAP                  "resource\\classesd.bmp"
-COPYBUTTON              BITMAP                  "resource\\copybutt.bmp"
-CUTBUTTON               BITMAP                  "resource\\cutbutto.bmp"
 DATACONSBMP             BITMAP                  "resource\\datacons.bmp"
-DELETEBUTTON            BITMAP                  "resource\\deletebu.bmp"
-EDITBUTTON              BITMAP                  "resource\\editbutt.bmp"
-EXITBUTTON              BITMAP                  "resource\\exitbutt.bmp"
-HELPBUTTON              BITMAP                  "resource\\helpbutt.bmp"
-HIERARCHYBUTTON         BITMAP                  "resource\\hierarch.bmp"
-HUGS32BMP               BITMAP                  "resource\\hugs32bm.bmp"
 INSTANCEBMP             BITMAP                  "resource\\instance.bmp"
 BMP_ABOUT               BITMAP                  "resource\\logo.bmp"
-MAKEBUTTON              BITMAP                  "resource\\relobutt.bmp"
 MEMBERBMP               BITMAP                  "resource\\memberbm.bmp"
 NAMEBMP                 BITMAP                  "resource\\namebmp.bmp"
 NAMESDLGBMP             BITMAP                  "resource\\namesdlg.bmp"
 NEWTYPEBMP              BITMAP                  "resource\\newtypeb.bmp"
-OPENFILEBUTTON          BITMAP                  "resource\\openfile.bmp"
-OPENPROJECTBUTTON       BITMAP                  "resource\\openproj.bmp"
-OPTIONSBUTTON           BITMAP                  "resource\\optionsb.bmp"
-OPTIONSDLGBMP           BITMAP                  "resource\\optionsd.bmp"
-PASTEBUTTON             BITMAP                  "resource\\pastebut.bmp"
 PRIMBMP                 BITMAP                  "resource\\primbmp.bmp"
-PUSHEDBUTTON            BITMAP                  "resource\\pushedbu.bmp"
-RESIZECORNER            BITMAP                  "resource\\resizeco.bmp"
-RUNBUTTON               BITMAP                  "resource\\runbutto.bmp"
 SELECTORBMP             BITMAP                  "resource\\selector.bmp"
-STOPBUTTON              BITMAP                  "resource\\stopbutt.bmp"
 TYCONSDLGBMP            BITMAP                  "resource\\tyconsdl.bmp"
 TYPECONSBMP             BITMAP                  "resource\\typecons.bmp"
 TYPESINBMP              BITMAP                  "resource\\typesinb.bmp"
-SCRIPTMANBUTTON         BITMAP                  "resource\\smanbutt.bmp"
 SCRIPTMANDLGBMP         BITMAP                  "resource\\smand.bmp"
 BMP_TOOLBAR             BITMAP                  "resource\\toolbar.bmp"
 
@@ -160,74 +140,6 @@ BEGIN
     PUSHBUTTON      "OK",IDOK,252,90,53,16
     CONTROL         "",rtfAbout,"RichEdit20A",ES_MULTILINE | ES_AUTOHSCROLL | 
                     ES_READONLY | WS_TABSTOP,103,17,201,67,WS_EX_TRANSPARENT
-END
-
-OPTIONSDLGBOX DIALOGEX 14, 24, 313, 234
-STYLE DS_SETFONT | DS_MODALFRAME | DS_3DLOOK | DS_FIXEDSYS | WS_POPUP | 
-    WS_CAPTION | WS_SYSMENU
-CAPTION "Options"
-FONT 8, "MS Shell Dlg", 0, 0, 0x0
-BEGIN
-    EDITTEXT        ID_HEAPSIZE,52,210,60,12
-    CONTROL         "",SPN_HEAPSIZE,"msctls_updown32",UDS_SETBUDDYINT | 
-                    UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS,112,209,
-                    11,14
-    GROUPBOX        " Fl&ags: ",IDC_STATIC,5,5,302,120
-    CONTROL         "&s Print no. reductions/cells after eval",ID_OP,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,12,19,142,10
-    CONTROL         "&t Print type after evaluation",151,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,12,29,142,10
-    CONTROL         "&f Terminate evaluation on first error",152,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,12,39,142,10
-    CONTROL         "&g Print no. cells recovered after gc",153,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,12,49,142,10
-    CONTROL         "&G Generate FFI code for foreign import",154,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,12,59,142,10
-    CONTROL         "&l Literate scripts as default",155,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,12,69,142,10
-    CONTROL         "&e Warn about errors in literate scripts",156,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,12,79,142,10
-    CONTROL         "&. Print dots to show progress",157,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,12,89,135,10
-    CONTROL         "&q Print nothing to show progress",158,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,12,99,135,10
-    CONTROL         "&Q Qualify names when printing",159,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,12,109,135,10
-    CONTROL         "&w Always show which files loaded",160,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,160,19,140,10
-    CONTROL         "&k Show kind errors in full",161,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,160,29,140,10
-    CONTROL         "&o Allow overlapping instances",162,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,160,39,140,10
-    CONTROL         "&O Allow unsafe overlapping instances",163,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,160,49,140,10
-    CONTROL         "&u Use ""show"" to display results",164,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,160,59,140,10
-    CONTROL         "&I Display results of IO programs",165,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,160,69,140,10
-    CONTROL         "&i Chase imports while loading files",166,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,160,79,140,10
-    CONTROL         "&A Auto load files",167,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,160,89,140,10
-    CONTROL         "&R Enable root optimisation",168,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,160,99,140,10
-    CONTROL         "&H Enable `here documents'",169,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,160,109,140,10
-    LTEXT           "Path:",IDC_STATIC,12,139,22,8
-    EDITTEXT        ID_PATH,37,137,183,12,ES_AUTOHSCROLL
-    LTEXT           "Editor:",IDC_STATIC,12,155,25,8
-    EDITTEXT        ID_EDITOR,37,153,183,12,ES_AUTOHSCROLL
-    LTEXT           "Prompt string:",IDC_STATIC,12,169,47,8
-    EDITTEXT        ID_PROMPT,62,167,158,12
-    LTEXT           "Repeat last expression string:",IDC_STATIC,12,183,96,8
-    EDITTEXT        ID_LASTEXPR,111,182,109,12
-    LTEXT           "Set constraint cutoff limit:",IDC_STATIC,12,198,80,8
-    EDITTEXT        ID_CUTOFF,97,195,123,12
-    LTEXT           "Heap size:",IDC_STATIC,12,214,36,8
-    PUSHBUTTON      "OK",IDOK,239,196,66,14
-    PUSHBUTTON      "Cancel",IDCANCEL,239,216,66,14
-    GROUPBOX        "",IDC_STATIC,5,128,227,102
-    LTEXT           "Kb",IDC_STATIC,126,213,9,8
 END
 
 BROWSECLASSESDLGBOX DIALOG  65535, 18, 344, 220
@@ -431,7 +343,6 @@ END
 // Cursor
 //
 
-GARBAGECURSOR           CURSOR                  "resource\\gc.cur"
 MOVECLASSCURSOR         CURSOR                  "resource\\move.cur"
 
 /////////////////////////////////////////////////////////////////////////////
@@ -452,11 +363,6 @@ HUGSDOC                 ICON                    "resource\\hugsdoc.ico"
 #ifdef APSTUDIO_INVOKED
 GUIDELINES DESIGNINFO 
 BEGIN
-    OPTIONSDLGBOX, DIALOG
-    BEGIN
-        BOTTOMMARGIN, 232
-    END
-
     BROWSECLASSESDLGBOX, DIALOG
     BEGIN
         BOTTOMMARGIN, 217
