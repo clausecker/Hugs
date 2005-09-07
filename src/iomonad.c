@@ -14,8 +14,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: iomonad.c,v $
- * $Revision: 1.99 $
- * $Date: 2005/07/27 00:51:13 $
+ * $Revision: 1.100 $
+ * $Date: 2005/09/07 20:28:05 $
  * ------------------------------------------------------------------------*/
  
 Name nameIORun;			        /* run IO code                     */
@@ -837,8 +837,17 @@ primFun(primSetArgs) {                  /* primSetArgs :: [String] -> IO () */
  * ------------------------------------------------------------------------*/
 
 primFun(primGetChar) {			/* Get character from stdin        */
-    checkOpen(HSTDIN, "getChar");
-    IOReturn(mkChar(hGetChar(HSTDIN, "Prelude.getChar")));
+    Int c;
+    checkOpen(HSTDIN, "Prelude.getChar");
+    c = hGetChar(HSTDIN, "Prelude.getChar");
+    if (c==EOF) {
+	IOFail(mkIOError(&handles[HSTDIN].hcell,
+			 nameEOFErr,
+			 "Prelude.getChar",
+			 "end of file",
+			 NULL));
+    }
+    IOReturn(mkChar(c));
 }
 
 primFun(primPutChar) {			/* print character on stdout	   */
