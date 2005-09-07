@@ -156,6 +156,7 @@ jmp_buf goToEvaluator;
 void WinHugsMessagePump()
 {
     MSG msg;
+    ExecutionFinished();
     while (GetMessage(&msg, NULL, 0, 0) > 0) {
 	if (!TranslateAccelerator(hThisWindow, hAccelTable, &msg)) {
 	     TranslateMessage(&msg);

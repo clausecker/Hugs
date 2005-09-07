@@ -162,6 +162,13 @@ void EnableButtons()
     EnableButton(ID_SELECTALL, !Running);
 }
 
+void ExecutionFinished()
+{
+    RtfWindowFlushBuffer();
+    Running = FALSE;
+    EnableButtons();
+}
+
 void FireCommand(LPCSTR Command)
 {
     RtfWindowSetCommand(Command);
@@ -175,12 +182,6 @@ void FireCommand(LPCSTR Command)
     input(BREAK);
     if (doCommand())
 	SendMessage(hThisWindow, WM_CLOSE, 0, 0);
-
-    RtfWindowFlushBuffer();
-    Running = FALSE;
-    EnableButtons();
-
-    //SetInterpreterCommand(Command);
 
     longjmp(catch_error, 1);
 }
