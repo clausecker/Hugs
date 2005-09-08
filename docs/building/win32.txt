@@ -7,20 +7,23 @@ Building from a source snapshot
 As the _build_ environment is Unix-slanted, you first need to have
 the following toolchains installed on your Windows platform:
 
-    * Install the MinGW compiler toolkit:
+  * Install the MinGW compiler toolkit (from http://www.mingw.org/).
 
-        http://www.mingw.org/
+  * You will also need a set of Unix tools, one of
 
-    * You will also need a set of Unix tools, either MSYS and msysDTK
-      from the MinGW site (the lighter weight alternative) or Cygwin, 
-      from
+    (a) MSYS and msysDTK from the MinGW site (the lighter weight
+	alternative).  Do not try to install MSYS into the same
+	folder as MinGW, but do install msysDTK into the same
+	folder as MSYS.
 
-        http://www.cygwin.com/
+    (b) Cygwin (from http://www.cygwin.com/).  In this case,
+	ensure that the mingw/bin directory appears before the
+	cygwin directories in your PATH.  (That gets you the MinGW
+	compiler instead of the Cygwin one, so the binaries you
+	build won't require extra libraries to run.)
 
-      If you use Cygwin, ensure that the mingw/bin directory appears
-      before the cygwin directories in your PATH.  (That gets you the
-      MinGW compiler instead of the Cygwin one, so the binaries you
-      build won't require extra libraries to run.)
+    You'll be using the shell from one of these to run the commands
+    below.
 
 It may also be possible to use Cygwin by itself, though that will
 produce Cygwin-dependent binaries.
@@ -49,11 +52,18 @@ Building from CVS
 -----------------
 
 This is more flexible, but in addition to the environment above,
-you will need a Happy installation and an Internet connection.
-(Happy is the Happy parser generator available from
-http://www.haskell.org/happy/ -- you can also get by without it by getting
-the file fptools/libraries/haskell-src/Language/Haskell/Parser.hs from
-a source snapshot.)
+you will need an Internet connection and
+
+    * the Happy parser generator (from http://www.haskell.org/happy/)
+      -- you can also get by without it by getting the file
+      fptools/libraries/haskell-src/Language/Haskell/Parser.hs from
+      a source snapshot.)
+
+    * the Bison parser generator (from the MinGW website).  Extract
+      it into your msys-1.0 directory using "tar zxf" (NOT WinZip),
+      so that bison.exe ends up in your MSYS "bin" folder.  Again you
+      can also get by without this by getting the file src/parser.c
+      from a source snapshot.)
 
 0) Check out the Hugs sources following instructions
    at http://cvs.haskell.org/
@@ -74,6 +84,16 @@ Using Microsoft Visual C++
 Building the libraries needs a Unix-like environment, as described
 above, but once you've done that you can build the interpreter and
 WinHugs using MSVC.
+
+Open the project files located in msc (for the plain interpreter)
+and winhugs (for teh GUI interface).  Clicking on compile should build
+the projects.
+
+Driving Microsoft Visual C++ from the Command Line (out-of-date)
+--------------------------------------------------
+
+(We used to invoke VC++ via nmake or make, but we haven't done this
+for some time.)
 
 * Building the Hugs interpreter using MSVC
 
@@ -96,4 +116,3 @@ WinHugs using MSVC.
     foo$ nmake -f winhugs/Makefile
 
   (Using 'make' would also work.)
-
