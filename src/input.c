@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: input.c,v $
- * $Revision: 1.87 $
- * $Date: 2005/09/01 14:49:24 $
+ * $Revision: 1.88 $
+ * $Date: 2005/09/08 16:14:19 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1218,7 +1218,11 @@ Char   sys; {                          /* character for shell escape       */
     if (c0=='\n')                      /* look for blank command lines     */
 	return NOCMD;		      					   
     if (c0==EOF)                       /* look for end of input stream     */
-	return QUIT;		      					   
+#if HUGS_FOR_WINDOWS
+	return NOCMD;
+#else
+	return QUIT;
+#endif
     if (c0==sys) {                     /* single character system escape   */
 	skip();			      					   
 	return SYSTEM;		      					   
