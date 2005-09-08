@@ -180,6 +180,7 @@ void FireCommand(LPCSTR Command)
 
     stringInput((LPSTR) Command);
     input(BREAK);
+    IORemapBegin();
     if (doCommand())
 	SendMessage(hThisWindow, WM_CLOSE, 0, 0);
 
@@ -240,6 +241,12 @@ void MainOpenFile(HWND hWnd)
     FireCommand(Command);
 }
 
+void AbortExecution()
+{
+    raise(SIGINT);
+    IORemapEnd();
+}
+
 void MainCommand(HWND hWnd, int ID)
 {
     switch (ID) {
@@ -279,7 +286,7 @@ void MainCommand(HWND hWnd, int ID)
 	/* Stop program execution */
 	case ID_STOP:
 	    MessageBeep(0xFFFFFFFF);
-	    raise(SIGINT);
+	    AbortExecution();
 	    break;
 
 	/* Evaluate main expression */
@@ -329,6 +336,11 @@ int MainNotify(HWND hWnd, LPNMHDR nmhdr)
     return FALSE;
 }
 
+void SetStatusBar(LPCTSTR Str)
+{
+    SetDlgItemText(hThisWindow, ID_STATUS, Str);
+}
+
 void MainMenuSelect(HWND hWnd, int ID, int Flags)
 {
     CHAR Buffer[100];
@@ -339,7 +351,7 @@ void MainMenuSelect(HWND hWnd, int ID, int Flags)
     if (ID == 0 || !LoadString(hThisInstance, ID, Buffer, sizeof(Buffer)))
 	Buffer[0] = 0;
 
-    SetDlgItemText(hWnd, ID_STATUS, Buffer);
+    SetStatusBar(Buffer);
 }
 
 void MainDropFiles(HWND hWnd, HDROP hDrop)
@@ -425,7 +437,7 @@ INT_PTR CALLBACK MainDlgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	case WM_CLOSE:
 	    RegistryWriteWindowPos(hWnd);
 	    if (Running)
-		raise(SIGINT);
+		AbortExecution();
 	    PostQuitMessage(0);
 	    break;
     }

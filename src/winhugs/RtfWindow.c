@@ -186,7 +186,14 @@ BOOL RtfNotify(HWND hDlg, NMHDR* nmhdr)
 	}
     } else if (nmhdr->code == EN_MSGFILTER) {
 	MSGFILTER* mf = (MSGFILTER*) nmhdr;
-	if (mf->msg == WM_KEYDOWN) {
+	if (mf->msg == WM_CHAR && Running) {
+	    WinHugsReceiveC(mf->wParam == '\r' ? '\n' : mf->wParam);
+	    SetWindowLong(hDlg, DWL_MSGRESULT, 1);
+	    return TRUE;
+	} else if (Running && mf->msg == WM_KEYDOWN) {
+	    SetWindowLong(hDlg, DWL_MSGRESULT, 1);
+	    return TRUE;
+	} else if (mf->msg == WM_KEYDOWN && !Running) {
 	    BOOL History = (mf->wParam == VK_UP || mf->wParam == VK_DOWN);
 	    if (History && (mf->lParam & (1 << 24))) {
 		CHARRANGE cr;

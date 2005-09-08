@@ -68,10 +68,85 @@ int WinHugsPutC(FILE* f, char c)
     return c;
 }
 
+/////////////////////////////////////////////////////////////////////
+// IMPLEMENT getChar and interact
+
+BOOL ValidMutexes = FALSE;
+CRITICAL_SECTION Mutex;
+HANDLE Contents;
+#define KeyboardBufferSize 25
+CHAR KeyboardBuffer[KeyboardBufferSize];
+int KeyboardBufferCount = 0;
+
+void EnterContents()
+{
+    WaitForSingleObject(Contents, INFINITE);
+}
+
+void ExitContents()
+{
+    ReleaseSemaphore(Contents, 1, NULL);
+}
+
+void IORemapBegin()
+{
+    // Put the mutexes in a sane state
+    // Kill then create them
+    if (ValidMutexes) {
+	DeleteCriticalSection(&Mutex);
+	CloseHandle(Contents);
+    }
+    InitializeCriticalSection(&Mutex);
+    Contents = CreateSemaphore(NULL, 0, 1, NULL);
+    ValidMutexes = TRUE;
+}
+
+void IORemapEnd()
+{
+    // Send a dead char, to wake up the semaphore if locked
+    WinHugsReceiveC(0);
+}
+
+// Called when a character gets sent to WinHugs while it is running
+void WinHugsReceiveC(int c)
+{
+    EnterCriticalSection(&Mutex);
+    if (KeyboardBufferCount != KeyboardBufferSize) {
+        KeyboardBuffer[KeyboardBufferCount] = c;
+	KeyboardBufferCount++;
+	if (KeyboardBufferCount == 1)
+	    ExitContents();
+    }
+    LeaveCriticalSection(&Mutex);
+}
+
 int WinHugsGetC(FILE* f)
 {
     if (f == stdin)
-	return 0; // no support for interact
+    {
+        int Res, i;
+
+	EnterCriticalSection(&Mutex);
+	if (KeyboardBufferCount == 0)
+	{
+            SetStatusBar("Waiting for user input");
+	    LeaveCriticalSection(&Mutex);
+	    EnterContents();
+	    EnterCriticalSection(&Mutex);
+	    SetStatusBar("");
+	}
+
+	Res = KeyboardBuffer[0];
+	for (i = 1; i < KeyboardBufferSize; i++)
+	    KeyboardBuffer[i-1] = KeyboardBuffer[i];
+	KeyboardBufferCount--;
+
+	if (KeyboardBufferCount > 0)
+	    ExitContents();
+	LeaveCriticalSection(&Mutex);
+
+	return Res; // no support for interact
+    }
     else
 	return fgetc(f);
 }

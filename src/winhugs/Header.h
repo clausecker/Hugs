@@ -37,6 +37,8 @@ void FireCommand(LPCTSTR Command);
 void ExecutionFinished();
 void ShowMainDialog();
 void EnableButtons();
+void SetStatusBar(LPCTSTR Str);
+extern BOOL Running;
 
 // From MruFiles.c
 LPSTR MruGetItem(int i);
@@ -47,6 +49,11 @@ void ShowAboutDialog(HWND hParent);
 BOOL ShowOptionsDialog(HWND hParent);
 LPSTR ExpandFileName(LPSTR what);
 LPCTSTR GetEditor(int Index, LPTSTR Buffer);
+
+// IORemap, for getChar support
+void WinHugsReceiveC(int c);
+void IORemapBegin();
+void IORemapEnd();
 
 // From WinBrowse2.c
 void DrawClassesHierarchy();
