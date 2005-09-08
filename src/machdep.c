@@ -11,8 +11,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.132 $
- * $Date: 2005/09/07 23:12:48 $
+ * $Revision: 1.133 $
+ * $Date: 2005/09/08 23:45:41 $
  * ------------------------------------------------------------------------*/
 #include "prelude.h"
 #include "storage.h"
@@ -258,7 +258,7 @@ static int    local pathCmp       Args((String, String));
 static String local normPath      Args((String));
 static Void   local searchChr     Args((Int));
 static Void   local searchStr     Args((String));
-static Bool   local tryEndings    Args((String));
+static Bool   local tryEndings    Args((Void));
 static Bool   local find1	  Args((String));
 static Bool   local find2	  Args((String));
 static String local expandVariable Args((String));
@@ -503,12 +503,11 @@ String s; {
     searchBuf[searchPos] = '\0';
 }
 
-static Bool local tryEndings(s) /* Try each of the listed endings          */
-String s; {
+static Bool local tryEndings()  /* Try each of the listed endings          */
+{
     Int save;
     String sp;
 
-    searchStr(s);
     save = searchPos;
     sp = hugsSuffixes;
     while (*sp) {
@@ -717,7 +716,7 @@ String filename; {              /* Return ***input name*** if no file was found 
 #if DEBUG_SEARCH
     Printf("trying '%s'\n", searchBuf);
 #endif
-    if (!readable(searchBuf,TRUE) && !tryEndings(""))
+    if (!readable(searchBuf,TRUE) && !tryEndings())
 	searchStr("");
     return normPath(searchBuf);
 }
@@ -821,7 +820,7 @@ String s; {
     for (sp = s; *sp; sp++) {
 	searchBuf[searchPos++] = *sp == '.' ? SLASH : *sp;
     }
-    return tryEndings("");
+    return tryEndings();
 }
 
 String dirname(filename)	/* Return the directory part of the filename */
