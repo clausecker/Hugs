@@ -116,7 +116,7 @@ BEGIN
     BEGIN
         MENUITEM "&Contents\tF1 ",              ID_HELPCONTENTS
         MENUITEM "Hugs C&ommands",              ID_HELPCOMMANDS
-        MENUITEM "User &Guide",                 ID_USERSGUIDE
+        MENUITEM "Hierarchical &Libraries",     ID_LIBRARIES
         MENUITEM SEPARATOR
         MENUITEM "&Hugs Website",               ID_WWWHUGS
         MENUITEM "Haskell &Website",            ID_WWWHASKELL
@@ -430,16 +430,6 @@ END
 
 STRINGTABLE 
 BEGIN
-    ID_FILESMENU            "Manage script files (Open, New...)"
-    ID_EDITMENU             "Cut, copy, paste and clear"
-    ID_INTERPRETERMENU      "Run, Compile, Evaluate, ..."
-    ID_BROWSEMENU           "Browse classes, instances, members, names and type constructors"
-    ID_HELPMENU             "View online help"
-    ID_OPTIONSMENU          "Manage interpreter options (Set, Save...)"
-END
-
-STRINGTABLE 
-BEGIN
     ID_NEW                  "Edit a new script file"
     ID_OPEN                 "Load modules from specified file"
     ID_SCRIPTMAN            "Enter Module Manager"
@@ -453,15 +443,12 @@ BEGIN
     ID_PASTE                "Paste text from clipboard"
     ID_GOEDIT               "Run text editor"
     ID_CUT                  "Cut selected text"
-    ID_CLEAR                "Clear selected text"
-    ID_FIND                 "Find definition of selected name"
     ID_GOPREVIOUS           "Edit previous input line"
 END
 
 STRINGTABLE 
 BEGIN
     ID_GONEXT               "Edit next input line"
-    ID_EDITSELECTED         "Edit selected file"
 END
 
 STRINGTABLE 
@@ -477,7 +464,6 @@ BEGIN
     ID_COMPILE              "Reload files"
     ID_MAKE                 "Reload files for current project"
     ID_CLEARALL             "Clear all files except prelude"
-    ID_INFO                 "Show information on selected text"
 END
 
 STRINGTABLE 
@@ -496,26 +482,8 @@ END
 STRINGTABLE 
 BEGIN
     ID_HELPINDEX            "Display help contents"
-    ID_HELPFIND             "Buscar ayuda sobre una palabra"
-    ID_HELPUSE              "Display help on help"
     ID_ABOUT                "Display version info"
-    ID_HELPCOMMANDS         "Display Hugs commands"
-    ID_HELPREPORT           "Display the Haskell Report"
-    ID_HELPLIBS             "Display the Haskell Library Report"
-END
-
-STRINGTABLE 
-BEGIN
-    ID_HELPGENTLE           "Display the Gentle Introduction to Haskell"
-    ID_HELPDOCS             "Display Hugs documentation"
-    ID_HELPEXTS             "Display Hugs and Ghc libraries"
-    ID_HELPHASKELLORG       "Go to haskell.org"
-END
-
-STRINGTABLE 
-BEGIN
-    IDS_FILTERPROJECT       "Hugs Projects(*.hp)|*.hp|Projects(*.prj)|*.prj|All files(*.*)|*.*|"
-    IDS_FILTERFILE          "Haskell files(*.hs *.lhs)|*.hs;*.lhs|Gofer files(*.gs *.gof *.lgs)|*.gs;*.gof;*.lgs|Literate Scripts(*.lhs *.lgs *.ver *.lit)|*.lgs;*.lhs;*.ver;*.lit|Preludes(*.pre)|*.pre|All files(*.*)|*.*|"
+    ID_HELPCOMMANDS         "Summary of Hugs commands"
 END
 
 STRINGTABLE 
@@ -570,6 +538,21 @@ BEGIN
     157                     "Load recently loaded file"
     158                     "Load recently loaded file"
     159                     "Load recently loaded file"
+END
+
+STRINGTABLE 
+BEGIN
+    ID_DELETE               "Delete the currently selected text"
+    ID_CLEARSCREEN          "Clear the screen"
+    ID_SELECTALL            "Select all the text"
+    ID_LIBRARIES            "Information on the Hierarchical Libraries"
+END
+
+STRINGTABLE 
+BEGIN
+    ID_WWWHUGS              "Visit the Hugs website, www.haskell.org/hugs"
+    ID_WWWHASKELL           "Visit the Haskell website, www.haskell.org"
+    ID_HELPCONTENTS         "Show the help contents"
 END
 
 #endif    // English (U.K.) resources
