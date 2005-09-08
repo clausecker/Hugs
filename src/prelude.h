@@ -8,8 +8,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: prelude.h,v $
- * $Revision: 1.77 $
- * $Date: 2005/09/06 23:38:15 $
+ * $Revision: 1.78 $
+ * $Date: 2005/09/08 16:02:03 $
  * ------------------------------------------------------------------------*/
 #ifndef __PRELUDE_H__
 #define __PRELUDE_H__
@@ -201,7 +201,7 @@ int macsystem(char *filenames);
  *-------------------------------------------------------------------------*/
 
 #if HUGS_FOR_WINDOWS
-# include "winhugs\Winhugs.h"
+# include "winhugs/Winhugs.h"
 #endif
 
 
@@ -400,25 +400,12 @@ extern int vsnprintf  Args((char*, size_t, const char*, va_list));
 
 #if DOS
 
-# if !HUGS_FOR_WINDOWS
-extern  int  kbhit	Args((void));
-# endif /* !HUGS_FOR_WINDOWS */
-# define allowBreak()	kbhit()
+# define allowBreak()	;
 
 #elif HANDLERS_CANT_LONGJMP /* eg Win32 */
 
-# if HUGS_FOR_WINDOWS
-#  if USE_THREADS
-#   define ctrlbrk(bh)	do { signal(SIGINT,bh); signal(SIGBREAK,bh); } while (0)
-#   define allowBreak()	if (broken) { broken = FALSE; sigRaise(breakHandler); }
-#  else
-#   define ctrlbrk(bh)  do { signal(SIGINT,bh); signal(SIGBREAK,bh); } while (0)
-#   define allowBreak()	kbhit(); if (broken) { broken = FALSE; sigRaise(breakHandler); }
-#  endif /* USE_THREADS */
-# else /* !HUGS_FOR_WINDOWS */
-#  define ctrlbrk(bh)	do { signal(SIGINT,bh); signal(SIGBREAK,bh); } while (0)
-#  define allowBreak()	if (broken) { broken = FALSE; sigRaise(breakHandler); }
-# endif /* !HUGS_FOR_WINDOWS */
+# define ctrlbrk(bh)	do { signal(SIGINT,bh); signal(SIGBREAK,bh); } while (0)
+# define allowBreak()	if (broken) { broken = FALSE; sigRaise(breakHandler); }
 
 #else /* !DOS && !HANDLERS_CANT_LONGJMP - eg Unix */
 

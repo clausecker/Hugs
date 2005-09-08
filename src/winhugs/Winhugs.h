@@ -73,7 +73,4 @@ extern void	WinHugsHyperlink(const char* msg);
 #define getchar()       WinHugsGetC(stdin)
 #define getch()         WinHugsGetC(stdin)
 
-// unused?
-#define kbhit()         WinKbhit(hWndText)
-
 #endif /* __WINHUGS_H__ */
