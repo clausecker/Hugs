@@ -15,7 +15,8 @@
 //    Modified minimally to get it working
 //    Moved out of WinHugs.c and into separate module, a bit of massage to make that work
 
-#include <windows.h>
+#include "Header.h"
+#include "Winhugs.h"
 #include "prelude.h"
 #include "storage.h"
 #include "connect.h"
