@@ -11,8 +11,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.133 $
- * $Date: 2005/09/08 23:45:41 $
+ * $Revision: 1.134 $
+ * $Date: 2005/09/09 23:42:30 $
  * ------------------------------------------------------------------------*/
 #include "prelude.h"
 #include "storage.h"
@@ -2168,10 +2168,16 @@ String file; {
     char dllPath[FILENAME_MAX+1];
 #endif
     String dot;
-    strcpy(dllPath, file);			/* pathname for module     */
+    String s;
+    for (s = file; *s && !isSLASH(*s); s++)
+	;
+    if (*s)
+	strcpy(dllPath, file);			/* pathname for module     */
+    else /* if in this directory, prefix ./ so search won't use the path   */
+	sprintf(dllPath, ".%c%s", SLASH, file);
     dot = strrchr(dllPath,'.');        		/* patch file extension    */
-    if (!dot) {
-	dot = dot + strlen(dllPath);
+    if (dot == NULL || dot == file) {
+	dot = dllPath + strlen(dllPath);
     }
     strcpy(dot,DLL_ENDING);
     return getDLL(dllPath);
