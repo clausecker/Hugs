@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: machine.c,v $
- * $Revision: 1.24 $
- * $Date: 2004/10/22 12:38:45 $
+ * $Revision: 1.25 $
+ * $Date: 2005/09/09 09:03:07 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -28,6 +28,8 @@ Bool   debugCode     = FALSE;		/* TRUE => print G-code to screen  */
 #if DEBUG_SHOWSC
 Bool   debugSC	     = FALSE;		/* TRUE => print SC-code to screen */
 #endif
+
+Int    evalDepth;			/* depth of nested eval()'s        */
 
 /* --------------------------------------------------------------------------
  * Data structures for machine memory (program storage):
@@ -1314,6 +1316,8 @@ Cell n; {
     Int      ar;
 
     STACK_CHECK
+    if (++evalDepth == MAX_EVAL_DEPTH)
+	hugsStackOverflow();
 #if GIMME_STACK_DUMPS
     evalRoots[++rootsp] = n;		/* Save pointer to root expression */
 					/* should probably test that rootsp*/
@@ -1578,6 +1582,7 @@ unw:switch (whatIs(n)) {                /* unwind spine of application     */
 #if GIMME_STACK_DUMPS
     rootsp--;
 #endif
+    evalDepth--;
 }
 
 #if OBSERVATIONS
@@ -1922,6 +1927,7 @@ Int what; {
 	case MARK    : break;
 
 	case RESET   : evalError = 0;
+		       evalDepth = 0;
 #if GIMME_STACK_DUMPS
 		       rootsp = (-1);
 #endif
