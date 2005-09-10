@@ -209,6 +209,10 @@ dnl--------------------------------------------------------------------
 
 dnl ToDo: if we have YACC, insert parser.c: parser.y in Makefile
 AC_PROG_YACC
+dnl To implement the Haskell layout rule of inserting an implicit close
+dnl brace if it would be legal where an illegal token is encountered,
+dnl parser.y does some error recovery trickery that is incompatible
+dnl with byacc.
 if test x"`basename ${YACC}`" = x"byacc"; then
   AC_MSG_ERROR([Found 'byacc', but the Hugs98 parser is incompatible with it.
 You need to install 'bison' and re-run the configure script.])
