@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.173 $
- * $Date: 2004/12/01 17:33:18 $
+ * $Revision: 1.174 $
+ * $Date: 2005/09/10 09:41:09 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -6844,8 +6844,8 @@ List fs;
 #if TREX
 /* If Trex records are used in the source code, flag it.
    trexLoad() uses this to determine whether or not to
-   bind to a couple of names in the Trex library (which
-   are used when generating 'show' code.)
+   bind to a couple of names in the Hugs.Trex module
+   (which are used when generating 'show' code.)
 */
 static Bool trexLibNeeded = FALSE;
 
@@ -6877,36 +6877,36 @@ static Void local trexLoad() {
 
 	if( !(nameInsFld = findQualName(insFldName)) &&
 	    !(nameInsFld = findName(qtextOf(insFldName))) ) {
-	    ERRMSG(0) "Trex.insertField not in scope" ETHEN
-		ERRTEXT   "\n*** Possible cause: \"Trex\" module not imported"
+	    ERRMSG(0) "Hugs.Trex.insertField not in scope" ETHEN
+		ERRTEXT   "\n*** Possible cause: \"Hugs.Trex\" module not imported"
 		EEND;
 	}
 
 	if( !(nameShowRecRow = findQualName(showRecName)) &&
 	    !(nameShowRecRow = findName(qtextOf(showRecName))) ) {
-	    ERRMSG(0) "Trex.showRecRow not in scope" ETHEN
-		ERRTEXT   "\n*** Possible cause: \"Trex\" module not imported"
+	    ERRMSG(0) "Hugs.Trex.showRecRow not in scope" ETHEN
+		ERRTEXT   "\n*** Possible cause: \"Hugs.Trex\" module not imported"
 		EEND;
 	}
 
 	if( !(nameEqRecRow = findQualName(eqRecRowName)) &&
 	    !(nameEqRecRow = findName(qtextOf(eqRecRowName))) ) {
-	    ERRMSG(0) "Trex.eqRecRow not in scope" ETHEN
-		ERRTEXT   "\n*** Possible cause: \"Trex\" module not imported"
+	    ERRMSG(0) "Hugs.Trex.eqRecRow not in scope" ETHEN
+		ERRTEXT   "\n*** Possible cause: \"Hugs.Trex\" module not imported"
 		EEND;
 	}
 
 	if( !(nameShowRecRowCls = findQualClass(ShowRecName)) &&
 	    !(nameShowRecRowCls = findClass(qtextOf(ShowRecName))) ) {
-	    ERRMSG(0) "Trex.ShowRecRow class not in scope" ETHEN
-		ERRTEXT   "\n*** Possible cause: \"Trex\" module not imported"
+	    ERRMSG(0) "Hugs.Trex.ShowRecRow class not in scope" ETHEN
+		ERRTEXT   "\n*** Possible cause: \"Hugs.Trex\" module not imported"
 		EEND;
 	}
 
 	if( !(nameEqRecRowCls = findQualClass(EqRecName)) &&
 	    !(nameEqRecRowCls = findClass(qtextOf(EqRecName))) ) {
-	    ERRMSG(0) "Trex.EqRecRow not in scope" ETHEN
-		ERRTEXT   "\n*** Possible cause: \"Trex\" module not imported"
+	    ERRMSG(0) "Hugs.Trex.EqRecRow not in scope" ETHEN
+		ERRTEXT   "\n*** Possible cause: \"Hugs.Trex\" module not imported"
 		EEND;
 	}
 
