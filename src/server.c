@@ -11,8 +11,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: server.c,v $
- * $Revision: 1.44 $
- * $Date: 2004/11/11 23:55:34 $
+ * $Revision: 1.45 $
+ * $Date: 2005/09/10 09:42:26 $
  * ------------------------------------------------------------------------*/
 #include "prelude.h"
 #include "storage.h"
@@ -231,7 +231,7 @@ String argv[]; {
       everybody(RESET);
 #ifndef NO_DYNAMIC_TYPES
       if (!linkDynamic()) {
-	setError("module HugsDynamic doesn't define correct functions");
+	setError("module Hugs.Dynamic doesn't define the expected functions");
 	return NULL;
       }
 #endif
@@ -389,7 +389,9 @@ String e; {
 	HVal r    = 0;
 
 	if (!SetModule(m)) {
-	    setError("compileExpr: invalid module");
+	    char errmsg[256];
+	    snprintf(errmsg, 255, "can't find \"%s\" module", m);
+	    setError(errmsg);
 	    return 0;
 	}
 	scriptFile = 0;
