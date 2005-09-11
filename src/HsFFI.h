@@ -308,15 +308,15 @@ extern void hs_free_fun_ptr(HsFunPtr fp);
 
 /* Copied verbatim from prelude.h */
 
-#ifdef _MSC_VER /* Microsoft Visual C++ */
-#define DLLIMPORT(rty) __declspec(dllimport) rty
-#define DLLEXPORT(rty) __declspec(dllexport) rty
-#elif defined __BORLANDC__ 
-#define DLLIMPORT(rty) rty far _import
-#define DLLEXPORT(rty) rty far _export
+#if defined(__BORLANDC__)
+# define DLLIMPORT(rty) rty far _import
+# define DLLEXPORT(rty) rty far _export
+#elif defined(_WIN32) /* Microsoft Windows */
+# define DLLIMPORT(rty) __declspec(dllimport) rty
+# define DLLEXPORT(rty) __declspec(dllexport) rty
 #else 
-#define DLLIMPORT(rty) rty
-#define DLLEXPORT(rty) rty
+# define DLLIMPORT(rty) rty
+# define DLLEXPORT(rty) rty
 #endif /* Don't need to declare DLL exports */
 
 #endif /* __HSFFI_H__ */
