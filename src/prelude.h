@@ -8,8 +8,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: prelude.h,v $
- * $Revision: 1.79 $
- * $Date: 2005/09/09 09:03:07 $
+ * $Revision: 1.80 $
+ * $Date: 2005/09/11 00:33:00 $
  * ------------------------------------------------------------------------*/
 #ifndef __PRELUDE_H__
 #define __PRELUDE_H__
@@ -269,21 +269,23 @@ int macsystem(char *filenames);
  * declaration and the definition to coexist in the same file without 
  * generating warning messages, you have to go through contortions.
  *
+ * We also do this under MinGW, to interoperate with MSVC.
+ *
  * Sigh, to add to the confusion, MS C and Borland C disagree about whether
  * to put the export declaration before or after the return type - so we
  * have to parameterise it to allow both.
  */
 #endif
 
-#ifdef _MSC_VER /* Microsoft Visual C++ */
-#define DLLIMPORT(rty) __declspec(dllimport) rty
-#define DLLEXPORT(rty) __declspec(dllexport) rty
-#elif defined __BORLANDC__ 
-#define DLLIMPORT(rty) rty far _import
-#define DLLEXPORT(rty) rty far _export
+#if defined(__BORLANDC__)
+# define DLLIMPORT(rty) rty far _import
+# define DLLEXPORT(rty) rty far _export
+#elif defined(_WIN32) /* Microsoft Windows */
+# define DLLIMPORT(rty) __declspec(dllimport) rty
+# define DLLEXPORT(rty) __declspec(dllexport) rty
 #else 
-#define DLLIMPORT(rty) rty
-#define DLLEXPORT(rty) rty
+# define DLLIMPORT(rty) rty
+# define DLLEXPORT(rty) rty
 #endif /* Don't need to declare DLL exports */
 
 #ifdef __EXTERNAL
