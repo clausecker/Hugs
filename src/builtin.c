@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: builtin.c,v $
- * $Revision: 1.87 $
- * $Date: 2005/09/04 14:27:05 $
+ * $Revision: 1.88 $
+ * $Date: 2005/09/12 00:26:33 $
  * ------------------------------------------------------------------------*/
 
 /* We include math.h before prelude.h because SunOS 4's cpp incorrectly
@@ -82,7 +82,7 @@
 # include <fcntl.h>
 #endif
 
-#if defined(openbsd_HOST_OS)
+#if defined(openbsd_HOST_OS) || defined(linux_HOST_OS)
 /* Needed for mallocBytesRWX() */
 #include <inttypes.h>
 #include <sys/mman.h>
@@ -2000,7 +2000,15 @@ static unsigned char *obscure_ccall_ret_code;	/* set by initAdjustor() */
  */
 static void* local mallocBytesRWX(int len) {
     void *addr = (void *)malloc(len);
-#if defined(openbsd_HOST_OS)
+#if defined(i386_HOST_ARCH) && defined(_WIN32)
+    /* This could be necessary for processors which distinguish between
+       READ and EXECUTE memory accesses, e.g. Itaniums. */
+    DWORD dwOldProtect = 0;
+    if (VirtualProtect(addr, len, PAGE_EXECUTE_READWRITE, &dwOldProtect) == 0) {
+        ERRMSG(0) "mallocBytesRWX: failed to protect 0x%p\n", addr
+	EEND;
+    }
+#elif defined(openbsd_HOST_OS) || defined(linux_HOST_OS)
     /* malloced memory isn't executable by default on OpenBSD */
     uintptr_t pageSize         = sysconf(_SC_PAGESIZE);
     uintptr_t mask             = ~(pageSize - 1);
