@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: builtin.c,v $
- * $Revision: 1.88 $
- * $Date: 2005/09/12 00:26:33 $
+ * $Revision: 1.89 $
+ * $Date: 2005/09/13 15:28:53 $
  * ------------------------------------------------------------------------*/
 
 /* We include math.h before prelude.h because SunOS 4's cpp incorrectly
@@ -2038,8 +2038,10 @@ static void local initAdjustor() {
 }
 
 static void* mkThunk(void (*app)(void), HugsStablePtr s) {
+    /* The code part of the thunk_data needs to be marked as executable,
+       but it's simple to do the whole struct. */
     struct thunk_data* thunk 
-        = (struct thunk_data*)malloc(sizeof(struct thunk_data));
+        = (struct thunk_data*)mallocBytesRWX(sizeof(struct thunk_data));
     char* pc;
     if (!thunk) {
         /* ToDo: better cleanup */
