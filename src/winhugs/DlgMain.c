@@ -63,7 +63,7 @@ void MainInitToolbar(HWND hWnd)
     for (AnyButtons = 0; Buttons[AnyButtons] != 0; AnyButtons++)
 	; // no code required
 
-    TbButtons = malloc(sizeof(Buttons) * AnyButtons);
+    TbButtons = malloc(sizeof(TBBUTTON) * AnyButtons);
     for (i = 0; i < AnyButtons; i++) {
 	if (Buttons[i] == -1) {
 	    TbButtons[i].iBitmap = 0;
