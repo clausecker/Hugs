@@ -10,6 +10,8 @@
 extern void	ErrorBox(const char* Msg);
 extern void	InfoBox(const char* Msg);
 
+extern char*	WinHugsPickDefaultEditor();
+
 extern void	WinHugsExit(void);
 
 extern int	InAutoReloadFiles;

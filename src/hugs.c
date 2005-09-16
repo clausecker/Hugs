@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.144 $
- * $Date: 2005/09/06 19:48:29 $
+ * $Revision: 1.145 $
+ * $Date: 2005/09/16 16:55:10 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -89,6 +89,9 @@ String argv[]; {
      */
     hugsEdit      = strCopy(fromEnv("EDITOR",NULL));
     if (hugsEdit == NULL) {
+#if HUGS_FOR_WINDOWS
+      hugsEdit = WinHugsPickDefaultEditor();
+#else
       UINT rc;
       int notePadLen = strlen(DEFAULT_EDITOR);
       char* notePadLoc;
@@ -112,6 +115,7 @@ String argv[]; {
 	strcat(notePadLoc, DEFAULT_EDITOR);
 	hugsEdit = strCopy(notePadLoc);
       }
+#endif
     }
 #elif __MWERKS__ && macintosh
     hugsEdit      = NULL;

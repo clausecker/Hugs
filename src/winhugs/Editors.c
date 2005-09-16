@@ -96,3 +96,18 @@ LPCTSTR GetEditor(int Index, LPTSTR Buffer)
         Buffer[0] = 0;
     return Editors[Index].Name;
 }
+
+char* WinHugsPickDefaultEditor()
+{
+    TCHAR Buffer[MAX_PATH];
+    int i;
+    for (i = 1; GetEditor(i, Buffer) != NULL; i++) {
+	if (Buffer[0] != 0)
+	    return strdup(Buffer);
+    }
+    GetEditor(0, Buffer);
+    if (Buffer[0] == 0)
+	return NULL;
+    else
+	return strdup(Buffer);
+}
