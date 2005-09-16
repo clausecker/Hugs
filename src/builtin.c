@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: builtin.c,v $
- * $Revision: 1.90 $
- * $Date: 2005/09/13 19:35:00 $
+ * $Revision: 1.91 $
+ * $Date: 2005/09/16 16:03:46 $
  * ------------------------------------------------------------------------*/
 
 /* We include math.h before prelude.h because SunOS 4's cpp incorrectly
@@ -2183,7 +2183,6 @@ static void* mkThunk(void (*app)(void), HugsStablePtr s) {
     ERRMSG(0) "Foreign import wrapper is not supported on this architecture"
     EEND;
 #endif
-    assert(pc <= &thunk->code[0] + sizeof(thunk->code));
     return &thunk->code; /* a pointer into the middle of the thunk */
 }
 
