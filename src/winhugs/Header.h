@@ -1,7 +1,10 @@
 #define WIN32_MEAN_AND_LEAN
+//#define UNICODE
+//#define _UNICODE
 #include <windows.h>
 #include <richedit.h>
 #include <commctrl.h>
+#include <tchar.h>
 
 // Globally shared variables
 extern HINSTANCE hThisInstance;
