@@ -127,7 +127,7 @@ INT APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmd
 LPCSTR appName = "Hugs for Windows";
 
 BOOL InAutoReloadFiles = FALSE;	/* TRUE =>loading files before eval*/
-BOOL autoLoadFiles     = FALSE; /* TRUE => automatically reloaded modified files */
+BOOL autoLoadFiles     = TRUE; /* TRUE => automatically reloaded modified files */
 
 void ErrorBox(LPCSTR Msg)
 {
