@@ -8,7 +8,7 @@ dnl typically usage from cshell:  env DEV_NULL="/dev/null" ./configure
 
 dnl AC_SUBST_DEF(varname,defaultvalue)
 
-AC_DEFUN(AC_SUBST_DEF,[
+AC_DEFUN([AC_SUBST_DEF],[
 $1=${$1=$2}
 AC_SUBST($1)
 ])
@@ -16,7 +16,7 @@ AC_SUBST($1)
 
 dnl On some machines, you cannot take the address of a jmp_buf
 dnl
-AC_DEFUN(AC_C_JMPBUF_ARRAY,
+AC_DEFUN([AC_C_JMPBUF_ARRAY],
 [AC_CACHE_CHECK(for arrays of jmp_bufs, ac_cv_c_jmp_buf_array,
 [AC_TRY_COMPILE([
 #include <setjmp.h>
@@ -38,7 +38,7 @@ fi
 
 dnl POSIX systems prefer "diff -C 1"; SunOS4 prefers "diff -c1".
 dnl
-AC_DEFUN(AC_PROG_DIFF,
+AC_DEFUN([AC_PROG_DIFF],
 [AC_PATH_PROG(DIFF,diff)
 AC_CACHE_CHECK(whether to use "diff -c1" or "diff -C 1", CONTEXT_DIFF,
 if AC_TRY_COMMAND(diff -C 1 config.log config.log); then
@@ -55,7 +55,7 @@ AC_SUBST(CONTEXT_DIFF)
 ])
 
 dnl check for gcc's "labels as values" feature
-AC_DEFUN(AC_C_LABELS_AS_VALUES,
+AC_DEFUN([AC_C_LABELS_AS_VALUES],
 [AC_CACHE_CHECK([labels as values], ac_cv_labels_as_values,
 [AC_TRY_COMPILE([
 int foo(int);
@@ -122,7 +122,7 @@ AS_VAR_POPDEF([fp_func])dnl
 dnl ** Try building and loading a dynamically loadable library using
 dnl    the specified flags.
 dnl
-AC_DEFUN(HUGS_TRY_DYNLINK,
+AC_DEFUN([HUGS_TRY_DYNLINK],
 dnl AC_BEFORE([$0], [AC_C_PROTOTYPES])
 [AC_MSG_CHECKING(if '$1' builds loadable libraries)
 AC_CACHE_VAL(ac_cv_dll_flags,
