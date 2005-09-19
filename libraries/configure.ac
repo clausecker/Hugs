@@ -47,7 +47,6 @@ dnl--------------------------------------------------------------------
 
 AC_C_CONST               dnl can we use "const"?
 AC_C_INLINE              dnl can we use "inline"?
-AC_C_INLINE_ONLY         dnl should we use "inline" or "inline extern"?
 
 dnl --------------------------------------------------
 dnl * Platform header file and syscall feature tests
