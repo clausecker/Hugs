@@ -179,19 +179,13 @@ build_package() {
 # extra_packages - packaged with Hugs, but may also be independently updated
 #	(each of these goes in a separate hierarchy under {Hugs}/packages)
 
-core_packages='base haskell98 haskell-src network'
-extra_packages='Cabal QuickCheck mtl fgl HaXml parsec HUnit'
+core_packages='base haskell98'
 
-#
-# ToDo: fix -- cygwin supports 'unix' only when no -mno-cygwin is given to gcc
-#
+Win32=
 case `uname -a` in
-CYGWIN*|MINGW32*)
-	extra_packages="$extra_packages Win32" ;;
-*)	core_packages="$core_packages unix" ;;
+CYGWIN*|MINGW32*) Win32="Win32" ;;
 esac
-
-extra_packages="$extra_packages X11 HGL OpenGL GLUT OpenAL"
+extra_packages="Cabal haskell-src QuickCheck mtl fgl HaXml parsec network HUnit $Win32 unix X11 HGL OpenGL GLUT OpenAL"
 
 build_package "libraries/hugsbase" $target/libraries
 
@@ -397,10 +391,10 @@ mkdir -p $compat
      stub GraphicsCore		Graphics.HGL.Core
      stub GraphicsUtils		Graphics.HGL
 
-# win32 library
+# Win32 library
 
-case `uname -a` in
-CYGWIN*|MINGW32*)
+case "$Win32" in
+Win32)
 
      stub Win32			Graphics.Win32 System.Win32
 
