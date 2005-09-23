@@ -72,6 +72,9 @@ AC_CHECK_HEADERS(windows.h winsock.h)
 AC_HEADER_TIME
 AC_CHECK_HEADERS(time.h sys/time.h sys/timeb.h sys/times.h)
 
+dnl ** check for functions
+AC_CHECK_FUNCS(getclock getrusage gettimeofday time times)
+
 dnl--------------------------------------------------------------------
 dnl ### types 
 dnl--------------------------------------------------------------------
@@ -116,13 +119,6 @@ FP_CHECK_ALIGNMENT(unsigned long long)
 fi
 FP_CHECK_ALIGNMENT(unsigned short)
 FP_CHECK_ALIGNMENT(void *)
-
-dnl ** check for more functions
-AC_CHECK_FUNCS(getclock)
-AC_CHECK_FUNCS(getrusage)
-AC_CHECK_FUNCS(gettimeofday)
-AC_CHECK_FUNCS(time)
-AC_CHECK_FUNCS(times)
 
 dnl Definitions computed by ../configure, for insertion into Makefile
 MkDefs=../MkDefs
