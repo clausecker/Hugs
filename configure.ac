@@ -22,22 +22,12 @@ dnl Choose host(/target/build) platform
 dnl--------------------------------------------------------------------
 
 dnl Guess host/target/build platform(s) if necessary.
-AC_CANONICAL_SYSTEM
-
-# "$host" defaults to "$target"
-if test "x$host" = xNONE ; then
-    host=$target
-fi
-
-dnl ** canonicalize platform names
-BuildPlatform=`/bin/sh config.sub $build` || exit 1
-HostPlatform=`/bin/sh config.sub $host` || exit 1
-TargetPlatform=`/bin/sh config.sub $target` || exit 1
+AC_CANONICAL_TARGET
 
 dnl ** fptools does further canonicalization
-BuildPlatform=`./fp-platform $BuildPlatform`
-HostPlatform=`./fp-platform $HostPlatform`
-TargetPlatform=`./fp-platform $TargetPlatform`
+BuildPlatform=`./fp-platform $build`
+HostPlatform=`./fp-platform $host`
+TargetPlatform=`./fp-platform $target`
 
 AC_SUBST([HostPlatform])
 
@@ -45,27 +35,30 @@ if test x"$HostPlatform" != x"$BuildPlatform" ; then
   AC_MSG_ERROR([Hugs98 does not yet support differing build/host (i.e., cross-compiling)])
 fi
 
-host_cpu=`echo $HostPlatform | sed 's/-.*//'`
-host_os=[`echo $HostPlatform | sed 's/^\([^-]*\)-\([^-]*\)-\([^-]*\).*/\3/'`]
-target_cpu=`echo $TargetPlatform | sed 's/-.*//'`
-target_os=[`echo $TargetPlatform | sed 's/^\([^-]*\)-\([^-]*\)-\([^-]*\).*/\3/'`]
-build_cpu=`echo $BuildPlatform | sed 's/-.*//'`
-build_os=[`echo $BuildPlatform | sed 's/^\([^-]*\)-\([^-]*\)-\([^-]*\).*/\3/'`]
+fp_get_cpu='s/-.*//'
+fp_get_os='s/^[[^-]]*-[[^-]]*-\([[^-]]*\).*/\1/'
+
+build_cpu=`echo $BuildPlatform | sed "$fp_get_cpu"`
+build_os=`echo $BuildPlatform | sed "$fp_get_os"`
+host_cpu=`echo $HostPlatform | sed "$fp_get_cpu"`
+host_os=`echo $HostPlatform | sed "$fp_get_os"`
+target_cpu=`echo $TargetPlatform | sed "$fp_get_cpu"`
+target_os=`echo $TargetPlatform | sed "$fp_get_os"`
 
 # We don't use AS_TR_CPP here, because it changes case too.
 fp_tr_cpp="sed s/[[^_a-zA-Z0-9]]/_/g"
 
+AC_SUBST([BuildPlatform_CPP],  [`echo $BuildPlatform  | $fp_tr_cpp`])
 AC_SUBST([HostPlatform_CPP],   [`echo $HostPlatform   | $fp_tr_cpp`])
 AC_SUBST([TargetPlatform_CPP], [`echo $TargetPlatform | $fp_tr_cpp`])
-AC_SUBST([BuildPlatform_CPP],  [`echo $BuildPlatform  | $fp_tr_cpp`])
 
+AC_SUBST([BuildArch_CPP],  [`echo $build_cpu  | $fp_tr_cpp`])
 AC_SUBST([HostArch_CPP],   [`echo $host_cpu   | $fp_tr_cpp`])
 AC_SUBST([TargetArch_CPP], [`echo $target_cpu | $fp_tr_cpp`])
-AC_SUBST([BuildArch_CPP],  [`echo $build_cpu  | $fp_tr_cpp`])
 
+AC_SUBST([BuildOS_CPP],  [`echo $build_os  | $fp_tr_cpp`])
 AC_SUBST([HostOS_CPP],   [`echo $host_os   | $fp_tr_cpp`])
 AC_SUBST([TargetOS_CPP], [`echo $target_os | $fp_tr_cpp`])
-AC_SUBST([BuildOS_CPP],  [`echo $build_os  | $fp_tr_cpp`])
 
 dnl--------------------------------------------------------------------
 dnl
