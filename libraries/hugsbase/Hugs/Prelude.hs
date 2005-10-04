@@ -1762,23 +1762,17 @@ putStrLn s = do putStr s
 getLine :: IO String
 getLine  = do 
   c <- getChar
-  if c=='\n' 
-   then return ""
-   else do
-     ls <- getRest 
-     return (c:ls)
+  getLine' c
   where
+   getLine' '\n' = return ""
+   getLine' c = do
+     cs <- getRest
+     return (c:cs)
    getRest = do
-     c <- catch getChar
-                (\ ex -> if ioe_type ex == EOF then 
-			    return '\n'
-			 else
-			    ioError ex)
-     if c=='\n'
-      then return ""
-      else do
-       cs <- getRest 
-       return (c:cs)
+     c <- catch getChar $ \ ex ->
+	if isEOFError ex then return '\n' else ioError ex
+     getLine' c
+   isEOFError ex = ioe_type ex == EOF	-- defined in System.IO.Error
 
 -- raises an exception instead of an error
 readIO          :: Read a => String -> IO a

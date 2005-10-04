@@ -143,24 +143,16 @@ primitive hGetChar    :: Handle -> IO Char
 hGetLine   :: Handle -> IO String
 hGetLine h = do
   c <- hGetChar h
-  if c=='\n'
-   then return ""
-   else do
-     ls <- getRest 
-     return (c:ls)
+  hGetLine' c
   where
+   hGetLine' '\n' = return ""
+   hGetLine' c = do
+     cs <- getRest
+     return (c:cs)
    getRest = do
-     c <- catch (hGetChar h)
-                (\ ex -> if isEOFError ex then 
-			    return '\n'
-			 else
-			    ioError ex)
-     if c=='\n'
-      then return ""
-      else do
-       cs <- getRest 
-       return (c:cs)
-
+     c <- catch (hGetChar h) $ \ ex ->
+        if isEOFError ex then return '\n' else ioError ex
+     hGetLine' c
 
 primitive hLookAhead    :: Handle -> IO Char
 primitive hGetContents  :: Handle -> IO String
