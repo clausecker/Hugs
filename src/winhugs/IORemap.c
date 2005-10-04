@@ -2,6 +2,10 @@
 #include <stdio.h>
 #include "Winhugs.h"
 
+#include <prelude.h>
+#include <storage.h>
+#include <connect.h>
+
 // stdstr output definitions
 #define MAX_STDSTR 1024
 int     StrInx = 0;
@@ -122,13 +126,11 @@ void WinHugsReceiveC(int c)
 
 int WinHugsGetC(FILE* f)
 {
-    if (f == stdin)
-    {
+    if (f == stdin) {
         int Res, i;
 
 	EnterCriticalSection(&Mutex);
-	if (KeyboardBufferCount == 0)
-	{
+	if (KeyboardBufferCount == 0) {
             SetStatusBar("Waiting for user input");
 	    LeaveCriticalSection(&Mutex);
 	    EnterContents();
@@ -146,7 +148,34 @@ int WinHugsGetC(FILE* f)
 	LeaveCriticalSection(&Mutex);
 
 	return Res; // no support for interact
-    }
-    else
+    } else
 	return fgetc(f);
+}
+
+void WinHugsFilename(const char* FileName, int LineNo)
+{
+    LPCTSTR HugsDir = hugsdir();
+    int nHugsDir = strlen(HugsDir);
+    int nCurDir;
+    char Buffer[MAX_PATH], CurDir[MAX_PATH];
+    nCurDir = GetCurrentDirectory(MAX_PATH, CurDir);
+
+    strcpy(Buffer, "file:");
+
+    if (strncmp(HugsDir, FileName, nHugsDir) == 0) {
+	strcat(Buffer, "{Hugs}");
+	strcat(Buffer, FileName + nHugsDir);
+    } else if (strnicmp(CurDir, FileName, nCurDir) == 0) {
+	strcat(Buffer, ".");
+	strcat(Buffer, FileName + nCurDir);
+    } else
+	strcat(Buffer, FileName);
+
+    if (LineNo) {
+	int n = strlen(Buffer);
+	Buffer[n] = ':';
+	itoa(LineNo, Buffer + n+1, 10);
+    }
+
+    WinHugsHyperlink(Buffer);
 }

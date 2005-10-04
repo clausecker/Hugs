@@ -377,10 +377,8 @@ Void whatScripts() {       /* list scripts in current session */
     Printf("\nHugs session for:");
     for (i=0; i<numScripts; ++i) {
 #if HUGS_FOR_WINDOWS
-	char buf[1000];
 	Putchar('\n');
-	sprintf(buf, "file:%s", scriptTable[i].fileName);
-	WinHugsHyperlink(buf);
+	WinHugsFilename(scriptTable[i].fileName, 0);
 #else
 	Printf("\n%s",scriptTable[i].fileName);
 #endif

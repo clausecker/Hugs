@@ -91,6 +91,7 @@ void ExecuteFile(LPSTR FileName)
 {
     if (strncmp(FileName, "file:", 5) == 0) {
 	//find the line number
+	char Buffer[MAX_PATH];
 	char* s = strrchr(FileName, ':');
 	int LineNo;
 	if (s != NULL) {
@@ -111,7 +112,17 @@ void ExecuteFile(LPSTR FileName)
 	    LineNo = atoi(s);
 	}
 
-	startEdit(LineNo, &FileName[5]);
+	FileName += 5;			/* skip over "file:" */
+	if (strncmp("{Hugs}", FileName, 6) == 0) {
+	    strcpy(Buffer, hugsdir());
+	    strcat(Buffer, &FileName[6]);
+	} else if (FileName[0] == '.') {
+	    GetCurrentDirectory(MAX_PATH, Buffer);
+	    strcat(Buffer, &FileName[1]);
+	} else
+	    strcpy(Buffer, FileName);
+
+	startEdit(LineNo, Buffer);
     } else {
 	int Res = (int) ShellExecute(hThisWindow, NULL, FileName, NULL, NULL, SW_SHOWNORMAL);
 	if (Res <= 32) {

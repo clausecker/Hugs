@@ -74,15 +74,8 @@ Int l; {
     if (scriptFile) {
 	setLastEdit(scriptFile,l);
 #ifdef HUGS_FOR_WINDOWS
-	{
-	    char buf[1000];
-	    FPrintf(errorStream," ");
-	    if (l)
-		sprintf(buf,"file:%s:%d",scriptFile,l);
-	    else
-		sprintf(buf,"file:%s",scriptFile);
-	    WinHugsHyperlink(buf);
-	}
+	FPrintf(errorStream," ");
+	WinHugsFilename(scriptFile, l);
 #else
 	FPrintf(errorStream," \"%s\"",scriptFile);
 	if (l)

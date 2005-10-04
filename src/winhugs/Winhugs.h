@@ -54,6 +54,7 @@ extern int	WinHugsFPrintf(FILE* f, const char* format, ...);
 extern int	WinHugsPutC(FILE* f, char c);
 extern int	WinHugsGetC(FILE* f);
 extern void	WinHugsHyperlink(const char* msg);
+extern void	WinHugsFilename(const char* FileName, int LineNo);
 
 // undefine everything that is a macro already
 #undef getc
