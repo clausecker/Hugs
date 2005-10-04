@@ -232,6 +232,8 @@ INT_PTR CALLBACK OptionsHugsProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPar
 
 /////////////////////////////////////////////////////////////////////
 // OPTRUNTIME related code
+#define MIN_HEAP_SIZE 1
+#define MAX_HEAP_SIZE 1000
 
 int Heap2Mb(int heap){return max(1, heap * 8 / (1024 * 1024));}
 int Mb2Heap(int mb){return (mb * 1024 * 1024) / 8;}
@@ -241,8 +243,8 @@ INT_PTR CALLBACK OptionsRuntimeProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM l
     switch (msg) {
 	case WM_INITDIALOG:
 	    // heapSize is 8 byte cells
-	    SetDlgItemInt(hDlg, txtHeapSize, Heap2Mb(heapSize), FALSE);
-	    SendDlgItemMessage(hDlg, spnHeapSize, UDM_SETRANGE, 0, MAKELONG(1000,1));
+	    SetDlgItemInt(hDlg, txtHeapSize, Heap2Mb(hpSize), FALSE);
+	    SendDlgItemMessage(hDlg, spnHeapSize, UDM_SETRANGE, 0, MAKELONG(MAX_HEAP_SIZE,MIN_HEAP_SIZE));
 
 	    SetDlgItemBool(hDlg, chkUserShow, useShow);
 	    SetDlgItemBool(hDlg, chkPrintStats, showStats);
@@ -253,6 +255,10 @@ INT_PTR CALLBACK OptionsRuntimeProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM l
 	case WM_NOTIFY:
 	    if (((NMHDR*) lParam)->code == PSN_APPLY) {
 		// apply here
+	        int size = GetDlgItemInt(hDlg, txtHeapSize, NULL, FALSE);
+		if (MIN_HEAP_SIZE <= size && size <= MAX_HEAP_SIZE)
+		    hpSize = Mb2Heap(size);
+
 		useShow = GetDlgItemBool(hDlg, chkUserShow);
 		showStats = GetDlgItemBool(hDlg, chkPrintStats);
 		addType = GetDlgItemBool(hDlg, chkPrintType);
