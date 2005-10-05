@@ -8,6 +8,9 @@
 #include "evaluator.h"
 #include "connect.h"
 #include "errors.h"
+#include "machdep.h"
+#include "opts.h"
+#include "strutil.h"
 
 // store the extern HINSTANCE
 HINSTANCE hThisInstance;
@@ -91,9 +94,41 @@ void copyArgs(LPSTR lpszCmdLine) {
 
 int main(int  argc,char *argv[]);
 
+void RunEditor(LPSTR File)
+{
+    if (File[0] == 0) {
+	MessageBox(NULL, "Error: /edit option used with no file", "WinHugs", MB_ICONERROR);
+	return;
+    }
+
+    // do some of the evaluation stuff from initialise()
+    // break before any scripts get loaded
+    startEvaluator();
+    hugsEdit = strCopy(fromEnv("EDITOR",NULL));
+    if (hugsEdit == NULL)
+	hugsEdit = WinHugsPickDefaultEditor();
+    readOptions("-p\"%s> \" -r$$",FALSE);
+    readOptionSettings();
+
+    startEdit(0, File);
+}
+
 INT APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLine, INT nCmdShow)
 {
     int i;
+
+    if (strnicmp(lpszCmdLine, "/edit", 5) == 0) {
+	lpszCmdLine += 5;
+	while (lpszCmdLine[0] == ' ')
+	    lpszCmdLine++;
+	if (lpszCmdLine[0] == '\"') {
+	    char* s = strchr(++lpszCmdLine, '\"');
+	    if (s != NULL)
+		s[0] = 0;
+	}
+	RunEditor(lpszCmdLine);
+	return 0;
+    }
 
     InitCommonControls();
     LoadLibrary("RICHED32.DLL");
@@ -127,7 +162,7 @@ INT APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmd
 LPCSTR appName = "Hugs for Windows";
 
 BOOL InAutoReloadFiles = FALSE;	/* TRUE =>loading files before eval*/
-BOOL autoLoadFiles     = TRUE; /* TRUE => automatically reloaded modified files */
+Bool autoLoadFiles     = TRUE; /* TRUE => automatically reloaded modified files */
 
 void ErrorBox(LPCSTR Msg)
 {
