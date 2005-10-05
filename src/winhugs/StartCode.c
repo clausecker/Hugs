@@ -30,7 +30,7 @@ void copyArgs(LPSTR lpszCmdLine) {
     /* 1) arguments are separates by spaces			     */
     /* 2) A single argument may contain spaces if surrounded by quotes */
     /*								     */
-    /* For example, a valid command line with two args is 	     */
+    /* For example, a valid command line with two args is	     */
     /*  c:> winhugs -98 "c:\program files\test.hs"		     */
 
     hugs_argc = 0;
@@ -254,29 +254,29 @@ DWORD evaluatorThreadBody(LPDWORD notUsed) {
 	static MEMORY_BASIC_INFORMATION mi;
 	static DWORD protect;
 
-      /* get at the current stack pointer */
-      _asm mov stackPtr, esp;
+	/* get at the current stack pointer */
+	_asm mov stackPtr, esp;
 
-      /* query for page size + VM info for the allocation chunk we're currently in. */
-      GetSystemInfo(&si);
-      VirtualQuery(stackPtr, &mi, sizeof(mi));
+	/* query for page size + VM info for the allocation chunk we're currently in. */
+	GetSystemInfo(&si);
+	VirtualQuery(stackPtr, &mi, sizeof(mi));
 
-      /* Abandon the C stack and, most importantly, re-insert
-         the page guard bit. Do this on the page above the
-	 current one, not the one where the exception was raised. */
-      stackPtr = (LPBYTE) (mi.BaseAddress) - si.dwPageSize;
-      if ( VirtualFree(mi.AllocationBase,
-		       (LPBYTE)stackPtr - (LPBYTE) mi.AllocationBase,
-		       MEM_DECOMMIT) &&
-	   VirtualProtect(stackPtr, si.dwPageSize,
-			  PAGE_GUARD | PAGE_READWRITE, &protect) ) {
+	/* Abandon the C stack and, most importantly, re-insert
+	   the page guard bit. Do this on the page above the
+	   current one, not the one where the exception was raised. */
+	stackPtr = (LPBYTE) (mi.BaseAddress) - si.dwPageSize;
+	if ( VirtualFree(mi.AllocationBase,
+			 (LPBYTE)stackPtr - (LPBYTE) mi.AllocationBase,
+			 MEM_DECOMMIT) &&
+	     VirtualProtect(stackPtr, si.dwPageSize,
+			    PAGE_GUARD | PAGE_READWRITE, &protect) ) {
 
-	  /* careful not to do a garbage collection here (as it may have caused the overflow). */
-	  WinHugsPutS(stderr, "ERROR - C stack overflow");
-	  errFail();
-      } else {
-	  fatal("C stack overflow; unable to recover.");
-      }
+	    /* careful not to do a garbage collection here (as it may have caused the overflow). */
+	    WinHugsPutS(stderr, "ERROR - C stack overflow");
+	    errFail();
+	} else {
+	    fatal("C stack overflow; unable to recover.");
+	}
     }
 #endif
     /* not reached*/
