@@ -11,8 +11,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.134 $
- * $Date: 2005/09/09 23:42:30 $
+ * $Revision: 1.135 $
+ * $Date: 2005/10/06 18:52:12 $
  * ------------------------------------------------------------------------*/
 #include "prelude.h"
 #include "storage.h"
@@ -1372,14 +1372,14 @@ Void normalTerminal() {                 /* restore terminal initial state  */
 }
 
 Bool getEchoTerminal(Int fd) {
-    return fd!=0;
+    return fd==0;
 }
 
 Void setEchoTerminal(Int fd, Bool echo) {
 }
 
 Bool getBuffTerminal(Int fd) {
-    return fd!=0;
+    return fd==0;
 }
 
 Void setBuffTerminal(Int fd, Bool buffered) {
