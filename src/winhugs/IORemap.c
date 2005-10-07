@@ -147,6 +147,7 @@ int WinHugsGetC(FILE* f)
 	    ExitContents();
 	LeaveCriticalSection(&Mutex);
 
+	WinHugsPutC(stdout, Res);
 	return Res; // no support for interact
     } else
 	return fgetc(f);
