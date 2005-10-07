@@ -11,11 +11,11 @@ extern HINSTANCE hThisInstance;
 extern HWND hThisWindow;
 extern HACCEL hAccelTable;
 
-
 // Exported from General.c
 void ExecuteFile(LPSTR FileName);
 void CenterDialogInParent(HWND hDlg);
 void ExecuteFileDocs(LPSTR FileName);
+BOOL ShowOpenFileDialog(HWND hParent, LPSTR FileName);
 
 // Exported from Registry.c
 void RegistryReadFont(CHARFORMAT* cf);

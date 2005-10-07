@@ -217,28 +217,11 @@ void MainOpenFile(HWND hWnd)
 {
     CHAR FileName[MAX_PATH];
     CHAR Command[2048];
-    OPENFILENAME ofn;
 
-    FileName[0] = 0;
-
-    memset(&ofn, 0, sizeof(ofn));
-    ofn.lStructSize = sizeof(OPENFILENAME);
-    ofn.hInstance = hThisInstance;
-    ofn.hwndOwner = hWnd;
-    ofn.lpstrFilter = "Haskell Files (*.hs;*.lhs)\0*.hs;*.lhs\0All Files (*.*)\0*.*\0";
-    ofn.nFilterIndex = 1;
-    ofn.lpstrFile= FileName;
-    ofn.nMaxFile = MAX_PATH;
-    ofn.lpstrFileTitle = NULL;
-    ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY | OFN_EXPLORER;
-    ofn.lpfnHook = NULL;
-    ofn.lpstrInitialDir = NULL;
-
-    if (!GetOpenFileName(&ofn))
-	return;
-
-    wsprintf(Command, ":load %s\n", ExpandFileName((String)FileName));
-    FireCommand(Command);
+    if (ShowOpenFileDialog(hWnd, FileName)) {
+	wsprintf(Command, ":load %s\n", ExpandFileName((String)FileName));
+	FireCommand(Command);
+    }
 }
 
 void AbortExecution()

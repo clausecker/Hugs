@@ -172,3 +172,24 @@ LPSTR ExpandFileName(LPSTR what)
     }
     return Expanded;
 }
+
+BOOL ShowOpenFileDialog(HWND hParent, LPSTR FileName)
+{
+    OPENFILENAME ofn;
+
+    FileName[0] = 0;
+    memset(&ofn, 0, sizeof(ofn));
+    ofn.lStructSize = sizeof(OPENFILENAME);
+    ofn.hInstance = hThisInstance;
+    ofn.hwndOwner = hParent;
+    ofn.lpstrFilter = "Haskell Files (*.hs;*.lhs)\0*.hs;*.lhs\0All Files (*.*)\0*.*\0";
+    ofn.nFilterIndex = 1;
+    ofn.lpstrFile= FileName;
+    ofn.nMaxFile = MAX_PATH;
+    ofn.lpstrFileTitle = NULL;
+    ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY | OFN_EXPLORER;
+    ofn.lpfnHook = NULL;
+    ofn.lpstrInitialDir = NULL;
+
+    return GetOpenFileName(&ofn);
+}

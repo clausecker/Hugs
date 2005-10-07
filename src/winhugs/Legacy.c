@@ -2359,85 +2359,6 @@ static Void local SmAddScr(HWND hDlg, CHAR * s)
     smUpto++;
 }
 
-/* Used to get a file name using a common dialog box. Returns a pointer to    */
-/* a static string where the file name is, or NULL if cancel button is pushed */
-/* Mask is the identificator of a string defined in Hugs.Rc where the type    */
-/* of files and their masks are 					      */
-static CHAR *local GetaFileName(HWND hWnd, UINT Mask)
-{
-#define MAXEXTENSIONS 15
-
-    static CHAR Extensions[MAXEXTENSIONS][_MAX_EXT + 1];
-    static OPENFILENAME ofn;
-    static CHAR szFileName[_MAX_PATH];
-    CHAR szFile[_MAX_PATH], szFileTitle[_MAX_PATH];
-    UINT i, j, cbString, n;
-    CHAR chReplace;		/* Separator between different filters in szFilter */
-    CHAR szFilter[300];
-    char currentDir[_MAX_PATH];
-
-    szFile[0] = '\0';
-
-    if ((cbString = LoadString(hThisInstance, Mask,
-		   szFilter, sizeof(szFilter))) == 0) {
-	/* Error */
-	return NULL;
-    }
-    chReplace = szFilter[cbString - 1];	/* Get separator */
-
-    /* Get valid extensions for files */
-    for (n = 0, i = 0; szFilter[i];) {
-	while (szFilter[i] != chReplace)
-	    i++;
-	i++;
-	do {
-	    while (szFilter[i] != '.')
-		i++;
-	    i++;
-	    j = 0;
-	    while ((szFilter[i] != ';')
-		   && (szFilter[i] != chReplace)) {
-		Extensions[n][j++] = szFilter[i++];
-	    }
-	    Extensions[n++][j] = (CHAR) 0;
-	} while (szFilter[i] == ';');
-	i++;
-    }
-    for (; n < MAXEXTENSIONS; n++)
-	Extensions[n][0] = (CHAR) 0;
-
-    /* Replace separator with NULL */
-    for (i = 0; szFilter[i] != '\0'; i++) {
-	if (szFilter[i] == chReplace)
-	    szFilter[i] = '\0';
-    }
-
-    memset(&ofn, 0, sizeof(OPENFILENAME));
-
-    ofn.lStructSize = sizeof(OPENFILENAME);
-    ofn.hInstance = hThisInstance;
-    ofn.hwndOwner = hWnd;
-    ofn.lpstrFilter = szFilter;
-    ofn.nFilterIndex = 1;
-    ofn.lpstrFile = szFile;
-    ofn.nMaxFile = sizeof(szFile);
-    ofn.lpstrFileTitle = szFileTitle;
-    ofn.nMaxFileTitle = sizeof(szFileTitle);
-    ofn.Flags =
-	OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY |
-	OFN_EXPLORER;;
-    ofn.lpfnHook = NULL;
-    GetCurrentDirectory(_MAX_PATH, currentDir);
-    ofn.lpstrInitialDir = currentDir;
-
-    if (GetOpenFileName(&ofn)) {
-	strcpy(szFileName, ofn.lpstrFile);
-	return szFileName;
-    } else {
-	return NULL;
-    }
-}
-
 INT_PTR CALLBACK ScriptManDlgProc(HWND hDlg, UINT msg,
 		  WPARAM wParam, LPARAM lParam)
 {
@@ -2504,10 +2425,9 @@ INT_PTR CALLBACK ScriptManDlgProc(HWND hDlg, UINT msg,
 			       "Add script",
 			       MB_ICONEXCLAMATION | MB_OK);
 		    else {
-			String s =
-			    GetaFileName(hDlg, IDS_FILTERFILE);
-			if (s)
-			    SmAddScr(hDlg, s);
+			CHAR Buffer[MAX_PATH];
+			if (ShowOpenFileDialog(hDlg, Buffer))
+			    SmAddScr(hDlg, Buffer);
 		    }
 		    return TRUE;
 
