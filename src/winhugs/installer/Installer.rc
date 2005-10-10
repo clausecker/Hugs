@@ -63,8 +63,8 @@ BEGIN
     CONTROL         "",barTop,"Static",SS_ETCHEDHORZ,0,33,313,1
     LTEXT           "This will install WinHugs on your computer\n\nPlease select an installation directory.",
                     lblWelcome,7,42,154,25
-    EDITTEXT        txtEdit,7,74,263,12,ES_AUTOHSCROLL
-    PUSHBUTTON      "...",cmdBrowse,277,74,24,12
+    EDITTEXT        txtEdit,7,74,232,12,ES_AUTOHSCROLL
+    PUSHBUTTON      "Browse",cmdBrowse,247,73,54,14
     PUSHBUTTON      "Cancel",IDCANCEL,191,172,50,14
     DEFPUSHBUTTON   "Install",IDOK,251,172,50,14
     CONTROL         "Run program after installation",chkExecute,"Button",
@@ -76,9 +76,9 @@ BEGIN
                     7,176,155,10,WS_DISABLED
     CONTROL         "Progress2",prgBar,"msctls_progress32",NOT WS_VISIBLE,7,
                     74,294,12
-    CONTROL         "Register Haskell files (*.hs,*.lhs) with WinHugs",
+    CONTROL         "Register Haskell files (*.hs,*.lhs) to open with WinHugs",
                     chkRegisterFiles,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,
-                    124,294,10
+                    127,294,10
     LTEXT           "#",lblSpace,7,89,294,9
     CONTROL         107,IDC_STATIC,"Static",SS_BITMAP | SS_REALSIZEIMAGE,280,
                     7,21,20
