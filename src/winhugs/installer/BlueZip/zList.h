@@ -22,4 +22,5 @@ public:
 
 	int OriginalSize(){return data.OrigSize;}
 	int CompressedSize(){return data.CompSize;}
+	long CRC(){return data.CRC;}
 };

@@ -1,6 +1,7 @@
 #include "header.h"
 #include "FileCode.h"
 #include "ShellCode.h"
+#include "InstallLog.h"
 #include <commctrl.h>
 #include <stdio.h>
 
@@ -207,6 +208,10 @@ bool DoInstall(char* InstallTo, bool RunOnEnd, HWND hDlg)
 	SendDlgItemMessage(hDlg, prgBar, PBM_SETRANGE, 0, MAKELPARAM(0, TotalCompSize / PrgFactor));
 	int Done = 0;
 
+	// start creating the install log
+	strcpy(BufPos, "install.log");
+	StartInstallLog(InstallTo);
+	WriteInstallLog("NOTE\tUinstall Log for " ProgramName);
 
 	//now you have access to at least the file Str
 	//extract all the files
@@ -255,6 +260,10 @@ bool DoInstall(char* InstallTo, bool RunOnEnd, HWND hDlg)
 				ErrDialog(hDlg, "Could not extract the file\n\n", InstallTo);
 				return false;
 			}
+			else
+			{
+				WriteInstallLog("FILE\t%s\t%i\t%lX", InstallTo, i->OriginalSize(), i->CRC());
+			}
 		}
 		SendDlgItemMessage(hDlg, prgBar, PBM_SETPOS, Done / PrgFactor, 0);
 	}
@@ -278,6 +287,9 @@ bool DoInstall(char* InstallTo, bool RunOnEnd, HWND hDlg)
 
 			SendDlgItemMessage(hDlg, prgBar, PBM_SETPOS, Done / PrgFactor, 0);
 		}
+
+		// and delete the install log
+		StopInstallLog(true);
 
 		//now delete all the directories
 		DeleteFolders();
@@ -308,6 +320,8 @@ bool DoInstall(char* InstallTo, bool RunOnEnd, HWND hDlg)
 			ErrBox("Could not register file types");
 	}
 	BufPos[-1] = '\\';
+
+	StopInstallLog(false);
 
 	//now InstallTo is the directory
 	strcpy(BufPos, PrimaryFile);
@@ -359,6 +373,7 @@ bool TryInstall(HWND hDlg)
 		//Rollback some variables that may have got modified
 		CancelInstall = false;
 		EnableWindow(GetDlgItem(hDlg, IDCANCEL), TRUE);
+		StopInstallLog(true);
 	}
 	return Res;
 }
