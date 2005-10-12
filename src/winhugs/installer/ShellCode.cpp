@@ -120,16 +120,24 @@ bool CreateStartMenuShortcut(HWND hDlg, char* Folder)
 }
 
 
-void WriteRegistry(char* Path, char* Local, char* Value)
+void WriteRegistry(HKEY Root, char* Path, char* Local, char* Value)
 {
 	HKEY hKey;
-	RegCreateKey(HKEY_CLASSES_ROOT, Path, &hKey);
+	RegCreateKey(Root, Path, &hKey);
 	if (hKey != NULL)
 	{
 		RegSetValueEx(hKey, Local, 0, REG_SZ, (BYTE*) Value, strlen(Value)+1);
 		RegCloseKey(hKey);
 
-		WriteInstallLog("REG\tHKEY_CLASSES_ROOT\t%s", Path);
+		char* RootName;
+		if (Root == HKEY_CLASSES_ROOT)
+			RootName = "HKEY_CLASSES_ROOT";
+		else if (Root == HKEY_LOCAL_MACHINE)
+			RootName = "HKEY_LOCAL_MACHINE";
+		else
+			RootName = "<UNKNOWN>";
+
+		WriteInstallLog("REG\t%s\t%s", RootName, Path);
 	}
 }
 
@@ -145,29 +153,48 @@ bool RegisterFiletypes(HWND hDlg, char* Folder)
 	FileName++;
 
 	//Register the two extensions
-	WriteRegistry(".hs" , "", HASKELL_HANDLER);
-	WriteRegistry(".lhs", "", HASKELL_HANDLER);
+	WriteRegistry(HKEY_CLASSES_ROOT, ".hs" , "", HASKELL_HANDLER);
+	WriteRegistry(HKEY_CLASSES_ROOT, ".lhs", "", HASKELL_HANDLER);
 
 	//Allow the user to create a template
-	WriteRegistry(".hs\\ShellNew", "FileName", "");
+	WriteRegistry(HKEY_CLASSES_ROOT, ".hs\\ShellNew", "FileName", "");
 
 
-	WriteRegistry(HASKELL_HANDLER,                 "", "Haskell Script");
+	WriteRegistry(HKEY_CLASSES_ROOT, HASKELL_HANDLER,                 "", "Haskell Script");
 	strcpy(FileName, PrimaryFile "\",1");
-	WriteRegistry(HASKELL_HANDLER "\\DefaultIcon", "", Buffer);
-	WriteRegistry(HASKELL_HANDLER "\\shell",       "", "");
+	WriteRegistry(HKEY_CLASSES_ROOT, HASKELL_HANDLER "\\DefaultIcon", "", Buffer);
+	WriteRegistry(HKEY_CLASSES_ROOT, HASKELL_HANDLER "\\shell",       "", "");
 
 	strcpy(FileName, PrimaryFile "\" \"%1\"");
-	WriteRegistry(HASKELL_HANDLER "\\shell\\Open",          "", "");
-	WriteRegistry(HASKELL_HANDLER "\\shell\\Open\\command", "", Buffer);
+	WriteRegistry(HKEY_CLASSES_ROOT, HASKELL_HANDLER "\\shell\\Open",          "", "");
+	WriteRegistry(HKEY_CLASSES_ROOT, HASKELL_HANDLER "\\shell\\Open\\command", "", Buffer);
 
 	strcpy(FileName, PrimaryFile "\" /edit \"%1\"");
-	WriteRegistry(HASKELL_HANDLER "\\shell\\Edit",          "", "");
-	WriteRegistry(HASKELL_HANDLER "\\shell\\Edit\\command", "", Buffer);
+	WriteRegistry(HKEY_CLASSES_ROOT, HASKELL_HANDLER "\\shell\\Edit",          "", "");
+	WriteRegistry(HKEY_CLASSES_ROOT, HASKELL_HANDLER "\\shell\\Edit\\command", "", Buffer);
 
 	return true;
 }
 
+void RegisterUninstall(HWND hDlg, char* Folder)
+{
+#define UNINSTALL_ENTRY "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\" ProgramName "\\"
+
+	char Buffer[MyMaxPath];
+	Buffer[0] = '\"';
+	strcpy(&Buffer[1], Folder);
+	char* FileName = &Buffer[strlen(Folder)+1];
+	FileName[0] = '\\';
+	FileName++;
+
+	WriteRegistry(HKEY_LOCAL_MACHINE, UNINSTALL_ENTRY, "DisplayName", ProgramName);
+	strcpy(FileName, PrimaryFile "\",0");
+	WriteRegistry(HKEY_LOCAL_MACHINE, UNINSTALL_ENTRY, "DisplayIcon", Buffer);
+	strcpy(FileName, "uninstall.exe\""); 
+	WriteRegistry(HKEY_LOCAL_MACHINE, UNINSTALL_ENTRY, "UninstallString", Buffer);
+	WriteRegistry(HKEY_LOCAL_MACHINE, UNINSTALL_ENTRY, "Publisher", Publisher);
+	WriteRegistry(HKEY_LOCAL_MACHINE, UNINSTALL_ENTRY, "HelpLink", Website);
+}
 
 void GetProgramFiles(HWND hDlg, char* Buffer)
 {

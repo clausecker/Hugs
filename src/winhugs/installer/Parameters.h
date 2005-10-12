@@ -22,3 +22,5 @@
 
 #define Copyright		"1994-2005"
 
+#define Publisher		"The Hugs Team"
+#define Website			"http://www.haskell.org/hugs/"
