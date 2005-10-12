@@ -1,5 +1,14 @@
 #include "Header.h"
 
+struct FolderItem
+{
+	char* Folder;
+	FolderItem* Next;
+};
+
+FolderItem* CreatedFolders = NULL;
+
+
 bool Exists(char* File)
 {
 	return (GetFileAttributes(File) != 0xffffffff);
@@ -60,7 +69,27 @@ bool EnsureFolder(char* File)
 		if (!Res) return false;
 	}
 
-	return (CreateDirectory(File, NULL) != 0);
+	bool Res = (CreateDirectory(File, NULL) != 0);
+	if (Res)
+	{
+		FolderItem* tmp = CreatedFolders;
+		CreatedFolders = new FolderItem;
+		CreatedFolders->Folder = strdup(File);
+		CreatedFolders->Next = tmp;
+	}
+	return Res;
+}
+
+void DeleteFolders()
+{
+	while (CreatedFolders != NULL)
+	{
+		RemoveDirectory(CreatedFolders->Folder);
+		free(CreatedFolders->Folder);
+		FolderItem* i = CreatedFolders;
+		CreatedFolders = CreatedFolders->Next;
+		delete i;
+	}
 }
 
 void FileSize(__int64 Size, char* Buffer)

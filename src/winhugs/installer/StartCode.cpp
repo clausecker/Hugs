@@ -20,6 +20,7 @@
 // GLOBAL STATE
 HINSTANCE hInst;
 bool InDoEvents = false;
+bool CancelInstall = false;
 BlueZip zip;
 
 int TotalCompSize;
@@ -209,8 +210,13 @@ bool DoInstall(char* InstallTo, bool RunOnEnd, HWND hDlg)
 
 	//now you have access to at least the file Str
 	//extract all the files
-	for (zList* i = zip.Files; i != NULL; i = i->next)
+	zList* i;
+	for (i = zip.Files; i != NULL; i = i->next)
 	{
+		DoEvents();
+		if (CancelInstall)
+			break;
+
 		Done += i->CompressedSize();
 
 		strcpy(BufPos, i->FileName);
@@ -252,6 +258,36 @@ bool DoInstall(char* InstallTo, bool RunOnEnd, HWND hDlg)
 		}
 		SendDlgItemMessage(hDlg, prgBar, PBM_SETPOS, Done / PrgFactor, 0);
 	}
+
+	if (CancelInstall)
+	{
+		DoEvents();
+
+		// first delete all the created files
+		for (zList* j = zip.Files; j != i; j = j->next)
+		{
+			Done -= j->CompressedSize();
+
+			strcpy(BufPos, j->FileName);
+			char LastChar = BufPos[strlen(BufPos)-1];
+			bool IsFolder = ((LastChar == '\\') || (LastChar == '/'));
+			NormalPath(BufPos);
+
+			if (!IsFolder)
+				DeleteFile(InstallTo);
+
+			SendDlgItemMessage(hDlg, prgBar, PBM_SETPOS, Done / PrgFactor, 0);
+		}
+
+		//now delete all the directories
+		DeleteFolders();
+
+		InfoBox("Installation rolled back, " ProgramName " has not been installed yet");
+		return false;
+	}
+
+	EnableWindow(GetDlgItem(hDlg, IDCANCEL), FALSE);
+
 	SetDlgItemText(hDlg, lblInstallFile, "Finalising...");
 
 	//now InstallTo is the install directory, plus a \\ character
@@ -290,7 +326,7 @@ void ShowProgress(HWND hDlg, bool State)
 {
 	int Show[] = {txtEdit, cmdBrowse, lblWelcome, 0};
 	int Hide[] = {prgBar, lblInstallTo, lblInstallFile, 0};
-	int Enable[] = {chkExecute, chkShortcutDesktop, chkShortcutStart, IDOK, IDCANCEL, 0};
+	int Enable[] = {chkExecute, chkShortcutDesktop, chkShortcutStart, IDOK, 0};
 
 	int i;
 	for (i = 0; Show[i] != 0; i++)
@@ -317,7 +353,14 @@ bool TryInstall(HWND hDlg)
 
 	ShowProgress(hDlg, true);
 
-	return DoInstall(Buffer, IsDlgButtonChecked(hDlg, chkExecute) == BST_CHECKED, hDlg);
+	bool Res = DoInstall(Buffer, IsDlgButtonChecked(hDlg, chkExecute) == BST_CHECKED, hDlg);
+	if (!Res)
+	{
+		//Rollback some variables that may have got modified
+		CancelInstall = false;
+		EnableWindow(GetDlgItem(hDlg, IDCANCEL), TRUE);
+	}
+	return Res;
 }
 
 int CALLBACK DlgFunc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
@@ -343,6 +386,12 @@ int CALLBACK DlgFunc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		case IDCANCEL:
 			if (!InDoEvents)
 				EndDialog(hDlg, 0);
+			else
+			{
+				CancelInstall = true;
+				SetDlgItemText(hDlg, lblInstallFile, "Cancelling...");
+				EnableWindow(GetDlgItem(hDlg, IDCANCEL), FALSE);
+			}
 			break;
 
 		case IDOK:
