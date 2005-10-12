@@ -515,9 +515,6 @@
 			RelativePath=".\installer.bmp">
 		</File>
 		<File
-			RelativePath="Pingus-Installer.manifest">
-		</File>
-		<File
 			RelativePath=".\resource.h">
 		</File>
 		<File
