@@ -2,6 +2,7 @@
 #include "Parameters.h"
 #include <shlobj.h>
 #include "FileCode.h"
+#include "InstallLog.h"
 
 
 bool OleReady;
@@ -57,7 +58,10 @@ bool CreateShortcut(char* Destination, char* Target, char* StartIn, char* Parame
         }
         psl->Release();
     }
-    return (SUCCEEDED(hres) ? true : false);
+    bool Res = (SUCCEEDED(hres) ? true : false);
+	if (Res)
+		WriteInstallLog("FILE %s", Destination);
+	return Res;
 }
 
 
@@ -124,6 +128,8 @@ void WriteRegistry(char* Path, char* Local, char* Value)
 	{
 		RegSetValueEx(hKey, Local, 0, REG_SZ, (BYTE*) Value, strlen(Value)+1);
 		RegCloseKey(hKey);
+
+		WriteInstallLog("REG\tHKEY_CLASSES_ROOT\t%s", Path);
 	}
 }
 
