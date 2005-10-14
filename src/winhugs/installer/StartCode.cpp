@@ -323,17 +323,17 @@ bool DoInstall(char* InstallTo, bool RunOnEnd, HWND hDlg)
 	BufPos[-1] = '\\';
 
 	StopInstallLog(false);
-
 	//now InstallTo is the directory
-	strcpy(BufPos, PrimaryFile);
-	if (RunOnEnd)
-	{
-		if ((int) ShellExecute(hDlg, NULL, InstallTo, NULL, NULL, SW_SHOWDEFAULT) <= 32)
-			ErrBox("Could not run file " PrimaryFile);
-	}
 
 	if (hDlg != NULL)
 		InfoBox(ProgramName " successfully installed");
+
+	if (RunOnEnd)
+	{
+		strcpy(BufPos, PrimaryFile);
+		if ((int) ShellExecute(hDlg, NULL, InstallTo, NULL, NULL, SW_SHOWDEFAULT) <= 32)
+			ErrBox("Could not run file " PrimaryFile);
+	}
 	return true;
 }
 
