@@ -60,7 +60,7 @@ bool CreateShortcut(char* Destination, char* Target, char* StartIn, char* Parame
     }
     bool Res = (SUCCEEDED(hres) ? true : false);
 	if (Res)
-		WriteInstallLog("FILE %s", Destination);
+		WriteInstallLog("FILE\t%s", Destination);
 	return Res;
 }
 
