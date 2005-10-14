@@ -262,7 +262,7 @@ bool DoInstall(char* InstallTo, bool RunOnEnd, HWND hDlg)
 			}
 			else
 			{
-				WriteInstallLog("FILE\t%s\t%i\t%lX", InstallTo, i->OriginalSize(), i->CRC());
+				WriteInstallLog("FILE\t.\\%s\t%i\t%lX", BufPos, i->OriginalSize(), i->CRC());
 			}
 		}
 		SendDlgItemMessage(hDlg, prgBar, PBM_SETPOS, Done / PrgFactor, 0);
