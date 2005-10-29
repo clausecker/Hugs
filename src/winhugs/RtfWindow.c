@@ -12,6 +12,9 @@ HWND hRTF;
 BOOL PuttingChar = FALSE;
 DWORD Length = 0;
 
+int FontColor = 0; // the color to write stuff out now
+int BufferColor = 0; // the color to write the buffer out as
+
 void RtfWindowInit(HWND hNewRTF)
 {
     CHARFORMAT cf;
@@ -288,12 +291,18 @@ void DestTimer()
 void WriteBuffer(LPCTSTR s, int Len)
 {
     CHARRANGE cr;
+    CHARFORMAT cf;
     cr.cpMin = 0xffff;
     cr.cpMax = cr.cpMin;
-//	SendMessage(hRTF, EM_EXSETSEL, 0, (LPARAM) &cr);
+    SendMessage(hRTF, EM_EXSETSEL, 0, (LPARAM) &cr);
+
+    cf.cbSize = sizeof(cf);
+    cf.dwMask = CFM_COLOR;
+    cf.dwEffects = 0;
+    cf.crTextColor = BufferColor;
+    SendMessage(hRTF, EM_SETCHARFORMAT, SCF_SELECTION, (LPARAM) &cf);
 
     PuttingChar = TRUE;
-//	RtfWindowTextColor(LastColor);
     SendMessage(hRTF, EM_REPLACESEL, FALSE, (LPARAM) s);
     PuttingChar = FALSE;
 
@@ -336,9 +345,16 @@ void RtfWindowFlushBuffer()
     FlushBuffer();
 }
 
+// need to copy from s to Buf
 void AddToBuffer(LPCTSTR s)
 {
-    int Len = strlen(s);
+    int Len;
+    if (FontColor != BufferColor) {
+	FlushBuffer();
+	BufferColor = FontColor;
+    }
+
+    Len = strlen(s);
 
     if (Len + BufPos > BufSize)
 	FlushBuffer();
@@ -372,28 +388,10 @@ void RtfEchoCommand(LPCTSTR s)
     RtfWindowPutS("\n");
 }
 
-int LastColor = 0;
-
 int WinHugsColor(int Color)
 {
-    int PrevColor = LastColor;
-
-    CHARFORMAT cf;
-
-    if (Color == LastColor)
-	return PrevColor;
-    LastColor = Color;
-
-    cf.cbSize = sizeof(cf);
-    cf.dwMask = CFM_COLOR;
-    cf.dwEffects = 0;
-    cf.crTextColor = Color;
-
-    FlushBuffer();
-
-    SendMessage(hRTF, EM_SETCHARFORMAT,
-	SCF_SELECTION, (LPARAM) &cf);
-
+    int PrevColor = FontColor;
+    FontColor = Color;
     return PrevColor;
 }
 
