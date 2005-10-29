@@ -11,6 +11,7 @@
 HWND hRTF;
 BOOL PuttingChar = FALSE;
 DWORD Length = 0;
+DWORD OutputStart;
 
 int FontColor = 0; // the color to write stuff out now
 int BufferColor = 0; // the color to write the buffer out as
@@ -348,22 +349,34 @@ void RtfWindowFlushBuffer()
 // need to copy from s to Buf
 void AddToBuffer(LPCTSTR s)
 {
-    int Len;
+    LPCTSTR c;
     if (FontColor != BufferColor) {
 	FlushBuffer();
 	BufferColor = FontColor;
     }
 
-    Len = strlen(s);
+    for (c = s; *c != 0; c++) {
+	if (*c == '\b') {
+	    if (BufPos == 0) {
+		//try and remove a letter off the window
+		int Len = RtfWindowTextLength();
+		if (Len != OutputStart) {
+		    CHARRANGE cr;
+		    cr.cpMin = Len-1;
+		    cr.cpMax = Len;
+		    SendMessage(hRTF, EM_EXSETSEL, 0, (LPARAM) &cr);
 
-    if (Len + BufPos > BufSize)
-	FlushBuffer();
-
-    if (Len > BufSize)
-	WriteBuffer(s, Len);
-    else {
-	strcpy(&Buf[BufPos], s);
-	BufPos += Len;
+		    PuttingChar = TRUE;
+		    SendMessage(hRTF, EM_REPLACESEL, FALSE, (LPARAM) "");
+		    PuttingChar = FALSE;
+		}
+	    } else
+		BufPos--;
+	} else {
+	    if (BufPos >= BufSize)
+		FlushBuffer();
+	    Buf[BufPos++] = *c;
+	}
     }
 
     EnsureTimer();
@@ -386,6 +399,13 @@ void RtfEchoCommand(LPCTSTR s)
 {
     RtfWindowPutS(s);
     RtfWindowPutS("\n");
+}
+
+void RtfWindowStartOutput()
+{
+    RtfWindowPutS("\n");
+    RtfWindowFlushBuffer();
+    OutputStart = RtfWindowTextLength();
 }
 
 int WinHugsColor(int Color)

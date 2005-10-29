@@ -172,7 +172,7 @@ void ExecutionFinished()
 void FireCommand(LPCSTR Command)
 {
     RtfWindowSetCommand(Command);
-    RtfWindowPutS("\n");
+    RtfWindowStartOutput();
     AddHistory(Command);
 
     Running = TRUE;
