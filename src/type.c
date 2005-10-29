@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: type.c,v $
- * $Revision: 1.79 $
- * $Date: 2004/11/04 00:01:31 $
+ * $Revision: 1.80 $
+ * $Date: 2005/10/29 11:40:50 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -571,6 +571,7 @@ Int  m; {
 	markBtyvs();			/* Now check assumptions	   */
 	mapProc(markAssumList,defnBounds);
 	mapProc(markAssumList,varsBounds);
+	mapProc(markPred,preds);
 
 	for (vs=hd(skolVars); nonNull(vs); vs=tl(vs)) {
 	    Int vn = intOf(fst(hd(vs)));
