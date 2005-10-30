@@ -134,7 +134,8 @@ src/stamp-h.in: configure.ac aclocal.m4 fptools
 
 fptools:
 	cvs -d `cat CVS/Root` checkout -r $(HSLIBSTAG) `for lib in $(HSLIBSDIRS); do echo fptools/hslibs/$$lib; done`
-	cvs -d `cat CVS/Root` checkout -r $(LIBRARIESTAG) fptools/config.sub fptools/config.guess fptools/install-sh `for lib in $(LIBRARIESDIRS); do echo fptools/libraries/$$lib; done`
+	cvs -d `cat CVS/Root` checkout -r $(LIBRARIESTAG) `for lib in $(LIBRARIESDIRS); do echo fptools/libraries/$$lib; done`
+	cp config.sub config.guess install-sh fptools
 	# We don't use this, so don't leave it there for Cabal to run
 	$(RM) fptools/libraries/HaXml/configure
 	# Move this so that make_bootlib won't stumble over it
