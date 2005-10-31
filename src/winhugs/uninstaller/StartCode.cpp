@@ -165,7 +165,7 @@ void CheckDeleteRights(HWND hDlg)
 		DoEvents();
 		File* f = log->Files[i];
 
-		HANDLE hFile = CreateFile(f->FileName, GENERIC_READ, 0, NULL, OPEN_EXISTING, 0, NULL);
+		HANDLE hFile = CreateFile(f->FileName, GENERIC_WRITE, 0, NULL, OPEN_EXISTING, 0, NULL);
 		if (hFile != INVALID_HANDLE_VALUE)
 			CloseHandle(hFile);
 		else if (GetFileAttributes(f->FileName) != INVALID_FILE_ATTRIBUTES)
