@@ -239,10 +239,10 @@ void PerformUninstall(HWND hDlg)
 			strcpy(in, f->FileName);
 			char* c;
 
-			while(true)
+			while(strlen(in) > 2)
 			{
-				GetFullPathName(in, MAX_PATH, out, &c);
-				if (c == 0) break;
+				int res = GetFullPathName(in, MAX_PATH, out, &c);
+				if (res == 0 || c == NULL) break;
 				c[-1] = 0;
 				Dirs = NewLinkedList(strdup(out), Dirs);
 
