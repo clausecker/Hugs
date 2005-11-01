@@ -36,6 +36,11 @@ void DoEvents()
 	InDoEvents = false;
 }
 
+bool FileExists(LPCTSTR File)
+{
+	return (GetFileAttributes(File) == INVALID_FILE_ATTRIBUTES ? false : true);
+}
+
 void PaintDialog(HWND hDlg)
 {
 	const char* Msg = ProgramName " - " Description "\n© " Copyright;
@@ -168,7 +173,7 @@ void CheckDeleteRights(HWND hDlg)
 		HANDLE hFile = CreateFile(f->FileName, GENERIC_WRITE, 0, NULL, OPEN_EXISTING, 0, NULL);
 		if (hFile != INVALID_HANDLE_VALUE)
 			CloseHandle(hFile);
-		else if (GetFileAttributes(f->FileName) != INVALID_FILE_ATTRIBUTES)
+		else if (FileExists(f->FileName))
 		{
 			Locked++;
 			SendDlgItemMessage(hDlg, lstItems, LB_ADDSTRING, 0, (LPARAM) f->FileName);
@@ -222,7 +227,7 @@ void PerformUninstall(HWND hDlg)
 			f->Modified = (DeleteFile(f->FileName) ? false : true);
 		if (f->Modified)
 		{
-			if (GetFileAttributes(f->FileName) != INVALID_FILE_ATTRIBUTES)
+			if (FileExists(f->FileName))
 			{
 				Alive++;
 				SendDlgItemMessage(hDlg, lstItems, LB_ADDSTRING, 0, (LPARAM) f->FileName);
@@ -339,16 +344,83 @@ int CALLBACK DlgFunc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	return FALSE;
 }
 
+// Supported command lines
+// "" - the user ran the instance next to install.og
+// /del file - delete the file and exit
+// /run file - run with file as the uninstaller
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
-	log = ReadLog(hInstance);
-	if (log == NULL)
-	{
-		MessageBox(NULL, "Failed to load uninstall file \"install.log\"", "WinHugs Uninstaller", MB_ICONERROR);	
-		return 0;
-	}
+	char Self[MyMaxPath];
+	GetModuleFileName(hInstance, Self, MyMaxPath);
 
-	InitCommonControls();
-	DialogBox(hInstance, MAKEINTRESOURCE(dlgInstall), NULL, DlgFunc);
+	MessageBox(NULL, lpCmdLine, "Hugs", 0);
+
+	if (strncmp(lpCmdLine, "/run ", 5) == 0)
+	{
+		char* OrigExe = &lpCmdLine[5];
+		char Buffer[MyMaxPath];
+		char* s;
+		GetFullPathName(OrigExe, MyMaxPath, Buffer, &s);
+
+		if (s == NULL)
+			log = NULL;
+		else
+		{
+			strcpy(s, "install.log");
+			log = ReadLog(Buffer, s);
+		}
+
+		if (log == NULL)
+			MessageBox(NULL, "Failed to load uninstall file \"install.log\"", "WinHugs Uninstaller", MB_ICONERROR);	
+		else
+		{
+			InitCommonControls();
+			DialogBox(hInstance, MAKEINTRESOURCE(dlgInstall), NULL, DlgFunc);
+		}
+
+		bool Success = false;
+		if (FileExists(OrigExe))
+		{
+			strcpy(Buffer, "/del ");
+			strcat(Buffer, Self);
+			if ((int) ShellExecute(NULL, NULL, OrigExe, Buffer, NULL, SW_NORMAL) > 32)
+				Success = true;
+		}
+		if (!Success)
+			DeleteOnReboot(Self);
+	}
+	else if (strncmp(lpCmdLine, "/del ", 5) == 0)
+	{
+		//try and delete the file
+		char* File = &lpCmdLine[5];
+		for (int i = 0; i < 30; i++)
+		{
+			DeleteFile(File);
+			if (!FileExists(File))
+				break;
+		}
+	}
+	else
+	{
+		char TempPath[MyMaxPath], TempFile[MyMaxPath];
+		GetTempPath(MyMaxPath, TempPath);
+		GetTempFileName(TempPath, "HUG", 0, TempFile);
+		strcat(TempFile, ".exe");
+
+		bool Success = false;
+		if (CopyFile(Self, TempFile, FALSE))
+		{
+			char CmdLine[MyMaxPath];
+			strcpy(CmdLine, "/run ");
+			strcat(CmdLine, Self);
+			if ((int) ShellExecute(NULL, NULL, TempFile, CmdLine, NULL, nCmdShow) > 32)
+				Success = true;
+		}
+
+		if (!Success)
+		{
+			MessageBox(NULL, "Failed to launch the uninstaller", "WinHugs Uninstaller", MB_ICONERROR);	
+		}
+	}
 	return 0;
 }
