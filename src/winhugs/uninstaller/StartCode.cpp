@@ -353,8 +353,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	char Self[MyMaxPath];
 	GetModuleFileName(hInstance, Self, MyMaxPath);
 
-	MessageBox(NULL, lpCmdLine, "Hugs", 0);
-
 	if (strncmp(lpCmdLine, "/run ", 5) == 0)
 	{
 		char* OrigExe = &lpCmdLine[5];
@@ -413,7 +411,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			char CmdLine[MyMaxPath];
 			strcpy(CmdLine, "/run ");
 			strcat(CmdLine, Self);
-			if ((int) ShellExecute(NULL, NULL, TempFile, CmdLine, NULL, nCmdShow) > 32)
+			if ((int) ShellExecute(NULL, NULL, TempFile, CmdLine, TempPath, nCmdShow) > 32)
 				Success = true;
 		}
 
