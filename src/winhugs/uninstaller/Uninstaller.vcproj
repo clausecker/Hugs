@@ -150,6 +150,9 @@
 				RelativePath=".\CRC.cpp">
 			</File>
 			<File
+				RelativePath=".\DeleteOnReboot.cpp">
+			</File>
+			<File
 				RelativePath="Header.h">
 			</File>
 			<File
