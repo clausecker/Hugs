@@ -212,6 +212,7 @@ bool DoInstall(char* InstallTo, bool RunOnEnd, HWND hDlg)
 	strcpy(BufPos, "install.log");
 	StartInstallLog(InstallTo);
 	WriteInstallLog("NOTE\tUinstall Log for " ProgramName);
+	WriteInstallLog("FILE\t.\\install.log");
 
 	//now you have access to at least the file Str
 	//extract all the files
