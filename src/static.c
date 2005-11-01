@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.174 $
- * $Date: 2005/09/10 09:41:09 $
+ * $Revision: 1.175 $
+ * $Date: 2005/11/01 14:06:51 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -684,14 +684,14 @@ Cell  cd; {				/* definitions (w or w/o deriving) */
 	if (isNull(n)) {
 	    n = newName(textOf(con),NIL);
 	} else if (name(n).defn!=PREDEFINED && name(n).mod == currentModule) {
-	  /* A local repeated definition */
-	  duplicateError(line,name(n).mod,name(n).text,"data constructor");
+	    /* A local repeated definition */
+	    duplicateError(line,name(n).mod,name(n).text,"data constructor");
 	} else if (name(n).defn!=PREDEFINED) {
-          Name oldnm = n;
-	  removeName(n);
-	  n            = newName(textOf(con),NIL);
-	  name(n).defn = PREDEFINED;
-	  name(n).clashes = cons(oldnm,name(n).clashes);
+	    Name oldnm = n;
+	    removeName(n);
+	    n            = newName(textOf(con),NIL);
+	    name(n).defn = PREDEFINED;
+	    name(n).clashes = cons(oldnm,name(n).clashes);
 	}
 
 	name(n).arity  = arity;		/* Save constructor fun details	   */
@@ -794,7 +794,7 @@ List ss; {				/* list of existing selectors	   */
 			         textToStr(t)
 		    EEND;
 		} else {
-		  removeName(oldnm);
+		    removeName(oldnm);
 		}
 	    }
 	    n               = newName(t,c);
@@ -802,7 +802,7 @@ List ss; {				/* list of existing selectors	   */
 	    name(n).number  = SELNAME;
 	    name(n).defn    = singleton(pair(c,mkInt(sn)));
 	    if (nonNull(oldnm)) {
-	      name(n).clashes = cons(oldnm,name(n).clashes);
+		name(n).clashes = cons(oldnm,name(n).clashes);
 	    }
 	    ss              = cons(n,ss);
 	}
@@ -1295,17 +1295,17 @@ Cell pred; {
 	    EEND;
 	}
 	if (!isQualIdent(h) && nonNull(cclass(c).clashes)) {
-	  List ls = cclass(c).clashes;
-	  ERRMSG(line) "Ambiguous class occurrence \"%s\"", textToStr(cclass(c).text) ETHEN
-	  ERRTEXT "\n*** Could refer to: " ETHEN
-	  ERRTEXT "%s.%s ", textToStr(module(cclass(c).mod).text), textToStr(cclass(c).text) ETHEN
-	  for(;nonNull(ls);ls=tl(ls)) {
-	    ERRTEXT "%s.%s ",
-		    textToStr(module(cclass(hd(ls)).mod).text),
-		    textToStr(cclass(hd(ls)).text)
-		    ETHEN
-  	  }
-	  ERRTEXT "\n" EEND;
+	    List ls = cclass(c).clashes;
+	    ERRMSG(line) "Ambiguous class occurrence \"%s\"", textToStr(cclass(c).text) ETHEN
+	    ERRTEXT "\n*** Could refer to: " ETHEN
+	    ERRTEXT "%s.%s ", textToStr(module(cclass(c).mod).text), textToStr(cclass(c).text) ETHEN
+	    for (;nonNull(ls);ls=tl(ls)) {
+		ERRTEXT "%s.%s ",
+			textToStr(module(cclass(hd(ls)).mod).text),
+			textToStr(cclass(hd(ls)).text)
+			ETHEN
+	    }
+	    ERRTEXT "\n" EEND;
         }
 	if (isNull(prev)) {
 	    pred = c;
@@ -1466,11 +1466,11 @@ Class parent; {
 	  textToStr(name(m).text)
 	EEND;
     } else if (name(m).defn!=PREDEFINED) {
-	  Name oldnm = m;
-	  removeName(m);
-	  m            = newName(textOf(v),parent);
-	  name(m).defn = PREDEFINED;
-	  name(m).clashes = cons(oldnm,name(m).clashes);
+	Name oldnm = m;
+	removeName(m);
+	m            = newName(textOf(v),parent);
+	name(m).defn = PREDEFINED;
+	name(m).clashes = cons(oldnm,name(m).clashes);
     } else if ( name(m).parent == NIL ) {
 	/* (try) improving the parent info. */
 	name(m).parent = parent;
@@ -1529,12 +1529,12 @@ Class c; {				/* class hierarchy is acyclic	   */
 	cclass(c).level = (-1);
 	for (; nonNull(scs); scs=tl(scs)) {
 #ifdef IPARAM
-	  if ( !isIP(getHead(hd(scs))) ) {
+	    if ( !isIP(getHead(hd(scs))) ) {
 #endif
-	    Int l = visitClass(getHead(hd(scs)));
-	    if (l>lev) lev=l;
+		Int l = visitClass(getHead(hd(scs)));
+		if (l>lev) lev=l;
 #ifdef IPARAM
-	  }
+	    }
 #endif
 	}
 	cclass(c).level = 1+lev;	/* level = 1 + max level of supers */
@@ -4269,17 +4269,17 @@ Name p; {
         }
 #ifdef DOTNET
 	if ( name(p).foreignFlags & FFI_CCONV_DOTNET ) {
-	  if ( e = matchToken("ctor", ext) ) {
-	      methFlags = ((methFlags & ~FFI_DOTNET_METHOD) | FFI_DOTNET_CTOR) ;
-	      ext = skipSpaces(e);
-	  } else if ( e = matchToken("field", ext) ) {
-	      methFlags = ((methFlags & ~FFI_DOTNET_METHOD) | FFI_DOTNET_FIELD) ;
-	      ext = skipSpaces(e);
-	  }  else if ( e = matchToken("method", ext) ) {
-	      /* redundant */
-	      methFlags |= FFI_DOTNET_METHOD;
-	      ext = skipSpaces(e);
-	  }
+	    if ( e = matchToken("ctor", ext) ) {
+		methFlags = ((methFlags & ~FFI_DOTNET_METHOD) | FFI_DOTNET_CTOR) ;
+		ext = skipSpaces(e);
+	    } else if ( e = matchToken("field", ext) ) {
+		methFlags = ((methFlags & ~FFI_DOTNET_METHOD) | FFI_DOTNET_FIELD) ;
+		ext = skipSpaces(e);
+	    } else if ( e = matchToken("method", ext) ) {
+		/* redundant */
+		methFlags |= FFI_DOTNET_METHOD;
+		ext = skipSpaces(e);
+	    }
 	} else {
 #endif
         if ((e = matchFname(ext))) {
@@ -5354,7 +5354,7 @@ Cell op; {
 }
 
 static Syntax local lookupSyntax(t)	/* Try to find fixity for var in  */
-Text t; {				            /* enclosing bindings		      */
+Text t; {				/* enclosing bindings		  */
     List bounds1   = bounds;
     List bindings1 = bindings;
 
