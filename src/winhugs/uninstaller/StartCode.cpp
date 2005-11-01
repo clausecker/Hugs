@@ -284,7 +284,8 @@ void PerformUninstall(HWND hDlg)
 	SetDlgItemText(hDlg, lblMessage, "Deleting registry keys");
 	for (int i = 0; i < log->nRegistry; i++)
 	{
-		RegDeleteKey(log->Registrys[i]->Root, log->Registrys[i]->Path);
+		DoEvents();
+		RegDelnode(log->Registrys[i]->Root, log->Registrys[i]->Path);
 	}
 
 	if (Alive != 0)
