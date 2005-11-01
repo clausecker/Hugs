@@ -193,7 +193,7 @@ void RegisterUninstall(HWND hDlg, char* Folder)
 	WriteRegistry(HKEY_LOCAL_MACHINE, UNINSTALL_ENTRY, "DisplayName", ProgramName);
 	strcpy(FileName, PrimaryFile "\",0");
 	WriteRegistry(HKEY_LOCAL_MACHINE, UNINSTALL_ENTRY, "DisplayIcon", Buffer);
-	strcpy(FileName, "uninstall.exe\""); 
+	strcpy(FileName, "uninstaller.exe\""); 
 	WriteRegistry(HKEY_LOCAL_MACHINE, UNINSTALL_ENTRY, "UninstallString", Buffer);
 	WriteRegistry(HKEY_LOCAL_MACHINE, UNINSTALL_ENTRY, "Publisher", Publisher);
 	WriteRegistry(HKEY_LOCAL_MACHINE, UNINSTALL_ENTRY, "HelpLink", Website);
