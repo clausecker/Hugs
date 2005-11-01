@@ -181,7 +181,7 @@ bool RegisterFiletypes(HWND hDlg, char* Folder)
 
 void RegisterUninstall(HWND hDlg, char* Folder)
 {
-#define UNINSTALL_ENTRY "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\" ProgramName "\\"
+#define UNINSTALL_ENTRY "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\" ProgramName
 
 	char Buffer[MyMaxPath];
 	Buffer[0] = '\"';
