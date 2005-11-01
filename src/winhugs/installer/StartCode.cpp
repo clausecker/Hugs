@@ -320,7 +320,7 @@ bool DoInstall(char* InstallTo, bool RunOnEnd, HWND hDlg)
 		if (!RegisterFiletypes(hDlg, InstallTo))
 			ErrBox("Could not register file types");
 	}
-	RegisterUninstall(hDlg, InstallTo);
+	RegisterUninstall(hDlg, InstallTo, TotalRealSize);
 	BufPos[-1] = '\\';
 
 	StopInstallLog(false);

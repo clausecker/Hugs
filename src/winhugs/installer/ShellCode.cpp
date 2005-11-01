@@ -122,6 +122,30 @@ bool CreateStartMenuShortcut(HWND hDlg, char* Folder)
 	return res;
 }
 
+void WriteRegistryLog(HKEY Root, char* Path)
+{
+	char* RootName;
+	if (Root == HKEY_CLASSES_ROOT)
+		RootName = "HKEY_CLASSES_ROOT";
+	else if (Root == HKEY_LOCAL_MACHINE)
+		RootName = "HKEY_LOCAL_MACHINE";
+	else
+		RootName = "<UNKNOWN>";
+
+	WriteInstallLog("REG\t%s\t%s", RootName, Path);
+}
+
+void WriteRegistryNum(HKEY Root, char* Path, char* Local, DWORD Value)
+{
+	HKEY hKey;
+	RegCreateKey(Root, Path, &hKey);
+	if (hKey != NULL)
+	{
+		RegSetValueEx(hKey, Local, 0, REG_DWORD, (BYTE*) &Value, sizeof(Value));
+		RegCloseKey(hKey);
+		WriteRegistryLog(Root, Path);
+	}
+}
 
 void WriteRegistry(HKEY Root, char* Path, char* Local, char* Value)
 {
@@ -131,16 +155,7 @@ void WriteRegistry(HKEY Root, char* Path, char* Local, char* Value)
 	{
 		RegSetValueEx(hKey, Local, 0, REG_SZ, (BYTE*) Value, strlen(Value)+1);
 		RegCloseKey(hKey);
-
-		char* RootName;
-		if (Root == HKEY_CLASSES_ROOT)
-			RootName = "HKEY_CLASSES_ROOT";
-		else if (Root == HKEY_LOCAL_MACHINE)
-			RootName = "HKEY_LOCAL_MACHINE";
-		else
-			RootName = "<UNKNOWN>";
-
-		WriteInstallLog("REG\t%s\t%s", RootName, Path);
+		WriteRegistryLog(Root, Path);
 	}
 }
 
@@ -179,7 +194,7 @@ bool RegisterFiletypes(HWND hDlg, char* Folder)
 	return true;
 }
 
-void RegisterUninstall(HWND hDlg, char* Folder)
+void RegisterUninstall(HWND hDlg, char* Folder, DWORD Size)
 {
 #define UNINSTALL_ENTRY "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\" ProgramName
 
@@ -197,6 +212,8 @@ void RegisterUninstall(HWND hDlg, char* Folder)
 	WriteRegistry(HKEY_LOCAL_MACHINE, UNINSTALL_ENTRY, "UninstallString", Buffer);
 	WriteRegistry(HKEY_LOCAL_MACHINE, UNINSTALL_ENTRY, "Publisher", Publisher);
 	WriteRegistry(HKEY_LOCAL_MACHINE, UNINSTALL_ENTRY, "HelpLink", Website);
+
+	WriteRegistryNum(HKEY_LOCAL_MACHINE, UNINSTALL_ENTRY, "EstimatedSize", Size);
 }
 
 void GetProgramFiles(HWND hDlg, char* Buffer)
