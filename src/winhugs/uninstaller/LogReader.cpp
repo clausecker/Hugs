@@ -66,9 +66,9 @@ File* ReadLogFile(char** Fields, char* Path, char* Pointer)
 Registry* ReadLogReg(char** Fields)
 {
 	Registry* r = new Registry;
-	if (strcmp(Fields[0], "HKEY_CLASSES_ROOT") == 0)
+	if (strcmp(Fields[1], "HKEY_CLASSES_ROOT") == 0)
 		r->Root = HKEY_CLASSES_ROOT;
-	else if (strcmp(Fields[0], "HKEY_LOCAL_MACHINE") == 0)
+	else if (strcmp(Fields[1], "HKEY_LOCAL_MACHINE") == 0)
 		r->Root = HKEY_LOCAL_MACHINE;
 	else
 		r->Root = NULL;
