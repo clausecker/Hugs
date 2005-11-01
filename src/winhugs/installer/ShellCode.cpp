@@ -83,6 +83,9 @@ bool CreateDesktopShortcut(HWND hDlg, char* Folder)
 	if (!GetFolder(hDlg, CSIDL_DESKTOP, Destination))
 		return false;
 
+	int i = strlen(Destination);
+	if (Destination[i-1] == '\\')
+		Destination[i-1] = 0;
 	strcat(Destination, "\\" ProgramName ".lnk");
 
 	char Target[MyMaxPath];
