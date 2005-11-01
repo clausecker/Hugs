@@ -25,4 +25,4 @@ struct Log
 	File** Files;
 };
 
-Log* ReadLog(HINSTANCE hInstance);
+Log* ReadLog(char* Directory, char* FileName);

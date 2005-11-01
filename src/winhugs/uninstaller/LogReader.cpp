@@ -77,19 +77,9 @@ Registry* ReadLogReg(char** Fields)
 	return r;
 }
 
-Log* ReadLog(HINSTANCE hInstance)
+Log* ReadLog(char* Directory, char* FileName)
 {
-	char Buffer[MyMaxPath];
-	GetModuleFileName(hInstance, Buffer, MyMaxPath);
-
-	char* s = strrchr(Buffer, '\\');
-	if (s == NULL)
-		s = Buffer;
-	else
-		s++;
-	strcpy(s, "install.log");
-
-	HANDLE hFile = CreateFile(Buffer, GENERIC_READ, 0, NULL,
+	HANDLE hFile = CreateFile(Directory, GENERIC_READ, 0, NULL,
 		OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 
 	if (hFile == INVALID_HANDLE_VALUE)
@@ -123,7 +113,7 @@ Log* ReadLog(HINSTANCE hInstance)
 		if (Fields[0][0] == 0 || strcmp(Fields[0], "NOTE") == 0)
 			; //discard, a comment
 		else if (strcmp(Fields[0], "FILE") == 0)
-			Files = NewLinkedList(ReadLogFile(Fields, Buffer, s), Files);
+			Files = NewLinkedList(ReadLogFile(Fields, Directory, FileName), Files);
 		else if (strcmp(Fields[0], "REG") == 0)
 			Regs = NewLinkedList(ReadLogReg(Fields), Regs);
 	}
