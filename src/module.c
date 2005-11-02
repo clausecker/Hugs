@@ -165,7 +165,7 @@ List ieList; {                   /* own in an import/export list.           */
       } else if (isCfun(e)) {
 	/* a lone data constructor (can only appear in a hiding list.) */
 	orphans = cons(pair(name(e).parent, singleton(e)), orphans);
-      } else if (name(e).number == SELNAME) {
+      } else if (isSfun(e)) {
 	/* a field name */
 	Cell p = name(e).parent;      /* the data constructor */
 	Cell t = name(p).parent;      /* the type constructor */
@@ -448,7 +448,7 @@ List is; {
         return addEntity(name(e).parent, singleton(e),is);
       } else if (isTycon(name(e).parent) && isCfun(e)) {
         return addEntity(name(e).parent, singleton(e),is);
-      } else if (name(e).number == SELNAME) {
+      } else if (isSfun(e)) {
         /* a field name */
         Cell p = name(e).parent;      /* the data constructor */
         Cell t = name(p).parent;      /* the type constructor */

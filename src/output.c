@@ -8,8 +8,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: output.c,v $
- * $Revision: 1.39 $
- * $Date: 2005/09/01 15:23:51 $
+ * $Revision: 1.40 $
+ * $Date: 2005/11/02 15:57:56 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1235,7 +1235,7 @@ Int  fr; {
 	}
 #endif
 #if IPARAM
-	if (whatIs(fun(pi)) == IPCELL) {
+	if (isIP(fun(pi))) {
 	    putChr('?');
 	    putPred(fun(pi),fr);
 	    putStr(" :: ");
@@ -1254,7 +1254,7 @@ Int  fr; {
 	putStr(textToStr(textOf(pi)));
     }
 #if IPARAM
-    else if (whatIs(pi) == IPCELL)
+    else if (isIP(pi))
         unlexVar(textOf(pi));
 #endif
     else

@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.175 $
- * $Date: 2005/11/01 14:06:51 $
+ * $Revision: 1.176 $
+ * $Date: 2005/11/02 15:57:56 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1331,7 +1331,7 @@ Cell pred; {
 #endif
     else
 #if IPARAM
-         if (whatIs(h) != IPCELL)
+         if (!isIP(h))
 #endif
     {
 	internal("depPredExp");
@@ -2251,7 +2251,7 @@ Cell pi; {
     }
 #endif
 #if IPARAM
-    if (isAp(pi) && whatIs(fun(pi)) == IPCELL) {
+    if (isAp(pi) && isIP(fun(pi))) {
 	static String ippred = "iparam predicate";
 	checkKind(l,alpha,m,arg(pi),NIL,ippred,STAR,0);
 	return;
