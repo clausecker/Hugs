@@ -116,7 +116,7 @@ void ExecuteFile(LPSTR FileName)
 	if (strncmp("{Hugs}", FileName, 6) == 0) {
 	    strcpy(Buffer, hugsdir());
 	    strcat(Buffer, &FileName[6]);
-	} else if (FileName[0] == '.') {
+	} else if (FileName[0] == '.' && FileName[1] == '\\') {
 	    GetCurrentDirectory(MAX_PATH, Buffer);
 	    strcat(Buffer, &FileName[1]);
 	} else
