@@ -179,13 +179,13 @@ build_package() {
 # extra_packages - packaged with Hugs, but may also be independently updated
 #	(each of these goes in a separate hierarchy under {Hugs}/packages)
 
-core_packages='base haskell98'
+core_packages=
 
 Win32=
 case `uname -a` in
 CYGWIN*|MINGW32*) Win32="Win32" ;;
 esac
-extra_packages="Cabal haskell-src QuickCheck mtl fgl HaXml parsec network HUnit $Win32 unix X11 HGL OpenGL GLUT OpenAL ALUT"
+extra_packages="base haskell98 Cabal haskell-src QuickCheck mtl fgl HaXml parsec network HUnit $Win32 unix X11 HGL OpenGL GLUT OpenAL ALUT"
 
 build_package "libraries/hugsbase" $target/libraries
 
