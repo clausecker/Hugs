@@ -119,16 +119,14 @@ Defs.mk: Makefile
 
 # configuration
 
-src/Makefile: configure src/config.h.in
+src/Makefile: configure
 	$(RM) -r config.cache autom4te.cache
 	LIBS=$(GNULIBS) ./configure $(EXTRA_CONFIGURE_OPTS)
 
-configure src/config.h.in: src/stamp-h.in
-src/stamp-h.in: configure.ac aclocal.m4 fptools
-	-autoreconf
+configure: configure.ac aclocal.m4 fptools
 	for dir in fptools/libraries/*; do if test -f $$dir/configure.ac; \
 		then (cd $$dir; autoreconf); fi; done
-	echo timestamp for config.h.in >$@
+	-autoreconf
 
 # fetching library sources and utility programs
 
