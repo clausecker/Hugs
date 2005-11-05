@@ -74,13 +74,13 @@ veryclean: veryclean_root
 clean_root:
 	$(RM) *.tar.gz *.rpm Defs.mk
 	$(RM) *~
-	cd debian; $(RM) control hugs.copyright libhugs-*-bundled.*
 
 distclean_root: clean_root
 	$(RM) -r config.status config.log config.cache autom4te.cache
 	$(RM) MkDefs tests/config
 
 veryclean_root: distclean_root
+	cd debian; $(RM) control hugs.copyright libhugs-*-bundled.*
 
 ################################################################
 # Regression tests (Unix only)
