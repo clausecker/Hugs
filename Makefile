@@ -74,6 +74,7 @@ veryclean: veryclean_root
 clean_root:
 	$(RM) *.tar.gz *.rpm Defs.mk
 	$(RM) *~
+	cd debian; $(RM) control hugs.copyright libhugs-*-bundled.*
 
 distclean_root: clean_root
 	$(RM) -r config.status config.log config.cache autom4te.cache
@@ -140,3 +141,7 @@ fptools:
 	mv fptools/libraries/Cabal/DefaultSetup.lhs fptools/libraries/Cabal/examples
 	cvs -d `cat CVS/Root` checkout -r $(HSC2HSTAG) fptools/ghc/utils/hsc2hs
 	cvs -d `cat CVS/Root` checkout -r $(CPPHSTAG) cpphs
+
+debian/control: debian/control.in debian/make-control.hs
+	cp License debian/hugs.copyright
+	runhugs -98 debian/make-control.hs `ls fptools/libraries/*/*.cabal | grep -v Win32`
