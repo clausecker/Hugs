@@ -63,11 +63,12 @@ $(PACKAGE).tar.gz:
 	  cvs export -r $(TAG) hugs98; \
 	  cd hugs98; \
 	  cvs export -r $(HSLIBSTAG) `for lib in $(HSLIBSDIRS); do echo fptools/hslibs/$$lib; done`; \
-	  cvs export -r $(LIBRARIESTAG) fptools/config.sub fptools/config.guess fptools/install-sh `for lib in $(LIBRARIESDIRS); do echo fptools/libraries/$$lib; done`; \
-	  $(RM) fptools/libraries/HaXml/configure; \
-	  mv fptools/libraries/Cabal/DefaultSetup.lhs fptools/libraries/Cabal/examples; \
+	  cvs export -r $(LIBRARIESTAG) `for lib in $(LIBRARIESDIRS); do echo fptools/libraries/$$lib; done`; \
 	  cvs export -r $(HSC2HSTAG) fptools/ghc/utils/hsc2hs; \
 	  cvs export -r $(CPPHSTAG) cpphs
+	cd $(TARTMP)/hugs98; cp config.sub config.guess install-sh fptools
+	cd $(TARTMP)/hugs98; $(RM) fptools/libraries/HaXml/configure
+	cd $(TARTMP)/hugs98; mv fptools/libraries/Cabal/DefaultSetup.lhs fptools/libraries/Cabal/examples
 # preprocess these, so the package can be built without happy & ghc
 	$(FIND) $(TARTMP)/hugs98/fptools/libraries -name "*.ly" -o -name "*.y" | \
 		xargs -l $(HAPPY)
@@ -79,6 +80,7 @@ $(PACKAGE).tar.gz:
 # Siggy deren't like these in distros
 	if test "$(MAJOR_RELEASE)" -eq 1; then cd $(TARTMP)/hugs98; rm -rf tests; fi
 	cd $(TARTMP)/hugs98; make configure
+	cd $(TARTMP)/hugs98; $(RM) -r autom4te.cache libraries/autom4te.cache fptools/libraries/*/autom4te.cache
 	mv $(TARTMP)/hugs98 $(TARTMP)/$(PACKAGE)
 	cd $(TARTMP); tar cf $(TMP)/$(NAME).tar $(PACKAGE)
 	gzip -9 $(TMP)/$(NAME).tar
