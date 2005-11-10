@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.145 $
- * $Date: 2005/09/16 16:55:10 $
+ * $Revision: 1.146 $
+ * $Date: 2005/11/10 14:50:53 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -280,7 +280,9 @@ static Void local menu() {
     Printf(":xplain <context>   explain instance resolution for <context>\n");
 #endif
     Printf(":find <name>        edit module containing definition of name\n");
+#if 0
     Printf(":!command           shell escape\n");
+#endif
     Printf(":cd dir             change directory\n");
     Printf(":gc                 force garbage collection\n");
 #ifdef __SYMBIAN32__
