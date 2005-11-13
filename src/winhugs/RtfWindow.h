@@ -14,3 +14,4 @@ void RtfWindowDelete();
 void RtfWindowHistory(int Delta);
 void RtfWindowSelectAll();
 void RtfWindowStartOutput();
+void RtfWindowStartInput();

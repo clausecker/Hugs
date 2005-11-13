@@ -165,6 +165,7 @@ void EnableButtons()
 void ExecutionFinished()
 {
     RtfWindowFlushBuffer();
+    RtfWindowStartInput();
     Running = FALSE;
     EnableButtons();
 }

@@ -272,7 +272,9 @@ void RtfWindowGetCommand(LPSTR Command)
 
 const int BufSize = 995;
 char Buf[1000];
-int BufPos = 0;
+int BufPos = 0; // where to write out in the buffer
+int BufLen = 0; // how much of the buffer is useful
+int OutputPos = 0; // how much to delete of the existing thing
 BOOL IsTimer = FALSE;
 
 void EnsureTimer()
@@ -293,8 +295,10 @@ void WriteBuffer(LPCTSTR s, int Len)
 {
     CHARRANGE cr;
     CHARFORMAT cf;
-    cr.cpMin = 0xffff;
-    cr.cpMax = cr.cpMin;
+    Length = RtfWindowTextLength();
+
+    cr.cpMin = max(OutputStart, Length + OutputPos);
+    cr.cpMax = cr.cpMin + BufLen;
     SendMessage(hRTF, EM_EXSETSEL, 0, (LPARAM) &cr);
 
     cf.cbSize = sizeof(cf);
@@ -302,7 +306,9 @@ void WriteBuffer(LPCTSTR s, int Len)
     cf.dwEffects = 0;
     cf.crTextColor = BufferColor;
     SendMessage(hRTF, EM_SETCHARFORMAT, SCF_SELECTION, (LPARAM) &cf);
+    // setcharformat seems to screw up the current selection!
 
+    SendMessage(hRTF, EM_EXSETSEL, 0, (LPARAM) &cr);
     PuttingChar = TRUE;
     SendMessage(hRTF, EM_REPLACESEL, FALSE, (LPARAM) s);
     PuttingChar = FALSE;
@@ -334,10 +340,12 @@ void WriteBuffer(LPCTSTR s, int Len)
 
 void FlushBuffer()
 {
-    if (BufPos != 0) {
-	Buf[BufPos] = 0;
-	WriteBuffer(Buf, BufPos);
+    if (BufLen != 0) {
+	Buf[BufLen] = 0;
+	WriteBuffer(Buf, BufLen);
+	OutputPos = BufPos - BufLen;
 	BufPos = 0;
+	BufLen = 0;
     }
 }
 
@@ -358,24 +366,14 @@ void AddToBuffer(LPCTSTR s)
     for (c = s; *c != 0; c++) {
 	if (*c == '\b') {
 	    if (BufPos == 0) {
-		//try and remove a letter off the window
-		int Len = RtfWindowTextLength();
-		if (Len != OutputStart) {
-		    CHARRANGE cr;
-		    cr.cpMin = Len-1;
-		    cr.cpMax = Len;
-		    SendMessage(hRTF, EM_EXSETSEL, 0, (LPARAM) &cr);
-
-		    PuttingChar = TRUE;
-		    SendMessage(hRTF, EM_REPLACESEL, FALSE, (LPARAM) "");
-		    PuttingChar = FALSE;
-		}
+		OutputPos--;
 	    } else
 		BufPos--;
 	} else {
-	    if (BufPos >= BufSize)
+	    if (BufLen >= BufSize)
 		FlushBuffer();
 	    Buf[BufPos++] = *c;
+	    BufLen = max(BufLen, BufPos);
 	}
     }
 
@@ -385,7 +383,7 @@ void AddToBuffer(LPCTSTR s)
 void RtfWindowTimer()
 {
     // if you are doing useful work, why die?
-    if (BufPos == 0)
+    if (BufLen == 0)
 	DestTimer();
     FlushBuffer();
 }
@@ -406,6 +404,25 @@ void RtfWindowStartOutput()
     RtfWindowPutS("\n");
     RtfWindowFlushBuffer();
     OutputStart = RtfWindowTextLength();
+}
+
+void RtfWindowStartInput()
+{
+    CHARRANGE cr;
+    CHARFORMAT cf;
+    cf.cbSize = sizeof(cf);
+    cf.dwMask = CFM_COLOR;
+    cf.dwEffects = 0;
+    cf.crTextColor = BLACK;
+
+    cr.cpMin = Length;
+    cr.cpMax = -1;
+    SendMessage(hRTF, EM_EXSETSEL, 0, (LPARAM) &cr);
+
+    SendMessage(hRTF, EM_SETCHARFORMAT, SCF_SELECTION, (LPARAM) &cf);
+
+    cr.cpMax = cr.cpMin;
+    SendMessage(hRTF, EM_EXSETSEL, 0, (LPARAM) &cr);
 }
 
 int WinHugsColor(int Color)
