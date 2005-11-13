@@ -81,7 +81,8 @@ $(PACKAGE).tar.gz:
 	if test "$(MAJOR_RELEASE)" -eq 1; then cd $(TARTMP)/hugs98; rm -rf tests; fi
 	cd $(TARTMP)/hugs98; make configure
 	cd $(TARTMP)/hugs98; $(RM) -r autom4te.cache libraries/autom4te.cache fptools/libraries/*/autom4te.cache
-	cd $(TARTMP)/hugs98; make debian/control
+# TODO: Disabled the line below, it needs runhugs, which we are just about to build...
+#	cd $(TARTMP)/hugs98; make debian/control
 	mv $(TARTMP)/hugs98 $(TARTMP)/$(PACKAGE)
 	cd $(TARTMP); tar cf $(TMP)/$(NAME).tar $(PACKAGE)
 	gzip -9 $(TMP)/$(NAME).tar
