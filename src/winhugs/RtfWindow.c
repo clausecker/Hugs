@@ -19,10 +19,11 @@ typedef struct _Format
     int BackColor;
     BOOL Bold;
     BOOL Italic;
+    BOOL Underline;
 } Format;
 
 BOOL FormatChanged = FALSE;
-Format DefFormat = {BLACK, WHITE, FALSE, FALSE};
+Format DefFormat = {BLACK, WHITE, FALSE, FALSE, FALSE};
 Format BufFormat;
 Format NowFormat;
 
@@ -292,6 +293,12 @@ int BufLen = 0; // how much of the buffer is useful
 int OutputPos = 0; // how much to delete of the existing thing
 BOOL IsTimer = FALSE;
 
+// buffer to hold an escape character
+BOOL InEscBuf = FALSE;
+const int EscBufSize = 100;
+char EscBuf[100];
+int EscBufPos = 0;
+
 void EnsureTimer()
 {
     if (!IsTimer) {
@@ -309,7 +316,7 @@ void DestTimer()
 void WriteBuffer(LPCTSTR s, int Len)
 {
     CHARRANGE cr;
-    CHARFORMAT cf;
+    CHARFORMAT2 cf;
     Length = RtfWindowTextLength();
 
     cr.cpMin = max(OutputStart, Length + OutputPos);
@@ -317,9 +324,13 @@ void WriteBuffer(LPCTSTR s, int Len)
     SendMessage(hRTF, EM_EXSETSEL, 0, (LPARAM) &cr);
 
     cf.cbSize = sizeof(cf);
-    cf.dwMask = CFM_COLOR;
+    cf.dwMask = CFM_COLOR | CFM_BACKCOLOR | CFM_BOLD | CFM_ITALIC | CFM_UNDERLINE;
     cf.dwEffects = 0;
     cf.crTextColor = BufFormat.ForeColor;
+    cf.crBackColor = BufFormat.BackColor;
+    cf.dwEffects = (BufFormat.Bold ? CFE_BOLD : 0) |
+		   (BufFormat.Italic ? CFE_ITALIC : 0) |
+		   (BufFormat.Underline ? CFE_UNDERLINE : 0);
     SendMessage(hRTF, EM_SETCHARFORMAT, SCF_SELECTION, (LPARAM) &cf);
     // setcharformat seems to screw up the current selection!
 
@@ -369,6 +380,43 @@ void RtfWindowFlushBuffer()
     FlushBuffer();
 }
 
+BOOL ParseEscapeCode(Format* f)
+{
+    int AnsiColor[8] = {BLACK, RED, GREEN, YELLOW, BLUE,
+			MAGENTA, CYAN, WHITE};
+    char* s;
+    int i;
+
+    EscBuf[EscBufPos] = 0;
+    if (EscBuf[0] != '[')
+	return FALSE;
+
+    s = &EscBuf[1];
+    for (i = 1; i <= EscBufPos; i++) {
+	if (EscBuf[i] == ';')
+	    EscBuf[i] = 0;
+
+	if (EscBuf[i] == 0) {
+	    int Val = atoi(s);
+	    s = &EscBuf[i+1];
+
+	    if (Val == 0) {
+		f->Bold = FALSE;
+		f->Underline = FALSE;
+		f->Italic = FALSE;
+	    } else if (Val == 1)
+		f->Bold = TRUE;
+	    else if (Val == 4)
+		f->Underline = TRUE;
+	    else if (Val >= 30 && Val <= 37)
+		f->ForeColor = AnsiColor[Val - 30];
+	    else if (Val >= 40 && Val <= 47)
+		f->BackColor = AnsiColor[Val - 40];
+	}
+    }
+    return TRUE;
+}
+
 // need to copy from s to Buf
 void AddToBuffer(LPCTSTR s)
 {
@@ -376,6 +424,7 @@ void AddToBuffer(LPCTSTR s)
 	if (NowFormat.BackColor != BufFormat.BackColor ||
 	    NowFormat.ForeColor != BufFormat.ForeColor ||
 	    NowFormat.Bold      != BufFormat.Bold      ||
+	    NowFormat.Underline != BufFormat.Underline ||
 	    NowFormat.Italic    != BufFormat.Italic    )
 	{
 	    FlushBuffer();
@@ -384,12 +433,40 @@ void AddToBuffer(LPCTSTR s)
 	FormatChanged = FALSE;
     }
 
+    if (InEscBuf) {
+	for (; *s != 0; s++) {
+	    if (*s == 'm') {
+		Format f = NowFormat;
+		if (ParseEscapeCode(&f)) {
+		    FormatChanged = TRUE;
+		    NowFormat = f;
+		}
+		InEscBuf = FALSE;
+		AddToBuffer(s+1);
+		return;
+	    } else if ((*s >= '0' && *s <= '9') ||
+		(*s == ';') || (*s == '[')) {
+		EscBuf[EscBufPos++] = *s;
+		EscBufPos = min(EscBufPos, EscBufSize);
+	    } else {
+		InEscBuf = FALSE;
+		AddToBuffer(EscBuf);
+		break;
+	    }
+	}
+    }
+
     for (; *s != 0; s++) {
 	if (*s == '\b') {
 	    if (BufPos == 0) {
 		OutputPos--;
 	    } else
 		BufPos--;
+	} else if (*s == 27) {
+	    InEscBuf = TRUE;
+	    EscBufPos = 0;
+	    AddToBuffer(s+1);
+	    return;
 	} else {
 	    if (BufLen >= BufSize)
 		FlushBuffer();
@@ -452,6 +529,7 @@ int WinHugsColor(int Color)
     FormatChanged = TRUE;
     NowFormat = DefFormat;
     NowFormat.ForeColor = Color;
+    InEscBuf = FALSE;
     return PrevColor;
 }
 
