@@ -17,7 +17,7 @@
 #define ProgramName		"WinHugs"
 
 
-#define Description		"Haskell98 Interpreter"
+#define Description		"Haskell 98 Interpreter"
 
 
 #define Copyright		"1994-2005"
