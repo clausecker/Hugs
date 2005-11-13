@@ -13,8 +13,19 @@ BOOL PuttingChar = FALSE;
 DWORD Length = 0;
 DWORD OutputStart;
 
-int FontColor = 0; // the color to write stuff out now
-int BufferColor = 0; // the color to write the buffer out as
+typedef struct _Format
+{
+    int ForeColor;
+    int BackColor;
+    BOOL Bold;
+    BOOL Italic;
+} Format;
+
+BOOL FormatChanged = FALSE;
+Format DefFormat = {BLACK, WHITE, FALSE, FALSE};
+Format BufFormat;
+Format NowFormat;
+
 
 void RtfWindowInit(HWND hNewRTF)
 {
@@ -32,6 +43,10 @@ void RtfWindowInit(HWND hNewRTF)
     // Allow them 1 million characters
     // the system will sort out overflows later
     SendMessage(hRTF, EM_LIMITTEXT, 1000000, 0);
+
+    // Default formatting information
+    BufFormat = DefFormat;
+    NowFormat = DefFormat;
 
     //update the font
     RtfWindowUpdateFont();
@@ -304,7 +319,7 @@ void WriteBuffer(LPCTSTR s, int Len)
     cf.cbSize = sizeof(cf);
     cf.dwMask = CFM_COLOR;
     cf.dwEffects = 0;
-    cf.crTextColor = BufferColor;
+    cf.crTextColor = BufFormat.ForeColor;
     SendMessage(hRTF, EM_SETCHARFORMAT, SCF_SELECTION, (LPARAM) &cf);
     // setcharformat seems to screw up the current selection!
 
@@ -357,14 +372,20 @@ void RtfWindowFlushBuffer()
 // need to copy from s to Buf
 void AddToBuffer(LPCTSTR s)
 {
-    LPCTSTR c;
-    if (FontColor != BufferColor) {
-	FlushBuffer();
-	BufferColor = FontColor;
+    if (FormatChanged) {
+	if (NowFormat.BackColor != BufFormat.BackColor ||
+	    NowFormat.ForeColor != BufFormat.ForeColor ||
+	    NowFormat.Bold      != BufFormat.Bold      ||
+	    NowFormat.Italic    != BufFormat.Italic    )
+	{
+	    FlushBuffer();
+	    BufFormat = NowFormat;
+	}
+	FormatChanged = FALSE;
     }
 
-    for (c = s; *c != 0; c++) {
-	if (*c == '\b') {
+    for (; *s != 0; s++) {
+	if (*s == '\b') {
 	    if (BufPos == 0) {
 		OutputPos--;
 	    } else
@@ -372,7 +393,7 @@ void AddToBuffer(LPCTSTR s)
 	} else {
 	    if (BufLen >= BufSize)
 		FlushBuffer();
-	    Buf[BufPos++] = *c;
+	    Buf[BufPos++] = *s;
 	    BufLen = max(BufLen, BufPos);
 	}
     }
@@ -427,8 +448,10 @@ void RtfWindowStartInput()
 
 int WinHugsColor(int Color)
 {
-    int PrevColor = FontColor;
-    FontColor = Color;
+    int PrevColor = NowFormat.ForeColor;
+    FormatChanged = TRUE;
+    NowFormat = DefFormat;
+    NowFormat.ForeColor = Color;
     return PrevColor;
 }
 
