@@ -368,6 +368,7 @@ void FlushBuffer()
 {
     if (BufLen != 0) {
 	Buf[BufLen] = 0;
+	Buf[BufLen+1] = 0;
 	WriteBuffer(Buf, BufLen);
 	OutputPos = BufPos - BufLen;
 	BufPos = 0;
@@ -400,11 +401,9 @@ BOOL ParseEscapeCode(Format* f)
 	    int Val = atoi(s);
 	    s = &EscBuf[i+1];
 
-	    if (Val == 0) {
-		f->Bold = FALSE;
-		f->Underline = FALSE;
-		f->Italic = FALSE;
-	    } else if (Val == 1)
+	    if (Val == 0)
+		*f = DefFormat;
+	    else if (Val == 1)
 		f->Bold = TRUE;
 	    else if (Val == 4)
 		f->Underline = TRUE;
