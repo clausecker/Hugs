@@ -135,13 +135,15 @@ fptools:
 	cvs -d `cat CVS/Root` checkout -r $(HSLIBSTAG) `for lib in $(HSLIBSDIRS); do echo fptools/hslibs/$$lib; done`
 	cvs -d `cat CVS/Root` checkout -r $(LIBRARIESTAG) `for lib in $(LIBRARIESDIRS); do echo fptools/libraries/$$lib; done`
 	cp config.sub config.guess install-sh fptools
-	# We don't use this, so don't leave it there for Cabal to run
+# We don't use this, so don't leave it there for Cabal to run
 	$(RM) fptools/libraries/HaXml/configure
-	# Move this so that make_bootlib won't stumble over it
+# Move this so that make_bootlib won't stumble over it
 	mv fptools/libraries/Cabal/DefaultSetup.lhs fptools/libraries/Cabal/examples
 	cvs -d `cat CVS/Root` checkout -r $(HSC2HSTAG) fptools/ghc/utils/hsc2hs
 	cvs -d `cat CVS/Root` checkout -r $(CPPHSTAG) cpphs
 
 debian/control: debian/control.in debian/make-control.hs
 	cp License debian/hugs.copyright
-	runhugs -98 debian/make-control.hs `ls fptools/libraries/*/*.cabal | grep -v Win32`
+# We need runhugs to build a Debian source package from CVS,
+# but don't complain if it's unavailable.
+	-runhugs -98 debian/make-control.hs `ls fptools/libraries/*/*.cabal | grep -v Win32` 2>/dev/null
