@@ -27,6 +27,8 @@ Format DefFormat = {BLACK, WHITE, FALSE, FALSE, FALSE};
 Format BufFormat;
 Format NowFormat;
 
+HANDLE hMutex;
+
 
 void RtfWindowInit(HWND hNewRTF)
 {
@@ -48,6 +50,9 @@ void RtfWindowInit(HWND hNewRTF)
     // Default formatting information
     BufFormat = DefFormat;
     NowFormat = DefFormat;
+
+    // And syncronisation stuff
+    hMutex = CreateMutex(NULL, FALSE, NULL);
 
     //update the font
     RtfWindowUpdateFont();
@@ -366,6 +371,8 @@ void WriteBuffer(LPCTSTR s, int Len)
 
 void FlushBuffer()
 {
+    WaitForSingleObject(hMutex, INFINITE);
+
     if (BufLen != 0) {
 	Buf[BufLen] = 0;
 	Buf[BufLen+1] = 0;
@@ -374,6 +381,8 @@ void FlushBuffer()
 	BufPos = 0;
 	BufLen = 0;
     }
+
+    ReleaseMutex(hMutex);
 }
 
 void RtfWindowFlushBuffer()
