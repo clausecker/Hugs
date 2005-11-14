@@ -369,9 +369,12 @@ void WriteBuffer(LPCTSTR s, int Len)
     }
 }
 
-void FlushBuffer()
+void FlushBuffer(BOOL Force)
 {
-    WaitForSingleObject(hMutex, INFINITE);
+    DWORD Res = WaitForSingleObject(hMutex, (Force ? INFINITE : 0));
+
+    if (Res != WAIT_OBJECT_0)
+	return; //you did not win
 
     if (BufLen != 0) {
 	Buf[BufLen] = 0;
@@ -387,7 +390,7 @@ void FlushBuffer()
 
 void RtfWindowFlushBuffer()
 {
-    FlushBuffer();
+    FlushBuffer(TRUE);
 }
 
 BOOL ParseEscapeCode(Format* f)
@@ -435,7 +438,7 @@ void AddToBuffer(LPCTSTR s)
 	    NowFormat.Underline != BufFormat.Underline ||
 	    NowFormat.Italic    != BufFormat.Italic    )
 	{
-	    FlushBuffer();
+	    FlushBuffer(TRUE);
 	    BufFormat = NowFormat;
 	}
 	FormatChanged = FALSE;
@@ -477,7 +480,7 @@ void AddToBuffer(LPCTSTR s)
 	    return;
 	} else {
 	    if (BufLen >= BufSize)
-		FlushBuffer();
+		FlushBuffer(TRUE);
 	    Buf[BufPos++] = *s;
 	    BufLen = max(BufLen, BufPos);
 	}
@@ -491,7 +494,7 @@ void RtfWindowTimer()
     // if you are doing useful work, why die?
     if (BufLen == 0)
 	DestTimer();
-    FlushBuffer();
+    FlushBuffer(FALSE);
 }
 
 void RtfWindowPutS(LPCTSTR s)
@@ -509,6 +512,8 @@ void RtfWindowStartOutput()
 {
     RtfWindowPutS("\n");
     RtfWindowFlushBuffer();
+    BufFormat = DefFormat;
+    NowFormat = DefFormat;
     OutputStart = RtfWindowTextLength();
 }
 
@@ -548,7 +553,7 @@ int WinHugsColor(int Color)
 void WinHugsHyperlink(const char* msg)
 {
     CHARFORMAT2 cf2;
-    FlushBuffer();
+    FlushBuffer(TRUE);
 
     cf2.cbSize = sizeof(cf2);
     cf2.dwMask = CFM_LINK;
