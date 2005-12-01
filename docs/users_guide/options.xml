@@ -1050,7 +1050,7 @@ The package will then be installed under
 
 <listitem><para>
 Those preparing binary packages will use <literal>--prefix=/usr</literal>
-or similar, with a corresponding <literal>--copy-prefix</literal>
+or similar, with an appropriate <literal>--destdir</literal>
 option to <quote><literal>setup copy</literal></quote>.
 </para></listitem>
 
