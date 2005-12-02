@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.176 $
- * $Date: 2005/11/02 15:57:56 $
+ * $Revision: 1.177 $
+ * $Date: 2005/12/02 12:42:27 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -249,6 +249,11 @@ static Bool   local odiff		Args((List,List));
 
 static Void   local duplicateError	Args((Int,Module,Text,String));
 static Void   local checkTypeIn		Args((Pair));
+
+static Bool   local h98Pred		Args((Bool,Cell));
+static Cell   local h98Context		Args((Bool,List));
+static Void   local h98CheckCtxt	Args((Int,String,Bool,List,Inst));
+static Void   local h98CheckType	Args((Int,String,Cell,Type));
 
 /* --------------------------------------------------------------------------
  * The code in this file is arranged in roughly the following order:
@@ -7219,7 +7224,7 @@ Pair cvs; {				/* synonym are defined             */
  * Haskell 98 compatibility tests:
  * ------------------------------------------------------------------------*/
 
-Bool h98Pred(allowArgs,pi)		/* Check syntax of Hask98 predicate*/
+static Bool local h98Pred(allowArgs,pi)	/* Check syntax of Hask98 predicate*/
 Bool allowArgs;
 Cell pi; {
     return isClass(getHead(pi)) && argCount==1 &&
@@ -7227,7 +7232,7 @@ Cell pi; {
            (argCount==0 || allowArgs);
 }
 
-Cell h98Context(allowArgs,ps)		/* Check syntax of Hask98 context  */
+static Cell h98Context(allowArgs,ps)	/* Check syntax of Hask98 context  */
 Bool allowArgs;
 List ps; {
     for (; nonNull(ps); ps=tl(ps)) {
@@ -7238,7 +7243,7 @@ List ps; {
     return NIL;
 }
 
-Void h98CheckCtxt(line,wh,allowArgs,ps,in)
+static Void local h98CheckCtxt(line,wh,allowArgs,ps,in)
 Int    line;				/* Report illegal context/predicate*/
 String wh;
 Bool   allowArgs;
@@ -7265,7 +7270,7 @@ Inst   in; {
 #endif
 }
 
-Void h98CheckType(line,wh,e,t)		/* Check for Haskell 98 type	   */
+static Void local h98CheckType(line,wh,e,t)	/* Check for Haskell 98 type */
 Int    line;
 String wh;
 Cell   e;
