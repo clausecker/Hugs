@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.177 $
- * $Date: 2005/12/02 12:42:27 $
+ * $Revision: 1.178 $
+ * $Date: 2005/12/02 17:09:55 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -7232,8 +7232,8 @@ Cell pi; {
            (argCount==0 || allowArgs);
 }
 
-static Cell h98Context(allowArgs,ps)	/* Check syntax of Hask98 context  */
-Bool allowArgs;
+static Cell local h98Context(allowArgs,ps)
+Bool allowArgs;				/* Check syntax of Hask98 context  */
 List ps; {
     for (; nonNull(ps); ps=tl(ps)) {
 	if (!h98Pred(allowArgs,hd(ps))) {
