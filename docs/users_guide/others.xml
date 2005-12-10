@@ -109,6 +109,12 @@ Then the program will read and act on both the <option>+l</option> and
 </cmdsynopsis>
 
 <para>
+Any module that contains <literal>foreign import</literal> declarations
+must be compiled with <command>ffihugs</command> before it can be loaded
+into Hugs.
+</para>
+
+<para>
 Suppose you have some C functions in <filename>test.c</filename>
 with some <literal>foreign import</literal> declarations for those
 functions in <filename>Test.hs</filename>,
