@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.178 $
- * $Date: 2005/12/02 17:09:55 $
+ * $Revision: 1.179 $
+ * $Date: 2005/12/10 11:25:13 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -6416,7 +6416,9 @@ Cell e;
 List qss; {
     Int n = length(qss);
     enterGathering();
-    if (n > 3 && isNull(findQualName(mkQVar(findText("List"),zipName(n))))) {
+    if (n > 3 &&
+	isNull(findQualName(mkQVar(findText("List"),zipName(n)))) &&
+	isNull(findQualName(mkQVar(findText("Data.List"),zipName(n))))) {
 	ERRMSG(l) "undefined variable \"%s\" (introduced by parallel comprehension)", textToStr(zipName(n))
 	EEND;
     }

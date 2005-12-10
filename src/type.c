@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: type.c,v $
- * $Revision: 1.80 $
- * $Date: 2005/10/29 11:40:50 $
+ * $Revision: 1.81 $
+ * $Date: 2005/12/10 11:25:13 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1415,11 +1415,13 @@ List qss; {
     len   = length(qss);
     zName = zipName(len);
     zpat  = mkTuple(len);
-    zexp  = findQualFun(findText("List"),zName);
+    zexp  = findQualFun(findText("Data.List"),zName);
+    if (isNull(zexp))
+	zexp = findQualFun(findText("List"),zName);
     if (isNull(zexp)) {
-      /* if they don't have List loaded, we can still handle the most
-	 common cases, because `zip' and `zip3' are defined in the Prelude */
-      zexp = findQualFun(textPrelude,zName);
+	/* if they don't have List loaded, we can still handle the most
+	   common cases, because `zip' and `zip3' are defined in the Prelude */
+	zexp = findQualFun(textPrelude,zName);
     }
     if (isNull(zexp)) {
 	ERRMSG(l) "\"%s\" not in scope (introduced by parallel comprehension)", textToStr(zName) ETHEN

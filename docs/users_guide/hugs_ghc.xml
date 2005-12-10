@@ -146,6 +146,11 @@ This will be translated to:
 ]]></programlisting>
 where <quote><literal>zip<replaceable>N</replaceable></literal></quote>
 is the appropriate zip for the given number of branches.
+These functions must be in scope;
+the <literal>Prelude</literal> defines <function>zip</function> and
+<function>zip3</function>, but if you want to handle 4 or more lists in
+parallel, you will need to import <literal>List</literal> or
+<literal>Data.List</literal>.
 </para>
 
 </sect2>
