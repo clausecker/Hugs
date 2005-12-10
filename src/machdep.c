@@ -11,8 +11,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.135 $
- * $Date: 2005/10/06 18:52:12 $
+ * $Revision: 1.136 $
+ * $Date: 2005/12/10 00:49:27 $
  * ------------------------------------------------------------------------*/
 #include "prelude.h"
 #include "storage.h"
@@ -1880,7 +1880,7 @@ HsInt64 i; {
 
 HsInt64 int64FromParts(c1,c2)
 Int c1, c2; {
-    return ((HsInt64)c1 << 32) | (HsInt64)((HsWord64)c2);
+    return ((HsInt64)c1 << 32) | (HsInt64)((HsWord32)c2);
 }
 #endif /* PROVIDE_INT64 */
 
