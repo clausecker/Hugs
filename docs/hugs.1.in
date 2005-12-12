@@ -1,5 +1,5 @@
 .\" @configure_input@
-.TH HUGS 1 "September 2003" "" ""
+.TH HUGS 1 "December 2005" "" ""
 .ds LB @HUGSDIR@
 .ds BN @BINDIR@
 .ds HP @HUGSPATH@
@@ -26,14 +26,13 @@ hugs, runhugs, ffihugs \- Hugs 98, functional programming system
 ]
 .br
 .B ffihugs
-.B +G
 [
 .I options
 ]
-[
-.BI +L arg
-] ...
 .I module
+[
+.I compiler_argument
+] ...
 .SH DESCRIPTION
 Hugs is an interpreter for Haskell, a standard non-strict functional
 programming language.  Hugs implements almost all of the
@@ -169,6 +168,11 @@ Set preprocessor filter for source files to \fIcmd\fP (unset by default).
 Instead of reading a source file directly,
 \fIHugs\fP will read the standard output of
 \fIcmd\fP run with the source file name as argument.
+.TP
+.BI \-X str
+The string \fIstr\fP is interpreted as an option string.
+This is useful, for example, for passing multiple arguments to \fBrunhugs\fP
+in a \fB#!\fP script.
 .SH COMMANDS
 Once the interpreter has been loaded, the following commands are available:
 .TP 18
@@ -265,7 +269,10 @@ will invoke the
 .B main
 function.
 Any arguments given on the command line will be available through
-.RB getArgs .
+.BR getArgs .
+.LP
+Note that \fB#!\fP passes only one orgument to the script.
+The \fB\-X\fP option may be used to get around this.
 .SH "C INTERFACE"
 On architectures that support dynamic linking,
 .I Hugs
@@ -273,28 +280,37 @@ implements the part of the
 .I "Haskell 98 Foreign Function Interface"
 (FFI) that allows Haskell functions to call C routines.
 (On the x86, PowerPC and Sparc architectures,
-all \fBforeign import\fP are supported;
+all \fBforeign import\fPs are supported;
 on others, only \fBstatic\fP imports are provided.)
 Modules containing such
 .B foreign
 declarations must be compiled using the
 .I ffihugs
-command with the
-.B +G
-option.
-Additional arguments for the C compiler may be supplied with 
-.B +L
-options.
+command before use with
+.BR hugs .
+Additional arguments for the C compiler may be supplied via \fIcompiler_argument\fPs.
 For example,
 suppose you have some C functions in \fBtest.c\fP and some FFI declarations
 for those functions in \fBTest.hs\fP and the code in \fBtest.c\fP needs to be
 compiled with \fB\-lm\fP.
 Then you would compile the module with the command
 .IP
-\fBffihugs +G +L"test.c" +L"\-lm" Test.hs\fP
+\fBffihugs Test.hs test.c \-lm \fP
 .LP
 which generates an object file \fBTest.so\fP.
 Then when \fIhugs\fP loads \fBTest.hs\fP, it will also load \fBTest.so\fP.
+.LP
+In the standard FFI, each \fBforeign import\fP declaration should name
+a C header file containing the prototype of the function.
+Because this is often cumbersome, \fBffihugs\fP provides the following
+additional option:
+.TP
+.BI \-i str
+Specify an include for the generated C file.
+The include string should be something that can follow "\fB#include\fP"
+in a C program, as in
+.IP
+\fBffihugs '-i<math.h>' '-i"mydefs.h"' Test.hs test.c -lm\fP
 .SH ENVIRONMENT
 .TP
 .B HUGSFLAGS
@@ -347,3 +363,4 @@ Hugs 98: Mark Jones and others, June 1999.
 Manual page: Jonathan Bowen, modified by Gary Leavens, and then
 (with apologies to the original authors) by Mark Jones.
 Updated for Hugs 98 by Antti-Juhani Kaijanaho and Ross Paterson.
+Updated for the March 2005 ffihugs changes by Joseph P. Skudlarek.
