@@ -503,6 +503,20 @@ String s; {              /* return FALSE if none found.     */
 			       cutoff = cutcand;
 		       }
 		       return TRUE;
+
+	    /* warnings about obsolete options */
+
+	    case 'e':
+	    case 'f':
+	    case 'N':
+	    case 'W':
+	    case 'G' : Printf("ERROR: ignoring obsolete %c%c option.\n",
+			  state ? '+' : '-', *s);
+		       return TRUE;
+
+	    case 'L' : Printf("ERROR: +L is no longer supported for ffihugs - put the argument (without +L) *after* the module - ignoring it.\n");
+		       return TRUE;
+
         default  :
 #if !HASKELL_98_ONLY
 	           if (strcmp("98",s)==0) {
