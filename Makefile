@@ -23,6 +23,8 @@ LIBRARIESDIRS = base haskell98 haskell-src mtl network parsec QuickCheck unix \
 
 # End of general settings (leave this line unchanged)
 
+FPTOOLS		= fptools/libraries/base/base.cabal
+
 # General targets:
 #
 # all:		(default) build a system that can be run in-place.
@@ -34,7 +36,7 @@ LIBRARIESDIRS = base haskell98 haskell-src mtl network parsec QuickCheck unix \
 #		will require additional tools).
 # check:	run regression tests
 
-all: fptools src/Makefile
+all: $(FPTOOLS) src/Makefile
 	cd src; $(MAKE) all
 	cd libraries; $(MAKE) all
 	cd docs; $(MAKE) all
@@ -48,7 +50,7 @@ install: install_all_but_docs
 # Install everything except documentation, which is installed differently
 # by some packagers (e.g. rpm)
 
-install_all_but_docs: fptools src/Makefile
+install_all_but_docs: $(FPTOOLS) src/Makefile
 	cd src; $(MAKE) install
 	cd libraries; $(MAKE) install
 	cd demos; $(MAKE) install
@@ -124,14 +126,14 @@ src/Makefile: configure
 	$(RM) -r config.cache autom4te.cache
 	LIBS=$(GNULIBS) ./configure $(EXTRA_CONFIGURE_OPTS)
 
-configure: configure.ac aclocal.m4 fptools
+configure: configure.ac aclocal.m4 $(FPTOOLS)
 	for dir in fptools/libraries/*; do if test -f $$dir/configure.ac; \
 		then (cd $$dir; autoreconf); fi; done
 	-autoreconf
 
 # fetching library sources and utility programs
 
-fptools:
+$(FPTOOLS):
 	cvs -d `cat CVS/Root` checkout -r $(HSLIBSTAG) `for lib in $(HSLIBSDIRS); do echo fptools/hslibs/$$lib; done`
 	cvs -d `cat CVS/Root` checkout -r $(LIBRARIESTAG) `for lib in $(LIBRARIESDIRS); do echo fptools/libraries/$$lib; done`
 	cp config.sub config.guess install-sh fptools
@@ -139,7 +141,6 @@ fptools:
 	$(RM) fptools/libraries/HaXml/configure
 # Move this so that make_bootlib won't stumble over it
 	mv fptools/libraries/Cabal/DefaultSetup.lhs fptools/libraries/Cabal/examples
-	cvs -d `cat CVS/Root` checkout -r $(HSC2HSTAG) fptools/ghc/utils/hsc2hs
 	cvs -d `cat CVS/Root` checkout -r $(CPPHSTAG) cpphs
 
 debian/control: debian/control.in debian/make-control.hs

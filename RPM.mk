@@ -64,7 +64,6 @@ $(PACKAGE).tar.gz:
 	  cd hugs98; \
 	  cvs export -r $(HSLIBSTAG) `for lib in $(HSLIBSDIRS); do echo fptools/hslibs/$$lib; done`; \
 	  cvs export -r $(LIBRARIESTAG) `for lib in $(LIBRARIESDIRS); do echo fptools/libraries/$$lib; done`; \
-	  cvs export -r $(HSC2HSTAG) fptools/ghc/utils/hsc2hs; \
 	  cvs export -r $(CPPHSTAG) cpphs
 	cd $(TARTMP)/hugs98; cp config.sub config.guess install-sh fptools
 	cd $(TARTMP)/hugs98; $(RM) fptools/libraries/HaXml/configure

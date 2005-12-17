@@ -19,7 +19,9 @@ BUILD_DIR	= ../hugsdir
 HEADERS		= ../src/HsFFI.h
 FP_HEADERS	= ../src/platform.h include/MachDeps.h include/ghcconfig.h
 CPPHS_SRC	= ../cpphs
-HSC2HS_SRC	= ../fptools/ghc/utils/hsc2hs
+HSC2HS_SRC	= ../hsc2hs
+
+HUGS_SETUP	= ../src/runhugs -98 -P../libraries/bootlib ../fptools/libraries/Cabal/examples/hapax.hs
 
 INCLUDES	= $(BUILD_DIR)/include/HsFFI.h
 # represents header files used by the base, network and unix packages
@@ -32,7 +34,9 @@ FP_INCLUDES	= ../fptools/ghc/includes/ghcconfig.h
 #    in particular because hsc2hs wasn't available yet, but it's enough
 #    to get ffihugs, runhugs, cpphs, hsc2hs and Cabal working,
 #
-# 2. Build all the packages into ../hugsdir, using cpphs, hsc2hs and Cabal.
+# 2. Build cpphs and then hsc2hs into ../hugsdir.
+#
+# 3. Build all the packages into ../hugsdir, using cpphs, hsc2hs and Cabal.
 #
 # Unfortunately that means building (and configuring) base twice.
 
@@ -54,18 +58,17 @@ $(BUILD_DIR)/.stamp: bootlib/.stamp $(INCLUDES) $(CPPHS_FILE) $(HSC2HS_FILE) $(C
 $(HSC2HS): $(BUILD_DIR)/programs/hsc2hs/Main.hs
 	(echo '#! /bin/sh'; \
 	 echo "rootdir='`cd ..; pwd`'"; \
-	 echo '$$rootdir/src/runhugs -P$$rootdir/libraries/bootlib $$rootdir/hugsdir/programs/hsc2hs/Main.hs -I$$rootdir/hugsdir/include "$$@"') >$@
+	 echo '$$rootdir/src/runhugs -98 -P$$rootdir/libraries/bootlib $$rootdir/hugsdir/programs/hsc2hs/Main.hs -I$$rootdir/hugsdir/include -t$$rootdir/hsc2hs/template-hsc.h "$$@"') >$@
 	chmod 755 $@
 
 $(HSC2HS).bat: $(BUILD_DIR)/programs/hsc2hs/Main.hs
 	(echo '@echo off'; \
 	 echo "set rootdir=`cd ..; src/runhugs -Plibraries/bootlib libraries/pwd.hs`"; \
-	 echo '%rootdir%/src/runhugs -P%rootdir%/libraries/bootlib %rootdir%/hugsdir/programs/hsc2hs/Main.hs -I%rootdir%/hugsdir/include %*') >$@
+	 echo '%rootdir%/src/runhugs -98 -P%rootdir%/libraries/bootlib %rootdir%/hugsdir/programs/hsc2hs/Main.hs -I%rootdir%/hugsdir/include -t$$rootdir/hsc2hs/template-hsc.h %*') >$@
 
 $(BUILD_DIR)/programs/hsc2hs/Main.hs: $(HSC2HS_SRC)/Main.hs $(BOOTLIB) $(INCLUDES) $(CPPHS_FILE)
-	mkdir -p $(BUILD_DIR)/programs/hsc2hs
-	../src/runhugs -Pbootlib $(BUILD_DIR)/programs/cpphs/Main.hs $(CPPFLAGS) --noline --strip $(HSC2HS_SRC)/Main.hs -O$(BUILD_DIR)/programs/hsc2hs/Main.hs
-	cp $(HSC2HS_SRC)/template-hsc.h $(BUILD_DIR)/programs/hsc2hs
+	cd $(HSC2HS_SRC); $(HUGS_SETUP) configure --verbose --hugs --scratchdir=$(BUILD_DIR) --with-cpphs="../libraries/tools/cpphs"
+	cd $(HSC2HS_SRC); $(HUGS_SETUP) build --verbose
 
 $(CPPHS): $(BUILD_DIR)/programs/cpphs/Main.hs
 	(echo '#! /bin/sh'; \
@@ -79,9 +82,8 @@ $(CPPHS).bat: $(BUILD_DIR)/programs/cpphs/Main.hs
 	 echo '%rootdir%/src/runhugs -P%rootdir%/libraries/bootlib %rootdir%/hugsdir/programs/cpphs/Main.hs %*') >$@
 
 $(BUILD_DIR)/programs/cpphs/Main.hs: $(BOOTLIB)
-	mkdir -p $(BUILD_DIR)/programs/cpphs
-	cp $(CPPHS_SRC)/*.hs $(BUILD_DIR)/programs/cpphs
-	cd $(BUILD_DIR)/programs/cpphs; mv cpphs.hs Main.hs
+	cd $(CPPHS_SRC); $(HUGS_SETUP) configure --verbose --hugs --scratchdir=$(BUILD_DIR)
+	cd $(CPPHS_SRC); $(HUGS_SETUP) build --verbose
 
 $(BOOTLIB): hugsbase/Hugs/*.* $(MAKE_BOOT) $(INCLUDES) $(FP_INCLUDES)
 	CPPFLAGS='$(CPPFLAGS)' $(MAKE_BOOT)
@@ -157,9 +159,11 @@ install: all
 	(echo '#! /bin/sh'; \
 	 echo 'runhugs $(hugsdir)/programs/cpphs/Main.hs "$$@"') >$(DESTDIR)$(bindir)/cpphs-hugs
 	chmod 755 $(DESTDIR)$(bindir)/cpphs-hugs
+	$(INSTALL) -d $(DESTDIR)$(datadir)/hsc2hs-0.66
+	$(INSTALL) -c -m 0644 ../hsc2hs/template-hsc.h $(DESTDIR)$(datadir)/hsc2hs-0.66/template-hsc.h
 	(echo '#! /bin/sh'; \
-	 echo 'runhugs $(hugsdir)/programs/hsc2hs/Main.hs -I$(hugsdir)/include "$$@"') >$(DESTDIR)$(bindir)/hsc2hs-hugs
+	 echo 'runhugs -98 $(hugsdir)/programs/hsc2hs/Main.hs -I$(hugsdir)/include "$$@"') >$(DESTDIR)$(bindir)/hsc2hs-hugs
 	chmod 755 $(DESTDIR)$(bindir)/hsc2hs-hugs
 
-LibStatus: all
+LibStatus: $(BUILD_DIR)/.stamp
 	tools/test_libraries ../fptools >$@
