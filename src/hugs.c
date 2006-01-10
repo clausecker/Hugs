@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.146 $
- * $Date: 2005/11/10 14:50:53 $
+ * $Revision: 1.147 $
+ * $Date: 2006/01/10 23:31:44 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -246,7 +246,7 @@ static struct cmd cmds[] = {
  {":reload", RELOAD}, {":gc",   COLLECT}, {":edit",    EDIT},
  {":quit",   QUIT},   {":set",  SET},     {":find",    FIND},
  {":names",  NAMES},  {":info", INFO},    {":module",  SETMODULE}, 
- {":browse", BROWSE},
+ {":browse", BROWSE}, {":main", MAIN},
 #if EXPLAIN_INSTANCE_RESOLUTION
  {":xplain", XPLAIN},
 #endif
@@ -276,6 +276,7 @@ static Void local menu() {
     Printf(":names [pat]        list names currently in scope\n");
     Printf(":info <names>       describe named objects\n");
     Printf(":browse <modules>   browse names exported by <modules>\n");
+    Printf(":main <aruments>    run the main function with the given arguments\n");
 #if EXPLAIN_INSTANCE_RESOLUTION
     Printf(":xplain <context>   explain instance resolution for <context>\n");
 #endif
@@ -540,6 +541,25 @@ static Void local xplain() {         /* print type of expression (if any)*/
     showInstRes = sir;
 }
 #endif
+
+static Void local runmain() {
+    String args[11];
+    String s;
+    int argPos = 1, i;
+    args[0] = "Hugs";
+
+    while (argPos < 10 && (s = readFilename())) {
+	args[argPos++] = strCopy(s);
+    }
+
+    setHugsArgs(argPos, args);
+    for (i = 1; i < argPos; i++)
+	free(args[i]);
+
+    stringInput((LPSTR) "main");
+    input(BREAK);
+    doCommand();
+}
 
 /* --------------------------------------------------------------------------
  * Enhanced help system:  print current list of scripts or give information
@@ -1100,6 +1120,8 @@ Bool doCommand()		    /* read and execute a command      */
 				 cellsRecovered);
 			  break;
 	    case NOCMD  : break;
+	    case MAIN: runmain();
+	    	  break;
 #ifdef __SYMBIAN32__
         case PRNDIR : printDir();
               break;

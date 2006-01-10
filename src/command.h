@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: command.h,v $
- * $Revision: 1.14 $
- * $Date: 2003/10/14 13:56:21 $
+ * $Revision: 1.15 $
+ * $Date: 2006/01/10 23:31:44 $
  * ------------------------------------------------------------------------*/
 #ifndef __COMMAND_H__
 #define __COMMAND_H__
@@ -46,6 +46,7 @@ extern Command readCommand Args((struct cmd *, Char, Char));
 #ifdef __SYMBIAN32__
 #define PRNDIR  21
 #endif
+#define MAIN    22
 
 #if OBSERVATIONS
 /*-------------------------------------------------------------------------*
