@@ -437,6 +437,17 @@ The default current module is now the empty module <literal>Hugs</literal>
 (see <xref linkend="module-commands"/>).
 </para></listitem>
 
+<listitem><para>
+Rewritten graphical Windows interface
+(contributed by Neil Mitchell;
+see <xref linkend="winhugs"/>).
+</para></listitem>
+
+<listitem><para>
+New <link linkend="main-command"><command>:main</command></link> command
+(contributed by Neil Mitchell).
+</para></listitem>
+
 </itemizedlist>
 
 </sect2>

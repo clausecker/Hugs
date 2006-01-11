@@ -158,6 +158,32 @@ If no options are given, list the available options and their current settings.
 </listitem>
 </varlistentry>
 
+<varlistentry id="main-command">
+<term>
+<cmdsynopsis>
+<command>:main</command> <arg rep="repeat"><replaceable>argument</replaceable></arg>
+</cmdsynopsis>
+</term>
+
+<listitem>
+<para>
+Run the <function>main</function> function,
+with the <function>getArgs</function> function
+returning the values specified for the arguments.
+This is useful for testing programs from the interpreter.
+</para>
+
+<para>
+If your <literal>Main</literal> module imports
+<literal>System.Environment</literal>,
+you can get the same effect using <function>withArgs</function>, e.g.
+</para>
+<screen>
+withArgs ["Hello", "World"] main
+</screen>
+</listitem>
+</varlistentry>
+
 <varlistentry id="quit-command">
 <term>
 <cmdsynopsis>
