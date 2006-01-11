@@ -279,7 +279,7 @@ void MainCommand(HWND hWnd, int ID)
 		char Buffer[1000];
 		RtfWindowGetCommand(Buffer);
 		if (Buffer[0] == '\0')
-		    FireCommand("main");
+			FireCommand(":main");
 		else
 		    FireCommand(Buffer);
 	    }
