@@ -22,13 +22,13 @@ export HUGSDIR
 
 case $# in
 1)	;;
-*)	echo "usage: $0 <fptools directory>"
+*)	echo "usage: $0 <packages directory>"
 	exit 1 ;;
 esac
 
-srcdir=$1/libraries
+srcdir=$1
 if [ ! -d $srcdir ]; then
-	echo "Can't find libraries in directory '$1'"
+	echo "Can't find directory '$1'"
 	exit 1
 fi
 
@@ -57,7 +57,7 @@ test_module() {
 		echo "*ERROR*  $module ($reason)"
 	elif grep '^ERROR' $tmpfile+ >/dev/null
 	then
-		module2=`grep '^ERROR ' $tmpfile- | sed -e 's:/packages/[^/]*/:/libraries/:' -e 's:.*"[^"]*/libraries/\([^".]*\)\.[a-z]*".*:\1:' -e 's:/:.:g'`
+		module2=`grep '^ERROR ' $tmpfile+ | sed -e 's:/packages/[^/]*/:/libraries/:' -e 's:.*"[^"]*/libraries/\([^".]*\)\.[a-z]*".*:\1:' -e 's:/:.:g'`
 		if [ "$module" != "$module2" ]
 		then	reason="imports $module2"
 		else

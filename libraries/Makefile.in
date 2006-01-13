@@ -1,6 +1,6 @@
 # @configure_input@
 ################################################################
-# Conversion of libraries from raw sources in the fptools tree
+# Conversion of libraries from raw sources in the packages tree
 # (this should be a POSIX 1003.2-1992 Makefile)
 ################################################################
 
@@ -21,11 +21,11 @@ FP_HEADERS	= ../src/platform.h include/MachDeps.h include/ghcconfig.h
 CPPHS_SRC	= ../cpphs
 HSC2HS_SRC	= ../hsc2hs
 
-HUGS_SETUP	= ../src/runhugs -98 -P../libraries/bootlib ../fptools/libraries/Cabal/examples/hapax.hs
+HUGS_SETUP	= ../src/runhugs -98 -P../libraries/bootlib ../packages/Cabal/examples/hapax.hs
 
 INCLUDES	= $(BUILD_DIR)/include/HsFFI.h
 # represents header files used by the base, network and unix packages
-FP_INCLUDES	= ../fptools/ghc/includes/ghcconfig.h
+FP_INCLUDES	= ../ghc/includes/ghcconfig.h
 
 # We use a bootstrap procedure to construct the libraries:
 #
@@ -94,8 +94,8 @@ $(INCLUDES): $(HEADERS)
 	$(CP) $(HEADERS) $(BUILD_DIR)/include
 
 $(FP_INCLUDES): $(FP_HEADERS)
-	mkdir -p ../fptools/ghc/includes
-	$(CP) $(FP_HEADERS) ../fptools/ghc/includes
+	mkdir -p ../ghc/includes
+	$(CP) $(FP_HEADERS) ../ghc/includes
 
 clean:
 	$(RM) LibStatus
@@ -103,16 +103,16 @@ clean:
 	$(RM) *~
 	$(RM) -r bootlib
 	$(RM) hugsbase/.installed-pkg-config
-	$(RM) ../fptools/libraries/*/.installed-pkg-config
-	find ../fptools/libraries -name \*.hsc | sed 's/c$$//' | xargs $(RM)
-	$(RM) -r ../fptools/ghc/includes
+	$(RM) ../packages/*/.installed-pkg-config
+	find ../packages -name \*.hsc | sed 's/c$$//' | xargs $(RM)
+	$(RM) -r ../ghc/includes
 # package configuration is part of the build process, so clean it here
 	$(RM) hugsbase/.setup-config
-	$(RM) ../fptools/libraries/*/.setup-config
-	$(RM) ../fptools/libraries/*/config.log
-	$(RM) ../fptools/libraries/*/config.status
-	$(RM) -r ../fptools/libraries/*/autom4te.cache
-	find ../fptools/libraries -name \*.in | sed 's/\.in$$//' | xargs $(RM)
+	$(RM) ../packages/*/.setup-config
+	$(RM) ../packages/*/config.log
+	$(RM) ../packages/*/config.status
+	$(RM) -r ../packages/*/autom4te.cache
+	find ../packages -name \*.in | sed 's/\.in$$//' | xargs $(RM)
 
 distclean: clean
 	$(RM) $(HSC2HS_FILE)
@@ -166,4 +166,4 @@ install: all
 	chmod 755 $(DESTDIR)$(bindir)/hsc2hs-hugs
 
 LibStatus: $(BUILD_DIR)/.stamp
-	tools/test_libraries ../fptools >$@
+	tools/test_libraries ../packages >$@

@@ -1,6 +1,6 @@
 #! /bin/sh
 
-# canonicalize platform names (approximately as fptools does)
+# canonicalize platform names (approximately as GHC does)
 
 for platform
 do

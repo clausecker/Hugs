@@ -50,7 +50,6 @@ clean:
 	dh_testroot
 	# get updated config.sub and config.guess
 	cp -f /usr/share/misc/config.sub /usr/share/misc/config.guess .
-	cp -f /usr/share/misc/config.sub /usr/share/misc/config.guess fptools
 	# force rerun of autoreconf (for the source distribution)
 	$(RM) configure
 	$(MAKE) configure

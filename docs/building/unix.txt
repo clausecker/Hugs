@@ -63,7 +63,7 @@ Long version:
     libraries/tools/make_bootlib to generate a subset of the libraries
     in libraries/bootlib, and then calls another shell script
     libraries/tools/convert_libraries to convert the Haskell library
-    packages under fptools into libraries under hugsdir for use by
+    packages under packages into libraries under hugsdir for use by
     Hugs, using the Cabal library (from the bootlib just created).
     (libraries/hugsbase/Hugs contains Hugs-specific modules that are
     also copied into hugsdir.)
@@ -78,8 +78,8 @@ Long version:
 
     Regression tests are run by "make check".  You can also run
     "cd libraries; make LibStatus", which creates a file LibStatus
-    giving the status of each module in fptools/libraries -- none
-    of them should be ERROR.
+    giving the status of each module in packages -- none of them
+    should be ERROR.
 
  3) Install Hugs in chosen directories
 

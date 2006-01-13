@@ -13,17 +13,20 @@ RELEASE = 1
 
 TAG = HEAD
 HSLIBSTAG = HEAD
-LIBRARIESTAG = HEAD
 CPPHSTAG = HEAD
 HSC2HSTAG = HEAD
 
+CVS_ROOT = :pserver:anoncvs@cvs.haskell.org:/cvs
 HSLIBSDIRS = concurrent data hssource lang net text util posix
+
+DARCS_ROOT = http://darcs.haskell.org
 LIBRARIESDIRS = base haskell98 haskell-src mtl network parsec QuickCheck unix \
 	Cabal OpenGL GLUT OpenAL ALUT fgl X11 HGL HaXml HUnit Win32
 
 # End of general settings (leave this line unchanged)
 
-FPTOOLS		= fptools/libraries/base/base.cabal
+PACKAGES	= packages/base/base.cabal
+DARCS_GET	= darcs get --partial
 
 # General targets:
 #
@@ -36,7 +39,7 @@ FPTOOLS		= fptools/libraries/base/base.cabal
 #		will require additional tools).
 # check:	run regression tests
 
-all: $(FPTOOLS) src/Makefile
+all: $(PACKAGES) src/Makefile
 	cd src; $(MAKE) all
 	cd libraries; $(MAKE) all
 	cd docs; $(MAKE) all
@@ -50,7 +53,7 @@ install: install_all_but_docs
 # Install everything except documentation, which is installed differently
 # by some packagers (e.g. rpm)
 
-install_all_but_docs: $(FPTOOLS) src/Makefile
+install_all_but_docs: $(PACKAGES) src/Makefile
 	cd src; $(MAKE) install
 	cd libraries; $(MAKE) install
 	cd demos; $(MAKE) install
@@ -126,25 +129,25 @@ src/Makefile: configure
 	$(RM) -r config.cache autom4te.cache
 	LIBS=$(GNULIBS) ./configure $(EXTRA_CONFIGURE_OPTS)
 
-configure: configure.ac aclocal.m4 $(FPTOOLS)
-	for dir in fptools/libraries/*; do if test -f $$dir/configure.ac; \
+configure: configure.ac aclocal.m4 $(PACKAGES)
+	for dir in packages/*; do if test -f $$dir/configure.ac; \
 		then (cd $$dir; autoreconf); fi; done
 	-autoreconf
 
 # fetching library sources and utility programs
 
-$(FPTOOLS):
-	cvs -d `cat CVS/Root` checkout -r $(HSLIBSTAG) `for lib in $(HSLIBSDIRS); do echo fptools/hslibs/$$lib; done`
-	cvs -d `cat CVS/Root` checkout -r $(LIBRARIESTAG) `for lib in $(LIBRARIESDIRS); do echo fptools/libraries/$$lib; done`
-	cp config.sub config.guess install-sh fptools
+$(PACKAGES):
+	cvs -d $(CVS_ROOT) checkout -r $(HSLIBSTAG) `for lib in $(HSLIBSDIRS); do echo fptools/hslibs/$$lib; done`
+	-mkdir packages
+	for lib in $(LIBRARIESDIRS); do $(DARCS_GET) --repo-name=packages/$$lib $(DARCS_ROOT)/packages/$$lib; done
 # We don't use this, so don't leave it there for Cabal to run
-	$(RM) fptools/libraries/HaXml/configure
+	cd packages; $(RM) HaXml/configure
 # Move this so that make_bootlib won't stumble over it
-	mv fptools/libraries/Cabal/DefaultSetup.lhs fptools/libraries/Cabal/examples
-	cvs -d `cat CVS/Root` checkout -r $(CPPHSTAG) cpphs
+	cd packages; mv Cabal/DefaultSetup.lhs Cabal/examples
+	cvs -d $(CVS_ROOT) checkout -r $(CPPHSTAG) cpphs
 
 debian/control: debian/control.in debian/make-control.hs
 	cp License debian/hugs.copyright
 # We need runhugs to build a Debian source package from CVS,
 # but don't complain if it's unavailable.
-	-runhugs -98 debian/make-control.hs `ls fptools/libraries/*/*.cabal | grep -v Win32` 2>/dev/null
+	-runhugs -98 debian/make-control.hs `ls packages/*/*.cabal | grep -v Win32` 2>/dev/null

@@ -25,9 +25,9 @@ case $# in
 	exit 1 ;;
 esac
 
-src=$1/libraries
-if [ ! -d $src ]; then
-	echo "Can't find libraries in directory '$1'" >&2
+lib_src=packages
+if [ ! -d $lib_src ]; then
+	echo "Can't find $lib_src directory" >&2
 	exit 1
 fi
 
@@ -132,8 +132,8 @@ copy_examples() {
 build_package() {
 	source_dir=$1
 	target_dir=$2
+	top_dir=`pwd`
 	cd $source_dir
-	top_dir=`echo $source_dir | sed 's:[^/][^/]*:..:g'`
 
 	HUGSDIR="$top_dir/$target"
 	HUGSFLAGS="-P{Hugs}/libraries:{Hugs}/packages/*:$top_dir/libraries/bootlib"
@@ -141,7 +141,7 @@ build_package() {
 
 	runhugs=$top_dir/src/runhugs
 	ffihugs=$top_dir/src/ffihugs
-	HugsSetup="$runhugs -98 $top_dir/fptools/libraries/Cabal/examples/hapax.hs"
+	HugsSetup="$runhugs -98 $top_dir/packages/Cabal/examples/hapax.hs"
 
 	case "$happy" in
 	'')	happyflag= ;;
@@ -191,15 +191,15 @@ build_package "libraries/hugsbase" $target/libraries
 
 for package in $core_packages
 do
-	build_package $src/$package $target/libraries
-	copy_examples $src/$package $target/demos/$package
+	build_package $lib_src/$package $target/libraries
+	copy_examples $lib_src/$package $target/demos/$package
 done
 
 for package in $extra_packages
 do
-	build_package $src/$package $target/packages/$package
+	build_package $lib_src/$package $target/packages/$package
 	if test -d $target/packages/$package; then
-		copy_examples $src/$package $target/demos/$package
+		copy_examples $lib_src/$package $target/demos/$package
 	fi
 done
 

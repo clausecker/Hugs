@@ -24,7 +24,7 @@ dnl--------------------------------------------------------------------
 dnl Guess host/target/build platform(s) if necessary.
 AC_CANONICAL_TARGET
 
-dnl ** fptools does further canonicalization
+dnl ** GHC does further canonicalization
 BuildPlatform=`./fp-platform $build`
 HostPlatform=`./fp-platform $host`
 TargetPlatform=`./fp-platform $target`
@@ -515,7 +515,7 @@ fi
 
 dnl--------------------------------------------------------------------
 dnl 
-dnl Readline - based on the feature testing that the GHC fptools/ configure
+dnl Readline - based on the feature testing that the GHC configure
 dnl            script performs.
 dnl
 dnl--------------------------------------------------------------------

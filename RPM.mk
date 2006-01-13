@@ -2,6 +2,8 @@
 
 include Defs.mk
 
+DARCS_GET	= darcs get --no-pristine-tree --partial
+
 MONTH_YEAR = $(shell date +"%B %Y")
 MON_YEAR = $(shell date +"%b%Y")
 YEAR_MONTH_DAY = $(shell date +"%Y%m%d")
@@ -58,18 +60,19 @@ $(PACKAGE).tar.gz:
 	-rm -rf $(TARTMP)
 	-mkdir -p $(TARTMP)
 # Note: The following line will not work correctly for "make -C blah".
-	CVSROOT=`cat CVS/Root`; export CVSROOT; \
+	CVSROOT=$(CVS_ROOT); export CVSROOT; \
 	  cd $(TARTMP); \
 	  cvs export -r $(TAG) hugs98; \
 	  cd hugs98; \
 	  cvs export -r $(HSLIBSTAG) `for lib in $(HSLIBSDIRS); do echo fptools/hslibs/$$lib; done`; \
-	  cvs export -r $(LIBRARIESTAG) `for lib in $(LIBRARIESDIRS); do echo fptools/libraries/$$lib; done`; \
 	  cvs export -r $(CPPHSTAG) cpphs
-	cd $(TARTMP)/hugs98; cp config.sub config.guess install-sh fptools
-	cd $(TARTMP)/hugs98; $(RM) fptools/libraries/HaXml/configure
-	cd $(TARTMP)/hugs98; mv fptools/libraries/Cabal/DefaultSetup.lhs fptools/libraries/Cabal/examples
+	cd $(TARTMP)/hugs98; mkdir packages
+	cd $(TARTMP)/hugs98; for lib in $(LIBRARIESDIRS); do $(DARCS_GET) --repo-name=packages/$$lib $(DARCS_ROOT)/packages/$$lib; done
+	$(RM) -r packages/*/_darcs
+	cd $(TARTMP)/hugs98/packages; $(RM) HaXml/configure
+	cd $(TARTMP)/hugs98/packages; mv Cabal/DefaultSetup.lhs Cabal/examples
 # preprocess these, so the package can be built without happy & ghc
-	$(FIND) $(TARTMP)/hugs98/fptools/libraries -name "*.ly" -o -name "*.y" | \
+	$(FIND) $(TARTMP)/hugs98/packages -name "*.ly" -o -name "*.y" | \
 		xargs -l $(HAPPY)
 	cp $(TARTMP)/hugs98/src/version.c $(TARTMP)
 	cd $(TARTMP)/hugs98/src; sed $(VERSION_SUBSTS) < $(TARTMP)/version.c > $(TARTMP)/hugs98/src/version.c
@@ -79,7 +82,7 @@ $(PACKAGE).tar.gz:
 # Siggy deren't like these in distros
 	if test "$(MAJOR_RELEASE)" -eq 1; then cd $(TARTMP)/hugs98; rm -rf tests; fi
 	cd $(TARTMP)/hugs98; make configure
-	cd $(TARTMP)/hugs98; $(RM) -r autom4te.cache libraries/autom4te.cache fptools/libraries/*/autom4te.cache
+	cd $(TARTMP)/hugs98; $(RM) -r autom4te.cache libraries/autom4te.cache packages/*/autom4te.cache
 	cd $(TARTMP)/hugs98; make debian/control
 	mv $(TARTMP)/hugs98 $(TARTMP)/$(PACKAGE)
 	cd $(TARTMP); tar cf $(TMP)/$(NAME).tar $(PACKAGE)

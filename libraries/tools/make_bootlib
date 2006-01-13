@@ -19,9 +19,9 @@ esac
 
 cd $toolsdir/../..
 
-source=fptools/libraries
+source=packages
 target=libraries/bootlib
-fp_includes=fptools/ghc/includes
+fp_includes=ghc/includes
 tmpdir_root=/tmp
 
 HUGSDIR=hugsdir
