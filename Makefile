@@ -143,7 +143,7 @@ $(PACKAGES):
 # We don't use this, so don't leave it there for Cabal to run
 	cd packages; $(RM) HaXml/configure
 # Move this so that make_bootlib won't stumble over it
-	cd packages; mv Cabal/DefaultSetup.lhs Cabal/examples
+	cd packages; mv Cabal/Setup.lhs Cabal/examples/DefaultSetup.lhs
 	cvs -d $(CVS_ROOT) checkout -r $(CPPHSTAG) cpphs
 
 debian/control: debian/control.in debian/make-control.hs

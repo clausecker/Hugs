@@ -70,7 +70,7 @@ $(PACKAGE).tar.gz:
 	cd $(TARTMP)/hugs98; for lib in $(LIBRARIESDIRS); do $(DARCS_GET) --repo-name=packages/$$lib $(DARCS_ROOT)/packages/$$lib; done
 	$(RM) -r packages/*/_darcs
 	cd $(TARTMP)/hugs98/packages; $(RM) HaXml/configure
-	cd $(TARTMP)/hugs98/packages; mv Cabal/DefaultSetup.lhs Cabal/examples
+	cd $(TARTMP)/hugs98/packages; mv Cabal/Setup.lhs Cabal/examples/DefaultSetup.lhs
 # preprocess these, so the package can be built without happy & ghc
 	$(FIND) $(TARTMP)/hugs98/packages -name "*.ly" -o -name "*.y" | \
 		xargs -l $(HAPPY)
