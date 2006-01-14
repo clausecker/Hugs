@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.147 $
- * $Date: 2006/01/10 23:31:44 $
+ * $Revision: 1.148 $
+ * $Date: 2006/01/14 00:08:01 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -556,7 +556,7 @@ static Void local runmain() {
     for (i = 1; i < argPos; i++)
 	free(args[i]);
 
-    stringInput((LPSTR) "main");
+    stringInput((String)"main");
     input(BREAK);
     doCommand();
 }
