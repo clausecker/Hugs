@@ -64,16 +64,17 @@ $(PACKAGE).tar.gz:
 	  cd $(TARTMP); \
 	  cvs export -r $(TAG) hugs98; \
 	  cd hugs98; \
-	  cvs export -r $(HSLIBSTAG) `for lib in $(HSLIBSDIRS); do echo fptools/hslibs/$$lib; done`; \
-	  cvs export -r $(CPPHSTAG) cpphs
+	  cvs export -r $(HSLIBSTAG) `for lib in $(HSLIBSDIRS); do echo fptools/hslibs/$$lib; done`
 	cd $(TARTMP)/hugs98; mkdir packages
-	cd $(TARTMP)/hugs98; for lib in $(LIBRARIESDIRS); do $(DARCS_GET) --repo-name=packages/$$lib $(DARCS_ROOT)/packages/$$lib; done
+	cd $(TARTMP)/hugs98/packages; for lib in $(LIBRARIESDIRS); do $(DARCS_GET) $(DARCS_ROOT)/packages/$$lib; done
 	$(RM) -r packages/*/_darcs
 	cd $(TARTMP)/hugs98/packages; $(RM) HaXml/configure
 	cd $(TARTMP)/hugs98/packages; mv Cabal/Setup.lhs Cabal/examples/DefaultSetup.lhs
 # preprocess these, so the package can be built without happy & ghc
 	$(FIND) $(TARTMP)/hugs98/packages -name "*.ly" -o -name "*.y" | \
 		xargs -l $(HAPPY)
+	cd $(TARTMP)/hugs98; $(DARCS_GET) $(DARCS_CPPHS)
+	$(RM) -r cpphs/_darcs
 	cp $(TARTMP)/hugs98/src/version.c $(TARTMP)
 	cd $(TARTMP)/hugs98/src; sed $(VERSION_SUBSTS) < $(TARTMP)/version.c > $(TARTMP)/hugs98/src/version.c
 # using `make parser.c' would be best, but by default yacc

@@ -13,8 +13,6 @@ RELEASE = 1
 
 TAG = HEAD
 HSLIBSTAG = HEAD
-CPPHSTAG = HEAD
-HSC2HSTAG = HEAD
 
 CVS_ROOT = :pserver:anoncvs@cvs.haskell.org:/cvs
 HSLIBSDIRS = concurrent data hssource lang net text util posix
@@ -22,6 +20,7 @@ HSLIBSDIRS = concurrent data hssource lang net text util posix
 DARCS_ROOT = http://darcs.haskell.org
 LIBRARIESDIRS = base haskell98 haskell-src mtl network parsec QuickCheck unix \
 	Cabal OpenGL GLUT OpenAL ALUT fgl X11 HGL HaXml HUnit Win32
+DARCS_CPPHS = http://www.cs.york.ac.uk/fp/darcs/cpphs
 
 # End of general settings (leave this line unchanged)
 
@@ -144,7 +143,7 @@ $(PACKAGES):
 	cd packages; $(RM) HaXml/configure
 # Move this so that make_bootlib won't stumble over it
 	cd packages; mv Cabal/Setup.lhs Cabal/examples/DefaultSetup.lhs
-	cvs -d $(CVS_ROOT) checkout -r $(CPPHSTAG) cpphs
+	$(DARCS_GET) $(DARCS_CPPHS)
 
 debian/control: debian/control.in debian/make-control.hs
 	cp License debian/hugs.copyright
