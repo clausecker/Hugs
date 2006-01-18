@@ -12,7 +12,12 @@ int     StrInx = 0;
 FILE   *stdstr = NULL;
 char    stdstrbuff[MAX_STDSTR];
 
-void WinHugsPutS(FILE* f, char* Buffer)
+
+// beacuse i need to use it
+// otherwise you call yourself
+#undef fputc
+
+void WinHugsPutText(FILE* f, char* Buffer, BOOL Char)
 {
     if (f == stderr) {
 	int LastColor = WinHugsColor(RED);
@@ -31,8 +36,16 @@ void WinHugsPutS(FILE* f, char* Buffer)
 		stdstrbuff[StrInx++] = Buffer[i];
 	}
     } else {
-	fputs(Buffer, f);
+	if (Char)
+	    fputc(Buffer[0], f);
+	else
+	    fputs(Buffer, f);
     }
+}
+
+void WinHugsPutS(FILE* f, char* Buffer)
+{
+    WinHugsPutText(f, Buffer, FALSE);
 }
 
 int WinHugsAnyPrintf(FILE* f, const char* format, va_list* args)
@@ -68,7 +81,7 @@ int WinHugsPutC(FILE* f, char c)
     char Buf[2];
     Buf[0] = c;
     Buf[1] = 0;
-    WinHugsPutS(f, Buf);
+    WinHugsPutText(f, Buf, TRUE);
     return c;
 }
 
