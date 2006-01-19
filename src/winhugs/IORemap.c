@@ -19,6 +19,10 @@ char    stdstrbuff[MAX_STDSTR];
 
 void WinHugsPutText(FILE* f, char* Buffer, BOOL Char)
 {
+    char First = Buffer[0];
+    if (Char && First == 0)
+	Buffer[0] = '\1';
+
     if (f == stderr) {
 	int LastColor = WinHugsColor(RED);
 	RtfWindowPutS(Buffer);
@@ -37,7 +41,7 @@ void WinHugsPutText(FILE* f, char* Buffer, BOOL Char)
 	}
     } else {
 	if (Char)
-	    fputc(Buffer[0], f);
+	    fputc(First, f);
 	else
 	    fputs(Buffer, f);
     }
