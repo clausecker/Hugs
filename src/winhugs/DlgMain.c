@@ -46,9 +46,16 @@ int Buttons[] = {
     0
 };
 
-void ShowMainDialog()
+BOOL ShowMainDialog()
 {
-    CreateDialog(hThisInstance, MAKEINTRESOURCE(DLG_MAIN), NULL, &MainDlgProc);
+    HWND hWnd = CreateDialog(hThisInstance, MAKEINTRESOURCE(DLG_MAIN), NULL, &MainDlgProc);
+
+    if (hWnd == NULL)
+    {
+	MessageBox(NULL, "Failed to create main WinHugs dialog", "WinHugs", MB_ICONERROR);
+	return FALSE;
+    }
+    return TRUE;
 }
 
 void MainInitToolbar(HWND hWnd)

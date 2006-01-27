@@ -137,7 +137,8 @@ INT APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmd
     hThisInstance = hInstance;
 
     hAccelTable = LoadAccelerators(hThisInstance, "HUGSACCELERATORS");
-    ShowMainDialog();
+    if (!ShowMainDialog())
+	return 1;
 
     // Call hugs main function
     copyArgs(lpszCmdLine);

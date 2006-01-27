@@ -38,7 +38,7 @@ void RtfWindowFlushBuffer();
 void FireCommandDelay(LPCTSTR Command);
 void FireCommand(LPCTSTR Command);
 void ExecutionFinished();
-void ShowMainDialog();
+BOOL ShowMainDialog();
 void EnableButtons();
 void SetStatusBar(LPCTSTR Str);
 extern BOOL Running;
