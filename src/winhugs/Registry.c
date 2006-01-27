@@ -95,18 +95,24 @@ void RegistryReadWindowPos(HWND hWnd)
 
 void RegistryWriteWindowPos(HWND hWnd)
 {
-    WINDOWPLACEMENT wpl;
+    RECT rc;
     int Maximized;
 
-    GetWindowPlacement(hWnd, &wpl);
-    Maximized = (wpl.showCmd == SW_MAXIMIZE ? 1 : 0);
+    // The user has closed while the app is minimized
+    // The current values are wrong, who knows what the correct
+    // ones are, so just be safe and store nothing
+    if (IsIconic(hWnd))
+	return;
+
+    Maximized = (IsZoomed(hWnd) ? 1 : 0);
     writeRegInt("WindowMaximized", Maximized);
 
     if (Maximized)
 	return;
 
-    writeRegInt("WindowLeft", wpl.rcNormalPosition.left);
-    writeRegInt("WindowTop", wpl.rcNormalPosition.top);
-    writeRegInt("WindowWidth", wpl.rcNormalPosition.right - wpl.rcNormalPosition.left);
-    writeRegInt("WindowHeight", wpl.rcNormalPosition.bottom - wpl.rcNormalPosition.top);
+    GetWindowRect(hWnd, &rc);
+    writeRegInt("WindowLeft", rc.left);
+    writeRegInt("WindowTop", rc.top);
+    writeRegInt("WindowWidth", rc.right - rc.left);
+    writeRegInt("WindowHeight", rc.bottom - rc.top);
 }
