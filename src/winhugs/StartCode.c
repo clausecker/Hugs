@@ -131,7 +131,7 @@ INT APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmd
     }
 
     InitCommonControls();
-    LoadLibrary("RICHED32.DLL");
+    LoadLibrary("RICHED20.DLL");
 
     // Save application instance
     hThisInstance = hInstance;
