@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: input.c,v $
- * $Revision: 1.88 $
- * $Date: 2005/09/08 16:14:19 $
+ * $Revision: 1.89 $
+ * $Date: 2006/01/30 14:50:48 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -339,7 +339,10 @@ Long   len; {                           /* used to set target for reading) */
 	inputStream = fopen(nm,FOPEN_MODE);
     }
 #else
-    inputStream = fopen(nm,FOPEN_MODE);
+    if (nm[0] == '\0')
+	inputStream = NULL;
+    else
+	inputStream = fopen(nm,FOPEN_MODE);
 #endif
     if (inputStream) {
 	reading      = SCRIPTFILE;
