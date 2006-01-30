@@ -11,8 +11,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.136 $
- * $Date: 2005/12/10 00:49:27 $
+ * $Revision: 1.137 $
+ * $Date: 2006/01/30 14:49:25 $
  * ------------------------------------------------------------------------*/
 #include "prelude.h"
 #include "storage.h"
@@ -836,7 +836,7 @@ String filename; {		/* or "." if no directory.                   */
 	if (isSLASH(*slash)) break;
 	slash--;
     }
-    if (slash == filename) {
+    if (slash <= filename) {
 	return strCopy(".");
     } else {
 	return strnCopy(filename, slash - filename);
