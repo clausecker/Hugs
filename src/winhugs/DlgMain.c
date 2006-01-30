@@ -227,7 +227,7 @@ void MainOpenFile(HWND hWnd)
     CHAR Command[2048];
 
     if (ShowOpenFileDialog(hWnd, FileName)) {
-	wsprintf(Command, ":load %s\n", ExpandFileName((String)FileName));
+	wsprintf(Command, ":load %s", ExpandFileName((String)FileName));
 	FireCommand(Command);
     }
 }
