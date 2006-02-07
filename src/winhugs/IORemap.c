@@ -80,10 +80,12 @@ int WinHugsFPrintf(FILE* f, const char* format, ...)
     return Count;
 }
 
-int WinHugsPutC(FILE* f, char c)
+// Must be an int and not a char
+// Otherwise -1 return codes get created, and hugs exits
+int WinHugsPutC(FILE* f, int c)
 {
     char Buf[2];
-    Buf[0] = c;
+    Buf[0] = (char) c;
     Buf[1] = 0;
     WinHugsPutText(f, Buf, TRUE);
     return c;

@@ -51,7 +51,7 @@ extern int	WinHugsColor(int Color);
 extern void	WinHugsPutS(FILE* f, char* Buffer);
 extern int	WinHugsPrintf(const char* format, ...);
 extern int	WinHugsFPrintf(FILE* f, const char* format, ...);
-extern int	WinHugsPutC(FILE* f, char c);
+extern int	WinHugsPutC(FILE* f, int c);
 extern int	WinHugsGetC(FILE* f);
 extern void	WinHugsHyperlink(const char* msg);
 extern void	WinHugsFilename(const char* FileName, int LineNo);
