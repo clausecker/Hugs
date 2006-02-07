@@ -166,6 +166,10 @@ int WinHugsGetC(FILE* f)
 	    ExitContents();
 	LeaveCriticalSection(&Mutex);
 
+	// fix problem with char/int truncation
+	if (Res < 0)
+	    Res += 256;
+
 	WinHugsPutC(stdout, Res);
 	return Res; // no support for interact
     } else
