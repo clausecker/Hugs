@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: machine.c,v $
- * $Revision: 1.25 $
- * $Date: 2005/09/09 09:03:07 $
+ * $Revision: 1.26 $
+ * $Date: 2006/02/14 16:12:19 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1737,15 +1737,21 @@ static  void *labs[] = { INSTRLIST };
 
 	Case(iUPDATE) : {   Cell t = stack(root          /* update cell ...*/
 					     + pc->mint);
+			    Cell r = pop();
+			    while (isPair(r) && fst(r)==INDIRECT)
+				r = snd(r);
 			    fst(t) = INDIRECT;
-			    snd(t) = pop();
+			    snd(t) = r;
 			}
 			pc++;
 			Continue;
 
 	Case(iRUPDATE): {   Cell t = stack(root);        /* update and ret */
+			    Cell r = top();
+			    while (isPair(r) && fst(r)==INDIRECT)
+				r = snd(r);
 			    fst(t) = INDIRECT;
-			    snd(t) = top();
+			    snd(t) = r;
 			}
 			return;
 
