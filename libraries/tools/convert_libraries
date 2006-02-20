@@ -197,9 +197,11 @@ done
 
 for package in $extra_packages
 do
-	build_package $lib_src/$package $target/packages/$package
-	if test -d $target/packages/$package; then
-		copy_examples $lib_src/$package $target/demos/$package
+	if test -d $lib_src/$package; then
+		build_package $lib_src/$package $target/packages/$package
+		if test -d $target/packages/$package; then
+			copy_examples $lib_src/$package $target/demos/$package
+		fi
 	fi
 done
 
