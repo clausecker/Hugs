@@ -38,6 +38,10 @@ DARCS_GET	= darcs get --partial
 #		will require additional tools).
 # check:	run regression tests
 
+# Note: we have to build in src before building in libraries, as the
+# latter uses the binaries in src.  See libraries/Makefile.in for
+# details of the bootstrapping of the libraries.
+
 all: $(PACKAGES) src/Makefile
 	cd src; $(MAKE) all
 	cd libraries; $(MAKE) all
