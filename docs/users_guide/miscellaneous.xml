@@ -438,6 +438,13 @@ The default current module is now the empty module <literal>Hugs</literal>
 </para></listitem>
 
 <listitem><para>
+The compatibility libraries are no longer included on the default search path.
+You can access them by adding <quote><literal>{Hugs}/oldlib</literal></quote>
+to the search path (see <xref linkend="option-search-path"/>),
+but they will be removed in the next release.
+</para></listitem>
+
+<listitem><para>
 Rewritten graphical Windows interface
 (contributed by Neil Mitchell;
 see <xref linkend="winhugs"/>).

@@ -768,7 +768,7 @@ if test "x$host_os" = "xmingw32"; then
     DLL_ENDING="-dll"   
     DEV_NULL="nul"
     hugsdir_deflt='${libdir}/hugs'
-    HUGSPATH=".;{Hugs}\\\\libraries;{Hugs}\\\\packages\\\\*;{Hugs}\\\\oldlib"
+    HUGSPATH=".;{Hugs}\\\\libraries;{Hugs}\\\\packages\\\\*"
     HUGSSUFFIXES=".hs;.lhs"
     MkInstall="src/MkInstal.in"
 elif test "x$host" = "xdos"; then
@@ -778,13 +778,13 @@ elif test "x$host" = "xdos"; then
     DLL_ENDING="-dll"   
     DEV_NULL="nul"
     hugsdir_deflt='${libdir}\\hugs'
-    HUGSPATH=".;{Hugs}\\\\libraries;{Hugs}\\\\packages\\\\*;{Hugs}\\\\oldlib"
+    HUGSPATH=".;{Hugs}\\\\libraries;{Hugs}\\\\packages\\\\*"
     HUGSSUFFIXES=".hs;.lhs"
     MkInstall="src/MkNull.in"
 else
     BAT=
     hugsdir_deflt='${libdir}/hugs'
-    HUGSPATH=".:{Home}/lib/hugs/packages/*:/usr/local/lib/hugs/packages/*:{Hugs}/libraries:{Hugs}/packages/*:{Hugs}/oldlib"
+    HUGSPATH=".:{Home}/lib/hugs/packages/*:/usr/local/lib/hugs/packages/*:{Hugs}/libraries:{Hugs}/packages/*"
     HUGSSUFFIXES=".hs:.lhs"
     MkInstall="src/MkInstal.in"
 fi

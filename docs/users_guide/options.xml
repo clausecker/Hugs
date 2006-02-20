@@ -272,7 +272,7 @@ means all the immediate subdirectories of <replaceable>directory</replaceable>.
 (See <xref linkend="packages"/> for a way of using this.)
 On Unix, the default value is
 <screen>
-.:{Home}/lib/hugs/packages/*:/usr/local/lib/hugs/packages/*:{Hugs}/libraries:{Hugs}/packages/*:{Hugs}/oldlib
+.:{Home}/lib/hugs/packages/*:/usr/local/lib/hugs/packages/*:{Hugs}/libraries:{Hugs}/packages/*
 </screen>
 </para>
 <para>
