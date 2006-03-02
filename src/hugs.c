@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.148 $
- * $Date: 2006/01/14 00:08:01 $
+ * $Revision: 1.149 $
+ * $Date: 2006/03/02 11:50:58 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -543,12 +543,13 @@ static Void local xplain() {         /* print type of expression (if any)*/
 #endif
 
 static Void local runmain() {
-    String args[11];
+    int MaxArgs = 255;
+    String args[256];
     String s;
     int argPos = 1, i;
     args[0] = "Hugs";
 
-    while (argPos < 10 && (s = readFilename())) {
+    while (argPos < MaxArgs && (s = readFilename())) {
 	args[argPos++] = strCopy(s);
     }
 
