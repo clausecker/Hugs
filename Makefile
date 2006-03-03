@@ -106,7 +106,7 @@ veryclean_root: distclean_root
 ################################################################
 
 check: all
-	cd tests && sh testScript | egrep -v '^--( |-----)'
+	cd tests && sh testScript | if egrep -v '^--( |-----)'; then false; else true; fi
 
 verbosecheck: all
 	cd tests && sh testScript
