@@ -16,6 +16,7 @@ module Hugs.ST
 	, RealWorld
 	, stToIO
 	, unsafeIOToST
+	, unsafeSTToIO
 
 	, STRef
 	  -- instance Eq (STRef s a)
@@ -39,7 +40,7 @@ module Hugs.ST
 
 import Hugs.Prelude(IO(..))
 import Hugs.Array(Array,Ix(index,rangeSize),bounds,elems)
-import Hugs.IOExts(unsafePerformIO)
+import Hugs.IOExts(unsafePerformIO, unsafeCoerce)
 import Control.Monad   
 
 -----------------------------------------------------------------------------
@@ -68,6 +69,9 @@ stToIO (ST f)        = IO f
 
 unsafeIOToST        :: IO a -> ST s a
 unsafeIOToST         = unsafePerformIO . liftM returnST
+
+unsafeSTToIO        :: ST s a -> IO a
+unsafeSTToIO         = stToIO . unsafeCoerce
 
 instance Functor (ST s) where
     fmap = liftM
