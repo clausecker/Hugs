@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: runhugs.c,v $
- * $Revision: 1.22 $
- * $Date: 2004/12/01 17:33:18 $
+ * $Revision: 1.23 $
+ * $Date: 2006/04/26 12:26:44 $
  * ------------------------------------------------------------------------*/
 
 #include <stdio.h>
@@ -140,3 +140,9 @@ char* argv[]; {
     exit(exitCode);
     return 0;/*NOTUSED*/
 }
+
+#if WANT_TIMER
+/* dummy definition: timers are only available in the interpreter */
+void updateTimers Args((void));
+void updateTimers() {}
+#endif
