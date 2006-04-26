@@ -11,8 +11,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.137 $
- * $Date: 2006/01/30 14:49:25 $
+ * $Revision: 1.138 $
+ * $Date: 2006/04/26 18:54:35 $
  * ------------------------------------------------------------------------*/
 #include "prelude.h"
 #include "storage.h"
@@ -2354,14 +2354,14 @@ String flags; {
     insertChar('/');
     insert("include\"");
 
-    /* the file to compile */
-    insert(" \"");
-    insert(mkFFIFilename(i));
-    insert("\"");
-
     /* the output file */
     insert(" -o \"");
     insert(mkFFIFilename2(i));
+    insert("\"");
+
+    /* the file to compile */
+    insert(" \"");
+    insert(mkFFIFilename(i));
     insert("\"");
 
     /* compiler and linker flags specified on Hugs command line */
