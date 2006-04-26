@@ -58,11 +58,14 @@ doing what.</para>
 <para>First, check the list of known deviations and bugs
 (see <xref linkend="haskell98"/>).</para>
 
-<para>Please send bug reports to <ulink url="mailto:hugs-bugs@haskell.org">hugs-bugs@haskell.org</ulink>.
+<para>Please report bugs either by using the bug tracking system on the
+<ulink url="http://hackage.haskell.org/trac/hugs">Hugs development page</ulink>
+or by sending a report to the
+<ulink url="mailto:hugs-bugs@haskell.org">hugs-bugs@haskell.org</ulink>
+mailing list.
 If you send the bug report to an individual, you run the risk that that person
 is on vacation, is rushing to meet a deadline or just accidentally deletes your
-mail.  Sending to the mailing list gives us all a chance to reply to your bug
-report.</para>
+mail.</para>
 
 <para>Please say which version of Hugs you are using, on which platform,
 and give us enough information to duplicate the problem.
