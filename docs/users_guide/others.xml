@@ -117,30 +117,39 @@ into Hugs.
 <para>
 Suppose you have some C functions in <filename>test.c</filename>
 with some <literal>foreign import</literal> declarations for those
-functions in <filename>Test.hs</filename>,
+functions in <filename>HTest.hs</filename>,
 and that the code in <filename>test.c</filename> needs to be
 compiled with <option>-lm</option>.
 To use these with Hugs, you must first use <command>ffihugs</command>
-to generate <filename>Test.c</filename>, compile it and link it against
+to generate <filename>HTest.c</filename>, compile it and link it against
 <filename>test.c</filename> with <option>-lm</option> to produce
-<filename>Test.so</filename>:
+an object file (<filename>HTest.so</filename> on Unix,
+<filename>HTest.dll</filename> on Windows):
 <screen>
-ffihugs Test.hs test.c -lm
+ffihugs HTest.hs test.c -lm
 </screen>
 Any Hugs options should be placed before the module name, as in
 <screen>
-ffihugs -98 Test.hs test.c -lm
+ffihugs -98 HTest.hs test.c -lm
 </screen>
 Now you can run Hugs as normal:
 <screen>
-hugs -98 Test.hs
+hugs -98 HTest.hs
 </screen>
-When <filename>Test.hs</filename> is loaded, Hugs will load
-<filename>Test.so</filename> and then use the imported functions.
-(If <filename>Test.hs</filename> depends on other modules using foreign
+When <filename>HTest.hs</filename> is loaded, Hugs will load
+the corresponding object file and then use the imported functions.
+(If <filename>HTest.hs</filename> depends on other modules using foreign
 functions, you'll have to have compiled those modules too, but not necessarily
-before compiling <filename>Test.hs</filename>.)
+before compiling <filename>HTest.hs</filename>.)
 </para>
+
+<note>
+<para>
+Because <command>ffihugs</command> generates a C file with the same
+base name as the Haskell source file, any auxiliary C files should
+avoid that name.
+</para>
+</note>
 
 <para>
 In the standard FFI, each <literal>foreign import</literal> declaration
