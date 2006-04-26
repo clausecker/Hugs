@@ -3,8 +3,8 @@
 REM First build up the command line to pass on in %s%
 set s=
 :begin
-if "%1" == "" goto done
-set s=%s% "%1"
+if '%1' == '' goto done
+set s=%s% %1
 shift
 goto begin
 :done
