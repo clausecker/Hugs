@@ -166,6 +166,7 @@ Unix)
 	$ffihugs '-i"HsBase.h"' System.Posix.Internals $base_includes
 	;;
 Win32)
+	$ffihugs '-i"HsBase.h"' System.Directory $base_includes $base_libs
 	$ffihugs Distribution.Simple.Utils
 	;;
 esac
