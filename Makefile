@@ -113,8 +113,11 @@ verbosecheck: all
 
 # Building distributions
 
-tar: Defs.mk
+tarplus: Defs.mk
 	$(MAKE) -f RPM.mk tar
+
+tar: Defs.mk
+	$(MAKE) PKGNAME=$(NAME) LIBRARIESDIRS='base haskell98 Cabal' -f RPM.mk tar
 
 rpm: Defs.mk
 	$(MAKE) -f RPM.mk rpm
@@ -145,8 +148,8 @@ $(PACKAGES):
 	for lib in $(LIBRARIESDIRS); do $(DARCS_GET) --repo-name=packages/$$lib $(DARCS_ROOT)/packages/$$lib; done
 # We don't use this, so don't leave it there for Cabal to run
 	cd packages; $(RM) HaXml/configure
-# Move this so that make_bootlib won't stumble over it
-	cd packages; mv Cabal/Setup.lhs Cabal/examples/DefaultSetup.lhs
+# Move these so that make_bootlib won't convert them
+	cd packages; mv Cabal/*.lhs Cabal/examples
 	$(DARCS_GET) $(DARCS_CPPHS)
 
 debian/control: debian/control.in debian/make-control.hs

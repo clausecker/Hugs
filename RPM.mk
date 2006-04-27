@@ -17,7 +17,8 @@ else
 VERSION=$(YEAR_MONTH_DAY)
 endif
 
-PACKAGE=$(NAME)-$(VERSION)
+PKGNAME = $(NAME)-plus
+PACKAGE = $(PKGNAME)-$(VERSION)
 
 # Starting with Red Hat 8.0, the build functionality was removed from rpm, so
 # one has to use rpmbuild instead. SuSE didn't follow this change, so there is
@@ -70,15 +71,17 @@ $(PACKAGE).tar.gz:
 	cd $(TARTMP)/hugs98/packages; $(RM) -r */_darcs
 	cd $(TARTMP)/hugs98/packages; $(RM) HaXml/configure
 	cd $(TARTMP)/hugs98/packages; mv Cabal/Setup.lhs Cabal/examples/DefaultSetup.lhs
-# preprocess these, so the package can be built without happy & ghc
-	$(FIND) $(TARTMP)/hugs98/packages -name "*.ly" -o -name "*.y" | \
-		xargs -l $(HAPPY)
+# preprocess, so the package can be built without happy
+	if test -d $(TARTMP)/hugs98/packages/haskell-src; \
+		then $(HAPPY) $(TARTMP)/hugs98/packages/haskell-src/Language/Haskell/Parser.ly; \
+		else true; \
+		fi
 	cd $(TARTMP)/hugs98; $(DARCS_GET) $(DARCS_CPPHS)
 	cd $(TARTMP)/hugs98; $(RM) -r cpphs/_darcs
 	cp $(TARTMP)/hugs98/src/version.c $(TARTMP)
 	cd $(TARTMP)/hugs98/src; sed $(VERSION_SUBSTS) < $(TARTMP)/version.c > $(TARTMP)/hugs98/src/version.c
 # using `make parser.c' would be best, but by default yacc
-# will be used, and yacc is, for some reason, incompatible
+# will be used, and byacc is, for some reason, incompatible
 	cd $(TARTMP)/hugs98/src; bison -y parser.y; mv y.tab.c parser.c
 # Siggy deren't like these in distros
 	if test "$(MAJOR_RELEASE)" -eq 1; then cd $(TARTMP)/hugs98; rm -rf tests; fi
@@ -86,9 +89,9 @@ $(PACKAGE).tar.gz:
 	cd $(TARTMP)/hugs98; $(RM) -r autom4te.cache libraries/autom4te.cache packages/*/autom4te.cache
 	cd $(TARTMP)/hugs98; make debian/control
 	mv $(TARTMP)/hugs98 $(TARTMP)/$(PACKAGE)
-	cd $(TARTMP); tar cf $(TMP)/$(NAME).tar $(PACKAGE)
-	gzip -9 $(TMP)/$(NAME).tar
-	mv $(TMP)/$(NAME).tar.gz $(PACKAGE).tar.gz
+	cd $(TARTMP); tar cf $(TMP)/$(PKGNAME).tar $(PACKAGE)
+	gzip -9 $(TMP)/$(PKGNAME).tar
+	mv $(TMP)/$(PKGNAME).tar.gz $(PACKAGE).tar.gz
 
 rpm-dirs:
 	-mkdir $(RPMTMP)
