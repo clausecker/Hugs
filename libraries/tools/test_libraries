@@ -1,9 +1,7 @@
 #!/bin/sh
 
-# Test the status within Hugs of each module in the following packages
-# of the hierarchical libraries.
-
-packages='haskell98 Cabal base haskell-src mtl network parsec QuickCheck unix OpenGL GLUT X11 HGL HUnit'
+# Test the status within Hugs of each module of the selected packages
+# from the hierarchical libraries.
 
 # ensure that letter ranges work
 LC_ALL=C
@@ -14,6 +12,8 @@ export LC_ALL
 
 this_dir="`dirname $0`"
 hugs_root_dir="${this_dir:-.}/../.."
+
+packages=`cd $hugs_root_dir/packages; ls */*.cabal | sed 's:/.*::'`
 
 hugs="$hugs_root_dir/src/hugs -P{Hugs}/libraries:{Hugs}/packages/*"
 
