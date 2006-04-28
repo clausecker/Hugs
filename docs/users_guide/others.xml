@@ -197,8 +197,8 @@ colorized prompt and various other items to aid reading.
 
 <listitem>
 <para>
-hyperlinks (underlined and in blue) in error messages;
-clicking on them opens an editor at the appropriate line.
+hyperlinks (underlined and in blue); clicking on a hyperlink in an error
+message opens an editor at the offending line.
 </para>
 </listitem>
 
