@@ -197,8 +197,8 @@ colorized prompt and various other items to aid reading.
 
 <listitem>
 <para>
-hyperlinks in error messages; clicking on them opens an editor at the
-appropriate line.
+hyperlinks (underlined and in blue) in error messages;
+clicking on them opens an editor at the appropriate line.
 </para>
 </listitem>
 
@@ -210,7 +210,7 @@ a convenient dialog for control of options.
 
 <listitem>
 <para>
-buttons for various commands, such as load.
+menu and button shortcuts for various commands, such as load.
 </para>
 </listitem>
 
@@ -260,9 +260,10 @@ options, and under the <guilabel>WinHugs</guilabel> tab set the
 </para>
 
 <para>
-After you've fixed the error, exit the editor, and
-<command>WinHugs</command> will reload the file, this time successfully.
-Now click on the run button, and watch it produce a message.
+After you've fixed the error, save the file, switch back to
+<command>WinHugs</command> and click on the <guibutton>Run</guibutton>
+button. <command>WinHugs</command> will automatically reload your file,
+and you can watch it produce a message.
 </para>
 </example>
 
