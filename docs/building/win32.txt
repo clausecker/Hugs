@@ -37,9 +37,9 @@ produce Cygwin-dependent binaries.
 
      foo$ make
 
-   If you're building uder Cygwin, you'll need to say
+   If you're building under Cygwin, you'll need to say
 
-     foo$ make EXTRA_CONFIGURE_OPTS='--build=i386-pc-mingw --host=i386-pc-mingw'
+     foo$ make EXTRA_CONFIGURE_OPTS='--build=i386-pc-mingw32 --host=i386-pc-mingw32'
 
    Other configure options you might add are listed in unix.txt.
 
@@ -86,7 +86,7 @@ above, but once you've done that you can build the interpreter and
 WinHugs using MSVC.
 
 Open the project files located in msc (for the plain interpreter)
-and winhugs (for teh GUI interface).  Clicking on compile should build
+and winhugs (for the GUI interface).  Clicking on compile should build
 the projects.
 
 Driving Microsoft Visual C++ from the Command Line (out-of-date)
