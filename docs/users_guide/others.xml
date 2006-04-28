@@ -182,7 +182,89 @@ Note the necessary quoting of the <option>-i</option> options here.
 <sect1 id="winhugs">
 <title>Graphical interface for Windows</title>
 
-<para>Some brief details of winhugs needed here.</para>
+<para>
+<command>WinHugs</command> is a friendly Windows user interface to Hugs.
+In addition to the console commands of Hugs (see <xref linkend="using-hugs"/>),
+it provides:
+</para>
+
+<itemizedlist>
+<listitem>
+<para>
+colorized prompt and various other items to aid reading.
+</para>
+</listitem>
+
+<listitem>
+<para>
+hyperlinks in error messages; clicking on them opens an editor at the
+appropriate line.
+</para>
+</listitem>
+
+<listitem>
+<para>
+a convenient dialog for control of options.
+</para>
+</listitem>
+
+<listitem>
+<para>
+buttons for various commands, such as load.
+</para>
+</listitem>
+
+<listitem>
+<para>
+browse commands to view the class hierarchy and items in scope.
+</para>
+</listitem>
+</itemizedlist>
+
+<para>
+In addition, some escape codes are supported, in particular those which
+change the foreground and background color.
+</para>
+
+<mediaobject>
+<imageobject>
+<imagedata fileref="winhugs.png"/>
+</imageobject>
+</mediaobject>
+
+<example>
+<title>Getting started with WinHugs</title>
+
+<para>
+The graphical interface is mostly self-explanatory, but this is a
+small introduction to the most commonly used features.
+</para>
+
+<para>
+Create a file called <filename>Main.hs</filename>, and inside put the text
+<programlisting>
+module Main where
+main = putStrLn "Hello, WinHugs!
+</programlisting>
+Note that this program contains a syntax error: the closing quote
+is missing.  Now run <command>WinHugs</command>, and click on open
+(<menuchoice><guimenu>File</guimenu>
+<guimenuitem>Open</guimenuitem></menuchoice>)
+and browse to the file <filename>Main.hs</filename>.
+When <command>WinHugs</command> loads the file, it reports an error,
+along with a link giving its location.  Click on this link, and the file
+will open in your editor, at the appropriate line.
+(If the file doesn't open at the correct line, visit the
+options, and under the <guilabel>WinHugs</guilabel> tab set the
+<guilabel>Editor</guilabel> value appropriately.)
+</para>
+
+<para>
+After you've fixed the error, exit the editor, and
+<command>WinHugs</command> will reload the file, this time successfully.
+Now click on the run button, and watch it produce a message.
+</para>
+</example>
 
 </sect1>
 

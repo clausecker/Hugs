@@ -27,6 +27,7 @@ SGML_FILES		= $(ROOT).sgml faq.sgml haskell98.sgml hugs_ghc.sgml \
 		  miscellaneous.sgml options.sgml others.sgml using_hugs.sgml
 CSS_FILE	= hugs-ug.css
 DSL_FILE	= hugs-ug.dsl
+IMAGE		= winhugs.png
 
 # Don't use $(ROOT)/index.html, because depending on $(DOCBOOK2HTML) it
 # could be $(ROOT)/$(ROOT).html instead.
@@ -40,7 +41,7 @@ all: $(SGMLDocWays)
 install: $(SGMLDocWays)
 	if test -f $(HTML); \
 	then	$(INSTALL) -d $(DESTDIR)$(hugsdir)/docs/users_guide; \
-		$(CP) users_guide/*.html users_guide/$(CSS_FILE) $(DESTDIR)$(hugsdir)/docs/users_guide; \
+		$(CP) users_guide/*.html users_guide/$(CSS_FILE) users_guide/$(IMAGE) $(DESTDIR)$(hugsdir)/docs/users_guide; \
 	fi
 	for ext in dvi pdf ps;\
 	do	if test -f $(ROOT).$$ext;\
@@ -80,6 +81,7 @@ $(HTML): $(SGML_FILES) $(DSL_FILE) $(CSS_FILE)
 	$(RM) -r $(ROOT)
 	mkdir $(ROOT)
 	$(CP) $(CSS_FILE) $(ROOT)
+	$(CP) $(IMAGE) $(ROOT)
 	test -z '$(DOCBOOK2HTML)' || \
 	  $(DOCBOOK2HTML) --dsl $(DSL_FILE) $(ROOT).sgml
 
@@ -100,3 +102,4 @@ $(ROOT).chm: $(ROOT)-htmlhelp/htmlhelp.hhp
 
 $(ROOT)-htmlhelp/htmlhelp.hhp: $(XML_FILES) htmlhelp.xsl
 	xsltproc htmlhelp.xsl $(ROOT).xml
+	$(CP) $(IMAGE) $(ROOT)-htmlhelp
