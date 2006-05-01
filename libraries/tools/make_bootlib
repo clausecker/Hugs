@@ -168,5 +168,6 @@ Unix)
 Win32)
 	$ffihugs '-i"HsBase.h"' System.Directory $base_includes $base_libs
 	$ffihugs Distribution.Simple.Utils
+	$ffihugs Distribution.Simple.LocalBuildInfo
 	;;
 esac
