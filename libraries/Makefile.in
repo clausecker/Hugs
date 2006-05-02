@@ -22,7 +22,8 @@ CPPHS_SRC	= ../cpphs
 HSC2HS_SRC	= ../hsc2hs
 
 # set the path both for runhugs and any ffihugs invoked by Cabal
-HUGS_SETUP	= HUGSFLAGS=-P../libraries/bootlib ../src/runhugs -98 ../packages/Cabal/examples/hapax.hs
+# HUGSDIR gives the location of HsFFI.h
+HUGS_SETUP	= HUGSFLAGS=-P../libraries/bootlib HUGSDIR=../hugsdir ../src/runhugs -98 ../packages/Cabal/examples/hapax.hs
 
 INCLUDES	= $(BUILD_DIR)/include/HsFFI.h
 # represents header files used by the base, network and unix packages
@@ -82,7 +83,7 @@ $(CPPHS).bat: $(BUILD_DIR)/programs/cpphs/Main.hs
 	 echo "set rootdir=`cd ..; src/runhugs -Plibraries/bootlib libraries/pwd.hs`"; \
 	 echo '%rootdir%/src/runhugs -P%rootdir%/libraries/bootlib %rootdir%/hugsdir/programs/cpphs/Main.hs %*') >$@
 
-$(BUILD_DIR)/programs/cpphs/Main.hs: $(BOOTLIB)
+$(BUILD_DIR)/programs/cpphs/Main.hs: $(BOOTLIB) $(INCLUDES)
 	cd $(CPPHS_SRC); $(HUGS_SETUP) configure --verbose --hugs --scratchdir=$(BUILD_DIR) --with-compiler=../src/ffihugs
 	cd $(CPPHS_SRC); $(HUGS_SETUP) build --verbose
 
