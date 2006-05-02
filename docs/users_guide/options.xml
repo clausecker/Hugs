@@ -876,6 +876,10 @@ The Hugs library directory.
 This is substituted for <literal>{Hugs}</literal> in the argument of the
 <link linkend="option-search-path"><option>-P</option></link> option
 (see <xref linkend="options-loading"/>).
+This directory should also contain an <filename>include</filename>
+subdirectory, which <command>ffihugs</command> will search for include
+files, particularly <filename>HsFFI.h</filename>
+(see <xref linkend="ffihugs"/>).
 </para>
 </listitem>
 </varlistentry>
