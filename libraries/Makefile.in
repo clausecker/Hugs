@@ -21,7 +21,8 @@ FP_HEADERS	= ../src/platform.h include/MachDeps.h include/ghcconfig.h
 CPPHS_SRC	= ../cpphs
 HSC2HS_SRC	= ../hsc2hs
 
-HUGS_SETUP	= ../src/runhugs -98 -P../libraries/bootlib ../packages/Cabal/examples/hapax.hs
+# set the path both for runhugs and any ffihugs invoked by Cabal
+HUGS_SETUP	= HUGSFLAGS=-P../libraries/bootlib ../src/runhugs -98 ../packages/Cabal/examples/hapax.hs
 
 INCLUDES	= $(BUILD_DIR)/include/HsFFI.h
 # represents header files used by the base, network and unix packages
