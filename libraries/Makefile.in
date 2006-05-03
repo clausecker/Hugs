@@ -71,6 +71,7 @@ $(HSC2HS).bat: $(BUILD_DIR)/programs/hsc2hs/Main.hs
 $(BUILD_DIR)/programs/hsc2hs/Main.hs: $(HSC2HS_SRC)/Main.hs $(BOOTLIB) $(INCLUDES) $(CPPHS_FILE)
 	cd $(HSC2HS_SRC); $(HUGS_SETUP) configure --verbose --hugs --scratchdir=$(BUILD_DIR) --with-compiler=../src/ffihugs --with-cpphs="../libraries/tools/cpphs"
 	cd $(HSC2HS_SRC); $(HUGS_SETUP) build --verbose
+	$(RM) -r $(BUILD_DIR)/autogen
 
 $(CPPHS): $(BUILD_DIR)/programs/cpphs/Main.hs
 	(echo '#! /bin/sh'; \
@@ -86,6 +87,7 @@ $(CPPHS).bat: $(BUILD_DIR)/programs/cpphs/Main.hs
 $(BUILD_DIR)/programs/cpphs/Main.hs: $(BOOTLIB) $(INCLUDES)
 	cd $(CPPHS_SRC); $(HUGS_SETUP) configure --verbose --hugs --scratchdir=$(BUILD_DIR) --with-compiler=../src/ffihugs
 	cd $(CPPHS_SRC); $(HUGS_SETUP) build --verbose
+	$(RM) -r $(BUILD_DIR)/autogen
 
 $(BOOTLIB): hugsbase/Hugs/*.* $(MAKE_BOOT) $(INCLUDES) $(FP_INCLUDES)
 	CPPFLAGS='$(CPPFLAGS)' $(MAKE_BOOT)

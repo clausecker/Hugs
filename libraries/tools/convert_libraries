@@ -168,6 +168,7 @@ build_package() {
 				cp $name $top_dir/$target_dir
 			fi
 		done
+		rm -rf $top_dir/$target_dir/autogen
 	else	echo "Skipping $package package"
 	fi
 	cd "$top_dir"
