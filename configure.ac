@@ -768,7 +768,7 @@ if test "x$host_os" = "xmingw32"; then
     DLL_ENDING="-dll"   
     DEV_NULL="nul"
     hugsdir_deflt='${libdir}/hugs'
-    HUGSPATH=".;{Hugs}\\\\libraries;{Hugs}\\\\packages\\\\*"
+    HUGSPATH=".;{Hugs}\\\\packages\\\\*"
     HUGSSUFFIXES=".hs;.lhs"
     MkInstall="src/MkInstal.in"
 elif test "x$host" = "xdos"; then
@@ -778,13 +778,13 @@ elif test "x$host" = "xdos"; then
     DLL_ENDING="-dll"   
     DEV_NULL="nul"
     hugsdir_deflt='${libdir}\\hugs'
-    HUGSPATH=".;{Hugs}\\\\libraries;{Hugs}\\\\packages\\\\*"
+    HUGSPATH=".;{Hugs}\\\\packages\\\\*"
     HUGSSUFFIXES=".hs;.lhs"
     MkInstall="src/MkNull.in"
 else
     BAT=
     hugsdir_deflt='${libdir}/hugs'
-    HUGSPATH=".:{Home}/lib/hugs/packages/*:/usr/local/lib/hugs/packages/*:{Hugs}/libraries:{Hugs}/packages/*"
+    HUGSPATH=".:{Home}/lib/hugs/packages/*:/usr/local/lib/hugs/packages/*:{Hugs}/packages/*"
     HUGSSUFFIXES=".hs:.lhs"
     MkInstall="src/MkInstal.in"
 fi
@@ -810,7 +810,7 @@ HUGSDIR=`sh -c "prefix=$prefix; exec_prefix=$exec_prefix; libdir=$libdir; datadi
 AC_DEFINE_UNQUOTED([HUGSDIR], ["$HUGSDIR"],
   [The directory name which is substituted for the string "{Hugs}" in a
    path variable. This normally points to where the Hugs libraries are
-   installed - ie so that the file HUGSDIR/libraries/Prelude.hs exists.
+   installed - ie so that the file HUGSDIR/packages/base/Prelude.hs exists.
    Typical values are: "/usr/local/lib/hugs", "/usr/homes/JFHaskell/hugs",
    "../hugsdir". This value is ignored on Windows and old MacOS versions
    since it is assumed that the binary is installed in HUGSDIR.

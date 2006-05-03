@@ -272,7 +272,7 @@ means all the immediate subdirectories of <replaceable>directory</replaceable>.
 (See <xref linkend="packages"/> for a way of using this.)
 On Unix, the default value is
 <screen>
-.:{Home}/lib/hugs/packages/*:/usr/local/lib/hugs/packages/*:{Hugs}/libraries:{Hugs}/packages/*
+.:{Home}/lib/hugs/packages/*:/usr/local/lib/hugs/packages/*:{Hugs}/packages/*
 </screen>
 </para>
 <para>
@@ -1062,10 +1062,9 @@ option to <quote><literal>setup copy</literal></quote>.
 
 <note>
 <para>
-Cabal should work with Hugs on Windows for simple packages,
-but not yet for more complex ones.
-Also the package manipulation tool <command>hugs-pkg</command> does not
-yet exist.
+Cabal should work with Hugs on Windows for simple packages.
+More complex ones require a Unix-like environment such as MSYS/MinGW.
+Also there is as yet no package manipulation tool <command>hugs-pkg</command>.
 </para>
 </note>
 

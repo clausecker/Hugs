@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # This script generates:
-# $2/libraries:
+# $2/packages/*:
 #	copies of the heirarchical libraries suitable for
 #	use with Hugs.  Note that some of the libraries require extensions
 #	to Haskell 98 and have to be run with the -98 flag.
@@ -131,12 +131,13 @@ copy_examples() {
 
 build_package() {
 	source_dir=$1
-	target_dir=$2
+	pkg=`basename $1`
+	target_dir="$target/packages/$pkg"
 	top_dir=`pwd`
 	cd $source_dir
 
 	HUGSDIR="$top_dir/$target"
-	HUGSFLAGS="-P{Hugs}/libraries:{Hugs}/packages/*:$top_dir/libraries/bootlib"
+	HUGSFLAGS="-P{Hugs}/packages/*:$top_dir/libraries/bootlib"
 	export HUGSDIR HUGSFLAGS
 
 	runhugs=$top_dir/src/runhugs
@@ -169,37 +170,24 @@ build_package() {
 			fi
 		done
 		rm -rf $top_dir/$target_dir/autogen
-	else	echo "Skipping $package package"
+		copy_examples $lib_src/$pkg $target/demos/$pkg
+	else	echo "Skipping $pkg package"
 	fi
 	cd "$top_dir"
 }
-
-# Distinguish two classes of package:
-# core_packages - released with Hugs and not independently updated
-#	(these go in a unified hierarchy under {Hugs}/libraries)
-# extra_packages - packaged with Hugs, but may also be independently updated
-#	(each of these goes in a separate hierarchy under {Hugs}/packages)
-
-core_packages=
 
 Win32=
 case `uname -a` in
 CYGWIN*|MINGW32*) Win32="Win32" ;;
 esac
-extra_packages="base haskell98 Cabal haskell-src QuickCheck mtl fgl HaXml parsec network HUnit $Win32 unix X11 HGL OpenGL GLUT OpenAL ALUT"
+packages="base haskell98 Cabal haskell-src QuickCheck mtl fgl HaXml parsec network HUnit $Win32 unix X11 HGL OpenGL GLUT OpenAL ALUT"
 
-build_package "libraries/hugsbase" $target/libraries
+build_package libraries/hugsbase
 
-for package in $core_packages
-do
-	build_package $lib_src/$package $target/libraries
-	copy_examples $lib_src/$package $target/demos/$package
-done
-
-for package in $extra_packages
+for package in $packages
 do
 	if test -d $lib_src/$package; then
-		build_package $lib_src/$package $target/packages/$package
+		build_package $lib_src/$package
 		if test -d $target/packages/$package; then
 			copy_examples $lib_src/$package $target/demos/$package
 		fi
