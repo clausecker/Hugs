@@ -129,16 +129,22 @@ copy_examples() {
 
 # Convert hierarchical modules
 
+case `uname -a` in
+CYGWIN*|MINGW32*) sep=';' ;;
+*) sep=':' ;;
+esac
+
+top_dir=`pwd`
+
+HUGSDIR="$top_dir/$target"
+HUGSFLAGS="-P{Hugs}/packages/*$sep$top_dir/libraries/bootlib"
+export HUGSDIR HUGSFLAGS
+
 build_package() {
 	source_dir=$1
 	pkg=`basename $1`
 	target_dir="$target/packages/$pkg"
-	top_dir=`pwd`
 	cd $source_dir
-
-	HUGSDIR="$top_dir/$target"
-	HUGSFLAGS="-P{Hugs}/packages/*:$top_dir/libraries/bootlib"
-	export HUGSDIR HUGSFLAGS
 
 	runhugs=$top_dir/src/runhugs
 	ffihugs=$top_dir/src/ffihugs
