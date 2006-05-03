@@ -52,25 +52,19 @@ module Hugs.IO (
     openFd                  -- :: Int -> Bool -> IOMode -> Bool -> IO Handle
     ) where
 
-import Hugs.Prelude	( Handle )
+import Hugs.Prelude	( Handle, IOMode(..), stdin, stdout, stderr )
+import Hugs.Prelude	( openFile, hClose, hPutChar, hPutStr )
+import Hugs.Prelude	( hGetContents, hGetChar, hGetLine )
 import Hugs.Prelude	( Ix(..) )
 import System.IO.Error
 
 -- data Handle
 
-data IOMode      =  ReadMode | WriteMode | AppendMode | ReadWriteMode
-                    deriving (Eq, Ord, Ix, Bounded, Enum, Read, Show)
 data BufferMode  =  NoBuffering | LineBuffering 
                  |  BlockBuffering (Maybe Int)
                     deriving (Eq, Ord, Read, Show)
 data SeekMode    =  AbsoluteSeek | RelativeSeek | SeekFromEnd
                     deriving (Eq, Ord, Ix, Bounded, Enum, Read, Show)
-
-primitive stdin       :: Handle
-primitive stdout      :: Handle
-primitive stderr      :: Handle
-primitive openFile    :: FilePath -> IOMode -> IO Handle
-primitive hClose      :: Handle -> IO ()
 
 primitive hFileSize   :: Handle -> IO Integer
 
@@ -138,26 +132,7 @@ primitive hSeekPrim :: Handle -> Int -> Int -> IO ()
 
 primitive hWaitForInput :: Handle -> Int -> IO Bool
 
-primitive hGetChar    :: Handle -> IO Char
-
-hGetLine   :: Handle -> IO String
-hGetLine h = do
-  c <- hGetChar h
-  hGetLine' c
-  where
-   hGetLine' '\n' = return ""
-   hGetLine' c = do
-     cs <- getRest
-     return (c:cs)
-   getRest = do
-     c <- catch (hGetChar h) $ \ ex ->
-        if isEOFError ex then return '\n' else ioError ex
-     hGetLine' c
-
 primitive hLookAhead    :: Handle -> IO Char
-primitive hGetContents  :: Handle -> IO String
-primitive hPutChar      :: Handle -> Char -> IO ()
-primitive hPutStr       :: Handle -> String -> IO ()
 
 primitive hIsOpen,    
    	  hIsClosed,  

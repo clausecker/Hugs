@@ -14,8 +14,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: iomonad.c,v $
- * $Revision: 1.100 $
- * $Date: 2005/09/07 20:28:05 $
+ * $Revision: 1.101 $
+ * $Date: 2006/05/03 09:10:40 $
  * ------------------------------------------------------------------------*/
  
 Name nameIORun;			        /* run IO code                     */
@@ -98,12 +98,7 @@ PROTO_PRIM(primGetArgs);
 PROTO_PRIM(primSetProgName);
 PROTO_PRIM(primSetArgs);
 
-PROTO_PRIM(primGetChar);
-PROTO_PRIM(primPutChar);
-PROTO_PRIM(primPutStr);
-
 #if IO_HANDLES
-static Void local fwritePrim  Args((StackPtr,Int,Bool,String));
 static Void local fopenPrim   Args((StackPtr,Bool,String));
 static int local getIOMode    Args((Cell));
 
@@ -112,7 +107,6 @@ PROTO_PRIM(primHPutChar);
 PROTO_PRIM(primHPutStr);
 PROTO_PRIM(primHreader);
 PROTO_PRIM(primHContents);
-PROTO_PRIM(primContents);
 PROTO_PRIM(primOpenFile);
 PROTO_PRIM(primOpenBinaryFile);
 PROTO_PRIM(primStdin);
@@ -121,7 +115,6 @@ PROTO_PRIM(primStderr);
 PROTO_PRIM(primOpenFd);
 PROTO_PRIM(primHandleToFd);
 PROTO_PRIM(primHIsEOF);
-PROTO_PRIM(primHugsHIsEOF);
 PROTO_PRIM(primHFlush);
 PROTO_PRIM(primHClose);
 PROTO_PRIM(primHGetPosn);
@@ -139,13 +132,6 @@ PROTO_PRIM(primHFileSize);
 PROTO_PRIM(primHWaitForInput);
 PROTO_PRIM(primEqHandle);
 PROTO_PRIM(primGetHandleNumber);
-PROTO_PRIM(primReadFile);
-PROTO_PRIM(primWriteFile);
-PROTO_PRIM(primAppendFile);
-
-PROTO_PRIM(primReadBinaryFile);
-PROTO_PRIM(primWriteBinaryFile);
-PROTO_PRIM(primAppendBinaryFile);
 
 PROTO_PRIM(primHSetBinaryMode);
 PROTO_PRIM(primHPutBuf);
@@ -239,17 +225,12 @@ static struct primitive iomonadPrimTable[] = {
   {"primSetProgName",   1+IOArity, primSetProgName},
   {"primSetArgs",       1+IOArity, primSetArgs},
 
-  {"getChar",		0+IOArity, primGetChar},
-  {"putChar",		1+IOArity, primPutChar},
-  {"putStr",		1+IOArity, primPutStr},
-
 #if IO_HANDLES
   {"hGetChar",		1+IOArity, primHGetChar},
   {"hPutChar",		2+IOArity, primHPutChar},
   {"hPutStr",		2+IOArity, primHPutStr},
   {"hreader",		1, primHreader},
   {"hGetContents",	1+IOArity, primHContents},
-  {"getContents",	0+IOArity, primContents},
   {"openFile",          2+IOArity, primOpenFile},
   {"openBinaryFile",    2+IOArity, primOpenBinaryFile},
   {"openFd",            4+IOArity, primOpenFd},
@@ -258,7 +239,6 @@ static struct primitive iomonadPrimTable[] = {
   {"stdout",		0, primStdout},
   {"stderr",		0, primStderr},
   {"hIsEOF",		1+IOArity, primHIsEOF},
-  {"hugsHIsEOF",	1+IOArity, primHugsHIsEOF},
   {"hFlush",		1+IOArity, primHFlush},
   {"hClose",		1+IOArity, primHClose},
   {"hGetPosnPrim",	1+IOArity, primHGetPosn},
@@ -276,12 +256,6 @@ static struct primitive iomonadPrimTable[] = {
   {"hWaitForInput",     2+IOArity, primHWaitForInput},
   {"primEqHandle",	2, primEqHandle},
   {"primGetHandleNumber", 1, primGetHandleNumber},
-  {"readFile",		1+IOArity, primReadFile},
-  {"writeFile",		2+IOArity, primWriteFile},
-  {"appendFile",	2+IOArity, primAppendFile},
-  {"readBinaryFile",	1+IOArity, primReadBinaryFile},
-  {"writeBinaryFile",	2+IOArity, primWriteBinaryFile},
-  {"appendBinaryFile",	2+IOArity, primAppendBinaryFile},
   {"hSetBinaryMode",	2+IOArity, primHSetBinaryMode},
   {"hPutBuf",		3+IOArity, primHPutBuf},
   {"hGetBuf",		3+IOArity, primHGetBuf},
@@ -555,6 +529,11 @@ static Void local hPutChar(Char c, Int h, String fname) {
 #endif
     if (retval == EOF)
 	throwErrno(fname, TRUE, h, NULL);
+#if FLUSHEVERY
+    if (h <= 2) { /* Only flush the standard handles */
+	fflush(handles[h].hfp);
+    }
+#endif
 }
 
 /* If the stream is read-write, set the state, otherwise do nothing */
@@ -833,50 +812,6 @@ primFun(primSetArgs) {                  /* primSetArgs :: [String] -> IO () */
 }
 
 /* --------------------------------------------------------------------------
- * Console IO
- * ------------------------------------------------------------------------*/
-
-primFun(primGetChar) {			/* Get character from stdin        */
-    Int c;
-    checkOpen(HSTDIN, "Prelude.getChar");
-    c = hGetChar(HSTDIN, "Prelude.getChar");
-    if (c==EOF) {
-	IOFail(mkIOError(&handles[HSTDIN].hcell,
-			 nameEOFErr,
-			 "Prelude.getChar",
-			 "end of file",
-			 NULL));
-    }
-    IOReturn(mkChar(c));
-}
-
-primFun(primPutChar) {			/* print character on stdout	   */
-    eval(pop());
-    hPutChar(charOf(whnfHead), HSTDOUT, "Prelude.putChar");
-    fflush(stdout);
-    IOReturn(nameUnit);
-}
-
-primFun(primPutStr) {			/* print string on stdout	   */
-    blackHoleRoot();            	/* supposedly = hPutStr stdout,	   */
-    eval(pop());			/* included here for speed	   */
-    while (whnfHead==nameCons) {
-	eval(top());
-	checkChar();
-	hPutChar(charOf(whnfHead), HSTDOUT, "Prelude.putStr");
-#if FLUSHEVERY
-	fflush(stdout);
-#endif
-	drop();
-	eval(pop());
-    }
-#if !FLUSHEVERY
-    fflush(stdout);
-#endif
-    IOReturn(nameUnit);
-}
-
-/* --------------------------------------------------------------------------
  * File IO
  * ------------------------------------------------------------------------*/
 
@@ -933,11 +868,6 @@ primFun(primHPutStr) {			/* print string on handle	   */
     while (whnfHead==nameCons) {
 	eval(pop());
 	hPutChar(charOf(whnfHead),h,"IO.hPutStr");
-#if FLUSHEVERY
-	if ( h <= 2 ) {  /* Only flush the standard handles */
-	    fflush(handles[h].hfp);
-	}
-#endif
 	eval(pop());
     }
 #if !FLUSHEVERY
@@ -970,12 +900,6 @@ primFun(primHContents) {		/* hGetContents :: Handle -> IO Str*/
     setRWState(h, RW_READING);
     handles[h].hmode = HSEMICLOSED; /* semi-close handle		   */
     IOReturn(ap(nameHreader,IOArg(1)));
-}
-
-primFun(primContents) {			/* Get contents of stdin	   */
-    checkReadable(HSTDIN, "IO.hGetContents");
-    handles[HSTDIN].hmode = HSEMICLOSED;
-    IOReturn(ap(nameHreader,handles[HSTDIN].hcell));
 }
 
 static int local getIOMode(mode)	/* From IOMode to internal form    */
@@ -1099,14 +1023,6 @@ primFun(primHandleToFd) {
 		     "unsupported operation",
 		     NULL));
 #endif
-}
-
-/* NOTE: this doesn't implement the Haskell 1.3 semantics */
-primFun(primHugsHIsEOF) {		/* Test for end of file on handle  */
-    Int h;
-    HandleArg(h,1+IOArity);
-    checkOpen(h, "IO.hugsIsEOF");
-    IOBoolResult(feof(handles[h].hfp));
 }
 
 primFun(primHIsEOF) {	/* Test for end of file on handle  */
@@ -1446,18 +1362,6 @@ primFun(primGetHandleNumber) {
     IntResult(h);
 }
 
-primFun(primReadFile) {			/* read file as lazy string	   */
-    Cell hnd = openHandle(root,&IOArg(1),HREAD,FALSE,"Prelude.readFile");
-    handles[intValOf(hnd)].hmode = HSEMICLOSED;
-    IOReturn(ap(nameHreader,hnd));
-}
-
-primFun(primReadBinaryFile) {		/* read file as lazy string	   */
-    Cell hnd = openHandle(root,&IOArg(1),HREAD,TRUE,"System.IO.readBinaryFile");
-    handles[intValOf(hnd)].hmode = HSEMICLOSED;
-    IOReturn(ap(nameHreader,hnd));
-}
-
 primFun(primHSetBinaryMode) {
     Int h;
     Bool binary;
@@ -1544,72 +1448,6 @@ primFun(primHGetBuf) {			/* read binary data into a buffer   */
     if (numRead < size && ferror(handles[h].hfp))
 	throwErrno("System.IO.hGetBuf", TRUE, h, NULL);
     IOReturn(mkInt(numRead));
-}
-
-primFun(primWriteFile) {		/* write string to specified file  */
-    fwritePrim(root,HWRITE,FALSE,"Prelude.writeFile");
-}
-
-primFun(primAppendFile) {		/* append string to specified file */
-    fwritePrim(root,HAPPEND,FALSE,"Prelude.appendFile");
-}
-
-primFun(primWriteBinaryFile) {		/* write string to specified file  */
-    fwritePrim(root,HWRITE,TRUE,"System.IO.writeBinaryFile");
-}
-
-primFun(primAppendBinaryFile) {		/* append string to specified file */
-    fwritePrim(root,HAPPEND,TRUE,"System.IO.appendBinaryFile");
-}
-
-static Void local fwritePrim(root,hmode,binary,loc)
-                                 /* Auxiliary function for  */
-StackPtr root;			 /* writing/appending to    */
-Int      hmode; 		 /* an output file	    */
-Bool     binary;
-String   loc; {
-    String s    = evalName(IOArg(2));		/* Eval and check filename */
-    FILE* wfp;
-    String stmode;
-    Char c;
-    Int retval;
-
-    if (!s) {
-        IOFail(mkIOError(NULL,
-			 nameIllegal,
-			 loc,
-		         "illegal file name",
-			 &IOArg(2)));
-    }
-    /* Note: there used to be a test here which would signal an
-       IO error if the file didn't exist and the user was
-       attempting to append to it. Haskell98 requires, quite
-       sensibly, this to succeed, hence the test has been removed.
-    */
-
-    stmode = modeString(hmode,binary);
-    if  ( (wfp = fopen(s,stmode)) == NULL )
-	throwErrno("loc", TRUE, NO_HANDLE, &IOArg(2));
-
-    blackHoleRoot();
-    drop();
-    eval(pop());
-    while (whnfHead==nameCons) {
-	eval(top());
-	checkChar();
-	c = charOf(whnfHead);
-#if CHAR_ENCODING
-	retval = binary ? putc(c, wfp) : FPutChar(c, wfp);
-#else
-	retval = FPutChar(c, wfp);
-#endif
-	if (retval == EOF)
-	    throwErrno(loc, TRUE, NO_HANDLE, NULL);
-	drop();
-	eval(pop());
-    }
-    fclose(wfp);
-    IOReturn(nameUnit);
 }
 
 primFun(primHWaitForInput) { /* Check whether a character can be read

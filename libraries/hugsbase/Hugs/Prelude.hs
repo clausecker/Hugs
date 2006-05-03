@@ -71,6 +71,13 @@ module Hugs.Prelude (
     catchException, throw,
     Dynamic(..), TypeRep(..), Key(..), TyCon(..), Obj,
 
+    IOMode(..),
+    stdin, stdout, stderr,
+    openFile,
+    hClose,
+    hGetContents, hGetChar, hGetLine,
+    hPutChar, hPutStr,
+
     Bool(False, True),
     Maybe(Nothing, Just),
     Either(Left, Right),
@@ -1737,9 +1744,6 @@ type FilePath = String  -- file pathnames are represented by strings
 
 primitive primbindIO		 :: IO a -> (a -> IO b) -> IO b
 primitive primretIO		 :: a -> IO a
-primitive putChar		 :: Char -> IO ()
-primitive putStr		 :: String -> IO ()
-primitive getChar   		 :: IO Char
 
 ioError :: IOError -> IO a
 ioError e = IO (\ s -> throw (IOException e))
@@ -1752,6 +1756,12 @@ catch m h = catchException m $ \e -> case e of
 		IOException err -> h err
 		_ -> throw e
 
+putChar   :: Char -> IO ()
+putChar    = hPutChar stdout
+
+putStr    :: String -> IO ()
+putStr     = hPutStr stdout
+
 print     :: Show a => a -> IO ()
 print      = putStrLn . show
 
@@ -1759,19 +1769,28 @@ putStrLn  :: String -> IO ()
 putStrLn s = do putStr s
 		putChar '\n'
 
-getLine :: IO String
-getLine  = do 
-  c <- getChar
-  getLine' c
+getChar   :: IO Char
+getChar    = hGetChar stdin
+
+getContents :: IO String
+getContents  = hGetContents stdin
+
+getLine   :: IO String
+getLine    = hGetLine stdin
+
+hGetLine :: Handle -> IO String
+hGetLine h = do 
+  c <- hGetChar h
+  hGetLine' c
   where
-   getLine' '\n' = return ""
-   getLine' c = do
+   hGetLine' '\n' = return ""
+   hGetLine' c = do
      cs <- getRest
      return (c:cs)
    getRest = do
-     c <- catch getChar $ \ ex ->
+     c <- catch (hGetChar h) $ \ ex ->
 	if isEOFError ex then return '\n' else ioError ex
-     getLine' c
+     hGetLine' c
    isEOFError ex = ioe_type ex == EOF	-- defined in System.IO.Error
 
 -- raises an exception instead of an error
@@ -1787,13 +1806,36 @@ readLn           = do l <- getLine
                       r <- readIO l
                       return r
 
-primitive getContents 		 :: IO String
-primitive writeFile   		 :: FilePath -> String -> IO ()
-primitive appendFile  		 :: FilePath -> String -> IO ()
-primitive readFile    		 :: FilePath -> IO String
+data IOMode      =  ReadMode | WriteMode | AppendMode | ReadWriteMode
+                    deriving (Eq, Ord, Ix, Bounded, Enum, Read, Show)
+
+writeFile	:: FilePath -> String -> IO ()
+writeFile        = writeFile' WriteMode
+
+appendFile	:: FilePath -> String -> IO ()
+appendFile       = writeFile' AppendMode
+
+writeFile'      :: IOMode -> FilePath -> String -> IO ()
+writeFile' mode name s = do
+  h <- openFile name mode
+  catchException (hPutStr h s) (\e -> hClose h >> throw e)
+  hClose h
+
+readFile	:: FilePath -> IO String
+readFile name    = openFile name ReadMode >>= hGetContents
 
 interact  :: (String -> String) -> IO ()
 interact f = getContents >>= (putStr . f)
+
+primitive stdin       :: Handle
+primitive stdout      :: Handle
+primitive stderr      :: Handle
+primitive openFile    :: FilePath -> IOMode -> IO Handle
+primitive hClose      :: Handle -> IO ()
+primitive hGetContents :: Handle -> IO String
+primitive hGetChar    :: Handle -> IO Char
+primitive hPutChar    :: Handle -> Char -> IO ()
+primitive hPutStr     :: Handle -> String -> IO ()
 
 instance Functor IO where
     fmap f x = x >>= (return . f)

@@ -33,10 +33,6 @@ module Hugs.IOExts
 	, hIsTerminalDevice	-- :: Handle -> IO Bool
 	, hGetEcho		-- :: Handle -> IO Bool
 	, hSetEcho		-- :: Handle -> Bool -> IO ()
-
-	  -- Non-standard extensions 
-	, hugsIsEOF             -- :: IO Bool
-	, hugsHIsEOF            -- :: Handle  -> IO Bool
 	) where
 
 import Hugs.Prelude
@@ -80,9 +76,21 @@ openFileEx fp m =
 argv :: [String]
 argv = unsafePerformIO getArgs
 
-primitive writeBinaryFile   	 :: FilePath -> String -> IO ()
-primitive appendBinaryFile  	 :: FilePath -> String -> IO ()
-primitive readBinaryFile    	 :: FilePath -> IO String
+writeBinaryFile		:: FilePath -> String -> IO ()
+writeBinaryFile		 = writeBinaryFile' WriteMode
+
+appendBinaryFile	:: FilePath -> String -> IO ()
+appendBinaryFile	 = writeBinaryFile' AppendMode
+
+writeBinaryFile'	:: IOMode -> FilePath -> String -> IO ()
+writeBinaryFile' mode name s = do
+  h <- openBinaryFile name mode
+  catchException (hPutStr h s) (\e -> hClose h >> throw e)
+  hClose h
+
+readBinaryFile		:: FilePath -> IO String
+readBinaryFile name	 = openBinaryFile name ReadMode >>= hGetContents
+
 primitive openBinaryFile         :: FilePath -> IOMode -> IO Handle
 
 primitive hSetBinaryMode	 :: Handle -> Bool -> IO ()
@@ -92,14 +100,3 @@ primitive hGetBuf	    	 :: Handle -> Ptr a -> Int -> IO Int
 primitive hIsTerminalDevice	 :: Handle -> IO Bool
 primitive hGetEcho		 :: Handle -> IO Bool
 primitive hSetEcho		 :: Handle -> Bool -> IO ()
-
------------------------------------------------------------------------------
--- Non-standard extensions 
--- (likely to disappear when IO library is more complete)
---
--- keep them around for now.
-
--- C library style test for EOF (doesn't obey Haskell semantics)
-primitive hugsHIsEOF "hugsHIsEOF" :: Handle -> IO Bool
-hugsIsEOF             :: IO Bool
-hugsIsEOF              = hugsHIsEOF stdin
