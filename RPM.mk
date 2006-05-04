@@ -17,7 +17,7 @@ else
 VERSION=$(YEAR_MONTH_DAY)
 endif
 
-PKGNAME = $(NAME)-plus
+PKGNAME = $(NAME)
 PACKAGE = $(PKGNAME)-$(VERSION)
 
 # Starting with Red Hat 8.0, the build functionality was removed from rpm, so

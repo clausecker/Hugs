@@ -8,7 +8,7 @@ Release:      %{release}
 License:      BSDish
 Group:        Development/Languages/Haskell
 URL:          http://haskell.org/hugs/
-Source:       %{name}-plus-%{version}.tar.gz
+Source:       %{name}-%{version}.tar.gz
 Packager:     Sven Panne <sven.panne@aedion.de>
 BuildRoot:    %{_tmppath}/%{name}-buildroot
 Provides:     haskell
