@@ -129,15 +129,12 @@ copy_examples() {
 
 # Convert hierarchical modules
 
-case `uname -a` in
-CYGWIN*|MINGW32*) sep=';' ;;
-*) sep=':' ;;
-esac
-
-top_dir=`pwd`
+# top directory relative to package directories.
+# absolute names won't work from Hugs on MSYS
+top_dir=../..
 
 HUGSDIR="$top_dir/$target"
-HUGSFLAGS="-P{Hugs}/packages/*$sep$top_dir/libraries/bootlib"
+HUGSFLAGS="-P{Hugs}/packages/*:$top_dir/libraries/bootlib"
 export HUGSDIR HUGSFLAGS
 
 build_package() {
