@@ -66,7 +66,7 @@ $(HSC2HS): $(BUILD_DIR)/programs/hsc2hs/Main.hs
 $(HSC2HS).bat: $(BUILD_DIR)/programs/hsc2hs/Main.hs
 	(echo '@echo off'; \
 	 echo "set rootdir=`cd ..; src/runhugs -Plibraries/bootlib libraries/pwd.hs`"; \
-	 echo '%rootdir%/src/runhugs -98 -P%rootdir%/libraries/bootlib %rootdir%/hugsdir/programs/hsc2hs/Main.hs -I%rootdir%/hugsdir/include -t$$rootdir/hsc2hs/template-hsc.h %*') >$@
+	 echo '%rootdir%/src/runhugs -98 -P%rootdir%/libraries/bootlib %rootdir%/hugsdir/programs/hsc2hs/Main.hs -I%rootdir%/hugsdir/include -t%rootdir%/hsc2hs/template-hsc.h %*') >$@
 
 $(BUILD_DIR)/programs/hsc2hs/Main.hs: $(HSC2HS_SRC)/Main.hs $(BOOTLIB) $(INCLUDES) $(CPPHS_FILE)
 	cd $(HSC2HS_SRC); $(HUGS_SETUP) configure --verbose --hugs --scratchdir=$(BUILD_DIR) --with-compiler=../src/ffihugs --with-cpphs="../libraries/tools/cpphs$(BAT)"
