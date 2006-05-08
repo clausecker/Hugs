@@ -112,17 +112,15 @@ hslibs() {
 # Copy package examples (if any) to the demos directory
 
 copy_examples() {
-	from_dir=$1
-	to_dir=$2
-	if [ -d $from_dir/examples ]
-	then	(cd $from_dir;
-		 $FIND examples -follow -name CVS -prune -o \! -name .cvsignore \! -name Makefile \! -name makefile -type f -print) |
+	to_dir=$1
+	if [ -d examples ]
+	then	$FIND examples -follow -name CVS -prune -o \! -name .cvsignore \! -name Makefile \! -name makefile -type f -print |
 			sed 's:^examples/::' |
 			while read name
 			do
 				target_file="$to_dir/$name"
 				mkdir -p `dirname $target_file`
-				cp $from_dir/examples/$name $target_file
+				cp examples/$name $target_file
 			done
 	fi
 }
@@ -173,7 +171,7 @@ build_package() {
 			fi
 		done
 		rm -rf $top_dir/$target_dir/autogen
-		copy_examples $lib_src/$pkg $target/demos/$pkg
+		copy_examples $top_dir/$target/demos/$pkg
 	else	echo "Skipping $pkg package"
 	fi
 	cd "$top_dir"
@@ -191,9 +189,6 @@ for package in $packages
 do
 	if test -d $lib_src/$package; then
 		build_package $lib_src/$package
-		if test -d $target/packages/$package; then
-			copy_examples $lib_src/$package $target/demos/$package
-		fi
 	fi
 done
 
