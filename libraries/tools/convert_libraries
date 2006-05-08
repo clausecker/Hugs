@@ -135,6 +135,12 @@ HUGSDIR="$top_dir/$target"
 HUGSFLAGS="-P{Hugs}/packages/*:$top_dir/libraries/bootlib"
 export HUGSDIR HUGSFLAGS
 
+# extension for batch files/shell scripts
+case `uname -a` in
+CYGWIN*|MINGW32*) bat=.bat ;;
+*) bat= ;;
+esac
+
 build_package() {
 	source_dir=$1
 	pkg=`basename $1`
@@ -160,8 +166,8 @@ build_package() {
 
 	$HugsSetup configure --verbose --hugs \
 			--scratchdir="$top_dir/$target_dir" \
-			--with-hsc2hs="$top_dir/libraries/tools/hsc2hs" \
-			--with-cpphs="$top_dir/libraries/tools/cpphs" \
+			--with-hsc2hs="$top_dir/libraries/tools/hsc2hs$bat" \
+			--with-cpphs="$top_dir/libraries/tools/cpphs$bat" \
 			--with-compiler="$top_dir/src/ffihugs" $happyflag \
 			$extra_opts
 	if $HugsSetup build --verbose; then
