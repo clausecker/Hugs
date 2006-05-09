@@ -11,8 +11,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.138 $
- * $Date: 2006/04/26 18:54:35 $
+ * $Revision: 1.139 $
+ * $Date: 2006/05/09 13:27:16 $
  * ------------------------------------------------------------------------*/
 #include "prelude.h"
 #include "storage.h"
@@ -2340,7 +2340,20 @@ String flags; {
  
     used    = 0;
 
-#ifdef MKDLL_CMD
+#if defined(HAVE_WINDOWS_H)
+    /* find the location of ffihugs.bat */
+    /* is in the same directory */
+    {
+	char Buffer[MAX_PATH+1];
+	char Buffer2[MAX_PATH+1];
+	GetModuleFileName(GetModuleHandle(NULL), Buffer, MAX_PATH);
+	strcpy(strrchr(Buffer, '.'), ".bat");
+	GetShortPathName(Buffer, Buffer2, MAX_PATH);
+
+	insert(Buffer2);
+	insert(MKDLL_CMD);
+    }
+#elif defined(MKDLL_CMD)
     /* The compile and link command */
     insert(MKDLL_CMD);
 #endif
