@@ -160,6 +160,8 @@ $ffihugs '-i"HsBase.h"' Foreign.Marshal.Alloc $base_includes \
 	$source/base/cbits/dirUtils.c \
 	$source/base/cbits/consUtils.c $base_libs
 $ffihugs '-i"HsBase.h"' Foreign.Marshal.Utils $base_includes $base_libs
+$ffihugs '-i"HsBase.h"' Foreign.Ptr $base_includes \
+	$source/base/cbits/PrelIOUtils.c $base_libs
 
 case $platform in
 Unix)
