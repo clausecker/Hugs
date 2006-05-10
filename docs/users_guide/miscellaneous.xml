@@ -368,6 +368,13 @@ The <option>-e</option>, <option>-f</option>, <option>-i</option>,
 <option>-N</option>, <option>-W</option> and <option>-X</option> options
 and the <command>:project</command> command have been removed.
 </para></listitem>
+
+<listitem><para>
+A searchpath may include an entry of the form
+<quote><replaceable>directory</replaceable><literal>/*</literal></quote>,
+meaning all the immediate subdirectories of <replaceable>directory</replaceable>
+(see <xref linkend="option-search-path"/>).
+</para></listitem>
 </itemizedlist>
 
 </sect2>
@@ -428,7 +435,7 @@ Hugs now has basic support for the
 </sect2>
 
 <sect2>
-<title>In development</title>
+<title>May 2006</title>
 
 <itemizedlist>
 
