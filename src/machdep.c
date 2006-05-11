@@ -11,8 +11,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.139 $
- * $Date: 2006/05/09 13:27:16 $
+ * $Revision: 1.140 $
+ * $Date: 2006/05/11 15:14:11 $
  * ------------------------------------------------------------------------*/
 #include "prelude.h"
 #include "storage.h"
@@ -2340,7 +2340,7 @@ String flags; {
  
     used    = 0;
 
-#if defined(HAVE_WINDOWS_H)
+#if defined(MKDLL_VISUAL_STUDIO)
     /* find the location of ffihugs.bat */
     /* is in the same directory */
     {

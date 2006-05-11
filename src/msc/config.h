@@ -346,6 +346,7 @@
 /* C compiler invocation use to build a dynamically loadable library. Typical
    value: "gcc -shared". Must evaluate to a literal C string. */
 #define MKDLL_CMD " /LD /ML /nologo"
+#define MKDLL_VISUAL_STUDIO 1
 
 /* Define to 1 if the C compiler supports function prototypes. */
 #define PROTOTYPES 1
