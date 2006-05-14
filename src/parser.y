@@ -10,8 +10,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: parser.y,v $
- * $Revision: 1.47 $
- * $Date: 2004/01/09 13:53:05 $
+ * $Revision: 1.48 $
+ * $Date: 2006/05/14 21:59:06 $
  * ------------------------------------------------------------------------*/
 
 %{
@@ -790,8 +790,18 @@ exp10b	  : '\\' pats ARROW exp		{$$ = gc4(ap(LAMBDA,
 						     pair(rev($2),
 							  pair($3,$4))));}
 	  | LET ldecls IN exp		{$$ = gc4(letrec($2,$4));}
-	  | IF exp THEN exp ELSE exp	{$$ = gc6(ap(COND,triple($2,$4,$6)));}
+	  | IF exp then_exp else_exp	{$$ = gc4(ap(COND,triple($2,$3,$4)));}
 	  ;
+/* Allow optional semicolons before 'then' and 'else' (as suggested by
+   John Meacham), to remove a common pitfall when using if-then-else
+   inside do expressions with implicit layout. */
+then_exp  : ';' THEN exp		{$$ = gc3($3);}
+	  | THEN exp			{$$ = gc2($2);}
+	  ;
+else_exp  : ';' ELSE exp		{$$ = gc3($3);}
+	  | ELSE exp			{$$ = gc2($2);}
+	  ;
+
 pats      : pats apat			{$$ = gc2(cons($2,$1));}
 	  | apat			{$$ = gc1(cons($1,NIL));}
 	  ;
