@@ -12,7 +12,7 @@ const int BmpTransparent = RGB(253,5,255);
 
 LPCTSTR AboutText = 
     "Hugs 98: Based on the Haskell 98 standard\n"
-    "Copyright © 1994-2005\n"
+    "Copyright © 1994-2006\n"
     "Bug reports to: mailto:hugs-bugs@haskell.org\n"
     "Website: http://www.haskell.org/hugs\n"
     "\n"
