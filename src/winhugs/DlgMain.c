@@ -308,7 +308,7 @@ void MainCommand(HWND hWnd, int ID)
 	// HELP MENU
 	case ID_HELPCONTENTS: ExecuteFileDocs("hugs98.chm"); break;
 	case ID_HELPCOMMANDS: FireCommand(":?\n"); break;
-	case ID_USERSGUIDE: ExecuteFileDocs("users_guide\\users-guide.html"); break;
+	case ID_LIBRARIES: ExecuteFile("http://www.haskell.org/ghc/docs/latest/html/libraries/index.html"); break;
 	case ID_WWWHASKELL: ExecuteFile("http://haskell.org/"); break;
 	case ID_WWWHUGS: ExecuteFile("http://haskell.org/hugs/"); break;
 	case ID_ABOUT: ShowAboutDialog(hWnd); break;
