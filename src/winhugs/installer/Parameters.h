@@ -20,7 +20,7 @@
 #define Description		"Haskell 98 Interpreter"
 
 
-#define Copyright		"1994-2005"
+#define Copyright		"1994-2006"
 
 #define Publisher		"The Hugs Team"
 #define Website			"http://www.haskell.org/hugs/"
