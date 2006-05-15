@@ -53,7 +53,7 @@ BOOTLIB		= bootlib/.stamp
 all: $(BUILD_DIR)/.stamp
 
 $(BUILD_DIR)/.stamp: bootlib/.stamp $(INCLUDES) $(CPPHS_FILE) $(HSC2HS_FILE) $(CONVERT)
-	$(RM) -r $(BUILD_DIR)/packages $(BUILD_DIR)/oldlib
+	$(RM) -r $(BUILD_DIR)/oldlib
 	cd ..; HOST='$(HOST)' libraries/$(CONVERT) fptools hugsdir
 	echo timestamp for libraries >$@
 
@@ -85,9 +85,12 @@ $(CPPHS).bat: $(BUILD_DIR)/programs/cpphs/Main.hs
 	 echo '%rootdir%/src/runhugs -P%rootdir%/libraries/bootlib %rootdir%/hugsdir/programs/cpphs/Main.hs %*') >$@
 
 $(BUILD_DIR)/programs/cpphs/Main.hs: $(BOOTLIB) $(INCLUDES)
-	cd $(CPPHS_SRC); $(HUGS_SETUP) configure --verbose --hugs --scratchdir=$(BUILD_DIR) --with-compiler=../src/ffihugs
+	cd $(CPPHS_SRC); $(HUGS_SETUP) configure --verbose --hugs --scratchdir=$(BUILD_DIR)/packages/cpphs --with-compiler=../src/ffihugs
 	cd $(CPPHS_SRC); $(HUGS_SETUP) build --verbose
-	$(RM) -r $(BUILD_DIR)/autogen
+	$(RM) -r $(BUILD_DIR)/packages/cpphs/autogen
+	mkdir -p $(BUILD_DIR)/programs
+	mv $(BUILD_DIR)/packages/cpphs/programs/cpphs $(BUILD_DIR)/programs
+	rmdir $(BUILD_DIR)/packages/cpphs/programs
 
 $(BOOTLIB): hugsbase/Hugs/*.* $(MAKE_BOOT) $(INCLUDES) $(FP_INCLUDES)
 	CPPFLAGS='$(CPPFLAGS)' $(MAKE_BOOT)
