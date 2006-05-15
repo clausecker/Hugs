@@ -116,7 +116,7 @@ bool CreateStartMenuShortcut(HWND hDlg, char* Folder)
 	bool res = CreateShortcut(Destination, Target, Folder, NULL, ProgramName " - " Description);
 
 	strcpy(i, "Readme.lnk");
-	strcpy(&Target[strlen(Folder)+1], "readme.htm");
+	strcpy(&Target[strlen(Folder)+1], "readme.txt");
 	res &= CreateShortcut(Destination, Target, NULL, NULL, ProgramName " - Read Me");
 
 	return res;
