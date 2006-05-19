@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: builtin.c,v $
- * $Revision: 1.91 $
- * $Date: 2005/09/16 16:03:46 $
+ * $Revision: 1.92 $
+ * $Date: 2006/05/19 21:20:51 $
  * ------------------------------------------------------------------------*/
 
 /* We include math.h before prelude.h because SunOS 4's cpp incorrectly
@@ -1988,6 +1988,7 @@ static struct thunk_data* foreignThunks = 0;
    to return to it before tail jumping from the adjustor thunk.
 */
 static unsigned char *obscure_ccall_ret_code;	/* set by initAdjustor() */
+#endif /* i386_HOST_ARCH */
 
 /* Heavily arch-specific, I'm afraid.. */
 
@@ -2023,8 +2024,6 @@ static void* local mallocBytesRWX(int len) {
 #endif
     return addr;
 }
-
-#endif /* i386_HOST_ARCH */
 
 /* Perform initialisation of adjustor thunk layer (if needed). */
 static void local initAdjustor() {
