@@ -57,7 +57,7 @@ mkdir $tmpdir
 
 # K&R-style C preprocessor
 
-function through_cpp {
+through_cpp() {
 	# The input file need not be called *.c, but for
 	# portability we run the preprocessor on a .c file.
 	cpp_input=$tmpdir/cppinput.c
