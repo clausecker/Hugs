@@ -1,6 +1,18 @@
 Building Hugs on Win32 platforms
 ================================
 
+Tips and Suggestions
+--------------------
+
+* Use MinGW/MSYS
+
+* If you wish to build the main .exe's using Visual Studio (which you
+  should if you have it available), then keep two separate trees - one
+  to compile the libraries, and a separate one to build the programs.
+  This is because gcc generated hugs.exe etc. are needed to build the
+  libraries and they trample each other.
+
+
 Building from a source snapshot
 -------------------------------
 
