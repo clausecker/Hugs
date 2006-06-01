@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: builtin.c,v $
- * $Revision: 1.92 $
- * $Date: 2006/05/19 21:20:51 $
+ * $Revision: 1.93 $
+ * $Date: 2006/06/01 22:20:17 $
  * ------------------------------------------------------------------------*/
 
 /* We include math.h before prelude.h because SunOS 4's cpp incorrectly
@@ -2148,7 +2148,7 @@ static void* mkThunk(void (*app)(void), HugsStablePtr s) {
 	a nutshell: This should work! (Famous last words! :-)
      */
     {
-	unsigned long *adj_code = (unsigned long *)pc;
+	unsigned long *adj_code = (unsigned long *)thunk->code;
 	adj_code[ 0]  = 0x9C23A008UL;	/* sub   %sp, 8, %sp         */
 	adj_code[ 1]  = 0xDA23A060UL;	/* st    %o5, [%sp + 96]     */
 	adj_code[ 2]  = 0xD823A05CUL;	/* st    %o4, [%sp + 92]     */
