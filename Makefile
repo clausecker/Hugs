@@ -151,6 +151,7 @@ $(PACKAGES):
 # Move these so that make_bootlib won't convert them
 	cd packages; mv Cabal/*.lhs Cabal/examples
 	$(DARCS_GET) $(DARCS_CPPHS)
+	$(DARCS_GET) $(DARCS_ROOT)/hsc2hs
 
 debian/control: debian/control.in debian/make-control.hs
 	cp License debian/hugs.copyright

@@ -78,6 +78,8 @@ $(PACKAGE).tar.gz:
 		fi
 	cd $(TARTMP)/hugs98; $(DARCS_GET) $(DARCS_CPPHS)
 	cd $(TARTMP)/hugs98; $(RM) -r cpphs/_darcs
+	cd $(TARTMP)/hugs98; $(DARCS_GET) $(DARCS_ROOT)/hsc2hs
+	cd $(TARTMP)/hugs98; $(RM) -r hsc2hs/_darcs
 	cp $(TARTMP)/hugs98/src/version.c $(TARTMP)
 	cd $(TARTMP)/hugs98/src; sed $(VERSION_SUBSTS) < $(TARTMP)/version.c > $(TARTMP)/hugs98/src/version.c
 # using `make parser.c' would be best, but by default yacc
