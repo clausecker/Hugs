@@ -93,11 +93,11 @@ for f in $sources; do
 		fi
 	fi
 	if $use_cpp; then
-		if hugs -F"$cpp $cpp_flags" $extra_opts $f </dev/null | tail +10 | fgrep -v 'Type :? for help' | fgrep -v '[Leaving Hugs]' | grep . >&2
+		if hugs -F"$cpp $cpp_flags" $extra_opts $f </dev/null | sed -n '10,$p' | fgrep -v 'Type :? for help' | fgrep -v '[Leaving Hugs]' | grep . >&2
 		then	exit 1
 		fi
 	else
-		if hugs $extra_opts $f </dev/null | tail +10 | fgrep -v 'Type :? for help' | fgrep -v '[Leaving Hugs]' | grep . >&2
+		if hugs $extra_opts $f </dev/null | sed -n '10,$p' | fgrep -v 'Type :? for help' | fgrep -v '[Leaving Hugs]' | grep . >&2
 		then	exit 1
 		fi
 	fi
@@ -134,7 +134,7 @@ done
 
 if ! $compile_only
 then
-	main_file=`cat $interfaces | grep . | head -1`
+	main_file=`cat $interfaces | grep . | sed 1q`
 	case "$main_file" in
 	?*)
 		: ${out_file:=a.out}
