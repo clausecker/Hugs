@@ -13,6 +13,7 @@ DOCBOOK2PS	= @DOCBOOK2PS@
 prefix		= @prefix@
 exec_prefix	= @exec_prefix@
 libdir		= @libdir@
+datarootdir	= @datarootdir@
 datadir		= @datadir@
 hugsdir		= @hugsdir@
 
