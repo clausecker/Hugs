@@ -158,8 +158,10 @@ install: all
 	(echo '#! /bin/sh'; \
 	 echo 'runhugs $(hugsdir)/programs/cpphs/Main.hs "$$@"') >$(DESTDIR)$(bindir)/cpphs-hugs
 	chmod 755 $(DESTDIR)$(bindir)/cpphs-hugs
-	$(INSTALL) -d $(DESTDIR)$(datadir)/hsc2hs-0.66
-	$(INSTALL) -c -m 0644 ../hsc2hs/template-hsc.h $(DESTDIR)$(datadir)/hsc2hs-0.66/template-hsc.h
+# install template file where hsc2hs-hugs expects to find it
+	hsc2hs_data=`sed -n 's/^datadir *= "\(.*\)"/\1/p' $(BUILD_DIR)/programs/hsc2hs/Paths_hsc2hs.hs`; \
+	  $(INSTALL) -d $(DESTDIR)$$hsc2hs_data; \
+	  $(INSTALL) -c -m 0644 ../hsc2hs/template-hsc.h $(DESTDIR)$$hsc2hs_data/template-hsc.h
 	(echo '#! /bin/sh'; \
 	 echo 'runhugs -98 $(hugsdir)/programs/hsc2hs/Main.hs -I$(hugsdir)/include "$$@"') >$(DESTDIR)$(bindir)/hsc2hs-hugs
 	chmod 755 $(DESTDIR)$(bindir)/hsc2hs-hugs
