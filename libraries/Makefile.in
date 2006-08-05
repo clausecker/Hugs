@@ -49,10 +49,11 @@ HSC2HS_FILE	= $(HSC2HS)$(BAT)
 MAKE_BOOT	= tools/make_bootlib
 CONVERT		= tools/convert_libraries
 BOOTLIB		= bootlib/.stamp
+LIBS		= $(BUILD_DIR)/.stamp
 
-all: $(BUILD_DIR)/.stamp
+all: $(LIBS)
 
-$(BUILD_DIR)/.stamp: bootlib/.stamp $(INCLUDES) $(CPPHS_FILE) $(HSC2HS_FILE) $(CONVERT)
+$(LIBS): $(BOOTLIB) $(INCLUDES) $(CPPHS_FILE) $(HSC2HS_FILE) $(CONVERT)
 	$(RM) -r $(BUILD_DIR)/oldlib
 	cd ..; HOST='$(HOST)' PREFIX='$(prefix)' libraries/$(CONVERT) fptools hugsdir
 	echo timestamp for libraries >$@
@@ -169,5 +170,5 @@ install: all
 	 echo 'runhugs -98 $(hugsdir)/programs/hsc2hs/Main.hs -I$(hugsdir)/include "$$@"') >$(DESTDIR)$(bindir)/hsc2hs-hugs
 	chmod 755 $(DESTDIR)$(bindir)/hsc2hs-hugs
 
-LibStatus: $(BUILD_DIR)/.stamp
+LibStatus: $(LIBS)
 	tools/test_libraries ../packages >$@
