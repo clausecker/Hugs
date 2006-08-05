@@ -110,11 +110,14 @@ clean:
 	$(RM) *~
 	$(RM) -r bootlib
 	$(RM) hugsbase/.installed-pkg-config
+	$(RM) ../cpphs/.installed-pkg-config
 	$(RM) ../packages/*/.installed-pkg-config
 	find ../packages -name \*.hsc | sed 's/c$$//' | xargs $(RM)
 	$(RM) -r ../ghc/includes
 # package configuration is part of the build process, so clean it here
 	$(RM) hugsbase/.setup-config
+	$(RM) ../cpphs/.setup-config
+	$(RM) ../hsc2hs/.setup-config
 	$(RM) ../packages/*/.setup-config
 	$(RM) ../packages/*/config.log
 	$(RM) ../packages/*/config.status
