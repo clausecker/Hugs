@@ -115,9 +115,9 @@ String msg; {
 
     Printf("Please report this Hugs bug to ");
 #if HUGS_FOR_WINDOWS
-    WinHugsHyperlink("mailto:hugs-bugs@haskell.org");
+    WinHugsHyperlink("http://hackage.haskell.org/trac/hugs");
 #else
-    Printf("hugs-bugs@haskell.org");
+    Printf("http://hackage.haskell.org/trac/hugs");
 #endif
     Printf("\n");
 

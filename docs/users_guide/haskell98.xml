@@ -310,8 +310,10 @@ Under Haskell 98, both kinds of program would fail at runtime.
 
 <para>
 Here are other known bugs in Hugs, in addition to the deviations listed
-above.  If you find a bug that is not listed here, please report it by
-sending email to
+above.  If you find a bug that is not listed here, please report it
+either by using the bug tracking system on the
+<ulink url="http://hackage.haskell.org/trac/hugs">Hugs development page</ulink>
+or by sending email to
 <ulink url="mailto:hugs-bugs@haskell.org">hugs-bugs@haskell.org</ulink>.
 </para>
 

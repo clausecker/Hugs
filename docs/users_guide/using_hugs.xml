@@ -28,7 +28,7 @@ __   __ __  __  ____   ___      _________________________________________
 ||   || ||  || ||  || ||__      Hugs 98: Based on the Haskell 98 standard
 ||___|| ||__|| ||__||  __||     Copyright (c) 1994-2005
 ||---||         ___||           World Wide Web: http://haskell.org/hugs
-||   ||                         Report bugs to: hugs-bugs@haskell.org
+||   ||                         Bugs: http://hackage.haskell.org/trac/hugs
 ||   || Version:    March 2005  _________________________________________
 
 Haskell 98 mode: Restart with command line option -98 to enable extensions
