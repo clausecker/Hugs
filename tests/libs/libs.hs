@@ -12,7 +12,6 @@ import ConcBase
 import Concurrent
 import Dynamic
 import Exception
-import FiniteMap
 import Foreign
 import ForeignObj
 import ForeignPtr
@@ -34,7 +33,6 @@ import QSemN
 import ST
 import SampleVar
 import Semaphore
-import Set
 import ShowFunctions
 import Stable
 import StablePtr
