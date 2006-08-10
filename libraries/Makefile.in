@@ -48,14 +48,16 @@ CPPHS_FILE	= $(CPPHS)$(BAT)
 HSC2HS_FILE	= $(HSC2HS)$(BAT)
 MAKE_BOOT	= tools/make_bootlib
 CONVERT		= tools/convert_libraries
+MAKE_OLDLIB	= tools/make_oldlib
 BOOTLIB		= bootlib/.stamp
 LIBS		= $(BUILD_DIR)/.stamp
 
 all: $(LIBS)
 
-$(LIBS): $(BOOTLIB) $(INCLUDES) $(CPPHS_FILE) $(HSC2HS_FILE) $(CONVERT)
-	$(RM) -r $(BUILD_DIR)/oldlib
+$(LIBS): $(BOOTLIB) $(INCLUDES) $(CPPHS_FILE) $(HSC2HS_FILE) $(CONVERT) $(MAKE_OLDLIB)
 	cd ..; HOST='$(HOST)' PREFIX='$(prefix)' libraries/$(CONVERT) fptools hugsdir
+	$(RM) -r $(BUILD_DIR)/oldlib
+	cd ..; libraries/$(MAKE_OLDLIB) fptools hugsdir
 	echo timestamp for libraries >$@
 
 $(HSC2HS): $(BUILD_DIR)/programs/hsc2hs/Main.hs
