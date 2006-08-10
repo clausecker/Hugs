@@ -225,9 +225,6 @@ mkdir -p $compat
   hslibs concurrent Semaphore.lhs	# -> Control.Concurrent.QSem Control.Concurrent.QSemN
 # hslibs concurrent Strategies.lhs
 
-  hslibs data FiniteMap.lhs		# -> Data.FiniteMap
-  hslibs data Set.lhs			# -> Data.Set
-
   cp $hs_src/data/edison/COPYRIGHT $compat/COPYRIGHT.edison
   hslibs data/edison/Assoc Assoc.hs
   hslibs data/edison/Assoc AssocDefaults.hs
