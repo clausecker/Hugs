@@ -318,6 +318,14 @@ void DestTimer()
     IsTimer = FALSE;
 }
 
+void FixCharFormat(CHARFORMAT2* cf)
+{
+	if (cf->crTextColor == BLACK)
+		cf->dwEffects |= CFE_AUTOCOLOR;
+	if (cf->crBackColor == WHITE)
+		cf->dwEffects |= CFE_AUTOBACKCOLOR;
+}
+
 void WriteBuffer(LPCTSTR s, int Len)
 {
     CHARRANGE cr;
@@ -336,6 +344,7 @@ void WriteBuffer(LPCTSTR s, int Len)
     cf.dwEffects = (BufFormat.Bold ? CFE_BOLD : 0) |
 		   (BufFormat.Italic ? CFE_ITALIC : 0) |
 		   (BufFormat.Underline ? CFE_UNDERLINE : 0);
+	FixCharFormat(&cf);
     SendMessage(hRTF, EM_SETCHARFORMAT, SCF_SELECTION, (LPARAM) &cf);
     // setcharformat seems to screw up the current selection!
 
