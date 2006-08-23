@@ -10,8 +10,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: parser.y,v $
- * $Revision: 1.48 $
- * $Date: 2006/05/14 21:59:06 $
+ * $Revision: 1.49 $
+ * $Date: 2006/08/23 22:33:24 $
  * ------------------------------------------------------------------------*/
 
 %{
@@ -50,6 +50,7 @@ static List   local checkCtxt	 Args((List));
 static Cell   local checkPred	 Args((Cell));
 static Pair   local checkDo	 Args((List));
 static Cell   local checkTyLhs	 Args((Cell));
+static Cell   local checkConstr	 Args((Cell));
 
 #if MUDO
 static Pair   local checkMDo	 Args((List));
@@ -332,8 +333,8 @@ constr	  : '!' btype conop bbtype	{$$ = gc4(ap(ap($3,bang($2)),$4));}
 	  | btype1    conop bbtype	{$$ = gc3(ap(ap($2,$1),$3));}
 	  | btype2    conop bbtype	{$$ = gc3(ap(ap($2,$1),$3));}
 	  | bpolyType conop bbtype	{$$ = gc3(ap(ap($2,$1),$3));}
-	  | btype2			{$$ = $1;}
-	  | btype3			{$$ = $1;}
+	  | btype2			{$$ = checkConstr($1);}
+	  | btype3			{$$ = checkConstr($1);}
 	  | con '{' fieldspecs '}'	{$$ = gc4(ap(LABC,pair($1,rev($3))));}
 	  | con '{' '}'			{$$ = gc3(ap(LABC,pair($1,NIL)));}
 	  | error			{syntaxError("data type declaration");}
@@ -1230,6 +1231,19 @@ Cell c; {				/* T a1 ... a			   */
     }
     if (whatIs(tlhs)!=CONIDCELL) {
 	ERRMSG(row) "Illegal left hand side in data type declaration"
+	EEND;
+    }
+    return c;
+}
+
+static Cell local checkConstr(c)	/* check that data constructor has */
+Cell c; {				/* an unqualified conid as head    */
+    Cell chd = c;
+    while (isAp(chd)) {
+	chd = fun(chd);
+    }
+    if (whatIs(chd)!=CONIDCELL) {
+	ERRMSG(row) "Qualified constructor in data type declaration"
 	EEND;
     }
     return c;
