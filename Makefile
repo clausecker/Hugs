@@ -19,7 +19,8 @@ HSLIBSDIRS = concurrent data hssource lang net text util posix
 
 DARCS_ROOT = http://darcs.haskell.org
 LIBRARIESDIRS = base haskell98 haskell-src mtl network parsec QuickCheck unix \
-	Cabal OpenGL GLUT OpenAL ALUT fgl X11 HGL HaXml HUnit Win32 time stm
+	Cabal OpenGL GLUT OpenAL ALUT fgl X11 HGL HaXml HUnit Win32 time stm \
+	xhtml
 DARCS_CPPHS = http://www.cs.york.ac.uk/fp/darcs/cpphs
 
 # End of general settings (leave this line unchanged)
