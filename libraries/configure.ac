@@ -42,40 +42,6 @@ FP_PROG_FIND
 FP_PROG_SORT
 
 dnl--------------------------------------------------------------------
-dnl ### compiler characteristics ###
-dnl--------------------------------------------------------------------
-
-AC_C_CONST               dnl can we use "const"?
-AC_C_INLINE              dnl can we use "inline"?
-
-dnl --------------------------------------------------
-dnl * Platform header file and syscall feature tests
-dnl ### checking the state of the local header files and syscalls ###
-
-dnl ** check for full ANSI header (.h) files
-AC_HEADER_STDC
-
-dnl checks for sys/wait.h
-AC_HEADER_SYS_WAIT
-
-dnl ** check for specific header (.h) files that we are interested in
-AC_CHECK_HEADERS(
-  ctype.h dirent.h errno.h fcntl.h grp.h limits.h pwd.h signal.h \
-  stdlib.h string.h \
-  sys/resource.h sys/stat.h sys/timers.h sys/types.h sys/utsname.h \
-  termios.h unistd.h utime.h vfork.h
-  )
-
-dnl Windows include files
-AC_CHECK_HEADERS(windows.h winsock.h)
-
-AC_HEADER_TIME
-AC_CHECK_HEADERS(time.h sys/time.h sys/timeb.h sys/times.h)
-
-dnl ** check for functions
-AC_CHECK_FUNCS(getclock getrusage gettimeofday time times)
-
-dnl--------------------------------------------------------------------
 dnl ### types 
 dnl--------------------------------------------------------------------
 
