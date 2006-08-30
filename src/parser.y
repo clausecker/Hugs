@@ -10,8 +10,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: parser.y,v $
- * $Revision: 1.49 $
- * $Date: 2006/08/23 22:33:24 $
+ * $Revision: 1.50 $
+ * $Date: 2006/08/30 18:57:13 $
  * ------------------------------------------------------------------------*/
 
 %{
@@ -1242,7 +1242,7 @@ Cell c; {				/* an unqualified conid as head    */
     while (isAp(chd)) {
 	chd = fun(chd);
     }
-    if (whatIs(chd)!=CONIDCELL) {
+    if (whatIs(chd)==QUALIDENT) {
 	ERRMSG(row) "Qualified constructor in data type declaration"
 	EEND;
     }
