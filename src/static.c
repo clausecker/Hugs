@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.179 $
- * $Date: 2005/12/10 11:25:13 $
+ * $Revision: 1.180 $
+ * $Date: 2006/08/30 18:46:22 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -4858,7 +4858,8 @@ List ds; {				/* given list of equations	   */
 		bs	= cons(pair(vs,pair(NIL,snd(d))),bs);
 	    }
 	    lastVar = NIL;
-	}
+	} else
+	    lastVar = NIL;
     }
     return bs;
 }
