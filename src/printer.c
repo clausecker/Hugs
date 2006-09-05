@@ -8,8 +8,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: printer.c,v $
- * $Revision: 1.14 $
- * $Date: 2003/12/02 12:15:53 $
+ * $Revision: 1.15 $
+ * $Date: 2006/09/05 22:43:44 $
  * ------------------------------------------------------------------------*/
 
 static Void   local printer		Args((Name,Int));
@@ -130,6 +130,7 @@ Int  d; {				/* precedence level		   */
     Int used = 0;			/* Output, in reverse, to "out"	   */
 
     allowBreak();
+
     switch(whatIs(whnfHead)) {
 
 	case NAME     : {   Syntax sy = syntaxOf(whnfHead);
@@ -137,6 +138,31 @@ Int  d; {				/* precedence level		   */
 			    if (!isCfun(whnfHead) ||
 				    name(whnfHead).arity>whnfArgs)
 				pr = nameNPrint;
+
+#ifndef VERBOSE_PRINT
+			    /* don't print dictionary arguments */
+			    while (used<whnfArgs) {
+				Cell h;
+				Int w;
+				h=pushed(used);
+				for (;;) {
+				    w = whatIs(h);
+				    if (w==AP)
+					h = fun(h);
+				    else if (w==INDIRECT)
+					h = arg(h);
+				    else
+					break;
+				}
+				if (w==NAME && isNull(name(h).type) &&
+				    (whatIs(name(h).parent)==INSTANCE ||
+				     isDfun(h) ||
+				     strncmp(textToStr(name(h).text),"Make.",5) == 0))
+				    used++;
+				else
+				    break;
+			    }
+#endif
 
 			    if (whnfHead==nameCons && whnfArgs==2) {/*list */
 				StackPtr ksp = sp;
@@ -178,26 +204,37 @@ Int  d; {				/* precedence level		   */
 				}
 				return;
 			    }
-			    else if (whnfArgs==1 && sy!=APPLIC) { /* (e1+) */
-				used = 1;
+#ifndef VERBOSE_PRINT
+			    /* hide fromInt/fromDouble */
+			    else if (whnfArgs==2 &&
+				     ((whnfHead==nameFromInt && whatIs(pushed(1))==INTCELL) ||
+				      (whnfHead==nameFromDouble && (whatIs(pushed(1))==FLOATCELL || whatIs(pushed(1))==DOUBLECELL)))) {
+				unwind(pushed(1));
+				printer(pr,d);
+				return;
+			    }
+#endif
+			    else if (whnfArgs-used==1 && sy!=APPLIC) { /* (e1+) */
 				outCh('(');
-				outPr(pr,FUN_PREC-1,pushed(0));
+				outPr(pr,FUN_PREC-1,pushed(used));
 				outCh(' ');
 				outOp(whnfHead);
 				outCh(')');
+				used++;
 			    }
-			    else if (whnfArgs>=2 && sy!=APPLIC) { /* e1+e2 */
+			    else if (whnfArgs-used>=2 && sy!=APPLIC) { /* e1+e2 */
 				Syntax a = assocOf(sy);
 				Int    p = precOf(sy);
-				used     = 2;
-				if (whnfArgs>2 || d>p)
+				if (whnfArgs-used>2 || d>p)
 				     outCh('(');
-				outPr(pr,(a==LEFT_ASS? p:1+p),pushed(0));
+				outPr(pr,(a==LEFT_ASS? p:1+p),pushed(used));
+				used++;
 				outCh(' ');
 				outOp(whnfHead);
 				outCh(' ');
-				outPr(pr,(a==RIGHT_ASS?p:1+p),pushed(1));
-				if (whnfArgs>2 || d>p)
+				outPr(pr,(a==RIGHT_ASS?p:1+p),pushed(used));
+				used++;
+				if (whnfArgs-used>2 || d>p)
 				    outCh(')');
 			    }
 			    else				  /* f ... */
@@ -454,6 +491,7 @@ static Void local outName(nm)  /* output nm using parent field if possible */
 Name nm; {
     Cell p = name(nm).parent;
     switch (whatIs(p)) {
+#ifdef VERBOSE_PRINT
 	case INSTANCE : outStr("inst");
 			outStr(textToStr(cclass(inst(p).c).text));
 			outCh('_');
@@ -466,6 +504,7 @@ Name nm; {
 	case TYCON    : outStr(textToStr(tycon(p).text));
 			outCh('_');
 			break;
+#endif
 
 	case NAME     : outName(p);
 			outCh('_');

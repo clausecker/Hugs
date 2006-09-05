@@ -464,6 +464,20 @@ New <link linkend="main-command"><command>:main</command></link> command
 
 </itemizedlist>
 
+<sect3>
+<title>In development</title>
+
+<itemizedlist>
+
+<listitem><para>
+The built-in printer is now less verbose, making pattern-match exceptions
+more readable.
+</para></listitem>
+
+</itemizedlist>
+
+</sect3>
+
 </sect2>
 
 </sect1>

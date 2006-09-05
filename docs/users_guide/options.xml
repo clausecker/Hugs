@@ -627,7 +627,7 @@ id
 Hugs> \x -> x
 v1497
 Hugs> [Just (2+3), Nothing]
-[Maybe_Just 5,Maybe_Nothing]
+[Just 5,Nothing]
 </screen>
 Another feature of the built-in printer is its treatment of failures
 (or exceptions).

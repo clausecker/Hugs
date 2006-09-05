@@ -38,13 +38,13 @@ Hugs:'\NUL'
 Hugs:'\DEL'
 Hugs:[]
 Hugs:[1]
-Hugs:Bool_True
-Hugs:Bool_False
+Hugs:True
+Hugs:False
 Hugs:('a','b')
 Hugs:('a','b','c')
 Hugs:(1,{error "foo"},3)
-Hugs:E_R 1
-Hugs:E_L 'a'
-Hugs:M_J Bool_True
-Hugs:M_N
+Hugs:R 1
+Hugs:L 'a'
+Hugs:J True
+Hugs:N
 Hugs:[Leaving Hugs]
