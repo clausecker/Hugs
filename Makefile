@@ -19,7 +19,7 @@ HSLIBSDIRS = concurrent data hssource lang net text util posix
 
 DARCS_ROOT = http://darcs.haskell.org
 LIBRARIESDIRS = base haskell98 haskell-src mtl network parsec QuickCheck unix \
-	Cabal OpenGL GLUT OpenAL ALUT fgl X11 HGL HaXml HUnit Win32 time stm \
+	Cabal OpenGL GLUT OpenAL ALUT fgl X11 HGL HUnit Win32 time stm \
 	xhtml
 DARCS_CPPHS = http://www.cs.york.ac.uk/fp/darcs/cpphs
 
@@ -147,8 +147,6 @@ $(PACKAGES):
 	cvs -d $(CVS_ROOT) checkout -r $(HSLIBSTAG) `for lib in $(HSLIBSDIRS); do echo fptools/hslibs/$$lib; done`
 	-mkdir packages
 	for lib in $(LIBRARIESDIRS); do $(DARCS_GET) --repo-name=packages/$$lib $(DARCS_ROOT)/packages/$$lib; done
-# We don't use this, so don't leave it there for Cabal to run
-	cd packages; $(RM) HaXml/configure
 # Move these so that make_bootlib won't convert them
 	cd packages; mv Cabal/*.lhs Cabal/examples
 	$(DARCS_GET) $(DARCS_CPPHS)
