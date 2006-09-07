@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: input.c,v $
- * $Revision: 1.89 $
- * $Date: 2006/01/30 14:50:48 $
+ * $Revision: 1.90 $
+ * $Date: 2006/09/07 13:03:51 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1508,6 +1508,7 @@ static Int local yylex() {             /* Read next input token ...        */
     static Bool insertedToken = FALSE;
     static Bool inADo         = FALSE;
     static Text textRepeat;
+    Bool readingRepeat = reading==KEYBOARD || reading==STRING;
 
 #define lookAhead(t) {skipWhitespace(); insertOpen = (c0!='{'); inADo = (t==DO); return t;}
 
@@ -1517,7 +1518,7 @@ static Int local yylex() {             /* Read next input token ...        */
 	insertOpen    = FALSE;
 	insertedToken = FALSE;
 	inADo         = FALSE;
-	if (reading==KEYBOARD)
+	if (readingRepeat)
 	    textRepeat = findText(repeatStr);
 	return firstTokenIs;
     }
@@ -1763,7 +1764,7 @@ loop:	    skip();                     /* Skip qualifying dot             */
 	if (it==textMDo && !haskell98) lookAhead(MDO);
 #endif
 #endif
-	if (it==textRepeat && reading==KEYBOARD)
+	if (it==textRepeat && readingRepeat)
 	    return repeatLast();
 
 	top() = yylval = ap((identType==CONID ? CONIDCELL : VARIDCELL),it);
@@ -1787,7 +1788,7 @@ loop:	    skip();                     /* Skip qualifying dot             */
 	if (it==textArrow)   return ARROW;
 	if (it==textLazy)    return '~';
 	if (it==textImplies) return IMPLIES;
-	if (it==textRepeat && reading==KEYBOARD)
+	if (it==textRepeat && readingRepeat)
 	    return repeatLast();
 
 	top() = yylval = ap((opType==CONOP ? CONOPCELL : VAROPCELL),it);
