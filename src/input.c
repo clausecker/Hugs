@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: input.c,v $
- * $Revision: 1.90 $
- * $Date: 2006/09/07 13:03:51 $
+ * $Revision: 1.91 $
+ * $Date: 2006/09/09 09:37:48 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1508,7 +1508,7 @@ static Int local yylex() {             /* Read next input token ...        */
     static Bool insertedToken = FALSE;
     static Bool inADo         = FALSE;
     static Text textRepeat;
-    Bool readingRepeat = reading==KEYBOARD || reading==STRING;
+    Bool readingRepeat = repeatStr && (reading==KEYBOARD || reading==STRING);
 
 #define lookAhead(t) {skipWhitespace(); insertOpen = (c0!='{'); inADo = (t==DO); return t;}
 
