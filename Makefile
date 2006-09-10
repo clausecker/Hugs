@@ -145,7 +145,8 @@ configure: configure.ac aclocal.m4 $(PACKAGES)
 
 $(PACKAGES):
 	cvs -d $(CVS_ROOT) checkout -r $(HSLIBSTAG) `for lib in $(HSLIBSDIRS); do echo fptools/hslibs/$$lib; done`
-	-mkdir packages
+	$(RM) -r packages cpphs hsc2hs
+	mkdir packages
 	for lib in $(LIBRARIESDIRS); do $(DARCS_GET) --repo-name=packages/$$lib $(DARCS_ROOT)/packages/$$lib; done
 # We don't use this, so don't leave it there for Cabal to run
 	cd packages; $(RM) HaXml/configure
