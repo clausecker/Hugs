@@ -465,7 +465,12 @@ New <link linkend="main-command"><command>:main</command></link> command
 </itemizedlist>
 
 <sect3>
-<title>In development</title>
+<title>September 2006</title>
+
+<para>
+This is a minor release fixing bugs in the May 2006 release,
+and including updated libraries matching those of GHC 6.6.
+</para>
 
 <itemizedlist>
 
