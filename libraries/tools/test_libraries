@@ -87,7 +87,7 @@ test_module() {
 				s:/:.:g' |
 			sort
 	done
-) | grep -v '^Prelude$' | grep -v '^[GN]HC' |
+) | grep -v '^Prelude$' | grep -v '^Setup$' | grep -v '^[GN]HC' |
 	grep -v '\.[a-z]' | grep -v '^[a-z]' |
 	while read module
 	do

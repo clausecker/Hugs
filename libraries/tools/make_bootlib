@@ -97,7 +97,7 @@ do
 			\( -name \*.hs -o -name \*.lhs -o -name \*.hsc \) -print |
 			sed '	s:^\./::
 				s/\..*//' |
-			grep -v '^Text/Regex' |
+			grep -v '^Setup$' |
 			$SORT -u >$all_modules
 
 		if [ -f hugs/exclude ]; then
