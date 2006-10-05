@@ -8,8 +8,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: storage.h,v $
- * $Revision: 1.68 $
- * $Date: 2004/11/14 11:02:38 $
+ * $Revision: 1.69 $
+ * $Date: 2006/10/05 09:14:17 $
  * ------------------------------------------------------------------------*/
 #ifndef __STORAGE_H__
 #define __STORAGE_H__
@@ -1114,7 +1114,7 @@ extern	StackPtr sp;
 #define topfun(f)    top()=ap((f),top())
 #define toparg(x)    top()=ap(top(),(x))
 
-extern  Void hugsStackOverflow Args((Void));
+extern  Void hugsStackOverflow Args((Void)) HUGS_noreturn;
 
 #if __MWERKS__ && macintosh
 #include <Memory.h>
