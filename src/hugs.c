@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: hugs.c,v $
- * $Revision: 1.150 $
- * $Date: 2006/08/05 15:49:59 $
+ * $Revision: 1.151 $
+ * $Date: 2006/10/06 11:49:08 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -956,9 +956,15 @@ static Void local autoReloadFiles() {
 static Void local interpreter(argc,argv)/* main interpreter loop           */
 Int    argc;
 String argv[]; {
+#if HAVE_SIGSEGV_H && HAVE_STACK_OVERFLOW_RECOVERY
+    char extra_stack[16384];
+#endif
     Int errorNumber = setjmp(catch_error);
 
     breakOn(TRUE);                      /* enable break trapping           */
+#if HAVE_SIGSEGV_H && HAVE_STACK_OVERFLOW_RECOVERY
+    stackoverflow_install_handler(stackOverflow, extra_stack, sizeof(extra_stack));
+#endif
     if ( numLoadedScripts()==0 ) {      /* only succeeds on first time,    */
 	if (errorNumber)                /* before Prelude has been loaded  */
 	    fatal("Unable to load Prelude");

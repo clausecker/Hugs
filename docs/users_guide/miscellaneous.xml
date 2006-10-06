@@ -485,6 +485,20 @@ more readable.
 
 </sect2>
 
+<sect2>
+<title>Under development</title>
+
+<itemizedlist>
+
+<listitem><para>
+C stack overflow is now caught if Hugs is built with
+<literal>libsigsegv</literal>.
+</para></listitem>
+
+</itemizedlist>
+
+</sect2>
+
 </sect1>
 
 </chapter>

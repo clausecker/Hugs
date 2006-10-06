@@ -11,8 +11,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: machdep.c,v $
- * $Revision: 1.140 $
- * $Date: 2006/05/11 15:14:11 $
+ * $Revision: 1.141 $
+ * $Date: 2006/10/06 11:49:08 $
  * ------------------------------------------------------------------------*/
 #include "prelude.h"
 #include "storage.h"
@@ -1553,7 +1553,7 @@ static Void local installHandlers() { /* Install handlers for all fatal    */
 # ifdef SIGQUIT
     signal(SIGQUIT,panic);
 # endif
-# ifdef SIGSEGV
+# if defined(SIGSEGV) && !(HAVE_SIGSEGV_H && HAVE_STACK_OVERFLOW_RECOVERY)
     signal(SIGSEGV,panic);
 # endif
 # ifdef SIGTERM

@@ -17,6 +17,14 @@ machine (including Linux, *BSD and MacOS X).  For other systems:
         a Unix-like environment.  You should be able to get help on the
         hugs-users mailing list.
 
+For best results, you should have the following libraries installed,
+though Hugs still builds without them:
+
+	sigsegv: used to catch C stack overflows
+	readline or editline: used to provide line editing in the interpreter
+
+Some of the extra library packages also rely on C libraries.
+
 Short version (for Unix-like environments):
 
     make EXTRA_CONFIGURE_OPTS=--prefix=$HOME

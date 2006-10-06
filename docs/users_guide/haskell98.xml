@@ -334,7 +334,10 @@ or just run indefinitely.
 Occasionally, depending on the relative sizes of your heap, Hugs stack
 and C stack, such expressions can overflow the C stack before exhausting
 the other two.
-On Unix, this usually causes a segmentation fault and causes Hugs to abort.
+This is caught on Windows if Hugs was compiled with Visual C++,
+and on other systems if Hugs was compiled with the
+<literal>libsigsegv</literal> library.
+In other cases, this triggers a segmentation fault and causes Hugs to abort.
 </para></listitem>
 </varlistentry>
 

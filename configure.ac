@@ -295,6 +295,7 @@ dnl--------------------------------------------------------------------
 AC_CHECK_LIB([dl], [dlopen])
 AC_CHECK_LIB([dld], [shl_load])
 AC_CHECK_LIB([m], [atan])
+AC_CHECK_LIB([sigsegv], [stackoverflow_install_handler])
 
 dnl--------------------------------------------------------------------
 dnl
@@ -309,6 +310,7 @@ AC_CHECK_HEADERS(stdarg.h stdlib.h unistd.h assert.h ctype.h string.h limits.h)
 AC_CHECK_HEADERS(fcntl.h sgtty.h termio.h termios.h signal.h)
 AC_CHECK_HEADERS(sys/types.h sys/stat.h sys/ioctl.h sys/resource.h sys/param.h)
 AC_CHECK_HEADERS(console.h Files.h errno.h stat.h direct.h dirent.h)
+AC_CHECK_HEADERS(sigsegv.h)
 
 AC_HEADER_TIME
 AC_CHECK_HEADERS(time.h sys/time.h sys/timeb.h sys/times.h)

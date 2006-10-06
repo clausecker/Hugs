@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: errors.h,v $
- * $Revision: 1.13 $
- * $Date: 2005/09/01 14:57:50 $
+ * $Revision: 1.14 $
+ * $Date: 2006/10/06 11:49:08 $
  * ------------------------------------------------------------------------*/
 #ifndef __ERRORS_H__
 #define __ERRORS_H__
@@ -91,6 +91,13 @@ extern Void errFail	 Args((Void)) HUGS_noreturn;
 extern Void errAbort	 Args((Void));
 
 extern sigProto(breakHandler);
+
+#if HAVE_SIGSEGV_H
+# include <sigsegv.h>
+# if HAVE_STACK_OVERFLOW_RECOVERY
+extern Void stackOverflow Args((int, stackoverflow_context_t)) HUGS_noreturn;
+# endif
+#endif
 
 extern Bool breakOn      Args((Bool));		   /* in machdep.c	   */
 

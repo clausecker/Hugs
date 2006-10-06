@@ -8,8 +8,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: prelude.h,v $
- * $Revision: 1.80 $
- * $Date: 2005/09/11 00:33:00 $
+ * $Revision: 1.81 $
+ * $Date: 2006/10/06 11:49:08 $
  * ------------------------------------------------------------------------*/
 #ifndef __PRELUDE_H__
 #define __PRELUDE_H__
@@ -765,13 +765,6 @@ typedef void*    Pointer;
 #define NUM_DOTNETPTRS	   Pick(10,     100,        10000)
 #endif
 #define NUM_DTUPLES	   Pick(3,      5,          5)
-
-/* Some infinite computations generate an infinite depth of alternations
- * between eval() and run().  If they don't use the Hugs stack or heap,
- * they will overrun the C stack, crashing the interpreter.  To protect
- * against this, we place a limit on the depth of recursion of eval().
- */
-#define MAX_EVAL_DEPTH	   Pick(1024,	4096,	    16384)
 
 /* Representation of Integer: requires BIGBASE == 10^BIGEXP */
 #define BIGBASE		   Pick(100,    10000,      10000)

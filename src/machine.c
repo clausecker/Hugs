@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: machine.c,v $
- * $Revision: 1.26 $
- * $Date: 2006/02/14 16:12:19 $
+ * $Revision: 1.27 $
+ * $Date: 2006/10/06 11:49:08 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -1316,8 +1316,6 @@ Cell n; {
     Int      ar;
 
     STACK_CHECK
-    if (++evalDepth == MAX_EVAL_DEPTH)
-	hugsStackOverflow();
 #if GIMME_STACK_DUMPS
     evalRoots[++rootsp] = n;		/* Save pointer to root expression */
 					/* should probably test that rootsp*/

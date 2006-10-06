@@ -169,6 +169,21 @@ sigHandler(breakHandler) {              /* respond to break interrupt      */
     sigResume;/*NOTREACHED*/
 }
 
+#if HAVE_SIGSEGV_H && HAVE_STACK_OVERFLOW_RECOVERY
+/* --------------------------------------------------------------------------
+ * Stack overflow handler:
+ * ------------------------------------------------------------------------*/
+void stackOverflow(int emergency, stackoverflow_context_t scp) {
+    sigsegv_leave_handler();
+    breakOn(TRUE);
+    if (emergency)
+	fatal("Stack overflow");
+    else
+	hugsStackOverflow();
+    /*NOTREACHED*/
+}
+#endif
+
 /* --------------------------------------------------------------------------
  * Compiler output
  * We can redirect compiler output (prompts, error messages, etc) by
