@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.180 $
- * $Date: 2006/08/30 18:46:22 $
+ * $Revision: 1.181 $
+ * $Date: 2006/10/18 15:50:39 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -751,12 +751,8 @@ Name c; {				/* CDICTS parameters		   */
 	t = monotypeOf(t);
     }
     if ((w=whatIs(t))==QUAL) {
-#if FAST_WHATIS			  /* decompose expression for whatIs macro */
-	t=snd(snd(t));
-	w = whatIs(t);
-#else
-	w = whatIs(t=snd(snd(t)));
-#endif
+	t = snd(snd(t));
+	w = whatIs(t);			/* whatIs() might be a macro       */
     }
     if (w==CDICTS) {
 	a -= length(fst(snd(t)));
