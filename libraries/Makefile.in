@@ -26,7 +26,7 @@ HSC2HS_SRC	= ../hsc2hs
 HUGS_SETUP	= HUGSFLAGS=-P../libraries/bootlib HUGSDIR=../hugsdir ../src/runhugs -98 ../packages/Cabal/examples/hapax.hs
 
 INCLUDES	= $(BUILD_DIR)/include/HsFFI.h
-# represents header files used by the base, network and unix packages
+# represents header files used by the base package
 FP_INCLUDES	= ../ghc/includes/ghcconfig.h
 
 # We use a bootstrap procedure to construct the libraries:
@@ -116,7 +116,7 @@ clean:
 	$(RM) ../cpphs/.installed-pkg-config
 	$(RM) ../packages/*/.installed-pkg-config
 	find ../packages -name \*.hsc | sed 's/c$$//' | xargs $(RM)
-	$(RM) -r ../ghc/includes
+	$(RM) -r ../ghc
 # package configuration is part of the build process, so clean it here
 	$(RM) hugsbase/.setup-config
 	$(RM) ../cpphs/.setup-config
