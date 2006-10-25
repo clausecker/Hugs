@@ -98,7 +98,7 @@ BOOL ValidMutexes = FALSE;
 CRITICAL_SECTION Mutex;
 HANDLE Contents;
 #define KeyboardBufferSize 25
-CHAR KeyboardBuffer[KeyboardBufferSize];
+int KeyboardBuffer[KeyboardBufferSize];
 int KeyboardBufferCount = 0;
 
 void EnterContents()
@@ -166,10 +166,6 @@ int WinHugsGetC(FILE* f)
     if (KeyboardBufferCount > 0)
 	ExitContents();
     LeaveCriticalSection(&Mutex);
-
-    // fix problem with char/int truncation
-    if (Res < 0)
-	Res += 256;
 
     WinHugsPutC(stdout, Res);
     return Res;
