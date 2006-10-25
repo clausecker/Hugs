@@ -167,7 +167,11 @@ int WinHugsGetC(FILE* f)
 	ExitContents();
     LeaveCriticalSection(&Mutex);
 
-    WinHugsPutC(stdout, Res);
+    if (Res == 4 || Res == 26)
+	Res = EOF;
+    else
+        WinHugsPutC(stdout, Res);
+
     return Res;
 }
 
