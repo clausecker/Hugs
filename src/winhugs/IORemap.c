@@ -120,6 +120,7 @@ void IORemapBegin()
 	DeleteCriticalSection(&Mutex);
 	CloseHandle(Contents);
     }
+    KeyboardBufferCount = 0;
     InitializeCriticalSection(&Mutex);
     Contents = CreateSemaphore(NULL, 0, 1, NULL);
     ValidMutexes = TRUE;
@@ -175,7 +176,7 @@ int WinHugsGetC(FILE* f)
 	AbortExecution();
 	return EOF;
     }
-    else
+    else if (Res != 0)
         WinHugsPutC(stdout, Res);
 
     return Res;
