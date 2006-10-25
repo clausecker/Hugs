@@ -145,35 +145,34 @@ void WinHugsReceiveC(int c)
 
 int WinHugsGetC(FILE* f)
 {
-    if (f == stdin) {
-        int Res, i;
+    int Res, i;
 
-	EnterCriticalSection(&Mutex);
-	if (KeyboardBufferCount == 0) {
-            SetStatusBar("Waiting for user input");
-	    LeaveCriticalSection(&Mutex);
-	    EnterContents();
-	    EnterCriticalSection(&Mutex);
-	    SetStatusBar("");
-	}
+    if (f != stdin) return fgetc(f);
 
-	Res = KeyboardBuffer[0];
-	for (i = 1; i < KeyboardBufferSize; i++)
-	    KeyboardBuffer[i-1] = KeyboardBuffer[i];
-	KeyboardBufferCount--;
-
-	if (KeyboardBufferCount > 0)
-	    ExitContents();
+    EnterCriticalSection(&Mutex);
+    if (KeyboardBufferCount == 0) {
+        SetStatusBar("Waiting for user input");
 	LeaveCriticalSection(&Mutex);
+	EnterContents();
+	EnterCriticalSection(&Mutex);
+	SetStatusBar("");
+    }
 
-	// fix problem with char/int truncation
-	if (Res < 0)
-	    Res += 256;
+    Res = KeyboardBuffer[0];
+    for (i = 1; i < KeyboardBufferSize; i++)
+	KeyboardBuffer[i-1] = KeyboardBuffer[i];
+    KeyboardBufferCount--;
 
-	WinHugsPutC(stdout, Res);
-	return Res; // no support for interact
-    } else
-	return fgetc(f);
+    if (KeyboardBufferCount > 0)
+	ExitContents();
+    LeaveCriticalSection(&Mutex);
+
+    // fix problem with char/int truncation
+    if (Res < 0)
+	Res += 256;
+
+    WinHugsPutC(stdout, Res);
+    return Res;
 }
 
 void WinHugsFilename(const char* FileName, int LineNo)
