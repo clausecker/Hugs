@@ -1,6 +1,7 @@
 #include "Header.h"
 #include <stdio.h>
 #include "Winhugs.h"
+#include "Winmenu.h"
 
 #include <prelude.h>
 #include <storage.h>
@@ -167,8 +168,13 @@ int WinHugsGetC(FILE* f)
 	ExitContents();
     LeaveCriticalSection(&Mutex);
 
-    if (Res == 4 || Res == 26)
+    if (Res == 4 || Res == 26) // Ctrl D, Ctrl Z
 	Res = EOF;
+    else if (Res == 3) // Ctrl C
+    {
+	AbortExecution();
+	return EOF;
+    }
     else
         WinHugsPutC(stdout, Res);
 
