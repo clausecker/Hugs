@@ -153,7 +153,7 @@ int WinHugsGetC(FILE* f)
 
     EnterCriticalSection(&Mutex);
     if (KeyboardBufferCount == 0) {
-        SetStatusBar("Waiting for user input");
+        SetStatusBar("Waiting for user input, Ctrl+D to end");
 	LeaveCriticalSection(&Mutex);
 	EnterContents();
 	EnterCriticalSection(&Mutex);
