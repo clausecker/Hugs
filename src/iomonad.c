@@ -14,8 +14,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: iomonad.c,v $
- * $Revision: 1.101 $
- * $Date: 2006/05/03 09:10:40 $
+ * $Revision: 1.102 $
+ * $Date: 2006/10/25 18:34:02 $
  * ------------------------------------------------------------------------*/
  
 Name nameIORun;			        /* run IO code                     */
@@ -505,7 +505,11 @@ static Char local hGetChar(Int h, String fname) {
 #else /* !CHAR_ENCODING */
     c = FGetChar(handles[h].hfp);
 #endif
+#if HUGS_FOR_WINDOWS
+    if (c==EOF && handles[h].hfp!=stdin && !feof(handles[h].hfp))
+#else
     if (c==EOF && !feof(handles[h].hfp))
+#endif
 	throwErrno(fname, TRUE, h, NULL);
 #if CHAR_ENCODING
     else if (c==BAD_CHAR) {
