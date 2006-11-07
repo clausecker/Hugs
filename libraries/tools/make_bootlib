@@ -162,13 +162,14 @@ $ffihugs '-i"HsBase.h"' Foreign.Marshal.Alloc $base_includes \
 $ffihugs '-i"HsBase.h"' Foreign.Marshal.Utils $base_includes $base_libs
 $ffihugs '-i"HsBase.h"' Foreign.Ptr $base_includes \
 	$source/base/cbits/PrelIOUtils.c $base_libs
+$ffihugs '-i"HsBase.h"' System.Directory $base_includes \
+	$source/base/cbits/PrelIOUtils.c $base_libs
 
 case $platform in
 Unix)
 	$ffihugs '-i"HsBase.h"' System.Posix.Internals $base_includes
 	;;
 Win32)
-	$ffihugs '-i"HsBase.h"' System.Directory $base_includes $base_libs
 	$ffihugs Distribution.Simple.Utils
 	$ffihugs -98 Distribution.Simple.LocalBuildInfo
 	;;
