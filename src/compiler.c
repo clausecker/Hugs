@@ -9,8 +9,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: compiler.c,v $
- * $Revision: 1.25 $
- * $Date: 2003/12/04 13:53:50 $
+ * $Revision: 1.26 $
+ * $Date: 2006/11/14 09:09:47 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -573,7 +573,7 @@ List seg; {
  *   vi = e1,        if the ith component of C is labelled with x1
  *       ...
  *      = en,        if the ith component of C is labelled with xn
- *      = undefined, otherwise
+ *      = throw (RecConError "C"), otherwise
  *
  * Update is implemented using the following transformation:
  *
@@ -605,6 +605,11 @@ List seg; {
  * at a later stage to cache definitions of functions like nv above.  This
  * would create a shared library of update functions, indexed by a set of
  * constructors {C,D,...}.
+ *
+ * In the case of newtypes, the translation is simply
+ *   C{}      =  throw (RecConError "C")
+ *   C{x=e}   =  e
+ *   e{x=e'}  =  e'
  * ------------------------------------------------------------------------*/
 
 static Cell local transConFlds(c,flds)  /* Translate C{flds}               */
@@ -617,6 +622,8 @@ List flds; {
     Cell tStr   = mkStr(t);
     Cell empty  = ap(namePrimThrow, ap(nameRecConError, tStr));
 
+    if (m==1 && name(c).defn==nameId)	/* for newtype */
+	return isNull(flds) ? empty : translate(snd(hd(flds)));
     for (i=m; i>0; i--) {
 	e = ap(e,empty);
     }
@@ -639,6 +646,8 @@ List flds; {
     List args = NIL;
     List alts = NIL;
 
+    if (nonNull(cs) && isNull(tl(cs)) && name(hd(cs)).defn==nameId)
+	return translate(snd(hd(flds))); /* for newtype */
     for (; nonNull(fs); fs=tl(fs)) {    /* body = nv e1 ... en             */
 	Cell b = hd(fs);                /* args = [v1, ..., vn]            */
 	body   = ap(body,translate(snd(b)));
