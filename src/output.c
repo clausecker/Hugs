@@ -8,8 +8,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: output.c,v $
- * $Revision: 1.40 $
- * $Date: 2005/11/02 15:57:56 $
+ * $Revision: 1.41 $
+ * $Date: 2006/11/15 16:34:57 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -261,6 +261,13 @@ Cell e; {
 			      putChr(charOf(arg(hd(xs))));
 			  break;
 #endif
+
+	case FLOATCELL  : {   Float f = (Double)floatOf(e);
+			      if (f<0 && d>=UMINUS_PREC) putChr('(');
+			      putStr(floatToString(f));
+			      if (f<0 && d>=UMINUS_PREC) putChr(')');
+			  }
+			  break;
 
 	case DOUBLECELL : {   Double f = (Double)doubleOf(e);
 			      if (f<0 && d>=UMINUS_PREC) putChr('(');
@@ -833,6 +840,13 @@ Int  co; {
 			      if (i<0 && d>=UMINUS_PREC) putChr('(');
 			      putInt(i);
 			      if (i<0 && d>=UMINUS_PREC) putChr(')');
+			  }
+			  break;
+
+	case FLOATCELL  : {   Float f = (Double)floatOf(e);
+			      if (f<0 && d>=UMINUS_PREC) putChr('(');
+			      putStr(floatToString(f));
+			      if (f<0 && d>=UMINUS_PREC) putChr(')');
 			  }
 			  break;
 
