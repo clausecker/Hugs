@@ -1,2 +1,0 @@
-?package(hugs):needs="text" section="Apps/Programming"\
-  title="Hugs" command="/usr/bin/hugs"

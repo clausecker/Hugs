@@ -89,7 +89,6 @@ distclean_root: clean_root
 	$(RM) MkDefs tests/config
 
 veryclean_root: distclean_root
-	cd debian; $(RM) control hugs.copyright libhugs-*-bundled.*
 
 ################################################################
 # Regression tests (Unix only)
@@ -154,9 +153,3 @@ $(PACKAGES):
 	cd packages; mv Cabal/*.lhs Cabal/examples
 	$(DARCS_GET) $(DARCS_CPPHS)
 	$(DARCS_GET) $(DARCS_ROOT)/hsc2hs
-
-debian/control: debian/control.in debian/make-control.hs
-	cp License debian/hugs.copyright
-# We need runhugs to build a Debian source package from CVS,
-# but don't complain if it's unavailable.
-	-runhugs -98 debian/make-control.hs `ls packages/*/*.cabal | grep -v Win32` 2>/dev/null
