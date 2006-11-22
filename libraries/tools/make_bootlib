@@ -94,6 +94,7 @@ do
 	(
 		cd $package_dir
 		$FIND . \( -name '[a-z]*' -o -name '[GN]HC' \) -prune -o \
+			-wholename './Setup.*' -prune -o \
 			\( -name \*.hs -o -name \*.lhs -o -name \*.hsc \) -print |
 			sed '	s:^\./::
 				s/\..*//' |

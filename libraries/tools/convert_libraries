@@ -73,7 +73,21 @@ build_package() {
 
 	runhugs=$top_dir/src/runhugs
 	ffihugs=$top_dir/src/ffihugs
-	HugsSetup="$runhugs -98 $top_dir/packages/Cabal/examples/hapax.hs"
+
+	# Copy the setup script into an empty directory, so that runhugs
+	# won't attempt to load modules from the package.
+	# (Specifically the base and Cabal packages)
+	setup_dir=$top_dir/libraries/tmp
+	mkdir -p $setup_dir
+	if test -f Setup.lhs
+	then	cp Setup.lhs $setup_dir
+		setup_script=$setup_dir/Setup.lhs
+	elif test -f Setup.hs
+	then	cp Setup.hs $setup_dir
+		setup_script=$setup_dir/Setup.hs
+	else	setup_script=$top_dir/packages/Cabal/examples/hapax.hs
+	fi
+	HugsSetup="$runhugs -98 $setup_script"
 
 	case "$happy" in
 	'')	happyflag= ;;
@@ -93,8 +107,8 @@ build_package() {
 			--scratchdir="$top_dir/$target_dir" \
 			--with-hsc2hs="$top_dir/libraries/tools/hsc2hs$bat" \
 			--with-cpphs="$top_dir/libraries/tools/cpphs$bat" \
-			--with-compiler="$top_dir/src/ffihugs" $happyflag \
-			$extra_opts
+			--with-runhugs="$runhugs" --with-compiler="$ffihugs" \
+			$happyflag $extra_opts
 	if $HugsSetup build --verbose; then
 		for name in LICEN[CS]E* COPYING* COPYRIGHT* copyright; do
 			if test -f $name; then

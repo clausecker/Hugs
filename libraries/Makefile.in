@@ -23,7 +23,7 @@ HSC2HS_SRC	= ../hsc2hs
 
 # set the path both for runhugs and any ffihugs invoked by Cabal
 # HUGSDIR gives the location of HsFFI.h
-HUGS_SETUP	= HUGSFLAGS=-P../libraries/bootlib HUGSDIR=../hugsdir ../src/runhugs -98 ../packages/Cabal/examples/hapax.hs
+HUGS_SETUP	= HUGSFLAGS=-P../libraries/bootlib HUGSDIR=../hugsdir ../src/runhugs -98 Setup.hs
 
 INCLUDES	= $(BUILD_DIR)/include/HsFFI.h
 # represents header files used by the base package
@@ -127,6 +127,7 @@ clean:
 	$(RM) ../packages/*/config.status
 	$(RM) -r ../packages/*/autom4te.cache
 	find ../packages -name \*.in | sed 's/\.in$$//' | xargs $(RM)
+	$(RM) -r tmp
 
 distclean: clean
 	$(RM) $(HSC2HS_FILE)

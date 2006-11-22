@@ -147,9 +147,5 @@ $(PACKAGES):
 	$(RM) -r packages cpphs hsc2hs
 	mkdir packages
 	for lib in $(LIBRARIESDIRS); do $(DARCS_GET) --repo-name=packages/$$lib $(DARCS_ROOT)/packages/$$lib; done
-# We don't use this, so don't leave it there for Cabal to run
-	cd packages; $(RM) HaXml/configure
-# Move these so that make_bootlib won't convert them
-	cd packages; mv Cabal/*.lhs Cabal/examples
 	$(DARCS_GET) $(DARCS_CPPHS)
 	$(DARCS_GET) $(DARCS_ROOT)/hsc2hs

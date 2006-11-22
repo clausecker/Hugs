@@ -69,8 +69,6 @@ $(PACKAGE).tar.gz:
 	cd $(TARTMP)/hugs98; mkdir packages
 	cd $(TARTMP)/hugs98/packages; for lib in $(LIBRARIESDIRS); do $(DARCS_GET) $(DARCS_ROOT)/packages/$$lib; done
 	cd $(TARTMP)/hugs98/packages; $(RM) -r */_darcs
-	cd $(TARTMP)/hugs98/packages; $(RM) HaXml/configure
-	cd $(TARTMP)/hugs98/packages; mv Cabal/*.lhs Cabal/examples
 # preprocess, so the package can be built without happy
 	if test -d $(TARTMP)/hugs98/packages/haskell-src; \
 		then $(HAPPY) $(TARTMP)/hugs98/packages/haskell-src/Language/Haskell/Parser.ly; \
