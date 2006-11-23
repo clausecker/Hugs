@@ -9,14 +9,11 @@
 module HugsLibs where
 
 import StdLibs
-import Trace
 import Number
 import ParseLib
 import Interact
 import AnsiScreen
 import AnsiInteract
-import IOExtensions
 import ListUtils
-import Dynamic
 
 -----------------------------------------------------------------------------
