@@ -48,16 +48,13 @@ CPPHS_FILE	= $(CPPHS)$(BAT)
 HSC2HS_FILE	= $(HSC2HS)$(BAT)
 MAKE_BOOT	= tools/make_bootlib
 CONVERT		= tools/convert_libraries
-MAKE_OLDLIB	= tools/make_oldlib
 BOOTLIB		= bootlib/.stamp
 LIBS		= $(BUILD_DIR)/.stamp
 
 all: $(LIBS)
 
-$(LIBS): $(BOOTLIB) $(INCLUDES) $(CPPHS_FILE) $(HSC2HS_FILE) $(CONVERT) $(MAKE_OLDLIB)
+$(LIBS): $(BOOTLIB) $(INCLUDES) $(CPPHS_FILE) $(HSC2HS_FILE) $(CONVERT)
 	cd ..; HOST='$(HOST)' PREFIX='$(prefix)' libraries/$(CONVERT) fptools hugsdir
-	$(RM) -r $(BUILD_DIR)/oldlib
-	cd ..; libraries/$(MAKE_OLDLIB) fptools hugsdir
 	echo timestamp for libraries >$@
 
 $(HSC2HS): $(BUILD_DIR)/programs/hsc2hs/Main.hs
@@ -142,8 +139,6 @@ veryclean: distclean
 install: all
 	$(INSTALL) -d $(DESTDIR)$(hugsdir)/include
 	$(INSTALL_DATA) $(BUILD_DIR)/include/* $(DESTDIR)$(hugsdir)/include
-	$(INSTALL) -d $(DESTDIR)$(hugsdir)/oldlib
-	$(INSTALL_DATA) $(BUILD_DIR)/oldlib/* $(DESTDIR)$(hugsdir)/oldlib
 	(cd $(BUILD_DIR); find packages -type f -print) | while read file;\
 		do	dir=`dirname $$file`;\
 			case $$file in \

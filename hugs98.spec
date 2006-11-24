@@ -74,7 +74,6 @@ make -C docs DESTDIR=${RPM_BUILD_ROOT} install_man
 %{_prefix}/bin/runhugs
 %{_prefix}/lib/hugs/demos
 %{_prefix}/lib/hugs/include
-%{_prefix}/lib/hugs/oldlib
 %{_prefix}/lib/hugs/packages
 %{_prefix}/lib/hugs/programs
 %{_prefix}/share/hsc2hs-0.67/template-hsc.h

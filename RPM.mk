@@ -63,9 +63,7 @@ $(PACKAGE).tar.gz:
 # Note: The following line will not work correctly for "make -C blah".
 	CVSROOT=$(CVS_ROOT); export CVSROOT; \
 	  cd $(TARTMP); \
-	  cvs export -r $(TAG) hugs98; \
-	  cd hugs98; \
-	  cvs export -r $(HSLIBSTAG) `for lib in $(HSLIBSDIRS); do echo fptools/hslibs/$$lib; done`
+	  cvs export -r $(TAG) hugs98
 	cd $(TARTMP)/hugs98; mkdir packages
 	cd $(TARTMP)/hugs98/packages; for lib in $(LIBRARIESDIRS); do $(DARCS_GET) $(DARCS_ROOT)/packages/$$lib; done
 	cd $(TARTMP)/hugs98/packages; $(RM) -r */_darcs

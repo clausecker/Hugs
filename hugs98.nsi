@@ -42,7 +42,6 @@ Section
 	File /r /x *.c "hugsdir\libraries"
 	File /r /x *.c "hugsdir\packages"
 	File /r /x *.c "hugsdir\programs"
-	File /r "hugsdir\oldlib"
 	File /r "hugsdir\demos"
 	File /r "hugsdir\include"
 

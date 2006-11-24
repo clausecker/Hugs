@@ -12,10 +12,8 @@ MAJOR_RELEASE = 0
 RELEASE = 1
 
 TAG = HEAD
-HSLIBSTAG = HEAD
 
 CVS_ROOT = :pserver:anoncvs@cvs.haskell.org:/cvs
-HSLIBSDIRS = concurrent data hssource lang net text util posix
 
 DARCS_ROOT = http://darcs.haskell.org
 LIBRARIESDIRS = base haskell98 haskell-src mtl network parsec QuickCheck unix \
@@ -143,8 +141,6 @@ configure: configure.ac aclocal.m4 $(PACKAGES)
 # fetching library sources and utility programs
 
 $(PACKAGES):
-	cvs -d $(CVS_ROOT) checkout -r $(HSLIBSTAG) `for lib in $(HSLIBSDIRS); do echo fptools/hslibs/$$lib; done`
-	$(RM) -r packages cpphs hsc2hs
 	mkdir packages
 	for lib in $(LIBRARIESDIRS); do $(DARCS_GET) --repo-name=packages/$$lib $(DARCS_ROOT)/packages/$$lib; done
 	$(DARCS_GET) $(DARCS_CPPHS)
