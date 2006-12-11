@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: builtin.c,v $
- * $Revision: 1.93 $
- * $Date: 2006/06/01 22:20:17 $
+ * $Revision: 1.94 $
+ * $Date: 2006/12/11 08:14:51 $
  * ------------------------------------------------------------------------*/
 
 /* We include math.h before prelude.h because SunOS 4's cpp incorrectly
@@ -2113,7 +2113,7 @@ static void* mkThunk(void (*app)(void), HugsStablePtr s) {
 	    while(n--)
 	    {
 		__asm__ volatile ("dcbf 0,%0\n\tsync\n\ticbi 0,%0"
-				: : "g" (p));
+				: : "r" (p));
 		p++;
 	    }
 	    __asm__ volatile ("sync\n\tisync");
