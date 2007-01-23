@@ -610,7 +610,7 @@ Pair importSpec; {
 	  } else {
 	    if (!entityIsMember(e,hidden)) {
 	      if (isQual) {
-		modImps = cons(pair(e,NIL),modImps);
+		modImps = cons(e, modImps);
 	      } else {
 		modImps = cons(importEntity(m,e), modImps);
 	      }
