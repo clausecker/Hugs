@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: static.c,v $
- * $Revision: 1.181 $
- * $Date: 2006/10/18 15:50:39 $
+ * $Revision: 1.182 $
+ * $Date: 2007/02/12 10:36:16 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"
@@ -5480,7 +5480,9 @@ static Void local leaveScope() {	/* Leave scope of last withinScope */
 	Cell b = hd(bs);
 	if (isVar(fst(b))) {		/* Variable binding		   */
 	    Cell a = fst(snd(b));
-	    dropNameClash(fst(b));
+	    if (toplevel) {
+		dropNameClash(fst(b));
+	    }
 	    if (isPair(a)) {
 		if (toplevel) {
 		    saveSyntax(fst(b),snd(a));
@@ -5492,8 +5494,8 @@ static Void local leaveScope() {	/* Leave scope of last withinScope */
 	    List as = fst(snd(b));
 	    while (nonNull(vs) && nonNull(as)) {
 		if (isPair(hd(as))) {
-		    dropNameClash(hd(vs));
 		    if (toplevel) {
+			dropNameClash(hd(vs));
 			saveSyntax(hd(vs),snd(hd(as)));
 		    }
 		    hd(as) = fst(hd(as));
@@ -6590,17 +6592,19 @@ Bool check; {
 
 	n = findBinding(t,hd(bindings1)); /* look for t in var bindings    */
 	if (nonNull(n)) {
+	    Cell dep = isVar(fst(n)) ? fst(n) : e;
+
 	    if (!cellIsMember(n,hd(depends1))) {
 		hd(depends1) = cons(n,hd(depends1));
 	    }
 #if MUDO
-	    mdepends = cons(isVar(fst(n)) ? fst(n) : e,mdepends);
+	    mdepends = cons(dep,mdepends);
 #endif
 
-	    if (check) {
-	      checkNameAmbig(line,t, (isVar(fst(n)) ? fst(n) : e));
+	    if (check && isNull(tl(bindings1))) {
+		checkNameAmbig(line,t,dep);
 	    }
-	    return (isVar(fst(n)) ? fst(n) : e);
+	    return dep;
 	}
 
 	bounds1   = tl(bounds1);
