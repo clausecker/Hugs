@@ -158,6 +158,7 @@ install: all
 			$(INSTALL) -d $(DESTDIR)$(hugsdir)/$$dir;\
 			$(INSTALL) -c -m 0644 $(BUILD_DIR)/$$file $(DESTDIR)$(hugsdir)/$$file;\
 		done
+	$(INSTALL) -d $(DESTDIR)$(bindir)
 	(echo '#! /bin/sh'; \
 	 echo 'runhugs $(hugsdir)/programs/cpphs/Main.hs "$$@"') >$(DESTDIR)$(bindir)/cpphs-hugs
 	chmod 755 $(DESTDIR)$(bindir)/cpphs-hugs
