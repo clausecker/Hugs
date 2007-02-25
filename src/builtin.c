@@ -7,8 +7,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: builtin.c,v $
- * $Revision: 1.95 $
- * $Date: 2007/02/25 16:57:40 $
+ * $Revision: 1.96 $
+ * $Date: 2007/02/25 17:09:49 $
  * ------------------------------------------------------------------------*/
 
 /* We include math.h before prelude.h because SunOS 4's cpp incorrectly
@@ -1774,16 +1774,16 @@ static void putPtr   (HsPtr    x) { push(mkPtr(x)); }
 static void putFunPtr(HsFunPtr x) { push(mkPtr((Pointer)x)); }
 
 static void putStablePtr4(HsStablePtr   x) {
-    push((HugsStablePtr)(x - ((HsStablePtr)0)));
+    push((HugsStablePtr)((char*)x - (char*)0));
 }
 
 static HsStablePtr getStablePtr4(void) { 
     HugsStablePtr x = pop();
-    return (HsStablePtr)(((HsStablePtr)0) + x);
+    return (HsStablePtr)((char*)0 + x);
 }
 
 static Void freeStablePtr4(HsStablePtr x) {
-    if (x) freeStablePtr((HugsStablePtr)(x - ((HsStablePtr)0)));
+    if (x) freeStablePtr((HugsStablePtr)((char*)x - (char*)0));
 }
 
 static HsFloat        getFloat()     { eval(pop()); checkFloat(); return whnfFloat; }
