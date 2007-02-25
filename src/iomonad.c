@@ -14,8 +14,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: iomonad.c,v $
- * $Revision: 1.102 $
- * $Date: 2006/10/25 18:34:02 $
+ * $Revision: 1.103 $
+ * $Date: 2007/02/25 16:57:40 $
  * ------------------------------------------------------------------------*/
  
 Name nameIORun;			        /* run IO code                     */
@@ -1633,13 +1633,13 @@ primFun(primFreeSP) {			/* StablePtr a -> IO ()   	   */
 primFun(primCastSPToP) {		/* StablePtr a -> Ptr ()   	   */
     HugsStablePtr x;
     SPArg(x,1);
-    PtrResult((Pointer)x);
+    PtrResult(((Pointer)0) + x);
 }
 
 primFun(primCastPToSP) {		/* Ptr () -> StablePtr a   	   */
     Pointer x;
     PtrArg(x,1);
-    SPResult((HsStablePtr)x);
+    SPResult((HugsStablePtr)(x - ((Pointer)0)));
 }
 
 
