@@ -101,8 +101,8 @@ rpm-dirs:
 rpm: tar rpm-dirs
 	cp $(PACKAGE).tar.gz $(RPMTMP)/SOURCES
 	$(RPMBUILD) $(RPMDEFS) -ba $(SPECFILE)
-	mv $(RPMTMP)/RPMS/i?86/$(PACKAGE)-$(RELEASE).i?86.rpm .
-	mv $(RPMTMP)/SRPMS/$(PACKAGE)-$(RELEASE).src.rpm .
+	mv $(RPMTMP)/RPMS/*/$(PACKAGE)-$(RELEASE)*.rpm .
+	mv $(RPMTMP)/SRPMS/$(PACKAGE)-$(RELEASE)*.src.rpm .
 
 rc-rpm:
 	$(MAKE) VERSION_SUBSTS='$(RC_VERSION_SUBSTS)' rpm
