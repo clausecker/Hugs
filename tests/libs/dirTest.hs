@@ -3,7 +3,7 @@ module Main where
 
 import Directory
 import IO
-import List ( isPrefixOf )
+import List ( isPrefixOf, sort )
 
 
 exHandler :: (IOError -> Bool)
@@ -54,11 +54,11 @@ dir5 = exHandler (const False) $ do
     createDirectory "dir5_test_dir"
     writeFile "dir5_test_dir/a" "ab"
     writeFile "dir5_test_dir/b" "cd"
-    getDirectoryContents "dir5_test_dir" >>= print
+    getDirectoryContents "dir5_test_dir" >>= print . sort
     removeFile "dir5_test_dir/b"
-    getDirectoryContents "dir5_test_dir" >>= print
+    getDirectoryContents "dir5_test_dir" >>= print . sort
     removeFile "dir5_test_dir/a"
-    getDirectoryContents "dir5_test_dir" >>= print
+    getDirectoryContents "dir5_test_dir" >>= print . sort
     removeDirectory "dir5_test_dir"
     return ()
     
