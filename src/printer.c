@@ -8,8 +8,8 @@
  * the license in the file "License", which is included in the distribution.
  *
  * $RCSfile: printer.c,v $
- * $Revision: 1.15 $
- * $Date: 2006/09/05 22:43:44 $
+ * $Revision: 1.16 $
+ * $Date: 2007/02/26 11:57:20 $
  * ------------------------------------------------------------------------*/
 
 static Void   local printer		Args((Name,Int));
@@ -277,7 +277,7 @@ Int  d; {				/* precedence level		   */
 			    char buffer[32];
 			    char spec[16];
 			    /* Fall into line with how GHC shows Addrs  */
-			    sprintf(spec,"0x%%.%dx", (SIZEOF_INTP)*2);
+			    sprintf(spec,"0x%%.%dlx", (SIZEOF_INTP)*2);
 			    sprintf(buffer,spec,(long)p);
 #if 0
 			    /* Old skool */
