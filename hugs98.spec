@@ -15,6 +15,7 @@ Provides:      haskell
 PreReq:        update-alternatives
 Requires:      readline
 BuildRequires: update-alternatives
+Summary:       Hugs 98 - A Haskell Interpreter
 
 %description
 Hugs 98 is a functional programming system based on Haskell 98, the de facto
