@@ -2,18 +2,19 @@
 # (`make rpm' takes care of these - you aren't expected to
 # use this spec directly)
 
-Name:         %{name}
-Version:      %{version}
-Release:      %{release}
-License:      BSDish
-Group:        Development/Languages/Haskell
-URL:          http://haskell.org/hugs/
-Source:       %{name}-%{version}.tar.gz
-Packager:     Sven Panne <sven.panne@aedion.de>
-BuildRoot:    %{_tmppath}/%{name}-buildroot
-Provides:     haskell
-Requires:     readline
-Summary:      Hugs 98 - A Haskell Interpreter
+Name:          %{name}
+Version:       %{version}
+Release:       %{release}
+License:       BSDish
+Group:         Development/Languages/Haskell
+URL:           http://haskell.org/hugs/
+Source:        %{name}-%{version}.tar.gz
+Packager:      Sven Panne <sven.panne@aedion.de>
+BuildRoot:     %{_tmppath}/%{name}-buildroot
+Provides:      haskell
+PreReq:        update-alternatives
+Requires:      readline
+BuildRequires: update-alternatives
 
 %description
 Hugs 98 is a functional programming system based on Haskell 98, the de facto
@@ -53,6 +54,32 @@ make
 rm -rf ${RPM_BUILD_ROOT}
 make DESTDIR=${RPM_BUILD_ROOT} install_all_but_docs
 make -C docs DESTDIR=${RPM_BUILD_ROOT} install_man
+
+%clean
+rm -rf ${RPM_BUILD_ROOT}
+
+%post
+# Alas, GHC, Hugs and nhc all come with different set of tools in addition to
+# a runFOO:
+#
+#   * GHC:  hsc2hs
+#   * Hugs: hsc2hs, cpphs
+#   * nhc:  cpphs
+#
+# Therefore it is currently not possible to use --slave below to form link
+# groups under a single name 'runhaskell'. Either these tools should be
+# disentangled from the Haskell implementations or all implementations should
+# have the same set of tools. *sigh*
+update-alternatives --install %{_bindir}/runhaskell runhaskell %{_bindir}/runhugs     300
+update-alternatives --install %{_bindir}/hsc2hs     hsc2hs     %{_bindir}/hsc2hs-hugs 300
+update-alternatives --install %{_bindir}/cpphs      cpphs      %{_bindir}/cpphs-hugs  300
+
+%preun
+if test "$1" = 0; then
+  update-alternatives --remove runhaskell %{_bindir}/runhugs
+  update-alternatives --remove hsc2hs     %{_bindir}/hsc2hs-hugs
+  update-alternatives --remove cpphs      %{_bindir}/cpphs-hugs
+fi
 
 %files
 %defattr(-,root,root)
