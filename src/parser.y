@@ -9,9 +9,6 @@
  * 1994-2003, All rights reserved.  It is distributed as free software under
  * the license in the file "License", which is included in the distribution.
  *
- * $RCSfile: parser.y,v $
- * $Revision: 1.50 $
- * $Date: 2006/08/30 18:57:13 $
  * ------------------------------------------------------------------------*/
 
 %{

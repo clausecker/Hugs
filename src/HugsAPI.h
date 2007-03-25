@@ -6,9 +6,6 @@
  * 1994-2003, All rights reserved.  It is distributed as free software under
  * the license in the file "License", which is included in the distribution.
  *
- * $RCSfile: HugsAPI.h,v $
- * $Revision: 1.3 $
- * $Date: 2004/02/04 17:53:38 $
  * ------------------------------------------------------------------------*/
 #ifndef __HUGSAPI_H__
 #define __HUGSAPI_H__

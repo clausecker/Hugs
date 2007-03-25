@@ -7,9 +7,6 @@
  * 1994-2003, All rights reserved.  It is distributed as free software under
  * the license in the file "License", which is included in the distribution.
  *
- * $RCSfile: printer.c,v $
- * $Revision: 1.16 $
- * $Date: 2007/02/26 11:57:20 $
  * ------------------------------------------------------------------------*/
 
 static Void   local printer		Args((Name,Int));

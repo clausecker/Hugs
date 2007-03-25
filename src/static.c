@@ -6,9 +6,6 @@
  * 1994-2003, All rights reserved.  It is distributed as free software under
  * the license in the file "License", which is included in the distribution.
  *
- * $RCSfile: static.c,v $
- * $Revision: 1.182 $
- * $Date: 2007/02/12 10:36:16 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"

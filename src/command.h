@@ -6,9 +6,6 @@
  * 1994-2003, All rights reserved.  It is distributed as free software under
  * the license in the file "License", which is included in the distribution.
  *
- * $RCSfile: command.h,v $
- * $Revision: 1.15 $
- * $Date: 2006/01/10 23:31:44 $
  * ------------------------------------------------------------------------*/
 #ifndef __COMMAND_H__
 #define __COMMAND_H__

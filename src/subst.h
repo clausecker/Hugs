@@ -6,9 +6,6 @@
  * 1994-2003, All rights reserved.  It is distributed as free software under
  * the license in the file "License", which is included in the distribution.
  *
- * $RCSfile: subst.h,v $
- * $Revision: 1.11 $
- * $Date: 2004/11/04 00:01:31 $
  * ------------------------------------------------------------------------*/
 #ifndef __SUBST_H__
 #define __SUBST_H__

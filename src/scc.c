@@ -6,9 +6,6 @@
  * 1994-2003, All rights reserved.  It is distributed as free software under
  * the license in the file "License", which is included in the distribution.
  *
- * $RCSfile: scc.c,v $
- * $Revision: 1.5 $
- * $Date: 2003/10/14 13:56:24 $
  * ------------------------------------------------------------------------*/
 
 #ifndef SCC_C

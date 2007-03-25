@@ -6,9 +6,6 @@
  * 1994-2003, All rights reserved.  It is distributed as free software under
  * the license in the file "License", which is included in the distribution.
  *
- * $RCSfile: bignums.c,v $
- * $Revision: 1.15 $
- * $Date: 2004/10/29 12:43:09 $
  * ------------------------------------------------------------------------*/
 
 /*#define DEBUG_BIGNUMS*/

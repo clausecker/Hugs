@@ -6,9 +6,6 @@
  * 1994-2005, All rights reserved.  It is distributed as free software under
  * the license in the file "License", which is included in the distribution.
  *
- * $RCSfile: hugs.c,v $
- * $Revision: 1.152 $
- * $Date: 2007/02/16 13:46:16 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"

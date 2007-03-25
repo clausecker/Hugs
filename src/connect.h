@@ -6,9 +6,6 @@
  * 1994-2003, All rights reserved.  It is distributed as free software under
  * the license in the file "License", which is included in the distribution.
  *
- * $RCSfile: connect.h,v $
- * $Revision: 1.92 $
- * $Date: 2005/12/02 12:42:27 $
  * ------------------------------------------------------------------------*/
 #ifndef __CONNECT_H__
 #define __CONNECT_H__

@@ -6,9 +6,6 @@
  * 1994-2003, All rights reserved.  It is distributed as free software under
  * the license in the file "License", which is included in the distribution.
  *
- * $RCSfile: array.c,v $
- * $Revision: 1.10 $
- * $Date: 2004/01/06 10:02:51 $
  * ------------------------------------------------------------------------*/
 
 static Name nameEltUndef;		/* undefined element in array	   */

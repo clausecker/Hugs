@@ -13,9 +13,6 @@
  * 1994-2003, All rights reserved.  It is distributed as free software under
  * the license in the file "License", which is included in the distribution.
  *
- * $RCSfile: iomonad.c,v $
- * $Revision: 1.104 $
- * $Date: 2007/02/25 17:09:49 $
  * ------------------------------------------------------------------------*/
  
 Name nameIORun;			        /* run IO code                     */

@@ -7,9 +7,6 @@
  * 1994-2003, All rights reserved.  It is distributed as free software under
  * the license in the file "License", which is included in the distribution.
  *
- * $RCSfile: storage.h,v $
- * $Revision: 1.69 $
- * $Date: 2006/10/05 09:14:17 $
  * ------------------------------------------------------------------------*/
 #ifndef __STORAGE_H__
 #define __STORAGE_H__

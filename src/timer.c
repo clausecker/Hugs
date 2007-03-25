@@ -25,9 +25,6 @@
  * 1994-2003, All rights reserved.  It is distributed as free software under
  * the license in the file "License", which is included in the distribution.
  *
- * $RCSfile: timer.c,v $
- * $Revision: 1.6 $
- * $Date: 2004/10/14 22:08:49 $
  * ------------------------------------------------------------------------*/
 
 

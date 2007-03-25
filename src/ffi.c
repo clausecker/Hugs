@@ -6,9 +6,6 @@
  * 1994-2003, All rights reserved.  It is distributed as free software under
  * the license in the file "License", which is included in the distribution.
  *
- * $RCSfile: ffi.c,v $
- * $Revision: 1.40 $
- * $Date: 2005/06/21 11:17:48 $
  * ------------------------------------------------------------------------*/
 
 #include "prelude.h"

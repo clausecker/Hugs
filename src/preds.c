@@ -6,9 +6,6 @@
  * 1994-2003, All rights reserved.  It is distributed as free software under
  * the license in the file "License", which is included in the distribution.
  *
- * $RCSfile: preds.c,v $
- * $Revision: 1.36 $
- * $Date: 2003/11/01 17:02:47 $
  * ------------------------------------------------------------------------*/
 
 /* --------------------------------------------------------------------------

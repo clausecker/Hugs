@@ -10,9 +10,6 @@
  * 1994-2003, All rights reserved.  It is distributed as free software under
  * the license in the file "License", which is included in the distribution.
  *
- * $RCSfile: interns.c,v $
- * $Revision: 1.14 $
- * $Date: 2003/11/19 21:49:48 $
  * ------------------------------------------------------------------------*/
  
 /* --------------------------------------------------------------------------

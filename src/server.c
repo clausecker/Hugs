@@ -10,9 +10,6 @@
  * 1994-2003, All rights reserved.  It is distributed as free software under
  * the license in the file "License", which is included in the distribution.
  *
- * $RCSfile: server.c,v $
- * $Revision: 1.45 $
- * $Date: 2005/09/10 09:42:26 $
  * ------------------------------------------------------------------------*/
 #include "prelude.h"
 #include "storage.h"
