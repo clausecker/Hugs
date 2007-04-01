@@ -16,9 +16,9 @@ TAG = HEAD
 CVS_ROOT = :pserver:anoncvs@cvs.haskell.org:/cvs
 
 DARCS_ROOT = http://darcs.haskell.org
-LIBRARIESDIRS = base haskell98 haskell-src mtl network parsec QuickCheck unix \
-	Cabal OpenGL GLUT OpenAL ALUT fgl X11 HGL HaXml HUnit Win32 time stm \
-	xhtml regex-base regex-posix regex-compat
+LIBRARIESDIRS = base filepath haskell98 haskell-src mtl network parsec \
+	QuickCheck unix Cabal OpenGL GLUT OpenAL ALUT fgl X11 HGL HaXml \
+	HUnit Win32 time stm xhtml regex-base regex-posix regex-compat
 DARCS_CPPHS = http://www.cs.york.ac.uk/fp/darcs/cpphs
 
 # End of general settings (leave this line unchanged)

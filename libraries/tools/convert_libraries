@@ -126,7 +126,7 @@ Win32=
 case `uname -a` in
 CYGWIN*|MINGW32*) Win32="Win32" ;;
 esac
-packages="base haskell98 Cabal haskell-src QuickCheck mtl fgl HaXml parsec html network HUnit $Win32 unix X11 HGL OpenGL GLUT OpenAL ALUT time stm xhtml regex-base regex-posix regex-compat"
+packages="base haskell98 filepath Cabal haskell-src QuickCheck mtl fgl HaXml parsec html network HUnit $Win32 unix X11 HGL OpenGL GLUT OpenAL ALUT time stm xhtml regex-base regex-posix regex-compat"
 
 build_package libraries/hugsbase
 
