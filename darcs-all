@@ -1,0 +1,300 @@
+#! /bin/sh
+
+################################################################################
+# Script for checking out and updating Haskell packages via darcs
+################################################################################
+
+set -e
+scriptname=$0
+package_list="package-list"
+hackage_archive="http://hackage.haskell.org/packages/archive"
+
+################################################################################
+# Output an informative message if we are in verbose mode.
+################################################################################
+
+message ()
+{
+  if test "${verbose}" = "yes"; then
+    echo "== $*"
+  fi
+}
+
+################################################################################
+# Print an error message on stderr and terminate script with an error code.
+################################################################################
+
+die ()
+{
+  echo "${scriptname}: $1" >&2
+  exit 1
+}
+
+################################################################################
+# Handle command line arguments.
+################################################################################
+
+extra="no"
+nofib="no"
+testsuite="no"
+release="no"
+verbose="no"
+
+while test $# -gt 0; do
+  case "$1" in
+    -e | --extra)     extra="yes" ;;
+    -n | --nofib)     nofib="yes" ;;
+    -t | --testsuite) testsuite="yes" ;;
+    -r | --release)   release="yes" ;;
+    -v | --verbose)   verbose="yes" ;;
+    -*)               die "unknown flag \"$1\"" ;;
+    *)                break ;;
+  esac
+  shift
+done
+
+################################################################################
+# Make sure we are called in the correct place, i.e. the top level.
+################################################################################
+
+if test ! -d "_darcs" -o ! -f "${package_list}"; then
+  die "run \"$0\" in the top level directory of the project"
+fi
+
+message "We are at the top level of a darcs project."
+
+################################################################################
+# Automagically determine our Haskell implementation via .spec files.
+################################################################################
+
+implementation="unknown"
+for i in *.spec *.spec.in; do
+  if test -f "$i"; then
+    implementation=`echo ${i} | sed 's/\.spec$//' | sed 's/\.spec\.in$//'`
+    break
+  fi
+done
+
+if test "${implementation}" = "unknown"; then
+  die "can't determine Haskell implementation"
+fi
+
+message "It looks like we are at the top level of the \"${implementation}\" project."
+
+################################################################################
+# Creativity is not *always* a good thing: Figure out where the individual tools
+# and packages should live.
+################################################################################
+
+case "${implementation}" in
+  ghc)
+    tools_dir="."
+    packages_dir="libraries" ;;
+  hugs98)
+    tools_dir="."
+    packages_dir="packages" ;;
+  nhc98)
+    tools_dir="src"
+    packages_dir="src/libraries" ;;
+  *)
+    die "unknon implementation \"${implementation}\"" ;;
+esac
+
+message "Tools will live in \"${tools_dir}\"."
+
+if test -d "${packages_dir}"; then
+  message "Packages will live in \"${packages_dir}\"."
+else
+  mkdir "${packages_dir}"
+  message "Packages will live in \"${packages_dir}\" (created)."
+fi
+
+################################################################################
+# Figure out where to get the other repositories from, based on where this repo
+# itself came from.
+################################################################################
+
+defaultrepo=`cat _darcs/prefs/defaultrepo`
+case "${defaultrepo}" in
+  http://* | *@*:*)
+    repository_base=`echo ${defaultrepo} | sed 's!/'"${implementation}"'$!!'`
+    lib_repository_base="${repository_base}/packages" ;;
+  /*)
+    repository_base="${defaultrepo}"
+    lib_repository_base="${defaultrepo}/libraries" ;;
+  *)
+    die "malformed default repository \"${defaultrepo}\"" ;;
+esac
+
+message "Repository base is \"${repository_base}\"."
+message "Libaries repository base is \"${lib_repository_base}\"."
+
+################################################################################
+# Normalize darcs command name.
+################################################################################
+
+if test $# -eq 0; then
+  die "missing darcs command"
+fi
+
+case "$1" in
+  g | ge | get)
+    darcs_command="get" ;;
+  w | wh | wha | what | whats | whatsn | whatsne | whatsnew)
+    darcs_command="whatsnew" ;;
+  *)
+    darcs_command="$1" ;;
+esac
+shift
+
+message "The darcs command is \"${darcs_command}\"."
+
+################################################################################
+# If we are going to retrieve a release version, we need either curl or wget.
+# Try to figure out which one via some ugly autoconf-like shell horror.
+################################################################################
+
+if test "${darcs_command}" = "get" -a "${release}" = "yes"; then
+
+  # For the tests below, we temporarily need an executable file in the current
+  # directory, which returns successfully.
+  test_script="darcs-all$$.sh"
+  cat > ${test_script} << EOF
+#! /bin/sh
+exit 0
+EOF
+  chmod +x ${test_script}
+
+  # The *nix vs. Windows war continues...
+  path_separator=":"
+  ( PATH="/nonexistentsillydir;."; ${test_script} ) > /dev/null 2>&1 && path_separator=';'
+
+  # The -x option of 'test' is not available everywhere, but it is not strictly
+  # needed later, anyway.
+  test_x_works="no"
+  test -x ${test_script} > /dev/null 2>&1 && test_x_works="yes"
+
+  rm -f ${test_script}
+
+  # Walk through the PATH to find either curl or wget.
+  downloader=""
+  for prog in curl wget; do
+    saved_IFS=$IFS
+    IFS=$path_separator
+    for dir in $PATH; do
+      IFS=$saved_IFS
+      test -z "${dir}" && dir="."
+      if test -f "${dir}/${prog}"; then
+        test "${test_x_works}" = "yes" && test ! -x "${dir}/${prog}" && continue
+        downloader="${prog}"
+        break
+      fi
+    done
+    IFS=$saved_IFS
+    test -n "${downloader}" && break
+  done
+
+  if test -z "${downloader}"; then
+    die "Neither \"curl\" nor \"wget\" could be found in the PATH."
+  fi
+
+  message "We will use \"${downloader}\" to retrieve released packages."
+fi
+
+################################################################################
+# Process ourselves and any tools.
+################################################################################
+
+tools=""
+
+# We don't need to get ourselves again.
+if test "${darcs_command}" != "get"; then
+  tools=". ${tools}"
+fi
+
+case "${implementation}" in
+  ghc)
+    if test "${darcs_command}" = "get"; then
+      if test "${nofib}" = "yes"; then tools="${tools} nofib"; fi
+      if test "${testsuite}" = "yes"; then tools="${tools} testsuite"; fi
+    else
+      if test -d "${tools_dir}/nofib"; then tools="${tools} nofib"; fi
+      if test -d "${tools_dir}/testsuite"; then tools="${tools} testsuite"; fi
+    fi ;;
+  hugs98 | nhc98)
+    tools="${tools} cpphs hsc2hs" ;;
+esac
+
+for tool in ${tools}; do
+  if test "${darcs_command}" = "get"; then
+    if test -d "${tools_dir}/${tool}"; then
+      message "The tool \"${tool}\" already exists, skipping."
+      continue
+    fi
+    message "Retrieving \"${tool}\"."
+    darcs "${darcs_command}" "$@" --repodir "${tools_dir}/${tool}" "${repository_base}/${tool}"
+  else
+    if test ! -d "${tools_dir}/${tool}/_darcs"; then
+      message "The directory \"${tools_dir}/${tool}\" is not present or not a repository, skipping."
+      continue
+    fi
+    message "Processing \"${tool}\"."
+    darcs "${darcs_command}" "$@" --repodir "${tools_dir}/${tool}"
+  fi
+done
+
+################################################################################
+# Process packages using the package list.
+################################################################################
+
+while read package kind version; do
+
+  # Ignore empty lines and comment lines.
+  if test -z "${package}"; then
+     continue
+  fi
+  case "${package}" in
+    \#*) continue ;;
+  esac
+
+  # We need to handle the "get" command differently, mostly due to the "release"
+  # mode, where we use wget/curl to retrieve a specific version.
+  if test "${darcs_command}" = "get"; then
+
+    if test "${kind}" = "extra" -a "${extra}" = "no"; then
+      message "Package \"${package}\" is not a core package, skipping."
+      continue
+    fi
+
+    if test -d "${packages_dir}/${package}"; then
+      message "Package \"${package}\" already exists, skipping."
+      continue
+    fi
+
+    if test "${release}" = "yes"; then
+      # Retrieve a numbered version from Hackage via wget/curl.
+      message "Retrieving \"${hackage_archive}/${package}/${package}-${version}.tar.gz\""
+      rm -rf "${package}-${version}.tar.gz" "${package}-${version}"
+      if test "${downloader}" = "curl"; then
+        curl "${hackage_archive}/${package}/${package}-${version}.tar.gz" | gunzip -c | tar xf -
+      else
+        wget --output-document=- "${hackage_archive}/${package}/${package}-${version}.tar.gz" | gunzip -c | tar xf -
+      fi
+      mv "${package}-${version}" "${packages_dir}/${package}"
+    else
+      # Retrieve a bleeding edge version from the same repository as we came from.
+      message "Retrieving \"${lib_repository_base}/${package}\""
+      darcs "${darcs_command}" "$@" --repodir "${packages_dir}/${package}" "${lib_repository_base}/${package}"
+    fi
+
+  else
+    # This is not a "get" command, so proceed as usual.
+    if test ! -d "${packages_dir}/${package}/_darcs"; then
+      message "The directory \"${packages_dir}/${package}\" is not present or not a repository, skipping."
+      continue
+    fi
+    message "Processing \"${packages_dir}/${package}\""
+    darcs "${darcs_command}" "$@" --repodir "${packages_dir}/${package}"
+  fi
+
+done < "${package_list}"
