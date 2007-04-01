@@ -1438,7 +1438,7 @@ Int n; {
  *
  * ------------------------------------------------------------------------*/
 
-static  Module    moduleHw;              /* next unused Module              */
+Module    moduleHw;			/* next unused Module              */
 struct  strModule DEFTABLE(tabModule,NUM_MODULE); /* Module storage         */
 Module  currentModule;                  /* Module currently being processed*/
 

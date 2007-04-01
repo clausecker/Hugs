@@ -26,6 +26,11 @@
 #undef IN
 #endif
 
+#if USE_READLINE
+#include <readline/readline.h>
+#include <readline/history.h>
+#endif
+
 /* --------------------------------------------------------------------------
  * Global data:
  * ------------------------------------------------------------------------*/
@@ -210,8 +215,6 @@ static String nextStringChar;          /* next char in string buffer       */
 static  String currentLine;            /* editline or GNU readline         */
 static  String nextChar;
 #define nextConsoleChar() (*nextChar=='\0' ? '\n' : ExtractChar(nextChar))
-extern  Void add_history  Args((String));
-extern  String readline   Args((String));
 #else
 #define nextConsoleChar() FGetChar(stdin)
 #endif
@@ -241,8 +244,10 @@ static int linePtr = 0;
 
 Void consoleInput(prompt)              /* prepare to input characters from */
 String prompt; {                       /* standard in (i.e. console/kbd)   */
-    reading     = KEYBOARD;            /* keyboard input is Line oriented, */
-    c0          =                      /* i.e. input terminated by '\n'    */
+    String r;			       /* keyboard input is Line oriented, */
+				       /* i.e. input terminated by '\n'    */
+    reading     = KEYBOARD;
+    c0          =
     c1          = ' ';
     column      = (-1);
     row         = 0;
@@ -266,14 +271,17 @@ String prompt; {                       /* standard in (i.e. console/kbd)   */
 	currentLine = 0;           /* We may lose the space of currentLine */
 	free(oldCurrentLine);      /* if interrupted here - unlikely       */
     }
-    currentLine = readline(prompt);
-    nextChar    = currentLine;
-    if (currentLine) {
+    r = readline(prompt);
+    if (r) {
+	nextChar = currentLine = tilde_expand(r);
+	free(r);
 	if (*currentLine)
 	    add_history(currentLine);
     }
-    else
+    else {
+	nextChar = NULL;
 	c0 = c1 = EOF;
+    }
 #else
 #if HUGS_FOR_WINDOWS
     {

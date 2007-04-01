@@ -25,6 +25,11 @@
 
 #include <stdio.h>
 
+#if USE_READLINE
+#include <readline/readline.h>
+#include <readline/history.h>
+#endif
+
 /* --------------------------------------------------------------------------
  * Local function prototypes:
  * ------------------------------------------------------------------------*/
@@ -50,9 +55,19 @@ static Void   local expandPath        Args((String,String,unsigned int));
 static Void   local browse	      Args((Void));
 static Void   local initialize        Args((Int, String []));
 static Void   local clearEvalModule   Args((Void));
+static Void   local initReadline      Args((Void));
+static Void   local shutdownReadline  Args((Void));
 
 #if HUGS_FOR_WINDOWS
 static Void   local autoReloadFiles   Args((Void));
+#endif
+
+#if USE_READLINE
+static Command local command_code     Args((const char *));
+static String local gen_command       Args((const char *, int));
+static String local gen_fn            Args((const char *, int));
+static String local gen_mod           Args((const char *, int));
+static char** local compl_fn          Args((const char *, int, int));
 #endif
 
 /* --------------------------------------------------------------------------
@@ -211,11 +226,13 @@ char *argv[]; {
       Printf("%0: failed to initialize, exiting\n", (argv ? argv[0] : ""));
       return 1;
     }
+    initReadline();
 
     printBanner();
 
     interpreter(argc,argv);
     Printf("[Leaving Hugs]\n");
+    shutdownReadline();
     everybody(EXIT);
     shutdownHugs();
 
@@ -243,7 +260,7 @@ static struct cmd cmds[] = {
  {":reload", RELOAD}, {":gc",   COLLECT}, {":edit",    EDIT},
  {":quit",   QUIT},   {":set",  SET},     {":find",    FIND},
  {":names",  NAMES},  {":info", INFO},    {":module",  SETMODULE}, 
- {":browse", BROWSE}, {":main", MAIN},
+ {":browse", BROWSE}, {":main", MAIN},    {":help",    HELP},
 #if EXPLAIN_INSTANCE_RESOLUTION
  {":xplain", XPLAIN},
 #endif
@@ -267,13 +284,13 @@ static Void local menu() {
     Printf(":module <module>    set module for evaluating expressions\n");
     Printf("<expr>              evaluate expression\n");
     Printf(":type <expr>        print type of expression\n");
-    Printf(":?                  display this list of commands\n");
+    Printf(":?, :help           display this list of commands\n");
     Printf(":set <options>      set command line options\n");
     Printf(":set                help on command line options\n");
     Printf(":names [pat]        list names currently in scope\n");
     Printf(":info <names>       describe named objects\n");
     Printf(":browse <modules>   browse names exported by <modules>\n");
-    Printf(":main <aruments>    run the main function with the given arguments\n");
+    Printf(":main <arguments>   run the main function with the given arguments\n");
 #if EXPLAIN_INSTANCE_RESOLUTION
     Printf(":xplain <context>   explain instance resolution for <context>\n");
 #endif
@@ -570,7 +587,7 @@ Cell   c; {
 #if 1 || DISPLAY_QUANTIFIERS
     static char newVar[60];
     switch (whatIs(c)) {
-	case NAME  : if (m == name(c).mod) {
+	case NAME  : if (m == -1 || m == name(c).mod) {
 			 sprintf(newVar,"%s", textToStr(name(c).text));
 		     } else {
 			 sprintf(newVar,"%s.%s",
@@ -579,7 +596,7 @@ Cell   c; {
 		     }
 		     break;
 
-	case TYCON : if (m == tycon(c).mod) {
+	case TYCON : if (m == -1 || m == tycon(c).mod) {
 			 sprintf(newVar,"%s", textToStr(tycon(c).text));
 		     } else {
 			 sprintf(newVar,"%s.%s",
@@ -1142,5 +1159,147 @@ Bool doCommand()		    /* read and execute a command      */
 	return FALSE;
 }
 
-/*-------------------------------------------------------------------------*/
+#if USE_READLINE
 
+/* extract the command of a command line */
+static Command local command_code(line)
+const char *line; {
+    struct cmd *cp;
+    for (cp=cmds; ; cp++) {
+	const char *s, *lp;
+	Bool match = TRUE;
+	for (s=cp->cmdString, lp=line; *s && *lp && *lp != ' '; s++, lp++) {
+	    if (*s != *lp) {
+		match = FALSE;
+		break;
+	    }
+	}
+	if (match)
+	    return cp->cmdCode;
+    }
+}
+
+/*
+ * generator functions for use with readline.
+ * text is the partial word to be completed.
+ * state is zero the first time the function is called.
+ * The return value should be NULL or a string allocated with malloc().
+ * readline() will free this string after use.
+ */
+
+/* generate Hugs commands */
+static String local gen_command(text, state)
+const char *text;
+int state; {
+    static int i;
+    int text_len = strlen(text);
+    if (!state)
+	i = 0;
+    for (;;) {
+	char *s = cmds[i].cmdString;
+	i++;
+	if (!s)
+	    break;
+	if (strncmp(s, text, text_len) == 0)
+	    return strCopy(s);
+    }
+    return NULL;
+}
+
+/* generate names of functions and constructors in loaded modules */
+static String local gen_fn(text, state)
+const char *text;
+int state; {
+    static List names;
+    if (!state) {
+	int text_len = strlen(text);
+	String pat = malloc(text_len+2);
+	if (!pat)
+	    return NULL;
+	strcpy(pat, text);
+	pat[text_len] = '*';
+	pat[text_len+1] = '\0';
+	names = addNamesMatching(pat, NIL);
+	free(pat);
+    }
+    if (names) {
+	String s = objToStr(-1, hd(names));
+	names = tl(names);
+	return strCopy(s);
+    } else {
+	return NULL;
+    }
+}
+
+/* generate names of loaded modules */
+static String local gen_mod(text, state)
+const char *text;
+int state; {
+    static Module m;
+    if (!state)
+	m = MODMIN;
+    for (; m<moduleHw; m++) {
+	char *t = textToStr(module(m).text);
+	if (t && strncmp(text, t, strlen(text)) == 0) {
+	    m++;
+	    return strCopy(t);
+	}
+    }
+    return NULL;
+}
+
+/* the list of completions of text */
+static char** local compl_fn(text, start, end)
+const char *text;
+int start;
+int end; {
+    char **r;
+    rl_attempted_completion_over = 1;
+    r = NULL;
+    if (end > 0 && rl_line_buffer[0] == ':') {
+	if (start == 0)
+	    r = rl_completion_matches(text, gen_command);
+	else
+	    switch (command_code(rl_line_buffer)) {
+		case LOAD: case ALSO: case EDIT:
+		    rl_attempted_completion_over = 0;
+		    break;
+		case TYPEOF: case NAMES: case INFO: case FIND:
+		    r = rl_completion_matches(text, gen_fn);
+		    break;
+		case SETMODULE: case BROWSE:
+		    r = rl_completion_matches(text, gen_mod);
+		    break;
+	    }
+    } else
+	r = rl_completion_matches(text, gen_fn);
+    return r;
+}
+#endif
+
+static Void local initReadline()
+{
+#if USE_READLINE
+    int r;
+    char *s;
+    rl_readline_name = "hugs";
+    rl_attempted_completion_function = compl_fn;
+    s = tilde_expand("~/.hugs_history");
+    if (s)
+	r = read_history(s);
+    stifle_history(2048);
+#endif
+}
+
+static Void local shutdownReadline()
+{
+#if USE_READLINE
+    int r;
+    char *s;
+    s = tilde_expand("~/.hugs_history");
+    if (s)
+	r = write_history(s);
+#endif
+}
+
+/*-------------------------------------------------------------------------*/

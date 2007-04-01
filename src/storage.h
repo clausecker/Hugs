@@ -1282,4 +1282,6 @@ extern  List   addNamesMatching  Args((String,List));
 
 #endif
 
+extern Module	moduleHw;		/* next unused Module              */
+
 #endif /* __STORAGE_H__ */
