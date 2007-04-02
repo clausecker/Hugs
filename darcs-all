@@ -51,18 +51,20 @@ nofib="no"
 testsuite="no"
 release="no"
 dry_run="no"
+list_packages="no"
 verbose="no"
 
 while test $# -gt 0; do
   case "$1" in
-    -e | --extra)     extra="yes" ;;
-    -n | --nofib)     nofib="yes" ;;
-    -t | --testsuite) testsuite="yes" ;;
-    -r | --release)   release="yes" ;;
-    -d | --dry-run)   dry_run="yes" ;;
-    -v | --verbose)   verbose="yes" ;;
-    -*)               die "unknown flag \"$1\"" ;;
-    *)                break ;;
+    -e | --extra)         extra="yes" ;;
+    -n | --nofib)         nofib="yes" ;;
+    -t | --testsuite)     testsuite="yes" ;;
+    -r | --release)       release="yes" ;;
+    -d | --dry-run)       dry_run="yes" ;;
+    -l | --list-packages) list_packages="yes" ;;
+    -v | --verbose)       verbose="yes" ;;
+    -*)                   die "unknown flag \"$1\"" ;;
+    *)                    break ;;
   esac
   shift
 done
@@ -76,6 +78,31 @@ if test ! -d "_darcs" -o ! -f "${package_list}"; then
 fi
 
 message "We are at the top level of a darcs project."
+
+################################################################################
+# If requested, list package names and exit.
+################################################################################
+
+if test "${list_packages}" = "yes"; then
+  while read package kind version; do
+
+    # Ignore empty lines and comment lines.
+    if test -z "${package}"; then
+       continue
+    fi
+    case "${package}" in
+      \#*) continue ;;
+    esac
+
+    # Do not list extra packages if they are not explicitly requested
+    if test "${kind}" = "extra" -a "${extra}" = "no"; then
+      continue
+    fi
+
+    echo "${package}"
+  done < "${package_list}"
+  exit
+fi
 
 ################################################################################
 # Automagically determine our Haskell implementation via .spec files.
