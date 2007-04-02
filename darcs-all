@@ -205,6 +205,19 @@ shift
 message "The darcs command is \"${darcs_command}\"."
 
 ################################################################################
+# To avoid pulling in a decade of patches, we make partial repositories the
+# default, but the user can override this, of course.
+################################################################################
+
+case $* in
+  *--complete* | *--partial*)
+    additional_get_option="" ;;
+  *)
+    message "Adding \"--partial\" to darcs commands."
+    additional_get_option="--partial" ;;
+esac
+
+################################################################################
 # If we are going to retrieve a release version, we need either curl or wget.
 # Try to figure out which one via some ugly autoconf-like shell horror.
 ################################################################################
@@ -299,7 +312,7 @@ for tool in ${tools}; do
       message "The tool \"${tool}\" already exists, skipping."
       continue
     fi
-    run_command darcs "${darcs_command}" "$@" --repodir "${tools_dir}/${tool}" "${repository_base}/${tool}"
+    run_command darcs "${darcs_command}" "${additional_get_option}" "$@" --repodir "${tools_dir}/${tool}" "${repository_base}/${tool}"
   else
     if test ! -d "${tools_dir}/${tool}/_darcs"; then
       message "The directory \"${tools_dir}/${tool}\" is not present or not a repository, skipping."
@@ -312,6 +325,8 @@ done
 ################################################################################
 # Process packages using the package list.
 ################################################################################
+
+user_darcs_options="$*"
 
 retrieve_package()
 {
@@ -338,7 +353,7 @@ retrieve_package()
       run_command mv "${packages_dir}/${package}-${version}" "${packages_dir}/${package}"
     else
       # Retrieve a bleeding edge version from the same repository as we came from.
-      run_command darcs "${darcs_command}" "$@" --repodir "${packages_dir}/${package}" "${lib_repository_base}/${package}"
+      run_command darcs "${darcs_command}" ${additional_get_option} ${user_darcs_options} --repodir "${packages_dir}/${package}" "${lib_repository_base}/${package}"
     fi
 
   else
@@ -348,7 +363,7 @@ retrieve_package()
       continue
     fi
     message "Processing \"${packages_dir}/${package}\""
-    run_command darcs "${darcs_command}" "$@" --repodir "${packages_dir}/${package}"
+    run_command darcs "${darcs_command}" ${user_darcs_options} --repodir "${packages_dir}/${package}"
   fi
 }
 
