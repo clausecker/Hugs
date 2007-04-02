@@ -43,6 +43,27 @@ run_command()
 }
 
 ################################################################################
+# Higher order shell programming: Map a function over all packages.
+################################################################################
+
+map_packages()
+{
+  func="$*"
+  while read package kind version; do
+
+    # Ignore empty lines and comment lines.
+    if test -z "${package}"; then
+       continue
+    fi
+    case "${package}" in
+      \#*) continue ;;
+    esac
+
+    ${func} "${package}" "${kind}" "${version}"
+  done < "${package_list}"
+}
+
+################################################################################
 # Handle command line arguments.
 ################################################################################
 
@@ -83,24 +104,17 @@ message "We are at the top level of a darcs project."
 # If requested, list package names and exit.
 ################################################################################
 
-if test "${list_packages}" = "yes"; then
-  while read package kind version; do
-
-    # Ignore empty lines and comment lines.
-    if test -z "${package}"; then
-       continue
-    fi
-    case "${package}" in
-      \#*) continue ;;
-    esac
-
-    # Do not list extra packages if they are not explicitly requested
-    if test "${kind}" = "extra" -a "${extra}" = "no"; then
-      continue
-    fi
-
+# I want anonymous shell functions! Join the petition!
+echo_package()
+{
+  package="$1"; kind="$2"; version="$3"
+  if test "${kind}" = "core" -o "${extra}" = "yes"; then
     echo "${package}"
-  done < "${package_list}"
+  fi
+}
+
+if test "${list_packages}" = "yes"; then
+  map_packages echo_package
   exit
 fi
 
@@ -299,15 +313,9 @@ done
 # Process packages using the package list.
 ################################################################################
 
-while read package kind version; do
-
-  # Ignore empty lines and comment lines.
-  if test -z "${package}"; then
-     continue
-  fi
-  case "${package}" in
-    \#*) continue ;;
-  esac
+retrieve_package()
+{
+  package="$1"; kind="$2"; version="$3"
 
   # We need to handle the "get" command differently, mostly due to the "release"
   # mode, where we use curl/wget to retrieve a specific version.
@@ -342,5 +350,6 @@ while read package kind version; do
     message "Processing \"${packages_dir}/${package}\""
     run_command darcs "${darcs_command}" "$@" --repodir "${packages_dir}/${package}"
   fi
+}
 
-done < "${package_list}"
+map_packages retrieve_package
