@@ -16,7 +16,7 @@ hackage_archive="http://hackage.haskell.org/packages/archive"
 message ()
 {
   if test "${verbose}" = "yes"; then
-    echo "== $*"
+    echo "== $*" >&2
   fi
 }
 
