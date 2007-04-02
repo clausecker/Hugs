@@ -1,7 +1,8 @@
 # This file contains all packages which are handled via darcs-all. Every line
 # contains:
 #
-#  * The name of a package.
+#  * The name of a package or a full URL of the darcs repository. In the
+#    latter case, the package name is the last path component of the URL.
 #
 #  * Its status, i.e. if it is a "core" or "extra" package. Core packages
 #    are always retrieved, extra packages only when darcs-all is given the

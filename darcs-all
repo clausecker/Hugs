@@ -49,17 +49,24 @@ run_command()
 map_packages()
 {
   func="$*"
-  while read package kind version; do
+  while read url kind version; do
 
     # Ignore empty lines and comment lines.
-    if test -z "${package}"; then
+    if test -z "${url}"; then
        continue
     fi
-    case "${package}" in
-      \#*) continue ;;
+    case "${url}" in
+      \#*)
+        continue ;;
+      */*)
+        package_url_prefix=`echo ${url} | sed 's,/[^/]*$,,'`
+        package=`echo ${url} | sed 's,.*/,,'` ;;
+      *)
+        package_url_prefix=""
+        package="${url}" ;;
     esac
 
-    ${func} "${package}" "${kind}" "${version}"
+    ${func} "${package_url_prefix}" "${package}" "${kind}" "${version}"
   done < "${package_list}"
 }
 
@@ -107,7 +114,7 @@ message "We are at the top level of a darcs project."
 # I want anonymous shell functions! Join the petition!
 echo_package()
 {
-  package="$1"; kind="$2"; version="$3"
+  package_url_prefix="$1"; package="$2"; kind="$3"; version="$4"; 
   if test "${kind}" = "core" -o "${extra}" = "yes"; then
     echo "${package}"
   fi
@@ -330,7 +337,7 @@ user_darcs_options="$*"
 
 retrieve_package()
 {
-  package="$1"; kind="$2"; version="$3"
+  package_url_prefix="$1"; package="$2"; kind="$3"; version="$4"; 
 
   # We need to handle the "get" command differently, mostly due to the "release"
   # mode, where we use curl/wget to retrieve a specific version.
@@ -352,8 +359,12 @@ retrieve_package()
         ( if test "${dry_run}" = "yes"; then cat; else gunzip -c | ( cd ${packages_dir}; tar xf - ); fi )
       run_command mv "${packages_dir}/${package}-${version}" "${packages_dir}/${package}"
     else
-      # Retrieve a bleeding edge version from the same repository as we came from.
-      run_command darcs "${darcs_command}" ${additional_get_option} ${user_darcs_options} --repodir "${packages_dir}/${package}" "${lib_repository_base}/${package}"
+      # Retrieve a bleeding edge version from the same repository as we came
+      # from or from a given URL.
+      if test -z "${package_url_prefix}"; then
+         package_url_prefix="${lib_repository_base}"
+      fi
+      run_command darcs "${darcs_command}" ${additional_get_option} ${user_darcs_options} --repodir "${packages_dir}/${package}" "${package_url_prefix}/${package}"
     fi
 
   else
