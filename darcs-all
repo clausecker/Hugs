@@ -31,6 +31,18 @@ die ()
 }
 
 ################################################################################
+# Run an external command if we are not in dry-run mode.
+################################################################################
+
+run_command()
+{
+  message "Running \"$*\""
+  if test "${dry_run}" = "no"; then
+    "$@"
+  fi
+}
+
+################################################################################
 # Handle command line arguments.
 ################################################################################
 
@@ -38,6 +50,7 @@ extra="no"
 nofib="no"
 testsuite="no"
 release="no"
+dry_run="no"
 verbose="no"
 
 while test $# -gt 0; do
@@ -46,6 +59,7 @@ while test $# -gt 0; do
     -n | --nofib)     nofib="yes" ;;
     -t | --testsuite) testsuite="yes" ;;
     -r | --release)   release="yes" ;;
+    -d | --dry-run)   dry_run="yes" ;;
     -v | --verbose)   verbose="yes" ;;
     -*)               die "unknown flag \"$1\"" ;;
     *)                break ;;
@@ -105,7 +119,7 @@ message "Tools will live in \"${tools_dir}\"."
 if test -d "${packages_dir}"; then
   message "Packages will live in \"${packages_dir}\"."
 else
-  mkdir "${packages_dir}"
+  run_command mkdir "${packages_dir}"
   message "Packages will live in \"${packages_dir}\" (created)."
 fi
 
@@ -156,25 +170,32 @@ message "The darcs command is \"${darcs_command}\"."
 
 if test "${darcs_command}" = "get" -a "${release}" = "yes"; then
 
-  # For the tests below, we temporarily need an executable file in the current
-  # directory, which returns successfully.
-  test_script="darcs-all$$.sh"
-  cat > ${test_script} << EOF
+  path_separator=":"
+  test_x_works="no"
+
+  # In a dry run, we simply make assumptions, avoiding the creation of a script.
+  if test "${dry_run}" = "yes"; then
+    message "Note: In a dry run we assume that ':' is the path separator and 'test' does not support '-x'"
+  else
+
+    # For the tests below, we temporarily need an executable file in the current
+    # directory, which returns successfully.
+    test_script="darcs-all$$.sh"
+    cat > ${test_script} << EOF
 #! /bin/sh
 exit 0
 EOF
-  chmod +x ${test_script}
+    chmod +x ${test_script}
 
-  # The *nix vs. Windows war continues...
-  path_separator=":"
-  ( PATH="/nonexistentsillydir;."; ${test_script} ) > /dev/null 2>&1 && path_separator=';'
+    # The *nix vs. Windows war continues...
+    ( PATH="/nonexistentsillydir;."; ${test_script} ) > /dev/null 2>&1 && path_separator=';'
 
-  # The -x option of 'test' is not available everywhere, but it is not strictly
-  # needed later, anyway.
-  test_x_works="no"
-  test -x ${test_script} > /dev/null 2>&1 && test_x_works="yes"
+    # The -x option of 'test' is not available everywhere, but it is not strictly
+    # needed later, anyway.
+    test -x ${test_script} > /dev/null 2>&1 && test_x_works="yes"
 
-  rm -f ${test_script}
+    rm -f ${test_script}
+  fi
 
   # Walk through the PATH to find either curl or wget.
   downloader=""
@@ -194,7 +215,12 @@ EOF
     test -n "${downloader}" && break
   done
 
-  case "x${prog}" in
+  if test -z "${downloader}" -a "${dry_run}" = "yes"; then
+    message "Neither \"curl\" nor \"wget\" could be found in the PATH, assuming \"curl\"."
+    downloader="curl"
+  fi
+
+  case "x${downloader}" in
     x)     die "Neither \"curl\" nor \"wget\" could be found in the PATH." ;;
     xcurl) download_command="curl" ;;
     xwget) download_command="wget --output-document=-" ;;
@@ -232,15 +258,13 @@ for tool in ${tools}; do
       message "The tool \"${tool}\" already exists, skipping."
       continue
     fi
-    message "Retrieving \"${tool}\"."
-    darcs "${darcs_command}" "$@" --repodir "${tools_dir}/${tool}" "${repository_base}/${tool}"
+    run_command darcs "${darcs_command}" "$@" --repodir "${tools_dir}/${tool}" "${repository_base}/${tool}"
   else
     if test ! -d "${tools_dir}/${tool}/_darcs"; then
       message "The directory \"${tools_dir}/${tool}\" is not present or not a repository, skipping."
       continue
     fi
-    message "Processing \"${tool}\"."
-    darcs "${darcs_command}" "$@" --repodir "${tools_dir}/${tool}"
+    run_command darcs "${darcs_command}" "$@" --repodir "${tools_dir}/${tool}"
   fi
 done
 
@@ -259,7 +283,7 @@ while read package kind version; do
   esac
 
   # We need to handle the "get" command differently, mostly due to the "release"
-  # mode, where we use wget/curl to retrieve a specific version.
+  # mode, where we use curl/wget to retrieve a specific version.
   if test "${darcs_command}" = "get"; then
 
     if test "${kind}" = "extra" -a "${extra}" = "no"; then
@@ -274,13 +298,12 @@ while read package kind version; do
 
     if test "${release}" = "yes"; then
       # Retrieve a numbered version from Hackage via curl/wget.
-      message "Retrieving \"${hackage_archive}/${package}/${package}-${version}.tar.gz\""
-      ${download_command} "${hackage_archive}/${package}/${package}-${version}.tar.gz" | gunzip -c | ( cd ${packages_dir}; tar xf - )
-      mv "${packages_dir}/${package}-${version}" "${packages_dir}/${package}"
+      run_command ${download_command} "${hackage_archive}/${package}/${package}-${version}.tar.gz" | \
+        ( if test "${dry_run}" = "yes"; then cat; else gunzip -c | ( cd ${packages_dir}; tar xf - ); fi )
+      run_command mv "${packages_dir}/${package}-${version}" "${packages_dir}/${package}"
     else
       # Retrieve a bleeding edge version from the same repository as we came from.
-      message "Retrieving \"${lib_repository_base}/${package}\""
-      darcs "${darcs_command}" "$@" --repodir "${packages_dir}/${package}" "${lib_repository_base}/${package}"
+      run_command darcs "${darcs_command}" "$@" --repodir "${packages_dir}/${package}" "${lib_repository_base}/${package}"
     fi
 
   else
@@ -290,7 +313,7 @@ while read package kind version; do
       continue
     fi
     message "Processing \"${packages_dir}/${package}\""
-    darcs "${darcs_command}" "$@" --repodir "${packages_dir}/${package}"
+    run_command darcs "${darcs_command}" "$@" --repodir "${packages_dir}/${package}"
   fi
 
 done < "${package_list}"
