@@ -131,7 +131,7 @@ fi
 defaultrepo=`cat _darcs/prefs/defaultrepo`
 case "${defaultrepo}" in
   http://* | *@*:*)
-    repository_base=`echo ${defaultrepo} | sed 's!/'"${implementation}"'$!!'`
+    repository_base=`echo ${defaultrepo} | sed 's!/[^/]*$!!'`
     lib_repository_base="${repository_base}/packages" ;;
   /*)
     repository_base="${defaultrepo}"
