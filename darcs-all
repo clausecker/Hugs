@@ -194,11 +194,12 @@ EOF
     test -n "${downloader}" && break
   done
 
-  if test -z "${downloader}"; then
-    die "Neither \"curl\" nor \"wget\" could be found in the PATH."
-  fi
-
-  message "We will use \"${downloader}\" to retrieve released packages."
+  case "x${prog}" in
+    x)     die "Neither \"curl\" nor \"wget\" could be found in the PATH." ;;
+    xcurl) download_command="curl" ;;
+    xwget) download_command="wget --output-document=-" ;;
+  esac
+  message "We will use \"${download_command}\" to retrieve released packages."
 fi
 
 ################################################################################
@@ -272,15 +273,10 @@ while read package kind version; do
     fi
 
     if test "${release}" = "yes"; then
-      # Retrieve a numbered version from Hackage via wget/curl.
+      # Retrieve a numbered version from Hackage via curl/wget.
       message "Retrieving \"${hackage_archive}/${package}/${package}-${version}.tar.gz\""
-      rm -rf "${package}-${version}.tar.gz" "${package}-${version}"
-      if test "${downloader}" = "curl"; then
-        curl "${hackage_archive}/${package}/${package}-${version}.tar.gz" | gunzip -c | tar xf -
-      else
-        wget --output-document=- "${hackage_archive}/${package}/${package}-${version}.tar.gz" | gunzip -c | tar xf -
-      fi
-      mv "${package}-${version}" "${packages_dir}/${package}"
+      ${download_command} "${hackage_archive}/${package}/${package}-${version}.tar.gz" | gunzip -c | ( cd ${packages_dir}; tar xf - )
+      mv "${packages_dir}/${package}-${version}" "${packages_dir}/${package}"
     else
       # Retrieve a bleeding edge version from the same repository as we came from.
       message "Retrieving \"${lib_repository_base}/${package}\""
