@@ -15,7 +15,7 @@ hackage_archive="http://hackage.haskell.org/packages/archive"
 
 message ()
 {
-  if test "${verbose}" = "yes"; then
+  if test ${verbose} = "yes"; then
     echo "== $*" >&2
   fi
 }
@@ -37,7 +37,7 @@ die ()
 run_command()
 {
   message "Running \"$*\""
-  if test "${dry_run}" = "no"; then
+  if test ${dry_run} = "no"; then
     "$@"
   fi
 }
@@ -53,9 +53,10 @@ map_packages()
 
     # Ignore empty lines and comment lines.
     if test -z "${url}"; then
-       continue
+      continue
     fi
-    case "${url}" in
+
+    case ${url} in
       \#*)
         continue ;;
       */*)
@@ -63,8 +64,13 @@ map_packages()
         package=`echo ${url} | sed 's,.*/,,'` ;;
       *)
         package_url_prefix=""
-        package="${url}" ;;
+        package=${url} ;;
     esac
+
+    # Sanity check
+    if test -z "${kind}" -o -z "${version}"; then
+      die "Missing kind/version in package list."
+    fi
 
     ${func} "${package_url_prefix}" "${package}" "${kind}" "${version}"
   done < "${package_list}"
@@ -83,7 +89,7 @@ list_packages="no"
 verbose="no"
 
 while test $# -gt 0; do
-  case "$1" in
+  case $1 in
     -e | --extra)         extra="yes" ;;
     -n | --nofib)         nofib="yes" ;;
     -t | --testsuite)     testsuite="yes" ;;
@@ -101,7 +107,7 @@ done
 # Make sure we are called in the correct place, i.e. the top level.
 ################################################################################
 
-if test ! -d "_darcs" -o ! -f "${package_list}"; then
+if test ! -d "_darcs" -o ! -f ${package_list}; then
   die "run \"$0\" in the top level directory of the project"
 fi
 
@@ -114,13 +120,13 @@ message "We are at the top level of a darcs project."
 # I want anonymous shell functions! Join the petition!
 echo_package()
 {
-  package_url_prefix="$1"; package="$2"; kind="$3"; version="$4"; 
-  if test "${kind}" = "core" -o "${extra}" = "yes"; then
+  package_url_prefix=$1; package=$2; kind=$3; version=$4
+  if test "${kind}" = "core" -o ${extra} = "yes"; then
     echo "${package}"
   fi
 }
 
-if test "${list_packages}" = "yes"; then
+if test ${list_packages} = "yes"; then
   map_packages echo_package
   exit
 fi
@@ -131,13 +137,13 @@ fi
 
 implementation="unknown"
 for i in *.spec *.spec.in; do
-  if test -f "$i"; then
+  if test -f ${i}; then
     implementation=`echo ${i} | sed 's/\.spec$//' | sed 's/\.spec\.in$//'`
     break
   fi
 done
 
-if test "${implementation}" = "unknown"; then
+if test ${implementation} = "unknown"; then
   die "can't determine Haskell implementation"
 fi
 
@@ -148,7 +154,7 @@ message "It looks like we are at the top level of the \"${implementation}\" proj
 # and packages should live.
 ################################################################################
 
-case "${implementation}" in
+case ${implementation} in
   ghc)
     tools_dir="."
     packages_dir="libraries" ;;
@@ -164,7 +170,7 @@ esac
 
 message "Tools will live in \"${tools_dir}\"."
 
-if test -d "${packages_dir}"; then
+if test -d ${packages_dir}; then
   message "Packages will live in \"${packages_dir}\"."
 else
   run_command mkdir "${packages_dir}"
@@ -177,12 +183,12 @@ fi
 ################################################################################
 
 defaultrepo=`cat _darcs/prefs/defaultrepo`
-case "${defaultrepo}" in
+case ${defaultrepo} in
   http://* | *@*:*)
     repository_base=`echo ${defaultrepo} | sed 's!/[^/]*$!!'`
     lib_repository_base="${repository_base}/packages" ;;
   /*)
-    repository_base="${defaultrepo}"
+    repository_base=${defaultrepo}
     lib_repository_base="${defaultrepo}/libraries" ;;
   *)
     die "malformed default repository \"${defaultrepo}\"" ;;
@@ -199,13 +205,13 @@ if test $# -eq 0; then
   die "missing darcs command"
 fi
 
-case "$1" in
+case $1 in
   g | ge | get)
     darcs_command="get" ;;
   w | wh | wha | what | whats | whatsn | whatsne | whatsnew)
     darcs_command="whatsnew" ;;
   *)
-    darcs_command="$1" ;;
+    darcs_command=$1 ;;
 esac
 shift
 
@@ -229,13 +235,13 @@ esac
 # Try to figure out which one via some ugly autoconf-like shell horror.
 ################################################################################
 
-if test "${darcs_command}" = "get" -a "${release}" = "yes"; then
+if test "${darcs_command}" = "get" -a ${release} = "yes"; then
 
   path_separator=":"
   test_x_works="no"
 
   # In a dry run, we simply make assumptions, avoiding the creation of a script.
-  if test "${dry_run}" = "yes"; then
+  if test ${dry_run} = "yes"; then
     message "Note: In a dry run we assume that ':' is the path separator and 'test' does not support '-x'"
   else
 
@@ -267,8 +273,8 @@ EOF
       IFS=$saved_IFS
       test -z "${dir}" && dir="."
       if test -f "${dir}/${prog}"; then
-        test "${test_x_works}" = "yes" && test ! -x "${dir}/${prog}" && continue
-        downloader="${prog}"
+        test ${test_x_works} = "yes" && test ! -x "${dir}/${prog}" && continue
+        downloader=${prog}
         break
       fi
     done
@@ -276,7 +282,7 @@ EOF
     test -n "${downloader}" && break
   done
 
-  if test -z "${downloader}" -a "${dry_run}" = "yes"; then
+  if test -z "${downloader}" -a ${dry_run} = "yes"; then
     message "Neither \"curl\" nor \"wget\" could be found in the PATH, assuming \"curl\"."
     downloader="curl"
   fi
@@ -300,11 +306,11 @@ if test "${darcs_command}" != "get"; then
   tools=". ${tools}"
 fi
 
-case "${implementation}" in
+case ${implementation} in
   ghc)
     if test "${darcs_command}" = "get"; then
-      if test "${nofib}" = "yes"; then tools="${tools} nofib"; fi
-      if test "${testsuite}" = "yes"; then tools="${tools} testsuite"; fi
+      if test ${nofib} = "yes"; then tools="${tools} nofib"; fi
+      if test ${testsuite} = "yes"; then tools="${tools} testsuite"; fi
     else
       if test -d "${tools_dir}/nofib"; then tools="${tools} nofib"; fi
       if test -d "${tools_dir}/testsuite"; then tools="${tools} testsuite"; fi
@@ -319,7 +325,7 @@ for tool in ${tools}; do
       message "The tool \"${tool}\" already exists, skipping."
       continue
     fi
-    run_command darcs "${darcs_command}" "${additional_get_option}" "$@" --repodir "${tools_dir}/${tool}" "${repository_base}/${tool}"
+    run_command darcs "${darcs_command}" ${additional_get_option} "$@" --repodir "${tools_dir}/${tool}" "${repository_base}/${tool}"
   else
     if test ! -d "${tools_dir}/${tool}/_darcs"; then
       message "The directory \"${tools_dir}/${tool}\" is not present or not a repository, skipping."
@@ -337,13 +343,13 @@ user_darcs_options="$*"
 
 retrieve_package()
 {
-  package_url_prefix="$1"; package="$2"; kind="$3"; version="$4"; 
+  package_url_prefix=$1; package=$2; kind=$3; version=$4
 
   # We need to handle the "get" command differently, mostly due to the "release"
   # mode, where we use curl/wget to retrieve a specific version.
   if test "${darcs_command}" = "get"; then
 
-    if test "${kind}" = "extra" -a "${extra}" = "no"; then
+    if test "${kind}" = "extra" -a ${extra} = "no"; then
       message "Package \"${package}\" is not a core package, skipping."
       continue
     fi
@@ -353,16 +359,16 @@ retrieve_package()
       continue
     fi
 
-    if test "${release}" = "yes"; then
+    if test ${release} = "yes"; then
       # Retrieve a numbered version from Hackage via curl/wget.
       run_command ${download_command} "${hackage_archive}/${package}/${package}-${version}.tar.gz" | \
-        ( if test "${dry_run}" = "yes"; then cat; else gunzip -c | ( cd ${packages_dir}; tar xf - ); fi )
+        ( if test ${dry_run} = "yes"; then cat; else gunzip -c | ( cd ${packages_dir}; tar xf - ); fi )
       run_command mv "${packages_dir}/${package}-${version}" "${packages_dir}/${package}"
     else
       # Retrieve a bleeding edge version from the same repository as we came
       # from or from a given URL.
       if test -z "${package_url_prefix}"; then
-         package_url_prefix="${lib_repository_base}"
+         package_url_prefix=${lib_repository_base}
       fi
       run_command darcs "${darcs_command}" ${additional_get_option} ${user_darcs_options} --repodir "${packages_dir}/${package}" "${package_url_prefix}/${package}"
     fi
