@@ -15,9 +15,10 @@ INSTALL_DATA	= /bin/cp
 CPPFLAGS	= -D__HUGS__ -D$(HOST_OS)_HOST_OS -D$(HOST_OS)_TARGET_OS
 
 BUILD_DIR	= ../hugsdir
+GHC_INCLUDE_DIR	= ../includes
 
 HEADERS		= ../src/HsFFI.h
-FP_HEADERS	= ../src/platform.h include/MachDeps.h include/ghcconfig.h
+GHC_HEADERS	= ../src/platform.h include/MachDeps.h include/ghcconfig.h
 CPPHS_SRC	= ../cpphs
 HSC2HS_SRC	= ../hsc2hs
 
@@ -27,7 +28,7 @@ HUGS_SETUP	= HUGSFLAGS=-P../libraries/bootlib HUGSDIR=../hugsdir ../src/runhugs 
 
 INCLUDES	= $(BUILD_DIR)/include/HsFFI.h
 # represents header files used by the base package
-FP_INCLUDES	= ../ghc/includes/ghcconfig.h
+GHC_INCLUDES	= $(GHC_INCLUDE_DIR)/ghcconfig.h
 
 # We use a bootstrap procedure to construct the libraries:
 #
@@ -93,7 +94,7 @@ $(BUILD_DIR)/programs/cpphs/Main.hs: $(BOOTLIB) $(INCLUDES)
 	mv $(BUILD_DIR)/packages/cpphs/programs/cpphs $(BUILD_DIR)/programs
 	rmdir $(BUILD_DIR)/packages/cpphs/programs
 
-$(BOOTLIB): hugsbase/Hugs/*.* $(MAKE_BOOT) $(INCLUDES) $(FP_INCLUDES)
+$(BOOTLIB): hugsbase/Hugs/*.* $(MAKE_BOOT) $(INCLUDES) $(GHC_INCLUDES)
 	CPPFLAGS='$(CPPFLAGS)' $(MAKE_BOOT)
 	echo timestamp for bootlib >$@
 
@@ -101,9 +102,9 @@ $(INCLUDES): $(HEADERS)
 	mkdir -p $(BUILD_DIR)/include
 	$(CP) $(HEADERS) $(BUILD_DIR)/include
 
-$(FP_INCLUDES): $(FP_HEADERS)
-	mkdir -p ../ghc/includes
-	$(CP) $(FP_HEADERS) ../ghc/includes
+$(GHC_INCLUDES): $(GHC_HEADERS)
+	mkdir -p $(GHC_INCLUDE_DIR)
+	$(CP) $(GHC_HEADERS) $(GHC_INCLUDE_DIR)
 
 clean:
 	$(RM) LibStatus

@@ -21,7 +21,7 @@ cd $toolsdir/../..
 
 source=packages
 target=libraries/bootlib
-fp_includes=ghc/includes
+fp_includes=includes
 tmpdir_root=/tmp
 
 HUGSDIR=hugsdir
