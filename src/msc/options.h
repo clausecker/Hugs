@@ -182,7 +182,7 @@
  * just crash, Hugs catches these errors and returns to the main loop.
  * It does this by calling a function "panic" which longjmp's back to the
  * main loop.
- * If you're developing a GreenCard library, this may not be the right
+ * If you're developing an FFI binding, this may not be the right
  * behaviour - it's better if Hugs leaves them for your debugger to
  * catch rather than trapping them and "panicing".
  */

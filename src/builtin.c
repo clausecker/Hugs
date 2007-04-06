@@ -1635,9 +1635,9 @@ primFun(primUnsafePtrToInt) {
 }
 
 /*---------------------------------------------------------------------------
- * GreenCard entry points
+ * FFI entry points
  *
- * GreenCard generated code accesses Hugs data structures and functions 
+ * Generated FFI glue code accesses Hugs data structures and functions
  * (only) via these functions (which are stored in the virtual function
  * table hugsAPI4).
  *-------------------------------------------------------------------------*/
