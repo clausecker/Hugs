@@ -24,6 +24,7 @@ static Void   local qualifyBinding    Args((List,Cell));
 static Cell   local qualifyExpr	      Args((Int,List,Cell));
 static Void   local overEvid	      Args((Cell,Cell));
 
+static Void   local checkDepth	      Args((List,Cell,Int,Int));
 static Void   local cutoffExceeded    Args((Cell,Int,List));
 static Cell   local scFind	      Args((Cell,Cell,Int,Cell,Int,Int));
 static Cell   local scEntail	      Args((List,Cell,Int,Int));
@@ -230,6 +231,24 @@ List ps; {
     EEND;
 }
 
+static Void local checkDepth(ps,pi,o,d) /* call before incrementing d      */
+List ps;
+Cell pi;
+Int  o;
+Int  d; {
+    static List top_ps;			/* top-level context               */
+    static Cell top_pi;			/* top-level goal                  */
+    static Int  top_o;
+
+    if (d == 0) {
+	top_ps = ps;
+	top_pi = pi;
+	top_o = o;
+    }
+    if (d >= cutoff)
+	cutoffExceeded(top_pi, top_o, top_ps);
+}
+
 static Cell local scFind(e,pi1,o1,pi,o,d)/* Use superclass entailment to   */
 Cell e;					/* find evidence for (pi,o) using  */
 Cell pi1;				/* the evidence e for (pi1,o1).	   */
@@ -288,8 +307,7 @@ List ps;				/* Using superclasses and equality.*/
 Cell pi;
 Int  o;
 Int  d; {
-    if (d++ >= cutoff)
-	cutoffExceeded(pi,o,ps);
+    checkDepth(ps,pi,o,d++);
 
     for (; nonNull(ps); ps=tl(ps)) {
 	Cell pi1 = hd(ps);
@@ -408,8 +426,7 @@ Int  d; {
 #endif
     Inst in;
 
-    if (d++ >= cutoff)
-	cutoffExceeded(pi,o,ps);
+    checkDepth(ps,pi,o,d++);
 
 #if TREX
     if (isAp(pi) && isExt(fun(pi))) {	/* Lacks predicates		   */
@@ -501,8 +518,7 @@ Int  d; {
     Inst in, in_;
     Cell e_;
 
-    if (d++ >= cutoff)
-	cutoffExceeded(pi,o,ps);
+    checkDepth(ps,pi,o,d++);
 
 #if TREX
     if (isAp(pi) && isExt(fun(pi))) {	/* Lacks predicates		   */
