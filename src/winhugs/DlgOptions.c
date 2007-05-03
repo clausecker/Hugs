@@ -325,11 +325,64 @@ INT_PTR CALLBACK OptionsExtensionsProc(HWND hDlg, UINT msg, WPARAM wParam, LPARA
 /////////////////////////////////////////////////////////////////////
 // OPTLOAD related code
 
+void SetSearchPath(HWND hDlg)
+{
+    int Length = 0, Lines = 0, i, j;
+    LPTSTR str;
+    for (i = 0; hugsPath[i] != 0; i++)
+    {
+	Length++;
+	if (hugsPath[i] == ';')
+	    Lines++;
+    }
+
+    str = malloc((Length + Lines + 3) * sizeof(TCHAR));
+    j = 0;
+    for (i = 0; hugsPath[i] != 0; i++)
+    {
+	if (hugsPath[i] == ';')
+	{
+	    str[j++] = '\r';
+	    str[j++] = '\n';
+	}
+	else
+	    str[j++] = hugsPath[i];
+    }
+    str[j++] = '\r';
+    str[j++] = '\n';
+    str[j] = 0;
+
+    SetDlgItemText(hDlg, txtPath, str);
+}
+
+void GetSearchPath(HWND hDlg)
+{
+    int i, j;
+    int n = GetWindowTextLength(GetDlgItem(hDlg, txtPath));
+    free(hugsPath);
+    hugsPath = malloc(n+5);
+    GetDlgItemText(hDlg, txtPath, hugsPath, n+3);
+
+    j = 0;
+    for (i = 0; hugsPath[i] != 0; i++)
+    {
+	if (hugsPath[i] == '\r')
+	    ;
+	else if (hugsPath[i] == '\n')
+	    hugsPath[j++] = ';';
+	else
+	    hugsPath[j++] = hugsPath[i];
+    }
+    while (j > 0 && hugsPath[j-1] == ';')
+	j--;
+    hugsPath[j] = 0;
+}
+
 INT_PTR CALLBACK OptionsLoadProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 {
     switch (msg) {
 	case WM_INITDIALOG:
-	    SetDlgItemText(hDlg, txtPath, hugsPath);
+	    SetSearchPath(hDlg);
 	    SetDlgItemBool(hDlg, chkListLoading, listScripts);
 	    SetDlgItemBool(hDlg, chkAutoReload, autoLoadFiles);
 	    break;
@@ -337,11 +390,7 @@ INT_PTR CALLBACK OptionsLoadProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPar
 	case WM_NOTIFY:
 	    if (((NMHDR*) lParam)->code == PSN_APPLY) {
 		// apply here
-		int n = GetWindowTextLength(GetDlgItem(hDlg, txtPath));
-		free(hugsPath);
-		hugsPath = malloc(n+5);
-		GetDlgItemText(hDlg, txtPath, hugsPath, n+3);
-
+		GetSearchPath(hDlg);
 		listScripts = GetDlgItemBool(hDlg, chkListLoading);
 		autoLoadFiles = GetDlgItemBool(hDlg, chkAutoReload);
 

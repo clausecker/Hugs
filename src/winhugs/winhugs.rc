@@ -225,18 +225,18 @@ BEGIN
     CONTROL         "",ID_RTF,"RichEdit20A",ES_MULTILINE | ES_AUTOVSCROLL | ES_NUMBER | WS_VSCROLL,48,34,70,72,WS_EX_CLIENTEDGE
 END
 
-DLG_OPTLOAD DIALOGEX 0, 0, 291, 86
+DLG_OPTLOAD DIALOGEX 0, 0, 291, 151
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "File Loading"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    LTEXT           "Path:",IDC_STATIC,12,21,42,13
-    EDITTEXT        txtPath,58,17,219,12,ES_AUTOHSCROLL
     CONTROL         "Show list of scripts being loaded",chkListLoading,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,12,34,261,11
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,12,18,261,11
     CONTROL         "Automatically reload modified files",chkAutoReload,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,12,45,265,10
-    GROUPBOX        "Loading Files",IDC_STATIC,7,7,277,53
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,12,29,265,10
+    LTEXT           "Path:",IDC_STATIC,12,46,42,10
+    EDITTEXT        txtPath,12,59,265,74,ES_MULTILINE | ES_AUTOVSCROLL | ES_AUTOHSCROLL | ES_WANTRETURN | WS_VSCROLL
+    GROUPBOX        "Loading Files",IDC_STATIC,7,7,277,132
 END
 
 DLG_OPTRUNTIME DIALOGEX 0, 0, 304, 113
@@ -278,15 +278,15 @@ BEGIN
     COMBOBOX        lstEditor,59,89,225,65,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
 END
 
-DLG_OPTEXTENSIONS DIALOGEX 0, 0, 291, 107
+DLG_OPTEXTENSIONS DIALOGEX 0, 0, 291, 119
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Extensions"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    GROUPBOX        "Haskell Extensions [Requires restart]",-1,7,7,277,74
+    GROUPBOX        "Haskell Extensions [Requires restart]",-1,7,7,277,86
     CONTROL         "Overlapping instances",chkOverlap,"Button",BS_AUTOCHECKBOX | WS_DISABLED | WS_TABSTOP,23,42,230,12
     CONTROL         "Unsafe overlapping instances",chkOverlapUnsafe,"Button",BS_AUTOCHECKBOX | WS_DISABLED | WS_TABSTOP,32,54,230,12
-    CONTROL         "Here documents",chkHereDocs,"Button",BS_AUTOCHECKBOX | WS_DISABLED | WS_TABSTOP,23,63,230,12
+    CONTROL         "Here documents",chkHereDocs,"Button",BS_AUTOCHECKBOX | WS_DISABLED | WS_TABSTOP,23,65,230,12
     CONTROL         "Haskell 98 Compatability",optCompatible,"Button",BS_AUTORADIOBUTTON,12,18,252,10
     CONTROL         "Allow Hugs/GHC Extensions",optExtensions,"Button",BS_AUTORADIOBUTTON,11,31,252,10
 END
@@ -341,7 +341,7 @@ BEGIN
         LEFTMARGIN, 7
         RIGHTMARGIN, 284
         TOPMARGIN, 7
-        BOTTOMMARGIN, 60
+        BOTTOMMARGIN, 139
     END
 
     DLG_OPTRUNTIME, DIALOG
@@ -365,7 +365,7 @@ BEGIN
         LEFTMARGIN, 7
         RIGHTMARGIN, 284
         TOPMARGIN, 7
-        BOTTOMMARGIN, 81
+        BOTTOMMARGIN, 93
     END
 END
 #endif    // APSTUDIO_INVOKED
