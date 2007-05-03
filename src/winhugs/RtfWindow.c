@@ -178,12 +178,12 @@ BOOL RtfNotify(HWND hDlg, NMHDR* nmhdr)
 	    }
 
 	    if (Buffer != NULL) {
-		// strip trailing new line characters
+		// change each newline character to space
 		int i;
-		for (i = strlen(Buffer)-1;
-		    i >= 0 && (Buffer[i] == '\r' || Buffer[i] == '\n');
-		    i--)
-		    Buffer[i] = 0;
+		for (i = 0; Buffer[i] != 0; i++) {
+		    if (Buffer[i] == '\r' || Buffer[i] == '\n')
+			Buffer[i] = ' ';
+		}
 		SendMessage(hRTF, EM_REPLACESEL, FALSE, (LPARAM)Buffer);
 		free(Buffer);
 	    }
