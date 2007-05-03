@@ -6,14 +6,15 @@
 #include "storage.h"
 #include "machdep.h"
 
-INT_PTR CALLBACK OptionsHugsProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
+INT_PTR CALLBACK OptionsLoadProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
+INT_PTR CALLBACK OptionsExtensionsProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
 INT_PTR CALLBACK OptionsRuntimeProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
-INT_PTR CALLBACK OptionsCompileProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
+INT_PTR CALLBACK OptionsHugsProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
 
 BOOL ShowOptionsDialog(HWND hParent)
 {
-    const int nPages = 3;
-    PROPSHEETPAGE psp[3];
+    const int nPages = 4;
+    PROPSHEETPAGE psp[4];
     PROPSHEETHEADER psh;
     int i;
 
@@ -23,14 +24,17 @@ BOOL ShowOptionsDialog(HWND hParent)
 	psp[i].hInstance = hThisInstance;
     }
 
-    psp[0].pszTemplate = MAKEINTRESOURCE(DLG_OPTCOMPILE);
-    psp[0].pfnDlgProc = OptionsCompileProc;
+    psp[0].pszTemplate = MAKEINTRESOURCE(DLG_OPTLOAD);
+    psp[0].pfnDlgProc = OptionsLoadProc;
 
-    psp[1].pszTemplate = MAKEINTRESOURCE(DLG_OPTRUNTIME);
-    psp[1].pfnDlgProc = OptionsRuntimeProc;
+    psp[1].pszTemplate = MAKEINTRESOURCE(DLG_OPTEXTENSIONS);
+    psp[1].pfnDlgProc = OptionsExtensionsProc;
 
-    psp[2].pszTemplate = MAKEINTRESOURCE(DLG_OPTHUGS);
-    psp[2].pfnDlgProc = OptionsHugsProc;
+    psp[2].pszTemplate = MAKEINTRESOURCE(DLG_OPTRUNTIME);
+    psp[2].pfnDlgProc = OptionsRuntimeProc;
+
+    psp[3].pszTemplate = MAKEINTRESOURCE(DLG_OPTHUGS);
+    psp[3].pfnDlgProc = OptionsHugsProc;
 
     psh.dwSize = sizeof(psh);
     psh.dwFlags = PSH_NOAPPLYNOW | PSH_PROPSHEETPAGE;
@@ -272,7 +276,7 @@ INT_PTR CALLBACK OptionsRuntimeProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM l
 }
 
 /////////////////////////////////////////////////////////////////////
-// OPTCOMPILE related code
+// OPTEXTENSIONS related code
 
 void EnableHaskellExts(HWND hDlg)
 {
@@ -284,14 +288,10 @@ void EnableHaskellExts(HWND hDlg)
 	Ext && GetDlgItemBool(hDlg, chkOverlap));
 }
 
-INT_PTR CALLBACK OptionsCompileProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
+INT_PTR CALLBACK OptionsExtensionsProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 {
     switch (msg) {
 	case WM_INITDIALOG:
-	    SetDlgItemText(hDlg, txtPath, hugsPath);
-	    SetDlgItemBool(hDlg, chkListLoading, listScripts);
-	    SetDlgItemBool(hDlg, chkAutoReload, autoLoadFiles);
-
 	    SetDlgItemBool(hDlg, optCompatible, haskell98);
 	    SetDlgItemBool(hDlg, optExtensions, !haskell98);
 	    SetDlgItemBool(hDlg, chkOverlap, allowOverlap);
@@ -303,13 +303,6 @@ INT_PTR CALLBACK OptionsCompileProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM l
 	case WM_NOTIFY:
 	    if (((NMHDR*) lParam)->code == PSN_APPLY) {
 		// apply here
-		int n = GetWindowTextLength(GetDlgItem(hDlg, txtPath));
-		free(hugsPath);
-		hugsPath = malloc(n+5);
-		GetDlgItemText(hDlg, txtPath, hugsPath, n+3);
-
-		listScripts = GetDlgItemBool(hDlg, chkListLoading);
-		autoLoadFiles = GetDlgItemBool(hDlg, chkAutoReload);
 		haskell98 = GetDlgItemBool(hDlg, optCompatible);
 		allowOverlap = GetDlgItemBool(hDlg, chkOverlap);
 		allowUnsafeOverlap = GetDlgItemBool(hDlg, chkOverlapUnsafe);
@@ -324,6 +317,36 @@ INT_PTR CALLBACK OptionsCompileProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM l
 		LOWORD(wParam) == optExtensions ||
 		LOWORD(wParam) == optCompatible)
 		EnableHaskellExts(hDlg);
+	    break;
+    }
+    return (INT_PTR)FALSE;
+}
+
+/////////////////////////////////////////////////////////////////////
+// OPTLOAD related code
+
+INT_PTR CALLBACK OptionsLoadProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
+{
+    switch (msg) {
+	case WM_INITDIALOG:
+	    SetDlgItemText(hDlg, txtPath, hugsPath);
+	    SetDlgItemBool(hDlg, chkListLoading, listScripts);
+	    SetDlgItemBool(hDlg, chkAutoReload, autoLoadFiles);
+	    break;
+
+	case WM_NOTIFY:
+	    if (((NMHDR*) lParam)->code == PSN_APPLY) {
+		// apply here
+		int n = GetWindowTextLength(GetDlgItem(hDlg, txtPath));
+		free(hugsPath);
+		hugsPath = malloc(n+5);
+		GetDlgItemText(hDlg, txtPath, hugsPath, n+3);
+
+		listScripts = GetDlgItemBool(hDlg, chkListLoading);
+		autoLoadFiles = GetDlgItemBool(hDlg, chkAutoReload);
+
+		WriteOptions();
+	    }
 	    break;
     }
     return (INT_PTR)FALSE;

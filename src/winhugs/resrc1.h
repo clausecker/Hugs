@@ -3,6 +3,7 @@
 // Used by winhugs.rc
 //
 #define DLG_OPTCOMPILE                  9
+#define DLG_OPTLOAD                     9
 #define BMP_ABOUT                       106
 #define DLG_OPTRUNTIME                  108
 #define ID_MRU                          150
@@ -40,6 +41,8 @@
 #define optExtensions                   1037
 #define DLG_MAIN                        28445
 #define DLG_OPTHUGS                     28446
+#define DLG_OPTLOAD1                    28447
+#define DLG_OPTEXTENSIONS               28447
 #define ID_USERSGUIDE                   40007
 #define ID_WWWHUGS                      40008
 #define ID_WWWHASKELL                   40009
