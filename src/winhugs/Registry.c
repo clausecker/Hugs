@@ -116,3 +116,16 @@ void RegistryWriteWindowPos(HWND hWnd)
     writeRegInt("WindowWidth", rc.right - rc.left);
     writeRegInt("WindowHeight", rc.bottom - rc.top);
 }
+
+
+//Note: leaks, but called only a couple of times per program
+char* getDefaultHugsPath()
+{
+    char* Buffer = malloc(MAX_PATH * 2 * sizeof(char));
+    char* s = getenv("PROGRAMFILES");
+    strcpy(Buffer, ".;{Hugs}\\packages\\*;");
+    strcat(Buffer, (s != NULL ? s : "C:\\Program Files"));
+    strcat(Buffer, "\\Haskell\\hugs\\packages\\*");
+
+    return Buffer;
+}

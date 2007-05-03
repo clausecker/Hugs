@@ -26,7 +26,9 @@
  * for HUGSFLAGS in the registry (Win32 only).  In all cases, use a
  * string of the form -P"...".
  */
-#define HUGSPATH ".;{Hugs}\\packages\\*"
+char* getDefaultHugsPath();
+
+#define HUGSPATH getDefaultHugsPath()
 
 /* The list of suffixes used by Haskell source files, separated either
  * by colons (Unix) or semicolons (Macintosh, Windows, DOS).
