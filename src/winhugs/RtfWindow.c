@@ -215,7 +215,7 @@ BOOL RtfNotify(HWND hDlg, NMHDR* nmhdr)
 	    WinHugsReceiveC(mf->wParam == '\r' ? '\n' : mf->wParam);
 	    SetWindowLong(hDlg, DWL_MSGRESULT, 1);
 	    return TRUE;
-	} else if (Running && mf->msg == WM_KEYDOWN) {
+	} else if (mf->msg == WM_KEYDOWN && Running) {
 	    SetWindowLong(hDlg, DWL_MSGRESULT, 1);
 	    return TRUE;
 	} else if (mf->msg == WM_KEYDOWN && !Running) {
