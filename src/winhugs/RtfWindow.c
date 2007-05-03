@@ -248,6 +248,10 @@ BOOL RtfNotify(HWND hDlg, NMHDR* nmhdr)
 		    SetWindowLong(hDlg, DWL_MSGRESULT, 1);
 		    return TRUE;
 		}
+	    } else if ((mf->wParam == 'R' || mf->wParam == 'E' || mf->wParam == 'L') &&
+		GetKeyState(VK_CONTROL) != 0) {
+		SetWindowLong(hDlg, DWL_MSGRESULT, 1);
+		return TRUE;
 	    }
 	}
     } else if (nmhdr->code == EN_SELCHANGE) {
