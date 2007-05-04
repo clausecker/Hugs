@@ -28,6 +28,9 @@ Void stopAnyPrinting() {  /* terminate printing of expression,*/
     if (printing) {       /* after successful termination or  */
 	printing = FALSE; /* runtime error (e.g. interrupt)   */
 	Putchar('\n');
+#if HUGS_FOR_WINDOWS
+	WinHugsStatistics(numReductions,numCells,numGcs);
+#endif
 	if (showStats) {
 #define plural(v)   v, (v==1?"":"s")
 #if HUGS_FOR_WINDOWS

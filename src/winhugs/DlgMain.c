@@ -185,6 +185,7 @@ void FireCommand(LPCSTR Command)
 
     Running = TRUE;
     EnableButtons();
+    WinHugsStatistics(-1,-1,-1);
 
     stringInput((LPSTR) Command);
     input(BREAK);
@@ -327,9 +328,49 @@ int MainNotify(HWND hWnd, LPNMHDR nmhdr)
     return FALSE;
 }
 
+LPTSTR DefaultMessage = NULL;
+
 void SetStatusBar(LPCTSTR Str)
 {
-    SetDlgItemText(hThisWindow, ID_STATUS, Str);
+    LPCTSTR Result = "";
+    if (Str == NULL && DefaultMessage != NULL)
+	Result = DefaultMessage;
+    else if (Str != NULL)
+	Result = Str;
+
+    SetDlgItemText(hThisWindow, ID_STATUS, Result);
+}
+
+void AddStat(LPCTSTR Message, int Value)
+{
+    itoa(Value, &DefaultMessage[strlen(DefaultMessage)], 10);
+    strcat(DefaultMessage, " ");
+    strcat(DefaultMessage, Message);
+    if (Value != 1)
+	strcat(DefaultMessage, "s");
+}
+
+void WinHugsStatistics(int Reductions, int Cells, int Gcs)
+{
+    if (DefaultMessage != NULL)
+	free(DefaultMessage);
+
+    if (Reductions == -1) {
+	DefaultMessage = NULL;
+    } else {
+	DefaultMessage = malloc(150);
+	strcpy(DefaultMessage, "Computation finished: ");
+
+	AddStat("reduction",Reductions);
+	strcat(DefaultMessage, ", ");
+	AddStat("cell",Cells);
+	if (Gcs > 0) {
+	    strcat(DefaultMessage, ", ");
+	    AddStat("garbage collection",Gcs);
+	}
+    }
+
+    SetStatusBar(NULL);
 }
 
 void MainMenuSelect(HWND hWnd, int ID, int Flags)
@@ -402,6 +443,10 @@ INT_PTR CALLBACK MainDlgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 	case WM_SIZE:
 	    MainSize(hWnd, LOWORD(lParam), HIWORD(lParam));
+	    break;
+
+	case WM_EXITMENULOOP:
+	    SetStatusBar(NULL);
 	    break;
 
 	case WM_MENUSELECT:

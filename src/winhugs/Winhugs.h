@@ -23,6 +23,9 @@ extern void	loopInBackground(void);
 // support for Most Recently Used Files
 extern void	WinHugsAddMruFile(const char* file);
 
+// support for reduction counts
+extern void     WinHugsStatistics(int Reductions, int Cells, int Gcs);
+
 extern void	WinHugsMessagePump(void);
 
 // Used for trapping console output and GUI'ifying it
