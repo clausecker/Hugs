@@ -85,6 +85,17 @@ void SetWorkingDir(LPCSTR Src)
     SetCurrentDirectory(thePath);
 }
 
+BOOL IsSeparatorChar(TCHAR c)
+{
+    return (c == '\\' || c == '/');
+}
+
+BOOL IsRelativeFile(LPCSTR s)
+{
+    return ((s[0] == '.' && s[1] == '.' && IsSeparatorChar(s[2])) ||
+	    (s[0] == '.' && IsSeparatorChar(s[2])));
+}
+
 // Works for HTML Documents, http links etc
 // if it starts with file:, then fire off the filename
 void ExecuteFile(LPSTR FileName)
@@ -116,9 +127,11 @@ void ExecuteFile(LPSTR FileName)
 	if (strncmp("{Hugs}", FileName, 6) == 0) {
 	    strcpy(Buffer, hugsdir());
 	    strcat(Buffer, &FileName[6]);
-	} else if (FileName[0] == '.' && FileName[1] == '\\') {
+	} else if (IsRelativeFile(FileName)) {
 	    GetCurrentDirectory(MAX_PATH, Buffer);
-	    strcat(Buffer, &FileName[1]);
+	    if (!IsSeparatorChar(Buffer[strlen(Buffer) - 1]))
+		strcat(Buffer, "\\");
+	    strcat(Buffer, FileName);
 	} else
 	    strcpy(Buffer, FileName);
 
