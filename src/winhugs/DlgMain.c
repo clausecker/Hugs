@@ -329,6 +329,7 @@ int MainNotify(HWND hWnd, LPNMHDR nmhdr)
 }
 
 LPTSTR DefaultMessage = NULL;
+DWORD TickCount;
 
 void SetStatusBar(LPCTSTR Str)
 {
@@ -357,10 +358,13 @@ void WinHugsStatistics(int Reductions, int Cells, int Gcs)
 
     if (Reductions == -1) {
 	DefaultMessage = NULL;
+	TickCount = GetTickCount();
     } else {
-	DefaultMessage = malloc(150);
-	strcpy(DefaultMessage, "Computation finished: ");
+	DWORD Time = GetTickCount() - TickCount;
 
+	DefaultMessage = malloc(150);
+	wsprintf(DefaultMessage, "Computation finished: %d.%.2d seconds, ",
+	    Time / 1000, (Time / 10) % 100);
 	AddStat("reduction",Reductions);
 	strcat(DefaultMessage, ", ");
 	AddStat("cell",Cells);
