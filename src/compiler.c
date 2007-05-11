@@ -386,7 +386,7 @@ Cell l; {
  *
  * do { e }               =>  e
  * do { p <- exp; qs }    =>  LETREC _h p = do { qs }
- *                                   _h _ = fail m "match fails"
+ *                                   _h _ = fail m "pattern match failure in do expression"
  *                            IN bind m exp _h
  * do { LET decls; qs }   =>  LETREC decls IN do { qs }
  * do { IF guard; qs }    =>  if guard then do { qs } else fail m  "guard fails"
@@ -408,7 +408,7 @@ List qs; {
 				Cell hVar = inventVar();
 
 				if (!failFree(fst(snd(q)))) {
-				    Cell str = mkStr(findText("match fails"));
+				    Cell str = mkStr(findText("pattern match failure in do expression"));
 				    ld = cons(pair(singleton(WILDCARD),
 						   ap2(nameMFail,m,str)),
 					      ld);
