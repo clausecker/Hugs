@@ -3,7 +3,7 @@
 # Create libraries sufficient for runhugs, ffihugs, cpphs, hsc2hs and
 # Cabal scripts.
 
-boot_packages='base haskell98 Cabal'
+boot_packages='base haskell98 filepath Cabal'
 
 # ensure that letter ranges work
 LC_ALL=C
@@ -65,7 +65,7 @@ through_cpp() {
 	cp "$1" $cpp_input
 
 	# gcc-3.3 on MacOS X 10.3 is reported to add #pragma
-	$cpp $cpp_flags $cpp_input | grep -v '^#' | cat -s
+	$cpp $cpp_flags -I`dirname $1` $cpp_input | grep -v '^#' | cat -s
 }
 
 # internal Hugs modules
