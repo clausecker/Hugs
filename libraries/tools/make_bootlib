@@ -3,7 +3,7 @@
 # Create libraries sufficient for runhugs, ffihugs, cpphs, hsc2hs and
 # Cabal scripts.
 
-boot_packages='base haskell98 filepath Cabal'
+boot_packages='base Cabal directory filepath haskell98 old-locale old-time pretty process random'
 
 # ensure that letter ranges work
 LC_ALL=C
@@ -145,6 +145,7 @@ done
 ffihugs=src/ffihugs
 
 base_includes="-I$source/base/include -I$fp_includes"
+directory_includes="-I$source/directory/include -I$fp_includes"
 
 case $platform in
 Unix)	base_libs= ;;
@@ -163,8 +164,8 @@ $ffihugs '-i"HsBase.h"' Foreign.Marshal.Alloc $base_includes \
 $ffihugs '-i"HsBase.h"' Foreign.Marshal.Utils $base_includes $base_libs
 $ffihugs '-i"HsBase.h"' Foreign.Ptr $base_includes \
 	$source/base/cbits/PrelIOUtils.c $base_libs
-$ffihugs '-i"HsBase.h"' System.Directory $base_includes \
-	$source/base/cbits/PrelIOUtils.c $base_libs
+$ffihugs '-i"HsDirectory.h"' System.Directory $directory_includes \
+	$source/directory/cbits/directory.c
 
 case $platform in
 Unix)

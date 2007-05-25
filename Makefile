@@ -16,9 +16,10 @@ TAG = HEAD
 CVS_ROOT = :pserver:anoncvs@cvs.haskell.org:/cvs
 
 DARCS_ROOT = http://darcs.haskell.org
-LIBRARIESDIRS = base filepath haskell98 haskell-src mtl network parsec \
-	QuickCheck unix Cabal OpenGL GLUT OpenAL ALUT fgl X11 HGL HaXml \
-	HUnit Win32 time stm xhtml regex-base regex-posix regex-compat
+LIBRARIESDIRS = ALUT base Cabal directory fgl filepath GLUT haskell98 \
+	haskell-src HaXml HGL HUnit mtl network old-locale old-time \
+	OpenAL OpenGL parallel parsec pretty process QuickCheck random \
+	regex-base regex-compat regex-posix stm time unix Win32 X11 xhtml
 DARCS_CPPHS = http://www.cs.york.ac.uk/fp/darcs/cpphs
 
 # End of general settings (leave this line unchanged)
@@ -115,7 +116,7 @@ tarplus: Defs.mk
 	$(MAKE) -f RPM.mk tar
 
 tar: Defs.mk
-	$(MAKE) PKGNAME=$(NAME) LIBRARIESDIRS='base haskell98 Cabal' -f RPM.mk tar
+	$(MAKE) PKGNAME=$(NAME) LIBRARIESDIRS='base Cabal directory filepath haskell98 old-locale old-time pretty process random' -f RPM.mk tar
 
 rpm: Defs.mk
 	$(MAKE) -f RPM.mk rpm

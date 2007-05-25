@@ -20,6 +20,7 @@ arrows             extra   0.2
 base               core    2.1
 Cabal              core    1.1.6
 cgi                extra   3001.1.0
+directory          core    1.0
 fgl                extra   5.3
 filepath           core    1.0
 GLUT               extra   2.0
@@ -30,11 +31,17 @@ html               extra   1.0
 HUnit              extra   1.1
 mtl                extra   1.0
 network            extra   2.0
+old-locale         extra   2.0
+old-time           extra   2.0
 ObjectIO           extra   1.0
 OpenAL             extra   1.3
 OpenGL             extra   2.1
+parallel           core    1.0
 parsec             core    2.0
+pretty             core    1.0
+process            core    1.0
 QuickCheck         extra   1.0
+random             core    1.0
 readline           core    1.0
 regex-base         core    0.91
 regex-compat       core    0.90

@@ -32,10 +32,10 @@ GHC_INCLUDES	= $(GHC_INCLUDE_DIR)/ghcconfig.h
 
 # We use a bootstrap procedure to construct the libraries:
 #
-# 1. Preprocess hugsbase, base, haskell9, filepath and Cabal into bootlibs
-#    using the shell script make_bootlib.  The result is incomplete,
-#    in particular because hsc2hs wasn't available yet, but it's enough
-#    to get ffihugs, runhugs, cpphs, hsc2hs and Cabal working,
+# 1. Preprocess hugsbase, base, haskell98, Cabal and packages they use
+#    into bootlibs using the shell script make_bootlib.  The result is
+#    incomplete, in particular because hsc2hs wasn't available yet, but
+#    it's enough to get ffihugs, runhugs, cpphs, hsc2hs and Cabal working,
 #
 # 2. Build cpphs and then hsc2hs into ../hugsdir.
 #
