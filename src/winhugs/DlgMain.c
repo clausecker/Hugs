@@ -9,6 +9,7 @@
 #include "resrc1.h"
 #include "Header.h"
 #include "Winmenu.h"
+#include "Winhugs.h"
 
 HWND hThisWindow;
 HACCEL hAccelTable;
