@@ -382,13 +382,8 @@ void WriteBuffer(LPCTSTR s, int Len)
     }
 }
 
-void FlushBuffer(BOOL Force)
+void FlushBufferUnlock()
 {
-    DWORD Res = WaitForSingleObject(hMutex, (Force ? INFINITE : 0));
-
-    if (Res != WAIT_OBJECT_0)
-	return; //you did not win
-
     if (BufLen != 0) {
 	Buf[BufLen] = 0;
 	Buf[BufLen+1] = 0;
@@ -397,7 +392,16 @@ void FlushBuffer(BOOL Force)
 	BufPos = 0;
 	BufLen = 0;
     }
+}
 
+void FlushBuffer(BOOL Force)
+{
+    DWORD Res = WaitForSingleObject(hMutex, (Force ? INFINITE : 0));
+
+    if (Res != WAIT_OBJECT_0)
+	return; //you did not win
+
+    FlushBufferUnlock();
     ReleaseMutex(hMutex);
 }
 
