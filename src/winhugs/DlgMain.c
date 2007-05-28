@@ -31,6 +31,7 @@ HACCEL hAccelTable;
 BOOL Running = FALSE;
 
 INT_PTR CALLBACK MainDlgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+void WinHugsStatistics(int Reductions, int Cells, int Gcs);
 
 // ID's for the items that are not in the resource dialog
 const int ID_STATUS = 9500;
