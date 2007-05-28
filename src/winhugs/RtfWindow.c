@@ -445,6 +445,53 @@ BOOL ParseEscapeCode(Format* f)
     return TRUE;
 }
 
+void AddToBufferUnlock(LPCTSTR s)
+{
+    if (InEscBuf) {
+	for (; *s != 0; s++) {
+	    if (*s == 'm') {
+		Format f = NowFormat;
+		if (ParseEscapeCode(&f)) {
+		    FormatChanged = TRUE;
+		    NowFormat = f;
+		}
+		InEscBuf = FALSE;
+		AddToBufferUnlock(s+1);
+		return;
+	    } else if ((*s >= '0' && *s <= '9') ||
+		(*s == ';') || (*s == '[')) {
+		EscBuf[EscBufPos++] = *s;
+		EscBufPos = min(EscBufPos, EscBufSize);
+	    } else {
+		InEscBuf = FALSE;
+		AddToBufferUnlock(EscBuf);
+		break;
+	    }
+	}
+    }
+
+    for (; *s != 0; s++) {
+	if (*s == '\b') {
+	    if (BufPos == 0) {
+		OutputPos--;
+	    } else
+		BufPos--;
+	} else if (*s == 27) {
+	    InEscBuf = TRUE;
+	    EscBufPos = 0;
+	    AddToBufferUnlock(s+1);
+	    return;
+	} else {
+	    if (BufLen >= BufSize)
+		FlushBufferUnlock();
+	    Buf[BufPos++] = *s;
+	    BufLen = max(BufLen, BufPos);
+	}
+    }
+
+    EnsureTimer();
+}
+
 // need to copy from s to Buf
 void AddToBuffer(LPCTSTR s)
 {
@@ -461,49 +508,9 @@ void AddToBuffer(LPCTSTR s)
 	FormatChanged = FALSE;
     }
 
-    if (InEscBuf) {
-	for (; *s != 0; s++) {
-	    if (*s == 'm') {
-		Format f = NowFormat;
-		if (ParseEscapeCode(&f)) {
-		    FormatChanged = TRUE;
-		    NowFormat = f;
-		}
-		InEscBuf = FALSE;
-		AddToBuffer(s+1);
-		return;
-	    } else if ((*s >= '0' && *s <= '9') ||
-		(*s == ';') || (*s == '[')) {
-		EscBuf[EscBufPos++] = *s;
-		EscBufPos = min(EscBufPos, EscBufSize);
-	    } else {
-		InEscBuf = FALSE;
-		AddToBuffer(EscBuf);
-		break;
-	    }
-	}
-    }
-
-    for (; *s != 0; s++) {
-	if (*s == '\b') {
-	    if (BufPos == 0) {
-		OutputPos--;
-	    } else
-		BufPos--;
-	} else if (*s == 27) {
-	    InEscBuf = TRUE;
-	    EscBufPos = 0;
-	    AddToBuffer(s+1);
-	    return;
-	} else {
-	    if (BufLen >= BufSize)
-		FlushBuffer(TRUE);
-	    Buf[BufPos++] = *s;
-	    BufLen = max(BufLen, BufPos);
-	}
-    }
-
-    EnsureTimer();
+    WaitForSingleObject(hMutex, INFINITE);
+    AddToBufferUnlock(s);
+    ReleaseMutex(hMutex);
 }
 
 void RtfWindowTimer()
