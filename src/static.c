@@ -219,8 +219,6 @@ static Cell   local depRecord		Args((Int,Cell));
 #endif
 
 #if MUDO
-static Void   local mdoLoad             Args((Void));
-static Void   local mdoUsed             Args((Void));
 static List   local mdoGetPatVarsLet	Args((Int,List,List));
 static List   local mdoBVars		Args((Int,List));
 static List   local mdoUsedVars		Args((List,Cell,List,List));
@@ -5763,8 +5761,7 @@ Cell e; {
 			  break;
 
 #if MUDO
-	case MDOCOMP	: mdoUsed();
-	                  depRecComp(line, snd(e), snd(snd(e)));
+	case MDOCOMP	: depRecComp(line, snd(e), snd(snd(e)));
 			  break;
 #endif
 
@@ -5882,61 +5879,6 @@ List qs; {
 }
 
 #if MUDO
-
-/*
- * When typechecking mdo expressions, we need to have
- * access to mfix et al., so we keep track of whether
- * a module uses MDOCOMP, and if it does, look up
- * the necessary class + method in mdoLoad().
- *
- * Do this here rather than in the typechecker itself
- * (where the innards of mdoLoad() used to be), as name
- * resolution / checking is really the domain of static
- * analysis. It also simplifies the handling of a module's
- * import lists.
- *
- */
-static Bool mdoLibsNeeded = FALSE;
-
-static Void local mdoUsed() {
-    mdoLibsNeeded = TRUE;
-}
-
-static Void local mdoLoad() {
-    if (mdoLibsNeeded) {
-	String fixLib     = "Control.Monad.Fix";
-	String fixClass   = "MonadFix";
-
-	/* Locate the module containing the MonadRec/MonadFix class */
-	Module m          = findModule(findText(fixLib));
-	Text t            = module(m).text;
-	Text alias        = findModAlias(t);
-	/* The class and method name are qualified by the local alias, not
-	 * the (real) module name.
-	 */
-	Cell monadRecName = mkQCon(alias,findText(fixClass));
-	Cell mfixName     = mkQCon(alias,findText("mfix"));
-
-	/* Reset this flag before signalling errors, so we won't inadvertently
-	 * loop.
-	 */
-	mdoLibsNeeded = FALSE;
-
-	if( !(classMonadRec = findQualClass(monadRecName)) &&
-	    !(classMonadRec = findClass(qtextOf(monadRecName))) ) {
-	    ERRMSG(0) "%s class not in scope", fixClass ETHEN
-		ERRTEXT   "\n*** Possible cause: \"%s\" module not imported", fixLib
-		EEND;
-	}
-
-	if( !(nameMFix = findQualName(mfixName)) &&
-	    !(nameMFix = findName(qtextOf(mfixName))) ) {
-	    ERRMSG(0) "%s class does not define the mfix method", fixClass
-		EEND;
-	}
-    }
-    mdoLibsNeeded = FALSE;
-}
 
 /* mdoExpandQualifiers inflates qs into a list of triples
    the first element is the original q
@@ -7343,9 +7285,6 @@ Void staticAnalysis(what)
 Int what; {
     switch (what) {
 	case RESET   :
-#if MUDO
-	               mdoLoad();
-#endif
 #if TREX
 	               trexLoad();
 #endif

@@ -70,6 +70,7 @@ module Hugs.Prelude (
     threadToIOResult,
     catchException, throw,
     Dynamic(..), TypeRep(..), Key(..), TyCon(..), Obj,
+    MonadFix(..),
 
     IOMode(..),
     stdin, stdout, stderr,
@@ -440,6 +441,10 @@ mapM_ f           = sequence_ . map f
 
 (=<<)            :: Monad m => (a -> m b) -> m a -> m b
 f =<< x           = x >>= f
+
+-- used by mdo
+class (Monad m) => MonadFix m where
+    mfix :: (a -> m a) -> m a
 
 -- Evaluation and strictness ------------------------------------------------
 

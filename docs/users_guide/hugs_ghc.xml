@@ -49,8 +49,9 @@ As you can guess <function>justOnes</function> will evaluate to
 </para>
 
 <para>
-The <literal>Control.Monad.Fix</literal> module introduces
-the <literal>MonadFix</literal> class, defined as
+The meaning of an <literal>mdo</literal> expression is defined via
+the <literal>MonadFix</literal> class, defined in
+the <literal>Control.Monad.Fix</literal> module as
 <programlisting>
 class Monad m => MonadFix m where
     mfix :: (a -> m a) -> m a

@@ -184,7 +184,6 @@ static Void   local typeDo	      Args((Int,Cell));
 #if MUDO
 static Void   local typeRecComp	      Args((Int,Type,Cell,List));
 static Void   local typeMDo	      Args((Int,Cell));
-static Void   local typeRecursiveDo   Args((Int,Cell));
 #endif
 static Void   local typeConFlds	      Args((Int,Cell));
 static Void   local typeUpdFlds	      Args((Int,Cell));
@@ -1611,24 +1610,6 @@ List qs; {
 }
 
 static Void local typeMDo(l,e)		/* type check recursive-do	   */
-Int l;
-Cell e; {
-    String fixLib     = "Control.Monad.Fix";
-    String fixClass   = "MonadFix";
-
-    if( !classMonadRec ) {
-	ERRMSG(0) "%s class not defined", fixClass ETHEN
-        ERRTEXT   "\n*** Possible cause: \"%s\" module not imported", fixLib
-	EEND;
-    }
-
-    predMonadRec = ap(classMonadRec,aVar);
-
-    /* Now we're safe: do the actual type-checking now: */
-    typeRecursiveDo(l,e);
-}
-
-static Void local typeRecursiveDo(l,e)	/* type check recursive-do exp.   */
 Int l;
 Cell e; {
     /* The structure at this point:
@@ -3237,6 +3218,11 @@ Void linkPreludeTC() {			/* Hook to tycons and classes in   */
 	classMonad      = linkClass("Monad");
 	predMonad       = ap(classMonad,aVar);
 
+#if MUDO
+	classMonadRec   = linkClass("MonadFix");
+	predMonadRec    = ap(classMonadRec,aVar);
+#endif
+
 #if IO_MONAD
 	typeIO          = linkTycon("IO");
 	typeProgIO      = ap(typeIO,aVar);
@@ -3307,6 +3293,10 @@ Void linkPreludeCM() {			/* Hook to cfuns and mfuns in	   */
 	nameBind        = linkName(">>=");
 	nameThen        = linkName(">>");
 	nameMFail       = linkName("fail");
+
+#if MUDO
+	nameMFix	= linkName("mfix");
+#endif
 
 #if IO_MONAD
         /* The constructor names better match up with the defn
