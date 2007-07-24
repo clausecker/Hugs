@@ -21,7 +21,6 @@ cd $toolsdir/../..
 
 source=packages
 target=libraries/bootlib
-fp_includes=includes
 tmpdir_root=/tmp
 
 HUGSDIR=hugsdir
@@ -121,7 +120,7 @@ do
 		target_stem=$target/$modname
 		dstdir=`dirname $target_stem`
 		basename=`basename $stem`
-		cpp_flags="$CPPFLAGS -I$HUGSDIR/include -I$package_dir/include -I$fp_includes"
+		cpp_flags="$CPPFLAGS -I$HUGSDIR/include -I$package_dir/include"
 
 		mkdir -p $dstdir
 
@@ -144,8 +143,8 @@ done
 
 ffihugs=src/ffihugs
 
-base_includes="-I$source/base/include -I$fp_includes"
-directory_includes="-I$source/directory/include -I$fp_includes"
+base_includes="-I$source/base/include"
+directory_includes="-I$source/directory/include"
 
 case $platform in
 Unix)	base_libs= ;;
