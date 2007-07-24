@@ -98,7 +98,7 @@ build_package() {
 	# HACK: network package expects host settings
 	case "$source_dir" in
 	*/network)
-		extra_opts="--build=$HOST --host=$HOST" ;;
+		extra_opts="--configure-option=--build=$HOST --configure-option=--host=$HOST" ;;
 	*)	extra_opts= ;;
 	esac
 
