@@ -9,9 +9,9 @@ These are the release notes for the program since it was renamed Hugs 98,
 reflecting substantial compliance with Haskell 98
 (though with numerous optional extensions).
 Archives of older versions of
-<ulink url="http://www.cse.ogi.edu/~mpj/goferarc/index.html">Gofer</ulink>
+<ulink url="http://www.cecs.pdx.edu/~mpj/goferarc/">Gofer</ulink>
 and
-<ulink url="http://www.cse.ogi.edu/~mpj/hugsarc/index.html">Hugs</ulink>
+<ulink url="http://www.cecs.pdx.edu/~mpj/hugsarc/">Hugs</ulink>
 are still available from Mark Jones's web page.
 </para>
 
