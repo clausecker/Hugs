@@ -3,7 +3,7 @@
 # Create libraries sufficient for runhugs, ffihugs, cpphs, hsc2hs and
 # Cabal scripts.
 
-boot_packages='base Cabal directory filepath haskell98 old-locale old-time pretty process random'
+boot_packages='array base Cabal containers directory filepath haskell98 old-locale old-time pretty process random'
 
 # ensure that letter ranges work
 LC_ALL=C

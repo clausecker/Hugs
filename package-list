@@ -16,10 +16,13 @@
 # lines starting with a "#" are ignored.
 
 ALUT               extra   2.0
+array              core    0.1
 arrows             extra   0.2
 base               core    2.1
+bytestring         extra   0.1
 Cabal              core    1.1.6
 cgi                extra   3001.1.0
+containers         core    0.1
 directory          core    1.0
 fgl                extra   5.3
 filepath           core    1.0
