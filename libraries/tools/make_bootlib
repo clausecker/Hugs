@@ -91,11 +91,12 @@ do
 
 	(
 		cd $package_dir
-		$FIND . \( -name '[a-z]*' -o -name '[GN]HC' \) -prune -o \
+		$FIND . -name '[a-z]*' -prune -o \
 			-wholename './Setup.*' -prune -o \
 			\( -name \*.hs -o -name \*.lhs -o -name \*.hsc \) -print |
 			sed '	s:^\./::
 				s/\..*//' |
+			grep -v '^[GN]HC\.' |
 			grep -v '^Setup$' |
 			$SORT -u >$module_list
 	)
