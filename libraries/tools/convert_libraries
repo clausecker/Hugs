@@ -107,7 +107,7 @@ build_package() {
 			--scratchdir="$top_dir/$target_dir" \
 			--with-hsc2hs="$top_dir/libraries/tools/hsc2hs$bat" \
 			--with-cpphs="$top_dir/libraries/tools/cpphs$bat" \
-			--with-runhugs="$runhugs" --with-compiler="$ffihugs" \
+			--with-compiler="$ffihugs" \
 			$happyflag $extra_opts
 	if $HugsSetup build --verbose; then
 		for name in LICEN[CS]E* COPYING* COPYRIGHT* copyright; do
