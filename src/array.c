@@ -18,6 +18,7 @@ PROTO_PRIM(primAmap);
 PROTO_PRIM(primSubscript);
 PROTO_PRIM(primBounds);
 PROTO_PRIM(primElems);
+PROTO_PRIM(primNumElements);
 PROTO_PRIM(primEltUndef);
 #if IO_MONAD
 PROTO_PRIM(primIONewArr);
@@ -36,6 +37,7 @@ static struct primitive arrayPrimTable[] = {
   {"primSubscript",	2, primSubscript},
   {"primBounds",	1, primBounds},
   {"primElems",		1, primElems},
+  {"numElements",	1, primNumElements},
   {"eltUndef",		0, primEltUndef},
 #if IO_MONAD
   {"IONewArr",		3+IOArity, primIONewArr},
@@ -43,6 +45,7 @@ static struct primitive arrayPrimTable[] = {
   {"IOWriteArr",	3+IOArity, primIOWriteArr},
   {"IOFreeze",		1+IOArity, primIOFreeze},
   {"IOBounds",	        1, primBounds},
+  {"IONumElements",	1, primNumElements},
   {"IOArrEq",	        2, primIOArrEq},
 #endif
   {0,			0, 0}
@@ -139,6 +142,8 @@ static struct primInfo arrayPrims = { arrayControl, arrayPrimTable, 0 };
  * aElems(a);		Evaluate array at primArg(a), and return its list of
  *			elements on top of stack in reverse order, backed onto
  *			NIL (ready for revOnto(top(),nameNil)).
+ * aNumElems(a);	Evaluate array at primArg(a), and return the number
+ *			of elements it contains.
  * aBounds()		Extract bounds from arr.
  * aGetBounds(a)	Extract bounds from primArg(a).
  *
@@ -221,6 +226,7 @@ static struct primInfo arrayPrims = { arrayControl, arrayPrimTable, 0 };
 			    }					\
 			    drop();				\
 			}
+#define aNumElems(a)	length(snd(snd(primArg(a))))
 #define aBounds()	fst(arr)
 #define aGetBounds(a)	fst(snd(primArg(a)))
 #define updarrRoot()	updapRoot(ARRAY,arr); arr=NIL
@@ -301,6 +307,11 @@ primFun(primElems) {			/* :: Array a b -> [b]		   */
     updateRoot(revOnto(top(),nameNil));
 }
 
+primFun(primNumElements) {		/* :: Array a b -> Int		   */
+    aEvalModel(1);
+    updateRoot(mkInt(aNumElems(1)));
+}
+
 primFun(primEltUndef) {
     throwException(ap(nameArrayException, ap(nameUndefinedElement, nameNil)));
 }
@@ -357,6 +368,7 @@ primFun(primIOArrEq) {		        /* :: IOArray a b                 */
 #undef aGetElt
 #undef aPutElt
 #undef aElems
+#undef aNumElems
 #undef aBounds
 #undef aGetBounds
 #undef updarrRoot

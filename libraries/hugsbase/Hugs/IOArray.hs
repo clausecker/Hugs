@@ -8,6 +8,7 @@ module Hugs.IOArray
 	( IOArray			-- instance of: Eq, Typeable
 	, newIOArray
 	, boundsIOArray
+	, getNumElementsIOArray
 	, readIOArray
 	, writeIOArray
 	, freezeIOArray
@@ -25,6 +26,7 @@ data IOArray ix elt -- implemented as an internal primitive
 
 newIOArray          :: Ix ix => (ix,ix) -> elt -> IO (IOArray ix elt)
 boundsIOArray       :: Ix ix => IOArray ix elt -> (ix, ix)
+getNumElementsIOArray :: Ix ix => IOArray ix elt -> Int
 readIOArray         :: Ix ix => IOArray ix elt -> ix -> IO elt
 writeIOArray        :: Ix ix => IOArray ix elt -> ix -> elt -> IO ()
 thawIOArray         :: Ix ix => Array ix elt -> IO (IOArray ix elt)
@@ -39,6 +41,7 @@ unsafeWriteIOArray   = primWriteArr
 
 newIOArray bs e      = primNewArr bs (rangeSize bs) e
 boundsIOArray a      = primBounds a
+getNumElementsIOArray a = primNumElements a
 readIOArray a i      = unsafeReadIOArray a (index (boundsIOArray a) i)
 writeIOArray a i e   = unsafeWriteIOArray a (index (boundsIOArray a) i) e
 thawIOArray arr      = do a <- newIOArray (bounds arr) err
@@ -64,6 +67,8 @@ primitive primFreeze   "IOFreeze"
           :: IOArray a b -> IO (Array a b)
 primitive primBounds   "IOBounds"
           :: IOArray a b -> (a,a)
+primitive primNumElements   "IONumElements"
+          :: IOArray a b -> Int
 primitive eqIOArray    "IOArrEq"
           :: IOArray a b -> IOArray a b -> Bool
 

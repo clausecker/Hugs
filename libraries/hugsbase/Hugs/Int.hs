@@ -246,7 +246,7 @@ primitive int32ToInt64 "primInt32ToInt64" :: Int32 -> Int32 -> Int64
 
 integerToI64 :: Integer -> Int64
 integerToI64 x = case x `divMod` 0x100000000 of
-    (hi,lo) -> int32ToInt64 (fromInteger hi) (fromInteger lo)
+    (hi,lo) -> int32ToInt64 (fromInteger (hi `mod` 0x100000000)) (fromInteger lo)
 
 i64ToInteger :: Int64 -> Integer
 i64ToInteger x = case int64ToInt32 x of

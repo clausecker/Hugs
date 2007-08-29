@@ -10,6 +10,7 @@ module Hugs.Array (
 
     Array, array, listArray, (!), bounds, indices, elems, assocs, 
     accumArray, (//), accum, ixmap,
+    numElements,
     unsafeArray, unsafeAt, unsafeReplace, unsafeAccum, unsafeAccumArray
     ) where
 
@@ -42,6 +43,8 @@ primitive primSubscript :: Array a b -> Int -> b
 primitive primBounds :: Array a b -> (a,a)
 primitive primElems  :: Array a b -> [b]
 primitive primAmap   :: (b -> c) -> Array a b -> Array a c
+
+primitive numElements :: Array a b -> Int
 
 unsafeArray :: Ix i => (i,i) -> [(Int, e)] -> Array i e
 unsafeArray bnds	= primArray bnds (rangeSize bnds)

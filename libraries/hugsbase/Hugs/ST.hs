@@ -28,6 +28,7 @@ module Hugs.ST
           -- instance Eq (STArray s ix elt)
         , newSTArray
         , boundsSTArray
+	, numElementsSTArray
         , readSTArray
         , writeSTArray
         , thawSTArray
@@ -111,6 +112,7 @@ unsafeWriteSTArray   = primWriteArr
 
 newSTArray bs e      = primNewArr bs (rangeSize bs) e
 boundsSTArray a      = primBounds a
+numElementsSTArray a = primNumElements a
 readSTArray a i      = unsafeReadSTArray a (index (boundsSTArray a) i)
 writeSTArray a i e   = unsafeWriteSTArray a (index (boundsSTArray a) i) e
 thawSTArray arr      = do
@@ -136,6 +138,8 @@ primitive primFreeze   "IOFreeze"
           :: STArray s a b -> ST s (Array a b)
 primitive primBounds   "IOBounds"
           :: STArray s a b -> (a,a)
+primitive primNumElements "IONumElements"
+          :: STArray s a b -> Int
 primitive eqSTArray    "IOArrEq"
           :: STArray s a b -> STArray s a b -> Bool
 
