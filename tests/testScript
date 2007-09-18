@@ -468,7 +468,7 @@ test_libs() {
   perl runstdtest $HUGS $STDOPTS Hugs.Observe "-o1libs/Loaded.output"
 
   echo "-- !!! Performing static tests on Hugs libraries"
-  perl runstdtest $HUGS $STDOPTS -98 -P:../demos/hugslibs HugsLibs "-o1libs/HugsLibs.output"
+  perl runstdtest $HUGS $STDOPTS -98 -P../demos/hugslibs: HugsLibs "-o1libs/HugsLibs.output"
   perl runstdtest $HUGS $STDOPTS -98 Hugs.Quote "-o1libs/Loaded.output"
 
   echo "-- !!! Performing dynamic tests on libraries"
@@ -500,8 +500,8 @@ test_demos() {
 ----------------------------------------------------------------"
 
   echo "-- !!! Performing static checks on demos"
-  perl runstdtest $HUGS $STDOPTS -98 -P:../demos/hugslibs ../demos/Demos "-o1demos/Loaded.output"
-  perl runstdtest $HUGS $STDOPTS -P:../demos/hugslibs ../demos/prolog/Main "-o1demos/Loaded.output"
+  perl runstdtest $HUGS $STDOPTS -98 -P../demos/hugslibs: ../demos/Demos "-o1demos/Loaded.output"
+  perl runstdtest $HUGS $STDOPTS -P../demos/hugslibs: ../demos/prolog/Main "-o1demos/Loaded.output"
 
 } # End of test demos
 
