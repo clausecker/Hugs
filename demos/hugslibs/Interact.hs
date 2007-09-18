@@ -5,7 +5,7 @@
 -----------------------------------------------------------------------------
 
 module Interact(
-	Interact(..),
+	Interact,
 	end,
 	readChar, peekChar, unreadChar, pressAnyKey,
 	writeChar, writeStr,
