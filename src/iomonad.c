@@ -1230,9 +1230,9 @@ primFun(primHSetBuffering) {	/* Change a Handle's buffering */
     if (rc != 0)
 	throwErrno("IO.hSetBuffering", TRUE, h, NULL);
 #if HAVE_ISATTY
-    if ((handles[h].hmode&(HWRITE|HAPPEND|HREADWRITE)) &&
+    if ((handles[h].hmode&(HREAD|HAPPEND|HREADWRITE)) &&
 	isatty(fileno(handles[h].hfp)))
-	setBuffTerminal(fileno(handles[h].hfp), ty!=0);
+	setBuffTerminal(fileno(handles[h].hfp), ty!=_IONBF);
 #endif
     IOReturn(nameUnit);
 }
