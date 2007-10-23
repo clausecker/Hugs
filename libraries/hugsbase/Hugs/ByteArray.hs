@@ -44,6 +44,7 @@ specialIOToST = unsafeCoerce
 type BytePtr = ForeignPtr Word8
 
 data MutableByteArray s = MutableByteArray !Int !BytePtr
+    deriving (Eq)
 
 newMutableByteArray :: Int -> ST s (MutableByteArray s)
 newMutableByteArray size = do
