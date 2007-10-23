@@ -6,6 +6,7 @@ maintainer: <hugs-bugs@haskell.org>
 homepage: http://www.haskell.org/hugs/
 synopsis: Internal modules for Hugs
 stability: internal
+build-type: Simple
 exposed-modules:
 	Hugs,
 	Hugs.Array,
