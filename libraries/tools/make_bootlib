@@ -56,6 +56,8 @@ mkdir $tmpdir
 
 # K&R-style C preprocessor
 
+Cabal_flag=`sed -n 's/ *CPP-Options: "\(.*\)"/\1/p' $source/Cabal/Cabal.cabal`
+
 through_cpp() {
 	# The input file need not be called *.c, but for
 	# portability we run the preprocessor on a .c file.
@@ -64,7 +66,7 @@ through_cpp() {
 	cp "$1" $cpp_input
 
 	# gcc-3.3 on MacOS X 10.3 is reported to add #pragma
-	$cpp $cpp_flags -I`dirname $1` $cpp_input | grep -v '^#' | cat -s
+	$cpp $Cabal_flag $cpp_flags -I`dirname $1` $cpp_input | grep -v '^#' | cat -s
 }
 
 # internal Hugs modules
