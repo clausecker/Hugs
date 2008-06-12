@@ -144,6 +144,16 @@ AC_ARG_ENABLE(debug,
       debugger.])
    fi])
 
+AC_ARG_ENABLE(extcore,
+  [AC_HELP_STRING([--enable-extcore],
+     [enable external Core generation])],
+  [if test "$enableval" = yes; then
+   COREHUGS='corehugs$(EXEEXT)'
+   AC_DEFINE([DEBUG_SHOWSC], [1],
+     [Define to 1 if debugging generated supercombinator definitions 
+      or compiler.])
+   fi])
+
 AC_ARG_ENABLE(tag-checks,
   [AC_HELP_STRING([--enable-tag-checks],
      [runtime tag checking (for debugging Hugs)])],
@@ -193,6 +203,8 @@ AC_ARG_ENABLE(char-encoding,
       is always used, give the --enable-char-encoding=utf8 option.
       [default=autodetect]])],
   , [enable_char_encoding=autodetect])
+
+AC_SUBST_DEF(COREHUGS, "")
 
 dnl--------------------------------------------------------------------
 dnl

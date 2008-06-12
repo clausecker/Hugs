@@ -100,6 +100,7 @@ static Void local newGlobalFunction     Args((Name,Int,List,Int,Cell));
 #if DEBUG_SHOWSC
 static Void local debugConstructors     Args((FILE *fp,Cell c));
 static Void local debugConstructor      Args((FILE *fp,Name c));
+static Void local debugPrimitive        Args((FILE *fp,Name c));
 #endif
 
 /* --------------------------------------------------------------------------
@@ -1998,6 +1999,7 @@ Void compileDefns() {			/* compile script definitions	   */
     Target i = 0;
 
 #if DEBUG_SHOWSC
+    Cell p;
     Module mod;
     String modName;
     char name[256];
@@ -2038,6 +2040,11 @@ Void compileDefns() {			/* compile script definitions	   */
 		  break;
 	      default:
 		  fprintf(scfp,"** unknown datacons **");
+	      }
+	  }
+	  for (p=NAMEMIN; isName(p); p++) {
+	      if (name(p).mod == currentModule) {
+		  debugPrimitive(scfp, p);
 	      }
 	  }
       }
@@ -2083,13 +2090,41 @@ static Void local debugConstructors(FILE *fp,Cell c) {
   }
 }
 
+/* --------------------------------------------------------------------------
+ * Print primitive information (only within the Prelude module, and
+ * always qualified with Prelude. since output.c/unlexFullVar prints
+ * primitives such way). All we can get at this point is name and arity.
+ * Primitive is printed in the following format:
+ * "primitive" primname _1 ... _n;
+ * ------------------------------------------------------------------------*/
+
+static Void local debugPrimitive(FILE *fp,Name p) {
+    int i;
+    char *t, *m;
+    switch(whatIs(p)) {
+	case NAME:
+	    if (name(p).primDef) {
+		m = textToStr(module(name(p).mod).text);
+		t = textToStr(name(p).text);
+		if (index(t,' ')) return;
+		fprintf(fp, "primitive %s.%s",m,t);
+		for (i=0;i < name(p).arity;i++)
+		    fprintf(fp," _%d", i+1);
+		fprintf(fp,";\n");
+	    }
+	    break;
+	default:
+	    fprintf(fp, "** not a primitive **");
+    }
+}
+
 static Void local debugConstructor(FILE *fp,Name c) {
   int i;
   switch(whatIs(c)) {
   case NAME: 
     fprintf(fp,"%s",textToStr(name(c).text));
     for(i=0;i < name(c).arity;i++) {
-      fprintf(scfp," *");
+      fprintf(fp," *");
     }
     break;
   default:

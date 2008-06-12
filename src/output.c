@@ -719,7 +719,7 @@ Name n; {
     unlexFullVar(name(n).parent);  
   } else {
     if (name(n).primDef) {
-      putStr("Prelude");
+      putStr(textToStr(module(m).text));
     } else {
       putStr(textToStr(module(m).text));
     }
@@ -877,10 +877,10 @@ Int  co; {
 			    pPut(COND_PREC+1,fst3(snd(e)),co);
 			    putStr(" of");
 			    pIndent(left+2);
-			    putStr(" { Prelude.True -> ");
+			    putStr(" { Hugs.Prelude.True -> ");
 			    pPut(COND_PREC+1,snd3(snd(e)),co);
 			    pIndent(left+2);
-			    putStr(" ; Prelude.False ->  ");
+			    putStr(" ; Hugs.Prelude.False ->  ");
 			    pPut(COND_PREC+1,thd3(snd(e)),co);
 			    pIndent(left+2);
 			    putStr("}");
@@ -1006,7 +1006,7 @@ String eq; {
 			       pPut(NEVER,fst(hd(gs)),co);
 			       putStr(" of\n");
 			       pIndent(left + 2);
-			       putStr("{ Prelude.True -> ");
+			       putStr("{ Hugs.Prelude.True -> ");
 			       pPut(NEVER,snd(hd(gs)),co);
 			       putStr("\n");
 			       pIndent(left + 2);
@@ -1064,9 +1064,9 @@ String eq; {
 	case NUMCASE : {   Int  left = outColumn;
 			   Cell t    = snd(e);
 			   Cell h     = getHead(snd3(t));
-			   String eqInt     = "Prelude.primPmInt";
-			   String eqInteger = "Prelude.primPmInteger";
-			   String eqDouble  = "Prelude.primPmFlt";
+			   String eqInt     = "Hugs.Prelude.primPmInt";
+			   String eqInteger = "Hugs.Prelude.primPmInteger";
+			   String eqDouble  = "Hugs.Prelude.primPmFlt";
 			   String theEq     = "** BAD EQUALITY **";
 			   Int  ar = 0;
 			   putStr("case ");
@@ -1098,7 +1098,7 @@ String eq; {
 			   pPut(NEVER,fst3(t),co);
 			   putStr(") of\n");
 			   pIndent(left+2);
-			   putStr("{ Prelude.True ");
+			   putStr("{ Hugs.Prelude.True ");
 			   pLiftedStart(thd3(t),co+ar,"->");
 			   putStr("\n");
 			   pIndent(left+2);

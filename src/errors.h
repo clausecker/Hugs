@@ -70,7 +70,7 @@ extern Void   hugsPutc      	    Args((int, FILE*));
 #define errorStream	 stdout
 #endif
 
-#define ERRMSG(l)	 Hilite(); errHead(l); FPrintf(errorStream,
+#define ERRMSG(l)	 Hilite(); errorCount++; errHead(l); FPrintf(errorStream,
 #define EEND       	 ); Lolite(); errFail()
 #define EEND_NORET       ); Lolite()
 #define ETHEN		 );
@@ -97,6 +97,8 @@ extern Void stackOverflow Args((int, stackoverflow_context_t)) HUGS_noreturn;
 #endif
 
 extern Bool breakOn      Args((Bool));		   /* in machdep.c	   */
+
+extern int errorCount;                   /* used by corehugs only */
 
 #include <setjmp.h>
 extern jmp_buf catch_error;          /* jump buffer for error trapping  */

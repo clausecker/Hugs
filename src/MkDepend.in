@@ -4,6 +4,9 @@ hugs.$(OBJEXT): hugs.c prelude.h config.h platform.h options.h storage.h HsFFI.h
 runhugs.$(OBJEXT): runhugs.c prelude.h config.h platform.h options.h storage.h \
   HsFFI.h connect.h machdep.h observe.h builtin.h evaluator.h errors.h \
   server.h HugsAPI.h
+corehugs.$(OBJEXT): corehugs.c prelude.h config.h platform.h options.h storage.h \
+  HsFFI.h command.h connect.h errors.h script.h opts.h strutil.h \
+  evaluator.h machdep.h output.h module.h timer.c
 server.$(OBJEXT): server.c prelude.h config.h platform.h options.h storage.h \
   HsFFI.h connect.h script.h machdep.h evaluator.h opts.h strutil.h \
   errors.h server.h HugsAPI.h
@@ -53,7 +56,7 @@ storage.$(OBJEXT): storage.c prelude.h config.h platform.h options.h storage.h \
   HsFFI.h connect.h opts.h errors.h machdep.h evaluator.h strutil.h \
   output.h
 strutil.$(OBJEXT): strutil.c prelude.h config.h platform.h options.h storage.h \
-  HsFFI.h connect.h errors.h strutil.h
+  HsFFI.h connect.h errors.h strutil.h char.h
 subst.$(OBJEXT): subst.c prelude.h config.h platform.h options.h storage.h \
   HsFFI.h connect.h errors.h output.h opts.h subst.h
 type.$(OBJEXT): type.c prelude.h config.h platform.h options.h storage.h HsFFI.h \

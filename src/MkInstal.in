@@ -4,8 +4,8 @@
 
 INSTALL		= ../install-sh
 
-install		:: hugs$(EXEEXT) runhugs$(EXEEXT) ffihugs$(EXEEXT)
+install		:: $(PROGRAMS)
 		$(INSTALL) -d $(DESTDIR)$(bindir)
-		$(INSTALL) -c hugs$(EXEEXT) $(DESTDIR)$(bindir)
-		$(INSTALL) -c runhugs$(EXEEXT) $(DESTDIR)$(bindir)
-		$(INSTALL) -c ffihugs$(EXEEXT) $(DESTDIR)$(bindir)
+		for p in $(PROGRAMS);\
+		do $(INSTALL) -c $$p $(DESTDIR)$(bindir);\
+		done

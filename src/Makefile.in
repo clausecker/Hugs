@@ -16,6 +16,7 @@
 # install:	  make and install programs
 # hugs@EXEEXT@:	  make minimal working system
 # runhugs@EXEEXT@: make batch-mode version of Hugs
+# corehugs@EXEEXT@: make Hugs core generator from loaded files
 # clean:       	  delete files not required in running system
 # distclean:      delete files that can be regenerated using C compiler
 # veryclean:      delete all machine generated files 
@@ -56,7 +57,7 @@ HFILES		= HsFFI.h builtin.h char.h command.h config.h connect.h \
 		  errors.h evaluator.h goal.h machdep.h module.h observe.h \
 		  options.h opts.h output.h prelude.h script.h server.h \
 		  storage.h strutil.h subst.h
-CFILES		= hugs.c runhugs.c server.c edit.c observe.c \
+CFILES		= hugs.c runhugs.c corehugs.c server.c edit.c observe.c \
 		  builtin.c char.c compiler.c errors.c evaluator.c ffi.c \
 		  goal.c input.c machdep.c machine.c module.c opts.c \
 		  output.c plugin.c script.c static.c storage.c strutil.c \
@@ -75,6 +76,7 @@ OBJECTS		= builtin.$(OBJEXT) char.$(OBJEXT) compiler.$(OBJEXT) \
 IOBJECTS	= hugs.$(OBJEXT) edit.$(OBJEXT) observe.$(OBJEXT) $(OBJECTS)
 WOBJECTS	= @WOBJECTS@
 RC_FILES	= @RC_FILES@
+PROGRAMS	= hugs$(EXEEXT) runhugs$(EXEEXT) ffihugs$(EXEEXT) @COREHUGS@
 
 ################################################################
 # Default target
@@ -83,7 +85,7 @@ RC_FILES	= @RC_FILES@
 # This rule goes first to make it the default choice
 default		:: all
 
-all		:: hugs$(EXEEXT) runhugs$(EXEEXT) ffihugs$(EXEEXT)
+all		:: $(PROGRAMS)
 
 ################################################################
 # Hugs interpreter and standalone evaluator
@@ -92,6 +94,12 @@ all		:: hugs$(EXEEXT) runhugs$(EXEEXT) ffihugs$(EXEEXT)
 hugs$(EXEEXT)	: $(IOBJECTS) $(WOBJECTS) $(RC_FILES)
 		  $(CC) $(LDFLAGS) $(IOBJECTS) $(WOBJECTS) $(LIBS) -o hugs$(EXEEXT) 
 		  $(STRIP)
+
+corehugs$(EXEEXT): corehugs.$(OBJEXT) $(OBJECTS) $(WOBJECTS) $(RC_FILES)
+		  $(CC) $(LDFLAGS) corehugs.$(OBJEXT) $(OBJECTS) $(WOBJECTS) $(LIBS) \
+			edit.$(OBJEXT) observe.$(OBJEXT) -o corehugs$(EXEEXT) 
+		  $(STRIP)
+
 
 version.$(OBJEXT) : version.c $(SOURCES)
 		  @$(CC) \
@@ -102,6 +110,7 @@ version.$(OBJEXT) : version.c $(SOURCES)
 SERVER_OBJECTS	= server.$(OBJEXT) $(OBJECTS) 
 runhugs$(EXEEXT) : runhugs.$(OBJEXT) $(SERVER_OBJECTS)
 		  $(CC) $(LDFLAGS) runhugs.$(OBJEXT) $(SERVER_OBJECTS) $(LIBS) -o runhugs$(EXEEXT)
+
 
 ffihugs$(EXEEXT) : ffihugs.$(OBJEXT) $(SERVER_OBJECTS)
 		  $(CC) $(LDFLAGS) ffihugs.$(OBJEXT) $(SERVER_OBJECTS) $(LIBS) -o ffihugs$(EXEEXT)
@@ -133,9 +142,7 @@ clean		::
 		  $(RM) *.hp
 distclean	:: clean
 distclean	::
-		  $(RM) hugs$(EXEEXT)
-		  $(RM) runhugs$(EXEEXT)
-		  $(RM) ffihugs$(EXEEXT)
+		  $(RM) $(PROGRAMS)
 		  $(RM) Makefile
 		  $(RM) config.h
 		  $(RM) options.h

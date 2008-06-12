@@ -18,6 +18,8 @@
 #include "evaluator.h" /* everybody() proto only */
 #include <setjmp.h>
 
+int errorCount; /* errors count, used by corehugs only */
+
 jmp_buf catch_error;          /* jump buffer for error trapping  */
 
 /* --------------------------------------------------------------------------
