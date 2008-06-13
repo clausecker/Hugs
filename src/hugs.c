@@ -223,7 +223,7 @@ char *argv[]; {
     CStackBase = &argc;                 /* Save stack base for use in gc   */
 
     if (!initSystem()) {
-      Printf("%0: failed to initialize, exiting\n", (argv ? argv[0] : ""));
+      Printf("%s: failed to initialize, exiting\n", argv ? argv[0] : "");
       return 1;
     }
     initReadline();

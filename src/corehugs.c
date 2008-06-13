@@ -92,7 +92,7 @@ char *argv[]; {
 
 #ifndef DEBUG_SHOWSC
 
-    Printf("%0: Hugs was not compiled with external core enabled\n" (argv ? argv[0] : ""));
+    Printf("%s: Hugs was not compiled with external core enabled\n", argv ? argv[0] : "");
     Printf("Please run configure --enable-extcore and rebuild\n", "");
     return 1;
 
@@ -101,7 +101,7 @@ char *argv[]; {
     CStackBase = &argc;                 /* Save stack base for use in gc   */
 
     if (!initSystem()) {
-	Printf("%0: failed to initialize, exiting\n", (argv ? argv[0] : ""));
+	Printf("%s: failed to initialize, exiting\n", argv ? argv[0] : "");
 	return 1;
     }
     errorCount = 0;
