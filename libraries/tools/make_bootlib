@@ -19,13 +19,13 @@ esac
 
 cd $toolsdir/../..
 
-source=packages
-target=libraries/bootlib
-tmpdir_root=/tmp
-
 HUGSDIR=hugsdir
-HUGSFLAGS="-P$target"
+HUGSFLAGS="-P$target/*"
 export HUGSDIR HUGSFLAGS
+
+source=packages
+target=$HUGSDIR/packages
+tmpdir_root=/tmp
 
 # platform sensitive settings
 
@@ -71,9 +71,9 @@ through_cpp() {
 
 # internal Hugs modules
 
-mkdir -p $target/Hugs
-cp libraries/hugsbase/Hugs/*.* $target/Hugs
-cp libraries/hugsbase/Hugs.hs $target
+mkdir -p $target/hugsbase/Hugs
+cp libraries/hugsbase/Hugs/*.* $target/hugsbase/Hugs
+cp libraries/hugsbase/Hugs.hs $target/hugsbase
 
 # Preprocess hierarchical modules
 
@@ -109,7 +109,7 @@ do
 	do	echo "Preprocessing $modname"
 
 		stem=$package_dir/$modname
-		target_stem=$target/$modname
+		target_stem=$target/$package/$modname
 		dstdir=`dirname $target_stem`
 		basename=`basename $stem`
 		cpp_flags="$CPPFLAGS -I$HUGSDIR/include -I$package_dir/include"
@@ -137,6 +137,7 @@ ffihugs=src/ffihugs
 
 base_includes="-I$source/base/include"
 directory_includes="-I$source/directory/include"
+unix_includes="-I$source/unix/include"
 
 case $platform in
 Unix)	base_libs= ;;
@@ -161,6 +162,9 @@ $ffihugs '-i"HsDirectory.h"' System.Directory $directory_includes \
 case $platform in
 Unix)
 	$ffihugs '-i"HsBase.h"' System.Posix.Internals $base_includes
+#	$ffihugs '-i"HsUnix.h"' '-i"execvpe.h"' System.Posix.Process.Internals \
+#		$unix_includes \
+#		$source/unix/cbits/HsUnix.c $source/unix/cbits/execvpe.c
 	;;
 Win32)
 	$ffihugs Distribution.Simple.Utils

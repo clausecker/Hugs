@@ -56,7 +56,7 @@ copy_examples() {
 top_dir=../..
 
 HUGSDIR="$top_dir/$target"
-HUGSFLAGS="-P{Hugs}/packages/*:$top_dir/libraries/bootlib"
+HUGSFLAGS="-P{Hugs}/packages/*"
 export HUGSDIR HUGSFLAGS
 
 # extension for batch files/shell scripts
@@ -126,7 +126,7 @@ Win32=
 case `uname -a` in
 CYGWIN*|MINGW32*) Win32="Win32" ;;
 esac
-packages="base array old-locale old-time directory process random haskell98 filepath pretty containers Cabal bytestring haskell-src QuickCheck mtl fgl HaXml parsec html network HUnit $Win32 unix X11 HGL OpenGL GLUT OpenAL ALUT time stm xhtml regex-base regex-posix regex-compat regex-tdfa"
+packages="base array old-locale old-time directory unix process random haskell98 filepath pretty containers Cabal bytestring haskell-src QuickCheck mtl fgl HaXml parsec html network HUnit $Win32 X11 HGL OpenGL GLUT OpenAL ALUT time stm xhtml regex-base regex-posix regex-compat regex-tdfa"
 
 build_package libraries/hugsbase
 
