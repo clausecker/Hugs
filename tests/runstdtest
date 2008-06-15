@@ -51,7 +51,6 @@ $DefaultStderrFile = "${tmpdir}/no_stderr$$";
 @PgmStdoutFile = ();
 @PgmStderrFile = ();
 $PgmStartLine = 0;
-$AltScript = '';
 $TimeCmd = '';
 
 die "$Pgm: program to run not given as first argument\n" if $#ARGV < 0;
@@ -91,8 +90,6 @@ arg: while ($_ = $ARGV[0]) {
 			    if ! -f $out_file;
 			push(@PgmStderrFile, $out_file);
 			next arg; };
-    /^-script(.*)/ && do { $AltScript = &grab_arg_arg('-script',$1);
-			next arg; };
     /^-t(.*)/	&& do { $TimeCmd = &grab_arg_arg('-t', $1); next arg; };
 
     # anything else is taken to be a pgm arg
@@ -128,19 +125,6 @@ foreach $a ( @PgmArgs ) {
 	$a =~ s/"/\\"/g;    # backslash the quotes;
 	$a = "\"$a\"";	    # quote the arg
     }
-}
-
-if ($AltScript ne '') {
-    local($to_do);
-    $to_do = `cat $AltScript`;
-    # glue in pgm to run...
-    $* = 1;
-    $to_do =~ s/^\$1 /$ToRun /;
-    &run_something($to_do);
-    exit 0;
-#    exec "$AltScript $ToRun";
-#    print STDERR "Failed to exec!!! $AltScript $ToRun\n";
-#    exit 1;
 }
 
 # OK, so we're gonna do the normal thing...
