@@ -19,13 +19,13 @@ esac
 
 cd $toolsdir/../..
 
+source=packages
+tmpdir_root=/tmp
+
 HUGSDIR=hugsdir
+target=$HUGSDIR/packages
 HUGSFLAGS="-P$target/*"
 export HUGSDIR HUGSFLAGS
-
-source=packages
-target=$HUGSDIR/packages
-tmpdir_root=/tmp
 
 # platform sensitive settings
 
