@@ -12,18 +12,9 @@ module Hugs.Exception(
 	AsyncException(..),
 
 	catchException,		-- :: IO a -> (Exception -> IO a) -> IO a
-
-	-- Throwing exceptions
-
 	throwIO,		-- :: Exception -> IO a
 	throw,			-- :: Exception -> a
-
 	evaluate,		-- :: a -> IO a
-
-	-- Async exception control
-
-        block,			-- :: IO a -> IO a
-        unblock,		-- :: IO a -> IO a
   ) where
 
 import Hugs.Prelude
@@ -56,14 +47,6 @@ throwIO exn = IO (\ s -> throw exn)
 
 evaluate :: a -> IO a
 evaluate x = IO (\ s -> x `seq` s x)
-
-----------------------------------------------------------------
--- dummy implementations of block and unblock
-----------------------------------------------------------------
-
-block, unblock :: IO a -> IO a
-block   m = m
-unblock m = m
 
 ----------------------------------------------------------------
 -- End
