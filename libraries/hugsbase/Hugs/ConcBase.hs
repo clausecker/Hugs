@@ -48,7 +48,7 @@ module Hugs.ConcBase(
 
 import Hugs.Prelude(
 	IO(..), IOResult(..), threadToIOResult,
-	Exception(..), catchException, blockIO)
+	SomeException(..), catchException, blockIO)
 import Hugs.IORef
 
 ----------------------------------------------------------------
@@ -84,7 +84,7 @@ continueIO cc = IO (\ s -> Hugs_ForkThread (s ()) cc)
 -- continuations.
 forkIO m = continueIO (threadToIOResult (m `catchException` forkExnHandler))
 
-forkExnHandler :: Exception -> IO a
+forkExnHandler :: SomeException -> IO a
 forkExnHandler e = do
     putStr "\nThread raised exception: "
     putStr (show e)

@@ -58,8 +58,8 @@ module Hugs.Prelude (
 --  Non-standard exports
     IO(..), IOResult(..),
     IOException(..), IOErrorType(..),
-    Exception(..),
-    ArithException(..), ArrayException(..), AsyncException(..),
+    SomeException(..),
+    ArithException(..), ArrayException(..),
     ExitCode(..),
     FunPtr, Ptr, Addr,
     Word, StablePtr, ForeignObj, ForeignPtr,
@@ -1599,14 +1599,10 @@ readFloat r    = [(fromRational ((n%1)*10^^(k-d)),t) | (n,d,s) <- readFix r,
 -- Exception datatype and operations
 ----------------------------------------------------------------
 
-data Exception
+data SomeException
   = ArithException      ArithException
   | ArrayException      ArrayException
-  | AssertionFailed     String
-  | AsyncException      AsyncException
-  | BlockedOnDeadMVar
-  | Deadlock
-  | DynException        Dynamic
+  | DynamicException    Dynamic (Int -> ShowS)
   | ErrorCall           String
   | ExitException       ExitCode
   | IOException 	IOException	-- IO exceptions (from 'ioError')
@@ -1617,14 +1613,10 @@ data Exception
   | RecSelError         String
   | RecUpdError         String
 
-instance Show Exception where
+instance Show SomeException where
   showsPrec _ (ArithException e)  = shows e
   showsPrec _ (ArrayException e)  = shows e
-  showsPrec _ (AssertionFailed s) = showException "assertion failed" s
-  showsPrec _ (AsyncException e)  = shows e
-  showsPrec _ BlockedOnDeadMVar   = showString "thread blocked indefinitely"
-  showsPrec _ Deadlock            = showString "<<deadlock>>"
-  showsPrec _ (DynException _)    = showString "unknown exception"
+  showsPrec p (DynamicException _ show_fn) = show_fn p
   showsPrec _ (ErrorCall s)       = showString s
   showsPrec _ (ExitException err) = showString "exit: " . shows err
   showsPrec _ (IOException err)	  = shows err
@@ -1660,17 +1652,6 @@ instance Show ArrayException where
     showException "array index out of range" s
   showsPrec _ (UndefinedElement s) =
     showException "undefined array element" s
-
-data AsyncException
-  = StackOverflow
-  | HeapOverflow
-  | ThreadKilled
-  deriving (Eq, Ord)
-
-instance Show AsyncException where
-  showsPrec _ StackOverflow   = showString "stack overflow"
-  showsPrec _ HeapOverflow    = showString "heap overflow"
-  showsPrec _ ThreadKilled    = showString "thread killed"
 
 showException :: String -> String -> ShowS
 showException tag msg =
@@ -1914,7 +1895,7 @@ newtype IO a = IO ((a -> IOResult) -> IOResult)
 
 data IOResult 
   = Hugs_ExitWith    Int
-  | Hugs_Catch       IOResult (Exception -> IOResult) (Obj -> IOResult)
+  | Hugs_Catch       IOResult (SomeException -> IOResult) (Obj -> IOResult)
   | Hugs_ForkThread  IOResult IOResult
   | Hugs_DeadThread
   | Hugs_YieldThread IOResult
@@ -1925,10 +1906,10 @@ data IOFinished a
   = Finished_ExitWith Int
   | Finished_Return   a
 
-primitive throw "primThrowException" :: Exception -> a
-primitive primCatchException :: a -> Either Exception a
+primitive throw "primThrowException" :: SomeException -> a
+primitive primCatchException :: a -> Either SomeException a
 
-catchException :: IO a -> (Exception -> IO a) -> IO a
+catchException :: IO a -> (SomeException -> IO a) -> IO a
 catchException (IO m) k = IO $ \ s ->
   Hugs_Catch (m hugsReturn)
              (\ e -> case (k e) of { IO k' -> k' s })
@@ -1951,7 +1932,7 @@ hugsIORun m =
  where
   runAndShowError :: IO a -> IO a
   runAndShowError m = m `catchException` exceptionHandler
-  exceptionHandler :: Exception -> IO a
+  exceptionHandler :: SomeException -> IO a
   exceptionHandler (ExitException ExitSuccess) = primExitWith 0
   exceptionHandler (ExitException (ExitFailure n)) = primExitWith n
   exceptionHandler err = runAndShowError $ do
@@ -1982,7 +1963,7 @@ loop (Hugs_YieldThread a:r)  = loop (r ++ [a])
 loop (Hugs_BlockThread a b:r)= loop (b a : r)
 loop _                       = error "Fatal error in Hugs scheduler"
 
-hugs_catch :: IOResult -> (Exception -> IOResult) -> (Obj -> IOResult) -> IOResult
+hugs_catch :: IOResult -> (SomeException -> IOResult) -> (Obj -> IOResult) -> IOResult
 hugs_catch m f s = case primCatchException (catch' m) of
   Left  exn                   -> f exn
   Right (Hugs_Return a)       -> s a
