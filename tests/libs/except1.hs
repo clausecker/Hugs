@@ -26,10 +26,10 @@ t1 = do
 -- Experiment to check if yielding a thread preserves the exception handler
 t2 :: IO ()
 t2 = do
-  try (yield >> print "Foo" >> lose2 "foo")
+  try (yield >> print "Foo" >> lose2 "foo") :: IO (Either SomeException ())
   print "Bar"
 
-try2 :: IO a -> IO (Either Exception a)
+try2 :: IO a -> IO (Either SomeException a)
 try2 m = catch (m >>= return . Right) (return . Left)
 
 lose1 x = ioError (userError x)
@@ -37,7 +37,7 @@ lose2 x = error x
 
 test :: String -> IO () -> IO ()
 test x m = do
-  y <- try m
+  y <- try m :: IO (Either SomeException ())
 --  y <- try2 m
   either (\ _ -> putStrLn (x ++ " failed"))
          (\ _ -> putStrLn (x ++ " worked"))

@@ -1,13 +1,13 @@
 -- !!! Testing primitive exception support
 
-import Hugs.Prelude( Exception, IO(..) )
+import Hugs.Prelude( SomeException, IO(..) )
 
 -- Note that these primitives break referential transparency.
 -- They should not be exported to the user in this form.
 -- They should always be wrapped in a referentially transparent
 -- cover.
 
-primitive primCatchException :: a -> Either Exception a
+primitive primCatchException :: a -> Either SomeException a
 -- primitive primThrowException :: Exception -> a
 
 -- One level of error catching
@@ -22,7 +22,7 @@ test1 x = case primCatchException x of
 -- Exception catching in the IO monad
 -- Won't behave correctly if combined with threads - use the Prelude
 -- code for that!
-catch' :: IO a -> (Exception -> IO a) -> IO a
+catch' :: IO a -> (SomeException -> IO a) -> IO a
 catch' (IO m) h = IO (\ s -> 
   case primCatchException (m s) of
     Left exn -> case h exn of { (IO h') -> h' s }
