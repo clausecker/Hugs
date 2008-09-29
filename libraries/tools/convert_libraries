@@ -31,6 +31,7 @@ target="$2"
 case $0 in
 */*)	. `dirname $0`/config ;;
 *)	. ./config ;;
+
 esac
 
 # Copy package examples (if any) to the demos directory
@@ -102,12 +103,15 @@ build_package() {
 	*)	extra_opts= ;;
 	esac
 
+        export PATH="$top_dir/src:$PATH"
+
 	$HugsSetup configure --verbose --hugs \
 			--prefix="$PREFIX" \
 			--scratchdir="$top_dir/$target_dir" \
 			--with-hsc2hs="$top_dir/libraries/tools/hsc2hs$bat" \
 			--with-cpphs="$top_dir/libraries/tools/cpphs$bat" \
 			--with-compiler="$ffihugs" \
+			--with-hugs="$top_dir/src/hugs" \
 			$happyflag $extra_opts
 	if $HugsSetup build --verbose; then
 		for name in LICEN[CS]E* COPYING* COPYRIGHT* copyright; do
