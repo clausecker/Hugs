@@ -1859,6 +1859,7 @@ Cell evalWithNoError(e)                /* Evaluate expression, returning   */
 Cell e; {                              /* NIL if successful,               */
     Cell caughtEx;                     /* Exception value if not...        */
     jmp_buf *oldCatch = evalError;
+    int oldEvalDepth = evalDepth;
 
 #if JMPBUF_ARRAY
     jmp_buf catcherr[1];
@@ -1879,6 +1880,7 @@ Cell e; {                              /* NIL if successful,               */
     else
 	caughtEx = exception;
 #endif
+    evalDepth = oldEvalDepth;
     evalError = oldCatch;
     return caughtEx;
 }
