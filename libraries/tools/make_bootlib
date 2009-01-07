@@ -56,7 +56,7 @@ mkdir $tmpdir
 
 # K&R-style C preprocessor
 
-Cabal_flag=`sed -n 's/ *CPP-Options: "\(.*\)"/\1/p' $source/Cabal/Cabal.cabal`
+Cabal_flag=`sed -n 's/ *[Cc][Pp][Pp]-[Oo]ptions: "\(.*\)"/\1/p' $source/Cabal/Cabal.cabal`
 
 through_cpp() {
 	# The input file need not be called *.c, but for
