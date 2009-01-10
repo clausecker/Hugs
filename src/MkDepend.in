@@ -44,7 +44,7 @@ module.$(OBJEXT): module.c prelude.h config.h platform.h options.h storage.h \
 opts.$(OBJEXT): opts.c prelude.h config.h platform.h options.h storage.h HsFFI.h \
   connect.h errors.h machdep.h strutil.h opts.h char.h
 output.$(OBJEXT): output.c prelude.h config.h platform.h options.h storage.h \
-  HsFFI.h connect.h errors.h output.h char.h
+  HsFFI.h connect.h errors.h output.h char.h opts.h
 plugin.$(OBJEXT): plugin.c prelude.h config.h platform.h options.h storage.h \
   HsFFI.h connect.h
 script.$(OBJEXT): script.c prelude.h config.h platform.h options.h storage.h \

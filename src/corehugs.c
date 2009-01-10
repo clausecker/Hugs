@@ -56,10 +56,13 @@ String argv[]; {
 
     /* force +C to be among the default options to generate Core */
 
-    readOptions("-p\"%s> \" -r$$ +C",FALSE);
+    readOptions("-p\"%s> \" -r$$",FALSE);
     readOptionSettings();
     processOptionVector(argc,argv);
-
+#if DEBUG_SHOWSC
+    readOptions("+C",FALSE);
+#endif
+	
     /* Figure out what Prelude module we're using + hoist it in. */
     loadPrelude();
 

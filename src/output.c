@@ -15,6 +15,7 @@
 #include "errors.h"
 #include "output.h"
 #include "char.h"
+#include "opts.h"
 #include <ctype.h>
 
 #if OBSERVATIONS
@@ -243,30 +244,76 @@ Cell e; {
 	case CHARCELL   : unlexCharConst(charOf(e));
 			  break;
 
-	case INTCELL    : {   Int i = intOf(e);
+        case INTCELL    : 
+#if DEBUG_SHOWSC			  
+			  if (debugSC) {   
+			      Int i = intOf(e);
+			      putChr('(');
+			      putInt(i);
+			      putStr(" :: Int");
+			      putChr(')');
+                          } else 
+#endif			  
+			  {   
+			      Int i = intOf(e);
 			      if (i<0 && d>=UMINUS_PREC) putChr('(');
 			      putInt(i);
 			      if (i<0 && d>=UMINUS_PREC) putChr(')');
 			  }
+
 			  break;
 
 #if BIGNUMS
 	case NEGNUM     :
 	case ZERONUM    :
-	case POSNUM     : xs = bigOut(e,NIL,d>=UMINUS_PREC);
-			  for (; nonNull(xs); xs=tl(xs))
-			      putChr(charOf(arg(hd(xs))));
+	case POSNUM     : 
+#if DEBUG_SHOWSC			  
+			  if (debugSC) {
+			      xs = bigOut(e,NIL,NEVER);
+			      putChr('(');
+			      for (; nonNull(xs); xs=tl(xs))
+				  putChr(charOf(arg(hd(xs))));
+			      putStr(" :: Integer");
+			      putChr(')');
+			  } else 
+#endif	/*DEBUG_SHOWSC */
+			  {
+			      xs = bigOut(e,NIL,d>=UMINUS_PREC);
+			      for (; nonNull(xs); xs=tl(xs))
+			          putChr(charOf(arg(hd(xs))));
+			  }
 			  break;
-#endif
+#endif /*BIGNUMS */
 
-	case FLOATCELL  : {   Float f = (Double)floatOf(e);
+	case FLOATCELL  : 
+#if DEBUG_SHOWSC			  
+			  if (debugSC) {
+			      Float f = (Double)floatOf(e);
+			      putChr('(');
+			      putStr(floatToString(f));
+			      putStr(" :: Float");
+			      putChr(')');
+                          } else 
+#endif
+			  {   
+			      Float f = (Double)floatOf(e);
 			      if (f<0 && d>=UMINUS_PREC) putChr('(');
 			      putStr(floatToString(f));
 			      if (f<0 && d>=UMINUS_PREC) putChr(')');
 			  }
 			  break;
 
-	case DOUBLECELL : {   Double f = (Double)doubleOf(e);
+	case DOUBLECELL : 
+#if DEBUG_SHOWSC			  
+			  if (debugSC) {	
+	      		      Double f = (Double)doubleOf(e);
+			      putChr('(');
+			      putStr(doubleToString(f));
+			      putStr(" :: Double");
+			      putChr(')');
+                          } else
+#endif
+			  {   Double f = (Double)doubleOf(e);
 			      if (f<0 && d>=UMINUS_PREC) putChr('(');
 			      putStr(doubleToString(f));
 			      if (f<0 && d>=UMINUS_PREC) putChr(')');
@@ -833,21 +880,53 @@ Int  co; {
 	case CHARCELL   : unlexCharConst(charOf(e));
 			  break;
 
-	case INTCELL    : {   Int i = intOf(e);
+	case INTCELL    : 
+#if DEBUG_SHOWSC			  
+			  if (debugSC) {   
+			      Int i = intOf(e);
+			      putChr('(');
+			      putInt(i);
+			      putStr(" :: Int");
+			      putChr(')');
+                          } else 
+#endif
+			  {   
+			      Int i = intOf(e);
 			      if (i<0 && d>=UMINUS_PREC) putChr('(');
 			      putInt(i);
 			      if (i<0 && d>=UMINUS_PREC) putChr(')');
 			  }
-			  break;
 
-	case FLOATCELL  : {   Float f = (Double)floatOf(e);
+			  break;
+	case FLOATCELL  : 
+#if DEBUG_SHOWSC			  
+			  if (debugSC) {
+			      Float f = (Double)floatOf(e);
+			      putChr('(');
+			      putStr(floatToString(f));
+			      putStr(" :: Float");
+			      putChr(')');
+                          } else 
+#endif
+			  {   
+			      Float f = (Double)floatOf(e);
 			      if (f<0 && d>=UMINUS_PREC) putChr('(');
 			      putStr(floatToString(f));
 			      if (f<0 && d>=UMINUS_PREC) putChr(')');
 			  }
 			  break;
 
-	case DOUBLECELL : {   Double f = (Double)doubleOf(e);
+	case DOUBLECELL : 
+#if DEBUG_SHOWSC			  
+			  if (debugSC) {	
+	      		      Double f = (Double)doubleOf(e);
+			      putChr('(');
+			      putStr(doubleToString(f));
+			      putStr(" :: Double");
+			      putChr(')');
+                          } else
+#endif
+			  {   Double f = (Double)doubleOf(e);
 			      if (f<0 && d>=UMINUS_PREC) putChr('(');
 			      putStr(doubleToString(f));
 			      if (f<0 && d>=UMINUS_PREC) putChr(')');
@@ -859,12 +938,24 @@ Int  co; {
 #if BIGNUMS
 	case NEGNUM     :
 	case ZERONUM    :
-	case POSNUM     : {   List xs = bigOut(e,NIL,d>=UMINUS_PREC);
+	case POSNUM     : 
+#if DEBUG_SHOWSC			  
+			  if (debugSC) {
+			      List xs = bigOut(e,NIL,NEVER);
+			      putChr('(');
+			      for (; nonNull(xs); xs=tl(xs))
+                                  putChr(charOf(arg(hd(xs))));
+                              putStr(" :: Integer");
+                              putChr(')');
+                          } else 
+#endif /* DEBUG_SHOWSC */
+			  {   
+			      List xs = bigOut(e,NIL,d>=UMINUS_PREC);
 			      for (; nonNull(xs); xs=tl(xs))
 				  putChr(charOf(arg(hd(xs))));
 			  }
 			  break;
-#endif
+#endif /* BIGNUMS */
 	case LETREC     : OPEN(d>WHERE_PREC);
 			  co += pPutLocals(fst(snd(e)),co);
 			  pPut(WHERE_PREC+1, snd(snd(e)), co);

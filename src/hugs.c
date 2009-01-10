@@ -138,6 +138,10 @@ String argv[]; {
     readOptions("-p\"%s> \" -r$$",FALSE);
     readOptionSettings();
     processOptionVector(argc,argv);
+    /* Disable +C if running the interactive Hugs */
+#if DEBUG_SHOWSC
+    readOptions("-C",FALSE);
+#endif
 
 #if !HASKELL_98_ONLY
     if (haskell98) {
@@ -201,7 +205,7 @@ static Void printBanner()
 #else
     Printf("__   __ __  __  ____   ___      _________________________________________\n");
     Printf("||   || ||  || ||  || ||__      Hugs 98: Based on the Haskell 98 standard\n");
-    Printf("||___|| ||__|| ||__||  __||     Copyright (c) 1994-2007\n");
+    Printf("||___|| ||__|| ||__||  __||     Copyright (c) 1994-2009\n");
     Printf("||---||         ___||           World Wide Web: http://haskell.org/hugs\n");
     Printf("||   ||                         Bugs: http://hackage.haskell.org/trac/hugs\n");
     Printf("||   || Version: %-14s _________________________________________\n\n",versionString);
